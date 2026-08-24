@@ -90,7 +90,7 @@ jobs:
           bi-ia-docs:test -pdf -interaction=nonstopmode -halt-on-error bitacora.tex
       - name: Ensure the versioned PDF is current
         run: git diff --exit-code -- docs/logbook/bitacora.pdf
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: bitacora-tecnica
           path: docs/logbook/bitacora.pdf
