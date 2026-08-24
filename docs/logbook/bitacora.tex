@@ -67,7 +67,7 @@
     Estudiantes & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPIs, insights y pronóstico \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.1.0 \\
+    Versión de la bitácora & 0.1.1 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -152,7 +152,7 @@ El anexo institucional exige módulos de seguridad, parámetros, negocio y repor
 \subsubsection{Incidentes y observaciones}
 
 \begin{enumerate}
-  \item La carpeta generada inicialmente contenía un directorio \file{.git} vacío y no era todavía un repositorio válido. Se planificó inicializar Git correctamente sobre la rama \file{main}.
+  \item La carpeta generada inicialmente contenía un directorio \file{.git} vacío y no era todavía un repositorio válido. Se resolvió inicializando Git sobre \file{main}; el commit base es \file{ead11fb}.
   \item El primer intento de generar \file{package-lock.json} falló porque npm trató de escribir en una caché de sólo lectura dentro del directorio personal. Se resolvió con la caché temporal \path{/tmp/bi-npm-cache}; el lockfile quedó generado sin vulnerabilidades reportadas.
   \item Una verificación de Compose se lanzó desde la subcarpeta \file{frontend}; no encontró los archivos raíz. Se repitió desde la raíz y las configuraciones de desarrollo y publicación resultaron válidas.
   \item La primera construcción del backend detectó formato pendiente y un import moderno requerido por Ruff. Se corrigieron ambos; Ruff, Mypy y dos pruebas Pytest finalizaron correctamente.
@@ -177,7 +177,7 @@ El anexo institucional exige módulos de seguridad, parámetros, negocio y repor
   AdventureWorks restaurada & \statusok & 71 tablas; \file{bi\_reader}: lectura 1 e inserción 0 \\
   Interfaz disponible & \statusok & Frontend saludable en el puerto 5173 y API accesible mediante proxy \\
   PDF legible & \statusok & Seis páginas renderizadas e inspeccionadas sin cortes ni solapamientos \\
-  Git local & \statuspending & Rama \file{main} y commit inicial \\
+  Git local & \statusok & Rama \file{main}; commit base \file{ead11fb} \\
   GitHub/GHCR & \statuspending & Remoto, Actions exitosas e imágenes públicas o autenticadas \\
   \bottomrule
 \end{tabularx}
@@ -185,8 +185,8 @@ El anexo institucional exige módulos de seguridad, parámetros, negocio y repor
 \section{Próximos pasos}
 
 \begin{enumerate}
-  \item Inicializar Git, crear el commit base y recuperar la autenticación de GitHub.
-  \item Elegir nombre y visibilidad del repositorio; publicar y observar la primera ejecución CI/CD.
+  \item Recuperar la autenticación de GitHub y elegir nombre y visibilidad del repositorio.
+  \item Publicar el repositorio y observar la primera ejecución CI/CD.
   \item Congelar una etiqueta de ambiente inicial y registrar los digest de las imágenes.
   \item Iniciar la siguiente iteración con migraciones del RBAC y parámetros, sin adelantar módulos de negocio.
 \end{enumerate}
@@ -198,6 +198,7 @@ El anexo institucional exige módulos de seguridad, parámetros, negocio y repor
   \textbf{Versión} & \textbf{Fecha} & \textbf{Cambio} \\
   \midrule
   0.1.0 & 24-08-2026 & Apertura de la bitácora y registro de la fase de ambiente, Docker, Git y DevOps. \\
+  0.1.1 & 24-08-2026 & Prueba integral desde volúmenes vacíos, corrección del usuario lector e inicialización del repositorio Git. \\
   \bottomrule
 \end{tabularx}
 
