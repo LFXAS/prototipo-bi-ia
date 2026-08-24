@@ -1,4 +1,4 @@
-.PHONY: help env bootstrap build up release-up down logs ps test lint format-check compose-check workflow-test doctor docs-image logbook sprint-report technical-manual docs verify
+.PHONY: help env bootstrap build up delivery-preview-up release-up release-down down logs ps test lint format-check compose-check workflow-test doctor docs-image logbook sprint-report technical-manual docs verify
 
 COMPOSE := docker compose
 
@@ -8,7 +8,9 @@ help:
 	@echo "  make bootstrap      Prepara y levanta todo desde cero"
 	@echo "  make build          Construye las imagenes de desarrollo"
 	@echo "  make up             Levanta frontend y backend"
-	@echo "  make release-up     Levanta imagenes ya publicadas en GHCR"
+	@echo "  make delivery-preview-up Anade Nginx en 8080 sin reemplazar desarrollo"
+	@echo "  make release-up     Levanta un entorno GHCR completo y aislado"
+	@echo "  make release-down   Detiene el entorno GHCR y conserva sus datos"
 	@echo "  make down           Detiene los servicios"
 	@echo "  make logs           Sigue los logs de los servicios"
 	@echo "  make test           Ejecuta todas las pruebas dentro de Docker"
@@ -34,9 +36,18 @@ build:
 up:
 	$(COMPOSE) up --build -d
 
+delivery-preview-up:
+	$(COMPOSE) --profile delivery build frontend-delivery
+	$(COMPOSE) --profile delivery up --no-build -d frontend-delivery
+
 release-up:
-	$(COMPOSE) -f compose.release.yaml pull
-	$(COMPOSE) -f compose.release.yaml up -d
+	@test -f .env.release || { echo "Falta .env.release: copie .env.release.example y cambie los secretos."; exit 1; }
+	$(COMPOSE) --env-file .env.release -f compose.release.yaml pull
+	$(COMPOSE) --env-file .env.release -f compose.release.yaml up -d
+
+release-down:
+	@test -f .env.release || { echo "Falta .env.release."; exit 1; }
+	$(COMPOSE) --env-file .env.release -f compose.release.yaml down
 
 down:
 	$(COMPOSE) down --remove-orphans
@@ -61,7 +72,8 @@ format-check:
 
 compose-check:
 	$(COMPOSE) config --quiet
-	$(COMPOSE) -f compose.release.yaml config --quiet
+	$(COMPOSE) --profile delivery config --quiet
+	$(COMPOSE) --env-file .env.release.example -f compose.release.yaml config --quiet
 
 workflow-test:
 	docker run --rm -v "$$(pwd):/workspace:ro" -w /workspace alpine:3.22 \
@@ -72,22 +84,26 @@ doctor:
 	@curl --fail --silent http://localhost:$${BACKEND_PORT:-8000}/api/v1/health/live || true
 	@echo
 	@curl --fail --silent http://localhost:$${FRONTEND_PORT:-5173} >/dev/null && echo "Frontend: disponible" || echo "Frontend: no disponible"
+	@curl --fail --silent http://localhost:$${DELIVERY_FRONTEND_PORT:-8080} >/dev/null && echo "Frontend de entrega: disponible" || echo "Frontend de entrega: no iniciado"
 
 docs-image:
 	docker build --target production -t bi-ia-docs:local infra/docs
 
 logbook: docs-image
 	docker run --rm --user "$$(id -u):$$(id -g)" \
+		-e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts \
 		-v "$$(pwd)/docs/logbook:/workspace" -w /workspace \
 		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error bitacora.tex
 
 sprint-report: docs-image
 	docker run --rm --user "$$(id -u):$$(id -g)" \
+		-e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts \
 		-v "$$(pwd)/docs:/workspace" -w /workspace/sprints \
 		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error sprint-01-entorno.tex
 
 technical-manual: docs-image
 	docker run --rm --user "$$(id -u):$$(id -g)" \
+		-e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts \
 		-v "$$(pwd)/docs:/workspace" -w /workspace/manual-tecnico \
 		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error manual-tecnico.tex
 

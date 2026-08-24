@@ -74,6 +74,18 @@ No se desarrollan funcionalidades directamente en `main` ni se fusiona una rama 
 
 CI se ejecuta sobre pull requests y pushes a ambas ramas. El control `Validate branch flow` acepta trabajo hacia `develop` y exige que toda promoción hacia `main` tenga origen `develop`. CD se ejecuta únicamente sobre `main` y etiquetas `v*`.
 
+## Relación entre ramas y ambientes
+
+Las ramas controlan el ciclo del código, no crean por sí solas servidores permanentes:
+
+- un cambio de `feature/*` o `fix/*` se prueba mediante contenedores efímeros de CI;
+- `develop` mantiene la integración candidata y puede ejecutarse localmente con `compose.yaml`;
+- un pull request `develop -> main` vuelve a ejecutar CI;
+- al fusionarse en `main`, CD publica cinco imágenes con etiquetas `main` y `sha-*`;
+- una etiqueta `vX.Y.Z` publica una versión inmutable que puede fijarse en `.env.release`.
+
+En una computadora pueden convivir el proyecto de desarrollo `bi-ia-prototype` y el proyecto de entrega `bi-ia-prototype-release`, porque usan redes, volúmenes y puertos anfitrión diferentes. La vista Nginx ligera (`make delivery-preview-up`) es una alternativa para probar sólo el frontend compilado sin duplicar las bases.
+
 ## Dependabot
 
 Dependabot abre sus pull requests contra la rama predeterminada `develop`. Las actualizaciones npm menores y parches se agrupan; los saltos mayores de versión no se proponen como actualización rutinaria porque requieren revisar compatibilidad y migraciones. Las alertas de seguridad siguen tratándose por separado.

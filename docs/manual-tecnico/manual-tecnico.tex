@@ -112,11 +112,12 @@
 
 Este manual permite instalar, levantar, comprobar, mantener y replicar el ambiente técnico del prototipo. Está dirigido a las autoras, docentes revisores, colaboradores autorizados y personal técnico que necesite reproducir la demostración.
 
-El documento cubre dos modalidades:
+El documento cubre tres modalidades:
 
 \begin{enumerate}
   \item \textbf{Desarrollo desde el código}: clona el repositorio y construye las imágenes localmente.
-  \item \textbf{Ejecución de una entrega}: descarga imágenes privadas de GitHub Container Registry (GHCR) y no compila el código.
+  \item \textbf{Vista local de entrega}: añade Nginx en el puerto 8080 y reutiliza la API y las bases de desarrollo.
+  \item \textbf{Ejecución de una entrega completa}: descarga imágenes de GitHub Container Registry (GHCR) en un proyecto Compose aislado.
 \end{enumerate}
 
 La versión actual contiene infraestructura y salud técnica. El RBAC y los módulos de negocio todavía no están implementados.
@@ -146,13 +147,14 @@ La versión actual contiene infraestructura y salud técnica. El RBAC y los mód
   Servicio & Responsabilidad & Puerto desarrollo & Persistencia \\
   \midrule
   frontend & Interfaz React y proxy a la API & 5173 & Código y dependencias \\
+  frontend-delivery & Frontend compilado servido por Nginx & 8080 & Sin volumen \\
   backend & API FastAPI, configuración y salud & 8000 & Código montado \\
   postgres & Configuración interna y futuro datamart & 55432 & Volumen \file{postgres\_data} \\
   sqlserver & Fuente AdventureWorks externa & 51433 & Volumen \file{sqlserver\_data} \\
   \bottomrule
 \end{tabularx}
 
-Compose crea la red y los volúmenes bajo el nombre lógico \file{bi-ia-prototype}. No usa los contenedores PostgreSQL o SQL Server que ya existan en el computador.
+Compose crea la red y los volúmenes de desarrollo bajo el nombre lógico \file{bi-ia-prototype}. El perfil \file{delivery} sólo añade Nginx a esa red. El Compose completo de entrega usa \file{bi-ia-prototype-release}, otra red, otros puertos y otros volúmenes. Ninguno usa contenedores PostgreSQL o SQL Server ajenos al proyecto.
 
 \subsection{Estructura del repositorio}
 
@@ -187,7 +189,7 @@ Makefile                  comandos operativos abreviados
   \item Docker Engine 24 o superior y Docker Compose v2; Docker Desktop es válido.
   \item Git para clonar y actualizar el repositorio.
   \item Acceso al repositorio público; permiso de escritura sólo para colaboradores autorizados.
-  \item Para consumir imágenes privadas: credenciales GHCR con \file{read:packages}.
+  \item Para consumir imágenes públicas no se necesita iniciar sesión; si un paquete GHCR conserva visibilidad privada, se requieren credenciales con \file{read:packages}.
 \end{itemize}
 
 No se requiere instalar Python, Node.js, PostgreSQL, SQL Server, controladores ODBC ni LaTeX en el host.
@@ -216,7 +218,8 @@ Se deben reemplazar todos los valores que empiecen con \file{ChangeMe\_*}. Las c
   \midrule
   \endhead
   \file{COMPOSE\_PROJECT\_NAME} & \file{bi-ia-prototype} & Prefijo aislado de red, contenedores y volúmenes. \\
-  \file{FRONTEND\_PORT} & 5173 & Puerto web de desarrollo; 8080 en la entrega. \\
+  \file{FRONTEND\_PORT} & 5173 & Puerto web de desarrollo; 8080 en la entrega completa. \\
+  \file{DELIVERY\_FRONTEND\_PORT} & 8080 & Vista Nginx que convive con Vite. \\
   \file{BACKEND\_PORT} & 8000 & Puerto de FastAPI y OpenAPI. \\
   \file{LOCAL\_POSTGRES\_PORT} & 55432 & Publicación local de PostgreSQL. \\
   \file{LOCAL\_SQLSERVER\_PORT} & 51433 & Publicación local de SQL Server. \\
@@ -316,13 +319,31 @@ Las dos respuestas deben indicar \file{"status":"ok"}; la segunda también debe 
   \caption{Resultado esperado después de levantar el entorno de desarrollo.}
 \end{figure}
 
-\section{Ejecución desde imágenes privadas de GHCR}
+\section{Vista local de entrega sin reemplazar desarrollo}
 
-Esta modalidad permite levantar una entrega sin compilar el código.
+Con los servicios de desarrollo activos, ejecutar:
+
+\begin{lstlisting}[style=terminal,language=bash]
+make delivery-preview-up
+\end{lstlisting}
+
+El comando construye la etapa \file{production} del frontend y añade \file{frontend-delivery} mediante el perfil Compose \file{delivery}. No detiene Vite, no recrea el backend y no duplica PostgreSQL ni SQL Server.
+
+\begin{itemize}
+  \item Vite y recarga automática: \url{http://localhost:5173}
+  \item Frontend compilado con Nginx: \url{http://localhost:8080}
+  \item API compartida: \url{http://localhost:8000}
+\end{itemize}
+
+Esta modalidad valida el frontend que se empaquetará, pero no representa un ambiente productivo totalmente independiente porque comparte el backend de desarrollo.
+
+\section{Ejecución desde imágenes de GHCR}
+
+Esta modalidad permite levantar una entrega completa sin compilar el código y sin reemplazar desarrollo. Usa los puertos 8080, 18000, 55433 y 51434, además de volúmenes independientes.
 
 \subsection{Autenticarse en GHCR}
 
-La persona debe tener acceso al repositorio y un token con permiso \file{read:packages}. El token se introduce por entrada estándar y no se escribe en el comando:
+Los paquetes públicos se descargan sin autenticación. Si GitHub indica que algún paquete es privado, la persona debe tener acceso y un token con permiso \file{read:packages}. El token se introduce por entrada estándar y no se escribe en el comando:
 
 \begin{lstlisting}[style=terminal,language=bash]
 echo "$GHCR_TOKEN" | docker login ghcr.io -u USUARIO_GITHUB --password-stdin
@@ -333,13 +354,13 @@ echo "$GHCR_TOKEN" | docker login ghcr.io -u USUARIO_GITHUB --password-stdin
 \subsection{Configurar la entrega}
 
 \begin{lstlisting}[style=terminal,language=bash]
-cp .env.release.example .env
+cp .env.release.example .env.release
 \end{lstlisting}
 
-En \file{.env}, establecer:
+En \file{.env.release}, cambiar todos los secretos \file{ChangeMe\_*} y confirmar:
 
 \begin{lstlisting}[style=terminal]
-IMAGE_PREFIX=ghcr.io/LFXAS/prototipo-bi-ia
+IMAGE_PREFIX=ghcr.io/lfxas/prototipo-bi-ia
 IMAGE_TAG=main
 \end{lstlisting}
 
@@ -348,12 +369,11 @@ Para una entrega académica estable, sustituir \file{main} por una etiqueta inmu
 \subsection{Descargar e iniciar}
 
 \begin{lstlisting}[style=terminal,language=bash]
-docker compose -f compose.release.yaml pull
-docker compose -f compose.release.yaml up -d
-docker compose -f compose.release.yaml ps
+make release-up
+docker compose --env-file .env.release -f compose.release.yaml ps
 \end{lstlisting}
 
-En esta modalidad el frontend usa \url{http://localhost:8080} y la API conserva el puerto 8000.
+En esta modalidad el frontend usa \url{http://localhost:8080} y su API aislada usa \url{http://localhost:18000}. Puede convivir con desarrollo, pero duplica las bases y requiere más memoria. La vista Nginx ligera y la entrega completa no deben usar simultáneamente el mismo puerto 8080.
 
 \section{Comprobación técnica}
 
@@ -403,6 +423,9 @@ No se debe ejecutar una prueba destructiva sobre datos que deban conservarse. La
   Comando & Función \\
   \midrule
   \file{make up} & Construye cambios y levanta el entorno en segundo plano. \\
+  \file{make delivery-preview-up} & Añade Nginx en 8080 y conserva Vite en 5173. \\
+  \file{make release-up} & Descarga y levanta las cinco imágenes en un proyecto aislado. \\
+  \file{make release-down} & Detiene sólo la entrega completa y conserva sus volúmenes. \\
   \file{make down} & Detiene servicios y conserva datos. \\
   \file{make ps} & Muestra servicios y estado de salud. \\
   \file{make logs} & Sigue los registros recientes. \\
@@ -458,8 +481,8 @@ make doctor
 \subsection{Entorno basado en GHCR}
 
 \begin{lstlisting}[style=terminal,language=bash]
-docker compose -f compose.release.yaml pull
-docker compose -f compose.release.yaml up -d
+docker compose --env-file .env.release -f compose.release.yaml pull
+docker compose --env-file .env.release -f compose.release.yaml up -d
 \end{lstlisting}
 
 Para volver a una versión conocida, fijar \file{IMAGE\_TAG} a una etiqueta anterior y repetir \file{pull}/\file{up}. No usar \file{latest} para entregas evaluables.
@@ -501,6 +524,8 @@ En cada push y pull request hacia \file{develop} o \file{main}, CI:
   \item compila los documentos LaTeX y verifica que los PDF versionados estén actualizados.
 \end{enumerate}
 
+Los trabajos de CI son efímeros: construyen y prueban contenedores en GitHub y los eliminan al terminar. No mantienen un servidor de desarrollo ni modifican los ambientes locales de los colaboradores.
+
 \subsection{Entrega continua}
 
 Después de un cambio en \file{main} o una etiqueta \file{v*}, CD valida y publica:
@@ -514,6 +539,25 @@ Después de un cambio en \file{main} o una etiqueta \file{v*}, CD valida y publi
 \end{itemize}
 
 Las ejecuciones de línea base CI 32749237009 y CD 32749237059 finalizaron exitosamente para el commit \file{ddf2551}.
+
+CD tampoco reemplaza automáticamente un servidor: publica imágenes con etiquetas \file{main}, \file{sha-*} y \file{v*}. Cada computador o proveedor de despliegue selecciona una etiqueta mediante \file{.env.release}. Así pueden coexistir desarrollo y producción sin compartir red, puertos ni volúmenes.
+
+\subsection{Cierre propuesto en Azure}
+
+Se recomienda Azure for Students para la demostración académica. La suscripción aporta crédito temporal, no alojamiento gratuito permanente. La arquitectura objetivo usa una VM Ubuntu x64 con 2 vCPU y 8 GiB, Docker Compose, alertas de presupuesto y apagado o desasignación fuera de las pruebas. SQL Server requiere x64 y consume una parte relevante de la memoria; una instancia gratuita mínima no es suficiente para el conjunto completo.
+
+El despliegue seguirá esta secuencia:
+
+\begin{enumerate}
+  \item CI aprueba el pull request y la promoción \file{develop -> main};
+  \item CD publica las cinco imágenes y una etiqueta inmutable;
+  \item el ambiente GitHub \file{production} exige la aprobación definida por el equipo;
+  \item GitHub Actions se autentica en Azure mediante OIDC y permisos limitados;
+  \item la VM descarga la etiqueta, ejecuta Compose y comprueba salud;
+  \item se registran SHA, digest, URL, resultado y cualquier reversión.
+\end{enumerate}
+
+La suscripción, la VM y el workflow de despliegue permanecen pendientes hasta que las autoras activen Azure for Students y confirmen región, presupuesto y nombres. No se almacenará una contraseña permanente de Azure en GitHub.
 
 Dependabot trabaja contra la rama predeterminada \file{develop}. Las actualizaciones npm menores y parches se agrupan; los saltos mayores se revisan de forma intencional y separada para evitar mezclar migraciones incompatibles.
 
@@ -541,7 +585,8 @@ Dependabot trabaja contra la rama predeterminada \file{develop}. Las actualizaci
   \textbf{Síntoma} & \textbf{Causa probable} & \textbf{Acción recomendada} \\
   \midrule
   \endhead
-  Puerto ocupado & Otro servicio usa 5173, 8000, 55432 o 51433. & Cambiar el puerto correspondiente en \file{.env} y reiniciar Compose. \\
+  Puerto ocupado & Otro servicio usa 5173, 8080, 8000, 18000, 55432, 55433, 51433 o 51434. & Cambiar el puerto correspondiente en el archivo de ambiente y reiniciar Compose. \\
+  5173 funciona y 8080 no responde & Sólo está iniciado el perfil normal de desarrollo. & Ejecutar \file{make delivery-preview-up} o iniciar la entrega completa. \\
   Backend vivo, pero \file{ready} falla & PostgreSQL no está saludable o las credenciales no coinciden. & Revisar \file{docker compose ps} y los registros de PostgreSQL/backend. \\
   SQL Server no queda saludable & Memoria insuficiente, clave SA inválida o descarga bloqueada. & Asignar 8 GB a Docker, corregir la clave y revisar los registros. \\
   Restauración muy lenta & Primera descarga o emulación ARM. & Esperar y seguir \file{docker compose logs -f sqlserver}. \\
@@ -613,8 +658,9 @@ Ante pérdida de datos locales, credenciales expuestas, imágenes inesperadas o 
   Recurso & Dirección & Observación \\
   \midrule
   Frontend desarrollo & \url{http://localhost:5173} & React/Vite \\
-  Frontend entrega & \url{http://localhost:8080} & Nginx/GHCR \\
-  API & \url{http://localhost:8000} & FastAPI \\
+  Frontend entrega & \url{http://localhost:8080} & Nginx local o GHCR \\
+  API desarrollo & \url{http://localhost:8000} & FastAPI con recarga \\
+  API entrega completa & \url{http://localhost:18000} & FastAPI desde GHCR \\
   OpenAPI & \url{http://localhost:8000/docs} & Contrato interactivo \\
   Salud básica & \url{http://localhost:8000/api/v1/health/live} & Proceso de API \\
   Preparación & \url{http://localhost:8000/api/v1/health/ready} & API y PostgreSQL \\
@@ -662,6 +708,8 @@ make verify
   \midrule
   1.0.0 & 24-08-2026 & Primera versión: instalación, réplica, operación, CI/CD, seguridad, diagnóstico y recuperación del ambiente del Sprint 1. \\
   1.1.0 & 24-08-2026 & Flujo \file{feature/*} hacia \file{develop}, promoción a \file{main}, protecciones y política de Dependabot. \\
+  1.2.0 & 24-08-2026 & Vista Nginx paralela, entrega GHCR aislada y relación entre ramas, CI/CD y ambientes simultáneos. \\
+  1.3.0 & 24-08-2026 & Propuesta de cierre DevOps en Azure for Students con VM x64, OIDC, aprobación y control de crédito. \\
   \bottomrule
 \end{tabularx}
 

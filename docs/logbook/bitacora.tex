@@ -67,7 +67,7 @@
     Estudiantes & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPIs, insights y pronóstico \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.1.5 \\
+    Versión de la bitácora & 0.1.6 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -207,6 +207,37 @@ El anexo institucional exige módulos de seguridad, parámetros, negocio y repor
   \item Una prueba adicional \file{make lint} se detuvo porque SQL Server estaba no saludable después de un reinicio. El motor aceptaba conexiones, pero AdventureWorks seguía recuperándose cuando el inicializador intentó configurarla y dejó ausente la marca de disponibilidad. Se añadió una espera explícita a la base, se recreó el contenedor sin borrar el volumen y la prueba de reinicio pasó.
 \end{enumerate}
 
+\subsection{24 de agosto de 2026 - Ambientes simultáneos y vista de entrega}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Diagnóstico de acceso & \statusok & Se comprobó que Vite respondía en 5173 y FastAPI estaba disponible en 8000; el error del navegador en 8080 se debía a que todavía no existía un servicio de entrega activo en ese puerto. \\
+  Vista Nginx paralela & \statusok & El perfil Compose \file{delivery} añade \file{frontend-delivery} en 8080, comparte la API y las bases de desarrollo y conserva Vite en 5173. \\
+  Entrega completa aislada & \statusok & \file{compose.release.yaml} usa el proyecto \file{bi-ia-prototype-release}, API 18000, PostgreSQL 55433, SQL Server 51434 y volúmenes independientes; no reemplaza desarrollo. \\
+  Automatización & \statusok & \file{make delivery-preview-up} inicia la vista ligera. \file{make release-up} exige \file{.env.release} y levanta las imágenes GHCR; \file{make release-down} detiene sólo ese ambiente. \\
+  CI/CD & \statusok & CI valida desarrollo, perfil de entrega y Compose GHCR mediante contenedores efímeros. CD publica desde \file{main} o etiquetas \file{v*}; el despliegue selecciona una etiqueta sin compartir volúmenes. \\
+  Guías & \statusok & README, arquitectura, réplica, flujo Git y manual técnico distinguen ramas, ambientes y consumo de recursos. \\
+  Verificación local & \statusok & Cinco servicios quedaron saludables; Vite respondió en 5173, Nginx en 8080 y el proxy de entrega devolvió salud de FastAPI. \\
+  Nube académica & \statuspending & Se recomienda Azure for Students con una VM Linux x64 de 2 vCPU y 8 GiB, OIDC, aprobación del ambiente y apagado automático. Falta activar la suscripción antes de crear recursos. \\
+  Visibilidad GHCR & \statuspending & La descarga anónima de los cinco paquetes respondió HTTP 401. El repositorio público no cambia automáticamente los paquetes; hasta ajustar su visibilidad, otras máquinas deben autenticarse con \file{read:packages}. \\
+  \bottomrule
+\end{longtable}
+
+\subsubsection{Decisión operativa}
+
+La vista Nginx es la opción recomendada para revisar rápidamente el frontend compilado porque no duplica SQL Server. La entrega GHCR completa se reserva para validar aislamiento, imágenes y restauración reproducible; puede convivir con desarrollo si el computador dispone de memoria suficiente. La vista ligera y la entrega completa comparten por defecto el puerto anfitrión 8080, por lo que se usa sólo una de ellas a la vez o se cambia su variable de puerto.
+
+\subsubsection{Incidente de verificación documental}
+
+La primera regeneración mostró avisos porque TeX intentó crear su caché de fuentes en una ruta sin escritura. La compilación usó su alternativa temporal y \file{make verify} terminó correctamente, pero se fijaron \file{HOME}, \file{TEXMFVAR} y \file{VARTEXFONTS} a rutas temporales dentro del contenedor para eliminar la dependencia implícita y mantener iguales los comandos locales y de CI.
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}X l X@{}}
@@ -219,7 +250,7 @@ El anexo institucional exige módulos de seguridad, parámetros, negocio y repor
   Frontend calidad y pruebas & \statusok & ESLint, 1 prueba Vitest y build de Vite dentro de Docker \\
   PostgreSQL disponible & \statusok & Esquemas \file{app} y \file{mart}; endpoint \file{/health/ready} en \file{ok} \\
   AdventureWorks restaurada & \statusok & 71 tablas; \file{bi\_reader}: lectura 1 e inserción 0 \\
-  Interfaz disponible & \statusok & Frontend saludable en el puerto 5173 y API accesible mediante proxy \\
+  Interfaz disponible & \statusok & Vite saludable en 5173, Nginx opcional en 8080 y API accesible mediante proxy \\
   PDF legible & \statusok & Todas las páginas renderizadas e inspeccionadas sin cortes ni solapamientos \\
   Git local & \statusok & \file{develop} para integración, \file{main} para entregas y ramas enfocadas por pull request \\
   GitHub/GHCR & \statusok & Repositorio público, dos colaboradoras con escritura, ramas protegidas y cinco imágenes publicadas en GHCR \\
@@ -229,6 +260,7 @@ El anexo institucional exige módulos de seguridad, parámetros, negocio y repor
 \section{Próximos pasos}
 
 \begin{enumerate}
+  \item Cambiar a pública la visibilidad de los cinco paquetes GHCR y repetir la descarga anónima.
   \item Revisar individualmente los pull requests de Dependabot que queden abiertos en \file{develop}; no fusionar ninguno sin CI aprobada.
   \item Congelar una etiqueta de ambiente inicial y registrar los digest de las imágenes.
   \item Iniciar la siguiente iteración con migraciones del RBAC y parámetros, sin adelantar módulos de negocio.
@@ -246,6 +278,7 @@ El anexo institucional exige módulos de seguridad, parámetros, negocio y repor
   0.1.3 & 24-08-2026 & Repositorio privado, primera CI/CD exitosa, imágenes GHCR y mantenimiento de Actions. \\
   0.1.4 & 24-08-2026 & Informe formal del Sprint 1, manual técnico, capturas e integración de todos los PDF en CI. \\
   0.1.5 & 24-08-2026 & Colaboradores, estrategia \file{develop/main}, protección, control de ramas, Dependabot y reinicio seguro de SQL Server. \\
+  0.1.6 & 24-08-2026 & Vista Nginx paralela, entrega GHCR aislada y documentación de ambientes simultáneos con CI/CD. \\
   \bottomrule
 \end{tabularx}
 

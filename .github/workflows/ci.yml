@@ -35,7 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Validate isolated stack configuration
-        run: docker compose config --quiet
+        run: make compose-check
 
   backend:
     name: Backend checks
@@ -101,16 +101,19 @@ jobs:
       - name: Compile logbook
         run: >-
           docker run --rm --user "$(id -u):$(id -g)"
+          -e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts
           -v "$PWD/docs/logbook:/workspace" -w /workspace
           bi-ia-docs:test -pdf -interaction=nonstopmode -halt-on-error bitacora.tex
       - name: Compile Sprint 1 report
         run: >-
           docker run --rm --user "$(id -u):$(id -g)"
+          -e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts
           -v "$PWD/docs:/workspace" -w /workspace/sprints
           bi-ia-docs:test -pdf -interaction=nonstopmode -halt-on-error sprint-01-entorno.tex
       - name: Compile technical manual
         run: >-
           docker run --rm --user "$(id -u):$(id -g)"
+          -e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts
           -v "$PWD/docs:/workspace" -w /workspace/manual-tecnico
           bi-ia-docs:test -pdf -interaction=nonstopmode -halt-on-error manual-tecnico.tex
       - name: Ensure versioned PDFs are current
