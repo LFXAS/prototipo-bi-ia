@@ -1,0 +1,98 @@
+# Entorno autocontenido sin compilacion local. Todas las imagenes propias se
+# descargan desde GHCR; la ruta donde se guarde este archivo es indiferente.
+name: ${COMPOSE_PROJECT_NAME:-bi-ia-prototype}
+
+services:
+  postgres:
+    image: ${IMAGE_PREFIX:-ghcr.io/OWNER/REPOSITORY}-postgres:${IMAGE_TAG:-main}
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-bi_prototype}
+      POSTGRES_USER: ${POSTGRES_USER:-bi_app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMe_Postgres_2026!}
+    ports:
+      - "${LOCAL_POSTGRES_PORT:-55432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    restart: unless-stopped
+
+  sqlserver:
+    platform: linux/amd64
+    image: ${IMAGE_PREFIX:-ghcr.io/OWNER/REPOSITORY}-sqlserver:${IMAGE_TAG:-main}
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: ${SQLSERVER_SA_PASSWORD:-ChangeMe_SA_2026!}
+      SQLSERVER_DATABASE: ${SQLSERVER_DATABASE:-AdventureWorks2022}
+      SQLSERVER_USER: ${SQLSERVER_USER:-bi_reader}
+      SQLSERVER_PASSWORD: ${SQLSERVER_PASSWORD:-ChangeMe_Reader_2026!}
+      ADVENTUREWORKS_BACKUP_URL: ${ADVENTUREWORKS_BACKUP_URL:-https://github.com/Microsoft/sql-server-samples/releases/download/adventureworks/AdventureWorks2022.bak}
+    ports:
+      - "${LOCAL_SQLSERVER_PORT:-51433}:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "test -f /var/opt/mssql/.adventureworks-ready && /opt/mssql-tools18/bin/sqlcmd -S localhost -U \"$${SQLSERVER_USER}\" -P \"$${SQLSERVER_PASSWORD}\" -C -d \"$${SQLSERVER_DATABASE}\" -Q \"SELECT 1\" -b -o /dev/null",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    restart: unless-stopped
+
+  backend:
+    image: ${IMAGE_PREFIX:-ghcr.io/OWNER/REPOSITORY}-backend:${IMAGE_TAG:-main}
+    environment:
+      APP_NAME: ${APP_NAME:-Prototipo BI asistido por IA}
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_VERSION: ${APP_VERSION:-0.1.0}
+      CORS_ORIGINS: ${CORS_ORIGINS:-["http://localhost:8080"]}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-bi_prototype}
+      POSTGRES_USER: ${POSTGRES_USER:-bi_app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMe_Postgres_2026!}
+      SQLSERVER_HOST: sqlserver
+      SQLSERVER_PORT: 1433
+      SQLSERVER_DATABASE: ${SQLSERVER_DATABASE:-AdventureWorks2022}
+      SQLSERVER_USER: ${SQLSERVER_USER:-bi_reader}
+      SQLSERVER_PASSWORD: ${SQLSERVER_PASSWORD:-ChangeMe_Reader_2026!}
+      SQLSERVER_DRIVER: ODBC Driver 18 for SQL Server
+      SQLSERVER_ENCRYPT: "true"
+      SQLSERVER_TRUST_SERVER_CERTIFICATE: "true"
+      SQLSERVER_APPLICATION_INTENT: ReadOnly
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      sqlserver:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8000/api/v1/health/live"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  frontend:
+    image: ${IMAGE_PREFIX:-ghcr.io/OWNER/REPOSITORY}-frontend:${IMAGE_TAG:-main}
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  sqlserver_data:

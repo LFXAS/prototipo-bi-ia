@@ -1,0 +1,204 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage[letterpaper,margin=2.3cm,headheight=15pt]{geometry}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+
+\ifdefined\pdfinfoomitdate\pdfinfoomitdate=1\fi
+\ifdefined\pdftrailerid\pdftrailerid{}\fi
+\ifdefined\pdfsuppressptexinfo\pdfsuppressptexinfo=15\fi
+
+\definecolor{ugblue}{HTML}{006A8D}
+\definecolor{deepgreen}{HTML}{123D3A}
+\definecolor{softgray}{HTML}{F2F5F4}
+\definecolor{warning}{HTML}{A45A00}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=ugblue,
+  urlcolor=ugblue,
+  pdftitle={Bitacora tecnica - Prototipo web de BI asistido por IA},
+  pdfauthor={Emily Robles Alvarado y Lesly Velasquez Anchundia}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Bitacora tecnica}
+\rhead{Prototipo BI asistido por IA}
+\cfoot{\thepage}
+
+\setlist[itemize]{leftmargin=1.5em,itemsep=0.25em,topsep=0.35em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\renewcommand{\arraystretch}{1.25}
+
+\newcommand{\statusok}{\textcolor{deepgreen}{\textbf{Completado}}}
+\newcommand{\statuspending}{\textcolor{warning}{\textbf{Pendiente}}}
+\newcommand{\file}[1]{\texttt{#1}}
+
+\begin{document}
+\hypersetup{pageanchor=false}
+
+\begin{titlepage}
+  \thispagestyle{empty}
+  \vspace*{1.2cm}
+  {\color{ugblue}\rule{\textwidth}{2.5pt}}
+  \vspace{1.4cm}
+
+  {\Large Universidad de Guayaquil\\[0.25em]Facultad de Ciencias Matemáticas y Físicas\\Carrera de Software}
+
+  \vfill
+
+  {\color{deepgreen}\fontsize{30}{35}\selectfont\textbf{Bitácora técnica}}\\[0.8em]
+  {\LARGE Prototipo web de BI asistido por IA}
+
+  \vspace{1.6cm}
+
+  \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
+    Estudiantes & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
+    Tema & Construcción asistida de un datamart, KPIs, insights y pronóstico \\
+    Repositorio local & \file{/home/ceo/Proyectos/BI} \\
+    Versión de la bitácora & 0.1.0 \\
+    Fecha de apertura & 24 de agosto de 2026 \\
+  \end{tabularx}
+
+  \vfill
+  {\color{ugblue}\rule{\textwidth}{2.5pt}}
+\end{titlepage}
+
+\hypersetup{pageanchor=true}
+\pagenumbering{roman}
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+\section{Propósito y reglas de mantenimiento}
+
+Este documento conserva la trazabilidad técnica del prototipo: decisiones, cambios, verificaciones, incidentes, evidencias y trabajo pendiente. Debe actualizarse al final de cada sesión significativa y antes de etiquetar una entrega.
+
+Reglas:
+
+\begin{itemize}
+  \item No eliminar incidentes ni resultados fallidos; agregar su resolución cuando exista.
+  \item Registrar comandos y resultados relevantes sin copiar contraseñas, tokens o datos sensibles.
+  \item Relacionar cada hito con un commit, pull request o etiqueta cuando GitHub esté disponible.
+  \item Regenerar el PDF con \file{make logbook} y comprobar visualmente sus páginas.
+  \item Mantener el archivo fuente \file{bitacora.tex} y el PDF generado bajo control de versiones.
+\end{itemize}
+
+\section{Resumen del alcance vigente}
+
+El anteproyecto corregido define una prueba de concepto académica con una fuente activa SQL Server y AdventureWorks en modo de sólo lectura. El flujo futuro extraerá metadatos, solicitará propuestas estructuradas a un LLM, exigirá aprobación humana y validaciones determinísticas, ejecutará un ETL básico hacia PostgreSQL y mostrará cinco KPIs, tres visualizaciones, insights explicables y un pronóstico mensual mediante regresión lineal con MAPE y RMSE.
+
+El anexo institucional exige módulos de seguridad, parámetros, negocio y reportes. Se acordó un RBAC mínimo con usuarios, roles, permisos y menús por rol. En la fase actual existe únicamente el límite arquitectónico; no hay autenticación ni lógica de negocio implementada.
+
+\section{Registro cronológico}
+
+\subsection{24 de agosto de 2026 - Inicio del repositorio y ambiente}
+
+\begin{longtable}{@{}p{0.20\textwidth}p{0.18\textwidth}p{0.54\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Revisión del anteproyecto & \statusok & Se inspeccionaron las 11 páginas, incluyendo alcance, exclusiones, objetivos, metodología, cronograma y requisitos mínimos institucionales. \\
+  Arquitectura base & \statusok & Se fijaron React con Vite y TypeScript, FastAPI, PostgreSQL interno/datamart y SQL Server AdventureWorks como fuente externa. \\
+  Docker-first & \statusok & El host sólo requiere Docker Compose. Se definieron etapas de desarrollo, prueba y producción para frontend y backend. \\
+  Bases reproducibles & \statusok & Se añadieron imágenes inicializadoras para PostgreSQL y SQL Server. AdventureWorks se restaura desde el respaldo oficial en un volumen vacío. \\
+  Seguridad & \statusok & El paquete \file{security} y las reglas del RBAC quedaron documentados, sin modelos ni endpoints funcionales. \\
+  Observabilidad & \statusok & Se añadieron endpoints \file{/health/live} y \file{/health/ready}, más una pantalla de estado en React. \\
+  DevOps & \statusok & Se prepararon CI, CD, Dependabot, plantilla de pull request y publicación de imágenes en GHCR. \\
+  Guía de réplica & \statusok & Se documentaron el entorno aislado desde cero y el consumo de imágenes publicadas. \\
+  GitHub remoto & \statuspending & El cliente \file{gh} detectó que el token de la cuenta local está vencido. Se requiere autenticar, elegir nombre/visibilidad y crear el remoto. \\
+  Verificación completa & \statusok & El conjunto se reconstruyó desde volúmenes vacíos; los cuatro servicios quedaron saludables y las pruebas automatizadas finalizaron correctamente. \\
+  \bottomrule
+\end{longtable}
+
+\subsubsection{Decisiones técnicas}
+
+\begin{itemize}
+  \item El repositorio definitivo se ubica en \file{/home/ceo/Proyectos/BI}; no se codifican rutas absolutas en Compose, por lo que otras máquinas pueden clonarlo en cualquier ubicación.
+  \item El Compose predeterminado crea red, bases y volúmenes aislados. Usa los puertos anfitrión 55432 y 51433 para no interferir con instancias existentes.
+  \item Los volúmenes Docker no se exportan como imágenes. El estado inicial se reconstruye con respaldos públicos, scripts y futuras migraciones versionadas.
+  \item \file{ApplicationIntent=ReadOnly} no es un control suficiente. El usuario \file{bi\_reader} recibe lectura y denegaciones explícitas de escritura en SQL Server.
+  \item CD publicará las imágenes propias en GitHub Container Registry con etiquetas de rama, versión y SHA.
+\end{itemize}
+
+\subsubsection{Archivos y componentes principales}
+
+\begin{itemize}
+  \item \file{compose.yaml}: aplicación, PostgreSQL y SQL Server autocontenidos.
+  \item \file{compose.release.yaml}: ejecución sin compilar, usando GHCR.
+  \item \file{backend/}: API, configuración, sesión PostgreSQL, salud, Alembic y scaffolding modular.
+  \item \file{frontend/}: interfaz React, proxy hacia la API, pruebas y Nginx de producción.
+  \item \file{infra/}: inicialización de PostgreSQL, restauración de SQL Server y compilador LaTeX.
+  \item \file{docs/replication-guide.md}: manual operativo paso a paso.
+  \item \file{.github/workflows/}: integración y entrega continua.
+\end{itemize}
+
+\subsubsection{Incidentes y observaciones}
+
+\begin{enumerate}
+  \item La carpeta generada inicialmente contenía un directorio \file{.git} vacío y no era todavía un repositorio válido. Se planificó inicializar Git correctamente sobre la rama \file{main}.
+  \item El primer intento de generar \file{package-lock.json} falló porque npm trató de escribir en una caché de sólo lectura dentro del directorio personal. Se resolvió con la caché temporal \path{/tmp/bi-npm-cache}; el lockfile quedó generado sin vulnerabilidades reportadas.
+  \item Una verificación de Compose se lanzó desde la subcarpeta \file{frontend}; no encontró los archivos raíz. Se repitió desde la raíz y las configuraciones de desarrollo y publicación resultaron válidas.
+  \item La primera construcción del backend detectó formato pendiente y un import moderno requerido por Ruff. Se corrigieron ambos; Ruff, Mypy y dos pruebas Pytest finalizaron correctamente.
+  \item La primera prueba del frontend duplicó la inicialización de \file{jest-dom}. Se retiró la importación redundante; ESLint, Vitest y Vite finalizaron correctamente.
+  \item npm detectó vulnerabilidades en las versiones iniciales de Vite y Vitest. Se actualizaron a las versiones corregidas 7.3.6 y 3.2.7; el lockfile registra cero vulnerabilidades.
+  \item La primera salud del frontend consultó \file{localhost}, que BusyBox resolvió como IPv6 mientras Vite escuchaba en IPv4. Se cambió la sonda a \file{127.0.0.1} y el contenedor quedó saludable.
+  \item La primera restauración creó \file{bi\_reader}, pero una denegación demasiado amplia de \file{CONTROL} también bloqueó el permiso subordinado de conexión. Se eliminó esa denegación, la sonda de salud pasó a probar el usuario real y se reconstruyó todo desde volúmenes vacíos.
+  \item La primera restauración de AdventureWorks requiere red y puede tardar varios minutos. Los reinicios posteriores reutilizan el volumen persistente.
+\end{enumerate}
+
+\section{Matriz de verificación de la fase}
+
+\begin{tabularx}{\textwidth}{@{}X l X@{}}
+  \toprule
+  \textbf{Control} & \textbf{Estado} & \textbf{Evidencia esperada} \\
+  \midrule
+  Compose autocontenido válido & \statusok & \file{docker compose config --quiet} \\
+  Compose de imágenes válido & \statusok & \file{docker compose -f compose.release.yaml config --quiet} \\
+  Backend calidad y pruebas & \statusok & Ruff, Mypy y 2 pruebas Pytest dentro de Docker \\
+  Frontend calidad y pruebas & \statusok & ESLint, 1 prueba Vitest y build de Vite dentro de Docker \\
+  PostgreSQL disponible & \statusok & Esquemas \file{app} y \file{mart}; endpoint \file{/health/ready} en \file{ok} \\
+  AdventureWorks restaurada & \statusok & 71 tablas; \file{bi\_reader}: lectura 1 e inserción 0 \\
+  Interfaz disponible & \statusok & Frontend saludable en el puerto 5173 y API accesible mediante proxy \\
+  PDF legible & \statusok & Seis páginas renderizadas e inspeccionadas sin cortes ni solapamientos \\
+  Git local & \statuspending & Rama \file{main} y commit inicial \\
+  GitHub/GHCR & \statuspending & Remoto, Actions exitosas e imágenes públicas o autenticadas \\
+  \bottomrule
+\end{tabularx}
+
+\section{Próximos pasos}
+
+\begin{enumerate}
+  \item Inicializar Git, crear el commit base y recuperar la autenticación de GitHub.
+  \item Elegir nombre y visibilidad del repositorio; publicar y observar la primera ejecución CI/CD.
+  \item Congelar una etiqueta de ambiente inicial y registrar los digest de las imágenes.
+  \item Iniciar la siguiente iteración con migraciones del RBAC y parámetros, sin adelantar módulos de negocio.
+\end{enumerate}
+
+\section{Historial del documento}
+
+\begin{tabularx}{\textwidth}{@{}l l X@{}}
+  \toprule
+  \textbf{Versión} & \textbf{Fecha} & \textbf{Cambio} \\
+  \midrule
+  0.1.0 & 24-08-2026 & Apertura de la bitácora y registro de la fase de ambiente, Docker, Git y DevOps. \\
+  \bottomrule
+\end{tabularx}
+
+\end{document}

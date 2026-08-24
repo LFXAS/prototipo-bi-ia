@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bi-ia-backend"
+version = "0.1.0"
+description = "API base del prototipo academico de BI asistido por IA"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+  "alembic==1.16.5",
+  "asyncpg==0.30.0",
+  "fastapi==0.116.1",
+  "pydantic-settings==2.10.1",
+  "psycopg[binary]==3.2.9",
+  "pyodbc==5.2.0",
+  "sqlalchemy==2.0.43",
+  "uvicorn[standard]==0.35.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "httpx==0.28.1",
+  "mypy==1.17.1",
+  "pytest==8.4.1",
+  "pytest-asyncio==1.1.0",
+  "ruff==0.12.10",
+]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+plugins = ["pydantic.mypy"]

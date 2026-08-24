@@ -1,0 +1,22 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      target: production
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+    volumes: []
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+      target: production
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-}
+    environment: []
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    volumes: []
+    restart: always

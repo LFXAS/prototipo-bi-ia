@@ -1,0 +1,96 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  compose:
+    name: Validate Compose
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate isolated stack configuration
+        run: docker compose config --quiet
+
+  backend:
+    name: Backend checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build test stage
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          target: test
+          push: false
+          cache-from: type=gha,scope=backend-test
+          cache-to: type=gha,mode=max,scope=backend-test
+
+  frontend:
+    name: Frontend checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build test stage
+        uses: docker/build-push-action@v6
+        with:
+          context: frontend
+          target: test
+          push: false
+          cache-from: type=gha,scope=frontend-test
+          cache-to: type=gha,mode=max,scope=frontend-test
+
+  infrastructure:
+    name: Infrastructure image - ${{ matrix.component }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - component: postgres
+            context: infra/postgres
+          - component: sqlserver
+            context: infra/sqlserver
+          - component: docs
+            context: infra/docs
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build production stage
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          target: production
+          push: false
+          cache-from: type=gha,scope=${{ matrix.component }}-test
+          cache-to: type=gha,mode=max,scope=${{ matrix.component }}-test
+
+  logbook:
+    name: Compile LaTeX logbook
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build LaTeX image
+        run: docker build --target production -t bi-ia-docs:test infra/docs
+      - name: Compile PDF
+        run: >-
+          docker run --rm --user "$(id -u):$(id -g)"
+          -v "$PWD/docs/logbook:/workspace" -w /workspace
+          bi-ia-docs:test -pdf -interaction=nonstopmode -halt-on-error bitacora.tex
+      - name: Ensure the versioned PDF is current
+        run: git diff --exit-code -- docs/logbook/bitacora.pdf
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bitacora-tecnica
+          path: docs/logbook/bitacora.pdf
