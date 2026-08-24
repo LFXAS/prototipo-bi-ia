@@ -61,6 +61,22 @@ WITH
     STATS = 10;"
 fi
 
+# The SQL Server listener can accept connections before an existing user
+# database has finished recovery after a container restart. Wait for the
+# actual source database before configuring the read-only account or marking
+# the service as ready.
+for attempt in $(seq 1 90); do
+    if "${sqlcmd}" -S localhost -U sa -P "${MSSQL_SA_PASSWORD}" -C \
+        -d "${database}" -Q "SELECT 1" -b -o /dev/null; then
+        break
+    fi
+    if [[ "${attempt}" -eq 90 ]]; then
+        echo "${database} did not become available" >&2
+        exit 1
+    fi
+    sleep 2
+done
+
 "${sqlcmd}" -S localhost -U sa -P "${MSSQL_SA_PASSWORD}" -C -b \
     -v DatabaseName="${database}" ReaderUser="${reader_user}" ReaderPassword="${reader_password}" <<'SQL'
 IF SUSER_ID(N'$(ReaderUser)') IS NULL

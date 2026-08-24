@@ -98,13 +98,17 @@ Si las imágenes deben descargarse sin autenticación, cambia la visibilidad del
 Flujo habitual:
 
 ```bash
-git checkout -b feat/nombre-cambio
+git switch develop
+git pull --ff-only origin develop
+git switch -c feature/nombre-cambio
+# editar y verificar todo dentro de Docker
+make verify
 git add .
 git commit -m "feat: descripcion breve"
-git push -u origin feat/nombre-cambio
+git push -u origin feature/nombre-cambio
 ```
 
-Abre un pull request. CI valida Compose, compila la bitácora y construye las etapas de prueba. Al fusionar en `main`, CD publica las cinco imágenes con las etiquetas `main` y `sha-*`. Una etiqueta Git `v1.0.0` produce además la imagen `v1.0.0`.
+Abre un pull request hacia `develop`. CI valida Compose, código, pruebas y los tres documentos PDF. Para publicar una entrega, abre otro pull request de `develop` hacia `main`; sólo esa fusión activa CD y publica las cinco imágenes con las etiquetas `main` y `sha-*`. Una etiqueta Git `v1.0.0` produce además la imagen `v1.0.0`. Consulta `docs/git-workflow.md` para el procedimiento completo y las reglas de protección.
 
 ## 6. Levantar el entorno publicado en otra máquina (sin compilar)
 

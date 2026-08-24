@@ -70,19 +70,22 @@ Los volúmenes del código habilitan recarga automática en FastAPI y Vite. Las 
 
 ## Git, CI y CD
 
-El repositorio usa la rama principal `main` y Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, etc.). Antes de enviar cambios:
+El repositorio usa `develop` como rama predeterminada de integración y `main` como rama estable de entrega. Las ramas `feature/*`, `fix/*`, `docs/*` y `chore/*` nacen desde `develop` y regresan mediante pull request. Sólo una promoción revisada `develop` -> `main` publica una entrega. Los commits siguen Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, etc.). Antes de enviar cambios:
 
 ```bash
-make test
-make lint
+make verify
 ```
 
 GitHub Actions incluye:
 
-- **CI:** valida Compose y construye las etapas de prueba de backend y frontend en cada pull request y push a `main`.
+- **CI:** valida el flujo de ramas, Compose, código, pruebas e informes PDF en cada pull request y push a `develop` o `main`. Un PR hacia `main` falla si no procede de `develop`.
 - **CD:** después de cambios en `main` o una etiqueta `v*`, construye y publica imágenes versionadas en GitHub Container Registry (GHCR). Publicar imágenes constituye entrega continua; el despliegue a un ambiente se añadirá cuando se elija el proveedor.
 - **Imágenes:** se publican frontend, backend, PostgreSQL inicializado y SQL Server con restauración automática. Los volúmenes no se publican; se reconstruyen de forma determinística.
-- **Dependabot:** propone actualizaciones semanales de acciones, npm y pip.
+- **Dependabot:** crea ramas temporales y pull requests hacia la rama predeterminada. En npm agrupa sólo cambios menores y parches; los cambios mayores requieren una actualización intencional y aislada.
+
+La estrategia completa, incluidos los comandos y la promoción de versiones, está en [`docs/git-workflow.md`](docs/git-workflow.md).
+
+El repositorio es público y tiene protecciones activas en `develop` y `main`: exige pull request, una aprobación, conversaciones resueltas y los controles de CI; además bloquea force-push y eliminación. La excepción administrativa se conserva sólo para recuperación y debe registrarse en la bitácora.
 
 Para vincular este repositorio local con GitHub, confirma la sesión y crea el remoto después de elegir nombre y visibilidad:
 

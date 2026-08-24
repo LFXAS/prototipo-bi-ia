@@ -91,10 +91,10 @@
 
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
-    Versión del manual & 1.0.0 \\
-    Línea base & Commit \file{ddf2551} \\
+    Versión del manual & 1.1.0 \\
+    Línea base & Ramas \file{develop} y \file{main} \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
-    Clasificación & Uso académico y técnico - repositorio privado \\
+    Clasificación & Uso académico y técnico - repositorio público \\
     Fecha & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -186,7 +186,7 @@ Makefile                  comandos operativos abreviados
 \begin{itemize}
   \item Docker Engine 24 o superior y Docker Compose v2; Docker Desktop es válido.
   \item Git para clonar y actualizar el repositorio.
-  \item Acceso autorizado al repositorio privado.
+  \item Acceso al repositorio público; permiso de escritura sólo para colaboradores autorizados.
   \item Para consumir imágenes privadas: credenciales GHCR con \file{read:packages}.
 \end{itemize}
 
@@ -268,7 +268,7 @@ docker compose logs -f sqlserver
 
 \subsection{Obtener el repositorio}
 
-La cuenta debe haber sido invitada al repositorio privado.
+El código puede clonarse sin invitación porque el repositorio es público. Para crear ramas en el repositorio central, revisar o fusionar cambios se requiere ser colaborador autorizado.
 
 \begin{lstlisting}[style=terminal,language=bash]
 git clone https://github.com/LFXAS/prototipo-bi-ia.git
@@ -470,22 +470,30 @@ Cuando existan migraciones de datos, la reversión deberá seguir el procedimien
 
 \subsection{Desarrollo por rama}
 
+La rama predeterminada \file{develop} integra el trabajo diario y \file{main} conserva únicamente entregas estables. Las ramas de trabajo parten de \file{develop} con los prefijos \file{feature/}, \file{fix/}, \file{docs/} o \file{chore/}.
+
 \begin{lstlisting}[style=terminal,language=bash]
-git checkout -b feat/nombre-cambio
+git switch develop
+git pull --ff-only origin develop
+git switch -c feature/nombre-cambio
 # editar y comprobar
 make verify
 git add .
 git commit -m "feat: descripcion breve"
-git push -u origin feat/nombre-cambio
+git push -u origin feature/nombre-cambio
+gh pr create --base develop --fill
 \end{lstlisting}
 
-Después se abre un pull request. CI debe aprobarse antes de fusionar en \file{main}.
+El pull request hacia \file{develop} exige CI aprobada, una revisión y conversaciones resueltas. Cuando la iteración sea estable, se abre un segundo pull request de \file{develop} hacia \file{main}; esa promoción vuelve a ejecutar CI y, al fusionarse, activa CD. El procedimiento completo está en \file{docs/git-workflow.md}.
+
+Las ramas \file{develop} y \file{main} tienen protección activa: impiden force-push y eliminación, exigen pull request, una aprobación, conversaciones resueltas y ocho controles de CI con la rama actualizada. La excepción administrativa se reserva para recuperación y debe justificarse en la bitácora.
 
 \subsection{Integración continua}
 
-En cada push y pull request hacia \file{main}, CI:
+En cada push y pull request hacia \file{develop} o \file{main}, CI:
 
 \begin{enumerate}
+  \item valida que los PR de trabajo lleguen a \file{develop} y que sólo \file{develop} promueva a \file{main};
   \item valida el archivo Compose;
   \item construye la etapa de prueba del backend;
   \item construye la etapa de prueba del frontend;
@@ -507,6 +515,8 @@ Después de un cambio en \file{main} o una etiqueta \file{v*}, CD valida y publi
 
 Las ejecuciones de línea base CI 32749237009 y CD 32749237059 finalizaron exitosamente para el commit \file{ddf2551}.
 
+Dependabot trabaja contra la rama predeterminada \file{develop}. Las actualizaciones npm menores y parches se agrupan; los saltos mayores se revisan de forma intencional y separada para evitar mezclar migraciones incompatibles.
+
 \section{Seguridad operativa}
 
 \begin{enumerate}
@@ -514,7 +524,7 @@ Las ejecuciones de línea base CI 32749237009 y CD 32749237059 finalizaron exito
   \item Mantener \file{.env} fuera de Git y fuera de los documentos.
   \item Usar \file{bi\_reader} para AdventureWorks; no conectar la aplicación como \file{sa}.
   \item Conservar \file{SQLSERVER\_APPLICATION\_INTENT=ReadOnly}, pero apoyarse en permisos reales del motor.
-  \item No publicar los paquetes GHCR mientras el repositorio de tesis sea privado.
+  \item Gestionar la visibilidad de cada paquete GHCR de forma independiente y no incluir secretos ni datos reales en ninguna imagen.
   \item Otorgar acceso únicamente a cuentas identificadas y revocar colaboradores que ya no participen.
   \item Revisar los cambios de Dependabot y no fusionarlos sin CI aprobada.
   \item Cuando se implemente RBAC, FastAPI debe autorizar cada endpoint; ocultar menús en React no es un control de seguridad.
@@ -535,6 +545,7 @@ Las ejecuciones de línea base CI 32749237009 y CD 32749237059 finalizaron exito
   Backend vivo, pero \file{ready} falla & PostgreSQL no está saludable o las credenciales no coinciden. & Revisar \file{docker compose ps} y los registros de PostgreSQL/backend. \\
   SQL Server no queda saludable & Memoria insuficiente, clave SA inválida o descarga bloqueada. & Asignar 8 GB a Docker, corregir la clave y revisar los registros. \\
   Restauración muy lenta & Primera descarga o emulación ARM. & Esperar y seguir \file{docker compose logs -f sqlserver}. \\
+  SQL Server queda no saludable tras reiniciar & AdventureWorks todavía está recuperándose. & Esperar la sonda; el inicializador comprueba la base antes de recrear la marca de disponibilidad. \\
   Frontend no muestra API disponible & Backend no saludable o proxy mal configurado. & Probar \file{/health/live}, revisar puertos y registros del frontend. \\
   GHCR devuelve \file{denied} & Falta autenticación, acceso al paquete o permiso \file{read:packages}. & Repetir \file{docker login ghcr.io} con una cuenta autorizada. \\
   PDF no se actualiza & No se regeneró después de editar LaTeX. & Ejecutar \file{make docs} y revisar los archivos modificados. \\
@@ -612,7 +623,9 @@ Ante pérdida de datos locales, credenciales expuestas, imágenes inesperadas o 
   \bottomrule
 \end{tabularx}
 
+\clearpage
 \section{Recuperación mínima}
+\thispagestyle{fancy}
 
 Si el entorno queda en un estado desconocido y no existen datos que conservar:
 
@@ -633,8 +646,8 @@ make verify
   Campo & Valor \\
   \midrule
   Estado & Primera edición técnica, sujeta a revisión de las autoras y del tutor. \\
-  Custodia & Repositorio privado \file{LFXAS/prototipo-bi-ia}. \\
-  Audiencia & Autoras, tutor, revisores y colaboradores expresamente autorizados. \\
+  Custodia & Repositorio público \file{LFXAS/prototipo-bi-ia}; escritura restringida a colaboradores. \\
+  Audiencia & Autoras, tutor, revisores, colaboradores y lectores académicos. \\
   Actualización & Debe acompañar todo cambio de instalación, puertos, secretos, imágenes, pruebas o recuperación. \\
   Fuente editable & \file{docs/manual-tecnico/manual-tecnico.tex}. \\
   Compilación & \file{make technical-manual} o \file{make docs}. \\
@@ -648,6 +661,7 @@ make verify
   Versión & Fecha & Cambio \\
   \midrule
   1.0.0 & 24-08-2026 & Primera versión: instalación, réplica, operación, CI/CD, seguridad, diagnóstico y recuperación del ambiente del Sprint 1. \\
+  1.1.0 & 24-08-2026 & Flujo \file{feature/*} hacia \file{develop}, promoción a \file{main}, protecciones y política de Dependabot. \\
   \bottomrule
 \end{tabularx}
 
@@ -657,12 +671,12 @@ make verify
   \toprule
   Rol & Nombre y conformidad & Fecha \\
   \midrule
-  Autora & \rule{0.90\linewidth}{0.4pt} & \rule{0.85\linewidth}{0.4pt} \\[1.2em]
-  Autora & \rule{0.90\linewidth}{0.4pt} & \rule{0.85\linewidth}{0.4pt} \\[1.2em]
+  Autora & \rule{0.90\linewidth}{0.4pt} & \rule{0.85\linewidth}{0.4pt} \\[0.6em]
+  Autora & \rule{0.90\linewidth}{0.4pt} & \rule{0.85\linewidth}{0.4pt} \\[0.6em]
   Tutor/revisor & \rule{0.90\linewidth}{0.4pt} & \rule{0.85\linewidth}{0.4pt} \\
   \bottomrule
 \end{tabularx}
 
-La aprobación formal se registra en la versión entregada de la tesis. Las firmas no deben incorporarse al repositorio si contienen datos personales que no hayan sido autorizados para su distribución.
+Las firmas formales pertenecen a la tesis entregada y no se versionan si contienen datos personales cuya distribución no fue autorizada.
 
 \end{document}

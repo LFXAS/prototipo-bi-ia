@@ -32,7 +32,10 @@ Build the academic BI proof of concept described in `docs/scope.md`. Keep the im
 
 ## Git and delivery
 
-- Main branch: `main`.
+- Stable/release branch: `main`.
+- Integration and default branch: `develop`.
+- Start `feature/*`, `fix/*`, `docs/*` and `chore/*` branches from `develop`; merge them back through pull requests.
+- Promote tested changes from `develop` to `main` through a release pull request. Never develop directly on `main`.
 - Use Conventional Commits.
 - Work on focused branches and merge through pull requests once GitHub is connected.
 - CI must pass before publishing. CD publishes every custom image to GHCR using branch, SHA and version tags.

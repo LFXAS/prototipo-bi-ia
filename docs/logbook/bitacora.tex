@@ -67,7 +67,7 @@
     Estudiantes & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPIs, insights y pronóstico \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.1.4 \\
+    Versión de la bitácora & 0.1.5 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -175,6 +175,38 @@ El anexo institucional exige módulos de seguridad, parámetros, negocio y repor
   \item CI compila, compara y publica los tres PDF como un único artefacto de documentación técnica.
 \end{itemize}
 
+\subsection{24 de agosto de 2026 - Gobierno Git, colaboradores y estabilidad DevOps}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Colaboradores GitHub & \statusok & Se verificaron \file{LeslyVelasquez} y \file{EmyRoblesBerry}; ambas cuentas tienen permiso de escritura en \file{LFXAS/prototipo-bi-ia}. \\
+  Ramas permanentes & \statusok & \file{develop} quedó como rama predeterminada de integración y \file{main} como rama estable de publicación. El trabajo usa \file{feature/*}, \file{fix/*}, \file{docs/*} o \file{chore/*}. \\
+  Visibilidad & \statusok & Por autorización expresa, el repositorio cambió de privado a público para habilitar las reglas de protección sin contratar todavía GitHub Pro. La visibilidad de los paquetes GHCR se gestiona por separado. \\
+  Protección de ramas & \statusok & \file{develop} y \file{main} exigen pull request, una aprobación, conversaciones resueltas, rama actualizada y ocho controles de CI; force-push y eliminación están deshabilitados. \\
+  Flujo automático & \statusok & CI valida ambas ramas y rechaza promociones a \file{main} cuyo origen no sea \file{develop}; CD continúa limitado a \file{main} y etiquetas \file{v*}. \\
+  Dependabot & \statusok & Las ramas \file{dependabot/*} se identificaron como temporales. npm agrupa sólo parches y cambios menores; los saltos mayores quedan fuera de las actualizaciones rutinarias. \\
+  Reinicio SQL Server & \statusok & El inicializador espera que AdventureWorks esté en línea antes de configurar el lector y crear la marca de salud. Un reinicio con volumen existente terminó con cuatro servicios saludables y 71 tablas. \\
+  Manual y guía & \statusok & README, guía de réplica, flujo Git y manual técnico describen comandos, promociones, protecciones, Dependabot y recuperación. \\
+  Verificación final & \statusok & \file{make verify} validó Compose, política de ramas, backend, frontend y los tres PDF; Actionlint 1.7.12 validó los flujos, todo dentro de Docker. \\
+  \bottomrule
+\end{longtable}
+
+\subsubsection{Incidentes y resolución}
+
+\begin{enumerate}
+  \item El PR automático del frontend agrupó 18 actualizaciones y falló durante \file{npm ci}. Se reprodujo el error: TypeScript 7.0.2 era incompatible con \file{typescript-}\allowbreak\file{eslint} 8.67.0, que admite versiones menores que 6.1. Se corrigió la política para no agrupar ni proponer saltos mayores rutinarios; el PR incompatible debe cerrarse sin fusionar.
+  \item La captura de Actions también mostraba avisos por acciones basadas en Node.js 20. La rama \file{main} ya contenía las generaciones vigentes de \file{checkout}, \file{upload-artifact} y las acciones Docker; los avisos procedían de una rama Dependabot atrasada dos commits.
+  \item El primer intento de proteger el repositorio privado devolvió HTTP 403 porque el plan actual no incluye protección de ramas privadas. El usuario autorizó volver público el repositorio; la misma configuración se aplicó correctamente a \file{develop} y \file{main}.
+  \item Una prueba adicional \file{make lint} se detuvo porque SQL Server estaba no saludable después de un reinicio. El motor aceptaba conexiones, pero AdventureWorks seguía recuperándose cuando el inicializador intentó configurarla y dejó ausente la marca de disponibilidad. Se añadió una espera explícita a la base, se recreó el contenedor sin borrar el volumen y la prueba de reinicio pasó.
+\end{enumerate}
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}X l X@{}}
@@ -189,15 +221,15 @@ El anexo institucional exige módulos de seguridad, parámetros, negocio y repor
   AdventureWorks restaurada & \statusok & 71 tablas; \file{bi\_reader}: lectura 1 e inserción 0 \\
   Interfaz disponible & \statusok & Frontend saludable en el puerto 5173 y API accesible mediante proxy \\
   PDF legible & \statusok & Todas las páginas renderizadas e inspeccionadas sin cortes ni solapamientos \\
-  Git local & \statusok & Rama \file{main}; commit base \file{ead11fb} \\
-  GitHub/GHCR & \statusok & CI 32747013480 y CD 32747013085 exitosas; cinco imágenes privadas publicadas \\
+  Git local & \statusok & \file{develop} para integración, \file{main} para entregas y ramas enfocadas por pull request \\
+  GitHub/GHCR & \statusok & Repositorio público, dos colaboradoras con escritura, ramas protegidas y cinco imágenes publicadas en GHCR \\
   \bottomrule
 \end{tabularx}
 
 \section{Próximos pasos}
 
 \begin{enumerate}
-  \item Obtener los nombres de usuario GitHub de las colaboradoras y enviar las invitaciones con permiso de escritura.
+  \item Revisar individualmente los pull requests de Dependabot que queden abiertos en \file{develop}; no fusionar ninguno sin CI aprobada.
   \item Congelar una etiqueta de ambiente inicial y registrar los digest de las imágenes.
   \item Iniciar la siguiente iteración con migraciones del RBAC y parámetros, sin adelantar módulos de negocio.
 \end{enumerate}
@@ -213,6 +245,7 @@ El anexo institucional exige módulos de seguridad, parámetros, negocio y repor
   0.1.2 & 24-08-2026 & Ejecución desde la ruta definitiva y validación de la sesión GitHub de \file{LFXAS}. \\
   0.1.3 & 24-08-2026 & Repositorio privado, primera CI/CD exitosa, imágenes GHCR y mantenimiento de Actions. \\
   0.1.4 & 24-08-2026 & Informe formal del Sprint 1, manual técnico, capturas e integración de todos los PDF en CI. \\
+  0.1.5 & 24-08-2026 & Colaboradores, estrategia \file{develop/main}, protección, control de ramas, Dependabot y reinicio seguro de SQL Server. \\
   \bottomrule
 \end{tabularx}
 

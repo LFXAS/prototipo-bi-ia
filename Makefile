@@ -1,4 +1,4 @@
-.PHONY: help env bootstrap build up release-up down logs ps test lint format-check compose-check doctor docs-image logbook sprint-report technical-manual docs verify
+.PHONY: help env bootstrap build up release-up down logs ps test lint format-check compose-check workflow-test doctor docs-image logbook sprint-report technical-manual docs verify
 
 COMPOSE := docker compose
 
@@ -14,6 +14,7 @@ help:
 	@echo "  make test           Ejecuta todas las pruebas dentro de Docker"
 	@echo "  make lint           Ejecuta los analizadores dentro de Docker"
 	@echo "  make compose-check  Valida la configuracion de Compose"
+	@echo "  make workflow-test  Prueba la politica de ramas dentro de Docker"
 	@echo "  make logbook        Regenera la bitacora PDF con LaTeX en Docker"
 	@echo "  make sprint-report  Regenera el informe PDF del Sprint 1"
 	@echo "  make technical-manual Regenera el manual tecnico PDF"
@@ -62,6 +63,10 @@ compose-check:
 	$(COMPOSE) config --quiet
 	$(COMPOSE) -f compose.release.yaml config --quiet
 
+workflow-test:
+	docker run --rm -v "$$(pwd):/workspace:ro" -w /workspace alpine:3.22 \
+		./scripts/test-branch-flow.sh
+
 doctor:
 	$(COMPOSE) ps
 	@curl --fail --silent http://localhost:$${BACKEND_PORT:-8000}/api/v1/health/live || true
@@ -88,4 +93,4 @@ technical-manual: docs-image
 
 docs: logbook sprint-report technical-manual
 
-verify: compose-check test docs
+verify: compose-check workflow-test test docs
