@@ -89,7 +89,7 @@ Una sola vez:
 
 ```bash
 cd "/home/ceo/Proyectos/BI"
-gh auth login -h github.com
+gh auth status || gh auth login -h github.com
 gh repo create NOMBRE_REPOSITORIO --private --source=. --remote=origin --push
 ```
 

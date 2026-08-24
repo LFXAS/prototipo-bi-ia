@@ -83,14 +83,14 @@ GitHub Actions incluye:
 - **Imágenes:** se publican frontend, backend, PostgreSQL inicializado y SQL Server con restauración automática. Los volúmenes no se publican; se reconstruyen de forma determinística.
 - **Dependabot:** propone actualizaciones semanales de acciones, npm y pip.
 
-Para vincular este repositorio local con GitHub, primero hay que iniciar sesión nuevamente porque el token local actual está vencido:
+Para vincular este repositorio local con GitHub, confirma la sesión y crea el remoto después de elegir nombre y visibilidad:
 
 ```bash
-gh auth login -h github.com
+gh auth status || gh auth login -h github.com
 gh repo create NOMBRE_REPOSITORIO --private --source=. --remote=origin --push
 ```
 
-El nombre y la visibilidad del repositorio deben elegirse antes de ejecutar el segundo comando.
+La sesión actual está asociada a la cuenta `LFXAS`. Cambia `--private` por `--public` si el código y las imágenes deben ser públicos desde el inicio.
 
 ## Estructura
 
