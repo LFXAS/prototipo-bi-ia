@@ -1,4 +1,4 @@
-.PHONY: help env bootstrap build up release-up down logs ps test lint format-check compose-check doctor logbook verify
+.PHONY: help env bootstrap build up release-up down logs ps test lint format-check compose-check doctor docs-image logbook sprint-report technical-manual docs verify
 
 COMPOSE := docker compose
 
@@ -15,6 +15,9 @@ help:
 	@echo "  make lint           Ejecuta los analizadores dentro de Docker"
 	@echo "  make compose-check  Valida la configuracion de Compose"
 	@echo "  make logbook        Regenera la bitacora PDF con LaTeX en Docker"
+	@echo "  make sprint-report  Regenera el informe PDF del Sprint 1"
+	@echo "  make technical-manual Regenera el manual tecnico PDF"
+	@echo "  make docs           Regenera todos los documentos PDF"
 	@echo "  make doctor         Muestra estado de contenedores y endpoints"
 	@echo "  make verify         Ejecuta toda la validacion local automatizada"
 
@@ -65,10 +68,24 @@ doctor:
 	@echo
 	@curl --fail --silent http://localhost:$${FRONTEND_PORT:-5173} >/dev/null && echo "Frontend: disponible" || echo "Frontend: no disponible"
 
-logbook:
+docs-image:
 	docker build --target production -t bi-ia-docs:local infra/docs
+
+logbook: docs-image
 	docker run --rm --user "$$(id -u):$$(id -g)" \
 		-v "$$(pwd)/docs/logbook:/workspace" -w /workspace \
 		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error bitacora.tex
 
-verify: compose-check test logbook
+sprint-report: docs-image
+	docker run --rm --user "$$(id -u):$$(id -g)" \
+		-v "$$(pwd)/docs:/workspace" -w /workspace/sprints \
+		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error sprint-01-entorno.tex
+
+technical-manual: docs-image
+	docker run --rm --user "$$(id -u):$$(id -g)" \
+		-v "$$(pwd)/docs:/workspace" -w /workspace/manual-tecnico \
+		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error manual-tecnico.tex
+
+docs: logbook sprint-report technical-manual
+
+verify: compose-check test docs

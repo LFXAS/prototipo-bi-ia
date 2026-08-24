@@ -76,21 +76,38 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.component }}-test
           cache-to: type=gha,mode=max,scope=${{ matrix.component }}-test
 
-  logbook:
-    name: Compile LaTeX logbook
+  documentation:
+    name: Compile LaTeX documentation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - name: Build LaTeX image
         run: docker build --target production -t bi-ia-docs:test infra/docs
-      - name: Compile PDF
+      - name: Compile logbook
         run: >-
           docker run --rm --user "$(id -u):$(id -g)"
           -v "$PWD/docs/logbook:/workspace" -w /workspace
           bi-ia-docs:test -pdf -interaction=nonstopmode -halt-on-error bitacora.tex
-      - name: Ensure the versioned PDF is current
-        run: git diff --exit-code -- docs/logbook/bitacora.pdf
+      - name: Compile Sprint 1 report
+        run: >-
+          docker run --rm --user "$(id -u):$(id -g)"
+          -v "$PWD/docs:/workspace" -w /workspace/sprints
+          bi-ia-docs:test -pdf -interaction=nonstopmode -halt-on-error sprint-01-entorno.tex
+      - name: Compile technical manual
+        run: >-
+          docker run --rm --user "$(id -u):$(id -g)"
+          -v "$PWD/docs:/workspace" -w /workspace/manual-tecnico
+          bi-ia-docs:test -pdf -interaction=nonstopmode -halt-on-error manual-tecnico.tex
+      - name: Ensure versioned PDFs are current
+        run: >-
+          git diff --exit-code --
+          docs/logbook/bitacora.pdf
+          docs/sprints/sprint-01-entorno.pdf
+          docs/manual-tecnico/manual-tecnico.pdf
       - uses: actions/upload-artifact@v7
         with:
-          name: bitacora-tecnica
-          path: docs/logbook/bitacora.pdf
+          name: documentacion-tecnica
+          path: |
+            docs/logbook/bitacora.pdf
+            docs/sprints/sprint-01-entorno.pdf
+            docs/manual-tecnico/manual-tecnico.pdf

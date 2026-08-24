@@ -1,0 +1,668 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage[letterpaper,margin=2.2cm,headheight=15pt]{geometry}
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{xurl}
+\usepackage{listings}
+\usepackage{float}
+
+\ifdefined\pdfinfoomitdate\pdfinfoomitdate=1\fi
+\ifdefined\pdftrailerid\pdftrailerid{}\fi
+\ifdefined\pdfsuppressptexinfo\pdfsuppressptexinfo=15\fi
+
+\definecolor{ugblue}{HTML}{006A8D}
+\definecolor{deepgreen}{HTML}{123D3A}
+\definecolor{softgray}{HTML}{F1F5F4}
+\definecolor{midgray}{HTML}{5D6B6B}
+\definecolor{warning}{HTML}{A45A00}
+\definecolor{danger}{HTML}{8A1C1C}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=ugblue,
+  urlcolor=ugblue,
+  hypertexnames=false,
+  pdftitle={Manual tecnico - Prototipo BI asistido por IA},
+  pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Manual técnico}
+\rhead{Prototipo BI asistido por IA}
+\cfoot{\thepage}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.52em}
+\setlist[itemize]{leftmargin=1.5em,itemsep=0.22em,topsep=0.3em}
+\setlist[enumerate]{leftmargin=1.7em,itemsep=0.32em,topsep=0.35em}
+\renewcommand{\arraystretch}{1.2}
+\newcommand{\file}[1]{\texttt{#1}}
+\newcommand{\warningbox}[1]{\begin{center}\fcolorbox{danger}{softgray}{\begin{minipage}{0.90\textwidth}\textcolor{danger}{\textbf{Precaución.}} #1\end{minipage}}\end{center}}
+\newcommand{\notebox}[1]{\begin{center}\fcolorbox{ugblue}{softgray}{\begin{minipage}{0.90\textwidth}\textcolor{ugblue}{\textbf{Nota.}} #1\end{minipage}}\end{center}}
+
+\lstdefinestyle{terminal}{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{softgray},
+  frame=single,
+  rulecolor=\color{midgray},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  xleftmargin=0.4em,
+  xrightmargin=0.4em,
+  aboveskip=0.6em,
+  belowskip=0.6em
+}
+
+\begin{document}
+\hypersetup{pageanchor=false}
+
+\begin{titlepage}
+  \thispagestyle{empty}
+  \vspace*{0.8cm}
+  {\color{ugblue}\rule{\textwidth}{2.8pt}}
+  \vspace{1.2cm}
+
+  {\Large Universidad de Guayaquil\\[0.25em]
+  Facultad de Ciencias Matemáticas y Físicas\\
+  Carrera de Software}
+
+  \vfill
+
+  {\color{deepgreen}\fontsize{30}{35}\selectfont\textbf{Manual técnico}}\\[0.7em]
+  {\LARGE Instalación, operación y réplica del entorno}\\[0.6em]
+  {\large Prototipo web de inteligencia de negocios asistido por IA}
+
+  \vspace{1.5cm}
+
+  \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
+    Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
+    Versión del manual & 1.0.0 \\
+    Línea base & Commit \file{ddf2551} \\
+    Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
+    Clasificación & Uso académico y técnico - repositorio privado \\
+    Fecha & 24 de agosto de 2026 \\
+  \end{tabularx}
+
+  \vfill
+  {\color{ugblue}\rule{\textwidth}{2.8pt}}
+\end{titlepage}
+
+\hypersetup{pageanchor=true}
+\pagenumbering{roman}
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+\section{Propósito y audiencia}
+
+Este manual permite instalar, levantar, comprobar, mantener y replicar el ambiente técnico del prototipo. Está dirigido a las autoras, docentes revisores, colaboradores autorizados y personal técnico que necesite reproducir la demostración.
+
+El documento cubre dos modalidades:
+
+\begin{enumerate}
+  \item \textbf{Desarrollo desde el código}: clona el repositorio y construye las imágenes localmente.
+  \item \textbf{Ejecución de una entrega}: descarga imágenes privadas de GitHub Container Registry (GHCR) y no compila el código.
+\end{enumerate}
+
+La versión actual contiene infraestructura y salud técnica. El RBAC y los módulos de negocio todavía no están implementados.
+
+\section{Arquitectura operativa}
+
+\begin{center}
+\fcolorbox{ugblue}{softgray}{%
+  \begin{minipage}{0.91\textwidth}
+    \centering
+    \textbf{Usuario} $\rightarrow$ \textbf{Frontend React/Vite o Nginx}\\[0.35em]
+    $\downarrow$ peticiones \file{/api/}\\[0.35em]
+    \textbf{Backend FastAPI}\\[0.35em]
+    \begin{tabular}{c@{\hspace{1.6cm}}c}
+      $\swarrow$ & $\searrow$ \\
+      \textbf{PostgreSQL} & \textbf{SQL Server} \\
+      \file{app} + \file{mart} & AdventureWorks 2022 \\
+      lectura/escritura interna & usuario externo de sólo lectura
+    \end{tabular}
+  \end{minipage}}
+\end{center}
+
+\subsection{Servicios}
+
+\begin{tabularx}{\textwidth}{@{}l X l l@{}}
+  \toprule
+  Servicio & Responsabilidad & Puerto desarrollo & Persistencia \\
+  \midrule
+  frontend & Interfaz React y proxy a la API & 5173 & Código y dependencias \\
+  backend & API FastAPI, configuración y salud & 8000 & Código montado \\
+  postgres & Configuración interna y futuro datamart & 55432 & Volumen \file{postgres\_data} \\
+  sqlserver & Fuente AdventureWorks externa & 51433 & Volumen \file{sqlserver\_data} \\
+  \bottomrule
+\end{tabularx}
+
+Compose crea la red y los volúmenes bajo el nombre lógico \file{bi-ia-prototype}. No usa los contenedores PostgreSQL o SQL Server que ya existan en el computador.
+
+\subsection{Estructura del repositorio}
+
+\begin{lstlisting}[style=terminal]
+backend/                  FastAPI, pruebas y migraciones
+frontend/                 React, Vite, pruebas y Nginx
+infra/postgres/           imagen e inicializacion PostgreSQL
+infra/sqlserver/          imagen y restauracion AdventureWorks
+infra/docs/               imagen reproducible de LaTeX
+scripts/                  arranque, espera y verificacion
+docs/                     arquitectura, guias y evidencias
+.github/workflows/        integracion y entrega continuas
+compose.yaml              entorno de desarrollo autocontenido
+compose.release.yaml      entorno con imagenes de GHCR
+Makefile                  comandos operativos abreviados
+\end{lstlisting}
+
+\section{Requisitos previos}
+
+\subsection{Hardware recomendado}
+
+\begin{itemize}
+  \item Procesador de 64 bits con virtualización habilitada.
+  \item 8 GB de memoria disponibles para Docker; 6 GB es el mínimo práctico.
+  \item 15 GB libres para imágenes, capas, respaldo y volúmenes.
+  \item Conexión a Internet durante la primera construcción y restauración.
+\end{itemize}
+
+\subsection{Software requerido}
+
+\begin{itemize}
+  \item Docker Engine 24 o superior y Docker Compose v2; Docker Desktop es válido.
+  \item Git para clonar y actualizar el repositorio.
+  \item Acceso autorizado al repositorio privado.
+  \item Para consumir imágenes privadas: credenciales GHCR con \file{read:packages}.
+\end{itemize}
+
+No se requiere instalar Python, Node.js, PostgreSQL, SQL Server, controladores ODBC ni LaTeX en el host.
+
+En equipos ARM, incluido Apple Silicon, SQL Server usa \file{linux/amd64} mediante emulación. El primer arranque puede ser más lento.
+
+\section{Configuración segura}
+
+\subsection{Archivo de entorno}
+
+El archivo \file{.env} contiene la configuración local y nunca debe enviarse a Git. Se crea desde el ejemplo:
+
+\begin{lstlisting}[style=terminal,language=bash]
+cp .env.example .env
+\end{lstlisting}
+
+Se deben reemplazar todos los valores que empiecen con \file{ChangeMe\_*}. Las claves deben cumplir la política de SQL Server: longitud suficiente y combinación de mayúsculas, minúsculas, números y símbolos.
+
+\begin{longtable}{@{}p{0.31\textwidth}p{0.23\textwidth}p{0.38\textwidth}@{}}
+  \toprule
+  \textbf{Variable} & \textbf{Valor inicial} & \textbf{Uso} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Variable} & \textbf{Valor inicial} & \textbf{Uso} \\
+  \midrule
+  \endhead
+  \file{COMPOSE\_PROJECT\_NAME} & \file{bi-ia-prototype} & Prefijo aislado de red, contenedores y volúmenes. \\
+  \file{FRONTEND\_PORT} & 5173 & Puerto web de desarrollo; 8080 en la entrega. \\
+  \file{BACKEND\_PORT} & 8000 & Puerto de FastAPI y OpenAPI. \\
+  \file{LOCAL\_POSTGRES\_PORT} & 55432 & Publicación local de PostgreSQL. \\
+  \file{LOCAL\_SQLSERVER\_PORT} & 51433 & Publicación local de SQL Server. \\
+  \file{POSTGRES\_DB} & \file{bi\_prototype} & Base interna y futuro datamart. \\
+  \file{POSTGRES\_USER} & \file{bi\_app} & Cuenta de la aplicación interna. \\
+  \file{POSTGRES\_PASSWORD} & secreto local & Clave de PostgreSQL. \\
+  \file{SQLSERVER\_DATABASE} & \file{AdventureWorks2022} & Base externa restaurada. \\
+  \file{SQLSERVER\_USER} & \file{bi\_reader} & Cuenta exclusiva de lectura. \\
+  \file{SQLSERVER\_PASSWORD} & secreto local & Clave del lector. \\
+  \file{SQLSERVER\_SA\_PASSWORD} & secreto local & Clave administrativa usada sólo durante inicialización. \\
+  \file{IMAGE\_PREFIX} & ruta GHCR & Prefijo de las imágenes publicadas. \\
+  \file{IMAGE\_TAG} & \file{main} & Entrega a ejecutar; se recomienda una etiqueta versionada. \\
+  \bottomrule
+\end{longtable}
+
+\warningbox{No copiar contraseñas, tokens, archivos \file{.env}, respaldos \file{.bak} ni volúmenes al repositorio. Ante una exposición, rotar inmediatamente la credencial y revisar el historial.}
+
+\section{Instalación de desarrollo en este computador}
+
+El proyecto se encuentra en \file{/home/ceo/Proyectos/BI}. Para una primera ejecución:
+
+\begin{lstlisting}[style=terminal,language=bash]
+cd "/home/ceo/Proyectos/BI"
+cp .env.example .env
+# Editar .env y cambiar todos los secretos ChangeMe_*
+make bootstrap
+\end{lstlisting}
+
+\file{make bootstrap} realiza las siguientes acciones:
+
+\begin{enumerate}
+  \item valida o crea el archivo de configuración local;
+  \item construye las imágenes propias;
+  \item crea una red y tres volúmenes exclusivos;
+  \item inicia PostgreSQL y espera su estado saludable;
+  \item inicia SQL Server, descarga y restaura AdventureWorks si el volumen está vacío;
+  \item crea y prueba el usuario \file{bi\_reader};
+  \item inicia FastAPI y después React;
+  \item espera hasta que los cuatro servicios respondan correctamente.
+\end{enumerate}
+
+El primer arranque puede tardar varios minutos. Para observar la restauración:
+
+\begin{lstlisting}[style=terminal,language=bash]
+docker compose logs -f sqlserver
+\end{lstlisting}
+
+\section{Instalación en otro computador desde el código}
+
+\subsection{Obtener el repositorio}
+
+La cuenta debe haber sido invitada al repositorio privado.
+
+\begin{lstlisting}[style=terminal,language=bash]
+git clone https://github.com/LFXAS/prototipo-bi-ia.git
+cd prototipo-bi-ia
+\end{lstlisting}
+
+La carpeta puede ubicarse en cualquier ruta; Compose utiliza rutas relativas.
+
+\subsection{Preparar secretos}
+
+\begin{lstlisting}[style=terminal,language=bash]
+cp .env.example .env
+# Abrir .env y reemplazar todos los valores ChangeMe_*
+\end{lstlisting}
+
+Si alguno de los puertos está ocupado, cambiarlo en \file{.env} antes del arranque.
+
+\subsection{Construir y levantar}
+
+\begin{lstlisting}[style=terminal,language=bash]
+make bootstrap
+\end{lstlisting}
+
+\subsection{Confirmar el estado}
+
+\begin{lstlisting}[style=terminal,language=bash]
+docker compose ps
+curl http://localhost:8000/api/v1/health/live
+curl http://localhost:8000/api/v1/health/ready
+\end{lstlisting}
+
+Las dos respuestas deben indicar \file{"status":"ok"}; la segunda también debe indicar \file{"postgres":"ok"}.
+
+\subsection{Abrir la aplicación}
+
+\begin{itemize}
+  \item Frontend: \url{http://localhost:5173}
+  \item API: \url{http://localhost:8000}
+  \item OpenAPI: \url{http://localhost:8000/docs}
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{../assets/sprint-01/frontend.jpg}
+  \caption{Resultado esperado después de levantar el entorno de desarrollo.}
+\end{figure}
+
+\section{Ejecución desde imágenes privadas de GHCR}
+
+Esta modalidad permite levantar una entrega sin compilar el código.
+
+\subsection{Autenticarse en GHCR}
+
+La persona debe tener acceso al repositorio y un token con permiso \file{read:packages}. El token se introduce por entrada estándar y no se escribe en el comando:
+
+\begin{lstlisting}[style=terminal,language=bash]
+echo "$GHCR_TOKEN" | docker login ghcr.io -u USUARIO_GITHUB --password-stdin
+\end{lstlisting}
+
+\warningbox{No guardar el token en el repositorio, en \file{.env} ni en capturas. La variable temporal debe eliminarse o cerrarse con la sesión.}
+
+\subsection{Configurar la entrega}
+
+\begin{lstlisting}[style=terminal,language=bash]
+cp .env.release.example .env
+\end{lstlisting}
+
+En \file{.env}, establecer:
+
+\begin{lstlisting}[style=terminal]
+IMAGE_PREFIX=ghcr.io/LFXAS/prototipo-bi-ia
+IMAGE_TAG=main
+\end{lstlisting}
+
+Para una entrega académica estable, sustituir \file{main} por una etiqueta inmutable, por ejemplo \file{v1.0.0}.
+
+\subsection{Descargar e iniciar}
+
+\begin{lstlisting}[style=terminal,language=bash]
+docker compose -f compose.release.yaml pull
+docker compose -f compose.release.yaml up -d
+docker compose -f compose.release.yaml ps
+\end{lstlisting}
+
+En esta modalidad el frontend usa \url{http://localhost:8080} y la API conserva el puerto 8000.
+
+\section{Comprobación técnica}
+
+\subsection{Comprobación rápida}
+
+\begin{lstlisting}[style=terminal,language=bash]
+make doctor
+\end{lstlisting}
+
+\subsection{Comprobación completa}
+
+\begin{lstlisting}[style=terminal,language=bash]
+make verify
+\end{lstlisting}
+
+El control completo valida las dos variantes de Compose, construye y prueba frontend/backend y regenera toda la documentación PDF.
+
+\subsection{Contrato OpenAPI}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{../assets/sprint-01/openapi.jpg}
+  \caption{Endpoints técnicos disponibles en el Sprint 1.}
+\end{figure}
+
+\subsection{Validación de AdventureWorks}
+
+La restauración correcta debe producir 71 tablas de usuario. La sonda del contenedor se autentica como \file{bi\_reader}; por tanto, un estado saludable confirma que la cuenta puede conectar y leer.
+
+Para una auditoría explícita, ingresar al contenedor usando variables ya inyectadas y ejecutar consultas controladas. No copiar las contraseñas al historial:
+
+\begin{lstlisting}[style=terminal,language=bash]
+docker compose exec sqlserver bash
+/opt/mssql-tools18/bin/sqlcmd -S localhost \
+  -U "$SQLSERVER_USER" -P "$SQLSERVER_PASSWORD" -C \
+  -d "$SQLSERVER_DATABASE" -Q \
+  "SELECT COUNT(*) AS tablas FROM sys.tables;"
+exit
+\end{lstlisting}
+
+No se debe ejecutar una prueba destructiva sobre datos que deban conservarse. La automatización de inicialización ya verifica las denegaciones de escritura de forma controlada.
+
+\section{Operación diaria}
+
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+  \toprule
+  Comando & Función \\
+  \midrule
+  \file{make up} & Construye cambios y levanta el entorno en segundo plano. \\
+  \file{make down} & Detiene servicios y conserva datos. \\
+  \file{make ps} & Muestra servicios y estado de salud. \\
+  \file{make logs} & Sigue los registros recientes. \\
+  \file{make test} & Ejecuta pruebas en las etapas Docker de backend y frontend. \\
+  \file{make lint} & Ejecuta Ruff, Mypy y ESLint en contenedores. \\
+  \file{make compose-check} & Valida Compose de desarrollo y de entrega. \\
+  \file{make docs} & Regenera bitácora, informe de sprint y manual. \\
+  \file{make verify} & Ejecuta la verificación completa antes de entregar. \\
+  \bottomrule
+\end{tabularx}
+
+La recarga automática de Vite y FastAPI permite editar código sin instalar sus dependencias en el host.
+
+\section{Persistencia y reinicio de datos}
+
+\subsection{Detener sin borrar}
+
+\begin{lstlisting}[style=terminal,language=bash]
+docker compose down
+\end{lstlisting}
+
+Los volúmenes permanecen y el siguiente arranque reutiliza PostgreSQL y AdventureWorks.
+
+\subsection{Reconstruir desde cero}
+
+\warningbox{El siguiente procedimiento elimina de forma irreversible sólo los volúmenes del proyecto Compose actual. Confirmar que no contienen resultados que deban conservarse.}
+
+\begin{lstlisting}[style=terminal,language=bash]
+docker compose down --volumes
+make bootstrap
+\end{lstlisting}
+
+La restauración de AdventureWorks volverá a descargar el respaldo cuando el volumen esté vacío.
+
+\subsection{Qué se versiona}
+
+\begin{itemize}
+  \item Se versionan Dockerfiles, Compose, scripts, migraciones, documentación y datos sintéticos aprobados.
+  \item No se versionan volúmenes, contraseñas, tokens, archivos \file{.bak}, \file{.dump} ni datos productivos.
+  \item AdventureWorks se reconstruye desde el respaldo oficial y PostgreSQL desde scripts/migraciones.
+\end{itemize}
+
+\section{Actualización y reversión}
+
+\subsection{Entorno construido desde código}
+
+\begin{lstlisting}[style=terminal,language=bash]
+git pull --ff-only
+docker compose up --build -d
+make doctor
+\end{lstlisting}
+
+\subsection{Entorno basado en GHCR}
+
+\begin{lstlisting}[style=terminal,language=bash]
+docker compose -f compose.release.yaml pull
+docker compose -f compose.release.yaml up -d
+\end{lstlisting}
+
+Para volver a una versión conocida, fijar \file{IMAGE\_TAG} a una etiqueta anterior y repetir \file{pull}/\file{up}. No usar \file{latest} para entregas evaluables.
+
+Cuando existan migraciones de datos, la reversión deberá seguir el procedimiento de la versión específica. Nunca sustituir una migración por la copia manual de un volumen.
+
+\section{Flujo Git y CI/CD}
+
+\subsection{Desarrollo por rama}
+
+\begin{lstlisting}[style=terminal,language=bash]
+git checkout -b feat/nombre-cambio
+# editar y comprobar
+make verify
+git add .
+git commit -m "feat: descripcion breve"
+git push -u origin feat/nombre-cambio
+\end{lstlisting}
+
+Después se abre un pull request. CI debe aprobarse antes de fusionar en \file{main}.
+
+\subsection{Integración continua}
+
+En cada push y pull request hacia \file{main}, CI:
+
+\begin{enumerate}
+  \item valida el archivo Compose;
+  \item construye la etapa de prueba del backend;
+  \item construye la etapa de prueba del frontend;
+  \item construye las imágenes de infraestructura;
+  \item compila los documentos LaTeX y verifica que los PDF versionados estén actualizados.
+\end{enumerate}
+
+\subsection{Entrega continua}
+
+Después de un cambio en \file{main} o una etiqueta \file{v*}, CD valida y publica:
+
+\begin{itemize}
+  \item \file{prototipo-bi-ia-backend};
+  \item \file{prototipo-bi-ia-frontend};
+  \item \file{prototipo-bi-ia-postgres};
+  \item \file{prototipo-bi-ia-sqlserver};
+  \item \file{prototipo-bi-ia-docs}.
+\end{itemize}
+
+Las ejecuciones de línea base CI 32749237009 y CD 32749237059 finalizaron exitosamente para el commit \file{ddf2551}.
+
+\section{Seguridad operativa}
+
+\begin{enumerate}
+  \item Cambiar todas las credenciales de ejemplo antes del primer arranque.
+  \item Mantener \file{.env} fuera de Git y fuera de los documentos.
+  \item Usar \file{bi\_reader} para AdventureWorks; no conectar la aplicación como \file{sa}.
+  \item Conservar \file{SQLSERVER\_APPLICATION\_INTENT=ReadOnly}, pero apoyarse en permisos reales del motor.
+  \item No publicar los paquetes GHCR mientras el repositorio de tesis sea privado.
+  \item Otorgar acceso únicamente a cuentas identificadas y revocar colaboradores que ya no participen.
+  \item Revisar los cambios de Dependabot y no fusionarlos sin CI aprobada.
+  \item Cuando se implemente RBAC, FastAPI debe autorizar cada endpoint; ocultar menús en React no es un control de seguridad.
+\end{enumerate}
+
+\section{Diagnóstico de fallos}
+
+\begin{longtable}{@{}p{0.27\textwidth}p{0.32\textwidth}p{0.34\textwidth}@{}}
+  \toprule
+  \textbf{Síntoma} & \textbf{Causa probable} & \textbf{Acción recomendada} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Síntoma} & \textbf{Causa probable} & \textbf{Acción recomendada} \\
+  \midrule
+  \endhead
+  Puerto ocupado & Otro servicio usa 5173, 8000, 55432 o 51433. & Cambiar el puerto correspondiente en \file{.env} y reiniciar Compose. \\
+  Backend vivo, pero \file{ready} falla & PostgreSQL no está saludable o las credenciales no coinciden. & Revisar \file{docker compose ps} y los registros de PostgreSQL/backend. \\
+  SQL Server no queda saludable & Memoria insuficiente, clave SA inválida o descarga bloqueada. & Asignar 8 GB a Docker, corregir la clave y revisar los registros. \\
+  Restauración muy lenta & Primera descarga o emulación ARM. & Esperar y seguir \file{docker compose logs -f sqlserver}. \\
+  Frontend no muestra API disponible & Backend no saludable o proxy mal configurado. & Probar \file{/health/live}, revisar puertos y registros del frontend. \\
+  GHCR devuelve \file{denied} & Falta autenticación, acceso al paquete o permiso \file{read:packages}. & Repetir \file{docker login ghcr.io} con una cuenta autorizada. \\
+  PDF no se actualiza & No se regeneró después de editar LaTeX. & Ejecutar \file{make docs} y revisar los archivos modificados. \\
+  CI rechaza el cambio & Pruebas, formato, Compose o PDF desactualizado. & Abrir el trabajo fallido, reproducir con \file{make verify} y corregir antes de fusionar. \\
+  \bottomrule
+\end{longtable}
+
+\subsection{Registros útiles}
+
+\begin{lstlisting}[style=terminal,language=bash]
+docker compose logs --tail=200 backend
+docker compose logs --tail=200 frontend
+docker compose logs --tail=200 postgres
+docker compose logs --tail=200 sqlserver
+\end{lstlisting}
+
+\section{Lista de comprobación para una demostración}
+
+\begin{enumerate}
+  \item Confirmar que el commit o etiqueta corresponde a la entrega evaluada.
+  \item Ejecutar \file{make verify} y conservar la evidencia de CI.
+  \item Ejecutar \file{docker compose ps}; los cuatro servicios deben estar saludables.
+  \item Consultar \file{/health/live} y \file{/health/ready}.
+  \item Abrir frontend y OpenAPI en el navegador.
+  \item Confirmar que AdventureWorks contiene 71 tablas y el acceso externo usa \file{bi\_reader}.
+  \item Confirmar que no hay secretos ni archivos \file{.env} en los cambios de Git.
+  \item Registrar SHA, etiqueta y digest de imágenes en la bitácora.
+  \item Conservar los PDF generados para la evidencia de tesis.
+\end{enumerate}
+
+\section{Mantenimiento de la documentación}
+
+Los documentos se compilan dentro de la imagen \file{bi-ia-docs}; no se instala LaTeX en el host.
+
+\begin{lstlisting}[style=terminal,language=bash]
+make logbook
+make sprint-report
+make technical-manual
+make docs
+\end{lstlisting}
+
+Después de cambios técnicos se deben actualizar, según corresponda, README, arquitectura, guía de réplica, manual técnico, informe del sprint y bitácora. Los PDF finales se versionan; los archivos auxiliares de LaTeX se ignoran.
+
+\section{Responsabilidades y escalamiento}
+
+\begin{tabularx}{\textwidth}{@{}p{0.27\textwidth}X@{}}
+  \toprule
+  Rol & Responsabilidad \\
+  \midrule
+  Autoras & Aprobar alcance, secretos, accesos, datos de prueba y entregas académicas. \\
+  Colaborador técnico & Trabajar por rama, ejecutar pruebas, actualizar documentación y solicitar revisión. \\
+  CI/CD & Repetir controles y publicar imágenes después de la integración autorizada. \\
+  FastAPI futuro & Aplicar autorización real, validaciones determinísticas y auditoría. \\
+  Responsable de datos & Confirmar que la fuente externa permanezca en lectura y que no se incorporen datos productivos. \\
+  \bottomrule
+\end{tabularx}
+
+Ante pérdida de datos locales, credenciales expuestas, imágenes inesperadas o permisos de escritura en AdventureWorks, detener la demostración, conservar registros, revocar las credenciales afectadas y documentar la resolución antes de continuar.
+
+\appendix
+\section{Referencia rápida de URLs y puertos}
+
+\begin{tabularx}{\textwidth}{@{}l l X@{}}
+  \toprule
+  Recurso & Dirección & Observación \\
+  \midrule
+  Frontend desarrollo & \url{http://localhost:5173} & React/Vite \\
+  Frontend entrega & \url{http://localhost:8080} & Nginx/GHCR \\
+  API & \url{http://localhost:8000} & FastAPI \\
+  OpenAPI & \url{http://localhost:8000/docs} & Contrato interactivo \\
+  Salud básica & \url{http://localhost:8000/api/v1/health/live} & Proceso de API \\
+  Preparación & \url{http://localhost:8000/api/v1/health/ready} & API y PostgreSQL \\
+  PostgreSQL & \file{localhost:55432} & Acceso técnico local \\
+  SQL Server & \file{localhost:51433} & Acceso técnico local \\
+  \bottomrule
+\end{tabularx}
+
+\section{Recuperación mínima}
+
+Si el entorno queda en un estado desconocido y no existen datos que conservar:
+
+\begin{lstlisting}[style=terminal,language=bash]
+cd "/ruta/del/repositorio"
+docker compose down --volumes
+docker compose build --no-cache
+make bootstrap
+make verify
+\end{lstlisting}
+
+\warningbox{La recuperación elimina los volúmenes del proyecto actual. No ejecutarla como diagnóstico rutinario ni en una carpeta cuya identidad Compose no haya sido confirmada.}
+
+\section{Control del manual}
+
+\begin{tabularx}{\textwidth}{@{}>{\bfseries}p{0.26\textwidth}X@{}}
+  \toprule
+  Campo & Valor \\
+  \midrule
+  Estado & Primera edición técnica, sujeta a revisión de las autoras y del tutor. \\
+  Custodia & Repositorio privado \file{LFXAS/prototipo-bi-ia}. \\
+  Audiencia & Autoras, tutor, revisores y colaboradores expresamente autorizados. \\
+  Actualización & Debe acompañar todo cambio de instalación, puertos, secretos, imágenes, pruebas o recuperación. \\
+  Fuente editable & \file{docs/manual-tecnico/manual-tecnico.tex}. \\
+  Compilación & \file{make technical-manual} o \file{make docs}. \\
+  \bottomrule
+\end{tabularx}
+
+\subsection*{Historial de cambios}
+
+\begin{tabularx}{\textwidth}{@{}l l X@{}}
+  \toprule
+  Versión & Fecha & Cambio \\
+  \midrule
+  1.0.0 & 24-08-2026 & Primera versión: instalación, réplica, operación, CI/CD, seguridad, diagnóstico y recuperación del ambiente del Sprint 1. \\
+  \bottomrule
+\end{tabularx}
+
+\subsection*{Registro de revisión}
+
+\begin{tabularx}{\textwidth}{@{}p{0.24\textwidth}X p{0.18\textwidth}@{}}
+  \toprule
+  Rol & Nombre y conformidad & Fecha \\
+  \midrule
+  Autora & \rule{0.90\linewidth}{0.4pt} & \rule{0.85\linewidth}{0.4pt} \\[1.2em]
+  Autora & \rule{0.90\linewidth}{0.4pt} & \rule{0.85\linewidth}{0.4pt} \\[1.2em]
+  Tutor/revisor & \rule{0.90\linewidth}{0.4pt} & \rule{0.85\linewidth}{0.4pt} \\
+  \bottomrule
+\end{tabularx}
+
+La aprobación formal se registra en la versión entregada de la tesis. Las firmas no deben incorporarse al repositorio si contienen datos personales que no hayan sido autorizados para su distribución.
+
+\end{document}

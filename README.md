@@ -4,7 +4,7 @@ Base técnica del proyecto de titulación de Emily Robles y Lesly Velásquez. Es
 
 La guía operativa completa para replicar, restaurar, publicar y probar el entorno está en [docs/replication-guide.md](docs/replication-guide.md).
 
-La trazabilidad del trabajo se mantiene en LaTeX y en su PDF generado dentro de `docs/logbook/`. Se regenera de forma reproducible con `make logbook`.
+La trazabilidad del trabajo se mantiene en LaTeX y PDF. La bitácora vive en `docs/logbook/`, el informe académico del primer sprint en `docs/sprints/` y el manual operativo en `docs/manual-tecnico/`. Todos se regeneran de forma reproducible con `make docs`.
 
 ## Alcance confirmado
 
@@ -58,6 +58,7 @@ make logs           # seguir los registros
 make test           # pruebas de backend y frontend en imagenes Docker
 make lint           # calidad estatica en contenedores
 make compose-check  # validar las dos variantes de Compose
+make docs           # regenerar bitacora, informe de sprint y manual
 make down           # detener la aplicacion
 ```
 
