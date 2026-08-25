@@ -238,6 +238,8 @@ La vista Nginx es la opción recomendada para revisar rápidamente el frontend c
 
 La primera regeneración mostró avisos porque TeX intentó crear su caché de fuentes en una ruta sin escritura. La compilación usó su alternativa temporal y \file{make verify} terminó correctamente, pero se fijaron \file{HOME}, \file{TEXMFVAR} y \file{VARTEXFONTS} a rutas temporales dentro del contenedor para eliminar la dependencia implícita y mantener iguales los comandos locales y de CI.
 
+La primera CI del commit \file{7f39517} falló únicamente en \file{Validate Compose}: \file{.env.release.example} existía localmente, pero una regla amplia de \file{.gitignore} impedía versionarlo. Se añadió una excepción explícita, se incorporó el archivo de ejemplo sin credenciales reales y se repitió la verificación. Este hallazgo confirma el valor de probar desde un clon limpio además del entorno local.
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}X l X@{}}
