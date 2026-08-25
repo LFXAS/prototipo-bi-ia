@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -14,13 +14,28 @@ permissions:
   contents: read
 
 jobs:
+  branch-flow:
+    name: Validate branch flow
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      BASE_BRANCH: ${{ github.base_ref }}
+      HEAD_BRANCH: ${{ github.head_ref }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Test and validate branch policy
+        run: |
+          make workflow-test
+          docker run --rm -v "$PWD:/workspace:ro" -w /workspace alpine:3.22 \
+            ./scripts/validate-branch-flow.sh "$BASE_BRANCH" "$HEAD_BRANCH"
+
   compose:
     name: Validate Compose
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - name: Validate isolated stack configuration
-        run: docker compose config --quiet
+        run: make compose-check
 
   backend:
     name: Backend checks
@@ -86,16 +101,19 @@ jobs:
       - name: Compile logbook
         run: >-
           docker run --rm --user "$(id -u):$(id -g)"
+          -e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts
           -v "$PWD/docs/logbook:/workspace" -w /workspace
           bi-ia-docs:test -pdf -interaction=nonstopmode -halt-on-error bitacora.tex
       - name: Compile Sprint 1 report
         run: >-
           docker run --rm --user "$(id -u):$(id -g)"
+          -e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts
           -v "$PWD/docs:/workspace" -w /workspace/sprints
           bi-ia-docs:test -pdf -interaction=nonstopmode -halt-on-error sprint-01-entorno.tex
       - name: Compile technical manual
         run: >-
           docker run --rm --user "$(id -u):$(id -g)"
+          -e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts
           -v "$PWD/docs:/workspace" -w /workspace/manual-tecnico
           bi-ia-docs:test -pdf -interaction=nonstopmode -halt-on-error manual-tecnico.tex
       - name: Ensure versioned PDFs are current

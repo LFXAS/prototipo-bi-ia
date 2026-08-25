@@ -67,7 +67,7 @@
     Estudiantes & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPIs, insights y pronóstico \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.1.4 \\
+    Versión de la bitácora & 0.1.8 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -175,6 +175,119 @@ El anexo institucional exige módulos de seguridad, parámetros, negocio y repor
   \item CI compila, compara y publica los tres PDF como un único artefacto de documentación técnica.
 \end{itemize}
 
+\subsection{24 de agosto de 2026 - Gobierno Git, colaboradores y estabilidad DevOps}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Colaboradores GitHub & \statusok & Se verificaron \file{LeslyVelasquez} y \file{EmyRoblesBerry}; ambas cuentas tienen permiso de escritura en \file{LFXAS/prototipo-bi-ia}. \\
+  Ramas permanentes & \statusok & \file{develop} quedó como rama predeterminada de integración y \file{main} como rama estable de publicación. El trabajo usa \file{feature/*}, \file{fix/*}, \file{docs/*} o \file{chore/*}. \\
+  Visibilidad & \statusok & Por autorización expresa, el repositorio cambió de privado a público para habilitar las reglas de protección sin contratar todavía GitHub Pro. La visibilidad de los paquetes GHCR se gestiona por separado. \\
+  Protección de ramas & \statusok & \file{develop} y \file{main} exigen pull request, una aprobación, conversaciones resueltas, rama actualizada y ocho controles de CI; force-push y eliminación están deshabilitados. \\
+  Flujo automático & \statusok & CI valida ambas ramas y rechaza promociones a \file{main} cuyo origen no sea \file{develop}; CD continúa limitado a \file{main} y etiquetas \file{v*}. \\
+  Dependabot & \statusok & Las ramas \file{dependabot/*} se identificaron como temporales. npm agrupa sólo parches y cambios menores; los saltos mayores quedan fuera de las actualizaciones rutinarias. \\
+  Reinicio SQL Server & \statusok & El inicializador espera que AdventureWorks esté en línea antes de configurar el lector y crear la marca de salud. Un reinicio con volumen existente terminó con cuatro servicios saludables y 71 tablas. \\
+  Manual y guía & \statusok & README, guía de réplica, flujo Git y manual técnico describen comandos, promociones, protecciones, Dependabot y recuperación. \\
+  Verificación final & \statusok & \file{make verify} validó Compose, política de ramas, backend, frontend y los tres PDF; Actionlint 1.7.12 validó los flujos, todo dentro de Docker. \\
+  \bottomrule
+\end{longtable}
+
+\subsubsection{Incidentes y resolución}
+
+\begin{enumerate}
+  \item El PR automático del frontend agrupó 18 actualizaciones y falló durante \file{npm ci}. Se reprodujo el error: TypeScript 7.0.2 era incompatible con \file{typescript-}\allowbreak\file{eslint} 8.67.0, que admite versiones menores que 6.1. Se corrigió la política para no agrupar ni proponer saltos mayores rutinarios; el PR incompatible debe cerrarse sin fusionar.
+  \item La captura de Actions también mostraba avisos por acciones basadas en Node.js 20. La rama \file{main} ya contenía las generaciones vigentes de \file{checkout}, \file{upload-artifact} y las acciones Docker; los avisos procedían de una rama Dependabot atrasada dos commits.
+  \item El primer intento de proteger el repositorio privado devolvió HTTP 403 porque el plan actual no incluye protección de ramas privadas. El usuario autorizó volver público el repositorio; la misma configuración se aplicó correctamente a \file{develop} y \file{main}.
+  \item Una prueba adicional \file{make lint} se detuvo porque SQL Server estaba no saludable después de un reinicio. El motor aceptaba conexiones, pero AdventureWorks seguía recuperándose cuando el inicializador intentó configurarla y dejó ausente la marca de disponibilidad. Se añadió una espera explícita a la base, se recreó el contenedor sin borrar el volumen y la prueba de reinicio pasó.
+\end{enumerate}
+
+\subsection{24 de agosto de 2026 - Ambientes simultáneos y vista de entrega}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Diagnóstico de acceso & \statusok & Se comprobó que Vite respondía en 5173 y FastAPI estaba disponible en 8000; el error del navegador en 8080 se debía a que todavía no existía un servicio de entrega activo en ese puerto. \\
+  Vista Nginx paralela & \statusok & El perfil Compose \file{delivery} añade \file{frontend-delivery} en 8080, comparte la API y las bases de desarrollo y conserva Vite en 5173. \\
+  Entrega completa aislada & \statusok & \file{compose.release.yaml} usa el proyecto \file{bi-ia-prototype-release}, API 18000, PostgreSQL 55433, SQL Server 51434 y volúmenes independientes; no reemplaza desarrollo. \\
+  Automatización & \statusok & \file{make delivery-preview-up} inicia la vista ligera. \file{make release-up} exige \file{.env.release} y levanta las imágenes GHCR; \file{make release-down} detiene sólo ese ambiente. \\
+  CI/CD & \statusok & CI valida desarrollo, perfil de entrega y Compose GHCR mediante contenedores efímeros. CD publica desde \file{main} o etiquetas \file{v*}; el despliegue selecciona una etiqueta sin compartir volúmenes. \\
+  Guías & \statusok & README, arquitectura, réplica, flujo Git y manual técnico distinguen ramas, ambientes y consumo de recursos. \\
+  Verificación local & \statusok & Cinco servicios quedaron saludables; Vite respondió en 5173, Nginx en 8080 y el proxy de entrega devolvió salud de FastAPI. \\
+  Nube académica & \statuspending & Se recomienda Azure for Students con una VM Linux x64 de 2 vCPU y 8 GiB, OIDC, aprobación del ambiente y apagado automático. Falta activar la suscripción antes de crear recursos. \\
+  Visibilidad GHCR & \statusok & Con autorización expresa se cambió a pública la visibilidad de \file{prototipo-bi-ia-frontend}, \file{prototipo-bi-ia-backend}, \file{prototipo-bi-ia-postgres}, \file{prototipo-bi-ia-sqlserver} y \file{prototipo-bi-ia-docs}. GitHub confirmó el estado público de cada paquete. \\
+  \bottomrule
+\end{longtable}
+
+\subsubsection{Decisión operativa}
+
+La vista Nginx es la opción recomendada para revisar rápidamente el frontend compilado porque no duplica SQL Server. La entrega GHCR completa se reserva para validar aislamiento, imágenes y restauración reproducible; puede convivir con desarrollo si el computador dispone de memoria suficiente. La vista ligera y la entrega completa comparten por defecto el puerto anfitrión 8080, por lo que se usa sólo una de ellas a la vez o se cambia su variable de puerto.
+
+\subsubsection{Incidente de verificación documental}
+
+La primera regeneración mostró avisos porque TeX intentó crear su caché de fuentes en una ruta sin escritura. La compilación usó su alternativa temporal y \file{make verify} terminó correctamente, pero se fijaron \file{HOME}, \file{TEXMFVAR} y \file{VARTEXFONTS} a rutas temporales dentro del contenedor para eliminar la dependencia implícita y mantener iguales los comandos locales y de CI.
+
+La primera CI del commit \file{7f39517} falló únicamente en \file{Validate Compose}: \file{.env.release.example} existía localmente, pero una regla amplia de \file{.gitignore} impedía versionarlo. Se añadió una excepción explícita, se incorporó el archivo de ejemplo sin credenciales reales y se repitió la verificación. Este hallazgo confirma el valor de probar desde un clon limpio además del entorno local.
+
+\clearpage
+\subsection{24 de agosto de 2026 - Publicación abierta de imágenes GHCR}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Autorización & \statusok & El usuario autorizó publicar las cinco imágenes porque el repositorio es académico y las colaboradoras deben poder reproducir el entorno. No se publicaron secretos, volúmenes ni respaldos privados. \\
+  Paquetes públicos & \statusok & Las cinco configuraciones de GitHub Packages indican que el paquete está público; la vista del perfil muestra los cinco contenedores sin la etiqueta \file{Private}. \\
+  Acceso del equipo & \statusok & \file{LeslyVelasquez} y \file{EmyRoblesBerry} conservan permiso de escritura heredado del repositorio. La lectura de los paquetes públicos no depende de ser colaborador. \\
+  Pull request 12 & \statuspending & Los ocho controles de CI están aprobados y la fusión automática está activa. Falta una aprobación de cualquiera de las dos colaboradoras para integrar los tres commits de \file{chore/git-flow} en \file{develop}. \\
+  Réplica externa & \statuspending & Falta ejecutar \file{make release-up} desde un clon limpio en un segundo computador sin sesión de GHCR y conservar como evidencia las sondas de salud y los digest descargados. \\
+  \bottomrule
+\end{longtable}
+
+\subsubsection{Incidentes y resolución}
+
+\begin{enumerate}
+  \item La primera prueba anónima devolvió HTTP 401 porque la visibilidad del repositorio y la de GitHub Packages son controles independientes. Se corrigió manualmente la visibilidad de cada paquete desde la cuenta propietaria.
+  \item La ampliación de permisos de GitHub CLI fue autorizada mediante el flujo de dispositivo, pero el entorno protegido no pudo escribir temporalmente su archivo local de autenticación. Se completó la operación desde la sesión web autenticada, sin registrar contraseñas, códigos ni tokens en el repositorio.
+  \item El mismo bloqueo de escritura impidió actualizar la bitácora durante esa intervención. No hubo pérdida ni corrupción: el árbol Git permaneció limpio y la versión 0.1.7 registró la resolución en una sesión posterior.
+\end{enumerate}
+
+\subsection{24 de agosto de 2026 - Operación documentada de contenedores}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Manual técnico & \statusok & Se elevó a la versión 1.4.0 y se añadió una sección operativa completa para los tres ambientes Docker. \\
+  Desarrollo & \statusok & Se documentaron primera ejecución, construcción, pausa con \file{stop}, reanudación con \file{start} y retiro con \file{make down}. \\
+  Vista Nginx & \statusok & Se documentaron inicio, consulta, pausa, reanudación y retiro exclusivo de \file{frontend-delivery}, sin afectar los cuatro servicios de desarrollo. \\
+  Entrega GHCR & \statusok & Se documentaron \file{release-up}, pausa, reanudación, consulta y \file{release-down} con \file{.env.release} y Compose aislado. \\
+  Persistencia & \statusok & El manual diferencia \file{stop}, \file{start}, \file{down} y \file{down --volumes}; la eliminación de volúmenes queda marcada como destructiva. \\
+  Verificación & \statusok & Los PDF del manual y la bitácora se regeneraron e inspeccionaron; \file{make verify} finalizó correctamente dentro de Docker. \\
+  \bottomrule
+\end{longtable}
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}X l X@{}}
@@ -187,17 +300,19 @@ El anexo institucional exige módulos de seguridad, parámetros, negocio y repor
   Frontend calidad y pruebas & \statusok & ESLint, 1 prueba Vitest y build de Vite dentro de Docker \\
   PostgreSQL disponible & \statusok & Esquemas \file{app} y \file{mart}; endpoint \file{/health/ready} en \file{ok} \\
   AdventureWorks restaurada & \statusok & 71 tablas; \file{bi\_reader}: lectura 1 e inserción 0 \\
-  Interfaz disponible & \statusok & Frontend saludable en el puerto 5173 y API accesible mediante proxy \\
+  Interfaz disponible & \statusok & Vite saludable en 5173, Nginx opcional en 8080 y API accesible mediante proxy \\
   PDF legible & \statusok & Todas las páginas renderizadas e inspeccionadas sin cortes ni solapamientos \\
-  Git local & \statusok & Rama \file{main}; commit base \file{ead11fb} \\
-  GitHub/GHCR & \statusok & CI 32747013480 y CD 32747013085 exitosas; cinco imágenes privadas publicadas \\
+  Git local & \statusok & \file{develop} para integración, \file{main} para entregas y ramas enfocadas por pull request \\
+  GitHub/GHCR & \statusok & Repositorio público, dos colaboradoras con escritura, ramas protegidas y cinco imágenes públicas en GHCR; la réplica desde un segundo computador queda como evidencia pendiente. \\
   \bottomrule
 \end{tabularx}
 
 \section{Próximos pasos}
 
 \begin{enumerate}
-  \item Obtener los nombres de usuario GitHub de las colaboradoras y enviar las invitaciones con permiso de escritura.
+  \item Obtener una aprobación de \file{LeslyVelasquez} o \file{EmyRoblesBerry} en el PR 12; la fusión automática incorporará entonces los cambios en \file{develop}.
+  \item Clonar el repositorio en un segundo computador, levantar la entrega pública sin iniciar sesión en GHCR y conservar las sondas de salud y los digest como evidencia.
+  \item Revisar individualmente los pull requests de Dependabot que queden abiertos en \file{develop}; no fusionar ninguno sin CI aprobada.
   \item Congelar una etiqueta de ambiente inicial y registrar los digest de las imágenes.
   \item Iniciar la siguiente iteración con migraciones del RBAC y parámetros, sin adelantar módulos de negocio.
 \end{enumerate}
@@ -213,6 +328,10 @@ El anexo institucional exige módulos de seguridad, parámetros, negocio y repor
   0.1.2 & 24-08-2026 & Ejecución desde la ruta definitiva y validación de la sesión GitHub de \file{LFXAS}. \\
   0.1.3 & 24-08-2026 & Repositorio privado, primera CI/CD exitosa, imágenes GHCR y mantenimiento de Actions. \\
   0.1.4 & 24-08-2026 & Informe formal del Sprint 1, manual técnico, capturas e integración de todos los PDF en CI. \\
+  0.1.5 & 24-08-2026 & Colaboradores, estrategia \file{develop/main}, protección, control de ramas, Dependabot y reinicio seguro de SQL Server. \\
+  0.1.6 & 24-08-2026 & Vista Nginx paralela, entrega GHCR aislada y documentación de ambientes simultáneos con CI/CD. \\
+  0.1.7 & 24-08-2026 & Cinco paquetes GHCR públicos, trazabilidad del incidente de autorización y réplica externa pendiente. \\
+  0.1.8 & 24-08-2026 & Manual técnico 1.4.0 con operación completa de desarrollo, vista Nginx y entrega GHCR. \\
   \bottomrule
 \end{tabularx}
 

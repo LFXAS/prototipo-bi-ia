@@ -1,16 +1,16 @@
 # Entorno autocontenido sin compilacion local. Todas las imagenes propias se
 # descargan desde GHCR; la ruta donde se guarde este archivo es indiferente.
-name: ${COMPOSE_PROJECT_NAME:-bi-ia-prototype}
+name: ${COMPOSE_PROJECT_NAME:-bi-ia-prototype-release}
 
 services:
   postgres:
-    image: ${IMAGE_PREFIX:-ghcr.io/OWNER/REPOSITORY}-postgres:${IMAGE_TAG:-main}
+    image: ${IMAGE_PREFIX:-ghcr.io/lfxas/prototipo-bi-ia}-postgres:${IMAGE_TAG:-main}
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-bi_prototype}
       POSTGRES_USER: ${POSTGRES_USER:-bi_app}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMe_Postgres_2026!}
     ports:
-      - "${LOCAL_POSTGRES_PORT:-55432}:5432"
+      - "${LOCAL_POSTGRES_PORT:-55433}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -22,7 +22,7 @@ services:
 
   sqlserver:
     platform: linux/amd64
-    image: ${IMAGE_PREFIX:-ghcr.io/OWNER/REPOSITORY}-sqlserver:${IMAGE_TAG:-main}
+    image: ${IMAGE_PREFIX:-ghcr.io/lfxas/prototipo-bi-ia}-sqlserver:${IMAGE_TAG:-main}
     environment:
       ACCEPT_EULA: "Y"
       MSSQL_PID: Developer
@@ -32,7 +32,7 @@ services:
       SQLSERVER_PASSWORD: ${SQLSERVER_PASSWORD:-ChangeMe_Reader_2026!}
       ADVENTUREWORKS_BACKUP_URL: ${ADVENTUREWORKS_BACKUP_URL:-https://github.com/Microsoft/sql-server-samples/releases/download/adventureworks/AdventureWorks2022.bak}
     ports:
-      - "${LOCAL_SQLSERVER_PORT:-51433}:1433"
+      - "${LOCAL_SQLSERVER_PORT:-51434}:1433"
     volumes:
       - sqlserver_data:/var/opt/mssql
     healthcheck:
@@ -48,7 +48,7 @@ services:
     restart: unless-stopped
 
   backend:
-    image: ${IMAGE_PREFIX:-ghcr.io/OWNER/REPOSITORY}-backend:${IMAGE_TAG:-main}
+    image: ${IMAGE_PREFIX:-ghcr.io/lfxas/prototipo-bi-ia}-backend:${IMAGE_TAG:-main}
     environment:
       APP_NAME: ${APP_NAME:-Prototipo BI asistido por IA}
       APP_ENV: production
@@ -70,7 +70,7 @@ services:
       SQLSERVER_TRUST_SERVER_CERTIFICATE: "true"
       SQLSERVER_APPLICATION_INTENT: ReadOnly
     ports:
-      - "${BACKEND_PORT:-8000}:8000"
+      - "${BACKEND_PORT:-18000}:8000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -85,7 +85,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: ${IMAGE_PREFIX:-ghcr.io/OWNER/REPOSITORY}-frontend:${IMAGE_TAG:-main}
+    image: ${IMAGE_PREFIX:-ghcr.io/lfxas/prototipo-bi-ia}-frontend:${IMAGE_TAG:-main}
     ports:
       - "${FRONTEND_PORT:-8080}:80"
     depends_on:
