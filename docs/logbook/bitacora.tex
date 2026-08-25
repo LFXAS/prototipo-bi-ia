@@ -67,7 +67,7 @@
     Estudiantes & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPIs, insights y pronóstico \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.1.6 \\
+    Versión de la bitácora & 0.1.7 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -226,7 +226,7 @@ El anexo institucional exige módulos de seguridad, parámetros, negocio y repor
   Guías & \statusok & README, arquitectura, réplica, flujo Git y manual técnico distinguen ramas, ambientes y consumo de recursos. \\
   Verificación local & \statusok & Cinco servicios quedaron saludables; Vite respondió en 5173, Nginx en 8080 y el proxy de entrega devolvió salud de FastAPI. \\
   Nube académica & \statuspending & Se recomienda Azure for Students con una VM Linux x64 de 2 vCPU y 8 GiB, OIDC, aprobación del ambiente y apagado automático. Falta activar la suscripción antes de crear recursos. \\
-  Visibilidad GHCR & \statuspending & La descarga anónima de los cinco paquetes respondió HTTP 401. El repositorio público no cambia automáticamente los paquetes; hasta ajustar su visibilidad, otras máquinas deben autenticarse con \file{read:packages}. \\
+  Visibilidad GHCR & \statusok & Con autorización expresa se cambió a pública la visibilidad de \file{prototipo-bi-ia-frontend}, \file{prototipo-bi-ia-backend}, \file{prototipo-bi-ia-postgres}, \file{prototipo-bi-ia-sqlserver} y \file{prototipo-bi-ia-docs}. GitHub confirmó el estado público de cada paquete. \\
   \bottomrule
 \end{longtable}
 
@@ -239,6 +239,34 @@ La vista Nginx es la opción recomendada para revisar rápidamente el frontend c
 La primera regeneración mostró avisos porque TeX intentó crear su caché de fuentes en una ruta sin escritura. La compilación usó su alternativa temporal y \file{make verify} terminó correctamente, pero se fijaron \file{HOME}, \file{TEXMFVAR} y \file{VARTEXFONTS} a rutas temporales dentro del contenedor para eliminar la dependencia implícita y mantener iguales los comandos locales y de CI.
 
 La primera CI del commit \file{7f39517} falló únicamente en \file{Validate Compose}: \file{.env.release.example} existía localmente, pero una regla amplia de \file{.gitignore} impedía versionarlo. Se añadió una excepción explícita, se incorporó el archivo de ejemplo sin credenciales reales y se repitió la verificación. Este hallazgo confirma el valor de probar desde un clon limpio además del entorno local.
+
+\clearpage
+\subsection{24 de agosto de 2026 - Publicación abierta de imágenes GHCR}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Autorización & \statusok & El usuario autorizó publicar las cinco imágenes porque el repositorio es académico y las colaboradoras deben poder reproducir el entorno. No se publicaron secretos, volúmenes ni respaldos privados. \\
+  Paquetes públicos & \statusok & Las cinco configuraciones de GitHub Packages indican que el paquete está público; la vista del perfil muestra los cinco contenedores sin la etiqueta \file{Private}. \\
+  Acceso del equipo & \statusok & \file{LeslyVelasquez} y \file{EmyRoblesBerry} conservan permiso de escritura heredado del repositorio. La lectura de los paquetes públicos no depende de ser colaborador. \\
+  Pull request 12 & \statuspending & Los ocho controles de CI están aprobados y la fusión automática está activa. Falta una aprobación de cualquiera de las dos colaboradoras para integrar los tres commits de \file{chore/git-flow} en \file{develop}. \\
+  Réplica externa & \statuspending & Falta ejecutar \file{make release-up} desde un clon limpio en un segundo computador sin sesión de GHCR y conservar como evidencia las sondas de salud y los digest descargados. \\
+  \bottomrule
+\end{longtable}
+
+\subsubsection{Incidentes y resolución}
+
+\begin{enumerate}
+  \item La primera prueba anónima devolvió HTTP 401 porque la visibilidad del repositorio y la de GitHub Packages son controles independientes. Se corrigió manualmente la visibilidad de cada paquete desde la cuenta propietaria.
+  \item La ampliación de permisos de GitHub CLI fue autorizada mediante el flujo de dispositivo, pero el entorno protegido no pudo escribir temporalmente su archivo local de autenticación. Se completó la operación desde la sesión web autenticada, sin registrar contraseñas, códigos ni tokens en el repositorio.
+  \item El mismo bloqueo de escritura impidió actualizar la bitácora durante esa intervención. No hubo pérdida ni corrupción: el árbol Git permaneció limpio y la presente versión 0.1.7 registra la resolución en una sesión posterior.
+\end{enumerate}
 
 \section{Matriz de verificación de la fase}
 
@@ -255,14 +283,15 @@ La primera CI del commit \file{7f39517} falló únicamente en \file{Validate Com
   Interfaz disponible & \statusok & Vite saludable en 5173, Nginx opcional en 8080 y API accesible mediante proxy \\
   PDF legible & \statusok & Todas las páginas renderizadas e inspeccionadas sin cortes ni solapamientos \\
   Git local & \statusok & \file{develop} para integración, \file{main} para entregas y ramas enfocadas por pull request \\
-  GitHub/GHCR & \statusok & Repositorio público, dos colaboradoras con escritura, ramas protegidas y cinco imágenes publicadas en GHCR \\
+  GitHub/GHCR & \statusok & Repositorio público, dos colaboradoras con escritura, ramas protegidas y cinco imágenes públicas en GHCR; la réplica desde un segundo computador queda como evidencia pendiente. \\
   \bottomrule
 \end{tabularx}
 
 \section{Próximos pasos}
 
 \begin{enumerate}
-  \item Cambiar a pública la visibilidad de los cinco paquetes GHCR y repetir la descarga anónima.
+  \item Obtener una aprobación de \file{LeslyVelasquez} o \file{EmyRoblesBerry} en el PR 12; la fusión automática incorporará entonces los cambios en \file{develop}.
+  \item Clonar el repositorio en un segundo computador, levantar la entrega pública sin iniciar sesión en GHCR y conservar las sondas de salud y los digest como evidencia.
   \item Revisar individualmente los pull requests de Dependabot que queden abiertos en \file{develop}; no fusionar ninguno sin CI aprobada.
   \item Congelar una etiqueta de ambiente inicial y registrar los digest de las imágenes.
   \item Iniciar la siguiente iteración con migraciones del RBAC y parámetros, sin adelantar módulos de negocio.
@@ -281,6 +310,7 @@ La primera CI del commit \file{7f39517} falló únicamente en \file{Validate Com
   0.1.4 & 24-08-2026 & Informe formal del Sprint 1, manual técnico, capturas e integración de todos los PDF en CI. \\
   0.1.5 & 24-08-2026 & Colaboradores, estrategia \file{develop/main}, protección, control de ramas, Dependabot y reinicio seguro de SQL Server. \\
   0.1.6 & 24-08-2026 & Vista Nginx paralela, entrega GHCR aislada y documentación de ambientes simultáneos con CI/CD. \\
+  0.1.7 & 24-08-2026 & Cinco paquetes GHCR públicos, trazabilidad del incidente de autorización y réplica externa pendiente. \\
   \bottomrule
 \end{tabularx}
 
