@@ -91,7 +91,7 @@
 
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
-    Versión del manual & 1.1.0 \\
+    Versión del manual & 1.4.0 \\
     Línea base & Ramas \file{develop} y \file{main} \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
     Clasificación & Uso académico y técnico - repositorio público \\
@@ -416,18 +416,136 @@ exit
 
 No se debe ejecutar una prueba destructiva sobre datos que deban conservarse. La automatización de inicialización ya verifica las denegaciones de escritura de forma controlada.
 
-\section{Operación diaria}
+\section{Operación completa de los contenedores}
+
+Todos los comandos de esta sección se ejecutan desde la raíz del repositorio. En este computador:
+
+\begin{lstlisting}[style=terminal,language=bash]
+cd "/home/ceo/Proyectos/BI"
+\end{lstlisting}
+
+En otro equipo se sustituye esa ruta por la carpeta donde se clonó el repositorio.
+
+\subsection{Diferencia entre pausar, reanudar y retirar}
+
+\begin{tabularx}{\textwidth}{@{}p{0.19\textwidth}p{0.29\textwidth}X@{}}
+  \toprule
+  Acción & Comando Compose & Efecto \\
+  \midrule
+  Pausar & \file{docker compose stop} & Detiene los procesos, pero conserva contenedores, red y volúmenes. \\
+  Reanudar & \file{docker compose start} & Inicia contenedores existentes sin reconstruir imágenes. Sólo se usa después de \file{stop}. \\
+  Retirar & \file{docker compose down} & Retira contenedores y red; conserva los volúmenes nombrados y, por tanto, los datos. \\
+  Reiniciar limpio & \file{docker compose down --volumes} & Retira también los volúmenes. Borra las bases del proyecto y obliga a restaurarlas. \\
+  \bottomrule
+\end{tabularx}
+
+\warningbox{No añadir \file{--volumes} para una detención normal. PostgreSQL y AdventureWorks sólo se conservan cuando los volúmenes permanecen.}
+
+\subsection{Ciclo del ambiente de desarrollo}
+
+El ambiente de desarrollo contiene \file{frontend}, \file{backend}, \file{postgres} y \file{sqlserver}.
+
+\textbf{Construir y levantar:}
+
+\begin{lstlisting}[style=terminal,language=bash]
+make up
+make ps
+\end{lstlisting}
+
+\textbf{Pausar y reanudar los mismos contenedores:}
+
+\begin{lstlisting}[style=terminal,language=bash]
+docker compose stop
+docker compose start
+\end{lstlisting}
+
+\textbf{Retirar los contenedores y la red, conservando las bases:}
+
+\begin{lstlisting}[style=terminal,language=bash]
+make down
+\end{lstlisting}
+
+Después de \file{make down}, \file{docker compose start} ya no aplica porque los contenedores fueron retirados. Para crearlos nuevamente se usa \file{make up}; los volúmenes existentes se reutilizan.
+
+\subsection{Ciclo de la vista local de entrega}
+
+La vista ligera contiene sólo \file{frontend-delivery}; comparte la API, la red y las bases del desarrollo.
+
+\textbf{Construir y levantar Nginx en 8080:}
+
+\begin{lstlisting}[style=terminal,language=bash]
+make delivery-preview-up
+docker compose --profile delivery ps
+\end{lstlisting}
+
+\textbf{Pausar y reanudar únicamente \file{frontend-delivery}:}
+
+\begin{lstlisting}[style=terminal,language=bash]
+docker compose --profile delivery stop frontend-delivery
+docker compose --profile delivery start frontend-delivery
+\end{lstlisting}
+
+\textbf{Detener y retirar únicamente ese contenedor:}
+
+\begin{lstlisting}[style=terminal,language=bash]
+docker compose --profile delivery rm --stop --force frontend-delivery
+\end{lstlisting}
+
+Estas acciones no detienen Vite, FastAPI, PostgreSQL ni SQL Server. Para volver a crear la vista después de retirarla se ejecuta de nuevo \file{make delivery-preview-up}.
+
+\subsection{Ciclo de la entrega completa desde GHCR}
+
+Este ambiente usa \file{compose.release.yaml}, el proyecto aislado \file{bi-ia-prototype-release} y el archivo \file{.env.release}.
+
+\textbf{Descargar y levantar las cinco imágenes:}
+
+\begin{lstlisting}[style=terminal,language=bash]
+make release-up
+docker compose --env-file .env.release \
+  -f compose.release.yaml ps
+\end{lstlisting}
+
+\textbf{Pausar y reanudar sin retirar contenedores:}
+
+\begin{lstlisting}[style=terminal,language=bash]
+docker compose --env-file .env.release \
+  -f compose.release.yaml stop
+docker compose --env-file .env.release \
+  -f compose.release.yaml start
+\end{lstlisting}
+
+\textbf{Retirar sólo la entrega completa y conservar sus bases:}
+
+\begin{lstlisting}[style=terminal,language=bash]
+make release-down
+\end{lstlisting}
+
+Los comandos de entrega no afectan los contenedores ni los volúmenes de desarrollo. La vista Nginx ligera y la entrega completa usan 8080 por defecto; no deben levantarse simultáneamente sin cambiar uno de los puertos.
+
+\subsection{Detener todos los ambientes conservando datos}
+
+Si están activos desarrollo, la vista Nginx y la entrega completa:
+
+\begin{lstlisting}[style=terminal,language=bash]
+docker compose --profile delivery down
+make release-down
+\end{lstlisting}
+
+El primer comando retira desarrollo y \file{frontend-delivery}; el segundo retira el proyecto de entrega completo. Ninguno usa \file{--volumes}. Si nunca se configuró \file{.env.release}, se omite \file{make release-down}.
+
+\subsection{Referencia de comandos abreviados}
 
 \begin{tabularx}{\textwidth}{@{}l X@{}}
   \toprule
   Comando & Función \\
   \midrule
-  \file{make up} & Construye cambios y levanta el entorno en segundo plano. \\
+  \file{make bootstrap} & Prepara secretos locales, construye y espera la salud del primer arranque. \\
+  \file{make up} & Construye cambios y levanta desarrollo en segundo plano. \\
   \file{make delivery-preview-up} & Añade Nginx en 8080 y conserva Vite en 5173. \\
   \file{make release-up} & Descarga y levanta las cinco imágenes en un proyecto aislado. \\
-  \file{make release-down} & Detiene sólo la entrega completa y conserva sus volúmenes. \\
-  \file{make down} & Detiene servicios y conserva datos. \\
-  \file{make ps} & Muestra servicios y estado de salud. \\
+  \file{make release-down} & Retira sólo la entrega completa y conserva sus volúmenes. \\
+  \file{make down} & Retira desarrollo y su red, conservando los volúmenes. \\
+  \file{make ps} & Muestra servicios de desarrollo y estado de salud. \\
   \file{make logs} & Sigue los registros recientes. \\
   \file{make test} & Ejecuta pruebas en las etapas Docker de backend y frontend. \\
   \file{make lint} & Ejecuta Ruff, Mypy y ESLint en contenedores. \\
@@ -444,10 +562,11 @@ La recarga automática de Vite y FastAPI permite editar código sin instalar sus
 \subsection{Detener sin borrar}
 
 \begin{lstlisting}[style=terminal,language=bash]
-docker compose down
+docker compose --profile delivery down
+make release-down
 \end{lstlisting}
 
-Los volúmenes permanecen y el siguiente arranque reutiliza PostgreSQL y AdventureWorks.
+El primer comando cubre desarrollo y la vista Nginx cuando está activa. El segundo cubre la entrega completa aislada. Los volúmenes permanecen y el siguiente arranque reutiliza PostgreSQL y AdventureWorks.
 
 \subsection{Reconstruir desde cero}
 
@@ -710,6 +829,7 @@ make verify
   1.1.0 & 24-08-2026 & Flujo \file{feature/*} hacia \file{develop}, promoción a \file{main}, protecciones y política de Dependabot. \\
   1.2.0 & 24-08-2026 & Vista Nginx paralela, entrega GHCR aislada y relación entre ramas, CI/CD y ambientes simultáneos. \\
   1.3.0 & 24-08-2026 & Propuesta de cierre DevOps en Azure for Students con VM x64, OIDC, aprobación y control de crédito. \\
+  1.4.0 & 24-08-2026 & Ciclo completo para levantar, pausar, reanudar y retirar desarrollo, vista Nginx y entrega GHCR sin borrar volúmenes. \\
   \bottomrule
 \end{tabularx}
 
