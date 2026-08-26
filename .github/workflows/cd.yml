@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Validate release configuration
-        run: docker compose -f compose.release.yaml config --quiet
+        run: docker compose --env-file .env.release.example -f compose.release.yaml config --quiet
       - name: Test backend image
         run: docker build --target test -t bi-ia-backend:test backend
       - name: Test frontend image
