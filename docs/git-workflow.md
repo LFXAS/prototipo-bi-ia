@@ -26,13 +26,15 @@ feature/*, fix/*, docs/*, chore/*
    git switch -c feature/descripcion-corta
    ```
 
-2. Implementar y verificar dentro de Docker:
+2. Antes de implementar una capacidad funcional, crear o actualizar su especificación en `docs/specs/` siguiendo [`docs/sdd-workflow.md`](sdd-workflow.md). Las correcciones puramente editoriales pueden documentar la justificación directamente en el pull request.
+
+3. Implementar y verificar dentro de Docker:
 
    ```bash
    make verify
    ```
 
-3. Registrar el cambio con Conventional Commits y publicarlo:
+4. Registrar el cambio con Conventional Commits y publicarlo:
 
    ```bash
    git add .
@@ -41,7 +43,7 @@ feature/*, fix/*, docs/*, chore/*
    gh pr create --base develop --fill
    ```
 
-4. Fusionar sólo después de CI verde, una aprobación y conversaciones resueltas. Se recomienda `Squash and merge` para las ramas de trabajo.
+5. Fusionar sólo después de CI verde, una aprobación y conversaciones resueltas. Se recomienda `Squash and merge` para las ramas de trabajo. El PR debe enlazar la especificación y declarar la evidencia ejecutada.
 
 Prefijos admitidos:
 
@@ -67,6 +69,21 @@ Prefijos admitidos:
 5. Para una entrega formal, crear una etiqueta `vX.Y.Z` sobre el commit aprobado de `main`.
 
 No se desarrollan funcionalidades directamente en `main` ni se fusiona una rama de trabajo saltándose `develop`.
+
+## Desarrollo guiado por especificaciones (SDD)
+
+SDD no sustituye Git, CI ni las revisiones. Es la regla que determina **qué debe construirse y cómo se comprobará** antes de tocar el código. Para cada capacidad nueva se crea una especificación versionada con: problema, alcance, exclusiones, actores, reglas, datos, API o interfaz afectada, seguridad, criterios de aceptación y estrategia de prueba. La especificación se revisa en el mismo PR o en un PR documental previo, según el tamaño del cambio.
+
+La secuencia obligatoria es:
+
+1. Crear `docs/specs/SPR-XX-nombre.md` desde la plantilla.
+2. Acordar y versionar los criterios de aceptación antes de implementar.
+3. Crear la rama de trabajo desde `develop` y enlazar la especificación en el PR.
+4. Implementar pruebas y código para satisfacer esos criterios; actualizar arquitectura, decisiones y manual si el cambio lo requiere.
+5. Ejecutar `make verify`, solicitar revisión y fusionar hacia `develop`.
+6. Registrar el resultado, evidencia y cualquier desviación en la bitácora; una promoción `develop -> main` sigue siendo el único camino de entrega estable.
+
+La guía, índice y plantilla se encuentran en [`docs/sdd-workflow.md`](sdd-workflow.md) y [`docs/specs/`](specs/README.md).
 
 ## Protecciones en GitHub
 

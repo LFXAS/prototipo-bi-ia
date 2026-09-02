@@ -67,7 +67,7 @@
     Estudiantes & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPIs, insights y pronóstico \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.1.8 \\
+    Versión de la bitácora & 0.1.9 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -288,6 +288,30 @@ La primera CI del commit \file{7f39517} falló únicamente en \file{Validate Com
   \bottomrule
 \end{longtable}
 
+\clearpage
+\subsection{1 de septiembre de 2026 - Cierre documental y adopción de SDD}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Auditoría documental & \statusok & Se revisaron README, arquitectura, réplica, flujo Git, manual técnico, informe y bitácora. Se corrigió el lenguaje heredado que todavía describía repositorio o imágenes como privados; el estado vigente es repositorio público, paquetes GHCR públicos y escritura limitada a colaboradoras autorizadas. \\
+  Manual técnico & \statusok & Se actualizó a versión 1.5.0 con explicación paso a paso de CI, CD, DevOps, lectura de GitHub Actions, límites actuales del despliegue y responsabilidades del equipo. \\
+  SDD & \statusok & Se incorporó la guía \file{docs/sdd-workflow.md}, índice, plantilla y la especificación inicial \file{SPR-02-rbac-y-parametros.md}. A partir del Sprint 2 toda capacidad funcional debe tener una especificación versionada antes del PR de implementación. \\
+  Sprint 1 & \statusok & El informe se actualizó para reconocer la evidencia de réplica y el cierre documental sin declarar implementado RBAC, ETL, IA ni despliegue Azure. \\
+  Entrega Git & \statuspending & Los cambios documentales deben seguir el flujo normal: rama \file{docs/*}, PR hacia \file{develop}, CI verde, una aprobación y posterior promoción \file{develop -> main}. \\
+  \bottomrule
+\end{longtable}
+
+\subsubsection{Decisión de gobierno}
+
+SDD se adopta como norma de trabajo, no como una promesa de implementación automática. La especificación define alcance y criterios de aceptación; Docker y CI aportan la evidencia técnica; la bitácora registra el resultado; y el pull request conserva la aprobación. Las modificaciones meramente editoriales pueden justificar su alcance en el PR, pero todo cambio funcional, de datos, seguridad, IA o integración externa requiere especificación previa.
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}X l X@{}}
@@ -303,18 +327,19 @@ La primera CI del commit \file{7f39517} falló únicamente en \file{Validate Com
   Interfaz disponible & \statusok & Vite saludable en 5173, Nginx opcional en 8080 y API accesible mediante proxy \\
   PDF legible & \statusok & Todas las páginas renderizadas e inspeccionadas sin cortes ni solapamientos \\
   Git local & \statusok & \file{develop} para integración, \file{main} para entregas y ramas enfocadas por pull request \\
-  GitHub/GHCR & \statusok & Repositorio público, dos colaboradoras con escritura, ramas protegidas y cinco imágenes públicas en GHCR; la réplica desde un segundo computador queda como evidencia pendiente. \\
+  GitHub/GHCR & \statusok & Repositorio público, dos colaboradoras con escritura, ramas protegidas y cinco imágenes públicas en GHCR; la réplica desde una VM Ubuntu se realizó con Docker y VS Code. \\
+  SDD y trazabilidad & \statusok & Guía SDD, plantilla y especificación inicial del Sprint 2 versionadas; toda capacidad funcional futura debe enlazarse a su especificación. \\
   \bottomrule
 \end{tabularx}
 
 \section{Próximos pasos}
 
 \begin{enumerate}
-  \item Obtener una aprobación de \file{LeslyVelasquez} o \file{EmyRoblesBerry} en el PR 12; la fusión automática incorporará entonces los cambios en \file{develop}.
-  \item Clonar el repositorio en un segundo computador, levantar la entrega pública sin iniciar sesión en GHCR y conservar las sondas de salud y los digest como evidencia.
+  \item Publicar el cierre documental mediante PR hacia \file{develop}; una vez aprobado, promoverlo hacia \file{main} como parte de la entrega estable.
   \item Revisar individualmente los pull requests de Dependabot que queden abiertos en \file{develop}; no fusionar ninguno sin CI aprobada.
   \item Congelar una etiqueta de ambiente inicial y registrar los digest de las imágenes.
-  \item Iniciar la siguiente iteración con migraciones del RBAC y parámetros, sin adelantar módulos de negocio.
+  \item Aprobar la especificación \file{SPR-02-rbac-y-parametros.md} antes de iniciar código de seguridad o parámetros.
+  \item Iniciar la siguiente iteración con migraciones del RBAC y parámetros, sin adelantar módulos BI, IA o ETL.
 \end{enumerate}
 
 \section{Historial del documento}
@@ -332,6 +357,7 @@ La primera CI del commit \file{7f39517} falló únicamente en \file{Validate Com
   0.1.6 & 24-08-2026 & Vista Nginx paralela, entrega GHCR aislada y documentación de ambientes simultáneos con CI/CD. \\
   0.1.7 & 24-08-2026 & Cinco paquetes GHCR públicos, trazabilidad del incidente de autorización y réplica externa pendiente. \\
   0.1.8 & 24-08-2026 & Manual técnico 1.4.0 con operación completa de desarrollo, vista Nginx y entrega GHCR. \\
+  0.1.9 & 01-09-2026 & Cierre documental del Sprint 1: manual CI/CD/DevOps ampliado, corrección de visibilidad pública y adopción de SDD con plantilla y especificación del Sprint 2. \\
   \bottomrule
 \end{tabularx}
 

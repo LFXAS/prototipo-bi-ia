@@ -91,9 +91,9 @@
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Identificador & SPR-01 \\
-    Fecha de ejecución & 24 de agosto de 2026 \\
+    Fecha de ejecución & 24 de agosto al 1 de septiembre de 2026 \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
-    Línea base & Commit \file{ddf2551} \\
+    Línea base & Entrega \file{main}; cierre documental pendiente de PR \\
     Estado & \statusok \\
   \end{tabularx}
 
@@ -246,19 +246,19 @@ make bootstrap
 
 Se añadieron \path{Makefile}, \path{scripts/bootstrap.sh}, \path{scripts/wait-for-stack.sh} y \path{scripts/verify-environment.sh}. Estos recursos construyen, esperan la restauración, comprueban salud y ejecutan controles de calidad sin instalar herramientas de desarrollo en el host.
 
-\subsection{Inicialización de Git y publicación privada}
+\subsection{Inicialización de Git y publicación reproducible}
 
-Se inicializó Git con \file{main}, se aplicó una política para excluir secretos y datos locales, y se creó el repositorio privado \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia}. Las contribuciones siguen Conventional Commits y una plantilla de pull request.
+Se inicializó Git con \file{main}, se aplicó una política para excluir secretos y datos locales, y se creó el repositorio \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia}. Su visibilidad vigente es pública para facilitar la réplica académica, mientras que la escritura permanece restringida a colaboradoras autorizadas. Las contribuciones siguen Conventional Commits y una plantilla de pull request.
 
 \subsection{Integración y entrega continuas}
 
-CI valida Compose y construye las etapas de prueba de frontend, backend e infraestructura. CD vuelve a comprobar la entrega y publica cinco imágenes privadas: frontend, backend, PostgreSQL, SQL Server y documentación. Las etiquetas incluyen rama, versión y SHA.
+CI valida Compose y construye las etapas de prueba de frontend, backend e infraestructura. CD vuelve a comprobar la entrega y publica cinco imágenes públicas en GHCR: frontend, backend, PostgreSQL, SQL Server y documentación. Las etiquetas incluyen rama, versión y SHA. CD publica imágenes, pero todavía no despliega automáticamente una VM Azure.
 
 Los volúmenes no se publican. El estado se reconstruye desde scripts, migraciones y el respaldo oficial; esta decisión evita distribuir contraseñas o datos dependientes de una máquina.
 
 \subsection{Documentación y trazabilidad}
 
-Se crearon README, guía de réplica, descripción de arquitectura, ADR y bitácora LaTeX. El repositorio incluye reglas para que futuras sesiones de desarrollo actualicen pruebas y documentos antes de entregar cambios.
+Se crearon README, guía de réplica, descripción de arquitectura, ADR y bitácora LaTeX. El repositorio incluye reglas para que futuras sesiones de desarrollo actualicen pruebas y documentos antes de entregar cambios. Como cierre, se adoptó SDD para los sprints posteriores: una especificación versionada definirá cada capacidad funcional antes de su implementación.
 
 \section{Evidencias del incremento}
 
@@ -318,7 +318,7 @@ AdventureWorks fue reconstruida desde un volumen vacío. La verificación encont
   Bitácora & Aprobado & PDF reproducible sin diferencias en CI \\
   CI & Éxito & \href{https://github.com/LFXAS/prototipo-bi-ia/actions/runs/32749237009}{Ejecución 32749237009} \\
   CD & Éxito & \href{https://github.com/LFXAS/prototipo-bi-ia/actions/runs/32749237059}{Ejecución 32749237059} \\
-  GHCR & Publicado & Cinco imágenes privadas con etiquetas \file{main} y \file{sha-*} \\
+  GHCR & Publicado & Cinco imágenes públicas con etiquetas \file{main} y \file{sha-*} \\
   \bottomrule
 \end{tabularx}
 
@@ -353,7 +353,7 @@ AdventureWorks fue reconstruida desde un volumen vacío. La verificación encont
   \item[\textbf{Cumple.}] Los cuatro servicios quedaron saludables y los endpoints respondieron.
   \item[\textbf{Cumple.}] AdventureWorks se restauró y el lector no obtuvo escritura.
   \item[\textbf{Cumple.}] Las pruebas del frontend y backend finalizaron correctamente.
-  \item[\textbf{Cumple.}] El repositorio privado y las cinco imágenes quedaron publicados.
+  \item[\textbf{Cumple.}] El repositorio público y las cinco imágenes públicas quedaron publicados sin secretos ni volúmenes.
   \item[\textbf{Cumple.}] Existe una guía reproducible para el computador actual y para terceros autorizados.
   \item[\textbf{Cumple.}] El RBAC está previsto y todavía no se presenta como implementado.
 \end{itemize}
@@ -374,7 +374,7 @@ El incremento puede demostrarse con una sola secuencia: clonar, crear \file{.env
   Mejorar & Congelar etiquetas de versión y registrar digest de cada imagen para entregas académicas. \\
   Mejorar & Incorporar migraciones desde el primer cambio que añada tablas de aplicación. \\
   Evitar & Permisos SQL demasiado amplios, dependencias sin lockfile y verificaciones ejecutadas fuera de la raíz. \\
-  Próxima acción & Implementar el núcleo RBAC y los parámetros mediante migraciones y pruebas. \\
+  Próxima acción & Aprobar la especificación SDD y luego implementar el núcleo RBAC y los parámetros mediante migraciones y pruebas. \\
   \bottomrule
 \end{tabularx}
 
@@ -383,12 +383,13 @@ El incremento puede demostrarse con una sola secuencia: clonar, crear \file{.env
 El Sprint 1 termina sin deuda funcional oculta: los módulos de negocio siguen explícitamente pendientes. Se propone que el Sprint 2 tenga como objetivo \emph{seguridad y parámetros mínimos} e incluya:
 
 \begin{enumerate}
+  \item aprobar primero \file{docs/specs/SPR-02-rbac-y-parametros.md} como contrato del sprint;
   \item migración inicial para usuarios, roles, permisos, asignaciones, menús y auditoría;
   \item autenticación segura y autorización por permiso en FastAPI;
   \item menú React derivado de permisos, sin sustituir la validación del backend;
   \item parámetros de conexión aprobados y prueba de SQL Server en modo lector;
   \item pruebas de denegación por defecto, migraciones y trazabilidad;
-  \item invitación de colaboradoras cuando se obtengan sus nombres de usuario GitHub.
+  \item mantener la documentación, evidencia y especificación enlazadas en cada PR.
 \end{enumerate}
 
 \section{Conclusión}
@@ -417,6 +418,7 @@ make verify
   \item \file{scripts/bootstrap.sh}, \file{scripts/wait-for-stack.sh} y \file{scripts/verify-environment.sh}.
   \item \file{.github/workflows/ci.yml} y \file{.github/workflows/cd.yml}.
   \item \file{docs/replication-guide.md}, \file{docs/architecture.md} y \file{docs/logbook/bitacora.tex}.
+  \item \file{docs/sdd-workflow.md} y \file{docs/specs/}, como control de evolución desde el Sprint 2.
   \item \file{AGENTS.md}, que conserva las reglas para el desarrollo asistido y automático.
 \end{itemize}
 

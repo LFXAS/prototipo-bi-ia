@@ -4,6 +4,8 @@ Base técnica del proyecto de titulación de Emily Robles y Lesly Velásquez. Es
 
 La guía operativa completa para replicar, restaurar, publicar y probar el entorno está en [docs/replication-guide.md](docs/replication-guide.md).
 
+Desde el Sprint 2 el proyecto aplica desarrollo guiado por especificaciones (SDD). Antes de crear una funcionalidad se redacta su especificación, criterios de aceptación, riesgos y evidencia de prueba en [`docs/specs/`](docs/specs/README.md). El flujo completo está en [`docs/sdd-workflow.md`](docs/sdd-workflow.md).
+
 La trazabilidad del trabajo se mantiene en LaTeX y PDF. La bitácora vive en `docs/logbook/`, el informe académico del primer sprint en `docs/sprints/` y el manual operativo en `docs/manual-tecnico/`. Todos se regeneran de forma reproducible con `make docs`.
 
 ## Alcance confirmado
@@ -105,6 +107,8 @@ Las ramas y los ambientes cumplen funciones distintas: `develop`/`main` controla
 Para cerrar el ciclo con una demostración en nube se propone **Azure for Students** y una VM Linux x64 con Docker Compose. GitHub Actions se autenticará mediante OIDC, sin guardar una contraseña permanente de Azure; después de aprobar el ambiente `production`, la VM descargará la etiqueta GHCR seleccionada, iniciará `compose.release.yaml` y ejecutará sondas de salud. La cuenta, la VM y el flujo de despliegue todavía no se crean: requieren activar primero la suscripción académica y definir presupuesto, región y nombre del recurso.
 
 La estrategia completa, incluidos los comandos y la promoción de versiones, está en [`docs/git-workflow.md`](docs/git-workflow.md).
+
+La documentación también es código de entrega: un cambio que modifique arquitectura, configuración, comandos, comportamiento de despliegue o decisiones debe actualizar los documentos afectados, regenerar los PDF con `make docs` y superar CI antes de fusionarse.
 
 El repositorio es público y tiene protecciones activas en `develop` y `main`: exige pull request, una aprobación, conversaciones resueltas y los controles de CI; además bloquea force-push y eliminación. La excepción administrativa se conserva sólo para recuperación y debe registrarse en la bitácora.
 
