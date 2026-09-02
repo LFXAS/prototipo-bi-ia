@@ -50,6 +50,10 @@ No se recomienda una VM ARM para este conjunto porque SQL Server para Linux requ
 
 Sólo `system` contiene comportamiento en esta entrega.
 
+## Contrato de evolución (SDD)
+
+Desde el Sprint 2, cada módulo sólo incorpora capacidad funcional a partir de una especificación versionada en `docs/specs/`. La especificación define el contrato funcional y de datos; la arquitectura, el ADR cuando exista una decisión duradera, las pruebas y el PR demuestran cómo se cumplió. Este control evita que una propuesta del LLM, un cambio de esquema o una integración externa aparezcan sin aprobación humana, criterios verificables y trazabilidad.
+
 ## RBAC previsto
 
 Entidades mínimas: `users`, `roles`, `permissions`, `user_roles`, `role_permissions`, `menus`, `menu_permissions` y `audit_events`.
