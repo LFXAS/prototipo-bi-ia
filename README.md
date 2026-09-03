@@ -6,7 +6,7 @@ La guía operativa completa para replicar, restaurar, publicar y probar el entor
 
 Desde el Sprint 2 el proyecto aplica desarrollo guiado por especificaciones (SDD). Antes de crear una funcionalidad se redacta su especificación, criterios de aceptación, riesgos y evidencia de prueba en [`docs/specs/`](docs/specs/README.md). El flujo completo está en [`docs/sdd-workflow.md`](docs/sdd-workflow.md).
 
-La trazabilidad del trabajo se mantiene en LaTeX y PDF. La bitácora vive en `docs/logbook/`, el informe académico del primer sprint en `docs/sprints/` y el manual operativo en `docs/manual-tecnico/`. Todos se regeneran de forma reproducible con `make docs`.
+La trazabilidad del trabajo se mantiene en LaTeX y PDF. La bitácora vive en `docs/logbook/`, el informe académico del primer sprint en `docs/sprints/` y el manual técnico detallado en `docs/manual-tecnico/`. El [índice documental](docs/README.md) explica la finalidad y custodia de cada artefacto. Todos se regeneran de forma reproducible con `make docs`.
 
 ## Alcance confirmado
 
