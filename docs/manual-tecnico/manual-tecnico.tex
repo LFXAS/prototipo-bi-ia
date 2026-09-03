@@ -91,11 +91,11 @@
 
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
-    Versión del manual & 1.5.0 \\
+    Versión del manual & 1.7.0 \\
     Línea base & Ramas \file{develop} y \file{main} \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
     Clasificación & Uso académico y técnico - repositorio público \\
-    Fecha & 1 de septiembre de 2026 \\
+    Fecha & 2 de septiembre de 2026 \\
   \end{tabularx}
 
   \vfill
@@ -684,6 +684,12 @@ Dependabot trabaja contra la rama predeterminada \file{develop}. Las actualizaci
 
 En GitHub se abre la pestaña \textbf{Actions}. Cada fila representa una ejecución; el círculo verde significa que todos sus trabajos terminaron correctamente y el rojo identifica una ejecución que necesita revisión. Al abrir una ejecución se puede leer cada trabajo, descargar los artefactos de documentación y conservar el enlace como evidencia para la tesis.
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.96\textwidth]{../assets/sprint-01/github-actions.png}
+  \caption{Historial real de GitHub Actions: CI y CD concluyen con estado satisfactorio después de promover \file{develop} hacia \file{main}.}
+\end{figure}
+
 \begin{tabularx}{\textwidth}{@{}p{0.22\textwidth}X X@{}}
   \toprule
   Flujo & Cuándo se ejecuta & Resultado esperado \\
@@ -695,6 +701,12 @@ En GitHub se abre la pestaña \textbf{Actions}. Cada fila representa una ejecuci
 \end{tabularx}
 
 Para diagnosticar una falla se abre primero el trabajo con marca roja, se identifica el paso que falló y se reproduce localmente con \file{make verify} desde la raíz del repositorio. No se fusiona un PR fallido ni se intenta corregir modificando directamente \file{main}. Un cambio documental también pasa por CI porque los PDF versionados deben coincidir con sus fuentes \LaTeX.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[height=0.57\textheight]{../assets/sprint-01/pr-checks.png}
+  \caption{Control de promoción: aprobación humana, verificaciones obligatorias y ausencia de conflictos antes de habilitar la fusión.}
+\end{figure}
 
 \subsection{Qué significa DevOps en este prototipo}
 
@@ -721,6 +733,8 @@ El Sprint 1 no se rehace con SDD porque ya se cerró como una base técnica. Des
 \end{enumerate}
 
 \notebox{La especificación no sustituye las pruebas. Define qué se debe probar. En especial, cualquier propuesta de IA, SQL o ETL debe declarar aprobación humana, validaciones determinísticas, datos permitidos y auditoría antes de ejecutarse.}
+
+\input{referencia-devops-sprint1.tex}
 
 \section{Seguridad operativa}
 
@@ -873,6 +887,8 @@ make verify
   1.3.0 & 24-08-2026 & Propuesta de cierre DevOps en Azure for Students con VM x64, OIDC, aprobación y control de crédito. \\
   1.4.0 & 24-08-2026 & Ciclo completo para levantar, pausar, reanudar y retirar desarrollo, vista Nginx y entrega GHCR sin borrar volúmenes. \\
   1.5.0 & 01-09-2026 & Explicación ampliada de CI, CD y DevOps; procedimiento SDD, plantillas versionadas y primera especificación del Sprint 2. \\
+  1.6.0 & 02-09-2026 & Reconstrucción operativa del Sprint 1 y referencia comentada de variables, Compose, Dockerfiles, Makefile, Git, GitHub, CI/CD, persistencia y verificación. \\
+  1.7.0 & 02-09-2026 & Evidencias visuales de GitHub Actions y de los controles obligatorios de aprobación, CI y fusión. \\
   \bottomrule
 \end{tabularx}
 

@@ -91,9 +91,9 @@
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Identificador & SPR-01 \\
-    Fecha de ejecución & 24 de agosto al 1 de septiembre de 2026 \\
+    Fecha de ejecución & 24 de agosto al 2 de septiembre de 2026 \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
-    Línea base & Entrega \file{main}; cierre documental pendiente de PR \\
+    Línea base & Cierre aprobado e integrado mediante PR \#15 y PR \#16 \\
     Estado & \statusok \\
   \end{tabularx}
 
@@ -109,7 +109,7 @@
 
 \section{Resumen ejecutivo}
 
-El trabajo realizado puede registrarse como el \textbf{Sprint 1} del proyecto. Produjo un incremento técnico terminado, verificable y reutilizable: el repositorio privado, el entorno Docker autocontenido, la aplicación base React/FastAPI, PostgreSQL, SQL Server con AdventureWorks, automatización de pruebas, CI/CD, publicación de imágenes y documentación reproducible.
+El trabajo realizado puede registrarse como el \textbf{Sprint 1} del proyecto. Produjo un incremento técnico terminado, verificable y reutilizable: el repositorio público con escritura controlada, el entorno Docker autocontenido, la aplicación base React/FastAPI, PostgreSQL, SQL Server con AdventureWorks, automatización de pruebas, CI/CD, publicación de imágenes y documentación reproducible.
 
 El objetivo deliberado de este sprint fue reducir el riesgo tecnológico antes de desarrollar funcionalidades de negocio. Por ello, no se implementaron todavía autenticación, ETL, KPIs, copiloto con IA ni pronóstico. El módulo de seguridad RBAC quedó previsto mediante límites modulares y reglas arquitectónicas, tal como exige el alcance académico.
 
@@ -122,7 +122,7 @@ La denominación Sprint 1 es válida porque existieron un objetivo acotado, un c
   Campo & Definición \\
   \midrule
   Nombre & Base reproducible y canal DevOps \\
-  Objetivo & Dejar el entorno completo ejecutándose desde cero con Docker y publicarlo de forma privada y repetible. \\
+  Objetivo & Dejar el entorno completo ejecutándose desde cero con Docker y publicarlo de forma controlada y repetible. \\
   Resultado esperado & Una persona autorizada puede clonar el repositorio, configurar secretos locales y levantar el mismo ambiente sin instalar Python, Node.js ni motores de base de datos en el host. \\
   Alcance funcional & Salud técnica y pantalla de estado; sin módulos de negocio. \\
   Fuente externa & SQL Server con AdventureWorks 2022, accesible mediante un usuario de sólo lectura. \\
@@ -259,6 +259,8 @@ Los volúmenes no se publican. El estado se reconstruye desde scripts, migracion
 \subsection{Documentación y trazabilidad}
 
 Se crearon README, guía de réplica, descripción de arquitectura, ADR y bitácora LaTeX. El repositorio incluye reglas para que futuras sesiones de desarrollo actualicen pruebas y documentos antes de entregar cambios. Como cierre, se adoptó SDD para los sprints posteriores: una especificación versionada definirá cada capacidad funcional antes de su implementación.
+
+\input{detalle-tecnico-sprint-01.tex}
 
 \section{Evidencias del incremento}
 
