@@ -2,6 +2,8 @@
 
 Esta guía cubre dos escenarios: desarrollar con un entorno autocontenido desde cero y ejecutar imágenes publicadas sin compilar el código.
 
+Para comprender cómo se construyó y automatizó esta línea base, consulte también el manual técnico en `docs/manual-tecnico/`. Ese documento comenta variables, Compose, Dockerfiles, Makefile, Git, GitHub Actions, GHCR, persistencia y evidencias; esta guía permanece como referencia breve para ejecutar y replicar.
+
 Las rutas son relativas al repositorio. En este computador el proyecto vive en `/home/ceo/Proyectos/BI`; en otra máquina puede guardarse en cualquier carpeta.
 
 ## 1. Qué se comparte y qué no

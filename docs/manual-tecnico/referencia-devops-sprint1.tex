@@ -1,0 +1,286 @@
+\clearpage
+\section{Construcción operativa del Sprint 1 desde cero}
+
+Esta sección explica cómo se concibió la línea base del Sprint 1 y qué debe realizar una persona para reconstruirla manualmente. No sustituye los archivos versionados: los interpreta, relaciona y ordena. Los comandos se ejecutan desde la raíz del repositorio, salvo que se indique otra ruta.
+
+\subsection{Secuencia de construcción}
+
+\begin{enumerate}
+  \item Revisar el alcance y separar infraestructura de funcionalidades. En el Sprint 1 sólo se autorizaron salud técnica, estructura modular, contenedores, repositorio, automatización y documentación.
+  \item Crear las carpetas \file{backend}, \file{frontend}, \file{infra}, \file{scripts}, \file{docs} y \file{.github/workflows}. Esta separación permite construir y probar cada componente de manera independiente.
+  \item Preparar Dockerfiles multietapa. Las etapas \file{development}, \file{test} y \file{production} evitan usar una imagen de desarrollo como entrega estable.
+  \item Definir \file{compose.yaml} como orquestador local y \file{compose.release.yaml} como consumidor de imágenes publicadas. Cada uno usa nombre, puertos, red y volúmenes independientes.
+  \item Crear \file{.env.example} y \file{.env.release.example}; mantener los archivos reales fuera de Git.
+  \item Implementar sondas de salud y dependencias condicionadas. El frontend no debe declararse listo antes del backend; FastAPI no debe iniciar antes de las bases saludables.
+  \item Incorporar scripts idempotentes para crear esquemas PostgreSQL y restaurar la fuente SQL Server. Repetir un arranque no debe duplicar objetos ni corromper datos.
+  \item Centralizar operaciones repetidas en el \file{Makefile}: levantar, verificar, compilar documentación y ejecutar pruebas.
+  \item Inicializar Git, crear \file{develop} y \file{main}, configurar colaboradores y aplicar protección de ramas.
+  \item Crear CI para validar cada cambio y CD para publicar sólo aquello que ya llegó a \file{main} o a una etiqueta \file{v*}.
+  \item Ejecutar una prueba limpia, registrar incidentes y conservar PDF, commit, Action y digest como evidencia.
+\end{enumerate}
+
+\subsection{Primera instalación manual reproducible}
+
+\begin{lstlisting}[style=terminal,language=bash]
+git clone https://github.com/LFXAS/prototipo-bi-ia.git
+cd prototipo-bi-ia
+git switch develop
+cp .env.example .env
+# Editar .env y sustituir cada ChangeMe_*
+docker compose config --quiet
+docker compose build
+docker compose up -d
+docker compose ps
+curl --fail http://localhost:8000/api/v1/health/live
+curl --fail http://localhost:8000/api/v1/health/ready
+\end{lstlisting}
+
+\file{docker compose config --quiet} detecta variables o estructuras YAML inválidas antes de consumir tiempo construyendo imágenes. \file{build} procesa los Dockerfiles y crea capas locales. \file{up -d} crea la red, los volúmenes y los contenedores en segundo plano. \file{ps} permite comprobar estado y salud. Las dos peticiones HTTP distinguen entre proceso vivo y dependencias realmente disponibles.
+
+\section{Referencia comentada de configuración}
+
+\subsection{Archivos de entorno}
+
+\file{.env.example} es una plantilla versionable para desarrollo. El archivo real \file{.env} es local. Sus grupos tienen estas funciones:
+
+\begin{itemize}
+  \item \file{COMPOSE\_PROJECT\_NAME}: crea un espacio de nombres y evita mezclar redes, volúmenes y contenedores con otros proyectos.
+  \item \file{FRONTEND\_PORT}, \file{DELIVERY\_FRONTEND\_PORT} y \file{BACKEND\_PORT}: publican servicios web en el computador anfitrión.
+  \item \file{LOCAL\_POSTGRES\_PORT} y \file{LOCAL\_SQLSERVER\_PORT}: permiten inspección local; dentro de Docker se siguen usando 5432 y 1433.
+  \item \file{POSTGRES\_*}: identifican la base interna y su cuenta de aplicación.
+  \item \file{SQLSERVER\_*}: identifican la fuente externa, la cuenta lectora, el controlador y las opciones cifradas.
+  \item \file{VITE\_API\_BASE\_URL}: vacía hace que Vite o Nginx envíe \file{/api} al backend sin fijar una dirección del host en el código compilado.
+\end{itemize}
+
+\file{.env.release.example} usa puertos distintos y añade \file{IMAGE\_PREFIX} y \file{IMAGE\_TAG}. El prefijo apunta a GHCR y la etiqueta decide qué entrega se ejecuta. \file{main} es móvil; una etiqueta como \file{v0.1.0} es la opción adecuada para una evidencia inmutable.
+
+\begin{lstlisting}[style=terminal]
+IMAGE_PREFIX=ghcr.io/lfxas/prototipo-bi-ia
+IMAGE_TAG=main
+\end{lstlisting}
+
+Los valores \file{ChangeMe\_*} son marcadores, no contraseñas válidas para una entrega. La plantilla puede versionarse porque no concede acceso. Los archivos reales deben aparecer ignorados por Git y comprobarse antes de cada commit con \file{git status} y, cuando sea necesario, \file{git diff --cached}.
+
+\subsection{Compose de desarrollo: \file{compose.yaml}}
+
+La clave \file{name} fija el nombre lógico del proyecto. \file{services} describe los cinco servicios posibles; \file{volumes} declara persistencia administrada por Docker.
+
+\begin{longtable}{@{}p{0.20\textwidth}p{0.30\textwidth}p{0.42\textwidth}@{}}
+  \toprule
+  \textbf{Bloque} & \textbf{Directiva relevante} & \textbf{Razón técnica} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Bloque} & \textbf{Directiva relevante} & \textbf{Razón técnica} \\
+  \midrule
+  \endhead
+  PostgreSQL & \file{build}, \file{environment}, \file{volumes} & Construye la imagen propia, inicializa los esquemas y conserva los datos fuera del ciclo de vida del contenedor. \\
+  PostgreSQL & \file{healthcheck} con \file{pg\_isready} & Confirma que el motor acepta conexiones antes de habilitar dependientes. \\
+  SQL Server & \file{platform: linux/amd64} & Declara la arquitectura compatible con la imagen de SQL Server. \\
+  SQL Server & \file{ADVENTUREWORKS\_BACKUP\_URL} & Permite restaurar el respaldo oficial al iniciar un volumen vacío, sin versionar el archivo \file{.bak}. \\
+  SQL Server & archivo de marca y \file{sqlcmd} & La salud exige restauración terminada y conexión real del usuario lector. \\
+  Backend & etapa \file{development} y montaje \file{./backend:/app} & Activa recarga automática y refleja cambios del editor sin copiar manualmente archivos. \\
+  Backend & \file{depends\_on: condition: service\_healthy} & Evita iniciar FastAPI cuando las bases todavía no están listas. \\
+  Frontend & montaje del código y volumen \file{node\_modules} & Conserva dependencias Linux dentro de Docker y permite recarga de Vite. \\
+  Entrega local & \file{profiles: [delivery]} & Nginx sólo se crea cuando se solicita; no consume recursos durante desarrollo ordinario. \\
+  Todos & \file{restart: unless-stopped} & Reinicia después de una falla o reinicio del daemon, excepto cuando la persona los detuvo expresamente. \\
+  \bottomrule
+\end{longtable}
+
+La sintaxis \file{\${VARIABLE:-valor}} significa usar la variable del entorno si existe y, de lo contrario, emplear el valor indicado. La forma \file{\$\$VARIABLE} escapa el signo para que Compose lo entregue al contenedor y sea el shell interno quien lo interprete.
+
+\subsection{Compose de producción local: \file{compose.prod.yaml}}
+
+Este archivo es una sobreescritura para construir las etapas \file{production} de backend y frontend. Desactiva los montajes de código y la depuración, utiliza Nginx y aplica una política de reinicio más estricta. Se conserva como configuración de construcción; la réplica publicada usa \file{compose.release.yaml}.
+
+\subsection{Compose de entrega: \file{compose.release.yaml}}
+
+La diferencia esencial es \file{image} en lugar de \file{build}. El equipo receptor descarga las cinco imágenes ya verificadas desde GHCR. El proyecto predeterminado \file{bi-ia-prototype-release}, los puertos 8080, 18000, 55433 y 51434 y los volúmenes propios permiten ejecutar desarrollo y entrega a la vez. No se trasladan bases mediante volúmenes: PostgreSQL se inicializa o migra y la fuente de demostración se restaura de forma reproducible.
+
+\begin{lstlisting}[style=terminal,language=bash]
+cp .env.release.example .env.release
+# Cambiar secretos y seleccionar IMAGE_TAG
+docker compose --env-file .env.release \
+  -f compose.release.yaml pull
+docker compose --env-file .env.release \
+  -f compose.release.yaml up -d
+\end{lstlisting}
+
+\subsection{Dockerfile del backend}
+
+El backend usa una construcción multietapa:
+
+\begin{enumerate}
+  \item \file{base}: parte de Python slim, instala certificados, ODBC y el controlador Microsoft; copia metadatos y aplicación.
+  \item \file{development}: instala dependencias de desarrollo y ejecuta Uvicorn con \file{--reload}.
+  \item \file{test}: copia las pruebas y obliga a pasar Ruff, comprobación de formato, Mypy y Pytest durante la construcción.
+  \item \file{production}: instala sólo el paquete, crea un usuario sin privilegios y ejecuta dos trabajadores sin recarga ni depuración.
+\end{enumerate}
+
+El patrón hace que una imagen de pruebas no pueda terminar correctamente si falla una comprobación. CI aprovecha esa propiedad construyendo directamente \file{target: test}.
+
+\subsection{Dockerfile del frontend}
+
+\file{dependencies} ejecuta \file{npm ci} a partir del lockfile, lo que reproduce versiones exactas. \file{development} inicia Vite escuchando en todas las interfaces del contenedor. \file{test} ejecuta ESLint, Vitest y la compilación. \file{build} genera archivos estáticos. \file{production} parte de Nginx y copia solamente \file{dist}; por ello no incluye Node.js ni el código fuente de desarrollo durante la entrega.
+
+\subsection{Imágenes de infraestructura}
+
+\begin{itemize}
+  \item \path{infra/postgres/Dockerfile}: extiende PostgreSQL y copia scripts SQL a \path{/docker-entrypoint-initdb.d/}. Esos scripts se ejecutan sólo al inicializar un volumen vacío.
+  \item \file{infra/sqlserver/Dockerfile}: extiende SQL Server 2022, instala herramientas de descarga y configura un punto de entrada que levanta el motor y ejecuta la restauración idempotente.
+  \item \file{infra/docs/Dockerfile}: fija Debian, \file{latexmk} y paquetes TeX. Gracias a esta imagen, el PDF se construye igual en estaciones y GitHub Actions.
+\end{itemize}
+
+\section{Automatización local con Make y scripts}
+
+Make no reemplaza Docker Compose; proporciona nombres estables para secuencias largas.
+
+\begin{longtable}{@{}p{0.25\textwidth}p{0.67\textwidth}@{}}
+  \toprule
+  \textbf{Objetivo} & \textbf{Acción y uso} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Objetivo} & \textbf{Acción y uso} \\
+  \midrule
+  \endhead
+  \file{make env} & Crea \file{.env} sólo cuando todavía no existe; no sobrescribe secretos locales. \\
+  \file{make bootstrap} & Ejecuta la preparación inicial, el arranque y la espera controlada de todos los servicios. \\
+  \file{make up}/\file{make down} & Construye y levanta desarrollo o retira contenedores y red conservando volúmenes. \\
+  \file{make delivery-preview-up} & Construye Nginx y añade sólo la vista de entrega al ambiente de desarrollo. \\
+  \file{make release-up}/\file{make release-down} & Descarga, inicia o retira el ambiente GHCR usando el archivo de entorno de entrega. \\
+  \file{make test} & Construye las etapas de prueba de frontend y backend; un fallo interrumpe el objetivo. \\
+  \file{make lint} & Ejecuta Ruff, Mypy y ESLint dentro de contenedores desechables. \\
+  \file{make compose-check} & Valida desarrollo, perfil de entrega y entrega GHCR sin iniciar servicios. \\
+  \file{make docs} & Construye la imagen LaTeX y regenera bitácora, informe y manual. \\
+  \file{make verify} & Agrupa configuración, política de ramas, pruebas y documentos; es la puerta local antes del push. \\
+  \bottomrule
+\end{longtable}
+
+Los scripts de \file{scripts/} resuelven operaciones que Compose no expresa por sí solo: preparar el archivo de entorno, esperar salud con límite de tiempo, verificar endpoints, validar la dirección de las ramas y probar esa política con casos permitidos y prohibidos.
+
+\section{Git y GitHub: procedimiento completo}
+
+\subsection{Inicialización conceptual del repositorio}
+
+En un proyecto nuevo, la secuencia manual equivalente es:
+
+\begin{lstlisting}[style=terminal,language=bash]
+git init -b main
+git add .
+git commit -m "chore: initialize reproducible environment"
+git switch -c develop
+git remote add origin URL_DEL_REPOSITORIO
+git push -u origin main
+git push -u origin develop
+\end{lstlisting}
+
+En este repositorio esa inicialización ya se realizó. No debe repetirse dentro de un clon. Una programadora actualiza sus carpetas con \file{fetch}, \file{switch} y \file{pull --ff-only}; no vuelve a clonar cada vez.
+
+\subsection{Trabajo diario y revisión}
+
+\begin{lstlisting}[style=terminal,language=bash]
+git fetch --prune origin
+git switch develop
+git pull --ff-only origin develop
+git switch -c feature/descripcion-breve
+# editar archivos
+make verify
+git status
+git diff
+git add RUTAS_ESPECIFICAS
+git diff --cached
+git commit -m "feat: descripcion verificable"
+git push -u origin feature/descripcion-breve
+\end{lstlisting}
+
+En GitHub se abre un PR con base \file{develop}. Otra persona revisa archivos y evidencia, selecciona \emph{Approve} y la integración sólo se habilita cuando los controles obligatorios están verdes. Para liberar, se abre un segundo PR cuya base es \file{main} y cuyo origen es \file{develop}. Esta separación conserva una rama integradora y otra estable.
+
+\subsection{Protecciones que deben configurarse en GitHub}
+
+Para \file{develop} y \file{main} se requiere PR, una aprobación, conversaciones resueltas, controles vigentes, prohibición de force-push y prohibición de borrar. En \file{main}, la validación adicional rechaza cualquier PR cuyo origen no sea \file{develop}. Estas reglas son controles preventivos; CI aporta el control detectivo.
+
+\section{Integración continua: lectura de \file{ci.yml}}
+
+\subsection{Disparadores, concurrencia y permisos}
+
+\begin{lstlisting}[style=terminal]
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+\end{lstlisting}
+
+CI se ejecuta en pushes y PR relacionados con las ramas permanentes. La agrupación cancela una ejecución anterior de la misma referencia cuando llega un commit nuevo. El permiso \file{contents: read} aplica privilegio mínimo: CI puede leer el código, pero no modificarlo ni publicar paquetes.
+
+\subsection{Trabajos y dependencia entre resultados}
+
+\begin{itemize}
+  \item \file{branch-flow}: sólo en PR; prueba el validador y comprueba base/origen reales.
+  \item \file{compose}: interpreta las tres configuraciones para detectar errores antes de construir.
+  \item \file{backend}: construye \file{target: test}; Ruff, formato, Mypy y Pytest están incorporados en esa etapa.
+  \item \file{frontend}: construye \file{target: test}; ejecuta lint, pruebas y compilación.
+  \item \file{infrastructure}: una matriz construye PostgreSQL, SQL Server y LaTeX en paralelo sin publicar.
+  \item \file{documentation}: compila los tres PDF, exige que coincidan con los archivos versionados y los adjunta como artefacto de la ejecución.
+\end{itemize}
+
+\file{actions/checkout} descarga el commit dentro del ejecutor temporal. \file{setup-buildx} habilita el constructor moderno y caché. \file{build-push-action} construye sin publicar porque \file{push: false}. \file{cache-from} y \file{cache-to} reducen tiempo, pero no sustituyen pruebas.
+
+El paso \file{git diff --exit-code} de documentación detecta un error frecuente: modificar LaTeX sin regenerar el PDF. \file{upload-artifact} permite descargar el conjunto documental desde la ejecución de Actions.
+
+\section{Entrega continua: lectura de \file{cd.yml}}
+
+CD se dispara después de un push a \file{main} o de una etiqueta que comience con \file{v}. No se dispara directamente desde una rama \file{feature/*}. La concurrencia no cancela una publicación en marcha, lo que evita dejar una entrega incompleta.
+
+\begin{lstlisting}[style=terminal]
+permissions:
+  contents: read
+  packages: write
+\end{lstlisting}
+
+El token efímero \file{GITHUB\_TOKEN} puede leer el repositorio y escribir paquetes, sin almacenar una contraseña personal. El trabajo \file{verify} valida Compose y vuelve a ejecutar las etapas de prueba. \file{publish} declara \file{needs: verify}; por tanto, ninguna imagen se publica si la verificación falla.
+
+La matriz publica cinco componentes. \file{docker/login-action} inicia sesión en GHCR; \file{metadata-action} genera etiquetas de rama, versión y SHA; \file{build-push-action} construye \file{target: production} y ejecuta \file{push: true}. El SHA crea trazabilidad incluso cuando la etiqueta \file{main} avanza.
+
+\subsection{Qué hace y qué no hace el CD actual}
+
+El CD actual produce y publica artefactos ejecutables. Todavía no crea una VM ni actualiza un servidor Azure. Por ello se denomina entrega continua, no despliegue automático completo. Un despliegue futuro debe seleccionar una etiqueta aprobada, autenticarse mediante OIDC, actualizar el Compose remoto, comprobar salud y conservar el digest.
+
+\section{Dependabot y mantenimiento controlado}
+
+\file{dependabot.yml} revisa semanalmente GitHub Actions, Python y npm. El frontend agrupa actualizaciones menores y parches y excluye saltos mayores. Cada propuesta es un PR ordinario: debe pasar CI y ser revisada. Una rama \file{dependabot/*} es temporal y no representa una rama de arquitectura ni un ambiente.
+
+\section{Persistencia, datos y paso a producción}
+
+Una imagen contiene software e inicializadores; un volumen contiene estado. No se publica el volumen de PostgreSQL ni el de SQL Server en GitHub. Para una instalación nueva, PostgreSQL crea su estructura mediante scripts y, desde el Sprint 2, migraciones Alembic. Los datos de prueba no deben migrarse a producción. Los catálogos indispensables se cargarán con semillas idempotentes y la configuración variable se creará mediante CRUD y procesos de puesta en marcha.
+
+El esquema \file{mart} es dinámico: sus estructuras y cargas dependerán del escenario BI aprobado. No debe congelarse un volumen de demostración como si fuera una base productiva. La fuente SQL Server se conecta con una cuenta de sólo lectura y puede residir en la misma LAN, una VPN o una red alcanzable desde el backend; publicar la aplicación en la nube no le concede acceso automático a una base local.
+
+\section{Prueba final y evidencia del Sprint 1}
+
+\begin{lstlisting}[style=terminal,language=bash]
+make verify
+make bootstrap
+docker compose ps
+make delivery-preview-up
+curl --fail http://localhost:8080
+\end{lstlisting}
+
+Se debe conservar: identificador del commit, URL del PR, aprobación, resumen de controles, PDF generado, captura de servicios saludables, pantalla web, OpenAPI, etiquetas y digest de GHCR y resultado de una réplica en otro computador. La captura nunca debe mostrar tokens, contraseñas o el contenido del archivo \file{.env}.
+
+\subsection{Errores de escritura frecuentes}
+
+Las opciones de Git no admiten espacios internos. Los comandos correctos son:
+
+\begin{lstlisting}[style=terminal,language=bash]
+git fetch --prune origin
+git pull --ff-only origin develop
+\end{lstlisting}
+
+Escribir \file{-- prune} hace que Git interprete \file{prune} como un repositorio. Escribir \file{--ff - only} produce una ruta extraña. Los caracteres deformados en mensajes en español indican una configuración de codificación de la terminal; no implican que el repositorio esté dañado.

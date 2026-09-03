@@ -67,7 +67,7 @@
     Estudiantes & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPIs, insights y pronóstico \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.1.9 \\
+    Versión de la bitácora & 0.2.0 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -312,6 +312,30 @@ La primera CI del commit \file{7f39517} falló únicamente en \file{Validate Com
 
 SDD se adopta como norma de trabajo, no como una promesa de implementación automática. La especificación define alcance y criterios de aceptación; Docker y CI aportan la evidencia técnica; la bitácora registra el resultado; y el pull request conserva la aprobación. Las modificaciones meramente editoriales pueden justificar su alcance en el PR, pero todo cambio funcional, de datos, seguridad, IA o integración externa requiere especificación previa.
 
+\subsection{2 de septiembre de 2026 - Profundización documental y material docente anónimo}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Estado GitHub & \statusok & Se verificó que el PR \#15 fue fusionado en \file{develop} y el PR \#16 promovió el cierre del Sprint 1 a \file{main}. \\
+  Manual técnico & \statusok & Se elevó a versión 1.7.0 y se incorporó una reconstrucción operativa desde cero, con explicación de variables, Compose, Dockerfiles, Makefile, scripts, Git, GitHub, CI, CD, GHCR y persistencia, además de capturas reales de Actions y los controles de promoción. \\
+  Informe Sprint 1 & \statusok & Se corrigió el estado de cierre y se agregó una matriz de trazabilidad entre necesidades, archivos, controles y evidencias, además del ciclo DevOps aplicado. \\
+  Manual docente & \statusok & Se preparó fuera del repositorio público un documento LaTeX anónimo con un caso genérico, ruta manual completa, ruta asistida por IA y diagramas de arquitectura y CI. No contiene nombres, cuentas, rutas ni identificadores del proyecto real. \\
+  Verificación & \statusok & Se compilaron los cuatro PDF, se renderizaron e inspeccionaron todas sus páginas y \file{make verify} validó Compose, ramas, backend, frontend y documentación dentro de Docker. \\
+  Entrega Git & \statusok & La mejora se consolidó y publicó en la rama \file{docs/ampliar-manuales-sprint-1}; el PR \#17 se abrió hacia \file{develop} bajo el flujo protegido después de la verificación local. \\
+  \bottomrule
+\end{longtable}
+
+\subsubsection{Criterio de separación documental}
+
+El manual técnico y el informe del sprint pertenecen a la tesis y conservan referencias verificables al repositorio real. El manual docente es un artefacto independiente y anónimo: enseña el mismo tipo de proceso mediante nombres ficticios y marcadores, sin publicar información que permita asociarlo con las estudiantes o con el prototipo.
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}X l X@{}}
@@ -358,6 +382,7 @@ SDD se adopta como norma de trabajo, no como una promesa de implementación auto
   0.1.7 & 24-08-2026 & Cinco paquetes GHCR públicos, trazabilidad del incidente de autorización y réplica externa pendiente. \\
   0.1.8 & 24-08-2026 & Manual técnico 1.4.0 con operación completa de desarrollo, vista Nginx y entrega GHCR. \\
   0.1.9 & 01-09-2026 & Cierre documental del Sprint 1: manual CI/CD/DevOps ampliado, corrección de visibilidad pública y adopción de SDD con plantilla y especificación del Sprint 2. \\
+  0.2.0 & 02-09-2026 & Profundización del manual técnico y del informe del Sprint 1; separación de un manual docente anónimo en LaTeX y registro de los PR de cierre. \\
   \bottomrule
 \end{tabularx}
 
