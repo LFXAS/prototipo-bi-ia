@@ -27,6 +27,14 @@ Describir quién inicia la acción, qué pasos ocurren y qué reglas no se puede
 - Pantallas o menús:
 - Integraciones externas:
 
+### 4.1 Experiencia UI/UX responsive
+
+Describir el flujo principal y los estados de carga, vacío, error, éxito y falta de autorización. Definir las pantallas, navegación, componentes reutilizables y cómo se comportan al menos en móvil (desde 320 px), tableta, escritorio y pantalla amplia. Indicar qué información se prioriza en pantallas pequeñas y cómo se evita el desplazamiento horizontal involuntario.
+
+### 4.2 Accesibilidad y lenguaje
+
+Indicar idioma, etiquetas de formularios, navegación por teclado, foco visible, contraste, mensajes de error y cualquier requisito de accesibilidad aplicable. No aceptar color, iconos o efectos al pasar el cursor como único medio para comunicar una acción o estado.
+
 ## 5. Seguridad y auditoría
 
 Indicar permisos requeridos, tratamiento de secretos, datos permitidos, eventos de auditoría y comportamiento por defecto ante falta de autorización.
@@ -36,6 +44,7 @@ Indicar permisos requeridos, tratamiento de secretos, datos permitidos, eventos 
 - [ ] Criterio observable 1.
 - [ ] Criterio observable 2.
 - [ ] Criterio de seguridad o error controlado.
+- [ ] Criterio de UI/UX responsive y accesibilidad verificable.
 - [ ] Pruebas automatizadas necesarias.
 
 ## 7. Plan de pruebas y evidencia

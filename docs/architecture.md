@@ -66,6 +66,12 @@ Reglas arquitectónicas:
 4. Las aprobaciones de propuestas/SQL quedan auditadas.
 5. Menús y permisos comparten códigos estables, no nombres visibles.
 
+## Contrato UI/UX responsive
+
+Desde Sprint 2, cada módulo que incorpore interfaz se integra en un cascarón React reutilizable con encabezado, navegación autorizada, contenido principal y avisos globales. La interfaz debe ser utilizable en móvil desde 320 px, tableta, escritorio y pantalla amplia; no puede depender de un tamaño fijo ni generar desplazamiento horizontal involuntario.
+
+Los menús son una representación de permisos ya autorizados por FastAPI. En escritorio pueden permanecer visibles; en móvil deben abrirse y cerrarse con teclado o táctil. Formularios, tablas y acciones administrativas definen estados de carga, vacío, éxito, error, sesión vencida y acceso denegado. La accesibilidad mínima incluye foco visible, etiquetas de campos, mensajes que no dependan sólo del color y contraste suficiente para lectura.
+
 ## Datos
 
 PostgreSQL alojará dos responsabilidades lógicamente separadas:

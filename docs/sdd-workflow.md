@@ -10,12 +10,12 @@ Esta regla comienza en el Sprint 2. No reescribe retrospectivamente el Sprint 1,
 
 Toda capacidad funcional nueva debe tener una especificación Markdown en `docs/specs/` antes de que se abra el pull request de implementación. La excepción son cambios puramente editoriales, de formato o de mantenimiento sin efecto funcional; estos deben explicar su motivación en el PR.
 
-La especificación es la fuente de verdad para alcance y aceptación. Si el código y la especificación discrepan, el PR no se fusiona hasta resolver la diferencia.
+La especificación es la fuente de verdad para alcance y aceptación. Si el código y la especificación discrepan, el PR no se fusiona hasta resolver la diferencia. La interfaz no es un detalle posterior: toda capacidad que exponga una pantalla, formulario, tabla o navegación debe definir su uso en móvil, tableta y escritorio, además de sus estados de carga, vacío, error y falta de autorización.
 
 ## Ciclo paso a paso
 
 1. Copiar `docs/specs/TEMPLATE.md` a `docs/specs/SPR-XX-nombre-corto.md`.
-2. Completar problema, objetivo, alcance, exclusiones, reglas, datos, seguridad, criterios de aceptación y pruebas.
+2. Completar problema, objetivo, alcance, exclusiones, reglas, datos, API, interfaz, experiencia UI/UX responsive, accesibilidad, seguridad, criterios de aceptación y pruebas.
 3. Revisar el documento con las autoras. Si altera una decisión permanente, añadir además un ADR en `docs/decisions/`.
 4. Crear la rama desde `develop`, por ejemplo `feature/rbac-inicial`.
 5. Implementar código y pruebas sólo dentro del alcance aprobado; enlazar la especificación en la descripción del PR.
