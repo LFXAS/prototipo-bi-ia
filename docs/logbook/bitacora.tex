@@ -67,7 +67,7 @@
     Estudiantes & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPIs, insights y pronóstico \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.2.0 \\
+    Versión de la bitácora & 0.2.3 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -337,7 +337,7 @@ SDD se adopta como norma de trabajo, no como una promesa de implementación auto
 El manual técnico y el informe del sprint pertenecen a la tesis y conservan referencias verificables al repositorio real. El manual docente es un artefacto independiente y anónimo: enseña el mismo tipo de proceso mediante nombres ficticios y marcadores, sin publicar información que permita asociarlo con las estudiantes o con el prototipo.
 
 \clearpage
-\subsection{4 de septiembre de 2026 - Especificación UX responsive del Sprint 2}
+\subsection{4 de septiembre de 2026 - Especificación UX y configuración LLM del Sprint 2}
 
 \begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
   \toprule
@@ -353,13 +353,15 @@ El manual técnico y el informe del sprint pertenecen a la tesis y conservan ref
   Navegación y flujos & \statusok & Se documentaron los flujos de acceso, navegación autorizada, administración de usuarios, roles/permisos y parámetros/conexión, incluidos los estados de sesión vencida y acceso denegado. \\
   Componentes y accesibilidad & \statusok & Se acordaron cascarón de aplicación, formularios, tablas, diálogos, avisos y pantallas de estado, con foco visible, etiquetas, mensajes claros y contraste verificable. \\
   Plantilla SDD & \statusok & La plantilla y el índice de especificaciones ahora exigen declarar UI/UX responsive y accesibilidad para toda capacidad futura que exponga interfaz. \\
+  Configuración LLM & \statusok & Se aprobó una única configuración activa entre Gemini Cloud, Qwen Cloud u Ollama local. Sus referencias de secreto son \file{GEMINI\_API\_KEY}, \file{DASHSCOPE\_API\_KEY} y \file{none}, respectivamente; se conservan fuera de PostgreSQL y de la interfaz. Una prueba real y acotada confirmará conectividad sin enviar datos del negocio. \\
+  ADR de proveedores & \statusok & El ADR 0002 fija adaptadores internos de FastAPI, un catálogo cerrado de tres proveedores y \file{qwen3:4b} como modelo local recomendado. Añadir otro proveedor requerirá actualizar decisión, especificación, controles de secretos y pruebas. \\
   Implementación & \statuspending & No se implementaron módulos ni pantallas en esta actividad. La especificación debe ser revisada y aprobada antes de crear la rama de implementación \file{feature/rbac-y-parametros}. \\
   \bottomrule
 \end{longtable}
 
 \subsubsection{Decisión de diseño}
 
-La plataforma usará un cascarón React reusable y menús derivados de permisos ya validados por FastAPI. La interfaz ofrece orientación y prevención de errores, pero no reemplaza las decisiones de autorización del backend. Se privilegiarán componentes nativos y CSS mantenible; una biblioteca visual externa sólo se evaluará con justificación explícita.
+La plataforma usará un cascarón React reusable y menús derivados de permisos ya validados por FastAPI. La interfaz ofrece orientación y prevención de errores, pero no reemplaza las decisiones de autorización del backend. Se privilegiarán componentes nativos y CSS mantenible; una biblioteca visual externa sólo se evaluará con justificación explícita. La configuración del LLM será administrable con un único proveedor activo: Gemini Cloud, Qwen Cloud u Ollama local. Su conexión será comprobable mediante una prueba real, limitada y sin datos del negocio. Las solicitudes generativas sobre BI sólo podrán ser realizadas posteriormente por el módulo \file{copilot}, usando una configuración activa validada y sin exponer credenciales.
 
 \section{Matriz de verificación de la fase}
 
@@ -409,6 +411,8 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   0.1.9 & 01-09-2026 & Cierre documental del Sprint 1: manual CI/CD/DevOps ampliado, corrección de visibilidad pública y adopción de SDD con plantilla y especificación del Sprint 2. \\
   0.2.0 & 02-09-2026 & Profundización del manual técnico y del informe del Sprint 1; separación de un manual docente anónimo en LaTeX y registro de los PR de cierre. \\
   0.2.1 & 04-09-2026 & Ampliación SDD del Sprint 2: UI/UX responsive, flujos, navegación, componentes, accesibilidad y criterios verificables previos a la implementación de RBAC. \\
+  0.2.2 & 04-09-2026 & Se incorporó la configuración segura y parametrizable de un proveedor LLM para el prototipo, sin adelantar la generación de propuestas BI. \\
+  0.2.3 & 04-09-2026 & Se aprobó el catálogo inicial Gemini Cloud, Qwen Cloud y Ollama local; el ADR 0002 define secreto por referencia, adaptadores y \file{qwen3:4b} como opción local. \\
   \bottomrule
 \end{tabularx}
 

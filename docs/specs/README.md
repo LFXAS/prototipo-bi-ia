@@ -21,4 +21,4 @@ Consulta [`../sdd-workflow.md`](../sdd-workflow.md) para el proceso completo.
 
 | Especificación | Estado | Propósito |
 |---|---|---|
-| [SPR-02-rbac-y-parametros.md](SPR-02-rbac-y-parametros.md) | borrador | Base de seguridad RBAC, parámetros de conexión y experiencia responsive aprobada. |
+| [SPR-02-rbac-y-parametros.md](SPR-02-rbac-y-parametros.md) | borrador | Base RBAC, parámetros de conexión, selección segura de Gemini/Qwen/Ollama y experiencia responsive. |
