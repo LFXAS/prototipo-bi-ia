@@ -9,7 +9,7 @@ description = "API base del prototipo academico de BI asistido por IA"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-  "alembic==1.16.5",
+  "alembic==1.19.1",
   "asyncpg==0.30.0",
   "fastapi==0.116.1",
   "pydantic-settings==2.10.1",
