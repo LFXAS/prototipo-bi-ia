@@ -2,6 +2,8 @@
 
 Esta guía cubre dos escenarios: desarrollar con un entorno autocontenido desde cero y ejecutar imágenes publicadas sin compilar el código.
 
+Para comprender cómo se construyó y automatizó esta línea base, consulte también el manual técnico en `docs/manual-tecnico/`. Ese documento comenta variables, Compose, Dockerfiles, Makefile, Git, GitHub Actions, GHCR, persistencia y evidencias; esta guía permanece como referencia breve para ejecutar y replicar.
+
 Las rutas son relativas al repositorio. En este computador el proyecto vive en `/home/ceo/Proyectos/BI`; en otra máquina puede guardarse en cualquier carpeta.
 
 ## 1. Qué se comparte y qué no
@@ -31,10 +33,11 @@ No se publican volúmenes Docker ni contraseñas. Los volúmenes son estado loca
 2. Asignar al menos 6 GB de memoria a Docker; se recomiendan 8 GB por SQL Server.
 3. Tener libres estos puertos o cambiarlos en `.env`:
    - `5173`: frontend de desarrollo;
-   - `8080`: frontend desde imágenes publicadas;
+   - `8080`: vista Nginx local o frontend desde imágenes publicadas;
    - `8000`: API;
    - `55432`: PostgreSQL autocontenido;
    - `51433`: SQL Server autocontenido.
+   Si desarrollo y entrega completa se ejecutan a la vez, la entrega usa además `18000`, `55433` y `51434`.
 4. En equipos ARM (por ejemplo Apple Silicon), Docker ejecutará SQL Server como `linux/amd64` mediante emulación; el primer inicio puede tardar más.
 
 ## 3. Primera ejecución en este computador (desarrollo autocontenido)
@@ -60,6 +63,16 @@ curl http://localhost:8000/api/v1/health/ready
 ```
 
 Abre <http://localhost:5173> y <http://localhost:8000/docs>.
+
+### Añadir la vista Nginx de entrega
+
+Sin detener ni reemplazar los cuatro servicios de desarrollo:
+
+```bash
+make delivery-preview-up
+```
+
+Vite continúa en <http://localhost:5173> y el frontend compilado con Nginx queda en <http://localhost:8080>. Ambos usan la misma API en `8000` y los mismos volúmenes. Esta modalidad prueba la construcción del frontend, no sustituye la validación del entorno completo publicado.
 
 ## 4. Reproducir absolutamente todo desde cero en otra ruta
 
@@ -98,38 +111,43 @@ Si las imágenes deben descargarse sin autenticación, cambia la visibilidad del
 Flujo habitual:
 
 ```bash
-git checkout -b feat/nombre-cambio
+git switch develop
+git pull --ff-only origin develop
+git switch -c feature/nombre-cambio
+# editar y verificar todo dentro de Docker
+make verify
 git add .
 git commit -m "feat: descripcion breve"
-git push -u origin feat/nombre-cambio
+git push -u origin feature/nombre-cambio
 ```
 
-Abre un pull request. CI valida Compose, compila la bitácora y construye las etapas de prueba. Al fusionar en `main`, CD publica las cinco imágenes con las etiquetas `main` y `sha-*`. Una etiqueta Git `v1.0.0` produce además la imagen `v1.0.0`.
+Abre un pull request hacia `develop`. CI valida Compose, código, pruebas y los tres documentos PDF. Para publicar una entrega, abre otro pull request de `develop` hacia `main`; sólo esa fusión activa CD y publica las cinco imágenes con las etiquetas `main` y `sha-*`. Una etiqueta Git `v1.0.0` produce además la imagen `v1.0.0`. Consulta `docs/git-workflow.md` para el procedimiento completo y las reglas de protección.
 
 ## 6. Levantar el entorno publicado en otra máquina (sin compilar)
 
-La persona puede clonar el repositorio o descargar únicamente `compose.release.yaml` y `.env.release.example`.
+La persona puede clonar el repositorio o descargar únicamente `compose.release.yaml` y `.env.release.example`. El proyecto de entrega tiene otro nombre, red, puertos y volúmenes, de modo que no reemplaza el ambiente de desarrollo.
 
 ```bash
-cp .env.release.example .env
+cp .env.release.example .env.release
 ```
 
-En `.env`, configura:
+En `.env.release`, cambia todos los secretos `ChangeMe_*` y confirma:
 
 ```dotenv
-IMAGE_PREFIX=ghcr.io/PROPIETARIO/NOMBRE_REPOSITORIO
+IMAGE_PREFIX=ghcr.io/lfxas/prototipo-bi-ia
 IMAGE_TAG=main
 ```
 
 Luego:
 
 ```bash
-docker compose -f compose.release.yaml pull
-docker compose -f compose.release.yaml up -d
-docker compose -f compose.release.yaml ps
+make release-up
+docker compose --env-file .env.release -f compose.release.yaml ps
 ```
 
-La aplicación quedará en <http://localhost:8080> y la API en <http://localhost:8000>.
+La aplicación quedará en <http://localhost:8080> y su API aislada en <http://localhost:18000>. PostgreSQL y SQL Server de entrega se publican en `55433` y `51434`. Desarrollo puede seguir activo en `5173`, `8000`, `55432` y `51433`.
+
+Ejecutar ambos ambientes completos duplica PostgreSQL, SQL Server y sus volúmenes; se recomienda disponer de memoria suficiente. Si sólo se necesita revisar el frontend compilado, usa `make delivery-preview-up` en lugar de iniciar el entorno GHCR completo.
 
 Para fijar una entrega académica reproducible, usa una etiqueta inmutable:
 
@@ -143,6 +161,7 @@ Detener conservando bases:
 
 ```bash
 docker compose down
+make release-down
 ```
 
 Volver a levantar conserva los volúmenes y no restaura de nuevo.
@@ -168,11 +187,12 @@ docker compose up --build -d
 Con imágenes GHCR:
 
 ```bash
-docker compose -f compose.release.yaml pull
-docker compose -f compose.release.yaml up -d
+make release-up
 ```
 
 Las migraciones futuras se ejecutarán como un paso controlado antes de iniciar una nueva versión del backend; nunca se copiará un volumen manualmente como mecanismo normal de despliegue.
+
+Si se actualiza documentación o una especificación SDD, el procedimiento es el mismo: obtener la rama aprobada, ejecutar `make docs` si se modificó LaTeX y comprobar que `git status` sólo muestra los archivos esperados. No se vuelve a clonar el repositorio para cada cambio; se usa `git pull --ff-only` cuando no existen modificaciones locales pendientes.
 
 ## 9. Diagnóstico rápido
 
@@ -186,6 +206,7 @@ docker compose logs --tail=200 postgres sqlserver
 - API viva pero `ready` falla: revisa PostgreSQL, credenciales y puerto.
 - SQL Server nunca queda saludable: revisa memoria, política de la clave SA y acceso a GitHub para descargar el `.bak`.
 - Puerto ocupado: cambia `*_PORT` o `LOCAL_*_PORT` en `.env`.
+- `5173` funciona y `8080` no responde: inicia la vista con `make delivery-preview-up` o la entrega completa con `make release-up`.
 - GHCR responde `denied`: el paquete es privado o falta `docker login ghcr.io`.
 - En ARM el inicio es lento: verifica que la emulación `linux/amd64` esté habilitada.
 
@@ -199,3 +220,19 @@ Conserva por versión:
 - versión de AdventureWorks (`AdventureWorks2022`);
 - hash del respaldo descargado, cuando se congele la beta;
 - resultados de pruebas y migraciones aplicadas.
+
+## 11. Cerrar el ciclo CI/CD en Azure
+
+La alternativa recomendada para la demostración académica es Azure for Students: aporta crédito temporal sin exigir tarjeta a estudiantes elegibles. No equivale a alojamiento gratuito permanente; se debe configurar presupuesto, alertas y apagado automático.
+
+Flujo previsto:
+
+1. crear por infraestructura como código una VM Ubuntu x64 de 2 vCPU y 8 GiB;
+2. instalar Docker y el complemento Compose mediante inicialización reproducible;
+3. crear el ambiente protegido `production` en GitHub;
+4. autenticar GitHub Actions con Azure mediante OIDC, sin secreto de cliente persistente;
+5. después de CI y aprobación, desplegar una etiqueta `vX.Y.Z` de GHCR;
+6. ejecutar sondas HTTP y conservar SHA, digest y evidencia del despliegue;
+7. apagar o desasignar la VM cuando no se use para proteger el crédito.
+
+La activación de la cuenta, creación de recursos y configuración OIDC están pendientes. No se incorporará un workflow que falle por secretos inexistentes antes de completar esos prerrequisitos.

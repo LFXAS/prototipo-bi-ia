@@ -1,0 +1,102 @@
+\clearpage
+\section{Trazabilidad técnica ampliada del incremento}
+
+El incremento no se limita a que la pantalla responda. La trazabilidad conecta una necesidad del Sprint 1 con un archivo, un control automático y una evidencia observable.
+
+\begin{longtable}{@{}p{0.20\textwidth}p{0.28\textwidth}p{0.23\textwidth}p{0.21\textwidth}@{}}
+  \toprule
+  \textbf{Necesidad} & \textbf{Implementación} & \textbf{Control} & \textbf{Evidencia} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Necesidad} & \textbf{Implementación} & \textbf{Control} & \textbf{Evidencia} \\
+  \midrule
+  \endhead
+  Repetibilidad & Dockerfiles, Compose y plantillas de entorno & \file{make compose-check} & Configuraciones interpretadas sin error \\
+  Aislamiento & Nombre Compose, puertos y volúmenes propios & \file{docker compose ps} & Recursos prefijados por el proyecto \\
+  Calidad backend & Etapa Docker \file{test} & Ruff, formato, Mypy y Pytest & Construcción exitosa en CI \\
+  Calidad frontend & Etapa Docker \file{test} & ESLint, Vitest y Vite build & Construcción exitosa en CI \\
+  Fuente lectora & Usuario \file{bi\_reader} y sonda real & Consulta permitida y escritura denegada & SQL Server saludable \\
+  Persistencia & Volúmenes nombrados & Reinicio y recreación sin \file{--volumes} & Datos conservados \\
+  Integración & PR hacia \file{develop} & Aprobación y controles obligatorios & PR \#15 fusionado \\
+  Promoción & PR \file{develop} hacia \file{main} & Política de flujo y CI & PR \#16 fusionado \\
+  Entrega & Workflow CD y GHCR & Verificación previa y matriz & Cinco imágenes publicadas \\
+  Documentación & LaTeX dentro de Docker & Compilación y \file{git diff --exit-code} & Tres PDF versionados \\
+  Réplica & Compose de desarrollo y de entrega & Prueba en VM Ubuntu & Aplicación levantada fuera del equipo principal \\
+  Gobierno futuro & SDD, plantilla y especificaciones & Revisión antes del código & Contrato de Sprint 2 preparado \\
+  \bottomrule
+\end{longtable}
+
+\section{Detalle del ciclo DevOps aplicado}
+
+\subsection{Planificación y especificación}
+
+El alcance se obtuvo del anteproyecto y se congeló en \file{docs/scope.md}. La decisión Docker-first se formalizó en un ADR. El Sprint 1 se ejecutó antes de adoptar formalmente SDD; como mejora de proceso, el cierre incorporó \file{docs/sdd-workflow.md}, una plantilla y la especificación preliminar del Sprint 2.
+
+\subsection{Construcción y configuración}
+
+\file{.env.example} documenta los valores de desarrollo sin secretos reales. \file{compose.yaml} construye servicios desde el código. \file{compose.prod.yaml} selecciona etapas estables durante una construcción local. \file{compose.release.yaml} descarga las imágenes publicadas y usa otros puertos y volúmenes. Esta separación permitió mantener simultáneamente un entorno editable y otro de comprobación.
+
+\subsection{Integración continua}
+
+El workflow \file{ci.yml} se activa en pushes y PR hacia \file{develop} o \file{main}. Sus trabajos validan el flujo de ramas, las variantes Compose, las etapas de prueba de FastAPI y React, las imágenes de infraestructura y los tres documentos. Los ejecutores son efímeros: al terminar no dejan servicios de desarrollo activos.
+
+La protección de ramas agrega una aprobación humana a la verificación automática. CI puede detectar incumplimientos, pero no decide si el cambio satisface el objetivo académico; esa responsabilidad permanece en la revisión.
+
+\subsection{Entrega continua}
+
+El workflow \file{cd.yml} se activa al integrar en \file{main} o crear una etiqueta \file{v*}. Primero revalida backend, frontend y la configuración de entrega. Después una matriz construye y publica cinco imágenes en GHCR. Cada artefacto recibe una etiqueta de rama o versión y otra derivada del SHA del commit. El CD entregado no despliega Azure; ese alcance se mantiene explícitamente pendiente.
+
+\subsection{Operación y retroalimentación}
+
+Las sondas de salud, registros de Docker, estado de Actions, digest de imágenes y prueba de réplica forman el ciclo de retroalimentación. Los incidentes encontrados se transformaron en cambios versionados: corrección de salud IPv4, espera de recuperación de AdventureWorks, permisos efectivos del lector, caché LaTeX escribible y exclusión correcta de secretos.
+
+\section{Archivos producidos y responsabilidad}
+
+\begin{longtable}{@{}p{0.34\textwidth}p{0.58\textwidth}@{}}
+  \toprule
+  \textbf{Archivo o carpeta} & \textbf{Responsabilidad dentro del Sprint 1} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Archivo o carpeta} & \textbf{Responsabilidad dentro del Sprint 1} \\
+  \midrule
+  \endhead
+  \file{backend/Dockerfile} & Ambientes Python de desarrollo, prueba y producción; controlador ODBC y usuario no privilegiado. \\
+  \file{frontend/Dockerfile} & Dependencias reproducibles, servidor Vite, controles y entrega Nginx. \\
+  \file{infra/postgres/} & Imagen PostgreSQL e inicialización de los esquemas \file{app} y \file{mart}. \\
+  \file{infra/sqlserver/} & SQL Server, restauración idempotente y cuenta de sólo lectura. \\
+  \file{infra/docs/} & Compilador LaTeX versionado como imagen. \\
+  \file{compose.yaml} & Desarrollo con recarga, bases locales y perfil de vista Nginx. \\
+  \file{compose.prod.yaml} & Sobreescritura para etapas estables construidas localmente. \\
+  \file{compose.release.yaml} & Entrega aislada que consume GHCR sin compilar. \\
+  \file{Makefile} y \file{scripts/} & Interfaz operativa, esperas, verificación y política de ramas. \\
+  \file{.github/workflows/ci.yml} & Integración continua sin permiso de publicación. \\
+  \file{.github/workflows/cd.yml} & Verificación y publicación de cinco imágenes. \\
+  \file{.github/dependabot.yml} & Propuestas semanales de mantenimiento de dependencias. \\
+  \file{docs/} & Alcance, arquitectura, decisiones, réplica, SDD, manual, informe y bitácora. \\
+  \bottomrule
+\end{longtable}
+
+\section{Validación manual equivalente}
+
+La siguiente secuencia resume lo que el equipo ejecutó o automatizó para declarar terminado el incremento:
+
+\begin{lstlisting}[style=terminal,language=bash]
+cp .env.example .env
+# Sustituir marcadores ChangeMe_*
+docker compose config --quiet
+docker compose --profile delivery config --quiet
+docker compose --env-file .env.release.example \
+  -f compose.release.yaml config --quiet
+docker build --target test -t backend:test backend
+docker build --target test -t frontend:test frontend
+make docs
+make bootstrap
+docker compose ps
+curl --fail http://localhost:8000/api/v1/health/ready
+\end{lstlisting}
+
+\section{Cierre real del Sprint 1}
+
+El PR \#15 integró en \file{develop} el cierre documental y la adopción de SDD. El PR \#16 promovió \file{develop} a \file{main} con aprobación, controles satisfactorios y sin conflictos. Por ello, el estado del incremento es cerrado y promocionado; Azure, RBAC, parámetros y capacidades BI permanecen fuera de este sprint.

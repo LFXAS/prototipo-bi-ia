@@ -4,7 +4,9 @@ Base técnica del proyecto de titulación de Emily Robles y Lesly Velásquez. Es
 
 La guía operativa completa para replicar, restaurar, publicar y probar el entorno está en [docs/replication-guide.md](docs/replication-guide.md).
 
-La trazabilidad del trabajo se mantiene en LaTeX y en su PDF generado dentro de `docs/logbook/`. Se regenera de forma reproducible con `make logbook`.
+Desde el Sprint 2 el proyecto aplica desarrollo guiado por especificaciones (SDD). Antes de crear una funcionalidad se redacta su especificación, criterios de aceptación, riesgos y evidencia de prueba en [`docs/specs/`](docs/specs/README.md). El flujo completo está en [`docs/sdd-workflow.md`](docs/sdd-workflow.md).
+
+La trazabilidad del trabajo se mantiene en LaTeX y PDF. La bitácora vive en `docs/logbook/`, el informe académico del primer sprint en `docs/sprints/` y el manual técnico detallado en `docs/manual-tecnico/`. El [índice documental](docs/README.md) explica la finalidad y custodia de cada artefacto. Todos se regeneran de forma reproducible con `make docs`.
 
 ## Alcance confirmado
 
@@ -50,14 +52,32 @@ La comprobación `live` confirma que FastAPI funciona. `ready` confirma además 
 
 La alternativa más automática es `make bootstrap`: crea `.env` si falta, construye todo, espera la restauración y no finaliza hasta que los servicios estén saludables.
 
+### Vista local de entrega sin detener desarrollo
+
+Con el entorno de desarrollo activo, se puede añadir el frontend compilado servido por Nginx sin reemplazar ningún contenedor ni duplicar las bases:
+
+```bash
+make delivery-preview-up
+```
+
+Quedan disponibles simultáneamente:
+
+- desarrollo con recarga automática: <http://localhost:5173>;
+- vista de entrega Nginx: <http://localhost:8080>;
+- API y bases compartidas: <http://localhost:8000>.
+
+Esta vista comprueba el artefacto web de producción, pero sigue usando el backend de desarrollo. Para probar las cinco imágenes publicadas como un ambiente completamente independiente, copia `.env.release.example` a `.env.release` y ejecuta `make release-up`; ese segundo proyecto usa API `18000`, PostgreSQL `55433` y SQL Server `51434`, por lo que puede convivir con desarrollo.
+
 ## Flujo diario
 
 ```bash
 make up             # construir y levantar
+make delivery-preview-up # anadir Nginx en 8080 sin detener Vite
 make logs           # seguir los registros
 make test           # pruebas de backend y frontend en imagenes Docker
 make lint           # calidad estatica en contenedores
 make compose-check  # validar las dos variantes de Compose
+make docs           # regenerar bitacora, informe de sprint y manual
 make down           # detener la aplicacion
 ```
 
@@ -69,19 +89,28 @@ Los volúmenes del código habilitan recarga automática en FastAPI y Vite. Las 
 
 ## Git, CI y CD
 
-El repositorio usa la rama principal `main` y Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, etc.). Antes de enviar cambios:
+El repositorio usa `develop` como rama predeterminada de integración y `main` como rama estable de entrega. Las ramas `feature/*`, `fix/*`, `docs/*` y `chore/*` nacen desde `develop` y regresan mediante pull request. Sólo una promoción revisada `develop` -> `main` publica una entrega. Los commits siguen Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, etc.). Antes de enviar cambios:
 
 ```bash
-make test
-make lint
+make verify
 ```
 
 GitHub Actions incluye:
 
-- **CI:** valida Compose y construye las etapas de prueba de backend y frontend en cada pull request y push a `main`.
+- **CI:** valida el flujo de ramas, Compose, código, pruebas e informes PDF en cada pull request y push a `develop` o `main`. Un PR hacia `main` falla si no procede de `develop`.
 - **CD:** después de cambios en `main` o una etiqueta `v*`, construye y publica imágenes versionadas en GitHub Container Registry (GHCR). Publicar imágenes constituye entrega continua; el despliegue a un ambiente se añadirá cuando se elija el proveedor.
 - **Imágenes:** se publican frontend, backend, PostgreSQL inicializado y SQL Server con restauración automática. Los volúmenes no se publican; se reconstruyen de forma determinística.
-- **Dependabot:** propone actualizaciones semanales de acciones, npm y pip.
+- **Dependabot:** crea ramas temporales y pull requests hacia la rama predeterminada. En npm agrupa sólo cambios menores y parches; los cambios mayores requieren una actualización intencional y aislada.
+
+Las ramas y los ambientes cumplen funciones distintas: `develop`/`main` controlan qué código se integra, mientras Compose controla dónde se ejecuta. CI no necesita mantener contenedores permanentes: crea comprobaciones efímeras para cada cambio. CD publica imágenes sólo desde `main` o una etiqueta `v*`; cada computador o servidor decide después qué etiqueta desplegar mediante `compose.release.yaml`.
+
+Para cerrar el ciclo con una demostración en nube se propone **Azure for Students** y una VM Linux x64 con Docker Compose. GitHub Actions se autenticará mediante OIDC, sin guardar una contraseña permanente de Azure; después de aprobar el ambiente `production`, la VM descargará la etiqueta GHCR seleccionada, iniciará `compose.release.yaml` y ejecutará sondas de salud. La cuenta, la VM y el flujo de despliegue todavía no se crean: requieren activar primero la suscripción académica y definir presupuesto, región y nombre del recurso.
+
+La estrategia completa, incluidos los comandos y la promoción de versiones, está en [`docs/git-workflow.md`](docs/git-workflow.md).
+
+La documentación también es código de entrega: un cambio que modifique arquitectura, configuración, comandos, comportamiento de despliegue o decisiones debe actualizar los documentos afectados, regenerar los PDF con `make docs` y superar CI antes de fusionarse.
+
+El repositorio es público y tiene protecciones activas en `develop` y `main`: exige pull request, una aprobación, conversaciones resueltas y los controles de CI; además bloquea force-push y eliminación. La excepción administrativa se conserva sólo para recuperación y debe registrarse en la bitácora.
 
 Para vincular este repositorio local con GitHub, confirma la sesión y crea el remoto después de elegir nombre y visibilidad:
 
