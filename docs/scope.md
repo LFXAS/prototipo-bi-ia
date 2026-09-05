@@ -28,6 +28,10 @@ El anexo institucional exige evidencia de un módulo de seguridad, parámetros, 
 
 En esta fase sólo existe su límite modular y la documentación del contrato. La implementación funcional se realizará en una migración y entrega posteriores.
 
+## Aclaración sobre el LLM configurable
+
+El anteproyecto requiere un LLM que proponga artefactos BI, siempre con validación determinística y aprobación humana. Para evitar depender de un único proveedor, el Sprint 2 preparará una configuración segura para elegir una sola conexión activa entre Gemini Cloud, Qwen Cloud y Ollama local. Esta preparación incluye administración de valores no secretos y una prueba limitada de conectividad desde FastAPI; no adelanta la generación de propuestas BI, la introspección, el ETL ni la ejecución de SQL.
+
 ## Objetivo de esta fase
 
 - Repositorio y flujo Git preparados.
