@@ -2,6 +2,8 @@
 
 Esta guía cubre dos escenarios: desarrollar con un entorno autocontenido desde cero y ejecutar imágenes publicadas sin compilar el código.
 
+Para comprender cómo se construyó y automatizó esta línea base, consulte también el manual técnico en `docs/manual-tecnico/`. Ese documento comenta variables, Compose, Dockerfiles, Makefile, Git, GitHub Actions, GHCR, persistencia y evidencias; esta guía permanece como referencia breve para ejecutar y replicar.
+
 Las rutas son relativas al repositorio. En este computador el proyecto vive en `/home/ceo/Proyectos/BI`; en otra máquina puede guardarse en cualquier carpeta.
 
 ## 1. Qué se comparte y qué no
@@ -189,6 +191,8 @@ make release-up
 ```
 
 Las migraciones futuras se ejecutarán como un paso controlado antes de iniciar una nueva versión del backend; nunca se copiará un volumen manualmente como mecanismo normal de despliegue.
+
+Si se actualiza documentación o una especificación SDD, el procedimiento es el mismo: obtener la rama aprobada, ejecutar `make docs` si se modificó LaTeX y comprobar que `git status` sólo muestra los archivos esperados. No se vuelve a clonar el repositorio para cada cambio; se usa `git pull --ff-only` cuando no existen modificaciones locales pendientes.
 
 ## 9. Diagnóstico rápido
 

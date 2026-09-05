@@ -91,11 +91,11 @@
 
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
-    Versión del manual & 1.4.0 \\
+    Versión del manual & 1.7.0 \\
     Línea base & Ramas \file{develop} y \file{main} \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
     Clasificación & Uso académico y técnico - repositorio público \\
-    Fecha & 24 de agosto de 2026 \\
+    Fecha & 2 de septiembre de 2026 \\
   \end{tabularx}
 
   \vfill
@@ -680,6 +680,62 @@ La suscripción, la VM y el workflow de despliegue permanecen pendientes hasta q
 
 Dependabot trabaja contra la rama predeterminada \file{develop}. Las actualizaciones npm menores y parches se agrupan; los saltos mayores se revisan de forma intencional y separada para evitar mezclar migraciones incompatibles.
 
+\subsection{Cómo verificar CI y CD en GitHub}
+
+En GitHub se abre la pestaña \textbf{Actions}. Cada fila representa una ejecución; el círculo verde significa que todos sus trabajos terminaron correctamente y el rojo identifica una ejecución que necesita revisión. Al abrir una ejecución se puede leer cada trabajo, descargar los artefactos de documentación y conservar el enlace como evidencia para la tesis.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.96\textwidth]{../assets/sprint-01/github-actions.png}
+  \caption{Historial real de GitHub Actions: CI y CD concluyen con estado satisfactorio después de promover \file{develop} hacia \file{main}.}
+\end{figure}
+
+\begin{tabularx}{\textwidth}{@{}p{0.22\textwidth}X X@{}}
+  \toprule
+  Flujo & Cuándo se ejecuta & Resultado esperado \\
+  \midrule
+  CI & Push o pull request hacia \file{develop} o \file{main}. & Valida flujo de ramas, Compose, backend, frontend, infraestructura y los tres PDF. No publica ni deja contenedores activos. \\
+  CD & Cambio ya fusionado en \file{main} o etiqueta \file{v*}. & Revalida backend/frontend y publica cinco imágenes de producción en GHCR con etiqueta de rama, SHA y, cuando aplique, versión. No despliega aún una VM Azure. \\
+  Dependabot & Según su programación. & Abre un PR temporal de actualización; se revisa y prueba igual que un cambio humano. \\
+  \bottomrule
+\end{tabularx}
+
+Para diagnosticar una falla se abre primero el trabajo con marca roja, se identifica el paso que falló y se reproduce localmente con \file{make verify} desde la raíz del repositorio. No se fusiona un PR fallido ni se intenta corregir modificando directamente \file{main}. Un cambio documental también pasa por CI porque los PDF versionados deben coincidir con sus fuentes \LaTeX.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[height=0.57\textheight]{../assets/sprint-01/pr-checks.png}
+  \caption{Control de promoción: aprobación humana, verificaciones obligatorias y ausencia de conflictos antes de habilitar la fusión.}
+\end{figure}
+
+\subsection{Qué significa DevOps en este prototipo}
+
+DevOps no es un contenedor adicional ni una persona distinta. En este proyecto es la práctica de mantener código, infraestructura, pruebas, documentación y entrega dentro del mismo ciclo trazable. Docker evita diferencias entre computadoras; Git conserva el historial; pull requests y protecciones controlan la revisión; CI comprueba cada integración; CD crea imágenes reutilizables; GHCR permite descargarlas; la bitácora y los PDF conservan la evidencia.
+
+El responsable integrador trabaja en una rama de función, corre las verificaciones y abre el PR. Las colaboradoras pueden reproducir el ambiente, revisar, documentar y aprobar. Sólo la promoción aprobada de \file{develop} a \file{main} representa una entrega estable. GitHub Actions inicia CD automáticamente después de esa fusión: no hay que presionar un botón de despliegue local y tampoco se modifica una instalación de otra persona.
+
+\section{Desarrollo guiado por especificaciones (SDD)}
+
+\textbf{SDD} significa \emph{Specification-Driven Development}: antes de programar una capacidad se escribe una especificación breve, verificable y versionada. La intención es evitar que una idea, una propuesta de IA o un cambio de datos se transforme en código sin que el equipo haya acordado su alcance, sus límites y la evidencia que demostrará que funciona.
+
+El Sprint 1 no se rehace con SDD porque ya se cerró como una base técnica. Desde el Sprint 2 la especificación es obligatoria para toda capacidad funcional nueva. Los archivos se conservan en \file{docs/specs/}; la guía es \file{docs/sdd-workflow.md} y \file{docs/specs/TEMPLATE.md} contiene la plantilla.
+
+\subsection{Procedimiento SDD para cada función}
+
+\begin{enumerate}
+  \item Copiar la plantilla y crear un archivo con el identificador del sprint. Por ejemplo: \path{SPR-02-rbac-y-parametros.md}.
+  \item Escribir el problema, objetivo, alcance incluido, exclusiones, actores, datos, API/interfaz, seguridad, criterios de aceptación, pruebas, riesgos y dependencias.
+  \item Revisar y aprobar la especificación antes de implementar. Si la decisión afecta permanentemente la arquitectura, crear además un ADR en \file{docs/decisions/}.
+  \item Crear la rama desde \file{develop}, implementar dentro del alcance y enlazar la especificación en el PR.
+  \item Añadir pruebas; actualizar README, arquitectura, réplica, manual y bitácora cuando resulte afectado; ejecutar \file{make verify}.
+  \item Con CI verde y revisión aprobada, fusionar hacia \file{develop}. Registrar el PR, SHA, evidencia y desviaciones en la bitácora.
+  \item Promover \file{develop} hacia \file{main} únicamente cuando el incremento integrado sea estable. CD publicará las imágenes sin sustituir los volúmenes ni los equipos de desarrollo.
+\end{enumerate}
+
+\notebox{La especificación no sustituye las pruebas. Define qué se debe probar. En especial, cualquier propuesta de IA, SQL o ETL debe declarar aprobación humana, validaciones determinísticas, datos permitidos y auditoría antes de ejecutarse.}
+
+\input{referencia-devops-sprint1.tex}
+
 \section{Seguridad operativa}
 
 \begin{enumerate}
@@ -810,7 +866,7 @@ make verify
   \toprule
   Campo & Valor \\
   \midrule
-  Estado & Primera edición técnica, sujeta a revisión de las autoras y del tutor. \\
+  Estado & Cierre documental del Sprint 1; base obligatoria para el Sprint 2 con SDD. \\
   Custodia & Repositorio público \file{LFXAS/prototipo-bi-ia}; escritura restringida a colaboradores. \\
   Audiencia & Autoras, tutor, revisores, colaboradores y lectores académicos. \\
   Actualización & Debe acompañar todo cambio de instalación, puertos, secretos, imágenes, pruebas o recuperación. \\
@@ -830,6 +886,9 @@ make verify
   1.2.0 & 24-08-2026 & Vista Nginx paralela, entrega GHCR aislada y relación entre ramas, CI/CD y ambientes simultáneos. \\
   1.3.0 & 24-08-2026 & Propuesta de cierre DevOps en Azure for Students con VM x64, OIDC, aprobación y control de crédito. \\
   1.4.0 & 24-08-2026 & Ciclo completo para levantar, pausar, reanudar y retirar desarrollo, vista Nginx y entrega GHCR sin borrar volúmenes. \\
+  1.5.0 & 01-09-2026 & Explicación ampliada de CI, CD y DevOps; procedimiento SDD, plantillas versionadas y primera especificación del Sprint 2. \\
+  1.6.0 & 02-09-2026 & Reconstrucción operativa del Sprint 1 y referencia comentada de variables, Compose, Dockerfiles, Makefile, Git, GitHub, CI/CD, persistencia y verificación. \\
+  1.7.0 & 02-09-2026 & Evidencias visuales de GitHub Actions y de los controles obligatorios de aprobación, CI y fusión. \\
   \bottomrule
 \end{tabularx}
 
