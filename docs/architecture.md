@@ -40,7 +40,7 @@ No se recomienda una VM ARM para este conjunto porque SQL Server para Linux requ
 
 - `system`: salud y diagnóstico técnico mínimo.
 - `security`: autenticación y RBAC mínimo.
-- `parameters`: parámetros del prototipo y conexiones aprobadas.
+- `parameters`: parámetros del prototipo, conexiones aprobadas y configuración no secreta del proveedor LLM activo.
 - `metadata`: introspección determinística de AdventureWorks.
 - `copilot`: propuestas estructuradas del LLM, nunca ejecución directa.
 - `etl`: vista previa, validación, ejecución y trazabilidad de cargas.
@@ -65,6 +65,20 @@ Reglas arquitectónicas:
 3. Los tokens no almacenan secretos ni reemplazan el estado activo del usuario.
 4. Las aprobaciones de propuestas/SQL quedan auditadas.
 5. Menús y permisos comparten códigos estables, no nombres visibles.
+
+## Contrato UI/UX responsive
+
+Desde Sprint 2, cada módulo que incorpore interfaz se integra en un cascarón React reutilizable con encabezado, navegación autorizada, contenido principal y avisos globales. La interfaz debe ser utilizable en móvil desde 320 px, tableta, escritorio y pantalla amplia; no puede depender de un tamaño fijo ni generar desplazamiento horizontal involuntario.
+
+Los menús son una representación de permisos ya autorizados por FastAPI. En escritorio pueden permanecer visibles; en móvil deben abrirse y cerrarse con teclado o táctil. Formularios, tablas y acciones administrativas definen estados de carga, vacío, éxito, error, sesión vencida y acceso denegado. La accesibilidad mínima incluye foco visible, etiquetas de campos, mensajes que no dependan sólo del color y contraste suficiente para lectura.
+
+## Contrato de configuración LLM
+
+El módulo `parameters` conserva una única configuración LLM activa con valores no secretos: tipo de proveedor, URL base, modelo, límites y referencia de credencial. El catálogo inicial es `gemini` (referencia `GEMINI_API_KEY`), `qwen-cloud` (referencia `DASHSCOPE_API_KEY`) y `ollama-local` (referencia `none`, servicio interno). La clave real vive sólo en variables de entorno o en el mecanismo de secretos del despliegue; ni PostgreSQL, ni React, ni los eventos de auditoría la almacenan o la devuelven.
+
+FastAPI encapsula las diferencias de cada servicio en adaptadores internos y sólo habilita uno a la vez. En Sprint 2 permite probar de forma real y limitada la conexión configurada, sin enviar datos de negocio ni conservar contenido de respuesta. Un perfil Docker opcional de Ollama se agregará junto con su implementación y permanecerá aislado de la red pública; `qwen3:4b` es el modelo local inicial recomendado. Gemini y Qwen Cloud conservan la elección de modelo en configuración porque su catálogo y sus cuotas pueden cambiar.
+
+El módulo `copilot` posterior consumirá este contrato mediante una interfaz interna y será el único que pueda solicitar propuestas sobre metadatos o planes BI; ningún SQL asistido por IA se ejecutará automáticamente. La decisión se detalla en [`decisions/0002-configuracion-proveedor-llm.md`](decisions/0002-configuracion-proveedor-llm.md).
 
 ## Datos
 

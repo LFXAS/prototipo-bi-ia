@@ -14,7 +14,7 @@ Las fuentes editables se encuentran junto a cada PDF. `referencia-devops-sprint1
 
 - [`scope.md`](scope.md): alcance técnico vigente y exclusiones.
 - [`architecture.md`](architecture.md): contenedores, ambientes, módulos y reglas arquitectónicas.
-- [`decisions/`](decisions/): decisiones duraderas de arquitectura (ADR).
+- [`decisions/`](decisions/): decisiones duraderas de arquitectura (ADR), incluido el catálogo inicial de proveedores LLM configurables.
 - [`git-workflow.md`](git-workflow.md): ramas, PR, protecciones, revisión y promoción.
 - [`replication-guide.md`](replication-guide.md): comandos de instalación y réplica.
 - [`sdd-workflow.md`](sdd-workflow.md) y [`specs/`](specs/README.md): proceso y contratos SDD desde el Sprint 2.
