@@ -9,13 +9,13 @@ description = "API base del prototipo academico de BI asistido por IA"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-  "alembic==1.16.5",
-  "asyncpg==0.30.0",
+  "alembic==1.19.1",
+  "asyncpg==0.31.0",
   "fastapi==0.116.1",
   "pydantic-settings==2.10.1",
-  "psycopg[binary]==3.2.9",
-  "pyodbc==5.2.0",
-  "sqlalchemy==2.0.43",
+  "psycopg[binary]==3.3.5",
+  "pyodbc==5.3.0",
+  "sqlalchemy==2.0.52",
   "uvicorn[standard]==0.35.0",
 ]
 
