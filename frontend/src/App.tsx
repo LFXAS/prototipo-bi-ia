@@ -121,7 +121,6 @@ export default function App() {
   }
 
   function toggleGroup(group: { code: string; items: Menu[] }) {
-    if (group.items.some((menu) => menu.path === page)) return
     setExpandedGroups((current) => ({ ...current, [group.code]: !current[group.code] }))
   }
 

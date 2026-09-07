@@ -42,7 +42,7 @@ React debe presentar estas capacidades mediante una interfaz clara, accesible y 
 - La ruta inicial autenticada se determina por el primer menú permitido; si no existe, se muestra una pantalla de cuenta sin módulos asignados con una explicación para solicitar acceso.
 - Las rutas deben tener título visible, una ubicación dentro de la navegación agrupada y una acción principal inequívoca cuando corresponda.
 - La navegación no debe depender sólo de iconos, color, desplazamiento horizontal ni de mantener el cursor sobre un elemento.
-- Cada módulo de navegación es una opción de menú padre desplegable. Al seleccionar su encabezado, por ejemplo **Seguridad**, se pliega o despliega su lista de submenús autorizados. La ruta activa debe mantener abierto su módulo padre; los demás módulos pueden permanecer plegados para reducir ruido visual. **Principal** se presenta como módulo padre y contiene Inicio.
+- Cada módulo de navegación es una opción de menú padre desplegable. Al seleccionar su encabezado, por ejemplo **Seguridad**, se pliega o despliega su lista de submenús autorizados. Cualquier módulo, incluido el de la ruta activa, puede plegarse o desplegarse según la decisión de la persona usuaria. **Principal** se presenta como módulo padre y contiene Inicio.
 - El control del módulo debe comunicar su estado expandido o plegado mediante texto y atributo accesible (`aria-expanded`); el indicador visual de flecha complementa el texto, pero no lo reemplaza. Debe responder a teclado, clic y táctil.
 - Al cambiar de ruta se conserva el foco lógico en el título principal; cuando se abre un diálogo, el foco queda dentro de él y vuelve al control que lo abrió al cerrarlo.
 - Cerrar sesión estará siempre disponible para la persona autenticada y eliminará la sesión local antes de redirigir al acceso.
@@ -162,7 +162,7 @@ Los valores son umbrales de prueba, no restricciones rígidas. El criterio real 
 - [ ] El inicio de sesión, el menú y las pantallas administrativas son utilizables desde 320 px, 768 px, 1024 px y 1440 px, sin desplazamiento horizontal involuntario ni pérdida de la acción principal.
 - [x] El menú autorizado se muestra de forma lateral en escritorio y puede abrirse/cerrarse con teclado y táctil en móvil; al navegar devuelve el foco al contenido principal.
 - [x] Los menús autorizados se agrupan por módulo con etiquetas administrables; Seguridad contiene Usuarios, Roles, Permisos, Menús y Auditoría, mientras Parámetros generales contiene Parámetros y Configuración LLM en la semilla inicial.
-- [ ] Cada grupo de menú funciona como un padre plegable/desplegable, conserva abierto el grupo de la ruta activa y expone su estado a tecnologías de asistencia mediante `aria-expanded`.
+- [ ] Cada grupo de menú funciona como un padre plegable/desplegable y expone su estado a tecnologías de asistencia mediante `aria-expanded`.
 - [x] Todas las listas administrativas usan paginación desde API, informan el total y no requieren cargar todos los registros para mostrar la primera página.
 - [ ] Formularios, tablas, diálogos y avisos cubren estados de carga, vacío, error y éxito, con texto comprensible y foco visible.
 - [ ] Cada control relevante tiene etiqueta accesible; los errores no dependen exclusivamente de color; una comprobación de contraste documenta los resultados de las pantallas principales.

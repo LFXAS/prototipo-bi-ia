@@ -31,6 +31,7 @@ nav button.active, nav button:hover { background: #d9eee8; color: #0d4b45; }
 .module-toggle { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: .75rem; color: #53706b; font-size: .78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .module-toggle:hover { background: #e7f3ef; }
 .submenu { display: grid; gap: .2rem; padding: .15rem 0 .45rem; }
+.submenu[hidden] { display: none; }
 .submenu button { padding-left: 1.1rem; }
 .content { min-width: 0; padding: clamp(1rem, 3vw, 2.3rem); border-radius: 1rem; background: #fff; box-shadow: 0 12px 35px #163d3520; }
 .lead { font-size: 1.15rem; }
