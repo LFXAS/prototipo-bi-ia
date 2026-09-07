@@ -5,6 +5,7 @@ import {
   type AuditEvent,
   type LlmConfiguration,
   type Menu,
+  type Page,
   type Parameter,
   type Permission,
   type Role,
@@ -13,18 +14,19 @@ import {
 } from './api/security'
 
 type PageData =
-  | User[]
-  | Role[]
-  | Permission[]
-  | Menu[]
-  | Parameter[]
-  | LlmConfiguration[]
-  | AuditEvent[]
+  | Page<User>
+  | Page<Role>
+  | Page<Permission>
+  | Page<Menu>
+  | Page<Parameter>
+  | Page<LlmConfiguration>
+  | Page<AuditEvent>
   | null
 type Row = Record<string, unknown>
 type Values = Record<string, string>
 
 const tokenKey = 'bi_ia_access_token'
+const pageSize = 10
 const labels: Record<string, string> = {
   '/': 'Inicio',
   '/usuarios': 'Usuarios',
@@ -63,6 +65,8 @@ export default function App() {
   const [email, setEmail] = useState('admin@bi.local')
   const [password, setPassword] = useState('')
   const [revision, setRevision] = useState(0)
+  const [offset, setOffset] = useState(0)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     if (!token) return
@@ -78,18 +82,18 @@ export default function App() {
   useEffect(() => {
     if (!token || !session || page === '/') return
     const loads: Record<string, () => Promise<PageData>> = {
-      '/usuarios': () => api.users(token),
-      '/roles': () => api.roles(token),
-      '/permisos': () => api.permissions(token),
-      '/menus': () => api.menus(token),
-      '/parametros': () => api.parameters(token),
-      '/llm': () => api.llm(token),
-      '/auditoria': () => api.audit(token),
+      '/usuarios': () => api.users(token, pageSize, offset),
+      '/roles': () => api.roles(token, pageSize, offset),
+      '/permisos': () => api.permissions(token, pageSize, offset),
+      '/menus': () => api.menus(token, pageSize, offset),
+      '/parametros': () => api.parameters(token, pageSize, offset),
+      '/llm': () => api.llm(token, pageSize, offset),
+      '/auditoria': () => api.audit(token, pageSize, offset),
     }
     setData(null)
     setMessage('')
     loads[page]?.().then(setData).catch((error: Error) => setMessage(error.message))
-  }, [page, revision, session, token])
+  }, [offset, page, revision, session, token])
 
   async function submitLogin(event: FormEvent) {
     event.preventDefault()
@@ -134,31 +138,40 @@ export default function App() {
     <main className="app-shell">
       <header>
         <div><p className="eyebrow">BI asistido por IA</p><strong>{session.user.full_name}</strong></div>
-        <button className="secondary" onClick={logout}>Cerrar sesión</button>
+        <div className="header-actions"><button className="menu-toggle secondary" aria-expanded={menuOpen} aria-controls="main-navigation" onClick={() => setMenuOpen((open) => !open)}>☰ Menú</button><button className="secondary" onClick={logout}>Cerrar sesión</button></div>
       </header>
       <div className="workspace">
-        <nav aria-label="Navegación principal">
-          {session.menus.map((menu) => <button className={page === menu.path ? 'active' : ''} onClick={() => setPage(menu.path)} key={menu.id}>{menu.label}</button>)}
-        </nav>
+        <aside className={`navigation-panel ${menuOpen ? 'open' : ''}`}><nav id="main-navigation" aria-label="Navegación principal">
+          {Object.values(groupMenus(session.menus)).map((group) => <div className="navigation-group" key={group.code}><p>{group.label}</p>{group.items.map((menu) => <button className={page === menu.path ? 'active' : ''} onClick={() => { setPage(menu.path); setOffset(0); setMenuOpen(false) }} key={menu.id}>{menu.label}</button>)}</div>)}
+        </nav></aside>
         <section className="content">
           <h1>{labels[page]}</h1>
           {page === '/'
             ? <Home session={session} />
-            : <ResourcePage page={page} data={data} message={message} token={token} canWrite={session.permissions.includes(writePermissions[page])} onSaved={() => setRevision((value) => value + 1)} />}
+            : <ResourcePage page={page} data={data} message={message} token={token} canWrite={session.permissions.includes(writePermissions[page])} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />}
         </section>
       </div>
     </main>
   )
 }
 
+function groupMenus(menus: Menu[]) {
+  return menus.reduce<Record<string, { code: string; label: string; items: Menu[] }>>((groups, menu) => {
+    const key = menu.module_code
+    groups[key] ??= { code: key, label: menu.module_label, items: [] }
+    groups[key].items.push(menu)
+    return groups
+  }, {})
+}
+
 function Home({ session }: { session: Session }) {
   return <><p className="lead">Bienvenido. Desde aquí se administra el acceso, la parametrización y la trazabilidad técnica del prototipo.</p><div className="cards"><article><strong>{session.user.roles.length}</strong><span>roles asignados</span></article><article><strong>{session.permissions.length}</strong><span>permisos efectivos</span></article><article><strong>{session.menus.length}</strong><span>opciones visibles</span></article></div><p className="notice">Los módulos BI, ETL, reportes y predicción continúan fuera del alcance de este sprint.</p></>
 }
 
-function ResourcePage({ page, data, message, token, canWrite, onSaved }: { page: string; data: PageData; message: string; token: string; canWrite: boolean; onSaved: () => void }) {
+function ResourcePage({ page, data, message, token, canWrite, onSaved, onChangePage }: { page: string; data: PageData; message: string; token: string; canWrite: boolean; onSaved: () => void; onChangePage: (offset: number) => void }) {
   const [selected, setSelected] = useState<Row | null>(null)
   const [actionError, setActionError] = useState('')
-  const rows = (data ?? []) as unknown as Row[]
+  const rows = (data?.items ?? []) as unknown as Row[]
 
   async function toggleActive(row: Row) {
     const isActive = row.is_active === true
@@ -189,8 +202,16 @@ function ResourcePage({ page, data, message, token, canWrite, onSaved }: { page:
       </table>
       {page === '/llm' && <p className="notice">Las credenciales se leen por referencia desde el entorno y nunca se almacenan aquí.</p>}
       {page === '/auditoria' && <p className="notice">La auditoría es de consulta: registra las acciones críticas, no se modifica desde la interfaz.</p>}
+      <Pagination page={data} onChange={onChangePage} />
     </div>
   </>
+}
+
+function Pagination({ page, onChange }: { page: Exclude<PageData, null>; onChange: (offset: number) => void }) {
+  if (page.total <= page.limit) return null
+  const from = page.offset + 1
+  const to = Math.min(page.offset + page.limit, page.total)
+  return <div className="pagination" aria-label="Paginación"><span>Mostrando {from}-{to} de {page.total} registros</span><div><button className="secondary" disabled={page.offset === 0} onClick={() => onChange(Math.max(0, page.offset - page.limit))}>Anterior</button><button disabled={page.offset + page.limit >= page.total} onClick={() => onChange(page.offset + page.limit)}>Siguiente</button></div></div>
 }
 
 function CrudForm({ page, token, selected, onSaved }: { page: string; token: string; selected: Row | null; onSaved: () => void }) {
@@ -252,10 +273,10 @@ function formConfig(page: string, token: string): FormConfig {
   }
   if (page === '/menus') return {
     singular: 'menú', createTitle: 'Crear menú', help: 'Use una ruta existente y asocie permisos con identificadores separados por comas.',
-    fields: [{ key: 'code', label: 'Código' }, { key: 'label', label: 'Etiqueta' }, { key: 'path', label: 'Ruta', placeholder: '/mi-modulo' }, { key: 'position', label: 'Posición' }, { key: 'permission_ids', label: 'Identificadores de permisos', required: false }],
-    empty: { code: '', label: '', path: '', position: '99', permission_ids: '' }, read: (row) => ({ code: String(row.code), label: String(row.label), path: String(row.path), position: String(row.position), permission_ids: ((row.permissions as Row[] | undefined) ?? []).map((permission) => permission.id).join(',') }),
-    create: (v) => api.create('/menus', token, { code: v.code, label: v.label, path: v.path, position: Number(v.position), permission_ids: parseIdentifiers(v.permission_ids) }),
-    update: (row, v) => api.update(`/menus/${row.id}`, token, { label: v.label, path: v.path, position: Number(v.position), permission_ids: parseIdentifiers(v.permission_ids) }),
+    fields: [{ key: 'code', label: 'Código' }, { key: 'label', label: 'Etiqueta' }, { key: 'path', label: 'Ruta', placeholder: '/mi-modulo' }, { key: 'position', label: 'Posición' }, { key: 'module_code', label: 'Código de módulo', placeholder: 'seguridad' }, { key: 'module_label', label: 'Nombre del módulo', placeholder: 'Seguridad' }, { key: 'permission_ids', label: 'Identificadores de permisos', required: false }],
+    empty: { code: '', label: '', path: '', position: '99', module_code: 'general', module_label: 'General', permission_ids: '' }, read: (row) => ({ code: String(row.code), label: String(row.label), path: String(row.path), position: String(row.position), module_code: String(row.module_code), module_label: String(row.module_label), permission_ids: ((row.permissions as Row[] | undefined) ?? []).map((permission) => permission.id).join(',') }),
+    create: (v) => api.create('/menus', token, { code: v.code, label: v.label, path: v.path, position: Number(v.position), module_code: v.module_code, module_label: v.module_label, permission_ids: parseIdentifiers(v.permission_ids) }),
+    update: (row, v) => api.update(`/menus/${row.id}`, token, { label: v.label, path: v.path, position: Number(v.position), module_code: v.module_code, module_label: v.module_label, permission_ids: parseIdentifiers(v.permission_ids) }),
   }
   if (page === '/parametros') return {
     singular: 'parámetro', createTitle: 'Guardar parámetro', help: 'Las claves son únicas y no deben incluir contraseñas ni secretos.',

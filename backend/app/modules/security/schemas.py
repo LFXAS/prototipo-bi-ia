@@ -97,6 +97,8 @@ class MenuRead(BaseModel):
     label: str
     path: str
     position: int
+    module_code: str
+    module_label: str
     is_active: bool
     permissions: list[PermissionRead] = []
 
@@ -106,6 +108,10 @@ class MenuCreate(BaseModel):
     label: str = Field(min_length=2, max_length=120)
     path: str = Field(pattern=r"^/.*", max_length=160)
     position: int = Field(default=0, ge=0)
+    module_code: str = Field(
+        default="general", pattern=r"^[a-z0-9]+(?:[._-][a-z0-9]+)*$", max_length=80
+    )
+    module_label: str = Field(default="General", min_length=2, max_length=120)
     permission_ids: list[int] = []
 
 
@@ -113,6 +119,10 @@ class MenuUpdate(BaseModel):
     label: str | None = Field(default=None, min_length=2, max_length=120)
     path: str | None = Field(default=None, pattern=r"^/.*", max_length=160)
     position: int | None = Field(default=None, ge=0)
+    module_code: str | None = Field(
+        default=None, pattern=r"^[a-z0-9]+(?:[._-][a-z0-9]+)*$", max_length=80
+    )
+    module_label: str | None = Field(default=None, min_length=2, max_length=120)
     is_active: bool | None = None
     permission_ids: list[int] | None = None
 

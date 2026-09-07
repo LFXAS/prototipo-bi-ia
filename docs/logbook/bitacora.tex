@@ -375,10 +375,10 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
   \midrule
   \endhead
-  Migración Sprint 2 & \statusok & Se incorporó la revisión Alembic \file{20260906\_01}, que crea en el esquema \file{app} las tablas de RBAC, auditoría, parámetros y configuración LLM no secreta. El servicio \file{migrate} la ejecuta antes de FastAPI. \\
+  Migración Sprint 2 & \statusok & Se incorporaron las revisiones Alembic \file{20260906\_01}, \file{20260906\_02} y \file{20260906\_03}, que crean las tablas iniciales y añaden ciclo de vida de permisos y agrupación administrable de menús. El servicio \file{migrate} las ejecuta antes de FastAPI. \\
   Seguridad & \statusok & Se implementaron hash Argon2, JWT de vida limitada, cuenta administradora inicial por variables de entorno, permisos estables, menús autorizados y auditoría de acceso y cambios administrativos. \\
   Parámetros y fuente externa & \statusok & Se implementaron parámetros no secretos, prueba lectora de AdventureWorks mediante la cuenta configurada y adaptadores acotados para Gemini, Qwen Cloud y Ollama local. Las claves siguen exclusivamente en variables de entorno. \\
-  Interfaz administrativa & \statusok & React incorpora acceso, cierre de sesión, navegación derivada de permisos, avisos, formularios de alta y edición, asociaciones por identificadores y activación/desactivación lógica para usuarios, roles, permisos, menús, parámetros y configuración LLM. La auditoría queda exclusivamente en consulta. El cascarón usa CSS responsive desde 320 px. \\
+  Interfaz administrativa & \statusok & React incorpora acceso, cierre de sesión, navegación derivada de permisos y agrupada por módulo, menú hamburguesa en tableta y móvil, avisos, formularios de alta y edición, asociaciones por identificadores y activación/desactivación lógica. Las listas de usuarios, roles, permisos, menús, parámetros, LLM y auditoría reciben paginación desde API. La auditoría queda exclusivamente en consulta. \\
   Verificación integrada & \statusok & En Docker se comprobó la migración, la creación del administrador, el inicio de sesión JWT, la sesión con ocho menús autorizados y las consultas protegidas de usuarios, roles, permisos, menús, parámetros, LLM y auditoría. \\
   Pendiente de cierre & \statuspending & Faltan pruebas negativas de autorización y de adaptadores LLM, evidencia visual responsive documentada, \file{make verify} final y el PR hacia \file{develop}. \\
   Alcance CRUD & \statusok & La especificación se precisó para exigir CRUD completo de usuarios, roles, permisos, menús, parámetros y configuración LLM, con desactivación segura, autorización backend y auditoría. \\
@@ -437,6 +437,7 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   0.2.3 & 04-09-2026 & Se aprobó el catálogo inicial Gemini Cloud, Qwen Cloud y Ollama local; el ADR 0002 define secreto por referencia, adaptadores y \file{qwen3:4b} como opción local. \\
   0.2.4 & 06-09-2026 & Implementación inicial del Sprint 2: migración RBAC/parámetros, JWT, auditoría, adaptadores LLM, cascarón React responsive y verificación integrada en Docker. \\
   0.2.5 & 06-09-2026 & CRUD administrativo del Sprint 2: migración de estado de permisos, edición y desactivación lógica protegidas por RBAC, formularios React y validaciones Docker de backend y frontend. \\
+  0.2.6 & 06-09-2026 & Mejora UX del Sprint 2: menús agrupados y administrables por módulo, hamburguesa responsive y paginación servidor-cliente para recursos administrativos. \\
   \bottomrule
 \end{tabularx}
 

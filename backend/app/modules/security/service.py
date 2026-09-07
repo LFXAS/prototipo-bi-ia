@@ -41,15 +41,39 @@ DEFAULT_PERMISSIONS: tuple[tuple[str, str, str], ...] = (
     ("audit.read", "Consultar auditoría", "Permite consultar eventos de auditoría."),
 )
 
-DEFAULT_MENUS: tuple[tuple[str, str, str, int, tuple[str, ...]], ...] = (
-    ("home", "Inicio", "/", 0, ()),
-    ("users", "Usuarios", "/usuarios", 10, ("security.users.read",)),
-    ("roles", "Roles", "/roles", 20, ("security.roles.read",)),
-    ("permissions", "Permisos", "/permisos", 30, ("security.permissions.read",)),
-    ("menus", "Menús", "/menus", 40, ("security.menus.read",)),
-    ("parameters", "Parámetros", "/parametros", 50, ("parameters.read",)),
-    ("llm", "Configuración LLM", "/llm", 60, ("parameters.llm.read",)),
-    ("audit", "Auditoría", "/auditoria", 70, ("audit.read",)),
+DEFAULT_MENUS: tuple[tuple[str, str, str, int, str, str, tuple[str, ...]], ...] = (
+    ("home", "Inicio", "/", 0, "home", "Principal", ()),
+    ("users", "Usuarios", "/usuarios", 10, "security", "Seguridad", ("security.users.read",)),
+    ("roles", "Roles", "/roles", 20, "security", "Seguridad", ("security.roles.read",)),
+    (
+        "permissions",
+        "Permisos",
+        "/permisos",
+        30,
+        "security",
+        "Seguridad",
+        ("security.permissions.read",),
+    ),
+    ("menus", "Menús", "/menus", 40, "security", "Seguridad", ("security.menus.read",)),
+    (
+        "parameters",
+        "Parámetros",
+        "/parametros",
+        50,
+        "parameters",
+        "Parámetros generales",
+        ("parameters.read",),
+    ),
+    (
+        "llm",
+        "Configuración LLM",
+        "/llm",
+        60,
+        "parameters",
+        "Parámetros generales",
+        ("parameters.llm.read",),
+    ),
+    ("audit", "Auditoría", "/auditoria", 70, "security", "Seguridad", ("audit.read",)),
 )
 
 
@@ -172,7 +196,7 @@ async def seed_security(session: AsyncSession) -> None:
     await session.flush()
 
     existing_menus = {item.code for item in (await session.execute(select(Menu))).scalars()}
-    for code, label, path, position, permission_codes in DEFAULT_MENUS:
+    for code, label, path, position, module_code, module_label, permission_codes in DEFAULT_MENUS:
         if code not in existing_menus:
             session.add(
                 Menu(
@@ -180,6 +204,8 @@ async def seed_security(session: AsyncSession) -> None:
                     label=label,
                     path=path,
                     position=position,
+                    module_code=module_code,
+                    module_label=module_label,
                     permissions=[permissions[item] for item in permission_codes],
                 )
             )

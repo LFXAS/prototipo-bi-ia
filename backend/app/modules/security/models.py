@@ -113,6 +113,8 @@ class Menu(Base):
     label: Mapped[str] = mapped_column(String(120))
     path: Mapped[str] = mapped_column(String(160), unique=True)
     position: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    module_code: Mapped[str] = mapped_column(String(80), default="general", nullable=False)
+    module_label: Mapped[str] = mapped_column(String(120), default="General", nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     permissions: Mapped[list[Permission]] = relationship(

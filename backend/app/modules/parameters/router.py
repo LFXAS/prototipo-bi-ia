@@ -4,11 +4,12 @@ import asyncio
 from datetime import UTC, datetime
 
 import pyodbc  # type: ignore[import-not-found]
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
+from app.core.pagination import PageRead
 from app.db.session import get_session
 from app.modules.parameters.models import LlmConfiguration, Parameter
 from app.modules.parameters.providers import test_provider
@@ -32,12 +33,18 @@ _CREDENTIAL_REFERENCES = {
 }
 
 
-@router.get("/parameters", response_model=list[ParameterRead])
+@router.get("/parameters", response_model=PageRead[ParameterRead])
 async def list_parameters(
     _: User = Depends(require_permission("parameters.read")),
     session: AsyncSession = Depends(get_session),
-) -> list[Parameter]:
-    return list((await session.execute(select(Parameter).order_by(Parameter.key))).scalars())
+    limit: int = Query(default=10, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+) -> PageRead[ParameterRead]:
+    total = (await session.scalar(select(func.count()).select_from(Parameter))) or 0
+    items = (
+        await session.execute(select(Parameter).order_by(Parameter.key).limit(limit).offset(offset))
+    ).scalars()
+    return PageRead(items=list(items), total=total, limit=limit, offset=offset)
 
 
 @router.put("/parameters/{key}", response_model=ParameterRead)
@@ -69,14 +76,20 @@ async def upsert_parameter(
     return parameter
 
 
-@router.get("/llm-configurations", response_model=list[LlmConfigurationRead])
+@router.get("/llm-configurations", response_model=PageRead[LlmConfigurationRead])
 async def list_llm_configurations(
     _: User = Depends(require_permission("parameters.llm.read")),
     session: AsyncSession = Depends(get_session),
-) -> list[LlmConfiguration]:
-    return list(
-        (await session.execute(select(LlmConfiguration).order_by(LlmConfiguration.id))).scalars()
-    )
+    limit: int = Query(default=10, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+) -> PageRead[LlmConfigurationRead]:
+    total = (await session.scalar(select(func.count()).select_from(LlmConfiguration))) or 0
+    items = (
+        await session.execute(
+            select(LlmConfiguration).order_by(LlmConfiguration.id).limit(limit).offset(offset)
+        )
+    ).scalars()
+    return PageRead(items=list(items), total=total, limit=limit, offset=offset)
 
 
 async def _apply_llm_configuration(

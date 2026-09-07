@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.core.pagination import PageRead
 from app.db.session import get_session
 from app.modules.security.models import AuditEvent, Menu, Permission, Role, User
 from app.modules.security.schemas import (
@@ -93,19 +94,26 @@ async def get_current_session(
     )
 
 
-@router.get("/users", response_model=list[UserRead])
+@router.get("/users", response_model=PageRead[UserRead])
 async def list_users(
     _: User = Depends(require_permission("security.users.read")),
     session: AsyncSession = Depends(get_session),
-) -> list[UserRead]:
+    limit: int = Query(default=10, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+) -> PageRead[UserRead]:
+    total = (await session.scalar(select(func.count()).select_from(User))) or 0
     users = (
         await session.execute(
             select(User)
             .options(selectinload(User.roles).selectinload(Role.permissions))
             .order_by(User.id)
+            .limit(limit)
+            .offset(offset)
         )
     ).scalars()
-    return [_user_read(user) for user in users]
+    return PageRead(
+        items=[_user_read(user) for user in users], total=total, limit=limit, offset=offset
+    )
 
 
 @router.post("/users", response_model=UserRead, status_code=status.HTTP_201_CREATED)
@@ -173,17 +181,29 @@ async def update_user(
     return _user_read(user)
 
 
-@router.get("/roles", response_model=list[RoleRead])
+@router.get("/roles", response_model=PageRead[RoleRead])
 async def list_roles(
     _: User = Depends(require_permission("security.roles.read")),
     session: AsyncSession = Depends(get_session),
-) -> list[RoleRead]:
+    limit: int = Query(default=10, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+) -> PageRead[RoleRead]:
+    total = (await session.scalar(select(func.count()).select_from(Role))) or 0
     items = (
         await session.execute(
-            select(Role).options(selectinload(Role.permissions)).order_by(Role.id)
+            select(Role)
+            .options(selectinload(Role.permissions))
+            .order_by(Role.id)
+            .limit(limit)
+            .offset(offset)
         )
     ).scalars()
-    return [RoleRead.model_validate(item) for item in items]
+    return PageRead(
+        items=[RoleRead.model_validate(item) for item in items],
+        total=total,
+        limit=limit,
+        offset=offset,
+    )
 
 
 @router.post("/roles", response_model=RoleRead, status_code=status.HTTP_201_CREATED)
@@ -282,13 +302,25 @@ async def update_role(
     return RoleRead.model_validate(role)
 
 
-@router.get("/permissions", response_model=list[PermissionRead])
+@router.get("/permissions", response_model=PageRead[PermissionRead])
 async def list_permissions(
     _: User = Depends(require_permission("security.permissions.read")),
     session: AsyncSession = Depends(get_session),
-) -> list[PermissionRead]:
-    items = (await session.execute(select(Permission).order_by(Permission.code))).scalars()
-    return [PermissionRead.model_validate(item) for item in items]
+    limit: int = Query(default=10, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+) -> PageRead[PermissionRead]:
+    total = (await session.scalar(select(func.count()).select_from(Permission))) or 0
+    items = (
+        await session.execute(
+            select(Permission).order_by(Permission.code).limit(limit).offset(offset)
+        )
+    ).scalars()
+    return PageRead(
+        items=[PermissionRead.model_validate(item) for item in items],
+        total=total,
+        limit=limit,
+        offset=offset,
+    )
 
 
 @router.post("/permissions", response_model=PermissionRead, status_code=status.HTTP_201_CREATED)
@@ -336,17 +368,29 @@ async def update_permission(
     return permission
 
 
-@router.get("/menus", response_model=list[MenuRead])
+@router.get("/menus", response_model=PageRead[MenuRead])
 async def list_menus(
     _: User = Depends(require_permission("security.menus.read")),
     session: AsyncSession = Depends(get_session),
-) -> list[MenuRead]:
+    limit: int = Query(default=10, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+) -> PageRead[MenuRead]:
+    total = (await session.scalar(select(func.count()).select_from(Menu))) or 0
     items = (
         await session.execute(
-            select(Menu).options(selectinload(Menu.permissions)).order_by(Menu.position)
+            select(Menu)
+            .options(selectinload(Menu.permissions))
+            .order_by(Menu.position)
+            .limit(limit)
+            .offset(offset)
         )
     ).scalars()
-    return [MenuRead.model_validate(item) for item in items]
+    return PageRead(
+        items=[MenuRead.model_validate(item) for item in items],
+        total=total,
+        limit=limit,
+        offset=offset,
+    )
 
 
 @router.post("/menus", response_model=MenuRead, status_code=status.HTTP_201_CREATED)
@@ -426,13 +470,17 @@ async def update_menu(
     return menu
 
 
-@router.get("/audit-events", response_model=list[AuditEventRead])
+@router.get("/audit-events", response_model=PageRead[AuditEventRead])
 async def list_audit_events(
     _: User = Depends(require_permission("audit.read")),
     session: AsyncSession = Depends(get_session),
-) -> list[AuditEvent]:
-    return list(
-        (
-            await session.execute(select(AuditEvent).order_by(AuditEvent.id.desc()).limit(200))
-        ).scalars()
-    )
+    limit: int = Query(default=10, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+) -> PageRead[AuditEventRead]:
+    total = (await session.scalar(select(func.count()).select_from(AuditEvent))) or 0
+    items = (
+        await session.execute(
+            select(AuditEvent).order_by(AuditEvent.id.desc()).limit(limit).offset(offset)
+        )
+    ).scalars()
+    return PageRead(items=list(items), total=total, limit=limit, offset=offset)
