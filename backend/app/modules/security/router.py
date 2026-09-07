@@ -12,11 +12,14 @@ from app.modules.security.schemas import (
     LoginRequest,
     MenuCreate,
     MenuRead,
+    MenuUpdate,
     PermissionCreate,
     PermissionRead,
+    PermissionUpdate,
     RoleCreate,
     RolePermissionsUpdate,
     RoleRead,
+    RoleUpdate,
     SessionRead,
     TokenResponse,
     UserCreate,
@@ -249,6 +252,36 @@ async def update_role_permissions(
     return RoleRead.model_validate(role)
 
 
+@router.patch("/roles/{role_id}", response_model=RoleRead)
+async def update_role(
+    role_id: int,
+    payload: RoleUpdate,
+    actor: User = Depends(require_permission("security.roles.write")),
+    session: AsyncSession = Depends(get_session),
+) -> RoleRead:
+    role = (
+        await session.execute(
+            select(Role).where(Role.id == role_id).options(selectinload(Role.permissions))
+        )
+    ).scalar_one_or_none()
+    if role is None:
+        raise HTTPException(status_code=404, detail="Rol no encontrado.")
+    if payload.is_active is False and role.code == "administrator":
+        raise HTTPException(
+            status_code=422,
+            detail="El rol administrador inicial no puede desactivarse en esta fase.",
+        )
+    if payload.name is not None:
+        role.name = payload.name
+    if payload.description is not None:
+        role.description = payload.description
+    if payload.is_active is not None:
+        role.is_active = payload.is_active
+    await add_audit_event(session, actor.id, "security.role.update", "role", str(role.id))
+    await session.commit()
+    return RoleRead.model_validate(role)
+
+
 @router.get("/permissions", response_model=list[PermissionRead])
 async def list_permissions(
     _: User = Depends(require_permission("security.permissions.read")),
@@ -273,6 +306,31 @@ async def create_permission(
     await session.flush()
     await add_audit_event(
         session, actor.id, "security.permission.create", "permission", str(permission.id)
+    )
+    await session.commit()
+    return permission
+
+
+@router.patch("/permissions/{permission_id}", response_model=PermissionRead)
+async def update_permission(
+    permission_id: int,
+    payload: PermissionUpdate,
+    actor: User = Depends(require_permission("security.permissions.write")),
+    session: AsyncSession = Depends(get_session),
+) -> Permission:
+    permission = (
+        await session.execute(select(Permission).where(Permission.id == permission_id))
+    ).scalar_one_or_none()
+    if permission is None:
+        raise HTTPException(status_code=404, detail="Permiso no encontrado.")
+    if payload.name is not None:
+        permission.name = payload.name
+    if payload.description is not None:
+        permission.description = payload.description
+    if payload.is_active is not None:
+        permission.is_active = payload.is_active
+    await add_audit_event(
+        session, actor.id, "security.permission.update", "permission", str(permission.id)
     )
     await session.commit()
     return permission
@@ -322,6 +380,49 @@ async def create_menu(
     await add_audit_event(session, actor.id, "security.menu.create", "menu", str(menu.id))
     await session.commit()
     await session.refresh(menu, ["permissions"])
+    return menu
+
+
+@router.patch("/menus/{menu_id}", response_model=MenuRead)
+async def update_menu(
+    menu_id: int,
+    payload: MenuUpdate,
+    actor: User = Depends(require_permission("security.menus.write")),
+    session: AsyncSession = Depends(get_session),
+) -> Menu:
+    menu = (
+        await session.execute(
+            select(Menu).where(Menu.id == menu_id).options(selectinload(Menu.permissions))
+        )
+    ).scalar_one_or_none()
+    if menu is None:
+        raise HTTPException(status_code=404, detail="Menú no encontrado.")
+    if payload.path is not None and payload.path != menu.path:
+        duplicate = (
+            await session.execute(select(Menu).where(Menu.path == payload.path))
+        ).scalar_one_or_none()
+        if duplicate is not None:
+            raise HTTPException(status_code=409, detail="La ruta del menú ya existe.")
+        menu.path = payload.path
+    if payload.label is not None:
+        menu.label = payload.label
+    if payload.position is not None:
+        menu.position = payload.position
+    if payload.is_active is not None:
+        menu.is_active = payload.is_active
+    if payload.permission_ids is not None:
+        permissions = list(
+            (
+                await session.execute(
+                    select(Permission).where(Permission.id.in_(payload.permission_ids))
+                )
+            ).scalars()
+        )
+        if len(permissions) != len(set(payload.permission_ids)):
+            raise HTTPException(status_code=422, detail="Uno o más permisos no existen.")
+        menu.permissions = permissions
+    await add_audit_event(session, actor.id, "security.menu.update", "menu", str(menu.id))
+    await session.commit()
     return menu
 
 

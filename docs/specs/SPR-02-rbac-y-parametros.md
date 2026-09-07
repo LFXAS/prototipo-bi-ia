@@ -152,7 +152,7 @@ Los valores son umbrales de prueba, no restricciones rígidas. El criterio real 
 - [ ] Formularios, tablas, diálogos y avisos cubren estados de carga, vacío, error y éxito, con texto comprensible y foco visible.
 - [ ] Cada control relevante tiene etiqueta accesible; los errores no dependen exclusivamente de color; una comprobación de contraste documenta los resultados de las pantallas principales.
 - [ ] Pruebas de backend, frontend, migraciones y CI pasan dentro de Docker.
-- [ ] Cada recurso administrativo del Sprint 2 cuenta con CRUD completo en API e interfaz, con permisos y eventos de auditoría verificables.
+- [x] Cada recurso administrativo del Sprint 2 cuenta con alta, consulta, edición y desactivación lógica en API e interfaz, con permisos y eventos de auditoría verificables. La auditoría permanece deliberadamente en modo consulta.
 
 ## 7. Plan de pruebas y evidencia
 
@@ -166,4 +166,4 @@ Antes de implementar se definirá el conjunto inicial de permisos y la política
 
 ## 9. Resultado de implementación
 
-Implementación en curso en `feature/rbac-y-parametros`. Se creó la migración `20260906_01`, el servicio automático `migrate`, la semilla segura de rol/usuario administrador, JWT con Argon2, endpoints RBAC y de parámetros, adaptadores de comprobación LLM y el cascarón React responsive con acceso, menú autorizado, cierre de sesión y vistas de consulta. La verificación integrada comprobó migración, inicio de sesión, sesión autorizada y consultas protegidas en Docker. Aún faltan los formularios completos de administración en React, las pruebas de acceso denegado y de configuración LLM, la inspección responsive documentada y el PR/CI final.
+Implementación en curso en `feature/rbac-y-parametros`. Se crearon las migraciones `20260906_01` y `20260906_02`, el servicio automático `migrate`, la semilla segura de rol/usuario administrador, JWT con Argon2, endpoints RBAC y de parámetros, adaptadores de comprobación LLM y el cascarón React responsive. La interfaz permite crear y editar usuarios, roles, permisos, menús, parámetros y configuraciones LLM; las asociaciones se ingresan con identificadores explícitos y los recursos admiten activación o desactivación lógica. La auditoría es consultable y no editable. La verificación dentro de Docker confirmó migración, inicio de sesión, sesión autorizada, consultas protegidas, pruebas del backend y lint, pruebas y compilación del frontend. Aún faltan pruebas negativas específicas de autorización y de adaptadores LLM, evidencia visual responsive documentada y el PR/CI final.

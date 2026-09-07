@@ -94,6 +94,7 @@ class Permission(Base):
     code: Mapped[str] = mapped_column(String(120), unique=True, index=True)
     name: Mapped[str] = mapped_column(String(160))
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     roles: Mapped[list[Role]] = relationship(
         secondary=role_permissions, back_populates="permissions"

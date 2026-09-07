@@ -24,12 +24,19 @@ class PermissionRead(BaseModel):
     code: str
     name: str
     description: str | None = None
+    is_active: bool
 
 
 class PermissionCreate(BaseModel):
     code: str = Field(pattern=r"^[a-z0-9]+(?:[._-][a-z0-9]+)*$", max_length=120)
     name: str = Field(min_length=3, max_length=160)
     description: str | None = Field(default=None, max_length=1000)
+
+
+class PermissionUpdate(BaseModel):
+    name: str | None = Field(default=None, min_length=3, max_length=160)
+    description: str | None = Field(default=None, max_length=1000)
+    is_active: bool | None = None
 
 
 class RoleRead(BaseModel):
@@ -52,6 +59,12 @@ class RoleCreate(BaseModel):
 
 class RolePermissionsUpdate(BaseModel):
     permission_ids: list[int]
+
+
+class RoleUpdate(BaseModel):
+    name: str | None = Field(default=None, min_length=3, max_length=120)
+    description: str | None = Field(default=None, max_length=1000)
+    is_active: bool | None = None
 
 
 class UserRead(BaseModel):
@@ -94,6 +107,14 @@ class MenuCreate(BaseModel):
     path: str = Field(pattern=r"^/.*", max_length=160)
     position: int = Field(default=0, ge=0)
     permission_ids: list[int] = []
+
+
+class MenuUpdate(BaseModel):
+    label: str | None = Field(default=None, min_length=2, max_length=120)
+    path: str | None = Field(default=None, pattern=r"^/.*", max_length=160)
+    position: int | None = Field(default=None, ge=0)
+    is_active: bool | None = None
+    permission_ids: list[int] | None = None
 
 
 class AuditEventRead(BaseModel):

@@ -107,7 +107,11 @@ async def current_user(
 
 def user_permission_codes(user: User) -> set[str]:
     return {
-        permission.code for role in user.roles if role.is_active for permission in role.permissions
+        permission.code
+        for role in user.roles
+        if role.is_active
+        for permission in role.permissions
+        if permission.is_active
     }
 
 

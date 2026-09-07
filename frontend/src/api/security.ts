@@ -1,6 +1,6 @@
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? ''
 
-export type Permission = { id: number; code: string; name: string; description?: string }
+export type Permission = { id: number; code: string; name: string; description?: string; is_active: boolean }
 export type Role = { id: number; code: string; name: string; description?: string; is_active: boolean; permissions: Permission[] }
 export type Menu = { id: number; code: string; label: string; path: string; position: number; is_active: boolean; permissions: Permission[] }
 export type User = { id: number; email: string; full_name: string; is_active: boolean; roles: Role[] }
@@ -31,4 +31,7 @@ export const api = {
   parameters: (token: string) => request<Parameter[]>('/parameters', token),
   llm: (token: string) => request<LlmConfiguration[]>('/llm-configurations', token),
   audit: (token: string) => request<AuditEvent[]>('/audit-events', token),
+  create: <T>(path: string, token: string, body: object) => request<T>(path, token, { method: 'POST', body: JSON.stringify(body) }),
+  update: <T>(path: string, token: string, body: object) => request<T>(path, token, { method: 'PATCH', body: JSON.stringify(body) }),
+  upsert: <T>(path: string, token: string, body: object) => request<T>(path, token, { method: 'PUT', body: JSON.stringify(body) }),
 }
