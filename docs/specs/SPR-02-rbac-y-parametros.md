@@ -16,7 +16,7 @@ React debe presentar estas capacidades mediante una interfaz clara, accesible y 
 
 ## 2. Alcance y exclusiones
 
-- Incluido: migración inicial PostgreSQL, usuarios, roles, permisos, asignaciones, menús, auditoría, autenticación y autorización mínima; parámetros de conexión sin secretos visibles en la interfaz; prueba controlada de acceso lector a AdventureWorks; configuración de un proveedor LLM activo mediante parámetros no secretos; cascarón de aplicación responsive, navegación por permisos, vistas de acceso y administración, componentes visuales reutilizables y estados de carga, vacío, error y acceso denegado.
+- Incluido: migración inicial PostgreSQL, usuarios, roles, permisos, asignaciones, menús, auditoría, autenticación y autorización mínima; CRUD completo de los recursos administrables del sprint; parámetros de conexión sin secretos visibles en la interfaz; prueba controlada de acceso lector a AdventureWorks; configuración de un proveedor LLM activo mediante parámetros no secretos; cascarón de aplicación responsive, navegación por permisos, vistas de acceso y administración, componentes visuales reutilizables y estados de carga, vacío, error y acceso denegado.
 - Excluido: SSO institucional, recuperación de contraseña por correo, administración avanzada multiempresa, conectores universales, varios proveedores LLM ejecutándose simultáneamente, generación de propuestas BI por LLM con metadatos de negocio, introspección automática, ETL, dashboard BI completo, temas visuales configurables por usuario y una biblioteca de diseño independiente.
 
 ## 3. Actores, flujo y reglas
@@ -50,6 +50,21 @@ React debe presentar estas capacidades mediante una interfaz clara, accesible y 
 - Migraciones: `app.users`, `app.roles`, `app.permissions`, `app.user_roles`, `app.role_permissions`, `app.menus`, `app.menu_permissions`, `app.audit_events`, parámetros de conexión y una configuración LLM no secreta.
 - API prevista: autenticación, sesión actual, administración mínima RBAC, menú autorizado, prueba de conexión aprobada y administración de configuración LLM. Los contratos devolverán errores consistentes para validación, sesión vencida, falta de permiso, conflicto y fallo controlado de conexión.
 - Interfaz prevista: inicio de sesión, página inicial autorizada, pantalla de cuenta sin módulos, administración de usuarios, roles, permisos, menús, parámetros y configuración LLM, además de menú dinámico. No incluye dashboard BI en este sprint.
+
+### 4.0 CRUD administrativo obligatorio
+
+Los recursos que este sprint administra deben contar con operaciones completas de crear, consultar, actualizar y desactivar o eliminar de manera controlada, tanto en la API como en las pantallas autorizadas. El término ``eliminar'' no autoriza borrar información crítica sin análisis: usuarios, roles, permisos, menús y configuraciones que tengan relaciones o trazabilidad se desactivarán por defecto; una eliminación física sólo podrá habilitarse cuando no existan dependencias y la especificación del recurso lo permita.
+
+| Recurso | Operaciones requeridas | Regla de seguridad y auditoría |
+|---|---|---|
+| Usuarios | Crear, consultar, editar, activar/desactivar y asignar roles. | Requiere permisos `security.users.*`; auditar creación, cambios de estado, contraseña y roles sin registrar secretos. |
+| Roles | Crear, consultar, editar, activar/desactivar y asignar permisos. | Requiere `security.roles.*`; no desactivar el último rol administrador operativo. |
+| Permisos | Crear, consultar, editar y desactivar cuando no esté asignado. | Requiere `security.permissions.*`; los códigos son estables y no se borran si están en uso. |
+| Menús | Crear, consultar, editar, activar/desactivar y relacionar permisos. | Requiere `security.menus.*`; la API determina el menú visible. |
+| Parámetros | Crear, consultar, editar y activar/desactivar. | Requiere `parameters.*`; nunca se usa para almacenar secretos. |
+| Configuración LLM | Crear, consultar, editar, activar/desactivar y probar. | Requiere `parameters.llm.*`; existe una única configuración activa y no se persisten claves. |
+
+Cada operación modificadora debe validar la autorización en FastAPI, devolver un resultado comprensible para la interfaz y registrar un evento en `audit_events` con actor, tipo de acción, recurso y detalle seguro. React puede ocultar acciones no permitidas, pero el backend siempre las valida.
 
 ### 4.1 Parámetro de proveedor LLM
 
@@ -137,6 +152,7 @@ Los valores son umbrales de prueba, no restricciones rígidas. El criterio real 
 - [ ] Formularios, tablas, diálogos y avisos cubren estados de carga, vacío, error y éxito, con texto comprensible y foco visible.
 - [ ] Cada control relevante tiene etiqueta accesible; los errores no dependen exclusivamente de color; una comprobación de contraste documenta los resultados de las pantallas principales.
 - [ ] Pruebas de backend, frontend, migraciones y CI pasan dentro de Docker.
+- [ ] Cada recurso administrativo del Sprint 2 cuenta con CRUD completo en API e interfaz, con permisos y eventos de auditoría verificables.
 
 ## 7. Plan de pruebas y evidencia
 
