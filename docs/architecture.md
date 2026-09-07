@@ -18,7 +18,7 @@ configuración interna, RBAC, auditoría y datamart
 
 - `frontend`: Vite con recarga en desarrollo; Nginx en la imagen de producción.
 - `frontend-delivery`: perfil opcional `delivery`; sirve con Nginx el frontend compilado en el puerto 8080 y comparte el backend y las bases de desarrollo. Permite validar el artefacto web sin reemplazar contenedores.
-- `backend`: FastAPI con recarga en desarrollo; Uvicorn sin recarga y usuario no privilegiado en producción.
+- `backend`: FastAPI con recarga en desarrollo; Uvicorn sin recarga y usuario no privilegiado en producción. El servicio `migrate` aplica Alembic antes de iniciar la API.
 - `postgres`: instancia aislada del proyecto, con esquemas `app` y `mart` inicializados en un volumen nombrado.
 - `sqlserver`: instancia aislada del proyecto; descarga y restaura AdventureWorks de forma idempotente en un volumen nombrado.
 
@@ -48,7 +48,7 @@ No se recomienda una VM ARM para este conjunto porque SQL Server para Linux requ
 - `forecasting`: regresión lineal y métricas MAPE/RMSE.
 - `reports`: evidencias y reportes académicos.
 
-Sólo `system` contiene comportamiento en esta entrega.
+En el Sprint 2, `system`, `security` y `parameters` contienen comportamiento. Los demás módulos siguen siendo límites arquitectónicos reservados para sprints posteriores.
 
 ## Contrato de evolución (SDD)
 
@@ -56,7 +56,7 @@ Desde el Sprint 2, cada módulo sólo incorpora capacidad funcional a partir de 
 
 ## RBAC previsto
 
-Entidades mínimas: `users`, `roles`, `permissions`, `user_roles`, `role_permissions`, `menus`, `menu_permissions` y `audit_events`.
+Entidades implementadas: `users`, `roles`, `permissions`, `user_roles`, `role_permissions`, `menus`, `menu_permissions`, `audit_events`, `parameters` y `llm_configurations`, todas bajo el esquema `app`.
 
 Reglas arquitectónicas:
 

@@ -1,8 +1,10 @@
 from fastapi import APIRouter
 
+from app.modules.parameters.router import router as parameters_router
+from app.modules.security.router import router as security_router
 from app.modules.system.router import router as system_router
 
 api_router = APIRouter()
 api_router.include_router(system_router)
-
-# Los routers de security, parameters y negocio se agregaran en iteraciones posteriores.
+api_router.include_router(security_router)
+api_router.include_router(parameters_router)

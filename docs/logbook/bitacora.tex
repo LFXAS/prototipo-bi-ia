@@ -363,6 +363,27 @@ El manual técnico y el informe del sprint pertenecen a la tesis y conservan ref
 
 La plataforma usará un cascarón React reusable y menús derivados de permisos ya validados por FastAPI. La interfaz ofrece orientación y prevención de errores, pero no reemplaza las decisiones de autorización del backend. Se privilegiarán componentes nativos y CSS mantenible; una biblioteca visual externa sólo se evaluará con justificación explícita. La configuración del LLM será administrable con un único proveedor activo: Gemini Cloud, Qwen Cloud u Ollama local. Su conexión será comprobable mediante una prueba real, limitada y sin datos del negocio. Las solicitudes generativas sobre BI sólo podrán ser realizadas posteriormente por el módulo \file{copilot}, usando una configuración activa validada y sin exponer credenciales.
 
+\clearpage
+\subsection{6 de septiembre de 2026 - Implementación inicial del Sprint 2}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Migración Sprint 2 & \statusok & Se incorporó la revisión Alembic \file{20260906\_01}, que crea en el esquema \file{app} las tablas de RBAC, auditoría, parámetros y configuración LLM no secreta. El servicio \file{migrate} la ejecuta antes de FastAPI. \\
+  Seguridad & \statusok & Se implementaron hash Argon2, JWT de vida limitada, cuenta administradora inicial por variables de entorno, permisos estables, menús autorizados y auditoría de acceso y cambios administrativos. \\
+  Parámetros y fuente externa & \statusok & Se implementaron parámetros no secretos, prueba lectora de AdventureWorks mediante la cuenta configurada y adaptadores acotados para Gemini, Qwen Cloud y Ollama local. Las claves siguen exclusivamente en variables de entorno. \\
+  Interfaz base & \statusok & React incorpora acceso, cierre de sesión, navegación derivada de permisos, avisos y vistas de consulta para los recursos del sprint. El cascarón usa CSS responsive desde 320 px. \\
+  Verificación integrada & \statusok & En Docker se comprobó la migración, la creación del administrador, el inicio de sesión JWT, la sesión con ocho menús autorizados y las consultas protegidas de usuarios, roles, permisos, menús, parámetros, LLM y auditoría. \\
+  Pendiente de cierre & \statuspending & Faltan formularios administrativos completos en React, pruebas negativas de autorización y de adaptadores, evidencia visual responsive, \file{make verify} final y el PR hacia \file{develop}. \\
+  \bottomrule
+\end{longtable}
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}X l X@{}}
@@ -413,6 +434,7 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   0.2.1 & 04-09-2026 & Ampliación SDD del Sprint 2: UI/UX responsive, flujos, navegación, componentes, accesibilidad y criterios verificables previos a la implementación de RBAC. \\
   0.2.2 & 04-09-2026 & Se incorporó la configuración segura y parametrizable de un proveedor LLM para el prototipo, sin adelantar la generación de propuestas BI. \\
   0.2.3 & 04-09-2026 & Se aprobó el catálogo inicial Gemini Cloud, Qwen Cloud y Ollama local; el ADR 0002 define secreto por referencia, adaptadores y \file{qwen3:4b} como opción local. \\
+  0.2.4 & 06-09-2026 & Implementación inicial del Sprint 2: migración RBAC/parámetros, JWT, auditoría, adaptadores LLM, cascarón React responsive y verificación integrada en Docker. \\
   \bottomrule
 \end{tabularx}
 

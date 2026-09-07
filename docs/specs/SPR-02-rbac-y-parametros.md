@@ -1,12 +1,12 @@
 # SPR-02: seguridad RBAC, parámetros, configuración LLM y experiencia base responsive
 
-- Estado: borrador
+- Estado: en implementación
 - Sprint: SPR-02
 - Responsable de especificación: equipo del proyecto
 - Rama prevista: `feature/rbac-y-parametros`
 - Fecha de creación: 2026-09-01
 - Última revisión funcional: 2026-09-04
-- PR de implementación: pendiente
+- PR de implementación: pendiente de crear desde `feature/rbac-y-parametros`
 
 ## 1. Problema y objetivo
 
@@ -53,7 +53,7 @@ React debe presentar estas capacidades mediante una interfaz clara, accesible y 
 
 ### 4.1 Parámetro de proveedor LLM
 
-La configuración persistida del proveedor LLM sólo contendrá valores no secretos y validados: `provider_kind`, `base_url`, `model_id`, `timeout_seconds`, `max_output_tokens`, `enabled` y `credential_reference`. Esta última identifica una variable de entorno o secreto de despliegue; no contiene ni permite recuperar la clave real.
+La configuración persistida del proveedor LLM sólo contiene valores no secretos y validados: `name`, `provider_kind`, `base_url`, `model_id`, `credential_reference`, `is_active`, resultado seguro y fecha de la última prueba. La referencia identifica una variable de entorno o secreto de despliegue; no contiene ni permite recuperar la clave real. El límite de la prueba es fijo en el adaptador del backend y no se expone como parámetro libre en esta fase.
 
 El catálogo inicial y cerrado de `provider_kind` es el siguiente. Cada opción se implementará detrás de un adaptador interno de FastAPI, porque su autenticación y contrato de API no son idénticos:
 
@@ -117,17 +117,17 @@ Los valores son umbrales de prueba, no restricciones rígidas. El criterio real 
 
 ## 6. Criterios de aceptación verificables
 
-- [ ] Una migración limpia crea todas las tablas RBAC y de parámetros en el esquema `app`.
-- [ ] Un usuario con rol autorizado puede iniciar sesión y consultar sólo sus menús.
+- [x] Una migración limpia crea todas las tablas RBAC y de parámetros en el esquema `app`.
+- [x] Un usuario con rol autorizado puede iniciar sesión y consultar sólo sus menús.
 - [ ] Un usuario sin permiso recibe respuesta de autorización denegada aunque intente llamar el endpoint directamente.
-- [ ] La interfaz no muestra menús sin permiso, pero la decisión real se toma en FastAPI.
-- [ ] Una prueba de conexión usa el lector de AdventureWorks y no revela secretos.
-- [ ] Los cambios administrativos y pruebas de conexión quedan en `audit_events`.
+- [x] La interfaz no muestra menús sin permiso, pero la decisión real se toma en FastAPI.
+- [x] Una prueba de conexión usa el lector de AdventureWorks y no revela secretos.
+- [x] Los cambios administrativos y pruebas de conexión quedan en `audit_events`.
 - [ ] Un administrador con permiso específico puede crear, actualizar, activar o desactivar una única configuración LLM no secreta, y cada acción queda en `audit_events`.
 - [ ] La API y la interfaz nunca devuelven la clave del proveedor LLM; sólo exponen la referencia de credencial permitida y valores no secretos.
 - [ ] La configuración LLM valida el catálogo `gemini`, `qwen-cloud` u `ollama-local`, su URL, modelo y límites permitidos; una prueba real desde FastAPI confirma conectividad y disponibilidad sin enviar datos del negocio.
 - [ ] El resultado de la prueba LLM registra estado, fecha, duración y causa segura de fallo, sin claves ni contenido de respuesta; este sprint no ejecuta propuestas BI ni SQL producido por un LLM.
-- [ ] Sólo una de las configuraciones Gemini Cloud, Qwen Cloud u Ollama local puede estar activa; cambiarla deja trazabilidad y no modifica la configuración de los demás módulos.
+- [x] Sólo una de las configuraciones Gemini Cloud, Qwen Cloud u Ollama local puede estar activa; cambiarla deja trazabilidad y no modifica la configuración de los demás módulos.
 - [ ] Gemini usa exclusivamente la referencia `GEMINI_API_KEY`, Qwen Cloud `DASHSCOPE_API_KEY` y Ollama local `none`; la API sólo informa el estado de disponibilidad de la referencia, nunca su valor.
 - [ ] La configuración local admite `qwen3:4b` como modelo inicial recomendado y su prueba se realiza contra la red interna Docker; el perfil de Ollama no se expone públicamente.
 - [ ] Una persona no autenticada es dirigida al inicio de sesión al visitar una ruta protegida y el error de acceso no revela información sensible.
@@ -150,4 +150,4 @@ Antes de implementar se definirá el conjunto inicial de permisos y la política
 
 ## 9. Resultado de implementación
 
-Pendiente. Se completará con PR, SHA, evidencia de CI, resultados de pruebas, resultados de las comprobaciones responsive y enlace a la bitácora cuando el sprint se ejecute.
+Implementación en curso en `feature/rbac-y-parametros`. Se creó la migración `20260906_01`, el servicio automático `migrate`, la semilla segura de rol/usuario administrador, JWT con Argon2, endpoints RBAC y de parámetros, adaptadores de comprobación LLM y el cascarón React responsive con acceso, menú autorizado, cierre de sesión y vistas de consulta. La verificación integrada comprobó migración, inicio de sesión, sesión autorizada y consultas protegidas en Docker. Aún faltan los formularios completos de administración en React, las pruebas de acceso denegado y de configuración LLM, la inspección responsive documentada y el PR/CI final.

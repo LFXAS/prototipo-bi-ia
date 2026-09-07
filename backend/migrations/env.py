@@ -12,7 +12,8 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-config.set_main_option("sqlalchemy.url", get_settings().postgres_sync_url)
+# ConfigParser interpreta el signo %; se duplica para conservar contraseñas URL-codificadas.
+config.set_main_option("sqlalchemy.url", get_settings().postgres_sync_url.replace("%", "%%"))
 target_metadata = Base.metadata
 
 

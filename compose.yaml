@@ -59,6 +59,13 @@ services:
       APP_DEBUG: ${APP_DEBUG:-true}
       APP_VERSION: ${APP_VERSION:-0.1.0}
       CORS_ORIGINS: ${CORS_ORIGINS:-["http://localhost:5173"]}
+      JWT_SECRET: ${JWT_SECRET:-ChangeMe_JWT_2026!}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+      JWT_ACCESS_TOKEN_MINUTES: ${JWT_ACCESS_TOKEN_MINUTES:-30}
+      BOOTSTRAP_ADMIN_EMAIL: ${BOOTSTRAP_ADMIN_EMAIL:-admin@bi.local}
+      BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-ChangeMe_Admin_2026!}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY:-}
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
       POSTGRES_DB: ${POSTGRES_DB:-bi_prototype}
@@ -88,7 +95,25 @@ services:
         condition: service_healthy
       sqlserver:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     restart: unless-stopped
+
+  migrate:
+    build:
+      context: ./backend
+      target: development
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-bi_prototype}
+      POSTGRES_USER: ${POSTGRES_USER:-bi_app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMe_Postgres_2026!}
+    command: alembic upgrade head
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
 
   frontend:
     build:
