@@ -42,6 +42,8 @@ React debe presentar estas capacidades mediante una interfaz clara, accesible y 
 - La ruta inicial autenticada se determina por el primer menú permitido; si no existe, se muestra una pantalla de cuenta sin módulos asignados con una explicación para solicitar acceso.
 - Las rutas deben tener título visible, una ubicación dentro de la navegación agrupada y una acción principal inequívoca cuando corresponda.
 - La navegación no debe depender sólo de iconos, color, desplazamiento horizontal ni de mantener el cursor sobre un elemento.
+- Cada módulo de navegación es una opción de menú padre desplegable. Al seleccionar su encabezado, por ejemplo **Seguridad**, se pliega o despliega su lista de submenús autorizados. La ruta activa debe mantener abierto su módulo padre; los demás módulos pueden permanecer plegados para reducir ruido visual. **Principal** se presenta como módulo padre y contiene Inicio.
+- El control del módulo debe comunicar su estado expandido o plegado mediante texto y atributo accesible (`aria-expanded`); el indicador visual de flecha complementa el texto, pero no lo reemplaza. Debe responder a teclado, clic y táctil.
 - Al cambiar de ruta se conserva el foco lógico en el título principal; cuando se abre un diálogo, el foco queda dentro de él y vuelve al control que lo abrió al cerrarlo.
 - Cerrar sesión estará siempre disponible para la persona autenticada y eliminará la sesión local antes de redirigir al acceso.
 
@@ -72,7 +74,7 @@ Cada operación modificadora debe validar la autorización en FastAPI, devolver 
 
 Los parámetros generales son valores operativos no secretos que permiten variar el comportamiento de la plataforma sin cambiar ni volver a desplegar código. Por ejemplo, en sprints posteriores podrán registrar límites de carga ETL, período de retención de auditoría, nombre de un origen aprobado, opciones de presentación o valores que el módulo BI use como configuración. No sustituyen una base de datos de negocio, no almacenan credenciales, contraseñas, tokens ni cadenas de conexión completas, y no habilitan ejecutar instrucciones arbitrarias. Cada clave es única, tiene una descripción humana, se puede activar o desactivar y conserva auditoría de sus cambios.
 
-La pantalla **Parámetros generales** sirve precisamente para que la persona administradora consulte y administre esos valores seguros. En este Sprint 2 puede verse inicialmente vacía: eso es correcto hasta que exista una necesidad funcional aprobada. La configuración de LLM está separada porque tiene validaciones y reglas de seguridad específicas.
+La pantalla **Parámetros generales** sirve precisamente para que la persona administradora consulte y administre esos valores seguros. Ejemplos futuros son `AUDIT_RETENTION_DAYS`, `ETL_BATCH_SIZE`, `DEFAULT_PAGE_SIZE` o `REPORT_TIMEZONE`. En este Sprint 2 puede verse inicialmente vacía: eso es correcto hasta que exista una necesidad funcional aprobada. Actualmente crear un parámetro lo deja disponible y auditado, pero no cambia por sí solo el comportamiento de la aplicación hasta que un módulo posterior declare explícitamente que lo consume. La configuración de LLM está separada porque tiene validaciones y reglas de seguridad específicas.
 
 ### 4.2 Parámetro de proveedor LLM
 
@@ -110,7 +112,7 @@ Los valores son umbrales de prueba, no restricciones rígidas. El criterio real 
 | Componente | Uso y comportamiento mínimo |
 |---|---|
 | Cascarón de aplicación | Encabezado, navegación autorizada, zona principal y cierre de sesión. Debe adaptarse entre menú lateral visible, contraído y desplegable. |
-| Grupo de navegación | Encabezado visible del módulo y opciones autorizadas. La agrupación se obtiene de los datos del menú; no se infiere únicamente por la posición visual. |
+| Grupo de navegación desplegable | Opción de menú padre con encabezado visible del módulo, indicador de expansión y submenús autorizados. La agrupación se obtiene de los datos del menú; no se infiere únicamente por la posición visual. Seguridad despliega Usuarios, Roles, Permisos, Menús y Auditoría; Parámetros generales despliega Parámetros y Configuración LLM. |
 | Formulario y campo | Etiqueta persistente, ayuda opcional, validación junto al campo y resumen de errores cuando aplique. No usar sólo un marcador de posición como etiqueta. |
 | Botón y acción destructiva | Estado normal, foco visible, ocupado y deshabilitado. Las acciones de desactivar o borrar requieren confirmación explícita. |
 | Tabla administrativa | Encabezados claros, estado vacío, carga y error. En móvil se priorizan datos esenciales mediante tarjetas o una presentación equivalente. |
@@ -160,6 +162,7 @@ Los valores son umbrales de prueba, no restricciones rígidas. El criterio real 
 - [ ] El inicio de sesión, el menú y las pantallas administrativas son utilizables desde 320 px, 768 px, 1024 px y 1440 px, sin desplazamiento horizontal involuntario ni pérdida de la acción principal.
 - [x] El menú autorizado se muestra de forma lateral en escritorio y puede abrirse/cerrarse con teclado y táctil en móvil; al navegar devuelve el foco al contenido principal.
 - [x] Los menús autorizados se agrupan por módulo con etiquetas administrables; Seguridad contiene Usuarios, Roles, Permisos, Menús y Auditoría, mientras Parámetros generales contiene Parámetros y Configuración LLM en la semilla inicial.
+- [ ] Cada grupo de menú funciona como un padre plegable/desplegable, conserva abierto el grupo de la ruta activa y expone su estado a tecnologías de asistencia mediante `aria-expanded`.
 - [x] Todas las listas administrativas usan paginación desde API, informan el total y no requieren cargar todos los registros para mostrar la primera página.
 - [ ] Formularios, tablas, diálogos y avisos cubren estados de carga, vacío, error y éxito, con texto comprensible y foco visible.
 - [ ] Cada control relevante tiene etiqueta accesible; los errores no dependen exclusivamente de color; una comprobación de contraste documenta los resultados de las pantallas principales.

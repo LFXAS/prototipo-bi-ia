@@ -67,6 +67,7 @@ export default function App() {
   const [revision, setRevision] = useState(0)
   const [offset, setOffset] = useState(0)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     if (!token) return
@@ -115,6 +116,15 @@ export default function App() {
     setPage('/')
   }
 
+  function isGroupExpanded(group: { code: string; items: Menu[] }) {
+    return group.items.some((menu) => menu.path === page) || expandedGroups[group.code] === true
+  }
+
+  function toggleGroup(group: { code: string; items: Menu[] }) {
+    if (group.items.some((menu) => menu.path === page)) return
+    setExpandedGroups((current) => ({ ...current, [group.code]: !current[group.code] }))
+  }
+
   if (!session) {
     return (
       <main className="login-page">
@@ -142,7 +152,7 @@ export default function App() {
       </header>
       <div className="workspace">
         <aside className={`navigation-panel ${menuOpen ? 'open' : ''}`}><nav id="main-navigation" aria-label="Navegación principal">
-          {Object.values(groupMenus(session.menus)).map((group) => <div className="navigation-group" key={group.code}><p>{group.label}</p>{group.items.map((menu) => <button className={page === menu.path ? 'active' : ''} onClick={() => { setPage(menu.path); setOffset(0); setMenuOpen(false) }} key={menu.id}>{menu.label}</button>)}</div>)}
+          {Object.values(groupMenus(session.menus)).map((group) => <div className="navigation-group" key={group.code}><button className="module-toggle" aria-expanded={isGroupExpanded(group)} aria-controls={`menu-group-${group.code}`} onClick={() => toggleGroup(group)}><span>{group.label}</span><span aria-hidden="true">{isGroupExpanded(group) ? '⌄' : '›'}</span></button><div className="submenu" id={`menu-group-${group.code}`} hidden={!isGroupExpanded(group)}>{group.items.map((menu) => <button className={page === menu.path ? 'active' : ''} onClick={() => { setPage(menu.path); setOffset(0); setMenuOpen(false) }} key={menu.id}>{menu.label}</button>)}</div></div>)}
         </nav></aside>
         <section className="content">
           <h1>{labels[page]}</h1>
