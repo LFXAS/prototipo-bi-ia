@@ -12,6 +12,7 @@ import {
   type Session,
   type User,
 } from './api/security'
+import { roleChoicesForUserAssignment } from './roleChoices'
 
 type PageData =
   | Page<User>
@@ -282,7 +283,7 @@ function Pagination({ page, onChange }: { page: Exclude<PageData, null>; onChang
 function CrudForm({ page, token, selected, onSaved }: { page: string; token: string; selected: Row | null; onSaved: () => void }) {
   const [roles, setRoles] = useState<Role[]>([])
   const [permissions, setPermissions] = useState<Permission[]>([])
-  const config = useMemo(() => formConfig(page, token, roles, permissions), [page, permissions, roles, token])
+  const config = useMemo(() => formConfig(page, token, roles, permissions, selected), [page, permissions, roles, selected, token])
   const [values, setValues] = useState<Values>(config.empty)
   const [error, setError] = useState('')
 
@@ -330,11 +331,11 @@ type Choice = { value: string; label: string; detail?: string }
 type Field = { key: string; label: string; placeholder?: string; secret?: boolean; inputType?: 'email' | 'text'; required?: boolean; kind?: 'select' | 'checks'; options?: Choice[]; help?: string }
 type FormConfig = { singular: string; createTitle: string; help: string; fields: Field[]; empty: Values; read: (row: Row) => Values; create: (values: Values) => Promise<unknown>; update: (row: Row, values: Values) => Promise<unknown> }
 
-function formConfig(page: string, token: string, roles: Role[], permissions: Permission[]): FormConfig {
+function formConfig(page: string, token: string, roles: Role[], permissions: Permission[], selected: Row | null): FormConfig {
   const active = (row: Row) => String(row.is_active ?? true)
   if (page === '/usuarios') return {
     singular: 'usuario', createTitle: 'Crear usuario', help: 'Seleccione uno o varios roles activos. La contraseña nunca se muestra después de guardarla.',
-    fields: [{ key: 'email', label: 'Correo', inputType: 'email', placeholder: 'operador@empresa.com' }, { key: 'full_name', label: 'Nombre completo' }, { key: 'password', label: 'Contraseña', secret: true }, { key: 'role_ids', label: 'Roles asignados', required: false, kind: 'checks', help: 'Marque uno o varios roles. Al editar, cambiar roles no modifica la contraseña.', options: roles.filter((role) => role.is_active).map((role) => ({ value: String(role.id), label: role.name, detail: role.description })) }],
+    fields: [{ key: 'email', label: 'Correo', inputType: 'email', placeholder: 'operador@empresa.com' }, { key: 'full_name', label: 'Nombre completo' }, { key: 'password', label: 'Contraseña', secret: true }, { key: 'role_ids', label: 'Roles asignados', required: false, kind: 'checks', help: 'Marque uno o varios roles. Al editar, cambiar roles no modifica la contraseña. Los roles inactivos ya asignados se muestran sólo para poder retirarlos.', options: roleChoicesForUserAssignment(roles, ((selected?.roles as Row[] | undefined) ?? []).map((role) => String(role.id))) }],
     empty: { email: '', full_name: '', password: '', role_ids: '' }, read: (row) => ({ email: String(row.email), full_name: String(row.full_name), password: '', role_ids: ((row.roles as Row[] | undefined) ?? []).map((role) => role.id).join(',') }),
     create: (v) => api.create('/users', token, { email: v.email, full_name: v.full_name, password: v.password, role_ids: parseSelectedIds(v.role_ids) }),
     update: (row, v) => api.update(`/users/${row.id}`, token, { full_name: v.full_name, ...(v.password ? { password: v.password } : {}), role_ids: parseSelectedIds(v.role_ids) }),

@@ -35,7 +35,7 @@ El modelo interno conserva códigos estables porque los endpoints necesitan una 
 
 1. La persona administradora abre **Seguridad > Usuarios** y ve una lista paginada, con buscador por correo o nombre, estado y roles visibles por nombre.
 2. Al elegir **Crear usuario**, el formulario inicia vacío y presenta correo, nombre, contraseña inicial y una tabla de casillas de roles activos. Cada fila muestra nombre y descripción; no se escriben `role_ids`.
-3. Al elegir **Editar** en una fila, sólo se carga esa cuenta. La tabla marca sus roles actuales; la contraseña queda vacía, no es obligatoria y sólo cambia si se escribe una nueva.
+3. Al elegir **Editar** en una fila, sólo se carga esa cuenta. La tabla marca sus roles actuales; la contraseña queda vacía, no es obligatoria y sólo cambia si se escribe una nueva. Si la cuenta conserva un rol que luego fue desactivado, éste se muestra identificado como **inactivo** únicamente para permitir retirarlo; no se ofrece para asignar a cuentas nuevas.
 4. Al desactivar, se muestra confirmación con la consecuencia. Si es una cuenta protegida o deja sin recuperación administrativa, el control explica por qué no está disponible.
 5. Guardar muestra éxito o un error comprensible y devuelve el formulario a un estado limpio. Cambiar de pantalla descarta la edición sin guardar tras pedir confirmación cuando corresponda.
 
@@ -97,6 +97,7 @@ Toda eliminación exitosa registra actor, fecha, acción `delete`, tipo y identi
 ## 5. Criterios de aceptación
 
 - [ ] Crear y editar un usuario permite seleccionar uno o varios roles activos en una tabla de casillas con nombre y descripción; no existe entrada manual de IDs. Al editar, una contraseña vacía conserva la existente.
+- [ ] Al editar un usuario con un rol inactivo ya asignado, la tabla permite identificarlo y retirarlo; el mismo rol inactivo no se ofrece para una asignación nueva.
 - [ ] Cambiar de Usuarios a cualquier otra vista limpia la selección y no se muestra información, `undefined` ni valores de Usuarios en otro formulario.
 - [ ] El administrador inicial no se puede desactivar ni dejar sin rol administrativo protegido mediante API ni interfaz.
 - [ ] El rol administrativo inicial no se puede desactivar, modificar en su clave técnica ni dejar sin la capacidad mínima de recuperación.
