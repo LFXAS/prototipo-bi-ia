@@ -431,6 +431,26 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   \bottomrule
 \end{longtable}
 
+\clearpage
+\subsection{11 de septiembre de 2026 - Corrección de auditoría y cuentas temporales}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Diagnóstico & \statusok & Se comprobó que una clave foránea restrictiva desde \file{audit\_events.actor\_user\_id} impedía eliminar usuarios temporales que habían ejecutado acciones. La regla era demasiado restrictiva para cuentas de prueba. \\
+  Migración & \statusok & La revisión Alembic \file{20260911\_05} incorpora \file{actor\_label}, conserva la identidad histórica segura y cambia la relación a \file{ON DELETE SET NULL}. \\
+  Regla funcional & \statusok & Una cuenta no protegida puede eliminarse después de resolver sus asociaciones usuario--rol. Los eventos de auditoría no se eliminan: conservan etiqueta histórica y su referencia técnica al actor queda vacía. \\
+  Evidencia & \statusok & Una prueba transaccional creó y eliminó una cuenta temporal; el evento sobrevivió con \file{actor\_user\_id} nulo y etiqueta histórica. La transacción se revirtió sin dejar datos de prueba. \\
+  Trazabilidad & \statusok & La especificación RBAC y la matriz SDD incorporan OBS-21. El cambio queda en el commit \file{ec3cdea} y PR \#30 hacia \file{develop}. \\
+  \bottomrule
+\end{longtable}
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}X l X@{}}
@@ -498,6 +518,7 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   0.2.12 & 10-09-2026 & Corrección de asociaciones: permisos de rol mediante \texttt{PUT}, contraseña opcional al editar y tablas de casillas legibles para roles y permisos. \\
   0.2.13 & 10-09-2026 & Corrección UX de LLM: las pruebas de conexión exitosas se comunican con confirmación verde accesible y los fallos conservan alerta roja. \\
   0.2.14 & 11-09-2026 & Alternativa local Ollama: perfil Docker opcional, modelo persistente por equipo, validación de disponibilidad y documentación operativa sin alterar Sprint 1 ni CI/CD. \\
+  0.2.15 & 11-09-2026 & Corrección de auditoría para usuarios temporales: preserva eventos y etiqueta histórica del actor, permite eliminación física no protegida mediante \file{ON DELETE SET NULL}. \\
   \bottomrule
 \end{longtable}
 
