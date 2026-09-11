@@ -190,6 +190,12 @@ La cuenta y el rol administrativos iniciales poseen una marca persistida de prot
 
 La corrección post-cierre para cuentas temporales permite eliminar un usuario no protegido una vez retiradas sus asociaciones usuario--rol, incluso si fue actor de auditoría. La migración \file{20260911\_05} usa \file{ON DELETE SET NULL} sobre la referencia técnica de actor y conserva una etiqueta histórica segura en el evento. La auditoría permanece disponible, mientras la cuenta temporal deja de existir.
 
+\subsection{Evolución reproducible de base de datos}
+
+El Sprint 2 formaliza la separación entre estructura, catálogo base y datos locales. Alembic aplica cambios de esquema versionados; inmediatamente después, el servicio Compose \file{seed} incorpora de manera idempotente permisos, menús, rol administrador y cuenta inicial protegidos. Así, cada programadora puede actualizar \file{develop} sin copiar un volumen PostgreSQL: su base conserva registros locales no protegidos y recibe el contrato técnico nuevo.
+
+La semilla no transporta auditoría, cuentas temporales, claves, tokens, configuraciones LLM ni datos de negocio. Los datos demostrativos de módulos futuros deberán ser sintéticos, opcionales y aprobados mediante su especificación SDD.
+
 \section{Experiencia de usuario}
 
 La administración se integra en un cascarón responsive. En escritorio se puede contraer o restaurar el panel lateral mediante un chevrón compacto superpuesto al borde. En tableta y móvil se usa el patrón hamburguesa. Los grupos \textbf{Seguridad} y \textbf{Parámetros generales} son plegables incluso cuando contienen la ruta activa; Inicio queda como acceso directo.

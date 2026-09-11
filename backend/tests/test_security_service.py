@@ -3,6 +3,9 @@ import jwt
 from app.core.config import settings
 from app.modules.security.models import AuditEvent
 from app.modules.security.service import (
+    DEFAULT_MENUS,
+    DEFAULT_PERMISSIONS,
+    RECOVERY_PERMISSION_CODES,
     create_access_token,
     generated_role_code,
     hash_password,
@@ -38,3 +41,13 @@ def test_audit_actor_reference_is_cleared_when_a_user_is_deleted() -> None:
     foreign_key = next(iter(AuditEvent.__table__.c.actor_user_id.foreign_keys))
 
     assert foreign_key.ondelete == "SET NULL"
+
+
+def test_seed_catalog_is_consistent_and_has_the_recovery_permissions() -> None:
+    permission_codes = {code for code, _, _ in DEFAULT_PERMISSIONS}
+
+    assert len(permission_codes) == len(DEFAULT_PERMISSIONS)
+    assert RECOVERY_PERMISSION_CODES.issubset(permission_codes)
+    assert all(
+        set(menu_permissions).issubset(permission_codes) for *_, menu_permissions in DEFAULT_MENUS
+    )

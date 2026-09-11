@@ -95,7 +95,7 @@ services:
         condition: service_healthy
       sqlserver:
         condition: service_healthy
-      migrate:
+      seed:
         condition: service_completed_successfully
     restart: unless-stopped
 
@@ -113,6 +113,25 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    restart: "no"
+
+  seed:
+    build:
+      context: ./backend
+      target: development
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      BOOTSTRAP_ADMIN_EMAIL: ${BOOTSTRAP_ADMIN_EMAIL:-admin@bi.local}
+      BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-ChangeMe_Admin_2026!}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-bi_prototype}
+      POSTGRES_USER: ${POSTGRES_USER:-bi_app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMe_Postgres_2026!}
+    command: python -m app.db.seed
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
     restart: "no"
 
   frontend:

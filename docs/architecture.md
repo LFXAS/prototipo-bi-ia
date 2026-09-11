@@ -92,3 +92,9 @@ PostgreSQL alojará dos responsabilidades lógicamente separadas:
 - esquema `mart`: hechos y dimensiones analíticas.
 
 La separación física en bases distintas no es necesaria para la prueba de concepto y puede revisarse si las mediciones lo justifican.
+
+### Evolución reproducible de PostgreSQL
+
+Los volúmenes Docker contienen estado local y no se comparten por GitHub. Cada cambio de esquema se incorpora mediante una migración Alembic inmutable y versionada. Después de aplicar las migraciones, el servicio Compose `seed` ejecuta el catálogo base aprobado de manera idempotente: permisos, menús, rol administrador y cuenta inicial de recuperación.
+
+El sembrado sólo crea o actualiza registros protegidos del sistema y no duplica catálogos. Tampoco distribuye cuentas temporales, eventos de auditoría, claves, tokens, configuraciones LLM ni datos de negocio. Los datos demostrativos futuros deberán declararse como semillas opcionales, anonimizadas y aprobadas por su especificación; nunca como copias de un volumen local.

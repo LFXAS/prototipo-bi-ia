@@ -451,6 +451,25 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   \bottomrule
 \end{longtable}
 
+\clearpage
+\subsection{11 de septiembre de 2026 - Migraciones y catálogo base reproducible}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Decisión de persistencia & \statusok & Se confirma que los volúmenes PostgreSQL son estado local por equipo y no se comparten mediante GitHub ni como mecanismo de actualización de sprints. \\
+  Servicio de semillas & \statusok & Compose ejecuta \file{seed} después de \file{migrate} y antes de FastAPI. El proceso es idempotente y carga el catálogo protegido de permisos, menús, rol administrador y cuenta inicial. \\
+  Conservación de datos & \statusok & La semilla no borra ni distribuye cuentas temporales, auditoría, configuraciones LLM, claves, tokens ni datos de negocio. Las demostraciones futuras requerirán semillas sintéticas y opcionales aprobadas por SDD. \\
+  Operación y evidencia & \statusok & Se incorpora \file{make seed}; README, arquitectura, guía de réplica, especificación RBAC, manual técnico e informe del Sprint 2 documentan el flujo de actualización por equipo. \\
+  \bottomrule
+\end{longtable}
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}X l X@{}}
@@ -519,6 +538,7 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   0.2.13 & 10-09-2026 & Corrección UX de LLM: las pruebas de conexión exitosas se comunican con confirmación verde accesible y los fallos conservan alerta roja. \\
   0.2.14 & 11-09-2026 & Alternativa local Ollama: perfil Docker opcional, modelo persistente por equipo, validación de disponibilidad y documentación operativa sin alterar Sprint 1 ni CI/CD. \\
   0.2.15 & 11-09-2026 & Corrección de auditoría para usuarios temporales: preserva eventos y etiqueta histórica del actor, permite eliminación física no protegida mediante \file{ON DELETE SET NULL}. \\
+  0.2.16 & 11-09-2026 & Migraciones y catálogo base reproducible: servicio \file{seed} idempotente posterior a Alembic, sin compartir volúmenes ni datos sensibles entre equipos. \\
   \bottomrule
 \end{longtable}
 

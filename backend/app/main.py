@@ -6,15 +6,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.router import api_router
 from app.core.config import get_settings
-from app.db.session import async_session_factory, dispose_engine
-from app.modules.security.service import seed_security
+from app.db.session import dispose_engine
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
-    if settings.app_env != "test":
-        async with async_session_factory() as session:
-            await seed_security(session)
     yield
     await dispose_engine()
 
