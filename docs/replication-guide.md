@@ -14,7 +14,7 @@ Se versionan en GitHub:
 - Dockerfiles de frontend, backend, PostgreSQL y SQL Server;
 - scripts para crear los esquemas PostgreSQL;
 - script que descarga y restaura AdventureWorks desde el respaldo oficial de Microsoft;
-- migraciones y datos sintéticos controlados que se incorporen después;
+- migraciones y semillas aprobadas, idempotentes y sin secretos;
 - flujos CI/CD.
 
 Se publican en GHCR cinco imágenes propias:
@@ -25,7 +25,7 @@ Se publican en GHCR cinco imágenes propias:
 - `...-sqlserver` (SQL Server más restauración idempotente de AdventureWorks).
 - `...-docs` (entorno LaTeX usado para regenerar la bitácora).
 
-No se publican volúmenes Docker ni contraseñas. Los volúmenes son estado local y no forman una imagen reproducible. AdventureWorks se restaura al iniciar un volumen vacío; PostgreSQL se reconstruye mediante scripts/migraciones. Éste es el patrón que permite repetir el entorno con control de versiones.
+No se publican volúmenes Docker ni contraseñas. Los volúmenes son estado local y no forman una imagen reproducible. AdventureWorks se restaura al iniciar un volumen vacío; PostgreSQL se reconstruye mediante migraciones y el catálogo base `seed`. Éste es el patrón que permite repetir el entorno con control de versiones.
 
 ## 2. Requisitos en cualquier equipo
 
@@ -222,7 +222,15 @@ Con imágenes GHCR:
 make release-up
 ```
 
-Las migraciones futuras se ejecutarán como un paso controlado antes de iniciar una nueva versión del backend; nunca se copiará un volumen manualmente como mecanismo normal de despliegue.
+Las migraciones futuras se ejecutarán como un paso controlado antes de iniciar una nueva versión del backend. Después se ejecuta el servicio `seed`, que actualiza sin duplicar el catálogo protegido de permisos, menús, rol administrador y cuenta inicial. Las cuentas temporales, auditoría, claves, configuraciones cloud y datos de negocio permanecen locales: nunca se copiará un volumen manualmente como mecanismo normal de despliegue.
+
+Si se necesita repetir el catálogo sin reiniciar PostgreSQL, desde la raíz del repositorio se puede ejecutar:
+
+```bash
+make seed
+```
+
+La operación es idempotente. Para datos de demostración adicionales se incorporará una semilla opcional y anonimizada junto con la especificación del módulo que los consume; no se exportará una base de datos personal de una integrante del equipo.
 
 Si se actualiza documentación o una especificación SDD, el procedimiento es el mismo: obtener la rama aprobada, ejecutar `make docs` si se modificó LaTeX y comprobar que `git status` sólo muestra los archivos esperados. No se vuelve a clonar el repositorio para cada cambio; se usa `git pull --ff-only` cuando no existen modificaciones locales pendientes.
 

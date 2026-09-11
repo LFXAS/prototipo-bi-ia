@@ -262,6 +262,8 @@ make bootstrap
   \item inicia PostgreSQL y espera su estado saludable;
   \item inicia SQL Server, descarga y restaura AdventureWorks si el volumen está vacío;
   \item crea y prueba el usuario \file{bi\_reader};
+  \item aplica las migraciones Alembic pendientes;
+  \item ejecuta el servicio \file{seed}, que incorpora sin duplicar el catálogo protegido aprobado;
   \item inicia FastAPI y después React;
   \item espera hasta que los cuatro servicios respondan correctamente.
 \end{enumerate}
@@ -344,7 +346,19 @@ Esta modalidad valida el frontend que se empaquetará, pero no representa un amb
 
 \section{Operación funcional del Sprint 2}
 
-El Sprint 2 se opera sobre el mismo ambiente levantado con \file{make bootstrap} o \file{make up}. No se crea una instalación ni un conjunto de contenedores adicional para seguridad: React, FastAPI y PostgreSQL ya contienen el incremento. La migración se aplica mediante el servicio \file{migrate} antes de iniciar FastAPI.
+El Sprint 2 se opera sobre el mismo ambiente levantado con \file{make bootstrap} o \file{make up}. No se crea una instalación ni un conjunto de contenedores adicional para seguridad: React, FastAPI y PostgreSQL ya contienen el incremento. La migración se aplica mediante el servicio \file{migrate}; después, el servicio \file{seed} carga de forma idempotente el catálogo protegido antes de iniciar FastAPI.
+
+\subsection{Migraciones y datos semilla por equipo}
+
+Cada volumen PostgreSQL pertenece exclusivamente al equipo que lo creó y nunca se transmite por GitHub. Cuando una programadora actualiza \file{develop} y levanta Compose, Alembic aplica el cambio de estructura y \file{seed} incorpora o actualiza los permisos, menús, rol administrador y cuenta inicial aprobados. Este orden permite que una base vacía quede operativa y que una base ya existente conserve sus datos locales no protegidos.
+
+Para repetir sólo el catálogo base, sin borrar ni exportar PostgreSQL, se ejecuta desde la raíz del repositorio:
+
+\begin{lstlisting}[style=terminal,language=bash]
+make seed
+\end{lstlisting}
+
+La operación no duplica registros. No distribuye cuentas temporales, auditoría, contraseñas, tokens, configuraciones LLM ni datos de negocio. Una semilla demostrativa futura deberá ser sintética, opcional y aprobada con la especificación del módulo que la consuma.
 
 \subsection{Acceso inicial y sesión}
 

@@ -1,4 +1,4 @@
-.PHONY: help env bootstrap build up delivery-preview-up ollama-up ollama-pull ollama-status ollama-down release-up release-down down logs ps test lint format-check compose-check workflow-test doctor docs-image logbook sprint-report sprint2-report technical-manual docs verify
+.PHONY: help env bootstrap build up seed delivery-preview-up ollama-up ollama-pull ollama-status ollama-down release-up release-down down logs ps test lint format-check compose-check workflow-test doctor docs-image logbook sprint-report sprint2-report technical-manual docs verify
 
 COMPOSE := docker compose
 
@@ -8,6 +8,7 @@ help:
 	@echo "  make bootstrap      Prepara y levanta todo desde cero"
 	@echo "  make build          Construye las imagenes de desarrollo"
 	@echo "  make up             Levanta frontend y backend"
+	@echo "  make seed           Aplica de forma idempotente el catálogo base aprobado"
 	@echo "  make delivery-preview-up Anade Nginx en 8080 sin reemplazar desarrollo"
 	@echo "  make ollama-up     Inicia Ollama local opcional, sin descargar modelo"
 	@echo "  make ollama-pull   Descarga una vez el modelo local configurado"
@@ -40,6 +41,9 @@ build:
 
 up:
 	$(COMPOSE) up --build -d
+
+seed:
+	$(COMPOSE) run --rm seed
 
 delivery-preview-up:
 	$(COMPOSE) --profile delivery build frontend-delivery

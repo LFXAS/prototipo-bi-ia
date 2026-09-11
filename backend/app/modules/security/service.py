@@ -204,12 +204,13 @@ async def add_audit_event(
 
 
 async def seed_security(session: AsyncSession) -> None:
-    """Creates only the minimum safe bootstrap configuration on an empty installation."""
+    """Upserts the approved protected catalog without touching non-system records."""
     existing_permissions = {
-        item.code for item in (await session.execute(select(Permission))).scalars()
+        item.code: item for item in (await session.execute(select(Permission))).scalars()
     }
     for code, name, description in DEFAULT_PERMISSIONS:
-        if code not in existing_permissions:
+        permission = existing_permissions.get(code)
+        if permission is None:
             session.add(
                 Permission(
                     code=code,
@@ -218,6 +219,11 @@ async def seed_security(session: AsyncSession) -> None:
                     is_system_protected=True,
                 )
             )
+        else:
+            permission.name = name
+            permission.description = description
+            permission.is_active = True
+            permission.is_system_protected = True
     await session.flush()
 
     permissions = {
@@ -236,13 +242,23 @@ async def seed_security(session: AsyncSession) -> None:
             is_system_protected=True,
         )
         session.add(administrator)
+    else:
+        administrator.name = "Administrador"
+        administrator.description = "Rol inicial de administración."
+        administrator.is_active = True
     administrator.is_system_protected = True
     administrator.permissions = list(permissions.values())
     await session.flush()
 
-    existing_menus = {item.code for item in (await session.execute(select(Menu))).scalars()}
+    existing_menus = {
+        item.code: item
+        for item in (
+            await session.execute(select(Menu).options(selectinload(Menu.permissions)))
+        ).scalars()
+    }
     for code, label, path, position, module_code, module_label, permission_codes in DEFAULT_MENUS:
-        if code not in existing_menus:
+        menu = existing_menus.get(code)
+        if menu is None:
             session.add(
                 Menu(
                     code=code,
@@ -255,6 +271,17 @@ async def seed_security(session: AsyncSession) -> None:
                     is_system_protected=True,
                 )
             )
+        else:
+            menu.label = label
+            menu.path = path
+            menu.position = position
+            menu.module_code = module_code
+            menu.module_label = module_label
+            menu.permissions = [permissions[item] for item in permission_codes]
+            menu.is_active = True
+            menu.is_system_protected = True
+    await session.flush()
+
     admin = (
         await session.execute(
             select(User)
@@ -273,4 +300,7 @@ async def seed_security(session: AsyncSession) -> None:
         session.add(admin)
     else:
         admin.is_system_protected = True
+        admin.is_active = True
+        if administrator not in admin.roles:
+            admin.roles.append(administrator)
     await session.commit()

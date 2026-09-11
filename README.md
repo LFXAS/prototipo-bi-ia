@@ -50,7 +50,7 @@ No es necesario instalar Node.js ni Python en el equipo anfitrión.
 
 La comprobación `live` confirma que FastAPI funciona. `ready` confirma además la conexión a PostgreSQL. En un volumen vacío, SQL Server descarga el respaldo oficial de AdventureWorks 2022, lo restaura y crea el usuario `bi_reader` sin permisos de escritura. La conexión de negocio a AdventureWorks se implementará en la siguiente iteración; sus variables y controlador ODBC ya forman parte del entorno.
 
-En el primer inicio el servicio `migrate` aplica automáticamente las migraciones y FastAPI crea el rol administrador, sus permisos y el usuario inicial definidos por `BOOTSTRAP_ADMIN_EMAIL` y `BOOTSTRAP_ADMIN_PASSWORD`. Ingrese desde el frontend con esos valores; cámbielos antes de cualquier demostración compartida. Las claves de Gemini o Qwen, si se usan, permanecen solamente en `GEMINI_API_KEY` o `DASHSCOPE_API_KEY` del entorno.
+En el primer inicio el servicio `migrate` aplica automáticamente las migraciones y el servicio `seed` carga de forma idempotente el catálogo protegido aprobado: permisos, menús, rol administrador y usuario inicial definidos por `BOOTSTRAP_ADMIN_EMAIL` y `BOOTSTRAP_ADMIN_PASSWORD`. Ingrese desde el frontend con esos valores; cámbielos antes de cualquier demostración compartida. Las claves de Gemini o Qwen, si se usan, permanecen solamente en `GEMINI_API_KEY` o `DASHSCOPE_API_KEY` del entorno. El catálogo no copia cuentas de prueba, auditoría, configuraciones LLM ni volúmenes entre equipos.
 
 La alternativa más automática es `make bootstrap`: crea `.env` si falta, construye todo, espera la restauración y no finaliza hasta que los servicios estén saludables.
 
@@ -92,6 +92,7 @@ Ollama sólo es accesible desde los contenedores del proyecto; el puerto `11434`
 
 ```bash
 make up             # construir y levantar
+make seed           # volver a aplicar el catálogo base aprobado sin duplicarlo
 make delivery-preview-up # anadir Nginx en 8080 sin detener Vite
 make ollama-up      # iniciar alternativa local de LLM, sin descargar aún
 make ollama-pull    # descargar qwen3:4b una vez por equipo

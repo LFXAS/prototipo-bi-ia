@@ -29,6 +29,13 @@ El modelo interno conserva códigos estables porque los endpoints necesitan una 
 5. Si la acción pone en riesgo esa condición, FastAPI responde con un mensaje claro, no realiza cambios y registra el intento de forma segura. La interfaz deshabilita la acción cuando puede determinarlo, pero la regla definitiva está en FastAPI.
 6. Ninguna recuperación normal debe requerir editar tablas directamente. Un procedimiento de emergencia, fuera del uso cotidiano, se documentará para el despliegue y exigirá acceso controlado al entorno.
 
+### 2.2 Catálogo base reproducible
+
+1. La estructura de PostgreSQL evoluciona únicamente mediante migraciones Alembic versionadas e inmutables.
+2. Tras una migración, un servicio de semillas idempotente incorpora o actualiza los registros protegidos aprobados: permisos, menús, rol administrativo y cuenta inicial de recuperación.
+3. Ejecutar las semillas más de una vez no crea duplicados ni borra cuentas no protegidas, eventos de auditoría, configuraciones LLM ni datos locales de una persona desarrolladora.
+4. Un dato demostrativo adicional debe ser sintético, opcional, no secreto y estar descrito por la especificación del módulo que lo consume. No se usa un volumen Docker ni una exportación de una computadora como mecanismo normal de sincronización.
+
 ## 3. Flujos de usuario
 
 ### 3.1 Usuarios
@@ -110,3 +117,4 @@ Toda eliminación exitosa registra actor, fecha, acción `delete`, tipo y identi
 - [ ] Auditoría registra los cambios administrativos sin secretos y permite consultarlos sin modificarlos.
 - [ ] Eliminar un padre con dependencias hijas devuelve `409`, explica qué asociaciones deben resolverse y no borra ningún dato; tras resolverlas, una eliminación permitida queda auditada como `delete`.
 - [ ] Un usuario no protegido y sin asignaciones usuario--rol puede eliminarse aunque haya sido actor de eventos de auditoría; los eventos permanecen, conservan su etiqueta histórica segura y su referencia `actor_user_id` queda vacía.
+- [ ] Una base vacía que levanta Compose recibe las migraciones y el catálogo protegido aprobado antes de que FastAPI atienda solicitudes; ejecutar nuevamente la semilla no duplica sus registros ni sustituye datos locales no protegidos.
