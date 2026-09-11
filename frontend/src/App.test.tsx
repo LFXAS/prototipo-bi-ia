@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import App from './App'
+import { roleChoicesForUserAssignment } from './roleChoices'
 
 describe('App', () => {
   afterEach(() => {
@@ -15,6 +16,16 @@ describe('App', () => {
     expect(screen.getByRole('heading', { name: 'BI asistido por IA' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Iniciar sesión' })).toBeInTheDocument()
     expect(screen.getByText(/interfaz y la API validan los permisos reales/i)).toBeInTheDocument()
+  })
+
+  it('permite retirar un rol inactivo previamente asignado sin ofrecerlo a cuentas nuevas', () => {
+    const roles = [
+      { id: 1, code: 'administrator', name: 'Administrador', description: 'Rol inicial.', is_active: true, permissions: [] },
+      { id: 2, code: 'operator', name: 'Operador', description: 'Consulta.', is_active: false, permissions: [] },
+    ]
+
+    expect(roleChoicesForUserAssignment(roles).map((role) => role.label)).toEqual(['Administrador'])
+    expect(roleChoicesForUserAssignment(roles, [roles[1].id]).map((role) => role.label)).toEqual(['Administrador', 'Operador (inactivo)'])
   })
 
   it('mantiene Inicio directo y permite plegar el módulo activo', async () => {
