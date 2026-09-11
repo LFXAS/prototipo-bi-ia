@@ -67,7 +67,7 @@ La pantalla **Seguridad > Menús** administra la presentación de opciones que y
 
 ### 3.5 Auditoría
 
-**Seguridad > Auditoría** es una vista de consulta paginada y filtrable por periodo, actor, recurso y tipo de acción. No permite crear, modificar ni eliminar eventos. Debe explicar las acciones con verbos comprensibles: por ejemplo, "Se asignó el rol Analista a María Pérez" en lugar de exponer únicamente `security.user.update`.
+**Seguridad > Auditoría** es una vista de consulta paginada y filtrable por periodo, actor, recurso y tipo de acción. No permite crear, modificar ni eliminar eventos. Debe explicar las acciones con verbos comprensibles: por ejemplo, "Se asignó el rol Analista a María Pérez" en lugar de exponer únicamente `security.user.update`. Si la cuenta de un actor fue eliminada, se presenta su etiqueta histórica segura y no un identificador inexistente.
 
 ### 3.6 Eliminación física controlada
 
@@ -75,7 +75,7 @@ Los CRUD habilitan **Eliminar definitivamente** sólo para registros no protegid
 
 | Padre | Dependencias que deben quedar resueltas antes | Regla adicional |
 |---|---|---|
-| Usuario | asignaciones usuario--rol; eventos donde la persona sea actor. | Una cuenta protegida no se elimina. Los eventos de auditoría son inmutables; si el usuario fue actor, se conserva y se desactiva en lugar de eliminarlo. |
+| Usuario | asignaciones usuario--rol. | Una cuenta protegida no se elimina. Los eventos de auditoría se conservan: al eliminar una cuenta no protegida, su referencia técnica de actor queda vacía y permanece una etiqueta histórica segura del actor; no se borra ni se altera el contenido funcional del evento. |
 | Rol | asignaciones usuario--rol y rol--permiso. | Un rol protegido no se elimina. Primero se retiran las asociaciones desde Usuarios y Roles. |
 | Permiso | asociaciones rol--permiso y menú--permiso. | Los permisos técnicos/protegidos no se eliminan desde el CRUD. |
 | Menú | asociaciones menú--permiso. | Un menú protegido no se elimina. |
@@ -108,3 +108,4 @@ Toda eliminación exitosa registra actor, fecha, acción `delete`, tipo y identi
 - [ ] FastAPI rechaza de forma verificable una petición directa sin permiso o que viole una invariante de recuperación, incluso si la interfaz fue manipulada.
 - [ ] Auditoría registra los cambios administrativos sin secretos y permite consultarlos sin modificarlos.
 - [ ] Eliminar un padre con dependencias hijas devuelve `409`, explica qué asociaciones deben resolverse y no borra ningún dato; tras resolverlas, una eliminación permitida queda auditada como `delete`.
+- [ ] Un usuario no protegido y sin asignaciones usuario--rol puede eliminarse aunque haya sido actor de eventos de auditoría; los eventos permanecen, conservan su etiqueta histórica segura y su referencia `actor_user_id` queda vacía.

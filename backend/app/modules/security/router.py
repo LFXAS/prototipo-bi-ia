@@ -273,15 +273,6 @@ async def delete_user(
                 "asignaciones de roles",
                 await _association_count(session, user_roles, user_roles.c.user_id, user_id),
             ),
-            (
-                "eventos de auditoría como actor",
-                await session.scalar(
-                    select(func.count())
-                    .select_from(AuditEvent)
-                    .where(AuditEvent.actor_user_id == user_id)
-                )
-                or 0,
-            ),
         ],
     )
     await add_audit_event(session, actor.id, "security.user.delete", "user", str(user_id))
