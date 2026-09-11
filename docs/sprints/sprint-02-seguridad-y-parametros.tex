@@ -1,0 +1,289 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage[letterpaper,margin=2.2cm,headheight=15pt]{geometry}
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{xurl}
+\usepackage{listings}
+
+\ifdefined\pdfinfoomitdate\pdfinfoomitdate=1\fi
+\ifdefined\pdftrailerid\pdftrailerid{}\fi
+\ifdefined\pdfsuppressptexinfo\pdfsuppressptexinfo=15\fi
+
+\definecolor{ugblue}{HTML}{006A8D}
+\definecolor{deepgreen}{HTML}{123D3A}
+\definecolor{softgray}{HTML}{F1F5F4}
+\definecolor{midgray}{HTML}{5D6B6B}
+\definecolor{success}{HTML}{157A57}
+\definecolor{warning}{HTML}{A45A00}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=ugblue,
+  urlcolor=ugblue,
+  hypertexnames=false,
+  pdftitle={Informe Sprint 2 - Seguridad y parámetros},
+  pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Informe Sprint 2}
+\rhead{Prototipo BI asistido por IA}
+\cfoot{\thepage}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.52em}
+\setlist[itemize]{leftmargin=1.5em,itemsep=0.22em,topsep=0.3em}
+\setlist[enumerate]{leftmargin=1.7em,itemsep=0.32em,topsep=0.35em}
+\renewcommand{\arraystretch}{1.18}
+\newcommand{\file}[1]{\texttt{#1}}
+\newcommand{\statusok}{\textcolor{success}{\textbf{Completado}}}
+\newcommand{\statuspending}{\textcolor{warning}{\textbf{Pendiente de cierre}}}
+\newcommand{\notebox}[1]{\begin{center}\fcolorbox{ugblue}{softgray}{\begin{minipage}{0.90\textwidth}\textcolor{ugblue}{\textbf{Nota.}} #1\end{minipage}}\end{center}}
+
+\lstdefinestyle{terminal}{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{softgray},
+  frame=single,
+  rulecolor=\color{midgray},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  xleftmargin=0.4em,
+  xrightmargin=0.4em,
+  aboveskip=0.6em,
+  belowskip=0.6em
+}
+
+\begin{document}
+\hypersetup{pageanchor=false}
+
+\begin{titlepage}
+  \thispagestyle{empty}
+  \vspace*{0.8cm}
+  {\color{ugblue}\rule{\textwidth}{2.8pt}}
+  \vspace{1.2cm}
+
+  {\Large Universidad de Guayaquil\\[0.25em]
+  Facultad de Ciencias Matemáticas y Físicas\\
+  Carrera de Software}
+
+  \vfill
+
+  {\color{deepgreen}\fontsize{29}{35}\selectfont\textbf{Informe del Sprint 2}}\\[0.7em]
+  {\LARGE Seguridad, administración y configuración inicial}\\[0.6em]
+  {\large Prototipo web de inteligencia de negocios asistido por IA}
+
+  \vspace{1.5cm}
+
+  \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
+    Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
+    Versión & 0.1.0 \\
+    Periodo de referencia & 4 al 11 de septiembre de 2026 \\
+    Rama de trabajo & \file{feature/rbac-y-parametros} \\
+    Línea base & \file{develop}; promoción posterior mediante pull request \\
+    Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
+    Fecha & 11 de septiembre de 2026 \\
+  \end{tabularx}
+
+  \vfill
+  {\color{ugblue}\rule{\textwidth}{2.8pt}}
+\end{titlepage}
+
+\hypersetup{pageanchor=true}
+\pagenumbering{roman}
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+\section{Resumen ejecutivo}
+
+El Sprint 2 transforma la línea base Docker del Sprint 1 en un incremento administrativo utilizable. Se implementa autenticación con JSON Web Token (JWT), autorización basada en roles y permisos (RBAC), gestión de usuarios, roles, permisos y menús, auditoría de acciones administrativas, parámetros operativos controlados y configuración segura de proveedores LLM.
+
+El incremento no adelanta las capacidades analíticas del anteproyecto. Aún no implementa ETL, datamart, exploración de metadatos, dashboard, reportería, predicción ni generación de propuestas BI. La configuración LLM prepara una integración controlada para un sprint posterior; no transmite datos de negocio ni ejecuta SQL.
+
+\section{Objetivo y alcance}
+
+\subsection{Objetivo}
+
+Proveer una administración segura, comprensible y responsive que permita controlar quién accede al prototipo, qué acciones puede realizar y qué configuración LLM aprobada queda disponible para la fase posterior de Copiloto BI.
+
+\subsection{Alcance entregado}
+
+\begin{tabularx}{\textwidth}{@{}p{0.25\textwidth}X p{0.18\textwidth}@{}}
+  \toprule
+  Capacidad & Entrega del incremento & Estado \\
+  \midrule
+  Autenticación & Inicio y cierre de sesión, hash Argon2, JWT de vida limitada y cuenta administradora inicial desde el entorno. & \statusok \\
+  RBAC & Usuarios, roles, permisos, asociaciones, autorización FastAPI y menús derivados de permisos. & \statusok \\
+  Protección & Cuenta/rol base protegidos, invariantes de recuperación y validaciones de dependencias antes de eliminar. & \statusok \\
+  Auditoría & Registro inmutable de inicio de sesión, creación, edición, estado, asociaciones, pruebas y eliminación. & \statusok \\
+  UX administrativa & Navegación agrupada, plegable, ocultable, responsive, formularios guiados, tablas de casillas y paginación. & \statusok \\
+  Parámetros y LLM & Catálogo sin claves libres, proveedores Gemini/Qwen/Ollama y prueba limitada desde backend. & \statusok \\
+  Ollama local & Perfil Docker opcional, modelo persistente \file{qwen3:4b} y prueba de disponibilidad real. & \statusok \\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Exclusiones}
+
+Quedan fuera de este Sprint: recuperación de contraseña por correo, SSO, multiempresa, microservicios, tematización por empresa, ETL, datamart, KPIs, gráficos, alertas, reportería, forecasting y Copiloto BI funcional. Estas exclusiones son decisiones de alcance, no fallas del incremento.
+
+\section{Desarrollo guiado por especificaciones}
+
+Antes de implementar se organizaron los contratos SDD en \file{docs/specs/}. La especificación principal separa las responsabilidades para evitar pantallas mezcladas o reglas de seguridad implícitas.
+
+\begin{longtable}{@{}p{0.28\textwidth}p{0.36\textwidth}p{0.26\textwidth}@{}}
+  \toprule
+  Documento & Contrato que define & Evidencia vinculada \\
+  \midrule
+  \endfirsthead
+  \toprule
+  Documento & Contrato que define & Evidencia vinculada \\
+  \midrule
+  \endhead
+  \url{SPR-02-01-seguridad-rbac.md} & Modelo RBAC, CRUD, protección administrativa, eliminación física validada y auditoría. & API, migración y pruebas. \\
+  \url{SPR-02-02-navegacion-y-experiencia.md} & Navegación responsive, agrupación, plegado, estados de pantalla, accesibilidad y controles legibles. & Prueba visual y frontend. \\
+  \url{SPR-02-03-parametros-y-llm.md} & Parámetros controlados, proveedores, secretos por entorno y prueba LLM segura. & Adaptadores, prueba unitaria y prueba real. \\
+  \url{SPR-02-04-identidad-visual-y-shell-bi.md} & Tokens visuales y dirección para módulos futuros sin mostrarlos prematuramente. & CSS y revisión visual. \\
+  \url{SPR-02-matriz-correcciones.md} & Trazabilidad de observaciones funcionales y decisiones correctivas. & Revisión, pruebas y bitácora. \\
+  \bottomrule
+\end{longtable}
+
+\notebox{Una especificación no sustituye la revisión humana. Las autoras aprueban, corrigen o rechazan la propuesta antes de que pase a código, pruebas y pull request.}
+
+\section{Arquitectura del incremento}
+
+\subsection{Flujo de seguridad}
+
+\begin{center}
+\fcolorbox{ugblue}{softgray}{\begin{minipage}{0.90\textwidth}
+\centering
+\textbf{React} $\rightarrow$ \textbf{FastAPI} $\rightarrow$ \textbf{JWT y permiso efectivo}\\[0.4em]
+Si autoriza: \textbf{servicio RBAC/parámetros} $\rightarrow$ \textbf{PostgreSQL app}\\[0.4em]
+Cada mutación $\rightarrow$ \textbf{evento de auditoría inmutable}
+\end{minipage}}
+\end{center}
+
+React mejora la orientación de la persona usuaria y oculta acciones no autorizadas, pero FastAPI vuelve a comprobar JWT y permiso en cada endpoint. Así, manipular la interfaz no concede privilegios.
+
+\subsection{Modelo RBAC}
+
+Un usuario puede tener varios roles. Un rol agrupa permisos. Los permisos autorizan endpoints y determinan qué menús son visibles. Los códigos técnicos permanecen estables en backend/migraciones; la interfaz presenta nombres, descripciones y tablas de casillas para evitar que la persona escriba IDs o privilegios manualmente.
+
+Las entidades de aplicación son \file{users}, \file{roles}, \file{permissions}, \file{user\_roles}, \file{role\_permissions}, \file{menus}, \file{menu\_permissions}, \file{audit\_events}, \file{parameters} y \file{llm\_configurations}, bajo el esquema PostgreSQL \file{app}.
+
+\subsection{Controles de recuperación y eliminación}
+
+La cuenta y el rol administrativos iniciales poseen una marca persistida de protección. FastAPI rechaza desactivarlos, eliminarlos o dejarlos sin las capacidades mínimas de recuperación. La eliminación física de recursos no protegidos requiere confirmación, comprueba primero dependencias hijas y responde con conflicto explícito cuando deben resolverse asociaciones. Una eliminación permitida genera auditoría con acción \file{delete}; los eventos de auditoría no se modifican ni eliminan desde la interfaz.
+
+\section{Experiencia de usuario}
+
+La administración se integra en un cascarón responsive. En escritorio se puede contraer o restaurar el panel lateral mediante un chevrón compacto superpuesto al borde. En tableta y móvil se usa el patrón hamburguesa. Los grupos \textbf{Seguridad} y \textbf{Parámetros generales} son plegables incluso cuando contienen la ruta activa; Inicio queda como acceso directo.
+
+Las listas reciben paginación desde FastAPI. Roles, usuarios y menús asignan relaciones mediante tablas de casillas con nombre y descripción. Al editar un usuario, la contraseña es opcional: si queda vacía se conserva la existente. Mensajes de éxito usan confirmación verde accesible; errores y validaciones se traducen a lenguaje comprensible y no muestran estructuras técnicas como \file{[object Object]}.
+
+\section{Parámetros generales}
+
+La pantalla Parámetros está preparada para configuraciones operativas aprobadas, pero no es una tabla libre de clave/valor. Un parámetro sólo podrá aparecer cuando exista un módulo consumidor, nombre humano, descripción, tipo, rango y validación definidos. En Sprint 2 no hay todavía un consumidor de parámetros operativos; por ello la pantalla muestra un estado vacío deliberado.
+
+El primer catálogo se definirá con el módulo que lo necesite, por ejemplo ETL, reportería o analítica. Ese sprint deberá incluir la especificación SDD del valor, sus límites, formulario, auditoría y pruebas. No se guardarán contraseñas, tokens, cadenas de conexión ni valores arbitrarios como parámetros generales.
+
+\section{Configuración LLM}
+
+\subsection{Principio de seguridad}
+
+La base sólo almacena valores no secretos: nombre, proveedor, URL permitida, modelo, estado y resultado seguro de la prueba. Las claves cloud viven únicamente en variables de entorno. Gemini usa \file{GEMINI\_API\_KEY}; Qwen Cloud usa \file{DASHSCOPE\_API\_KEY}; Ollama local no requiere clave.
+
+\subsection{Alternativa local verificable}
+
+El perfil Compose \file{local-llm} incorpora Ollama de forma opcional y privada dentro de la red de contenedores. El modelo de referencia es \file{qwen3:4b}. Se opera desde la raíz del repositorio:
+
+\begin{lstlisting}[style=terminal,language=bash]
+make ollama-up
+make ollama-pull
+make ollama-status
+make ollama-down
+\end{lstlisting}
+
+El modelo se guarda en el volumen \file{ollama\_models}; cada programadora lo descarga una vez en su máquina. No se versiona con Git, no se publica en GHCR y CI/CD no lo descarga. La URL interna que debe registrarse en la pantalla es \file{http://ollama:11434}. FastAPI consulta \file{/api/tags} y sólo confirma éxito si el servicio responde y el modelo seleccionado está descargado. La verificación real del incremento confirmó esa condición sin enviar datos del negocio y sin alterar la configuración cloud activa.
+
+\section{Verificación y evidencia}
+
+\begin{tabularx}{\textwidth}{@{}p{0.30\textwidth}p{0.20\textwidth}X@{}}
+  \toprule
+  Control & Resultado & Evidencia \\
+  \midrule
+  Compose & \statusok & Desarrollo, perfil \file{delivery}, perfil \file{local-llm} y entrega GHCR validados con configuración Compose. \\
+  Backend & \statusok & Ruff, Mypy y pruebas Pytest Docker; se añadieron casos de modelo Ollama disponible/no descargado. \\
+  Frontend & \statusok & ESLint, pruebas Vitest y construcción Vite dentro de Docker. \\
+  LLM local & \statusok & \file{qwen3:4b} descargado; prueba FastAPI exitosa contra Ollama interno. \\
+  Documentación & \statusok & Bitácora, informe Sprint 1, informe Sprint 2 y manual técnico compilados reproduciblemente con LaTeX Docker. \\
+  Seguridad operativa & \statusok & Configuración Ollama inactiva; la configuración Gemini existente no fue sustituida. \\
+  \bottomrule
+\end{tabularx}
+
+La comprobación integral se ejecuta con:
+
+\begin{lstlisting}[style=terminal,language=bash]
+make verify
+\end{lstlisting}
+
+El comando no descarga modelos LLM: valida solamente que el perfil opcional sea una configuración Compose válida. Esta decisión evita que CI consuma almacenamiento, tiempo y recursos de cómputo en cada ejecución.
+
+\section{Riesgos y controles}
+
+\begin{tabularx}{\textwidth}{@{}p{0.27\textwidth}p{0.34\textwidth}X@{}}
+  \toprule
+  Riesgo & Control aplicado & Resultado esperado \\
+  \midrule
+  Pérdida de acceso administrativo & Marca protegida e invariantes verificadas en backend. & Siempre existe una vía de recuperación. \\
+  Exposición de secretos & Variables de entorno, respuesta segura y auditoría sin claves/JWT. & Ninguna API key llega a PostgreSQL o React. \\
+  Borrado inconsistente & Confirmación, validación de hijos y respuesta 409. & No hay borrado en cascada silencioso. \\
+  Cuota cloud agotada & Ollama local opcional y modelo persistente. & Prueba LLM sin depender de cuota. \\
+  Uso excesivo de recursos & Perfil no automático, modelo explícito, límites de contexto y una sola carga. & El entorno normal no se hace más pesado. \\
+  Confusión entre módulos & Especificaciones separadas y estado aislado por ruta. & Formularios y mensajes corresponden al recurso activo. \\
+  \bottomrule
+\end{tabularx}
+
+\section{Cierre y siguientes pasos}
+
+El incremento administrativo está construido y verificado localmente. Antes de declararlo cerrado en control de versiones, corresponde revisar los cambios, ejecutar \file{make verify}, abrir el pull request de \file{feature/rbac-y-parametros} hacia \file{develop}, obtener la aprobación requerida, fusionar y luego promover \file{develop} hacia \file{main} mediante un nuevo pull request.
+
+Los siguientes sprints deben conservar este contrato: primero especificación SDD aprobada; después migraciones, API, interfaz, pruebas y documentación. El próximo módulo funcional recomendado es la introspección determinística de AdventureWorks y sus metadatos, no la generación automática de SQL por IA.
+
+\section{Control documental}
+
+\begin{tabularx}{\textwidth}{@{}>{\bfseries}p{0.28\textwidth}X@{}}
+  \toprule
+  Campo & Valor \\
+  \midrule
+  Fuente editable & \file{docs/sprints/sprint-02-seguridad-y-parametros.tex} \\
+  Compilación & \file{make sprint2-report} o \file{make docs} \\
+  Documentos relacionados & Especificaciones SPR-02, ADR 0002, bitácora y manual técnico. \\
+  Revisión & Debe actualizarse si cambia la arquitectura, alcance, controles, pruebas o evidencia del Sprint 2. \\
+  \bottomrule
+\end{tabularx}
+
+\subsection*{Historial de cambios}
+
+\begin{tabularx}{\textwidth}{@{}l l X@{}}
+  \toprule
+  Versión & Fecha & Cambio \\
+  \midrule
+  0.1.0 & 11-09-2026 & Primera versión: documentación del incremento administrativo, RBAC, UX, parámetros, proveedores LLM y alternativa local Ollama. \\
+  \bottomrule
+\end{tabularx}
+
+\end{document}

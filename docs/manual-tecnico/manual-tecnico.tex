@@ -91,11 +91,11 @@
 
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
-    Versión del manual & 1.7.0 \\
+    Versión del manual & 1.8.0 \\
     Línea base & Ramas \file{develop} y \file{main} \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
     Clasificación & Uso académico y técnico - repositorio público \\
-    Fecha & 2 de septiembre de 2026 \\
+    Fecha & 10 de septiembre de 2026 \\
   \end{tabularx}
 
   \vfill
@@ -120,7 +120,7 @@ El documento cubre tres modalidades:
   \item \textbf{Ejecución de una entrega completa}: descarga imágenes de GitHub Container Registry (GHCR) en un proyecto Compose aislado.
 \end{enumerate}
 
-La versión actual contiene infraestructura y salud técnica. El RBAC y los módulos de negocio todavía no están implementados.
+La versión actual conserva la infraestructura y salud técnica del Sprint 1 e implementa el núcleo administrativo del Sprint 2: autenticación JWT, RBAC, auditoría, parámetros controlados y configuración LLM. Los módulos BI de negocio (metadatos, ETL, datamart, dashboard, reportería y Copiloto BI) continúan fuera de este incremento.
 
 \section{Arquitectura operativa}
 
@@ -151,10 +151,11 @@ La versión actual contiene infraestructura y salud técnica. El RBAC y los mód
   backend & API FastAPI, configuración y salud & 8000 & Código montado \\
   postgres & Configuración interna y futuro datamart & 55432 & Volumen \file{postgres\_data} \\
   sqlserver & Fuente AdventureWorks externa & 51433 & Volumen \file{sqlserver\_data} \\
+  ollama & LLM local opcional, sólo red interna & No publicado & Volumen \file{ollama\_models} \\
   \bottomrule
 \end{tabularx}
 
-Compose crea la red y los volúmenes de desarrollo bajo el nombre lógico \file{bi-ia-prototype}. El perfil \file{delivery} sólo añade Nginx a esa red. El Compose completo de entrega usa \file{bi-ia-prototype-release}, otra red, otros puertos y otros volúmenes. Ninguno usa contenedores PostgreSQL o SQL Server ajenos al proyecto.
+Compose crea la red y los volúmenes de desarrollo bajo el nombre lógico \file{bi-ia-prototype}. El perfil \file{delivery} sólo añade Nginx a esa red; el perfil opcional \file{local-llm} añade Ollama sin publicar el puerto 11434 en el host. El Compose completo de entrega usa \file{bi-ia-prototype-release}, otra red, otros puertos y otros volúmenes. Ninguno usa contenedores PostgreSQL o SQL Server ajenos al proyecto.
 
 \subsection{Estructura del repositorio}
 
@@ -179,7 +180,7 @@ Makefile                  comandos operativos abreviados
 \begin{itemize}
   \item Procesador de 64 bits con virtualización habilitada.
   \item 8 GB de memoria disponibles para Docker; 6 GB es el mínimo práctico.
-  \item 15 GB libres para imágenes, capas, respaldo y volúmenes.
+  \item 15 GB libres para imágenes, capas, respaldo y volúmenes; reservar al menos 8 GB adicionales si se descargará el modelo local de Ollama.
   \item Conexión a Internet durante la primera construcción y restauración.
 \end{itemize}
 
@@ -232,6 +233,10 @@ Se deben reemplazar todos los valores que empiecen con \file{ChangeMe\_*}. Las c
   \file{SQLSERVER\_SA\_PASSWORD} & secreto local & Clave administrativa usada sólo durante inicialización. \\
   \file{IMAGE\_PREFIX} & ruta GHCR & Prefijo de las imágenes publicadas. \\
   \file{IMAGE\_TAG} & \file{main} & Entrega a ejecutar; se recomienda una etiqueta versionada. \\
+  \file{GEMINI\_API\_KEY} & vacío & Clave opcional de Gemini; nunca se escribe desde la interfaz. \\
+  \file{DASHSCOPE\_API\_KEY} & vacío & Clave opcional de Qwen Cloud; nunca se escribe desde la interfaz. \\
+  \file{OLLAMA\_MODEL} & \file{qwen3:4b} & Modelo local que se descarga explícitamente por equipo. \\
+  \file{OLLAMA\_CONTEXT\_LENGTH} & 4096 & Límite local de contexto para controlar consumo de memoria. \\
   \bottomrule
 \end{longtable}
 
@@ -337,6 +342,100 @@ El comando construye la etapa \file{production} del frontend y añade \file{fron
 
 Esta modalidad valida el frontend que se empaquetará, pero no representa un ambiente productivo totalmente independiente porque comparte el backend de desarrollo.
 
+\section{Operación funcional del Sprint 2}
+
+El Sprint 2 se opera sobre el mismo ambiente levantado con \file{make bootstrap} o \file{make up}. No se crea una instalación ni un conjunto de contenedores adicional para seguridad: React, FastAPI y PostgreSQL ya contienen el incremento. La migración se aplica mediante el servicio \file{migrate} antes de iniciar FastAPI.
+
+\subsection{Acceso inicial y sesión}
+
+El primer arranque crea la cuenta administradora inicial desde las variables de administración definidas en \file{.env}. Estos valores son secretos locales: se cambian antes de una demostración compartida y nunca se incorporan a Git, capturas ni bitácora. Se abre la interfaz en el puerto configurado, se ingresa con esas credenciales y se cierra la sesión desde el encabezado al terminar.
+
+FastAPI valida la contraseña con Argon2 y entrega un JWT de vida limitada. React conserva únicamente el token de sesión necesario para consultar la API; el token no contiene contraseñas, claves LLM ni permisos que sustituyan la comprobación del servidor. Cada endpoint administrativo comprueba de nuevo el usuario activo y su permiso efectivo.
+
+\subsection{Navegación administrativa}
+
+La navegación muestra sólo menús autorizados y los organiza así:
+
+\begin{center}
+\begin{tabularx}{0.88\textwidth}{@{}l X@{}}
+  \toprule
+  Grupo o acceso & Pantallas y finalidad \\
+  \midrule
+  Inicio & Resumen inicial de la sesión y punto de entrada directo. \\
+  Seguridad & Usuarios, Roles, Permisos, Menús y Auditoría. \\
+  Parámetros generales & Parámetros operativos aprobados y Configuración LLM. \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+Los grupos Seguridad y Parámetros generales se pueden plegar o desplegar, incluso si contienen la pantalla activa. En escritorio, el panel lateral se contrae o restaura mediante el chevrón de su borde; en tableta y móvil se abre con menú hamburguesa. La visibilidad en React facilita la experiencia, pero no es una autorización: una URL o petición directa sin permiso recibe una respuesta de acceso denegado desde FastAPI.
+
+\subsection{Usuarios, roles, permisos y menús}
+
+La administración no solicita IDs ni códigos técnicos a la persona usuaria. En \textbf{Usuarios}, se registra correo, nombre, contraseña inicial y roles mediante una tabla de casillas con nombre y descripción. Durante una edición, dejar la contraseña vacía mantiene la contraseña existente; escribir una nueva la reemplaza de forma segura.
+
+En \textbf{Roles}, los permisos se asignan o retiran mediante otra tabla de casillas legible. La actualización de asociaciones usa el contrato \file{PUT /roles/\{id\}/permissions}; el código técnico interno del rol no se digita desde la pantalla. Permisos y Menús son catálogos controlados: una pantalla administrativa no puede inventar un permiso, ruta o módulo que no exista en una especificación, migración y endpoint reales.
+
+Las listas administrativas son paginadas desde el servidor. Usuarios, Roles y Menús permiten crear, editar, activar/desactivar y, cuando corresponde, eliminar definitivamente. Las acciones de registros base de recuperación muestran el estado \textbf{Protegido}; FastAPI impide desactivar, eliminar o debilitar la cuenta y rol administrativos iniciales.
+
+\subsection{Eliminación y auditoría}
+
+Eliminar no significa ocultar un registro. Para una eliminación física permitida, la interfaz pide confirmación y FastAPI comprueba primero las asociaciones hijas. Por ejemplo, un rol con usuarios o permisos asignados no se borra hasta resolver esas relaciones; la API responde con conflicto y una explicación. No existe borrado en cascada silencioso.
+
+Toda mutación administrativa genera un evento de auditoría con actor, fecha, acción, tipo de recurso, identificador y resumen seguro. Se registran inicio de sesión, altas, actualizaciones, cambios de estado, asociaciones, pruebas de conexión y eliminaciones. La vista Auditoría es sólo de consulta, paginada e inmutable; nunca presenta contraseñas, JWT, API keys ni cadenas de conexión completas.
+
+\subsection{Parámetros generales}
+
+La pantalla Parámetros no es una tabla libre de clave/valor. Sólo muestra valores previamente aprobados mediante un catálogo que define nombre humano, descripción, módulo consumidor, tipo, límites y valor permitido. Mientras el Sprint 2 no tenga un módulo consumidor que requiera parámetros operativos, la pantalla presenta un estado vacío explicativo. El catálogo queda diferido al sprint que implemente su primer consumidor, como ETL, reportería o analítica, y deberá llegar con especificación, validaciones, pruebas y auditoría. Esta decisión evita guardar valores arbitrarios que el software no interpretaría.
+
+\subsection{Configuración LLM cloud y local}
+
+La pantalla Configuración LLM mantiene configuraciones no secretas: nombre, proveedor, URL validada, modelo, estado y resultado de prueba. Puede existir una sola configuración activa. Gemini Cloud utiliza la referencia \file{GEMINI\_API\_KEY}; Qwen Cloud utiliza \file{DASHSCOPE\_API\_KEY}; ambas claves permanecen exclusivamente en \file{.env}. Para probar una configuración cloud se guarda el registro, se usa \textbf{Probar conexión} y se revisa el aviso verde de éxito o rojo con causa segura. La prueba sale desde FastAPI, con tiempo limitado y sin datos del negocio.
+
+\subsection{Alternativa LLM local con Ollama}
+
+Ollama es un respaldo opcional para probar la integración LLM cuando no se dispone de una cuota cloud o se desea evitar usarla. No reemplaza Gemini ni Qwen Cloud, no se inicia con \file{make up}, no requiere API key y no publica un puerto en el computador anfitrión. Sólo FastAPI, dentro de la red del proyecto, puede acceder al servicio por \file{http://ollama:11434}.
+
+\subsection{Preparar y descargar el modelo}
+
+Todos los comandos se ejecutan desde la raíz del repositorio. Antes de la descarga se recomienda comprobar que el equipo tenga al menos 8 GB de disco libre adicionales. El perfil inicia el servicio, pero no descarga automáticamente un modelo:
+
+\begin{lstlisting}[style=terminal,language=bash]
+make ollama-up
+make ollama-pull
+make ollama-status
+\end{lstlisting}
+
+El primer comando activa el perfil \file{local-llm}; el segundo descarga \file{qwen3:4b}, salvo que \file{OLLAMA\_MODEL} tenga otro valor local aprobado; el tercero muestra los modelos disponibles. La descarga se conserva en el volumen \file{ollama\_models}. Por tanto, cada programadora debe ejecutar este procedimiento una vez en su propio computador: Git no versiona el modelo, GitHub Container Registry no lo publica y CI/CD no lo descarga.
+
+\subsection{Registrar y probar la configuración}
+
+En la pantalla \textbf{Configuración LLM} crear un registro con los valores siguientes, inicialmente inactivo para no sustituir una configuración cloud que ya esté funcionando:
+
+\begin{center}
+\begin{tabularx}{0.88\textwidth}{@{}l X@{}}
+  \toprule
+  Campo & Valor \\
+  \midrule
+  Nombre & Ollama local de prueba \\
+  Proveedor & Ollama local \\
+  URL de servicio & \file{http://ollama:11434} \\
+  Modelo & \file{qwen3:4b} \\
+  Estado & Inactivo hasta que una persona autorizada decida activarlo \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+Después de guardar, seleccionar \textbf{Probar conexión}. FastAPI consulta \file{/api/tags} sin enviar datos del negocio. El resultado es verde sólo si Ollama responde y el modelo configurado está descargado; si el servicio responde pero falta el modelo, la interfaz muestra una alerta roja comprensible y se corrige ejecutando \file{make ollama-pull}. La prueba, creación y cambios quedan auditados sin almacenar una clave ni el contenido de una respuesta del modelo.
+
+\subsection{Detener sin borrar el modelo}
+
+\begin{lstlisting}[style=terminal,language=bash]
+make ollama-down
+\end{lstlisting}
+
+Este comando detiene únicamente Ollama y conserva \file{ollama\_models}. También \file{make down} detiene el servicio si está activo y conserva el volumen. No se debe usar \file{docker compose down --volumes} si se desea conservar el modelo local y las bases del proyecto.
+
 \section{Ejecución desde imágenes de GHCR}
 
 Esta modalidad permite levantar una entrega completa sin compilar el código y sin reemplazar desarrollo. Usa los puertos 8080, 18000, 55433 y 51434, además de volúmenes independientes.
@@ -389,7 +488,7 @@ make doctor
 make verify
 \end{lstlisting}
 
-El control completo valida las dos variantes de Compose, construye y prueba frontend/backend y regenera toda la documentación PDF.
+El control completo valida desarrollo, el perfil de entrega, el perfil local de Ollama y la entrega GHCR; además construye y prueba frontend/backend y regenera los cuatro PDF oficiales.
 
 \subsection{Contrato OpenAPI}
 
@@ -443,7 +542,7 @@ En otro equipo se sustituye esa ruta por la carpeta donde se clonó el repositor
 
 \subsection{Ciclo del ambiente de desarrollo}
 
-El ambiente de desarrollo contiene \file{frontend}, \file{backend}, \file{postgres} y \file{sqlserver}.
+El ambiente de desarrollo contiene \file{frontend}, \file{backend}, \file{postgres} y \file{sqlserver}. El perfil opcional \file{local-llm} puede añadir \file{ollama}.
 
 \textbf{Construir y levantar:}
 
@@ -466,6 +565,17 @@ make down
 \end{lstlisting}
 
 Después de \file{make down}, \file{docker compose start} ya no aplica porque los contenedores fueron retirados. Para crearlos nuevamente se usa \file{make up}; los volúmenes existentes se reutilizan.
+
+\subsection{Ciclo del LLM local opcional}
+
+\begin{lstlisting}[style=terminal,language=bash]
+make ollama-up
+make ollama-pull
+make ollama-status
+make ollama-down
+\end{lstlisting}
+
+La secuencia inicia el servicio, descarga el modelo una única vez, lista lo disponible y finalmente detiene sólo Ollama. El último comando conserva el volumen \file{ollama\_models}. El perfil no publica el puerto 11434, no se inicia al levantar desarrollo normal y no forma parte de \file{compose.release.yaml}; por ello no cambia la superficie de red de una entrega ni agrega una descarga pesada a CI.
 
 \subsection{Ciclo de la vista local de entrega}
 
@@ -542,6 +652,10 @@ El primer comando retira desarrollo y \file{frontend-delivery}; el segundo retir
   \file{make bootstrap} & Prepara secretos locales, construye y espera la salud del primer arranque. \\
   \file{make up} & Construye cambios y levanta desarrollo en segundo plano. \\
   \file{make delivery-preview-up} & Añade Nginx en 8080 y conserva Vite en 5173. \\
+  \file{make ollama-up} & Inicia Ollama local opcional sin descargar un modelo. \\
+  \file{make ollama-pull} & Descarga \file{OLLAMA\_MODEL} una vez por equipo. \\
+  \file{make ollama-status} & Lista los modelos presentes en el volumen local. \\
+  \file{make ollama-down} & Detiene Ollama y conserva el modelo. \\
   \file{make release-up} & Descarga y levanta las cinco imágenes en un proyecto aislado. \\
   \file{make release-down} & Retira sólo la entrega completa y conserva sus volúmenes. \\
   \file{make down} & Retira desarrollo y su red, conservando los volúmenes. \\
@@ -549,8 +663,8 @@ El primer comando retira desarrollo y \file{frontend-delivery}; el segundo retir
   \file{make logs} & Sigue los registros recientes. \\
   \file{make test} & Ejecuta pruebas en las etapas Docker de backend y frontend. \\
   \file{make lint} & Ejecuta Ruff, Mypy y ESLint en contenedores. \\
-  \file{make compose-check} & Valida Compose de desarrollo y de entrega. \\
-  \file{make docs} & Regenera bitácora, informe de sprint y manual. \\
+  \file{make compose-check} & Valida Compose de desarrollo, entrega y perfil Ollama opcional. \\
+  \file{make docs} & Regenera bitácora, informes de Sprint 1 y Sprint 2, y manual. \\
   \file{make verify} & Ejecuta la verificación completa antes de entregar. \\
   \bottomrule
 \end{tabularx}
@@ -694,7 +808,7 @@ En GitHub se abre la pestaña \textbf{Actions}. Cada fila representa una ejecuci
   \toprule
   Flujo & Cuándo se ejecuta & Resultado esperado \\
   \midrule
-  CI & Push o pull request hacia \file{develop} o \file{main}. & Valida flujo de ramas, Compose, backend, frontend, infraestructura y los tres PDF. No publica ni deja contenedores activos. \\
+  CI & Push o pull request hacia \file{develop} o \file{main}. & Valida flujo de ramas, Compose, backend, frontend, infraestructura y los cuatro PDF. No publica ni deja contenedores activos ni descarga modelos LLM. \\
   CD & Cambio ya fusionado en \file{main} o etiqueta \file{v*}. & Revalida backend/frontend y publica cinco imágenes de producción en GHCR con etiqueta de rama, SHA y, cuando aplique, versión. No despliega aún una VM Azure. \\
   Dependabot & Según su programación. & Abre un PR temporal de actualización; se revisa y prueba igual que un cambio humano. \\
   \bottomrule
@@ -746,7 +860,7 @@ El Sprint 1 no se rehace con SDD porque ya se cerró como una base técnica. Des
   \item Gestionar la visibilidad de cada paquete GHCR de forma independiente y no incluir secretos ni datos reales en ninguna imagen.
   \item Otorgar acceso únicamente a cuentas identificadas y revocar colaboradores que ya no participen.
   \item Revisar los cambios de Dependabot y no fusionarlos sin CI aprobada.
-  \item Cuando se implemente RBAC, FastAPI debe autorizar cada endpoint; ocultar menús en React no es un control de seguridad.
+  \item RBAC ya exige que FastAPI autorice cada endpoint; ocultar menús en React no es un control de seguridad.
 \end{enumerate}
 
 \section{Diagnóstico de fallos}
@@ -780,6 +894,7 @@ docker compose logs --tail=200 backend
 docker compose logs --tail=200 frontend
 docker compose logs --tail=200 postgres
 docker compose logs --tail=200 sqlserver
+docker compose --profile local-llm logs --tail=200 ollama
 \end{lstlisting}
 
 \section{Lista de comprobación para una demostración}
@@ -803,6 +918,7 @@ Los documentos se compilan dentro de la imagen \file{bi-ia-docs}; no se instala 
 \begin{lstlisting}[style=terminal,language=bash]
 make logbook
 make sprint-report
+make sprint2-report
 make technical-manual
 make docs
 \end{lstlisting}
@@ -818,7 +934,7 @@ Después de cambios técnicos se deben actualizar, según corresponda, README, a
   Autoras & Aprobar alcance, secretos, accesos, datos de prueba y entregas académicas. \\
   Colaborador técnico & Trabajar por rama, ejecutar pruebas, actualizar documentación y solicitar revisión. \\
   CI/CD & Repetir controles y publicar imágenes después de la integración autorizada. \\
-  FastAPI futuro & Aplicar autorización real, validaciones determinísticas y auditoría. \\
+  FastAPI & Aplica autorización RBAC, validaciones determinísticas, auditoría y pruebas LLM seguras. \\
   Responsable de datos & Confirmar que la fuente externa permanezca en lectura y que no se incorporen datos productivos. \\
   \bottomrule
 \end{tabularx}
@@ -866,7 +982,7 @@ make verify
   \toprule
   Campo & Valor \\
   \midrule
-  Estado & Cierre documental del Sprint 1; base obligatoria para el Sprint 2 con SDD. \\
+  Estado & Manual acumulativo del Sprint 1 y Sprint 2; base obligatoria para los módulos posteriores con SDD. \\
   Custodia & Repositorio público \file{LFXAS/prototipo-bi-ia}; escritura restringida a colaboradores. \\
   Audiencia & Autoras, tutor, revisores, colaboradores y lectores académicos. \\
   Actualización & Debe acompañar todo cambio de instalación, puertos, secretos, imágenes, pruebas o recuperación. \\
@@ -889,6 +1005,7 @@ make verify
   1.5.0 & 01-09-2026 & Explicación ampliada de CI, CD y DevOps; procedimiento SDD, plantillas versionadas y primera especificación del Sprint 2. \\
   1.6.0 & 02-09-2026 & Reconstrucción operativa del Sprint 1 y referencia comentada de variables, Compose, Dockerfiles, Makefile, Git, GitHub, CI/CD, persistencia y verificación. \\
   1.7.0 & 02-09-2026 & Evidencias visuales de GitHub Actions y de los controles obligatorios de aprobación, CI y fusión. \\
+  1.8.0 & 11-09-2026 & Consolidación del Sprint 2: operación JWT/RBAC, navegación, CRUD protegido, auditoría, parámetros, proveedores LLM y perfil Docker local de Ollama con persistencia y validación segura. \\
   \bottomrule
 \end{tabularx}
 

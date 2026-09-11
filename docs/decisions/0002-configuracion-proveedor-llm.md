@@ -26,5 +26,5 @@ En Sprint 2 no se generan propuestas BI ni se envían metadatos al LLM. Estas fu
 - La aplicación puede cambiar entre nube y local sin acoplar ETL, metadatos o analítica a un proveedor.
 - Las claves continúan fuera del código y de la base; la interfaz sólo muestra si la referencia requerida está disponible.
 - Qwen Cloud y Gemini pueden tener costos, límites o modelos cambiantes; se deberán revisar las condiciones de la cuenta antes de realizar pruebas y configurar límites de consumo.
-- Ollama evita dependencia de cuota cloud, pero exige recursos locales y su perfil Docker no se expone públicamente.
+- Ollama evita dependencia de cuota cloud, pero exige recursos locales. Se inicia explícitamente con el perfil Docker `local-llm`, conserva el modelo por equipo en `ollama_models`, no expone un puerto público y no se descarga durante CI/CD ni se publica en GHCR.
 - Agregar otro proveedor requerirá actualizar esta decisión, la especificación SPR-02, los controles de secretos y las pruebas.

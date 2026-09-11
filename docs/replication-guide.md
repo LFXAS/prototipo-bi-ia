@@ -30,7 +30,7 @@ No se publican volúmenes Docker ni contraseñas. Los volúmenes son estado loca
 ## 2. Requisitos en cualquier equipo
 
 1. Instalar Docker Desktop en Windows/macOS, o Docker Engine más el complemento Compose en Linux.
-2. Asignar al menos 6 GB de memoria a Docker; se recomiendan 8 GB por SQL Server.
+2. Asignar al menos 6 GB de memoria a Docker; se recomiendan 8 GB por SQL Server. Si se usará el LLM local Ollama, disponer además de al menos 8 GB libres de disco para su imagen/modelo y, de preferencia, 16 GB de memoria total en el equipo.
 3. Tener libres estos puertos o cambiarlos en `.env`:
    - `5173`: frontend de desarrollo;
    - `8080`: vista Nginx local o frontend desde imágenes publicadas;
@@ -73,6 +73,38 @@ make delivery-preview-up
 ```
 
 Vite continúa en <http://localhost:5173> y el frontend compilado con Nginx queda en <http://localhost:8080>. Ambos usan la misma API en `8000` y los mismos volúmenes. Esta modalidad prueba la construcción del frontend, no sustituye la validación del entorno completo publicado.
+
+### Alternativa local sin cuota cloud: Ollama
+
+Ollama es una alternativa opcional para probar el contrato LLM sin una clave cloud. No inicia con `make bootstrap` ni `make up`; no tiene puerto publicado en el host y no reemplaza una configuración Gemini/Qwen que ya esté activa.
+
+Desde la raíz del repositorio, en cada equipo que vaya a probarlo:
+
+```bash
+make ollama-up
+make ollama-pull
+make ollama-status
+```
+
+`make ollama-pull` descarga una vez `qwen3:4b` al volumen local `ollama_models`. Git no versiona ese volumen y CI/CD no descarga el modelo: por ello, después de clonar o actualizar el repositorio, cada programadora ejecuta el mismo comando en su equipo si desea usarlo.
+
+En la pantalla **Configuración LLM**, crear una configuración con:
+
+| Campo | Valor |
+|---|---|
+| Nombre | Ollama local de prueba |
+| Proveedor | Ollama local |
+| URL de servicio | `http://ollama:11434` |
+| Modelo | `qwen3:4b` |
+| Estado inicial | Inactivo, para no sustituir otro proveedor activo |
+
+Guardar y usar **Probar conexión**. La confirmación sólo será exitosa cuando el servicio y el modelo estén disponibles. Para detener el servicio conservando el modelo:
+
+```bash
+make ollama-down
+```
+
+No se necesita ni se debe crear `OLLAMA_API_KEY`. Las variables `OLLAMA_*` de `.env.example` sólo controlan imagen, modelo y límites locales; se pueden conservar con sus valores sugeridos.
 
 ## 4. Reproducir absolutamente todo desde cero en otra ruta
 
@@ -121,7 +153,7 @@ git commit -m "feat: descripcion breve"
 git push -u origin feature/nombre-cambio
 ```
 
-Abre un pull request hacia `develop`. CI valida Compose, código, pruebas y los tres documentos PDF. Para publicar una entrega, abre otro pull request de `develop` hacia `main`; sólo esa fusión activa CD y publica las cinco imágenes con las etiquetas `main` y `sha-*`. Una etiqueta Git `v1.0.0` produce además la imagen `v1.0.0`. Consulta `docs/git-workflow.md` para el procedimiento completo y las reglas de protección.
+Abre un pull request hacia `develop`. CI valida Compose, código, pruebas y los cuatro documentos PDF. Para publicar una entrega, abre otro pull request de `develop` hacia `main`; sólo esa fusión activa CD y publica las cinco imágenes con las etiquetas `main` y `sha-*`. Una etiqueta Git `v1.0.0` produce además la imagen `v1.0.0`. Consulta `docs/git-workflow.md` para el procedimiento completo y las reglas de protección.
 
 ## 6. Levantar el entorno publicado en otra máquina (sin compilar)
 
@@ -201,6 +233,7 @@ docker compose ps
 docker compose logs --tail=200 backend
 docker compose logs --tail=200 frontend
 docker compose logs --tail=200 postgres sqlserver
+docker compose --profile local-llm logs --tail=200 ollama
 ```
 
 - API viva pero `ready` falla: revisa PostgreSQL, credenciales y puerto.
@@ -209,6 +242,7 @@ docker compose logs --tail=200 postgres sqlserver
 - `5173` funciona y `8080` no responde: inicia la vista con `make delivery-preview-up` o la entrega completa con `make release-up`.
 - GHCR responde `denied`: el paquete es privado o falta `docker login ghcr.io`.
 - En ARM el inicio es lento: verifica que la emulación `linux/amd64` esté habilitada.
+- La prueba de Ollama indica que falta el modelo: ejecuta `make ollama-pull` desde la raíz del repositorio y repite la prueba; no copies el volumen de otra máquina.
 
 ## 10. Evidencias para la tesis
 
