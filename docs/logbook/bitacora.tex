@@ -385,6 +385,52 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   \bottomrule
 \end{longtable}
 
+\clearpage
+\subsection{10 de septiembre de 2026 - Corrección funcional y visual del módulo administrativo}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Especificación corregida & \statusok & Las observaciones funcionales se reorganizaron en especificaciones de seguridad RBAC, navegación, parámetros/LLM, identidad visual y una matriz de trazabilidad. No se adelantan ETL, analítica ni Copiloto BI. \\
+  Protección administrativa & \statusok & La migración \file{20260910\_04} añade la marca persistente \file{is\_system\_protected}. La cuenta y el rol administrativo inicial no se pueden desactivar desde la API; el rol debe conservar permisos de recuperación y los permisos/menús de sistema no se desactivan. \\
+  Interfaz RBAC & \statusok & La creación y edición de usuarios selecciona roles por nombre; los roles seleccionan permisos por nombre y descripción. La interfaz ya no solicita identificadores numéricos ni códigos técnicos para esas asociaciones. \\
+  Menús y estado de pantalla & \statusok & Inicio se muestra como acceso directo, sin grupo \emph{Principal}. Los grupos pueden plegarse aun cuando contienen la ruta activa, el sidebar se puede ocultar en escritorio y cada ruta reinicia su estado de edición para evitar datos cruzados o valores \file{undefined}. \\
+  Ajuste de controles administrativos & \statusok & Los listbox de permisos otorgados y requeridos ocupan la fila completa y se adaptan a la opción legible más larga dentro de límites responsive. El control textual del encabezado se sustituyó por un chevrón compacto superpuesto al borde del sidebar, visible también cuando la barra está oculta y sin desplazar la navegación. \\
+  Mensajes de validación & \statusok & La interfaz traduce el detalle estructurado de validación de FastAPI para evitar el texto \file{[object Object]}. El correo de creación de usuario se solicita mediante un control de correo y presenta un ejemplo de formato válido. \\
+  Respuesta de usuario creado & \statusok & Se corrigió la carga diferida de permisos al devolver un usuario recién creado o editado. La API vuelve a consultar el usuario con sus roles y permisos antes de responder, evitando un error 500 después de confirmar la transacción. \\
+  Parámetros y LLM & \statusok & Parámetros generales no permite claves libres mientras no exista un catálogo consumido por un módulo. Configuración LLM presenta proveedor guiado, referencia de secreto por entorno y acción para probar la conexión desde FastAPI. \\
+  Dirección visual & \statusok & Se definieron tokens CSS para marca, superficies y estados, además del cascarón futuro para Datos, Analítica e IA. Los módulos futuros no se muestran como opciones vacías en Sprint 2. \\
+  Verificación & \statusok & Migración aplicada en Docker; backend saludable; Ruff, Mypy y cinco pruebas Pytest aprobadas; ESLint, dos pruebas Vitest y construcción Vite aprobados. \file{make verify} aprobó configuración Compose, flujo de ramas, imágenes de prueba y generación de PDF. \\
+  \bottomrule
+\end{longtable}
+
+\clearpage
+\subsection{11 de septiembre de 2026 - Alternativa local Ollama para configuración LLM}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Especificación y decisión & \statusok & La especificación SPR-02-03, la matriz de observaciones y el ADR 0002 precisan que Ollama es una alternativa local opcional del Sprint 2. No modifica el alcance histórico del Sprint 1 ni adelanta el módulo Copiloto BI. \\
+  Perfil Docker & \statusok & \file{compose.yaml} incorpora el perfil \file{local-llm} con el servicio \file{ollama}, volumen nombrado \file{ollama\_models}, sin publicar el puerto 11434 en el host. \\
+  Operación por equipo & \statusok & \file{make ollama-up}, \file{make ollama-pull}, \file{make ollama-status} y \file{make ollama-down} permiten iniciar, descargar, revisar y detener el servicio. El modelo se conserva por computador y no se versiona, publica en GHCR ni descarga en CI/CD. \\
+  Validación segura & \statusok & FastAPI consulta \file{/api/tags} y exige que el modelo configurado esté descargado antes de informar éxito. Una prueba unitaria cubre modelo presente y ausente; la prueba real confirmó \file{qwen3:4b} sin enviar datos del negocio. \\
+  Configuración funcional & \statusok & Se registró una configuración local de prueba inactiva, de modo que no se sustituyó la configuración Gemini existente. La creación y prueba conservaron la auditoría sin persistir claves. \\
+  Documentación & \statusok & README, guía de réplica, arquitectura y manual técnico se ampliaron con requisitos, comandos, persistencia, URL interna y procedimiento para cada programadora. Se creó el informe formal del Sprint 2 y CI compila/verifica ahora los cuatro PDF oficiales. \\
+  \bottomrule
+\end{longtable}
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}X l X@{}}
@@ -398,6 +444,7 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   PostgreSQL disponible & \statusok & Esquemas \file{app} y \file{mart}; endpoint \file{/health/ready} en \file{ok} \\
   AdventureWorks restaurada & \statusok & 71 tablas; \file{bi\_reader}: lectura 1 e inserción 0 \\
   Interfaz disponible & \statusok & Vite saludable en 5173, Nginx opcional en 8080 y API accesible mediante proxy \\
+  Ollama local opcional & \statusok & Perfil \file{local-llm}, modelo \file{qwen3:4b} persistente y prueba FastAPI de servicio más modelo, sin puerto público ni descarga CI \\
   PDF legible & \statusok & Todas las páginas renderizadas e inspeccionadas sin cortes ni solapamientos \\
   Git local & \statusok & \file{develop} para integración, \file{main} para entregas y ramas enfocadas por pull request \\
   GitHub/GHCR & \statusok & Repositorio público, dos colaboradoras con escritura, ramas protegidas y cinco imágenes públicas en GHCR; la réplica desde una VM Ubuntu se realizó con Docker y VS Code. \\
@@ -417,10 +464,15 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
 
 \section{Historial del documento}
 
-\begin{tabularx}{\textwidth}{@{}l l X@{}}
+\begin{longtable}{@{}p{0.62in} p{0.86in} p{4.82in}@{}}
   \toprule
   \textbf{Versión} & \textbf{Fecha} & \textbf{Cambio} \\
   \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Versión} & \textbf{Fecha} & \textbf{Cambio} \\
+  \midrule
+  \endhead
   0.1.0 & 24-08-2026 & Apertura de la bitácora y registro de la fase de ambiente, Docker, Git y DevOps. \\
   0.1.1 & 24-08-2026 & Prueba integral desde volúmenes vacíos, corrección del usuario lector e inicialización del repositorio Git. \\
   0.1.2 & 24-08-2026 & Ejecución desde la ruta definitiva y validación de la sesión GitHub de \file{LFXAS}. \\
@@ -438,7 +490,15 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   0.2.4 & 06-09-2026 & Implementación inicial del Sprint 2: migración RBAC/parámetros, JWT, auditoría, adaptadores LLM, cascarón React responsive y verificación integrada en Docker. \\
   0.2.5 & 06-09-2026 & CRUD administrativo del Sprint 2: migración de estado de permisos, edición y desactivación lógica protegidas por RBAC, formularios React y validaciones Docker de backend y frontend. \\
   0.2.6 & 06-09-2026 & Mejora UX del Sprint 2: menús agrupados y administrables por módulo, hamburguesa responsive y paginación servidor-cliente para recursos administrativos. \\
+  0.2.7 & 10-09-2026 & Corrección de Sprint 2: protección persistente de administración, selectores guiados, navegación plegable/ocultable, aislamiento de formularios, catálogo de parámetros y dirección visual BI. \\
+  0.2.8 & 10-09-2026 & Ajuste UX: listbox de permisos de ancho legible y control lateral compacto superpuesto para ocultar/restaurar la navegación sin desplazarla. \\
+  0.2.9 & 10-09-2026 & Corrección UX de creación de usuarios: validaciones API legibles por campo y orientación para el formato de correo. \\
+  0.2.10 & 10-09-2026 & Corrección de API: respuesta consistente después de crear o editar usuarios con roles asignados. \\
+  0.2.11 & 10-09-2026 & Eliminación física controlada: confirmación de interfaz, bloqueo explícito de dependencias hijas, protección de registros base y auditoría de las eliminaciones permitidas. \\
+  0.2.12 & 10-09-2026 & Corrección de asociaciones: permisos de rol mediante \texttt{PUT}, contraseña opcional al editar y tablas de casillas legibles para roles y permisos. \\
+  0.2.13 & 10-09-2026 & Corrección UX de LLM: las pruebas de conexión exitosas se comunican con confirmación verde accesible y los fallos conservan alerta roja. \\
+  0.2.14 & 11-09-2026 & Alternativa local Ollama: perfil Docker opcional, modelo persistente por equipo, validación de disponibilidad y documentación operativa sin alterar Sprint 1 ni CI/CD. \\
   \bottomrule
-\end{tabularx}
+\end{longtable}
 
 \end{document}

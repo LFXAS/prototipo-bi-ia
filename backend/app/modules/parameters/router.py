@@ -4,7 +4,7 @@ import asyncio
 from datetime import UTC, datetime
 
 import pyodbc  # type: ignore[import-not-found]
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -32,6 +32,10 @@ _CREDENTIAL_REFERENCES = {
     "ollama-local": "none",
 }
 
+# Sprint 2 deliberately has no generic operational value consumed by the product yet.
+# New entries require a type, limits and an owning module before the UI may edit them.
+_PARAMETER_CATALOG: dict[str, dict[str, str]] = {}
+
 
 @router.get("/parameters", response_model=PageRead[ParameterRead])
 async def list_parameters(
@@ -40,9 +44,21 @@ async def list_parameters(
     limit: int = Query(default=10, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
 ) -> PageRead[ParameterRead]:
-    total = (await session.scalar(select(func.count()).select_from(Parameter))) or 0
+    if not _PARAMETER_CATALOG:
+        return PageRead(items=[], total=0, limit=limit, offset=offset)
+    total = (
+        await session.scalar(
+            select(func.count()).select_from(Parameter).where(Parameter.key.in_(_PARAMETER_CATALOG))
+        )
+    ) or 0
     items = (
-        await session.execute(select(Parameter).order_by(Parameter.key).limit(limit).offset(offset))
+        await session.execute(
+            select(Parameter)
+            .where(Parameter.key.in_(_PARAMETER_CATALOG))
+            .order_by(Parameter.key)
+            .limit(limit)
+            .offset(offset)
+        )
     ).scalars()
     return PageRead(items=list(items), total=total, limit=limit, offset=offset)
 
@@ -54,6 +70,11 @@ async def upsert_parameter(
     actor: User = Depends(require_permission("parameters.write")),
     session: AsyncSession = Depends(get_session),
 ) -> Parameter:
+    if key not in _PARAMETER_CATALOG:
+        raise HTTPException(
+            status_code=422,
+            detail="No existe un parámetro operativo aprobado para esta clave.",
+        )
     if key != payload.key:
         raise HTTPException(
             status_code=422, detail="La clave de la ruta y del contenido deben coincidir."
@@ -157,6 +178,32 @@ async def update_llm_configuration(
     )
     await session.commit()
     return configuration
+
+
+@router.delete("/llm-configurations/{configuration_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_llm_configuration(
+    configuration_id: int,
+    actor: User = Depends(require_permission("parameters.llm.write")),
+    session: AsyncSession = Depends(get_session),
+) -> Response:
+    configuration = (
+        await session.execute(
+            select(LlmConfiguration).where(LlmConfiguration.id == configuration_id)
+        )
+    ).scalar_one_or_none()
+    if configuration is None:
+        raise HTTPException(status_code=404, detail="Configuración LLM no encontrada.")
+    if configuration.is_active:
+        raise HTTPException(
+            status_code=422,
+            detail="Desactive la configuración LLM antes de eliminarla definitivamente.",
+        )
+    await add_audit_event(
+        session, actor.id, "parameters.llm.delete", "llm_configuration", str(configuration_id)
+    )
+    await session.delete(configuration)
+    await session.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.post("/llm-configurations/{configuration_id}/test", response_model=ConnectionTestResponse)

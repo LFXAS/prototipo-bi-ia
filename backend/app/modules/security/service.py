@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+import unicodedata
 from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime, timedelta
 
@@ -42,7 +44,7 @@ DEFAULT_PERMISSIONS: tuple[tuple[str, str, str], ...] = (
 )
 
 DEFAULT_MENUS: tuple[tuple[str, str, str, int, str, str, tuple[str, ...]], ...] = (
-    ("home", "Inicio", "/", 0, "home", "Principal", ()),
+    ("home", "Inicio", "/", 0, "home", "Inicio", ()),
     ("users", "Usuarios", "/usuarios", 10, "security", "Seguridad", ("security.users.read",)),
     ("roles", "Roles", "/roles", 20, "security", "Seguridad", ("security.roles.read",)),
     (
@@ -74,6 +76,15 @@ DEFAULT_MENUS: tuple[tuple[str, str, str, int, str, str, tuple[str, ...]], ...] 
         ("parameters.llm.read",),
     ),
     ("audit", "Auditoría", "/auditoria", 70, "security", "Seguridad", ("audit.read",)),
+)
+
+RECOVERY_PERMISSION_CODES = frozenset(
+    {
+        "security.users.write",
+        "security.roles.write",
+        "security.permissions.write",
+        "security.menus.write",
+    }
 )
 
 
@@ -139,6 +150,19 @@ def user_permission_codes(user: User) -> set[str]:
     }
 
 
+def role_has_recovery_permissions(role: Role) -> bool:
+    return RECOVERY_PERMISSION_CODES.issubset(
+        {permission.code for permission in role.permissions if permission.is_active}
+    )
+
+
+def generated_role_code(name: str) -> str:
+    """Creates a stable internal code without asking administrators to invent one."""
+    normalized = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode()
+    code = re.sub(r"[^a-z0-9]+", "-", normalized.lower()).strip("-")
+    return code[:72] or "rol"
+
+
 def require_permission(code: str) -> Callable[[User], Awaitable[User]]:
     async def dependency(user: User = Depends(current_user)) -> User:
         if code not in user_permission_codes(user):
@@ -176,7 +200,14 @@ async def seed_security(session: AsyncSession) -> None:
     }
     for code, name, description in DEFAULT_PERMISSIONS:
         if code not in existing_permissions:
-            session.add(Permission(code=code, name=name, description=description))
+            session.add(
+                Permission(
+                    code=code,
+                    name=name,
+                    description=description,
+                    is_system_protected=True,
+                )
+            )
     await session.flush()
 
     permissions = {
@@ -189,9 +220,13 @@ async def seed_security(session: AsyncSession) -> None:
     ).scalar_one_or_none()
     if administrator is None:
         administrator = Role(
-            code="administrator", name="Administrador", description="Rol inicial de administración."
+            code="administrator",
+            name="Administrador",
+            description="Rol inicial de administración.",
+            is_system_protected=True,
         )
         session.add(administrator)
+    administrator.is_system_protected = True
     administrator.permissions = list(permissions.values())
     await session.flush()
 
@@ -207,6 +242,7 @@ async def seed_security(session: AsyncSession) -> None:
                     module_code=module_code,
                     module_label=module_label,
                     permissions=[permissions[item] for item in permission_codes],
+                    is_system_protected=True,
                 )
             )
     admin = (
@@ -217,12 +253,14 @@ async def seed_security(session: AsyncSession) -> None:
         )
     ).scalar_one_or_none()
     if admin is None:
-        session.add(
-            User(
-                email=settings.bootstrap_admin_email,
-                full_name="Administrador inicial",
-                password_hash=hash_password(settings.bootstrap_admin_password.get_secret_value()),
-                roles=[administrator],
-            )
+        admin = User(
+            email=settings.bootstrap_admin_email,
+            full_name="Administrador inicial",
+            password_hash=hash_password(settings.bootstrap_admin_password.get_secret_value()),
+            roles=[administrator],
+            is_system_protected=True,
         )
+        session.add(admin)
+    else:
+        admin.is_system_protected = True
     await session.commit()

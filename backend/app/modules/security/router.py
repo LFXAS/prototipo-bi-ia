@@ -1,13 +1,24 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from typing import Any
+
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.core.pagination import PageRead
 from app.db.session import get_session
-from app.modules.security.models import AuditEvent, Menu, Permission, Role, User
+from app.modules.security.models import (
+    AuditEvent,
+    Menu,
+    Permission,
+    Role,
+    User,
+    menu_permissions,
+    role_permissions,
+    user_roles,
+)
 from app.modules.security.schemas import (
     AuditEventRead,
     LoginRequest,
@@ -28,9 +39,11 @@ from app.modules.security.schemas import (
     UserUpdate,
 )
 from app.modules.security.service import (
+    RECOVERY_PERMISSION_CODES,
     add_audit_event,
     create_access_token,
     current_user,
+    generated_role_code,
     hash_password,
     require_permission,
     user_permission_codes,
@@ -40,12 +53,27 @@ from app.modules.security.service import (
 router = APIRouter(tags=["security"])
 
 
+async def _association_count(session: AsyncSession, table: Any, column: Any, value: int) -> int:
+    query = select(func.count()).select_from(table).where(column == value)
+    return (await session.scalar(query)) or 0
+
+
+def _delete_blocked(resource: str, dependencies: list[tuple[str, int]]) -> None:
+    pending = [f"{count} {label}" for label, count in dependencies if count]
+    if pending:
+        raise HTTPException(
+            status_code=409,
+            detail=f"No se puede eliminar {resource}: primero resuelva {' y '.join(pending)}.",
+        )
+
+
 def _user_read(user: User) -> UserRead:
     return UserRead(
         id=user.id,
         email=user.email,
         full_name=user.full_name,
         is_active=user.is_active,
+        is_system_protected=user.is_system_protected,
         roles=[RoleRead.model_validate(role) for role in user.roles],
     )
 
@@ -127,7 +155,13 @@ async def create_user(
     ).scalar_one_or_none():
         raise HTTPException(status_code=409, detail="El correo ya está registrado.")
     roles = (
-        list((await session.execute(select(Role).where(Role.id.in_(payload.role_ids)))).scalars())
+        list(
+            (
+                await session.execute(
+                    select(Role).where(Role.id.in_(payload.role_ids), Role.is_active.is_(True))
+                )
+            ).scalars()
+        )
         if payload.role_ids
         else []
     )
@@ -144,9 +178,16 @@ async def create_user(
     await add_audit_event(
         session, actor.id, "security.user.create", "user", str(user.id), {"email": user.email}
     )
+    user_id = user.id
     await session.commit()
-    await session.refresh(user, ["roles"])
-    return _user_read(user)
+    saved_user = (
+        await session.execute(
+            select(User)
+            .where(User.id == user_id)
+            .options(selectinload(User.roles).selectinload(Role.permissions))
+        )
+    ).scalar_one()
+    return _user_read(saved_user)
 
 
 @router.patch("/users/{user_id}", response_model=UserRead)
@@ -163,6 +204,27 @@ async def update_user(
     ).scalar_one_or_none()
     if user is None:
         raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+    if user.is_system_protected and payload.is_active is False:
+        await add_audit_event(
+            session, actor.id, "security.user.protected_change_rejected", "user", str(user.id)
+        )
+        await session.commit()
+        raise HTTPException(
+            status_code=422,
+            detail="La cuenta administrativa protegida no puede desactivarse.",
+        )
+    if user.is_system_protected and payload.role_ids is not None:
+        await add_audit_event(
+            session, actor.id, "security.user.protected_change_rejected", "user", str(user.id)
+        )
+        await session.commit()
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "Los roles de la cuenta administrativa protegida no se modifican "
+                "desde esta pantalla."
+            ),
+        )
     if payload.full_name is not None:
         user.full_name = payload.full_name
     if payload.password is not None:
@@ -171,14 +233,61 @@ async def update_user(
         user.is_active = payload.is_active
     if payload.role_ids is not None:
         roles = list(
-            (await session.execute(select(Role).where(Role.id.in_(payload.role_ids)))).scalars()
+            (
+                await session.execute(
+                    select(Role).where(Role.id.in_(payload.role_ids), Role.is_active.is_(True))
+                )
+            ).scalars()
         )
         if len(roles) != len(set(payload.role_ids)):
             raise HTTPException(status_code=422, detail="Uno o más roles no existen.")
         user.roles = roles
-    await add_audit_event(session, actor.id, "security.user.update", "user", str(user.id))
+    user_id = user.id
+    await add_audit_event(session, actor.id, "security.user.update", "user", str(user_id))
     await session.commit()
-    return _user_read(user)
+    saved_user = (
+        await session.execute(
+            select(User)
+            .where(User.id == user_id)
+            .options(selectinload(User.roles).selectinload(Role.permissions))
+        )
+    ).scalar_one()
+    return _user_read(saved_user)
+
+
+@router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_user(
+    user_id: int,
+    actor: User = Depends(require_permission("security.users.write")),
+    session: AsyncSession = Depends(get_session),
+) -> Response:
+    user = (await session.execute(select(User).where(User.id == user_id))).scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+    if user.is_system_protected:
+        raise HTTPException(status_code=422, detail="La cuenta protegida no puede eliminarse.")
+    _delete_blocked(
+        "el usuario",
+        [
+            (
+                "asignaciones de roles",
+                await _association_count(session, user_roles, user_roles.c.user_id, user_id),
+            ),
+            (
+                "eventos de auditoría como actor",
+                await session.scalar(
+                    select(func.count())
+                    .select_from(AuditEvent)
+                    .where(AuditEvent.actor_user_id == user_id)
+                )
+                or 0,
+            ),
+        ],
+    )
+    await add_audit_event(session, actor.id, "security.user.delete", "user", str(user_id))
+    await session.delete(user)
+    await session.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get("/roles", response_model=PageRead[RoleRead])
@@ -212,8 +321,12 @@ async def create_role(
     actor: User = Depends(require_permission("security.roles.write")),
     session: AsyncSession = Depends(get_session),
 ) -> RoleRead:
-    if (await session.execute(select(Role).where(Role.code == payload.code))).scalar_one_or_none():
-        raise HTTPException(status_code=409, detail="El código del rol ya existe.")
+    base_code = generated_role_code(payload.name)
+    code = base_code
+    suffix = 2
+    while (await session.execute(select(Role).where(Role.code == code))).scalar_one_or_none():
+        code = f"{base_code[: max(1, 76 - len(str(suffix)))]}-{suffix}"
+        suffix += 1
     permissions = (
         list(
             (
@@ -228,7 +341,7 @@ async def create_role(
     if len(permissions) != len(set(payload.permission_ids)):
         raise HTTPException(status_code=422, detail="Uno o más permisos no existen.")
     role = Role(
-        code=payload.code,
+        code=code,
         name=payload.name,
         description=payload.description,
         permissions=permissions,
@@ -264,6 +377,17 @@ async def update_role_permissions(
     )
     if len(permissions) != len(set(payload.permission_ids)):
         raise HTTPException(status_code=422, detail="Uno o más permisos no existen.")
+    if role.is_system_protected and not RECOVERY_PERMISSION_CODES.issubset(
+        {permission.code for permission in permissions if permission.is_active}
+    ):
+        await add_audit_event(
+            session, actor.id, "security.role.protected_change_rejected", "role", str(role.id)
+        )
+        await session.commit()
+        raise HTTPException(
+            status_code=422,
+            detail="El rol administrativo protegido debe conservar los permisos de recuperación.",
+        )
     role.permissions = permissions
     await add_audit_event(
         session, actor.id, "security.role.permissions.update", "role", str(role.id)
@@ -286,10 +410,10 @@ async def update_role(
     ).scalar_one_or_none()
     if role is None:
         raise HTTPException(status_code=404, detail="Rol no encontrado.")
-    if payload.is_active is False and role.code == "administrator":
+    if payload.is_active is False and role.is_system_protected:
         raise HTTPException(
             status_code=422,
-            detail="El rol administrador inicial no puede desactivarse en esta fase.",
+            detail="El rol administrativo protegido no puede desactivarse.",
         )
     if payload.name is not None:
         role.name = payload.name
@@ -300,6 +424,38 @@ async def update_role(
     await add_audit_event(session, actor.id, "security.role.update", "role", str(role.id))
     await session.commit()
     return RoleRead.model_validate(role)
+
+
+@router.delete("/roles/{role_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_role(
+    role_id: int,
+    actor: User = Depends(require_permission("security.roles.write")),
+    session: AsyncSession = Depends(get_session),
+) -> Response:
+    role = (await session.execute(select(Role).where(Role.id == role_id))).scalar_one_or_none()
+    if role is None:
+        raise HTTPException(status_code=404, detail="Rol no encontrado.")
+    if role.is_system_protected:
+        raise HTTPException(status_code=422, detail="El rol protegido no puede eliminarse.")
+    _delete_blocked(
+        "el rol",
+        [
+            (
+                "asignaciones a usuarios",
+                await _association_count(session, user_roles, user_roles.c.role_id, role_id),
+            ),
+            (
+                "asignaciones de permisos",
+                await _association_count(
+                    session, role_permissions, role_permissions.c.role_id, role_id
+                ),
+            ),
+        ],
+    )
+    await add_audit_event(session, actor.id, "security.role.delete", "role", str(role_id))
+    await session.delete(role)
+    await session.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get("/permissions", response_model=PageRead[PermissionRead])
@@ -329,18 +485,17 @@ async def create_permission(
     actor: User = Depends(require_permission("security.permissions.write")),
     session: AsyncSession = Depends(get_session),
 ) -> Permission:
-    if (
-        await session.execute(select(Permission).where(Permission.code == payload.code))
-    ).scalar_one_or_none():
-        raise HTTPException(status_code=409, detail="El código del permiso ya existe.")
-    permission = Permission(**payload.model_dump())
-    session.add(permission)
-    await session.flush()
     await add_audit_event(
-        session, actor.id, "security.permission.create", "permission", str(permission.id)
+        session, actor.id, "security.permission.create_rejected", "permission", payload.code
     )
     await session.commit()
-    return permission
+    raise HTTPException(
+        status_code=422,
+        detail=(
+            "Los permisos técnicos se registran al aprobar e implementar un módulo; "
+            "no se crean manualmente."
+        ),
+    )
 
 
 @router.patch("/permissions/{permission_id}", response_model=PermissionRead)
@@ -355,6 +510,19 @@ async def update_permission(
     ).scalar_one_or_none()
     if permission is None:
         raise HTTPException(status_code=404, detail="Permiso no encontrado.")
+    if permission.is_system_protected and payload.is_active is False:
+        await add_audit_event(
+            session,
+            actor.id,
+            "security.permission.protected_change_rejected",
+            "permission",
+            str(permission.id),
+        )
+        await session.commit()
+        raise HTTPException(
+            status_code=422,
+            detail="El permiso de sistema protegido no puede desactivarse.",
+        )
     if payload.name is not None:
         permission.name = payload.name
     if payload.description is not None:
@@ -399,32 +567,14 @@ async def create_menu(
     actor: User = Depends(require_permission("security.menus.write")),
     session: AsyncSession = Depends(get_session),
 ) -> Menu:
-    if (
-        await session.execute(
-            select(Menu).where((Menu.code == payload.code) | (Menu.path == payload.path))
-        )
-    ).scalar_one_or_none():
-        raise HTTPException(status_code=409, detail="El código o la ruta del menú ya existe.")
-    permissions = (
-        list(
-            (
-                await session.execute(
-                    select(Permission).where(Permission.id.in_(payload.permission_ids))
-                )
-            ).scalars()
-        )
-        if payload.permission_ids
-        else []
-    )
-    if len(permissions) != len(set(payload.permission_ids)):
-        raise HTTPException(status_code=422, detail="Uno o más permisos no existen.")
-    menu = Menu(**payload.model_dump(exclude={"permission_ids"}), permissions=permissions)
-    session.add(menu)
-    await session.flush()
-    await add_audit_event(session, actor.id, "security.menu.create", "menu", str(menu.id))
+    await add_audit_event(session, actor.id, "security.menu.create_rejected", "menu", payload.code)
     await session.commit()
-    await session.refresh(menu, ["permissions"])
-    return menu
+    raise HTTPException(
+        status_code=422,
+        detail=(
+            "Los menús se registran al aprobar e implementar una pantalla; no se crean manualmente."
+        ),
+    )
 
 
 @router.patch("/menus/{menu_id}", response_model=MenuRead)
@@ -441,6 +591,15 @@ async def update_menu(
     ).scalar_one_or_none()
     if menu is None:
         raise HTTPException(status_code=404, detail="Menú no encontrado.")
+    if menu.is_system_protected and payload.is_active is False:
+        await add_audit_event(
+            session, actor.id, "security.menu.protected_change_rejected", "menu", str(menu.id)
+        )
+        await session.commit()
+        raise HTTPException(
+            status_code=422,
+            detail="El menú de sistema protegido no puede desactivarse.",
+        )
     if payload.path is not None and payload.path != menu.path:
         duplicate = (
             await session.execute(select(Menu).where(Menu.path == payload.path))
@@ -468,6 +627,34 @@ async def update_menu(
     await add_audit_event(session, actor.id, "security.menu.update", "menu", str(menu.id))
     await session.commit()
     return menu
+
+
+@router.delete("/menus/{menu_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_menu(
+    menu_id: int,
+    actor: User = Depends(require_permission("security.menus.write")),
+    session: AsyncSession = Depends(get_session),
+) -> Response:
+    menu = (await session.execute(select(Menu).where(Menu.id == menu_id))).scalar_one_or_none()
+    if menu is None:
+        raise HTTPException(status_code=404, detail="Menú no encontrado.")
+    if menu.is_system_protected:
+        raise HTTPException(status_code=422, detail="El menú protegido no puede eliminarse.")
+    _delete_blocked(
+        "el menú",
+        [
+            (
+                "asignaciones de permisos",
+                await _association_count(
+                    session, menu_permissions, menu_permissions.c.menu_id, menu_id
+                ),
+            )
+        ],
+    )
+    await add_audit_event(session, actor.id, "security.menu.delete", "menu", str(menu_id))
+    await session.delete(menu)
+    await session.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get("/audit-events", response_model=PageRead[AuditEventRead])

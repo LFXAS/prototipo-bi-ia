@@ -4,7 +4,7 @@ Este directorio conserva las especificaciones funcionales del prototipo. Cada ar
 
 ## Convención de nombres
 
-Usar `SPR-XX-nombre-corto.md`, donde `XX` es el sprint. Ejemplo: `SPR-02-rbac-y-parametros.md`.
+Usar `SPR-XX-nombre-corto.md`, donde `XX` es el sprint. Cuando un sprint tenga capacidades independientes, usar además un sufijo numérico (`SPR-02-01-seguridad-rbac.md`) y mantener un archivo índice del sprint.
 
 ## Uso rápido
 
@@ -21,4 +21,9 @@ Consulta [`../sdd-workflow.md`](../sdd-workflow.md) para el proceso completo.
 
 | Especificación | Estado | Propósito |
 |---|---|---|
-| [SPR-02-rbac-y-parametros.md](SPR-02-rbac-y-parametros.md) | borrador | Base RBAC, parámetros de conexión, selección segura de Gemini/Qwen/Ollama y experiencia responsive. |
+| [SPR-02-rbac-y-parametros.md](SPR-02-rbac-y-parametros.md) | revisión correctiva | Índice y alcance integrado del módulo administrativo del Sprint 2. |
+| [SPR-02-01-seguridad-rbac.md](SPR-02-01-seguridad-rbac.md) | revisión correctiva | Usuarios, roles, permisos, menús, auditoría y protecciones de recuperación. |
+| [SPR-02-02-navegacion-y-experiencia.md](SPR-02-02-navegacion-y-experiencia.md) | revisión correctiva | Sidebar, plegado de grupos, responsive, paginación y aislamiento de estado. |
+| [SPR-02-03-parametros-y-llm.md](SPR-02-03-parametros-y-llm.md) | revisión correctiva | Parámetros aprobados y configuración/probación segura de LLM. |
+| [SPR-02-04-identidad-visual-y-shell-bi.md](SPR-02-04-identidad-visual-y-shell-bi.md) | borrador para aprobación | Dirección visual y cascarón común del prototipo BI asistido por IA. |
+| [SPR-02-matriz-correcciones.md](SPR-02-matriz-correcciones.md) | pendiente de evidencia | Trazabilidad entre observaciones funcionales, requisito y prueba. |

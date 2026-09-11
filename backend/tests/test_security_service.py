@@ -1,7 +1,12 @@
 import jwt
 
 from app.core.config import settings
-from app.modules.security.service import create_access_token, hash_password, verify_password
+from app.modules.security.service import (
+    create_access_token,
+    generated_role_code,
+    hash_password,
+    verify_password,
+)
 
 
 def test_password_is_hashed_and_verified() -> None:
@@ -21,3 +26,8 @@ def test_access_token_contains_subject() -> None:
     )
 
     assert payload["sub"] == "42"
+
+
+def test_generated_role_code_is_stable_and_human_name_does_not_need_a_technical_value() -> None:
+    assert generated_role_code("Analista de Ventas") == "analista-de-ventas"
+    assert generated_role_code("Gestión Ñandú") == "gestion-nandu"

@@ -35,6 +35,22 @@ async def test_provider(configuration: LlmConfiguration) -> ProviderTestResult:
             base_url = configuration.base_url.rstrip("/")
             if configuration.provider_kind == "ollama-local":
                 response = await client.get(f"{base_url}/api/tags")
+                if 200 <= response.status_code < 300:
+                    available_models = {
+                        str(model.get("name", "")) for model in response.json().get("models", [])
+                    }
+                    if configuration.model_id not in available_models:
+                        return ProviderTestResult(
+                            False,
+                            (
+                                "El servicio Ollama está disponible, pero el modelo configurado "
+                                "no está descargado."
+                            ),
+                        )
+                    return ProviderTestResult(
+                        True,
+                        "Conexión con Ollama y modelo local validada sin enviar datos del negocio.",
+                    )
             elif configuration.provider_kind == "gemini":
                 response = await client.get(f"{base_url}/v1beta/models", params={"key": credential})
             else:

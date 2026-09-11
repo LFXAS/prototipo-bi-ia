@@ -1,4 +1,4 @@
-.PHONY: help env bootstrap build up delivery-preview-up release-up release-down down logs ps test lint format-check compose-check workflow-test doctor docs-image logbook sprint-report technical-manual docs verify
+.PHONY: help env bootstrap build up delivery-preview-up ollama-up ollama-pull ollama-status ollama-down release-up release-down down logs ps test lint format-check compose-check workflow-test doctor docs-image logbook sprint-report sprint2-report technical-manual docs verify
 
 COMPOSE := docker compose
 
@@ -9,6 +9,10 @@ help:
 	@echo "  make build          Construye las imagenes de desarrollo"
 	@echo "  make up             Levanta frontend y backend"
 	@echo "  make delivery-preview-up Anade Nginx en 8080 sin reemplazar desarrollo"
+	@echo "  make ollama-up     Inicia Ollama local opcional, sin descargar modelo"
+	@echo "  make ollama-pull   Descarga una vez el modelo local configurado"
+	@echo "  make ollama-status Muestra los modelos locales descargados"
+	@echo "  make ollama-down   Detiene Ollama y conserva sus modelos"
 	@echo "  make release-up     Levanta un entorno GHCR completo y aislado"
 	@echo "  make release-down   Detiene el entorno GHCR y conserva sus datos"
 	@echo "  make down           Detiene los servicios"
@@ -19,6 +23,7 @@ help:
 	@echo "  make workflow-test  Prueba la politica de ramas dentro de Docker"
 	@echo "  make logbook        Regenera la bitacora PDF con LaTeX en Docker"
 	@echo "  make sprint-report  Regenera el informe PDF del Sprint 1"
+	@echo "  make sprint2-report Regenera el informe PDF del Sprint 2"
 	@echo "  make technical-manual Regenera el manual tecnico PDF"
 	@echo "  make docs           Regenera todos los documentos PDF"
 	@echo "  make doctor         Muestra estado de contenedores y endpoints"
@@ -39,6 +44,18 @@ up:
 delivery-preview-up:
 	$(COMPOSE) --profile delivery build frontend-delivery
 	$(COMPOSE) --profile delivery up --no-build -d frontend-delivery
+
+ollama-up:
+	$(COMPOSE) --profile local-llm up -d ollama
+
+ollama-pull: ollama-up
+	$(COMPOSE) --profile local-llm exec ollama ollama pull $${OLLAMA_MODEL:-qwen3:4b}
+
+ollama-status:
+	$(COMPOSE) --profile local-llm exec ollama ollama list
+
+ollama-down:
+	$(COMPOSE) --profile local-llm stop ollama
 
 release-up:
 	@test -f .env.release || { echo "Falta .env.release: copie .env.release.example y cambie los secretos."; exit 1; }
@@ -73,6 +90,7 @@ format-check:
 compose-check:
 	$(COMPOSE) config --quiet
 	$(COMPOSE) --profile delivery config --quiet
+	$(COMPOSE) --profile local-llm config --quiet
 	$(COMPOSE) --env-file .env.release.example -f compose.release.yaml config --quiet
 
 workflow-test:
@@ -101,12 +119,18 @@ sprint-report: docs-image
 		-v "$$(pwd)/docs:/workspace" -w /workspace/sprints \
 		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error sprint-01-entorno.tex
 
+sprint2-report: docs-image
+	docker run --rm --user "$$(id -u):$$(id -g)" \
+		-e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts \
+		-v "$$(pwd)/docs:/workspace" -w /workspace/sprints \
+		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error sprint-02-seguridad-y-parametros.tex
+
 technical-manual: docs-image
 	docker run --rm --user "$$(id -u):$$(id -g)" \
 		-e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts \
 		-v "$$(pwd)/docs:/workspace" -w /workspace/manual-tecnico \
 		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error manual-tecnico.tex
 
-docs: logbook sprint-report technical-manual
+docs: logbook sprint-report sprint2-report technical-manual
 
 verify: compose-check workflow-test test docs

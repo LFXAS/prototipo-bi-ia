@@ -62,6 +62,7 @@ class User(Base):
     full_name: Mapped[str] = mapped_column(String(160))
     password_hash: Mapped[str] = mapped_column(String(255))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    is_system_protected: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
@@ -79,6 +80,7 @@ class Role(Base):
     name: Mapped[str] = mapped_column(String(120), unique=True)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    is_system_protected: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     users: Mapped[list[User]] = relationship(secondary=user_roles, back_populates="roles")
     permissions: Mapped[list[Permission]] = relationship(
@@ -95,6 +97,7 @@ class Permission(Base):
     name: Mapped[str] = mapped_column(String(160))
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    is_system_protected: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     roles: Mapped[list[Role]] = relationship(
         secondary=role_permissions, back_populates="permissions"
@@ -116,6 +119,7 @@ class Menu(Base):
     module_code: Mapped[str] = mapped_column(String(80), default="general", nullable=False)
     module_label: Mapped[str] = mapped_column(String(120), default="General", nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    is_system_protected: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     permissions: Mapped[list[Permission]] = relationship(
         secondary=menu_permissions, back_populates="menus"

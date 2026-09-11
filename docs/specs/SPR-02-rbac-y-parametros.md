@@ -1,184 +1,60 @@
-# SPR-02: seguridad RBAC, parámetros, configuración LLM y experiencia base responsive
+# SPR-02: módulo administrativo, seguridad y configuración inicial
 
-- Estado: en implementación
-- Sprint: SPR-02
-- Responsable de especificación: equipo del proyecto
-- Rama prevista: `feature/rbac-y-parametros`
-- Fecha de creación: 2026-09-01
-- Última revisión funcional: 2026-09-04
-- PR de implementación: pendiente de crear desde `feature/rbac-y-parametros`
+- Estado: **implementado y verificado localmente; pendiente de revisión colaborativa y cierre mediante PR hacia `develop`**.
+- Sprint: SPR-02.
+- Responsable de especificación: equipo del proyecto.
+- Rama prevista: `feature/rbac-y-parametros`.
+- Última revisión funcional: 2026-09-10.
 
-## 1. Problema y objetivo
+## 1. Propósito y límite del Sprint 2
 
-El prototipo necesita un módulo mínimo de seguridad exigido académicamente, un mecanismo auditable para parametrizar conexiones y la futura configuración del LLM que asistirá el proceso BI. El objetivo es que un administrador pueda gestionar usuarios, roles, permisos, menús y parámetros aprobados, mientras FastAPI autoriza todas las operaciones relevantes.
+El Sprint 2 entrega el cimiento administrativo del prototipo BI asistido por IA. Su objetivo no es producir análisis BI, ETL, tableros ni respuestas de IA: es permitir que una persona administradora gestione de manera comprensible y segura quién ingresa, qué puede hacer, qué opciones visualiza y qué configuraciones aprobadas utiliza la plataforma.
 
-React debe presentar estas capacidades mediante una interfaz clara, accesible y adaptable. El diseño visual nunca sustituye los controles de seguridad del backend: sólo ayuda a que cada persona entienda qué puede hacer y complete su tarea sin errores evitables.
+El alcance se divide deliberadamente en tres capacidades. Cada una tiene su propia especificación y criterios verificables; no se aceptará una interfaz que mezcle datos, formularios o estados de una capacidad con otra.
 
-## 2. Alcance y exclusiones
-
-- Incluido: migración inicial PostgreSQL, usuarios, roles, permisos, asignaciones, menús agrupados por módulo, auditoría, autenticación y autorización mínima; CRUD completo de los recursos administrables del sprint; parámetros operativos no secretos y de conexión; prueba controlada de acceso lector a AdventureWorks; configuración de un proveedor LLM activo mediante parámetros no secretos; cascarón de aplicación responsive, navegación por permisos, vistas de acceso y administración, paginación de listas, componentes visuales reutilizables y estados de carga, vacío, error y acceso denegado.
-- Excluido: SSO institucional, recuperación de contraseña por correo, administración avanzada multiempresa, conectores universales, varios proveedores LLM ejecutándose simultáneamente, generación de propuestas BI por LLM con metadatos de negocio, introspección automática, ETL, dashboard BI completo, temas visuales configurables por usuario y una biblioteca de diseño independiente.
-
-## 3. Actores, flujo y reglas
-
-- Administrador: crea o desactiva usuarios, asigna roles y permisos, administra menús y parámetros permitidos.
-- Usuario autenticado: sólo ve menús autorizados y sólo puede llamar endpoints cuyo permiso posea.
-- Persona no autenticada: al abrir una ruta protegida se le dirige al inicio de sesión; no ve datos, menús administrativos ni detalles internos del error.
-- Backend: deniega por defecto. Ocultar un menú en React nunca sustituye la autorización del backend.
-- Fuente SQL Server: se usa exclusivamente con la cuenta lectora; ningún endpoint permitirá ejecutar escritura en AdventureWorks.
-- Configuración LLM: el administrador autorizado mantiene una única configuración activa; elige uno de los tres proveedores iniciales aprobados, define el modelo y límites permitidos. La clave se obtiene exclusivamente de una variable de entorno o gestor de secretos identificado por referencia, no de la base ni de la interfaz.
-
-### 3.1 Flujos de experiencia de usuario
-
-1. **Acceso.** La persona ingresa usuario y contraseña. Mientras se valida, el botón queda bloqueado y comunica que la operación está en curso. Si es correcto, llega a la página inicial autorizada y recibe solamente su menú; si falla, ve un mensaje claro sin revelar si el usuario existe.
-2. **Navegación autorizada.** El cascarón consulta la sesión y el menú autorizado, agrupado por módulo. En este sprint, Usuarios, Roles, Permisos, Menús y Auditoría forman el grupo **Seguridad**; Parámetros y Configuración LLM forman **Parámetros generales**. En escritorio el menú lateral puede permanecer visible; en tableta y móvil se abre mediante un control de hamburguesa accesible y se cierra al seleccionar una opción o al volver al contenido.
-3. **Administración de usuarios.** El administrador consulta una lista paginable, busca, crea o edita un usuario y confirma acciones sensibles, como desactivar una cuenta. Los cambios exitosos se comunican y se reflejan sin dejar la pantalla en un estado ambiguo.
-4. **Administración de roles y permisos.** El administrador asigna roles a usuarios y permisos a roles mediante controles que expliquen su efecto. Antes de guardar se muestra qué cambiará; al guardar se registra auditoría y se actualiza el menú en la próxima obtención de sesión.
-5. **Parámetros y conexión.** El administrador visualiza únicamente metadatos permitidos de una conexión. Puede crear o actualizar una configuración aprobada y ejecutar una prueba lectora. La contraseña nunca se vuelve a presentar, ni siquiera parcialmente, y el resultado informa éxito o causa técnica segura.
-6. **Configuración LLM.** El administrador con permiso específico configura un único proveedor activo, revisa sus valores no secretos y ejecuta una prueba real, limitada y sin datos del negocio. La prueba confirma conectividad, credencial y disponibilidad del modelo mediante el adaptador correspondiente; no envía metadatos, no propone modelos dimensionales ni ejecuta SQL. Esas capacidades pertenecen al módulo `copilot` posterior.
-
-### 3.2 Reglas de navegación
-
-- La ruta inicial autenticada se determina por el primer menú permitido; si no existe, se muestra una pantalla de cuenta sin módulos asignados con una explicación para solicitar acceso.
-- Las rutas deben tener título visible, una ubicación dentro de la navegación agrupada y una acción principal inequívoca cuando corresponda.
-- La navegación no debe depender sólo de iconos, color, desplazamiento horizontal ni de mantener el cursor sobre un elemento.
-- Cada módulo de navegación es una opción de menú padre desplegable. Al seleccionar su encabezado, por ejemplo **Seguridad**, se pliega o despliega su lista de submenús autorizados. Cualquier módulo, incluido el de la ruta activa, puede plegarse o desplegarse según la decisión de la persona usuaria. **Principal** se presenta como módulo padre y contiene Inicio.
-- El control del módulo debe comunicar su estado expandido o plegado mediante texto y atributo accesible (`aria-expanded`); el indicador visual de flecha complementa el texto, pero no lo reemplaza. Debe responder a teclado, clic y táctil.
-- Al cambiar de ruta se conserva el foco lógico en el título principal; cuando se abre un diálogo, el foco queda dentro de él y vuelve al control que lo abrió al cerrarlo.
-- Cerrar sesión estará siempre disponible para la persona autenticada y eliminará la sesión local antes de redirigir al acceso.
-
-## 4. Datos, API e interfaz
-
-- Migraciones: `app.users`, `app.roles`, `app.permissions`, `app.user_roles`, `app.role_permissions`, `app.menus`, `app.menu_permissions`, `app.audit_events`, parámetros de conexión y una configuración LLM no secreta. Cada menú incorpora código y etiqueta de módulo para que su agrupación sea administrable.
-- API prevista: autenticación, sesión actual, administración mínima RBAC, menú autorizado, prueba de conexión aprobada, administración de configuración LLM y consultas paginadas. Los contratos devolverán errores consistentes para validación, sesión vencida, falta de permiso, conflicto y fallo controlado de conexión.
-- Interfaz prevista: inicio de sesión, página inicial autorizada, pantalla de cuenta sin módulos, administración de usuarios, roles, permisos, menús, parámetros y configuración LLM, además de menú dinámico. No incluye dashboard BI en este sprint.
-
-### 4.0 CRUD administrativo obligatorio
-
-Los recursos que este sprint administra deben contar con operaciones completas de crear, consultar, actualizar y desactivar o eliminar de manera controlada, tanto en la API como en las pantallas autorizadas. El término ``eliminar'' no autoriza borrar información crítica sin análisis: usuarios, roles, permisos, menús y configuraciones que tengan relaciones o trazabilidad se desactivarán por defecto; una eliminación física sólo podrá habilitarse cuando no existan dependencias y la especificación del recurso lo permita.
-
-| Recurso | Operaciones requeridas | Regla de seguridad y auditoría |
+| Capacidad | Especificación normativa | Resultado esperado |
 |---|---|---|
-| Usuarios | Crear, consultar, editar, activar/desactivar y asignar roles. | Requiere permisos `security.users.*`; auditar creación, cambios de estado, contraseña y roles sin registrar secretos. |
-| Roles | Crear, consultar, editar, activar/desactivar y asignar permisos. | Requiere `security.roles.*`; no desactivar el último rol administrador operativo. |
-| Permisos | Crear, consultar, editar y desactivar cuando no esté asignado. | Requiere `security.permissions.*`; los códigos son estables y no se borran si están en uso. |
-| Menús | Crear, consultar, editar, activar/desactivar y relacionar permisos. | Requiere `security.menus.*`; la API determina el menú visible. |
-| Parámetros | Crear, consultar, editar y activar/desactivar. | Requiere `parameters.*`; nunca se usa para almacenar secretos. |
-| Configuración LLM | Crear, consultar, editar, activar/desactivar y probar. | Requiere `parameters.llm.*`; existe una única configuración activa y no se persisten claves. |
+| Seguridad y RBAC | [SPR-02-01-seguridad-rbac.md](SPR-02-01-seguridad-rbac.md) | Usuarios, roles, permisos, menús y auditoría administrados sin exponer códigos internos ni bloquear la administración. |
+| Navegación y UX | [SPR-02-02-navegacion-y-experiencia.md](SPR-02-02-navegacion-y-experiencia.md) | Cascarón responsive, menú lateral ocultable y grupos que siempre pueden plegarse o desplegarse. |
+| Parámetros y LLM | [SPR-02-03-parametros-y-llm.md](SPR-02-03-parametros-y-llm.md) | Parámetros con propósito claro y configuración LLM separada, guiada y comprobable. |
+| Identidad visual BI | [SPR-02-04-identidad-visual-y-shell-bi.md](SPR-02-04-identidad-visual-y-shell-bi.md) | Dirección visual común para el módulo administrativo, los datos, la analítica y el futuro copiloto. |
+| Trazabilidad de correcciones | [SPR-02-matriz-correcciones.md](SPR-02-matriz-correcciones.md) | Cada observación recibida se relaciona con un requisito y una prueba. |
 
-Cada operación modificadora debe validar la autorización en FastAPI, devolver un resultado comprensible para la interfaz y registrar un evento en `audit_events` con actor, tipo de acción, recurso y detalle seguro. React puede ocultar acciones no permitidas, pero el backend siempre las valida.
+## 2. Principios obligatorios
 
-### 4.1 Parámetro de proveedor LLM
+1. **El backend autoriza.** Ocultar una acción o un menú en React mejora la experiencia, pero FastAPI valida siempre la sesión JWT y el permiso efectivo.
+2. **La interfaz usa lenguaje de negocio.** Los identificadores técnicos (`security.users.write`, rutas, claves internas e identificadores numéricos) sirven al software y a soporte técnico; no son datos que la persona deba adivinar o digitar para administrar acceso.
+3. **Cada pantalla conserva su propio estado.** Seleccionar "Editar rol" no puede poblar formularios de permisos, menús, parámetros ni LLM. Al cambiar de vista, se cancela la edición anterior. No se mostrará `undefined`, datos residuales ni referencias ajenas al recurso actual.
+4. **La administración debe ser recuperable.** No se permitirá desactivar, vaciar de privilegios ni alterar la identidad técnica de la única vía administrativa protegida. El sistema debe rechazar una acción que deje a la plataforma sin al menos una cuenta activa con capacidad de recuperar la seguridad.
+5. **Configuración no significa programación.** Un valor configurable sólo se muestra cuando tiene nombre humano, propósito, tipo, validación, consumidor conocido y auditoría. Crear valores, permisos, rutas o proveedores arbitrarios no vuelve al producto más flexible: lo vuelve inseguro y difícil de operar.
+6. **Cada cambio administrativo se audita sin secretos.** Se registra actor, fecha, tipo de acción, recurso y resumen seguro; nunca contraseñas, JWT, claves API ni cadenas de conexión completas.
 
-### 4.1 Parámetros generales
+## 3. Alcance incluido
 
-Los parámetros generales son valores operativos no secretos que permiten variar el comportamiento de la plataforma sin cambiar ni volver a desplegar código. Por ejemplo, en sprints posteriores podrán registrar límites de carga ETL, período de retención de auditoría, nombre de un origen aprobado, opciones de presentación o valores que el módulo BI use como configuración. No sustituyen una base de datos de negocio, no almacenan credenciales, contraseñas, tokens ni cadenas de conexión completas, y no habilitan ejecutar instrucciones arbitrarias. Cada clave es única, tiene una descripción humana, se puede activar o desactivar y conserva auditoría de sus cambios.
+- Inicio de sesión con JWT de vida limitada, hash Argon2 y mensajes seguros.
+- Consulta, creación y edición guiada de usuarios y asignación de uno o varios roles mediante selección por nombre.
+- Consulta y administración protegida de roles y su conjunto de permisos mediante selección legible.
+- Catálogo de permisos y de menús con nombres, descripciones y ayudas; las claves y rutas internas permanecen controladas por el software.
+- Menú autorizado, agrupado y responsive; Inicio es acceso directo y no un grupo artificial.
+- Bitácora de auditoría sólo de consulta.
+- Catálogo de parámetros operativos aprobados y configuración independiente de un proveedor LLM; prueba de conexión desde el backend.
+- Paginación, búsqueda y estados de carga, vacío, error, éxito y acceso denegado en las listas administrativas.
 
-La pantalla **Parámetros generales** sirve precisamente para que la persona administradora consulte y administre esos valores seguros. Ejemplos futuros son `AUDIT_RETENTION_DAYS`, `ETL_BATCH_SIZE`, `DEFAULT_PAGE_SIZE` o `REPORT_TIMEZONE`. En este Sprint 2 puede verse inicialmente vacía: eso es correcto hasta que exista una necesidad funcional aprobada. Actualmente crear un parámetro lo deja disponible y auditado, pero no cambia por sí solo el comportamiento de la aplicación hasta que un módulo posterior declare explícitamente que lo consume. La configuración de LLM está separada porque tiene validaciones y reglas de seguridad específicas.
+## 4. Exclusiones explícitas
 
-### 4.2 Parámetro de proveedor LLM
+- Recuperación de contraseña por correo, SSO institucional, multiempresa, microservicios y temas visuales configurables por empresa.
+- ETL, metadatos, conexión universal a fuentes, datamart, dashboard BI, reportería funcional, predicciones y generación de consultas o modelos BI por LLM.
+- Alta libre de permisos de aplicación, rutas o módulos desde la interfaz. Agregar una capacidad de software requerirá una especificación posterior, migración controlada y pruebas.
+- Almacenamiento o visualización de contraseñas, tokens, claves de proveedores o cadenas de conexión completas en PostgreSQL o React.
 
-La configuración persistida del proveedor LLM sólo contiene valores no secretos y validados: `name`, `provider_kind`, `base_url`, `model_id`, `credential_reference`, `is_active`, resultado seguro y fecha de la última prueba. La referencia identifica una variable de entorno o secreto de despliegue; no contiene ni permite recuperar la clave real. El límite de la prueba es fijo en el adaptador del backend y no se expone como parámetro libre en esta fase.
+## 5. Orden de construcción correctiva
 
-El catálogo inicial y cerrado de `provider_kind` es el siguiente. Cada opción se implementará detrás de un adaptador interno de FastAPI, porque su autenticación y contrato de API no son idénticos:
+1. Corregir el aislamiento de estado y las protecciones de recuperación administrativa.
+2. Sustituir las entradas de IDs y códigos técnicos por catálogos seleccionables, ayudas y validaciones.
+3. Aplicar la navegación lateral ocultable y el plegado libre de todos los grupos.
+4. Separar definitivamente Parámetros generales de Configuración LLM, con sus pruebas y ayudas.
+5. Completar pruebas de autorización negativa, interfaz, responsive y auditoría; luego actualizar bitácora, manual técnico y documentación del Sprint 2.
 
-| `provider_kind` | Servicio | Referencia de credencial | Configuración inicial prevista |
-|---|---|---|---|
-| `gemini` | Gemini API en la nube | `GEMINI_API_KEY` | URL oficial del proveedor y un modelo Gemini Flash disponible para la cuenta. |
-| `qwen-cloud` | Qwen mediante Alibaba Cloud Model Studio / DashScope | `DASHSCOPE_API_KEY` | URL oficial de DashScope y un modelo Qwen habilitado para la cuenta. |
-| `ollama-local` | Ollama ejecutado localmente en Docker | `none` | URL interna del servicio y `qwen3:4b` como modelo local inicial recomendado. |
+## 6. Condición de cierre
 
-La referencia `none` sólo significa que Ollama no suele requerir una clave en la red interna del entorno; no habilita exponer su servicio fuera de la red del proyecto. La interfaz muestra únicamente el tipo elegido, los valores no secretos y si la credencial requerida está disponible; nunca muestra el valor de una clave. Las cuotas, modelos sin costo y condiciones de los servicios cloud pueden cambiar, por lo que no son una garantía funcional ni se codifican en la aplicación.
-
-Sólo existirá una configuración activa en la demostración. Cambiar de proveedor desactiva la configuración anterior de forma auditada; Sprint 2 no ejecutará varios proveedores al mismo tiempo ni balanceará solicitudes. El contrato permite cambiar entre servicio local y nube sin modificar los módulos de metadatos, ETL o analítica. La configuración no habilita URL arbitrarias sin validación: el backend verificará tipo, URL permitida para el adaptador, modelo, límites de tiempo y autorización antes de usarla.
-
-La prueba de conexión se ejecuta desde FastAPI, nunca desde React. Cada adaptador realiza una comprobación de disponibilidad compatible con Gemini, Qwen Cloud u Ollama y, cuando corresponda, una solicitud mínima con límite estricto de salida y sin contexto del proyecto. Sólo se conservan el resultado, fecha, duración, proveedor/modelo y causa segura de fallo; el contenido de una respuesta de prueba se descarta. El perfil Docker de Ollama se añadirá cuando se implemente este requisito; no se crea en esta etapa de especificación.
-
-### 4.3 Cascarón visual, menú agrupado y adaptación a pantallas
-
-La aplicación se construirá como un cascarón reutilizable: encabezado, navegación, área principal y avisos globales. No se diseñarán pantallas independientes con estilos incompatibles. El contenido debe poder ampliarse en los sprints de metadatos, ETL, analítica y reportes sin reemplazar esta estructura.
-
-| Contexto | Ancho de referencia | Comportamiento esperado |
-|---|---:|---|
-| Móvil | 320--767 px | Una columna, márgenes legibles, controles táctiles, menú lateral oculto y activable mediante botón hamburguesa, tablas convertidas en tarjetas o con columnas esenciales. |
-| Tableta | 768--1023 px | Contenido flexible, navegación oculta inicialmente y disponible con botón hamburguesa; formularios que pueden usar dos columnas sólo si conservan legibilidad. |
-| Escritorio | desde 1024 px | Navegación lateral disponible, área principal centrada y tablas administrativas completas sin depender de un ancho fijo de monitor. |
-| Pantalla amplia | desde 1440 px | El contenido conserva un ancho máximo legible; el espacio adicional no agranda indefinidamente textos, formularios ni tablas. |
-
-Los valores son umbrales de prueba, no restricciones rígidas. El criterio real es que no exista desplazamiento horizontal involuntario a partir de 320 px, que los controles sean utilizables con táctil y que la información prioritaria permanezca visible.
-
-### 4.4 Componentes reutilizables previstos
-
-| Componente | Uso y comportamiento mínimo |
-|---|---|
-| Cascarón de aplicación | Encabezado, navegación autorizada, zona principal y cierre de sesión. Debe adaptarse entre menú lateral visible, contraído y desplegable. |
-| Grupo de navegación desplegable | Opción de menú padre con encabezado visible del módulo, indicador de expansión y submenús autorizados. La agrupación se obtiene de los datos del menú; no se infiere únicamente por la posición visual. Seguridad despliega Usuarios, Roles, Permisos, Menús y Auditoría; Parámetros generales despliega Parámetros y Configuración LLM. |
-| Formulario y campo | Etiqueta persistente, ayuda opcional, validación junto al campo y resumen de errores cuando aplique. No usar sólo un marcador de posición como etiqueta. |
-| Botón y acción destructiva | Estado normal, foco visible, ocupado y deshabilitado. Las acciones de desactivar o borrar requieren confirmación explícita. |
-| Tabla administrativa | Encabezados claros, estado vacío, carga y error. En móvil se priorizan datos esenciales mediante tarjetas o una presentación equivalente. |
-| Paginador | Informa rango, total, página actual y permite avanzar o retroceder. La API recibe límite y desplazamiento para no transferir listas extensas innecesariamente. |
-| Diálogo de confirmación | Nombre de la acción, consecuencia, opción de cancelar, foco administrado y cierre con teclado. |
-| Aviso o notificación | Comunica éxito, error o información sin depender exclusivamente del color; los errores que bloquean una acción permanecen visibles. |
-| Pantallas de estado | Carga, sin resultados, acceso denegado, sesión vencida y error técnico seguro, con una siguiente acción comprensible. |
-
-### 4.5 Accesibilidad y lenguaje
-
-- El idioma visible inicial es español y los mensajes deben explicar qué ocurrió y qué puede hacer la persona después.
-- Todo control interactivo es alcanzable con teclado y tiene foco visible.
-- Los campos tienen etiquetas asociadas; los mensajes de error se anuncian de forma accesible y no dependen sólo de color o iconos.
-- La combinación de texto y fondo debe tener contraste suficiente para lectura normal; se verificará con una herramienta de contraste antes del cierre del sprint.
-- La interfaz respeta la preferencia de reducción de movimiento cuando se incorporen transiciones; las animaciones no deben ser necesarias para comprender ni completar una tarea.
-
-## 5. Seguridad y auditoría
-
-- Contraseñas con Argon2 o bcrypt; nunca texto plano.
-- JWT de vida limitada; secretos sólo por variables de entorno.
-- Autorización por códigos estables de permiso en FastAPI.
-- Auditoría de inicio de sesión, cambios de roles/permisos, cambios de parámetros y pruebas de conexión.
-- Los secretos de conexión no se devuelven por API ni se registran en texto claro.
-- La configuración LLM nunca devuelve ni persiste la clave del proveedor. Las referencias de credencial permitidas se validan contra un catálogo controlado de variables de entorno.
-- La URL y los límites configurados para un proveedor LLM se validan antes de persistirse; en el futuro, las llamadas sólo podrán ejecutarse desde el backend y con tiempos máximos definidos.
-- La prueba de conexión LLM usa el backend, un tiempo máximo, una respuesta mínima y ningún dato de AdventureWorks, PostgreSQL, usuarios o metadatos. Su resultado queda auditado sin incluir claves ni contenido sensible.
-- La interfaz no conserva contraseñas de usuarios ni secretos de conexión fuera del envío estrictamente necesario; los campos sensibles se limpian después de una operación exitosa o cancelada.
-- Las respuestas de error visibles no exponen trazas, tokens, cadenas de conexión ni estructura interna de la base.
-
-## 6. Criterios de aceptación verificables
-
-- [x] Una migración limpia crea todas las tablas RBAC y de parámetros en el esquema `app`.
-- [x] Un usuario con rol autorizado puede iniciar sesión y consultar sólo sus menús.
-- [ ] Un usuario sin permiso recibe respuesta de autorización denegada aunque intente llamar el endpoint directamente.
-- [x] La interfaz no muestra menús sin permiso, pero la decisión real se toma en FastAPI.
-- [x] Una prueba de conexión usa el lector de AdventureWorks y no revela secretos.
-- [x] Los cambios administrativos y pruebas de conexión quedan en `audit_events`.
-- [ ] Un administrador con permiso específico puede crear, actualizar, activar o desactivar una única configuración LLM no secreta, y cada acción queda en `audit_events`.
-- [ ] La API y la interfaz nunca devuelven la clave del proveedor LLM; sólo exponen la referencia de credencial permitida y valores no secretos.
-- [ ] La configuración LLM valida el catálogo `gemini`, `qwen-cloud` u `ollama-local`, su URL, modelo y límites permitidos; una prueba real desde FastAPI confirma conectividad y disponibilidad sin enviar datos del negocio.
-- [ ] El resultado de la prueba LLM registra estado, fecha, duración y causa segura de fallo, sin claves ni contenido de respuesta; este sprint no ejecuta propuestas BI ni SQL producido por un LLM.
-- [x] Sólo una de las configuraciones Gemini Cloud, Qwen Cloud u Ollama local puede estar activa; cambiarla deja trazabilidad y no modifica la configuración de los demás módulos.
-- [ ] Gemini usa exclusivamente la referencia `GEMINI_API_KEY`, Qwen Cloud `DASHSCOPE_API_KEY` y Ollama local `none`; la API sólo informa el estado de disponibilidad de la referencia, nunca su valor.
-- [ ] La configuración local admite `qwen3:4b` como modelo inicial recomendado y su prueba se realiza contra la red interna Docker; el perfil de Ollama no se expone públicamente.
-- [ ] Una persona no autenticada es dirigida al inicio de sesión al visitar una ruta protegida y el error de acceso no revela información sensible.
-- [ ] Una persona autenticada sólo recibe las rutas y los menús asociados a sus permisos; intentar una URL no autorizada muestra una vista de acceso denegado y FastAPI responde con denegación.
-- [ ] El inicio de sesión, el menú y las pantallas administrativas son utilizables desde 320 px, 768 px, 1024 px y 1440 px, sin desplazamiento horizontal involuntario ni pérdida de la acción principal.
-- [x] El menú autorizado se muestra de forma lateral en escritorio y puede abrirse/cerrarse con teclado y táctil en móvil; al navegar devuelve el foco al contenido principal.
-- [x] Los menús autorizados se agrupan por módulo con etiquetas administrables; Seguridad contiene Usuarios, Roles, Permisos, Menús y Auditoría, mientras Parámetros generales contiene Parámetros y Configuración LLM en la semilla inicial.
-- [ ] Cada grupo de menú funciona como un padre plegable/desplegable y expone su estado a tecnologías de asistencia mediante `aria-expanded`.
-- [x] Todas las listas administrativas usan paginación desde API, informan el total y no requieren cargar todos los registros para mostrar la primera página.
-- [ ] Formularios, tablas, diálogos y avisos cubren estados de carga, vacío, error y éxito, con texto comprensible y foco visible.
-- [ ] Cada control relevante tiene etiqueta accesible; los errores no dependen exclusivamente de color; una comprobación de contraste documenta los resultados de las pantallas principales.
-- [ ] Pruebas de backend, frontend, migraciones y CI pasan dentro de Docker.
-- [x] Cada recurso administrativo del Sprint 2 cuenta con alta, consulta, edición y desactivación lógica en API e interfaz, con permisos y eventos de auditoría verificables. La auditoría permanece deliberadamente en modo consulta.
-
-## 7. Plan de pruebas y evidencia
-
-Pruebas unitarias de hash, autorización, validación de parámetros y selección del adaptador LLM; integración con PostgreSQL para migraciones, auditoría y configuración LLM no secreta; pruebas controladas de los adaptadores con dobles de prueba y, cuando una credencial autorizada esté disponible, una evidencia manual sin datos del negocio; pruebas de interfaz para menú, redirección, acceso denegado, formularios y estados; pruebas visuales o manuales documentadas en 320 px, 768 px, 1024 px y 1440 px; una evidencia de CI verde y capturas sin secretos para la tesis. Antes de cerrar el PR se ejecutará `make verify` y los PDF/documentos afectados se regenerarán.
-
-## 8. Riesgos, dependencias y decisiones
-
-Depende de Alembic, del cascarón React existente y de los límites modulares definidos. El diseño exacto de JWT, hashes y entidades deberá documentarse en un ADR si introduce una decisión que afecte sprints posteriores. Las cuentas iniciales y sus credenciales no se versionarán.
-
-Antes de implementar se definirá el conjunto inicial de permisos y la política de actualización de menú al cambiar permisos. El catálogo LLM aprobado queda registrado en el ADR 0002; sumar un cuarto proveedor requerirá actualizar la especificación, el ADR, los controles de secretos y las pruebas. El diseño visual debe privilegiar componentes nativos y CSS mantenible; no se incorporará una biblioteca de componentes si no se justifica por una necesidad concreta y se registra su impacto en tamaño, accesibilidad y mantenimiento.
-
-## 9. Resultado de implementación
-
-Implementación en curso en `feature/rbac-y-parametros`. Se crearon las migraciones `20260906_01`, `20260906_02` y `20260906_03`, el servicio automático `migrate`, la semilla segura de rol/usuario administrador, JWT con Argon2, endpoints RBAC y de parámetros, adaptadores de comprobación LLM y el cascarón React responsive. La interfaz permite crear y editar usuarios, roles, permisos, menús, parámetros y configuraciones LLM; las asociaciones se ingresan con identificadores explícitos y los recursos admiten activación o desactivación lógica. La auditoría es consultable y no editable. La navegación ahora agrupa opciones por módulo, usa hamburguesa en tableta/móvil y todas las listas se consultan de forma paginada desde API. Aún faltan pruebas negativas específicas de autorización y de adaptadores LLM, evidencia visual responsive documentada y el PR/CI final.
+El Sprint 2 sólo se considerará cerrado cuando todos los criterios de aceptación de las tres especificaciones hijas estén aprobados, las observaciones de la matriz estén resueltas con evidencia, `make verify` sea exitoso dentro de Docker y las capturas de escritorio, tableta y móvil no exhiban estados cruzados, textos técnicos innecesarios ni pérdida de acceso administrativo.

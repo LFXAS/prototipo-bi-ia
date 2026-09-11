@@ -25,6 +25,7 @@ class PermissionRead(BaseModel):
     name: str
     description: str | None = None
     is_active: bool
+    is_system_protected: bool = False
 
 
 class PermissionCreate(BaseModel):
@@ -47,11 +48,11 @@ class RoleRead(BaseModel):
     name: str
     description: str | None = None
     is_active: bool
+    is_system_protected: bool = False
     permissions: list[PermissionRead] = []
 
 
 class RoleCreate(BaseModel):
-    code: str = Field(pattern=r"^[a-z0-9]+(?:[._-][a-z0-9]+)*$", max_length=80)
     name: str = Field(min_length=3, max_length=120)
     description: str | None = Field(default=None, max_length=1000)
     permission_ids: list[int] = []
@@ -72,6 +73,7 @@ class UserRead(BaseModel):
     email: EmailAddress
     full_name: str
     is_active: bool
+    is_system_protected: bool = False
     roles: list[RoleRead] = []
 
 
@@ -100,6 +102,7 @@ class MenuRead(BaseModel):
     module_code: str
     module_label: str
     is_active: bool
+    is_system_protected: bool = False
     permissions: list[PermissionRead] = []
 
 

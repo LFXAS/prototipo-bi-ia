@@ -19,7 +19,7 @@ Consulta [docs/scope.md](docs/scope.md) y [docs/architecture.md](docs/architectu
 ## Requisitos
 
 - Docker Engine 24 o superior con Docker Compose v2.
-- Al menos 8 GB de memoria disponibles para ejecutar el conjunto de contenedores.
+- Al menos 8 GB de memoria disponibles para ejecutar el conjunto de contenedores. Para la alternativa local con Ollama se recomiendan 16 GB de memoria total y al menos 8 GB adicionales de disco libre para la imagen y el modelo.
 - Conexión a Internet en el primer arranque para descargar las imágenes base y el respaldo oficial de AdventureWorks.
 
 No es necesario instalar Node.js ni Python en el equipo anfitrión.
@@ -70,15 +70,36 @@ Quedan disponibles simultáneamente:
 
 Esta vista comprueba el artefacto web de producción, pero sigue usando el backend de desarrollo. Para probar las cinco imágenes publicadas como un ambiente completamente independiente, copia `.env.release.example` a `.env.release` y ejecuta `make release-up`; ese segundo proyecto usa API `18000`, PostgreSQL `55433` y SQL Server `51434`, por lo que puede convivir con desarrollo.
 
+### Alternativa LLM local con Ollama
+
+Ollama es opcional: no se inicia con `make up`, no reemplaza Gemini o Qwen Cloud y no requiere una API key. Se usa como respaldo local cuando no se desea depender de cuotas cloud. Desde la raíz del repositorio:
+
+```bash
+make ollama-up
+make ollama-pull
+make ollama-status
+```
+
+La primera descarga guarda `qwen3:4b` en el volumen Docker `ollama_models`; se conserva al detener el servicio y cada programadora debe descargarlo una vez en su propio equipo. No se sincroniza con Git, no se publica en GHCR y CI/CD nunca lo descarga. Luego, en **Configuración LLM**, cree un registro inactivo con proveedor **Ollama local**, URL `http://ollama:11434` y modelo `qwen3:4b`; use **Probar conexión**. La aplicación confirma tanto el servicio como la presencia del modelo. Para detener Ollama sin borrar el modelo:
+
+```bash
+make ollama-down
+```
+
+Ollama sólo es accesible desde los contenedores del proyecto; el puerto `11434` no se publica en el computador anfitrión.
+
 ## Flujo diario
 
 ```bash
 make up             # construir y levantar
 make delivery-preview-up # anadir Nginx en 8080 sin detener Vite
+make ollama-up      # iniciar alternativa local de LLM, sin descargar aún
+make ollama-pull    # descargar qwen3:4b una vez por equipo
+make ollama-down    # detener Ollama y conservar el modelo
 make logs           # seguir los registros
 make test           # pruebas de backend y frontend en imagenes Docker
 make lint           # calidad estatica en contenedores
-make compose-check  # validar las dos variantes de Compose
+make compose-check  # validar desarrollo, entrega y perfil local de Ollama
 make docs           # regenerar bitacora, informe de sprint y manual
 make down           # detener la aplicacion
 ```
