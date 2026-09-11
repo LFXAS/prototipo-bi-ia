@@ -7,7 +7,7 @@ export type User = { id: number; email: string; full_name: string; is_active: bo
 export type Session = { user: User; permissions: string[]; menus: Menu[] }
 export type Parameter = { id: number; key: string; value: string; description?: string; is_active: boolean }
 export type LlmConfiguration = { id: number; name: string; provider_kind: string; base_url: string; model_id: string; credential_reference: string; is_active: boolean; last_test_status?: string; last_test_message?: string }
-export type AuditEvent = { id: number; action: string; resource_type: string; resource_id?: string; created_at: string }
+export type AuditEvent = { id: number; actor_user_id?: number; actor_label?: string; action: string; resource_type: string; resource_id?: string; created_at: string }
 export type Page<T> = { items: T[]; total: number; limit: number; offset: number }
 
 type ValidationIssue = { loc?: (string | number)[]; msg?: string }

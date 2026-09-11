@@ -182,9 +182,19 @@ async def add_audit_event(
     resource_id: str | None = None,
     detail: dict[str, object] | None = None,
 ) -> None:
+    actor_label: str | None = None
+    if actor_user_id is not None:
+        actor = (
+            await session.execute(
+                select(User.full_name, User.email).where(User.id == actor_user_id)
+            )
+        ).one_or_none()
+        if actor is not None:
+            actor_label = f"{actor.full_name} <{actor.email}>"
     session.add(
         AuditEvent(
             actor_user_id=actor_user_id,
+            actor_label=actor_label,
             action=action,
             resource_type=resource_type,
             resource_id=resource_id,

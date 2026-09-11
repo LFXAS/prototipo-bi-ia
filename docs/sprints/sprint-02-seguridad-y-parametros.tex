@@ -188,6 +188,8 @@ Las entidades de aplicación son \file{users}, \file{roles}, \file{permissions},
 
 La cuenta y el rol administrativos iniciales poseen una marca persistida de protección. FastAPI rechaza desactivarlos, eliminarlos o dejarlos sin las capacidades mínimas de recuperación. La eliminación física de recursos no protegidos requiere confirmación, comprueba primero dependencias hijas y responde con conflicto explícito cuando deben resolverse asociaciones. Una eliminación permitida genera auditoría con acción \file{delete}; los eventos de auditoría no se modifican ni eliminan desde la interfaz.
 
+La corrección post-cierre para cuentas temporales permite eliminar un usuario no protegido una vez retiradas sus asociaciones usuario--rol, incluso si fue actor de auditoría. La migración \file{20260911\_05} usa \file{ON DELETE SET NULL} sobre la referencia técnica de actor y conserva una etiqueta histórica segura en el evento. La auditoría permanece disponible, mientras la cuenta temporal deja de existir.
+
 \section{Experiencia de usuario}
 
 La administración se integra en un cascarón responsive. En escritorio se puede contraer o restaurar el panel lateral mediante un chevrón compacto superpuesto al borde. En tableta y móvil se usa el patrón hamburguesa. Los grupos \textbf{Seguridad} y \textbf{Parámetros generales} son plegables incluso cuando contienen la ruta activa; Inicio queda como acceso directo.
@@ -250,7 +252,7 @@ El comando no descarga modelos LLM: valida solamente que el perfil opcional sea 
   \midrule
   Pérdida de acceso administrativo & Marca protegida e invariantes verificadas en backend. & Siempre existe una vía de recuperación. \\
   Exposición de secretos & Variables de entorno, respuesta segura y auditoría sin claves/JWT. & Ninguna API key llega a PostgreSQL o React. \\
-  Borrado inconsistente & Confirmación, validación de hijos y respuesta 409. & No hay borrado en cascada silencioso. \\
+  Borrado inconsistente & Confirmación, validación de hijos y respuesta 409; los eventos de auditoría conservan etiqueta histórica si se borra un actor temporal. & No hay borrado en cascada silencioso ni pérdida de trazabilidad. \\
   Cuota cloud agotada & Ollama local opcional y modelo persistente. & Prueba LLM sin depender de cuota. \\
   Uso excesivo de recursos & Perfil no automático, modelo explícito, límites de contexto y una sola carga. & El entorno normal no se hace más pesado. \\
   Confusión entre módulos & Especificaciones separadas y estado aislado por ruta. & Formularios y mensajes corresponden al recurso activo. \\

@@ -382,7 +382,9 @@ Las listas administrativas son paginadas desde el servidor. Usuarios, Roles y Me
 
 Eliminar no significa ocultar un registro. Para una eliminación física permitida, la interfaz pide confirmación y FastAPI comprueba primero las asociaciones hijas. Por ejemplo, un rol con usuarios o permisos asignados no se borra hasta resolver esas relaciones; la API responde con conflicto y una explicación. No existe borrado en cascada silencioso.
 
-Toda mutación administrativa genera un evento de auditoría con actor, fecha, acción, tipo de recurso, identificador y resumen seguro. Se registran inicio de sesión, altas, actualizaciones, cambios de estado, asociaciones, pruebas de conexión y eliminaciones. La vista Auditoría es sólo de consulta, paginada e inmutable; nunca presenta contraseñas, JWT, API keys ni cadenas de conexión completas.
+Una cuenta temporal no protegida sí puede eliminarse después de retirar sus roles. Sus eventos de auditoría no son una dependencia bloqueante: la migración \file{20260911\_05} configura la referencia de actor con \file{ON DELETE SET NULL}. Al borrar la cuenta, el identificador técnico queda vacío, pero cada evento conserva la etiqueta histórica segura del actor (nombre y correo en el momento de la acción). Así se mantiene la trazabilidad sin conservar una cuenta de prueba ni borrar eventos de auditoría.
+
+Toda mutación administrativa genera un evento de auditoría con actor, fecha, acción, tipo de recurso, identificador y resumen seguro. Se registran inicio de sesión, altas, actualizaciones, cambios de estado, asociaciones, pruebas de conexión y eliminaciones. La vista Auditoría es sólo de consulta, paginada e inmutable; para actores ya eliminados muestra la etiqueta histórica y nunca presenta contraseñas, JWT, API keys ni cadenas de conexión completas.
 
 \subsection{Parámetros generales}
 
@@ -1006,6 +1008,7 @@ make verify
   1.6.0 & 02-09-2026 & Reconstrucción operativa del Sprint 1 y referencia comentada de variables, Compose, Dockerfiles, Makefile, Git, GitHub, CI/CD, persistencia y verificación. \\
   1.7.0 & 02-09-2026 & Evidencias visuales de GitHub Actions y de los controles obligatorios de aprobación, CI y fusión. \\
   1.8.0 & 11-09-2026 & Consolidación del Sprint 2: operación JWT/RBAC, navegación, CRUD protegido, auditoría, parámetros, proveedores LLM y perfil Docker local de Ollama con persistencia y validación segura. \\
+  1.8.1 & 11-09-2026 & Corrección de eliminación de usuarios temporales: auditoría preservada con etiqueta histórica de actor y referencia nula mediante \file{ON DELETE SET NULL}. \\
   \bottomrule
 \end{tabularx}
 

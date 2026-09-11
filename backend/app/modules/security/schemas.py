@@ -135,6 +135,7 @@ class AuditEventRead(BaseModel):
 
     id: int
     actor_user_id: int | None
+    actor_label: str | None
     action: str
     resource_type: str
     resource_id: str | None

@@ -131,7 +131,10 @@ class AuditEvent(Base):
     __table_args__ = {"schema": "app"}
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    actor_user_id: Mapped[int | None] = mapped_column(ForeignKey("app.users.id"), nullable=True)
+    actor_user_id: Mapped[int | None] = mapped_column(
+        ForeignKey("app.users.id", ondelete="SET NULL"), nullable=True
+    )
+    actor_label: Mapped[str | None] = mapped_column(String(320), nullable=True)
     action: Mapped[str] = mapped_column(String(120), index=True)
     resource_type: Mapped[str] = mapped_column(String(100))
     resource_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
