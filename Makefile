@@ -53,7 +53,7 @@ ollama-up:
 	$(COMPOSE) --profile local-llm up -d ollama
 
 ollama-pull: ollama-up
-	$(COMPOSE) --profile local-llm exec ollama ollama pull $${OLLAMA_MODEL:-qwen3:4b}
+	$(COMPOSE) --profile local-llm exec ollama ollama pull $${OLLAMA_MODEL:-qwen2.5:3b}
 
 ollama-status:
 	$(COMPOSE) --profile local-llm exec ollama ollama list

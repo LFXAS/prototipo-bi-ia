@@ -235,8 +235,8 @@ Se deben reemplazar todos los valores que empiecen con \file{ChangeMe\_*}. Las c
   \file{IMAGE\_TAG} & \file{main} & Entrega a ejecutar; se recomienda una etiqueta versionada. \\
   \file{GEMINI\_API\_KEY} & vacío & Clave opcional de Gemini; nunca se escribe desde la interfaz. \\
   \file{DASHSCOPE\_API\_KEY} & vacío & Clave opcional de Qwen Cloud; nunca se escribe desde la interfaz. \\
-  \file{OLLAMA\_MODEL} & \file{qwen3:4b} & Modelo local que se descarga explícitamente por equipo. \\
-  \file{OLLAMA\_CONTEXT\_LENGTH} & 4096 & Límite local de contexto para controlar consumo de memoria. \\
+  \file{OLLAMA\_MODEL} & \file{qwen2.5:3b} & Modelo local ágil que se descarga explícitamente por equipo. \\
+  \file{OLLAMA\_CONTEXT\_LENGTH} & 2048 & Límite local de contexto para controlar consumo de memoria y priorizar agilidad. \\
   \bottomrule
 \end{longtable}
 
@@ -422,7 +422,7 @@ make ollama-pull
 make ollama-status
 \end{lstlisting}
 
-El primer comando activa el perfil \file{local-llm}; el segundo descarga \file{qwen3:4b}, salvo que \file{OLLAMA\_MODEL} tenga otro valor local aprobado; el tercero muestra los modelos disponibles. La descarga se conserva en el volumen \file{ollama\_models}. Por tanto, cada programadora debe ejecutar este procedimiento una vez en su propio computador: Git no versiona el modelo, GitHub Container Registry no lo publica y CI/CD no lo descarga.
+El primer comando activa el perfil \file{local-llm}; el segundo descarga \file{qwen2.5:3b}, salvo que \file{OLLAMA\_MODEL} tenga otro valor local aprobado; el tercero muestra los modelos disponibles. Esta opción se adopta como predeterminada porque ofrece respuestas directas en español con menor consumo que \file{qwen3:4b}. La descarga se conserva en el volumen \file{ollama\_models}. Por tanto, cada programadora debe ejecutar este procedimiento una vez en su propio computador: Git no versiona el modelo, GitHub Container Registry no lo publica y CI/CD no lo descarga.
 
 \subsection{Registrar y probar la configuración}
 
@@ -436,13 +436,13 @@ En la pantalla \textbf{Configuración LLM} crear un registro con los valores sig
   Nombre & Ollama local de prueba \\
   Proveedor & Ollama local \\
   URL de servicio & \file{http://ollama:11434} \\
-  Modelo & \file{qwen3:4b} \\
+  Modelo & \file{qwen2.5:3b} \\
   Estado & Inactivo hasta que una persona autorizada decida activarlo \\
   \bottomrule
 \end{tabularx}
 \end{center}
 
-Después de guardar, seleccionar \textbf{Probar conexión}. FastAPI consulta \file{/api/tags} sin enviar datos del negocio. El resultado es verde sólo si Ollama responde y el modelo configurado está descargado; si el servicio responde pero falta el modelo, la interfaz muestra una alerta roja comprensible y se corrige ejecutando \file{make ollama-pull}. La prueba, creación y cambios quedan auditados sin almacenar una clave ni el contenido de una respuesta del modelo.
+Después de guardar, seleccionar \textbf{Probar conexión}. FastAPI consulta \file{/api/tags} sin enviar datos del negocio. El resultado es verde sólo si Ollama responde y el modelo configurado está descargado; si el servicio responde pero falta el modelo, la interfaz muestra una alerta roja comprensible y se corrige ejecutando \file{make ollama-pull}. \file{qwen3:4b} sigue disponible para pruebas de mayor capacidad, pero puede requerir más tiempo por su razonamiento interno. La prueba, creación y cambios quedan auditados sin almacenar una clave ni el contenido de una respuesta del modelo.
 
 \subsection{Detener sin borrar el modelo}
 

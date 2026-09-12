@@ -80,7 +80,7 @@ make ollama-pull
 make ollama-status
 ```
 
-La primera descarga guarda `qwen3:4b` en el volumen Docker `ollama_models`; se conserva al detener el servicio y cada programadora debe descargarlo una vez en su propio equipo. No se sincroniza con Git, no se publica en GHCR y CI/CD nunca lo descarga. Luego, en **Configuración LLM**, cree un registro inactivo con proveedor **Ollama local**, URL `http://ollama:11434` y modelo `qwen3:4b`; use **Probar conexión**. La aplicación confirma tanto el servicio como la presencia del modelo. Para detener Ollama sin borrar el modelo:
+La primera descarga guarda `qwen2.5:3b` en el volumen Docker `ollama_models`; se conserva al detener el servicio y cada programadora debe descargarlo una vez en su propio equipo. Es el modelo local recomendado por su respuesta ágil y directa en español. No se sincroniza con Git, no se publica en GHCR y CI/CD nunca lo descarga. Luego, en **Configuración LLM**, cree un registro inactivo con proveedor **Ollama local**, URL `http://ollama:11434` y modelo `qwen2.5:3b`; use **Probar conexión**. `qwen3:4b` permanece como alternativa de mayor capacidad, pero puede tardar más por su razonamiento interno. La aplicación confirma tanto el servicio como la presencia del modelo. Para detener Ollama sin borrar el modelo:
 
 ```bash
 make ollama-down
@@ -95,7 +95,7 @@ make up             # construir y levantar
 make seed           # volver a aplicar el catálogo base aprobado sin duplicarlo
 make delivery-preview-up # anadir Nginx en 8080 sin detener Vite
 make ollama-up      # iniciar alternativa local de LLM, sin descargar aún
-make ollama-pull    # descargar qwen3:4b una vez por equipo
+make ollama-pull    # descargar qwen2.5:3b una vez por equipo
 make ollama-down    # detener Ollama y conservar el modelo
 make logs           # seguir los registros
 make test           # pruebas de backend y frontend en imagenes Docker

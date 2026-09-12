@@ -470,6 +470,24 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   \bottomrule
 \end{longtable}
 
+\subsection{11 de septiembre de 2026 - Modelo local ágil para Ollama}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Decisión operativa & \statusok & \file{qwen2.5:3b} reemplaza a \file{qwen3:4b} como modelo local predeterminado para desarrollo y demostraciones ágiles en español. \\
+  Recursos locales & \statusok & El contexto predeterminado se ajusta a 2048; el modelo anterior queda como alternativa de mayor capacidad, no como requisito de cada equipo. \\
+  Reproducibilidad & \statusok & \file{.env.example}, Compose, Makefile, interfaz, especificación, ADR y guías indican el mismo valor. No se versionan modelos, volúmenes ni archivos \file{.env} personales. \\
+  Verificación & \statusok & Pruebas de proveedor, configuración Compose y comprobación integral ejecutadas antes del PR. \\
+  \bottomrule
+\end{longtable}
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}X l X@{}}
@@ -483,7 +501,7 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   PostgreSQL disponible & \statusok & Esquemas \file{app} y \file{mart}; endpoint \file{/health/ready} en \file{ok} \\
   AdventureWorks restaurada & \statusok & 71 tablas; \file{bi\_reader}: lectura 1 e inserción 0 \\
   Interfaz disponible & \statusok & Vite saludable en 5173, Nginx opcional en 8080 y API accesible mediante proxy \\
-  Ollama local opcional & \statusok & Perfil \file{local-llm}, modelo \file{qwen3:4b} persistente y prueba FastAPI de servicio más modelo, sin puerto público ni descarga CI \\
+  Ollama local opcional & \statusok & Perfil \file{local-llm}, modelo ágil \file{qwen2.5:3b} persistente y prueba FastAPI de servicio más modelo, sin puerto público ni descarga CI \\
   PDF legible & \statusok & Todas las páginas renderizadas e inspeccionadas sin cortes ni solapamientos \\
   Git local & \statusok & \file{develop} para integración, \file{main} para entregas y ramas enfocadas por pull request \\
   GitHub/GHCR & \statusok & Repositorio público, dos colaboradoras con escritura, ramas protegidas y cinco imágenes públicas en GHCR; la réplica desde una VM Ubuntu se realizó con Docker y VS Code. \\
@@ -539,6 +557,7 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   0.2.14 & 11-09-2026 & Alternativa local Ollama: perfil Docker opcional, modelo persistente por equipo, validación de disponibilidad y documentación operativa sin alterar Sprint 1 ni CI/CD. \\
   0.2.15 & 11-09-2026 & Corrección de auditoría para usuarios temporales: preserva eventos y etiqueta histórica del actor, permite eliminación física no protegida mediante \file{ON DELETE SET NULL}. \\
   0.2.16 & 11-09-2026 & Migraciones y catálogo base reproducible: servicio \file{seed} idempotente posterior a Alembic, sin compartir volúmenes ni datos sensibles entre equipos. \\
+  0.2.17 & 11-09-2026 & Modelo local predeterminado \file{qwen2.5:3b} y contexto 2048 para una experiencia Ollama ágil; \file{qwen3:4b} queda como alternativa opcional de mayor capacidad. \\
   \bottomrule
 \end{longtable}
 
