@@ -44,7 +44,7 @@ def test_ollama_connection_requires_downloaded_model(monkeypatch: MonkeyPatch) -
     monkeypatch.setattr(
         providers.httpx,
         "AsyncClient",
-        lambda **kwargs: FakeAsyncClient({"models": [{"name": "qwen3:4b"}]}, **kwargs),
+        lambda **kwargs: FakeAsyncClient({"models": [{"name": "qwen2.5:3b"}]}, **kwargs),
     )
 
     result = asyncio.run(providers.test_provider(ollama_configuration("qwen3:8b")))
@@ -57,10 +57,10 @@ def test_ollama_connection_accepts_downloaded_model(monkeypatch: MonkeyPatch) ->
     monkeypatch.setattr(
         providers.httpx,
         "AsyncClient",
-        lambda **kwargs: FakeAsyncClient({"models": [{"name": "qwen3:4b"}]}, **kwargs),
+        lambda **kwargs: FakeAsyncClient({"models": [{"name": "qwen2.5:3b"}]}, **kwargs),
     )
 
-    result = asyncio.run(providers.test_provider(ollama_configuration("qwen3:4b")))
+    result = asyncio.run(providers.test_provider(ollama_configuration("qwen2.5:3b")))
 
     assert result.ok
     assert "modelo local validada" in result.message

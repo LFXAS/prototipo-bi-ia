@@ -86,7 +86,7 @@ make ollama-pull
 make ollama-status
 ```
 
-`make ollama-pull` descarga una vez `qwen3:4b` al volumen local `ollama_models`. Git no versiona ese volumen y CI/CD no descarga el modelo: por ello, después de clonar o actualizar el repositorio, cada programadora ejecuta el mismo comando en su equipo si desea usarlo.
+`make ollama-pull` descarga una vez `qwen2.5:3b` al volumen local `ollama_models`. Es el valor predeterminado por su agilidad y sus respuestas directas en español. Git no versiona ese volumen y CI/CD no descarga el modelo: por ello, después de clonar o actualizar el repositorio, cada programadora ejecuta el mismo comando en su equipo si desea usarlo. `qwen3:4b` queda disponible como alternativa de mayor capacidad si el equipo dispone de más recursos.
 
 En la pantalla **Configuración LLM**, crear una configuración con:
 
@@ -95,7 +95,7 @@ En la pantalla **Configuración LLM**, crear una configuración con:
 | Nombre | Ollama local de prueba |
 | Proveedor | Ollama local |
 | URL de servicio | `http://ollama:11434` |
-| Modelo | `qwen3:4b` |
+| Modelo | `qwen2.5:3b` |
 | Estado inicial | Inactivo, para no sustituir otro proveedor activo |
 
 Guardar y usar **Probar conexión**. La confirmación sólo será exitosa cuando el servicio y el modelo estén disponibles. Para detener el servicio conservando el modelo:
@@ -250,7 +250,7 @@ docker compose --profile local-llm logs --tail=200 ollama
 - `5173` funciona y `8080` no responde: inicia la vista con `make delivery-preview-up` o la entrega completa con `make release-up`.
 - GHCR responde `denied`: el paquete es privado o falta `docker login ghcr.io`.
 - En ARM el inicio es lento: verifica que la emulación `linux/amd64` esté habilitada.
-- La prueba de Ollama indica que falta el modelo: ejecuta `make ollama-pull` desde la raíz del repositorio y repite la prueba; no copies el volumen de otra máquina.
+- La prueba de Ollama indica que falta el modelo: ejecuta `make ollama-pull` desde la raíz del repositorio y repite la prueba; el valor predeterminado es `qwen2.5:3b`, elegido para una respuesta local ágil. No copies el volumen de otra máquina.
 
 ## 10. Evidencias para la tesis
 

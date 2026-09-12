@@ -132,7 +132,7 @@ Proveer una administración segura, comprensible y responsive que permita contro
   Auditoría & Registro inmutable de inicio de sesión, creación, edición, estado, asociaciones, pruebas y eliminación. & \statusok \\
   UX administrativa & Navegación agrupada, plegable, ocultable, responsive, formularios guiados, tablas de casillas y paginación. & \statusok \\
   Parámetros y LLM & Catálogo sin claves libres, proveedores Gemini/Qwen/Ollama y prueba limitada desde backend. & \statusok \\
-  Ollama local & Perfil Docker opcional, modelo persistente \file{qwen3:4b} y prueba de disponibilidad real. & \statusok \\
+  Ollama local & Perfil Docker opcional, modelo ágil \file{qwen2.5:3b} persistente y prueba de disponibilidad real. & \statusok \\
   \bottomrule
 \end{tabularx}
 
@@ -216,7 +216,7 @@ La base sólo almacena valores no secretos: nombre, proveedor, URL permitida, mo
 
 \subsection{Alternativa local verificable}
 
-El perfil Compose \file{local-llm} incorpora Ollama de forma opcional y privada dentro de la red de contenedores. El modelo de referencia es \file{qwen3:4b}. Se opera desde la raíz del repositorio:
+El perfil Compose \file{local-llm} incorpora Ollama de forma opcional y privada dentro de la red de contenedores. El modelo local predeterminado es \file{qwen2.5:3b}, elegido para mantener una experiencia ágil en equipos de desarrollo. \file{qwen3:4b} permanece como alternativa de mayor capacidad y mayor consumo. Se opera desde la raíz del repositorio:
 
 \begin{lstlisting}[style=terminal,language=bash]
 make ollama-up
@@ -236,7 +236,7 @@ El modelo se guarda en el volumen \file{ollama\_models}; cada programadora lo de
   Compose & \statusok & Desarrollo, perfil \file{delivery}, perfil \file{local-llm} y entrega GHCR validados con configuración Compose. \\
   Backend & \statusok & Ruff, Mypy y pruebas Pytest Docker; se añadieron casos de modelo Ollama disponible/no descargado. \\
   Frontend & \statusok & ESLint, pruebas Vitest y construcción Vite dentro de Docker. \\
-  LLM local & \statusok & \file{qwen3:4b} descargado; prueba FastAPI exitosa contra Ollama interno. \\
+  LLM local & \statusok & \file{qwen2.5:3b} predeterminado; prueba FastAPI verifica servicio y modelo interno. \\
   Documentación & \statusok & Bitácora, informe Sprint 1, informe Sprint 2 y manual técnico compilados reproduciblemente con LaTeX Docker. \\
   Seguridad operativa & \statusok & Configuración Ollama inactiva; la configuración Gemini existente no fue sustituida. \\
   \bottomrule
