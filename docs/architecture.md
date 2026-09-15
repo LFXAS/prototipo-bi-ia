@@ -84,6 +84,12 @@ FastAPI encapsula las diferencias de cada servicio en adaptadores internos y só
 
 El módulo `copilot` posterior consumirá este contrato mediante una interfaz interna y será el único que pueda solicitar propuestas sobre metadatos o planes BI; ningún SQL asistido por IA se ejecutará automáticamente. La decisión se detalla en [`decisions/0002-configuracion-proveedor-llm.md`](decisions/0002-configuracion-proveedor-llm.md).
 
+## Contrato propuesto para Sprint 3
+
+Sprint 3 separa introspección y razonamiento asistido. El módulo `metadata` consulta catálogos de AdventureWorks, normaliza una instantánea inmutable y calcula su hash. El módulo `copilot` sólo recibe un paquete compacto derivado de esa instantánea y confirmado por una persona; devuelve un documento JSON versionado con modelo dimensional, KPIs y plan ETL declarativo.
+
+FastAPI valida que todas las tablas, columnas, claves, relaciones y operaciones propuestas existan o pertenezcan a catálogos aprobados. Sólo después un permiso independiente permite aprobar o rechazar. Una aprobación no ejecuta SQL: conserva una entrada inmutable para el módulo `etl` de Sprint 4. Este límite se detalla en [`decisions/0003-metadatos-y-propuesta-bi-supervisada.md`](decisions/0003-metadatos-y-propuesta-bi-supervisada.md).
+
 ## Datos
 
 PostgreSQL alojará dos responsabilidades lógicamente separadas:

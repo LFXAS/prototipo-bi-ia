@@ -1,6 +1,6 @@
-# Prototipo web de BI asistido por IA
+# Prototipo web de inteligencia de negocios asistido por IA
 
-Base técnica del proyecto de titulación de Emily Robles y Lesly Velásquez. El entorno **Docker-first** ejecuta React + Vite, FastAPI, PostgreSQL y AdventureWorks en SQL Server con un usuario de solo lectura. El Sprint 2 incorpora seguridad RBAC, JWT, auditoría, parámetros y configuración no secreta de un proveedor LLM; los módulos BI de negocio continúan planificados para sprints posteriores.
+Base técnica del proyecto de titulación **“Prototipo web de inteligencia de negocios asistido por IA para la construcción semiautomatizada y supervisada de un datamart de ventas con datos públicos y sintéticos”**. El entorno **Docker-first** ejecuta React + Vite, FastAPI, PostgreSQL y AdventureWorks en SQL Server con un usuario de solo lectura. El Sprint 2 incorpora seguridad RBAC, JWT, auditoría, parámetros y configuración no secreta de un proveedor LLM. El Sprint 3 se encuentra especificado para introspeccionar AdventureWorks y producir una propuesta BI estructurada, validada y sometida a aprobación humana antes de cualquier ETL.
 
 La guía operativa completa para replicar, restaurar, publicar y probar el entorno está en [docs/replication-guide.md](docs/replication-guide.md).
 
@@ -12,7 +12,7 @@ La trazabilidad del trabajo se mantiene en LaTeX y PDF. La bitácora vive en `do
 
 El anteproyecto define una prueba de concepto académica con una sola fuente SQL Server/AdventureWorks, introspección de metadatos, propuestas de un LLM sujetas a aprobación humana y validaciones determinísticas, ETL básico hacia un datamart PostgreSQL, cinco KPIs, tres gráficos, insights explicables y un pronóstico mensual por regresión lineal evaluado con MAPE y RMSE.
 
-El Sprint 1 implementó el entorno y la observabilidad mínima. El Sprint 2 implementa la base de seguridad: autenticación JWT, usuarios, roles, permisos, menús autorizados, auditoría, parámetros y pruebas seguras de conexión. Aún no incluye introspección, ETL, datamart, KPIs, tableros, propuestas BI por LLM ni pronóstico.
+El Sprint 1 implementó el entorno y la observabilidad mínima. El Sprint 2 implementa la base de seguridad: autenticación JWT, usuarios, roles, permisos, menús autorizados, auditoría, parámetros y pruebas seguras de conexión. El Sprint 3 está definido en [`docs/specs/SPR-03-metadatos-y-propuesta-bi.md`](docs/specs/SPR-03-metadatos-y-propuesta-bi.md): incorporará introspección, explorador y propuestas BI supervisadas, pero no ejecutará todavía ETL, datamart, KPIs, tableros ni pronóstico.
 
 Consulta [docs/scope.md](docs/scope.md) y [docs/architecture.md](docs/architecture.md) para el detalle.
 

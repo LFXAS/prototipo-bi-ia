@@ -2,6 +2,26 @@
 
 Fuente: anteproyecto corregido `A15_E25 (LVelásquez - ERobles) (ANTEPROYECTO).pdf`, 11 páginas, revisado el 24 de agosto de 2026.
 
+## Identificación vigente de la investigación
+
+Título acordado el 14 de septiembre de 2026:
+
+> **Prototipo web de inteligencia de negocios asistido por IA para la construcción semiautomatizada y supervisada de un datamart de ventas con datos públicos y sintéticos.**
+
+La fuente pública funcional es AdventureWorks. Los datos sintéticos se utilizan únicamente para pruebas controladas y valores faltantes; no representan una segunda fuente que el prototipo deba conectar o validar.
+
+### Objetivo general
+
+Desarrollar un prototipo web de inteligencia de negocios asistido por IA que permita la construcción semiautomatizada y supervisada de un datamart de ventas, utilizando datos públicos y sintéticos para generar KPIs, hallazgos analíticos y pronósticos de ventas.
+
+### Objetivos específicos
+
+1. Analizar los requisitos funcionales, técnicos y de calidad de datos necesarios para construir un datamart de ventas a partir de AdventureWorks, considerando datos sintéticos únicamente para pruebas controladas.
+2. Diseñar la arquitectura y el flujo de trabajo del prototipo, integrando conexión de sólo lectura, introspección del esquema, interpretación de metadatos mediante un LLM, validación humana y ejecución controlada del proceso ETL.
+3. Desarrollar una aplicación web que permita obtener los metadatos de la fuente relacional y generar propuestas supervisadas de modelo dimensional, KPIs y plan ETL mediante inteligencia artificial.
+4. Implementar un proceso ETL trazable que construya y cargue un datamart de ventas desde una base destino vacía, y que genere KPIs, visualizaciones, hallazgos analíticos explicables y un pronóstico de ventas mediante regresión lineal.
+5. Validar el funcionamiento del prototipo mediante consultas y resultados de referencia, controles de calidad de datos y las métricas MAPE y RMSE para evaluar el pronóstico de ventas.
+
 ## Incluido por el anteproyecto
 
 - Una sola fuente activa de sólo lectura: SQL Server con AdventureWorks.
@@ -41,3 +61,9 @@ El anteproyecto requiere un LLM que proponga artefactos BI, siempre con validaci
 - Endpoints de salud, OpenAPI y pantalla técnica inicial.
 - CI/CD preparado en GitHub Actions.
 - Ningún módulo de negocio implementado todavía.
+
+## Límite aprobado para especificar el Sprint 3
+
+Sprint 3 cubre la conexión de sólo lectura, introspección determinística, exploración del esquema y generación de una propuesta BI estructurada por el LLM activo. FastAPI valida las referencias contra una instantánea inmutable y una persona autorizada aprueba o rechaza la propuesta.
+
+La creación física del datamart, ejecución del ETL, KPIs calculados, visualizaciones, hallazgos y pronóstico permanecen fuera de Sprint 3. La propuesta aprobada será la entrada controlada del Sprint 4.
