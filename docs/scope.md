@@ -12,7 +12,7 @@ La fuente pública funcional es AdventureWorks. Los datos sintéticos se utiliza
 
 ### Usuarios previstos
 
-El prototipo está dirigido principalmente a un gerente comercial, analista de negocio o responsable de datos de una PyME que conoce las preguntas de ventas, pero no necesita programar. Una persona administradora configura el entorno y los permisos; un analista BI puede revisar detalles avanzados. El equipo de desarrollo construye el motor general y no prepara consultas por cada análisis.
+El prototipo está dirigido principalmente a un gerente comercial, analista de negocio o responsable de datos de una PyME que conoce las preguntas de ventas, pero no necesita programar. Una persona administradora configura desde la plataforma las conexiones, credenciales, proveedor LLM y permisos; un analista BI puede revisar detalles avanzados. El equipo de desarrollo construye el motor general y no prepara consultas por cada análisis.
 
 La participación del usuario final comienza en Sprint 3 al formular y revisar una solicitud de negocio. Los resultados calculados para toma de decisiones estarán disponibles después de la materialización del datamart y el ETL en Sprint 4; los hallazgos y el pronóstico completarán la experiencia en las fases analíticas posteriores.
 
@@ -30,10 +30,11 @@ Desarrollar un prototipo web de inteligencia de negocios asistido por IA que per
 
 ## Incluido por el anteproyecto
 
-- Una sola fuente activa de sólo lectura: SQL Server con AdventureWorks.
+- Catálogo web extensible de conexiones con una sola fuente activa; Sprint 3 implementa SQL Server y se valida con AdventureWorks.
+- Credenciales de fuente y LLM ingresadas desde la plataforma y almacenadas mediante referencia cifrada, sin exposición posterior.
 - Introspección de tablas, columnas, tipos, claves primarias, claves foráneas y relaciones declaradas.
-- Metadatos estructurados enviados a un LLM para sugerir dominio, hecho, dimensiones, medidas, KPIs y plan ETL.
-- Solicitud guiada en español y preselección automática del alcance técnico, con modo avanzado opcional para un analista BI.
+- Metadatos estructurados enviados por bloques a un LLM para interpretar nombres técnicos en inglés y generar conceptos comprensibles en español sin inventar referencias.
+- Solicitud guiada en español y descubrimiento dinámico del alcance técnico, con modo avanzado opcional para un analista BI.
 - Aprobación humana del significado de negocio y validación determinística antes de ejecutar SQL o transformaciones.
 - Datamart PostgreSQL con `fact_ventas`, `dim_fecha`, `dim_producto`, `dim_cliente` y `dim_territorio`.
 - ETL de carga completa con uniones simples, fechas/tipos, nulos e importes.
@@ -42,7 +43,7 @@ Desarrollar un prototipo web de inteligencia de negocios asistido por IA que per
 
 ## Excluido por el anteproyecto
 
-- Conectores universales, fuentes simultáneas, alta disponibilidad y despliegue empresarial.
+- Implementación funcional de múltiples motores, fuentes simultáneas, alta disponibilidad y despliegue empresarial; la interfaz queda preparada para adaptadores futuros.
 - CDC, cargas incrementales y dimensiones lentamente cambiantes complejas.
 - Selección automática entre múltiples modelos predictivos.
 - SQL del LLM ejecutado sin revisión humana.
@@ -58,7 +59,7 @@ En esta fase sólo existe su límite modular y la documentación del contrato. L
 
 ## Aclaración sobre el LLM configurable
 
-El anteproyecto requiere un LLM que proponga artefactos BI, siempre con validación determinística y aprobación humana. Para evitar depender de un único proveedor, el Sprint 2 preparará una configuración segura para elegir una sola conexión activa entre Gemini Cloud, Qwen Cloud y Ollama local. Esta preparación incluye administración de valores no secretos y una prueba limitada de conectividad desde FastAPI; no adelanta la generación de propuestas BI, la introspección, el ETL ni la ejecución de SQL.
+El anteproyecto requiere un LLM que proponga artefactos BI, siempre con validación determinística y aprobación humana. Para evitar depender de un único proveedor, el Sprint 2 preparó una configuración para elegir una sola conexión activa entre Gemini Cloud, Qwen Cloud y Ollama local. Sprint 3 amplía ese contrato para registrar o reemplazar desde la web las credenciales cifradas de proveedores cloud y elimina la edición de `.env` como operación ordinaria. Esta parametrización no permite enviar datos crudos ni ejecutar SQL del modelo.
 
 ## Objetivo de esta fase
 
@@ -72,6 +73,6 @@ El anteproyecto requiere un LLM que proponga artefactos BI, siempre con validaci
 
 ## Límite aprobado para especificar el Sprint 3
 
-Sprint 3 cubre la conexión de sólo lectura, introspección determinística, solicitud guiada de negocio, preselección del alcance de ventas, exploración técnica opcional y generación de una propuesta BI estructurada por el LLM activo. FastAPI valida las referencias contra una instantánea inmutable y una persona autorizada aprueba o rechaza el significado de negocio. El gerente no selecciona tablas ni escribe SQL en el recorrido principal.
+Sprint 3 cubre el catálogo web de conexiones, secretos cifrados, el adaptador SQL Server, introspección determinística, solicitud guiada de negocio, interpretación dinámica del inglés al español, descubrimiento del alcance de ventas, exploración técnica opcional y generación de una propuesta BI estructurada por el LLM activo. FastAPI valida las referencias contra una instantánea inmutable y una persona autorizada aprueba o rechaza el significado de negocio. El gerente no edita archivos, selecciona tablas ni escribe SQL en el recorrido principal.
 
 La creación física del datamart, generación determinística de consultas, ejecución del ETL, KPIs calculados, visualizaciones, hallazgos y pronóstico permanecen fuera de Sprint 3. La propuesta aprobada será la entrada controlada del Sprint 4, donde un motor construido una sola vez deberá materializarla sin intervención de un programador por análisis.

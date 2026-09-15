@@ -18,43 +18,49 @@ El objetivo es definir dos niveles de experiencia: un recorrido principal que pa
 
 | Grupo | Opción | Permiso mínimo | Propósito |
 |---|---|---|---|
-| Datos | Fuente AdventureWorks | `metadata.read` | Estado de conexión e instantánea; uso administrativo o de diagnóstico. |
+| Parámetros generales | Conexiones de datos | `connections.read` | CRUD web de fuentes, prueba, activación y estado sin revelar secretos. |
+| Datos | Fuente activa | `metadata.read` | Estado de conexión e instantánea; uso administrativo o de diagnóstico. |
 | Datos | Explorador de esquema | `metadata.read` | Vista avanzada de tablas, columnas, claves, relaciones y alcance derivado. |
 | IA | Asistente de análisis | `copilot.proposals.read` | Solicitud de negocio, propuesta, validación y revisión supervisada. |
 
-No se mostrarán todavía ETL, Datamart, Dashboard, Reportes ni Predicciones como rutas funcionales. La barra superior mostrará **Fuente activa: AdventureWorks2022** y un estado textual `Disponible`, `Iniciando`, `No disponible` o `Sin comprobar`, sin selector de múltiples fuentes. El inicio del gerente destacará **Preparar análisis de ventas**; los accesos técnicos sólo aparecerán cuando sus permisos lo permitan.
+No se mostrarán todavía ETL, Datamart, Dashboard, Reportes ni Predicciones como rutas funcionales. La barra superior mostrará el nombre de la conexión activa y un estado textual `Disponible`, `Iniciando`, `No disponible` o `Sin comprobar`. No permite cambiar secretos: enlaza al catálogo autorizado cuando el actor posee permiso. El inicio del gerente destacará **Preparar análisis de ventas**; los accesos técnicos sólo aparecerán cuando sus permisos lo permitan.
 
-### 2.2 Pantalla Fuente AdventureWorks
+### 2.2 Pantalla Conexiones de datos
 
-- Identidad: SQL Server, AdventureWorks2022 y finalidad de sólo lectura.
+Implementa el formulario, listado, acciones, estados y protección de secretos definidos en SPR-03-04. El usuario configura nombre, motor disponible, servidor, puerto, base y credencial desde la web; nunca pega una cadena completa ni edita archivos.
+
+### 2.3 Pantalla Fuente activa
+
+- Identidad: nombre configurado, motor, base de datos y finalidad de sólo lectura.
 - Estado de conexión y fecha de última prueba.
 - Última instantánea, hash abreviado y totales.
 - Acciones: **Probar conexión** y **Actualizar metadatos**, según permiso.
 - Explicación visible: actualizar metadatos no carga ventas ni modifica la fuente.
 
-### 2.3 Asistente de análisis: recorrido principal
+### 2.4 Asistente de análisis: recorrido principal
 
 - Plantilla inicial **Analizar ventas**, con una explicación breve del resultado esperado.
 - Campo **¿Qué desea conocer?**, limitado y acompañado por ejemplos de negocio.
 - Preguntas sugeridas mediante casillas: ventas por periodo, productos destacados, clientes y territorios.
 - Periodo y dimensiones de interés mediante controles de negocio; no se solicitan tablas ni columnas.
-- Resumen del alcance sugerido: Venta, Fecha, Producto, Cliente y Territorio, con explicación de por qué se incluyó cada concepto.
+- Progreso del descubrimiento por bloques, sin exponer razonamiento interno del LLM.
+- Resumen dinámico del alcance sugerido: conceptos españoles, descripción, confianza declarada y origen técnico consultable.
 - Confirmación visible de que se enviarán únicamente metadatos y la solicitud normalizada, nunca ventas, clientes, credenciales o SQL.
 - Acción **Generar propuesta BI** y acceso secundario **Ver detalles técnicos** para quien tenga permiso.
 
-### 2.4 Explorador de esquema avanzado
+### 2.5 Explorador de esquema avanzado
 
 - Buscador por esquema, tabla o columna.
 - Filtro de esquema y resumen de resultados.
 - Lista jerárquica esquema > tabla.
 - Detalle de tabla con columnas, tipo, nulabilidad, PK y referencias.
 - Relaciones entrantes y salientes expresadas como `Esquema.Tabla.columna`.
-- Identificación del alcance preseleccionado por `adventureworks-sales-v1`, diferenciando tablas ancla y dependencias añadidas.
+- Identificación del alcance obtenido por descubrimiento semántico, diferenciando candidatos del LLM, referencias validadas y dependencias añadidas.
 - Ajuste opcional mediante casillas para un analista autorizado; no se permite escribir identificadores técnicos libres.
 - Resumen persistente del alcance: conceptos solicitados, tablas derivadas, dependencias y advertencias.
 - Acción **Volver al asistente**, que conserva la solicitud no sensible; ningún ajuste llama al LLM sin confirmación.
 
-### 2.5 Propuesta BI
+### 2.6 Propuesta BI
 
 - Barra de pasos: Necesidad, Alcance sugerido, Generación, Validación y Revisión.
 - Encabezado con id, estado, fecha, snapshot, proveedor/modelo y versión del contrato.
@@ -72,7 +78,7 @@ No se mostrarán todavía ETL, Datamart, Dashboard, Reportes ni Predicciones com
 1. El recorrido comienza con una solicitud de negocio; nunca obliga a visitar Fuente o Explorador si los prerrequisitos ya están saludables.
 2. Seleccionar otra instantánea limpia el alcance anterior después de confirmación; nunca mezcla objetos de snapshots diferentes.
 3. Cambiar de pantalla no reutiliza errores, selección ni propuesta de otro módulo.
-4. La preselección automática explica conceptos incluidos, versión del perfil y advertencias; no presenta tablas como primera decisión del gerente.
+4. El descubrimiento automático explica conceptos incluidos, etapa, confianza y advertencias; no presenta tablas como primera decisión del gerente.
 5. En modo avanzado, una tabla puede ajustarse desde la lista o detalle y ambos controles reflejan el mismo estado.
 6. Las dependencias añadidas automáticamente se explican y pueden revisarse; no aparecen como selecciones ocultas.
 7. Si el analista intenta retirar una tabla requerida por una FK seleccionada, la interfaz ofrece retirar también la relación o conservar la dependencia.
@@ -87,8 +93,9 @@ No se mostrarán todavía ETL, Datamart, Dashboard, Reportes ni Predicciones com
 
 | Pantalla | Estados mínimos |
 |---|---|
-| Fuente | Sin comprobar, probando, disponible, no disponible, sin captura, capturando, sin cambios, captura actualizada, 403. |
-| Asistente | Nuevo análisis, solicitud incompleta, alcance preparando, alcance listo, aclaración requerida, prerrequisito pendiente y 403. |
+| Conexiones | Vacío, listado, creando, editando, probando, disponible, permisos de escritura detectados, activando, dependencia, error seguro y 403. |
+| Fuente | Sin conexión activa, sin comprobar, disponible, no disponible, sin captura, capturando, sin cambios, captura actualizada y 403. |
+| Asistente | Nuevo análisis, solicitud incompleta, metadatos dividiendo, interpretando bloque, combinando, alcance listo, aclaración requerida, proveedor fallido, prerrequisito pendiente y 403. |
 | Explorador avanzado | Cargando, vacío real, resultados, búsqueda sin coincidencias, detalle, alcance derivado, ajuste incompleto, error recuperable, 403. |
 | Propuesta | Lista para generar, generando, proveedor fallido, validación fallida, lista para revisión, aprobada, rechazada, sustituida, 403. |
 
@@ -107,8 +114,8 @@ Las tablas internas pueden tener desplazamiento horizontal contenido cuando sea 
 
 ## 6. Accesibilidad y lenguaje
 
-- Interfaz, mensajes y propuestas visibles en español; un glosario controlado presenta equivalencias y conserva los nombres técnicos originales en detalles.
-- Las etiquetas **Venta**, **Fecha**, **Producto**, **Cliente** y **Territorio** no sustituyen ni alteran tablas o columnas de AdventureWorks.
+- Interfaz, mensajes y propuestas visibles en español; el mapa semántico dinámico presenta equivalencias y conserva los nombres técnicos originales en detalles.
+- Las etiquetas de negocio son propuestas para la conexión e instantánea actuales; no sustituyen ni alteran tablas o columnas del origen.
 - Árbol, acordeones, casillas, pestañas y diálogos operables con teclado.
 - Foco visible y orden lógico; al abrir detalle o diálogo, el foco se mueve y se restaura al cerrar.
 - Estructura semántica con encabezados, etiquetas y descripciones asociadas.
@@ -122,6 +129,7 @@ Las tablas internas pueden tener desplazamiento horizontal contenido cuando sea 
 - React oculta acciones no autorizadas, pero FastAPI aplica los permisos.
 - No se muestran host, puerto interno, usuario SQL, contraseña ni cadena ODBC.
 - La interfaz indica qué metadatos se enviarán antes de generar.
+- Los formularios de conexión nunca muestran una contraseña o clave almacenada; permiten conservarla o reemplazarla.
 - El texto del objetivo se presenta como contenido del usuario, no como instrucción privilegiada; se valida, limita y escapa.
 - No se permite editar el JSON de entrada, instrucciones del sistema o URL del proveedor desde Propuesta BI.
 - La sección de trazabilidad muestra actor, fecha, estado y comentario seguro; la auditoría completa sigue siendo de sólo consulta bajo `audit.read`.
@@ -129,12 +137,14 @@ Las tablas internas pueden tener desplazamiento horizontal contenido cuando sea 
 
 ## 8. Criterios de aceptación verificables
 
-- [ ] Los tres accesos aparecen sólo con permiso y dentro de los grupos Datos e IA; Asistente de análisis es el acceso principal del usuario de negocio.
-- [ ] La barra superior muestra AdventureWorks como única fuente, sin un selector engañoso.
+- [ ] Conexiones, Fuente, Explorador y Asistente aparecen sólo con sus permisos y grupos; Asistente de análisis es el acceso principal del usuario de negocio.
+- [ ] La barra superior muestra la conexión activa sin revelar credenciales ni ofrecer motores no implementados.
+- [ ] Una persona administradora configura y prueba SQL Server desde la web sin editar archivos ni registros directamente.
 - [ ] La ficha explica que probar o actualizar no modifica ni carga datos.
 - [ ] El gerente puede expresar un objetivo y confirmar conceptos sin seleccionar tablas, escribir SQL ni leer JSON.
 - [ ] El explorador avanzado permite localizar una tabla y comprender sus columnas, PK, FK y relaciones.
-- [ ] El alcance derivado, ajustes y dependencias son visibles y no se mezclan entre instantáneas.
+- [ ] La correspondencia entre conceptos españoles y el origen técnico, los ajustes y las dependencias son visibles y no se mezclan entre instantáneas.
+- [ ] Las etiquetas se obtienen dinámicamente de los metadatos; una referencia inventada no aparece como concepto válido.
 - [ ] La confirmación previa a IA identifica objetivo, modelo, conceptos, alcance técnico consultable y política de sólo metadatos.
 - [ ] La propuesta diferencia contenido del LLM, validación determinística y decisión humana.
 - [ ] Aprobar declara expresamente que no ejecuta ETL ni crea el datamart.
@@ -146,18 +156,19 @@ Las tablas internas pueden tener desplazamiento horizontal contenido cuando sea 
 
 ## 9. Plan de pruebas y evidencia
 
-- Componentes: solicitud guiada, conceptos, árbol/lista avanzada, detalle, casillas, dependencias, pasos, secciones, diálogos y avisos.
-- Integración UI-API: solicitud, alcance automático, ajuste avanzado, cambio de snapshot, generación y revisión.
+- Componentes: conexión, secreto reemplazable, solicitud guiada, mapa semántico, árbol/lista avanzada, detalle, casillas, dependencias, pasos, secciones, diálogos y avisos.
+- Integración UI-API: CRUD/prueba de conexión, solicitud, descubrimiento por bloques, ajuste avanzado, cambio de snapshot, generación y revisión.
 - Accesibilidad: teclado, foco, nombres accesibles y anuncio de estados.
 - Responsive: capturas y pruebas en 320, 768, 1024 y 1440 px.
 - Autorización: menú oculto más respuesta 403 del backend.
-- Evidencia académica principal: secuencia Asistente > Necesidad de negocio > Alcance sugerido > Propuesta > Validación > Aprobación/Rechazo; Fuente y Explorador se documentan como soporte técnico.
+- Evidencia académica principal: secuencia Conexión web > Fuente activa > Asistente > Necesidad de negocio > Interpretación español/origen > Propuesta > Validación > Aprobación/Rechazo; Explorador se documenta como soporte técnico.
 
 ## 10. Riesgos y decisiones
 
 - Un diagrama completo de 71 tablas sería ilegible y no ayuda al gerente; Sprint 3 prioriza conceptos de negocio y conserva lista, detalle y relaciones en el modo avanzado. Un grafo interactivo queda como mejora posterior.
 - El panel de Copiloto de la referencia visual no será un chat general; en este sprint se usa una experiencia guiada y verificable.
-- Depende de SPR-03-01, SPR-03-02 y del cascarón definido en SPR-02-04.
+- La interpretación puede requerir varias llamadas; la UI muestra progreso por etapa y un error recuperable, no texto de razonamiento interno.
+- Depende de SPR-03-01, SPR-03-02, SPR-03-04 y del cascarón definido en SPR-02-04.
 
 ## 11. Resultado de implementación
 
