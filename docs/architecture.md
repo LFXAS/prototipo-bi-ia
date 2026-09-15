@@ -23,6 +23,8 @@ configuración interna, RBAC, auditoría y datamart
 - `sqlserver`: instancia aislada del proyecto; descarga y restaura AdventureWorks de forma idempotente en un volumen nombrado.
 - `ollama`: perfil opcional `local-llm`; mantiene modelos locales en el volumen nombrado `ollama_models`, se comunica sólo dentro de la red Compose y no publica un puerto en el host.
 
+Sprint 3 propone un volumen nombrado adicional para la raíz criptográfica local generada automáticamente. Este volumen no contiene configuraciones de negocio, no se versiona y permanece separado de PostgreSQL; el backend lo usa únicamente para cifrar y descifrar secretos autorizados en memoria.
+
 ## Modos de ejecución
 
 1. **Desarrollo:** `compose.yaml` inicia Vite, FastAPI y las dos bases bajo `bi-ia-prototype`.
@@ -42,10 +44,10 @@ No se recomienda una VM ARM para este conjunto porque SQL Server para Linux requ
 
 - `system`: salud y diagnóstico técnico mínimo.
 - `security`: autenticación y RBAC mínimo.
-- `parameters`: parámetros del prototipo, conexiones aprobadas y configuración no secreta del proveedor LLM activo.
-- `metadata`: introspección determinística de AdventureWorks.
-- `copilot`: propuestas estructuradas del LLM, nunca ejecución directa.
-- `etl`: vista previa, validación, ejecución y trazabilidad de cargas.
+- `parameters`: parámetros del prototipo, catálogo web de conexiones, referencias a secretos cifrados y configuración del proveedor LLM activo.
+- `metadata`: introspección determinística mediante la interfaz del conector activo; SQL Server es el primer adaptador.
+- `copilot`: solicitud guiada de negocio y propuestas estructuradas del LLM, nunca ejecución directa.
+- `etl`: constructor determinístico, vista previa, validación, ejecución backend y trazabilidad de cargas; no depende de SQL escrito por cada usuario.
 - `analytics`: KPIs, gráficos e insights.
 - `forecasting`: regresión lineal y métricas MAPE/RMSE.
 - `reports`: evidencias y reportes académicos.
@@ -58,14 +60,14 @@ Desde el Sprint 2, cada módulo sólo incorpora capacidad funcional a partir de 
 
 ## RBAC previsto
 
-Entidades implementadas: `users`, `roles`, `permissions`, `user_roles`, `role_permissions`, `menus`, `menu_permissions`, `audit_events`, `parameters` y `llm_configurations`, todas bajo el esquema `app`.
+Entidades implementadas hasta Sprint 2: `users`, `roles`, `permissions`, `user_roles`, `role_permissions`, `menus`, `menu_permissions`, `audit_events`, `parameters` y `llm_configurations`, todas bajo el esquema `app`. Sprint 3 propone ampliar `parameters` como catálogo tipado y añadir `data_connections`, `secrets`, `metadata_snapshots` y `bi_proposals` mediante migraciones versionadas.
 
 Reglas arquitectónicas:
 
 1. React puede ocultar opciones, pero FastAPI autoriza cada operación.
 2. Denegar por defecto cuando un permiso no esté asignado.
 3. Los tokens no almacenan secretos ni reemplazan el estado activo del usuario.
-4. Las aprobaciones de propuestas/SQL quedan auditadas.
+4. Las aprobaciones de propuestas y las futuras ejecuciones quedan auditadas.
 5. Menús y permisos comparten códigos estables, no nombres visibles.
 6. La cuenta inicial, su rol de recuperación, los permisos mínimos y los menús base quedan protegidos en datos persistidos; el sistema rechaza su desactivación para conservar una vía de administración.
 7. Los permisos y menús técnicos se incorporan con un módulo aprobado y su migración/versionamiento, nunca como texto libre en la pantalla administrativa.
@@ -76,13 +78,27 @@ Desde Sprint 2, cada módulo que incorpore interfaz se integra en un cascarón R
 
 Los menús son una representación de permisos ya autorizados por FastAPI. En escritorio pueden permanecer visibles; en móvil deben abrirse y cerrarse con teclado o táctil. Formularios, tablas y acciones administrativas definen estados de carga, vacío, éxito, error, sesión vencida y acceso denegado. La accesibilidad mínima incluye foco visible, etiquetas de campos, mensajes que no dependan sólo del color y contraste suficiente para lectura.
 
+### Perfiles de uso
+
+La administración técnica configura desde la web fuente, credenciales, proveedor LLM y permisos una vez. El gerente comercial o solicitante expresa objetivos y preguntas en español, revisa conceptos y consume resultados sin escribir SQL. El analista BI o responsable de datos utiliza detalles avanzados y aprueba el significado de negocio. Las programadoras mantienen el motor y sus plantillas, pero no intervienen en cada análisis de operación.
+
 ## Contrato de configuración LLM
 
-El módulo `parameters` conserva una única configuración LLM activa con valores no secretos: tipo de proveedor, URL base, modelo, límites y referencia de credencial. El catálogo inicial es `gemini` (referencia `GEMINI_API_KEY`), `qwen-cloud` (referencia `DASHSCOPE_API_KEY`) y `ollama-local` (referencia `none`, servicio interno). La clave real vive sólo en variables de entorno o en el mecanismo de secretos del despliegue; ni PostgreSQL, ni React, ni los eventos de auditoría la almacenan o la devuelven.
+El módulo `parameters` conserva una única configuración LLM activa con tipo de proveedor, URL base, modelo, límites y referencia opaca de credencial. Antes del flujo funcional del Sprint 3 se corrige el módulo de Sprint 2 con un almacén cifrado para registrar o reemplazar la clave desde la web. PostgreSQL conserva exclusivamente el valor cifrado; React y auditoría no reciben el secreto. Las referencias `GEMINI_API_KEY` y `DASHSCOPE_API_KEY` quedan como transición de instalaciones anteriores, no como requisito de operación cotidiana.
+
+La raíz criptográfica se genera automáticamente en el primer arranque local y se conserva con permisos restrictivos en un volumen Docker separado de PostgreSQL. Una instalación productiva deberá sustituir ese proveedor por un gestor de secretos externo. Puertos, redes, imágenes, volúmenes y credenciales internas siguen siendo infraestructura de despliegue y no se modifican desde la aplicación.
 
 FastAPI encapsula las diferencias de cada servicio en adaptadores internos y sólo habilita uno a la vez. En Sprint 2 permite probar de forma real y limitada la conexión configurada, sin enviar datos de negocio ni conservar contenido de respuesta. El perfil Docker opcional `local-llm` inicia Ollama aislado de la red pública; `qwen2.5:3b` es el modelo local inicial recomendado por su equilibrio entre agilidad, uso de memoria y respuestas directas en español. `qwen3:4b` es una alternativa de mayor capacidad, pero puede tardar más por el razonamiento interno. La prueba verifica tanto el servicio como que el modelo configurado esté descargado. Gemini y Qwen Cloud conservan la elección de modelo en configuración porque su catálogo y sus cuotas pueden cambiar.
 
 El módulo `copilot` posterior consumirá este contrato mediante una interfaz interna y será el único que pueda solicitar propuestas sobre metadatos o planes BI; ningún SQL asistido por IA se ejecutará automáticamente. La decisión se detalla en [`decisions/0002-configuracion-proveedor-llm.md`](decisions/0002-configuracion-proveedor-llm.md).
+
+## Contrato propuesto para Sprint 3
+
+Sprint 3 separa configuración, introspección y razonamiento asistido. La administración registra desde la web una conexión cuyo motor pertenece al catálogo de adaptadores; en este sprint sólo `sqlserver` está disponible y se valida con AdventureWorks. El módulo `metadata` consulta el conector activo, normaliza una instantánea inmutable y calcula su hash.
+
+El módulo `copilot` recibe una solicitud guiada de negocio y procesa la instantánea en bloques compactos. El LLM interpreta dinámicamente nombres técnicos en inglés u otro idioma, propone conceptos y explicaciones de negocio en español y conserva las referencias originales. FastAPI descarta cualquier tabla, columna o relación que no exista antes de construir el paquete dimensional final. No se utiliza un glosario codificado exclusivamente para AdventureWorks.
+
+FastAPI valida que todas las tablas, columnas, claves, relaciones y operaciones propuestas existan o pertenezcan a catálogos aprobados. Sólo después un permiso independiente permite aprobar o rechazar el significado de negocio. Una aprobación no genera ni ejecuta SQL: conserva una entrada inmutable para el módulo `etl` de Sprint 4. Ese módulo deberá construir consultas parametrizadas mediante operaciones tipadas y plantillas autorizadas, presentar una vista previa y ejecutarlas desde el backend con permisos mínimos. Este límite se detalla en [`decisions/0003-metadatos-y-propuesta-bi-supervisada.md`](decisions/0003-metadatos-y-propuesta-bi-supervisada.md).
 
 ## Datos
 

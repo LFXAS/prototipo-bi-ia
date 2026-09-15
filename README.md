@@ -1,6 +1,6 @@
-# Prototipo web de BI asistido por IA
+# Prototipo web de inteligencia de negocios asistido por IA
 
-Base técnica del proyecto de titulación de Emily Robles y Lesly Velásquez. El entorno **Docker-first** ejecuta React + Vite, FastAPI, PostgreSQL y AdventureWorks en SQL Server con un usuario de solo lectura. El Sprint 2 incorpora seguridad RBAC, JWT, auditoría, parámetros y configuración no secreta de un proveedor LLM; los módulos BI de negocio continúan planificados para sprints posteriores.
+Base técnica del proyecto de titulación **“Prototipo web de inteligencia de negocios asistido por IA para la construcción semiautomatizada y supervisada de un datamart de ventas con datos públicos y sintéticos”**. El entorno **Docker-first** ejecuta React + Vite, FastAPI, PostgreSQL y AdventureWorks en SQL Server con un usuario de solo lectura. El producto permitirá configurar desde la web la fuente y sus secretos, y que una persona de negocio formule una necesidad en español sin seleccionar tablas ni escribir SQL. El LLM interpretará dinámicamente metadatos técnicos en inglés, los explicará como conceptos de negocio en español y toda referencia será validada antes de presentar una propuesta. El Sprint 2 incorpora seguridad RBAC, JWT, auditoría, parámetros y configuración no secreta de un proveedor LLM.
 
 La guía operativa completa para replicar, restaurar, publicar y probar el entorno está en [docs/replication-guide.md](docs/replication-guide.md).
 
@@ -12,7 +12,7 @@ La trazabilidad del trabajo se mantiene en LaTeX y PDF. La bitácora vive en `do
 
 El anteproyecto define una prueba de concepto académica con una sola fuente SQL Server/AdventureWorks, introspección de metadatos, propuestas de un LLM sujetas a aprobación humana y validaciones determinísticas, ETL básico hacia un datamart PostgreSQL, cinco KPIs, tres gráficos, insights explicables y un pronóstico mensual por regresión lineal evaluado con MAPE y RMSE.
 
-El Sprint 1 implementó el entorno y la observabilidad mínima. El Sprint 2 implementa la base de seguridad: autenticación JWT, usuarios, roles, permisos, menús autorizados, auditoría, parámetros y pruebas seguras de conexión. Aún no incluye introspección, ETL, datamart, KPIs, tableros, propuestas BI por LLM ni pronóstico.
+El Sprint 1 implementó el entorno y la observabilidad mínima. El Sprint 2 implementa la base de seguridad: autenticación JWT, usuarios, roles, permisos, menús autorizados, auditoría, parámetros y pruebas seguras de conexión. El Sprint 3 está definido en [`docs/specs/SPR-03-metadatos-y-propuesta-bi.md`](docs/specs/SPR-03-metadatos-y-propuesta-bi.md): incorporará configuración web de conexiones y secretos, adaptador SQL Server, solicitud de negocio guiada, introspección, interpretación semántica dinámica, explorador avanzado y propuestas BI supervisadas, pero no ejecutará todavía ETL, datamart, KPIs, tableros ni pronóstico.
 
 Consulta [docs/scope.md](docs/scope.md) y [docs/architecture.md](docs/architecture.md) para el detalle.
 
@@ -50,7 +50,7 @@ No es necesario instalar Node.js ni Python en el equipo anfitrión.
 
 La comprobación `live` confirma que FastAPI funciona. `ready` confirma además la conexión a PostgreSQL. En un volumen vacío, SQL Server descarga el respaldo oficial de AdventureWorks 2022, lo restaura y crea el usuario `bi_reader` sin permisos de escritura. La conexión de negocio a AdventureWorks se implementará en la siguiente iteración; sus variables y controlador ODBC ya forman parte del entorno.
 
-En el primer inicio el servicio `migrate` aplica automáticamente las migraciones y el servicio `seed` carga de forma idempotente el catálogo protegido aprobado: permisos, menús, rol administrador y usuario inicial definidos por `BOOTSTRAP_ADMIN_EMAIL` y `BOOTSTRAP_ADMIN_PASSWORD`. Ingrese desde el frontend con esos valores; cámbielos antes de cualquier demostración compartida. Las claves de Gemini o Qwen, si se usan, permanecen solamente en `GEMINI_API_KEY` o `DASHSCOPE_API_KEY` del entorno. El catálogo no copia cuentas de prueba, auditoría, configuraciones LLM ni volúmenes entre equipos.
+En el primer inicio el servicio `migrate` aplica automáticamente las migraciones y el servicio `seed` carga de forma idempotente el catálogo protegido aprobado: permisos, menús, rol administrador y usuario inicial definidos por `BOOTSTRAP_ADMIN_EMAIL` y `BOOTSTRAP_ADMIN_PASSWORD`. Ingrese desde el frontend con esos valores; cámbielos antes de cualquier demostración compartida. En la versión actual del Sprint 2, las claves cloud permanecen en `GEMINI_API_KEY` o `DASHSCOPE_API_KEY`; la corrección de Configuración LLM las reemplazará por registro web y almacenamiento cifrado antes de iniciar el flujo funcional del Sprint 3. El catálogo no copia cuentas de prueba, auditoría, configuraciones LLM ni volúmenes entre equipos.
 
 La alternativa más automática es `make bootstrap`: crea `.env` si falta, construye todo, espera la restauración y no finaliza hasta que los servicios estén saludables.
 
@@ -158,6 +158,7 @@ compose*.yaml            desarrollo autocontenido, publicación y producción
 ## Próxima iteración
 
 1. Ampliar las pantallas administrativas con formularios y confirmaciones completas.
-2. Iniciar introspección determinística de AdventureWorks con el usuario lector.
-3. Implementar el módulo de metadatos antes de cualquier propuesta BI por LLM.
-4. Registrar auditoría de aprobaciones y SQL validado desde el primer flujo de negocio.
+2. Implementar el catálogo web de conexiones y secretos cifrados antes de depender de una fuente activa.
+3. Iniciar introspección determinística con el adaptador SQL Server y AdventureWorks como caso de validación.
+4. Implementar interpretación semántica dinámica de nombres técnicos a conceptos españoles antes de la propuesta dimensional.
+5. Registrar auditoría de solicitudes, validaciones y aprobaciones desde el primer flujo de negocio; el SQL determinístico se especificará antes de implementar el Sprint 4.
