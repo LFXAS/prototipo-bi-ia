@@ -502,12 +502,14 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   \endhead
   Alcance de investigación & \statusok & Se registra el título vigente, los cinco objetivos y la regla de que AdventureWorks es la única fuente funcional; los datos sintéticos se reservan para pruebas controladas. \\
   Especificaciones & \statusok & Se refinan el índice SPR-03 y cuatro contratos para configuración web, conexión e introspección, propuesta BI asistida y experiencia de exploración/revisión. Todos permanecen en borrador hasta aprobación humana. \\
-  Usuario objetivo & \statusok & El gerente o analista expresa una necesidad en español sin seleccionar tablas ni escribir SQL; el explorador técnico queda como modo avanzado opcional. \\
+  Usuario objetivo & \statusok & El gerente o analista expresa una necesidad en español sin seleccionar tablas ni escribir SQL; el explorador técnico queda como consulta avanzada de sólo lectura. \\
   Separación de responsabilidades & \statusok & La aplicación conecta, normaliza, preselecciona, valida y audita; el LLM propone un documento estructurado; una persona aprueba el significado de negocio. Ninguna propuesta ejecuta SQL o ETL. \\
   Parametrización segura & \statusok & Conexiones, claves LLM y parámetros operativos tipados se administrarán desde la web; los secretos se cifran, SQL Server es el primer adaptador y el contrato admite motores futuros. \\
   Interpretación dinámica & \statusok & El LLM interpreta metadatos técnicos por bloques, propone conceptos comprensibles en español y FastAPI descarta toda tabla, columna o relación inexistente. \\
   Decisión arquitectónica & \statusok & El ADR 0003 define instantáneas inmutables, mapa semántico dinámico, contrato JSON, validadores y puerta de aprobación. Sprint 4 deberá incorporar un constructor determinístico y ejecutor backend, no consultas manuales por análisis. \\
   Límite del sprint & \statusok & Sprint 3 termina con una propuesta aprobada como entrada de Sprint 4; datamart físico, ETL, KPIs calculados, dashboard y pronóstico permanecen pendientes. \\
+  Simplificación de alcance & \statusok & Se separa lo obligatorio, lo preparado y lo futuro. Sprint 3 implementará un solo motor, una sola fuente, cuatro parámetros consumidos, un recorrido de negocio de cuatro pasos y un explorador técnico de sólo lectura. \\
+  Valor para usuario final & \statusok & El gerente formula una necesidad, comprende los conceptos detectados y aprueba o rechaza una propuesta sin seleccionar tablas, editar archivos, escribir SQL ni interpretar JSON. \\
   \bottomrule
 \end{longtable}
 
@@ -536,7 +538,7 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
 
 \begin{enumerate}
   \item Revisar y aprobar las especificaciones SPR-03-01, SPR-03-02, SPR-03-03 y SPR-03-04 antes de escribir código funcional.
-  \item Confirmar que el recorrido de usuario, permiso de aprobación y sustitución explícita incorporados representan la decisión final del equipo.
+  \item Confirmar que el recorrido de usuario, permiso de aprobación y conservación de cada intento representan la decisión final del equipo.
   \item Tras la aprobación, implementar Sprint 3 en una rama nueva desde \file{develop} y verificarlo íntegramente dentro de Docker.
   \item Conservar ETL, datamart físico, dashboard y pronóstico para los sprints posteriores definidos por sus propias especificaciones.
   \item Promover a \file{main} únicamente una integración estable, revisada y con CI aprobada.
@@ -584,6 +586,7 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   0.3.0 & 14-09-2026 & Borradores SDD del Sprint 3 para introspección de AdventureWorks, propuesta BI estructurada, validación determinística, aprobación humana y experiencia responsive. \\
   0.3.1 & 14-09-2026 & Redefinición del Sprint 3 para el usuario final: solicitud comercial guiada, alcance técnico automático, glosario español, modo avanzado y futura generación determinística de SQL sin intervención de un programador por análisis. \\
   0.3.2 & 14-09-2026 & Parametrización web de conexiones y secretos, interfaz extensible de conectores e interpretación dinámica de metadatos técnicos a conceptos españoles, sin referencias inventadas ni configuración manual cotidiana. \\
+  0.3.3 & 14-09-2026 & Simplificación del Sprint 3 para viabilidad académica: SQL Server único, alcance técnico de sólo lectura, cuatro parámetros reales, credenciales LLM como corrección del Sprint 2 y recorrido centrado en usuario final. \\
   \bottomrule
 \end{longtable}
 

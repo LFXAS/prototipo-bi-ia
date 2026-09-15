@@ -1,175 +1,146 @@
-# SPR-03-03: asistente de análisis, explorador avanzado y trazabilidad
+# SPR-03-03: experiencia del asistente y trazabilidad comprensible
 
-- Estado: **borrador para revisión y aprobación**.
+- Estado: **borrador simplificado para revisión y aprobación**.
 - Pertenece a: [SPR-03-metadatos-y-propuesta-bi.md](SPR-03-metadatos-y-propuesta-bi.md).
-- Fecha de creación: 2026-09-14.
-- Rama prevista de implementación: `feature/sprint-03-metadata-copilot`.
-- PR de implementación: pendiente.
+- Fecha de revisión: 2026-09-14.
 
-## 1. Problema y objetivo
+## 1. Objetivo de experiencia
 
-La introspección y la propuesta BI requieren una experiencia que permita comprender qué leyó la aplicación, qué información recibió la IA y qué decidió una persona. Mostrar primero listas técnicas, exigir una selección de tablas o presentar una respuesta cruda del LLM convertiría el prototipo en una herramienta para especialistas y no en un asistente útil para un gerente o analista de negocio.
+El producto está dirigido principalmente a un gerente comercial o analista de negocio. Su recorrido no puede comenzar con 71 tablas, identificadores en inglés, JSON o SQL. Debe comenzar con una pregunta de ventas y terminar con una propuesta comprensible que pueda aceptar o rechazar.
 
-El objetivo es definir dos niveles de experiencia: un recorrido principal que parte de una necesidad comercial expresada en español y una vista avanzada para inspeccionar la trazabilidad técnica. Ningún usuario de negocio necesita escribir SQL, seleccionar tablas o interpretar JSON para completar el recorrido principal.
+El detalle técnico existe para trazabilidad y soporte, pero no constituye el recorrido principal ni una tarea obligatoria para el usuario final.
 
-## 2. Arquitectura de información
+## 2. Valor para el usuario final
 
-### 2.1 Navegación
+En Sprint 3, el usuario todavía no recibe un dashboard calculado, pero ya obtiene valor verificable:
 
-| Grupo | Opción | Permiso mínimo | Propósito |
+1. expresa qué desea analizar en lenguaje cotidiano;
+2. conoce qué conceptos de negocio encontró el asistente en la base;
+3. recibe una explicación en español del posible datamart y sus KPIs;
+4. puede revisar advertencias y decidir si la propuesta representa su necesidad;
+5. deja una entrada aprobada para que Sprint 4 construya el datamart sin solicitar SQL manual.
+
+Este recorrido diferencia el prototipo de un visor de base de datos y demuestra la asistencia semiautomatizada y supervisada indicada en el título de la investigación.
+
+## 3. Navegación mínima
+
+| Grupo | Opción | Usuario principal | Propósito |
 |---|---|---|---|
-| Parámetros generales | Conexiones de datos | `connections.read` | CRUD web de fuentes, prueba, activación y estado sin revelar secretos. |
-| Datos | Fuente activa | `metadata.read` | Estado de conexión e instantánea; uso administrativo o de diagnóstico. |
-| Datos | Explorador de esquema | `metadata.read` | Vista avanzada de tablas, columnas, claves, relaciones y alcance derivado. |
-| IA | Asistente de análisis | `copilot.proposals.read` | Solicitud de negocio, propuesta, validación y revisión supervisada. |
+| Parámetros generales | Conexiones de datos | Administrador | Configurar y probar SQL Server sin editar archivos. |
+| Datos | Explorador de esquema | Administrador o analista BI | Consultar la instantánea y su trazabilidad técnica. |
+| IA | Asistente de análisis | Gerente o analista de negocio | Formular la necesidad, revisar conceptos y decidir sobre la propuesta. |
 
-No se mostrarán todavía ETL, Datamart, Dashboard, Reportes ni Predicciones como rutas funcionales. La barra superior mostrará el nombre de la conexión activa y un estado textual `Disponible`, `Iniciando`, `No disponible` o `Sin comprobar`. No permite cambiar secretos: enlaza al catálogo autorizado cuando el actor posee permiso. El inicio del gerente destacará **Preparar análisis de ventas**; los accesos técnicos sólo aparecerán cuando sus permisos lo permitan.
+La barra superior muestra el nombre y estado de la fuente activa. No se crea una pantalla separada de **Fuente activa**: su estado, última prueba y acción **Actualizar metadatos** se integran en Conexiones de datos. Así se evita una ruta adicional sin valor propio.
 
-### 2.2 Pantalla Conexiones de datos
+ETL, Datamart, Dashboard y Pronóstico no se muestran como opciones funcionales hasta que sus sprints los implementen.
 
-Implementa el formulario, listado, acciones, estados y protección de secretos definidos en SPR-03-04. El usuario configura nombre, motor disponible, servidor, puerto, base y credencial desde la web; nunca pega una cadena completa ni edita archivos.
+## 4. Pantallas obligatorias
 
-### 2.3 Pantalla Fuente activa
+### 4.1 Conexiones de datos
 
-- Identidad: nombre configurado, motor, base de datos y finalidad de sólo lectura.
-- Estado de conexión y fecha de última prueba.
-- Última instantánea, hash abreviado y totales.
-- Acciones: **Probar conexión** y **Actualizar metadatos**, según permiso.
-- Explicación visible: actualizar metadatos no carga ventas ni modifica la fuente.
+Contiene el formulario SQL Server, estado de credencial, acciones de prueba y activación, fecha de última prueba y fecha de última instantánea. La acción **Actualizar metadatos** aclara que sólo lee la estructura y no modifica ni carga datos.
 
-### 2.4 Asistente de análisis: recorrido principal
+### 4.2 Asistente de análisis
 
-- Plantilla inicial **Analizar ventas**, con una explicación breve del resultado esperado.
-- Campo **¿Qué desea conocer?**, limitado y acompañado por ejemplos de negocio.
-- Preguntas sugeridas mediante casillas: ventas por periodo, productos destacados, clientes y territorios.
-- Periodo y dimensiones de interés mediante controles de negocio; no se solicitan tablas ni columnas.
-- Progreso del descubrimiento por bloques, sin exponer razonamiento interno del LLM.
-- Resumen dinámico del alcance sugerido: conceptos españoles, descripción, confianza declarada y origen técnico consultable.
-- Confirmación visible de que se enviarán únicamente metadatos y la solicitud normalizada, nunca ventas, clientes, credenciales o SQL.
-- Acción **Generar propuesta BI** y acceso secundario **Ver detalles técnicos** para quien tenga permiso.
+Usa cuatro pasos visibles:
 
-### 2.5 Explorador de esquema avanzado
+1. **Necesidad:** objetivo, preguntas y periodo de análisis en español.
+2. **Conceptos encontrados:** etiquetas de negocio, explicación y confianza; el origen técnico permanece plegado.
+3. **Propuesta validada:** significado del hecho, granularidad, dimensiones, medidas, KPIs, plan ETL declarativo, supuestos y advertencias.
+4. **Revisión:** aprobar o rechazar con comentario y explicación de que aún no se ejecuta ETL.
 
-- Buscador por esquema, tabla o columna.
-- Filtro de esquema y resumen de resultados.
-- Lista jerárquica esquema > tabla.
-- Detalle de tabla con columnas, tipo, nulabilidad, PK y referencias.
-- Relaciones entrantes y salientes expresadas como `Esquema.Tabla.columna`.
-- Identificación del alcance obtenido por descubrimiento semántico, diferenciando candidatos del LLM, referencias validadas y dependencias añadidas.
-- Ajuste opcional mediante casillas para un analista autorizado; no se permite escribir identificadores técnicos libres.
-- Resumen persistente del alcance: conceptos solicitados, tablas derivadas, dependencias y advertencias.
-- Acción **Volver al asistente**, que conserva la solicitud no sensible; ningún ajuste llama al LLM sin confirmación.
+El usuario no selecciona tablas, no escribe identificadores y no edita JSON. Si la interpretación es ambigua, la aplicación solicita precisar la necesidad en español.
 
-### 2.6 Propuesta BI
+La propuesta diferencia visualmente:
 
-- Barra de pasos: Necesidad, Alcance sugerido, Generación, Validación y Revisión.
-- Encabezado con id, estado, fecha, snapshot, proveedor/modelo y versión del contrato.
-- Resumen inicial en lenguaje de negocio: significado de la venta, nivel de detalle, dimensiones y preguntas que podrán responderse.
-- Secciones de hecho, granularidad, dimensiones, medidas, KPIs, plan ETL, calidad, supuestos y advertencias, con etiquetas en español.
-- Cada concepto ofrece **Ver origen técnico** para volver al detalle correspondiente, sin dominar visualmente el recorrido.
-- Bloques visuales diferenciados:
-  - **Propuesta de IA**;
-  - **Validación de la aplicación**;
-  - **Decisión humana**.
-- Acciones finales condicionadas por estado y permiso: aprobar, rechazar o solicitar nueva propuesta.
+- **Propuesto por IA**;
+- **Comprobado por la aplicación**;
+- **Decidido por una persona**.
 
-## 3. Reglas de interacción y estado
+### 4.3 Explorador de esquema
 
-1. El recorrido comienza con una solicitud de negocio; nunca obliga a visitar Fuente o Explorador si los prerrequisitos ya están saludables.
-2. Seleccionar otra instantánea limpia el alcance anterior después de confirmación; nunca mezcla objetos de snapshots diferentes.
-3. Cambiar de pantalla no reutiliza errores, selección ni propuesta de otro módulo.
-4. El descubrimiento automático explica conceptos incluidos, etapa, confianza y advertencias; no presenta tablas como primera decisión del gerente.
-5. En modo avanzado, una tabla puede ajustarse desde la lista o detalle y ambos controles reflejan el mismo estado.
-6. Las dependencias añadidas automáticamente se explican y pueden revisarse; no aparecen como selecciones ocultas.
-7. Si el analista intenta retirar una tabla requerida por una FK seleccionada, la interfaz ofrece retirar también la relación o conservar la dependencia.
-8. La generación requiere una confirmación que resume objetivo, conceptos, proveedor, modelo y política “sólo metadatos”.
-9. La acción Aprobar repite significado de la venta, granularidad, dimensiones, KPIs, advertencias y efecto: habilitar como entrada de Sprint 4, sin ejecutar ETL.
-10. Rechazar o solicitar otra versión usa un comentario con longitud mínima y máxima; el comentario se conserva en la revisión.
-11. Aprobar una sustitución requiere una segunda confirmación que identifica la versión anterior que quedará como `superseded`.
-12. Una operación en progreso impide dobles envíos y conserva una clave de idempotencia.
-13. Si la sesión vence, se conserva localmente sólo la solicitud y el alcance no sensibles y se solicita iniciar sesión; nunca se guarda una credencial o respuesta del LLM en almacenamiento del navegador.
+Es una vista avanzada de sólo lectura:
 
-## 4. Estados obligatorios por pantalla
+- búsqueda por esquema, tabla o columna;
+- lista paginada de tablas;
+- detalle de columnas, tipos, PK y FK;
+- relaciones entrantes y salientes;
+- etiquetas españolas propuestas y su correspondencia técnica.
 
-| Pantalla | Estados mínimos |
+En Sprint 3 el explorador no permite modificar manualmente el alcance. Esa edición se elimina para reducir complejidad y evitar trasladar decisiones técnicas al gerente.
+
+## 5. Reglas de interacción
+
+1. El Asistente es el acceso principal del usuario de negocio.
+2. Si falta fuente, instantánea o LLM probado, la pantalla explica qué debe resolver el administrador.
+3. Sólo se envían al LLM metadatos y la solicitud normalizada; la confirmación lo indica antes de generar.
+4. Una referencia descartada por el backend nunca aparece como concepto válido.
+5. Cada concepto muestra una explicación española y permite consultar su origen técnico.
+6. Los errores se presentan en lenguaje comprensible y ofrecen la siguiente acción.
+7. Mientras una operación está en curso, se impiden envíos duplicados.
+8. Aprobar y rechazar requieren confirmación; rechazar exige comentario.
+9. Cambiar de pantalla no mezcla formularios, selecciones, errores ni resultados.
+10. No se guardan credenciales ni respuestas LLM en el almacenamiento del navegador.
+
+## 6. Estados mínimos
+
+| Pantalla | Estados necesarios |
 |---|---|
-| Conexiones | Vacío, listado, creando, editando, probando, disponible, permisos de escritura detectados, activando, dependencia, error seguro y 403. |
-| Fuente | Sin conexión activa, sin comprobar, disponible, no disponible, sin captura, capturando, sin cambios, captura actualizada y 403. |
-| Asistente | Nuevo análisis, solicitud incompleta, metadatos dividiendo, interpretando bloque, combinando, alcance listo, aclaración requerida, proveedor fallido, prerrequisito pendiente y 403. |
-| Explorador avanzado | Cargando, vacío real, resultados, búsqueda sin coincidencias, detalle, alcance derivado, ajuste incompleto, error recuperable, 403. |
-| Propuesta | Lista para generar, generando, proveedor fallido, validación fallida, lista para revisión, aprobada, rechazada, sustituida, 403. |
+| Conexiones | Sin registros, editando, probando, disponible, error seguro y dependencia. |
+| Asistente | Prerrequisito pendiente, listo, interpretando, propuesta inválida, listo para revisión, aprobado y rechazado. |
+| Explorador | Cargando, sin instantánea, resultados, sin coincidencias, detalle y error recuperable. |
 
-Cada estado incluye explicación y siguiente acción cuando exista. No se presentan códigos HTTP, trazas, objetos JSON sin formato ni mensajes como `undefined` o `[object Object]`.
+No se muestran códigos HTTP, trazas, objetos JSON sin formato, `undefined` ni `[object Object]`.
 
-## 5. Responsive
+## 7. Responsive y accesibilidad
 
-| Ancho | Comportamiento |
-|---|---|
-| 320-767 px | Sidebar en hamburguesa; solicitud y acciones apiladas; conceptos en tarjetas; explorador avanzado como lista seguida de detalle; propuesta en acordeones; acciones finales en bloque visible. |
-| 768-1023 px | Sidebar temporal; asistente en una columna legible; lista y detalle avanzado alternan sin reducir columnas; resumen del alcance permanece accesible. |
-| 1024-1439 px | Sidebar contraíble; explorador en dos paneles; propuesta en área principal con resumen lateral cuando haya espacio. |
-| Desde 1440 px | Lista, detalle y resumen pueden coexistir; el ancho de lectura permanece limitado y el espacio adicional no estira párrafos. |
+- En móvil, la navegación usa hamburguesa; formularios y secciones se apilan y la propuesta utiliza acordeones.
+- En tableta, lista y detalle del explorador alternan sin comprimir el contenido.
+- En escritorio, el asistente mantiene un ancho de lectura cómodo y puede mostrar un resumen lateral.
+- Las tablas tienen paginación y su desplazamiento queda contenido; no desplazan toda la página.
+- Casillas, acordeones, diálogos y acciones funcionan con teclado y foco visible.
+- Los estados incluyen texto y no dependen únicamente del color.
+- La interfaz visible, ayudas, errores y propuesta se presentan en español.
 
-Las tablas internas pueden tener desplazamiento horizontal contenido cuando sea imprescindible, pero nunca provocan desplazamiento horizontal de toda la página. Las columnas secundarias se transforman en etiquetas en móvil.
+Se verifican 320, 768, 1024 y 1440 px.
 
-## 6. Accesibilidad y lenguaje
+## 8. Seguridad y auditoría visible
 
-- Interfaz, mensajes y propuestas visibles en español; el mapa semántico dinámico presenta equivalencias y conserva los nombres técnicos originales en detalles.
-- Las etiquetas de negocio son propuestas para la conexión e instantánea actuales; no sustituyen ni alteran tablas o columnas del origen.
-- Árbol, acordeones, casillas, pestañas y diálogos operables con teclado.
-- Foco visible y orden lógico; al abrir detalle o diálogo, el foco se mueve y se restaura al cerrar.
-- Estructura semántica con encabezados, etiquetas y descripciones asociadas.
-- Estados no dependen sólo de color o icono; incluyen texto.
-- Las relaciones se expresan también como texto, incluso si después se añade un diagrama visual.
-- Avisos del LLM distinguen “propuesta”, “advertencia” y “error de validación”.
-- Una alternativa tabular acompaña cualquier diagrama futuro del esquema.
+- React oculta acciones no autorizadas y FastAPI vuelve a comprobar cada permiso.
+- Una credencial guardada sólo se presenta como configurada o pendiente.
+- La pantalla informa qué metadatos serán enviados al proveedor.
+- La trazabilidad muestra fecha, fuente, instantánea, proveedor/modelo, resultado del validador y decisión humana.
+- Nunca muestra clave, contraseña, cadena de conexión, prompt interno ni razonamiento privado del modelo.
 
-## 7. Seguridad, privacidad y auditoría visible
+## 9. Criterios de aceptación
 
-- React oculta acciones no autorizadas, pero FastAPI aplica los permisos.
-- No se muestran host, puerto interno, usuario SQL, contraseña ni cadena ODBC.
-- La interfaz indica qué metadatos se enviarán antes de generar.
-- Los formularios de conexión nunca muestran una contraseña o clave almacenada; permiten conservarla o reemplazarla.
-- El texto del objetivo se presenta como contenido del usuario, no como instrucción privilegiada; se valida, limita y escapa.
-- No se permite editar el JSON de entrada, instrucciones del sistema o URL del proveedor desde Propuesta BI.
-- La sección de trazabilidad muestra actor, fecha, estado y comentario seguro; la auditoría completa sigue siendo de sólo consulta bajo `audit.read`.
-- Las descargas de evidencia, si se implementan, contienen metadatos/propuesta sin secretos y requieren permiso de lectura.
+- [ ] El administrador configura y prueba SQL Server desde la web.
+- [ ] El gerente completa el asistente sin seleccionar tablas, escribir SQL ni interpretar JSON.
+- [ ] Los metadatos técnicos en inglés se presentan como conceptos comprensibles en español.
+- [ ] Cada concepto conserva un origen técnico consultable y validado.
+- [ ] Una referencia inventada no aparece como válida ni puede aprobarse.
+- [ ] La propuesta separa claramente IA, validación de la aplicación y decisión humana.
+- [ ] Aprobar o rechazar queda auditado y no ejecuta todavía ETL.
+- [ ] El explorador permite verificar tablas, columnas y relaciones sin editarlas.
+- [ ] Los estados de error explican cómo continuar y no exponen datos sensibles.
+- [ ] El recorrido funciona con teclado y en los cuatro anchos definidos.
 
-## 8. Criterios de aceptación verificables
+## 10. Pruebas y evidencia
 
-- [ ] Conexiones, Fuente, Explorador y Asistente aparecen sólo con sus permisos y grupos; Asistente de análisis es el acceso principal del usuario de negocio.
-- [ ] La barra superior muestra la conexión activa sin revelar credenciales ni ofrecer motores no implementados.
-- [ ] Una persona administradora configura y prueba SQL Server desde la web sin editar archivos ni registros directamente.
-- [ ] La ficha explica que probar o actualizar no modifica ni carga datos.
-- [ ] El gerente puede expresar un objetivo y confirmar conceptos sin seleccionar tablas, escribir SQL ni leer JSON.
-- [ ] El explorador avanzado permite localizar una tabla y comprender sus columnas, PK, FK y relaciones.
-- [ ] La correspondencia entre conceptos españoles y el origen técnico, los ajustes y las dependencias son visibles y no se mezclan entre instantáneas.
-- [ ] Las etiquetas se obtienen dinámicamente de los metadatos; una referencia inventada no aparece como concepto válido.
-- [ ] La confirmación previa a IA identifica objetivo, modelo, conceptos, alcance técnico consultable y política de sólo metadatos.
-- [ ] La propuesta diferencia contenido del LLM, validación determinística y decisión humana.
-- [ ] Aprobar declara expresamente que no ejecuta ETL ni crea el datamart.
-- [ ] Ninguna pantalla solicita que un programador prepare una consulta para continuar el análisis.
-- [ ] Los estados de carga, vacío, error, éxito, sesión vencida y 403 tienen mensajes y acciones coherentes.
-- [ ] Los flujos principales funcionan con teclado y tienen foco visible.
-- [ ] No existe desplazamiento horizontal involuntario en 320, 768, 1024 y 1440 px.
-- [ ] No se muestran secretos, trazas o representaciones técnicas sin formato.
+- Componentes: formularios, pasos, concepto/origen, propuesta, estados y confirmaciones.
+- Integración: conexión > instantánea > necesidad > interpretación > propuesta > validación > decisión.
+- Seguridad: permisos, ocultamiento de secretos y errores sanitizados.
+- Responsive y accesibilidad: teclado, foco y capturas en los cuatro anchos.
+- Evidencia académica: secuencia completa narrada desde la necesidad del usuario hasta la propuesta aprobada.
 
-## 9. Plan de pruebas y evidencia
+## 11. Fuera de Sprint 3
 
-- Componentes: conexión, secreto reemplazable, solicitud guiada, mapa semántico, árbol/lista avanzada, detalle, casillas, dependencias, pasos, secciones, diálogos y avisos.
-- Integración UI-API: CRUD/prueba de conexión, solicitud, descubrimiento por bloques, ajuste avanzado, cambio de snapshot, generación y revisión.
-- Accesibilidad: teclado, foco, nombres accesibles y anuncio de estados.
-- Responsive: capturas y pruebas en 320, 768, 1024 y 1440 px.
-- Autorización: menú oculto más respuesta 403 del backend.
-- Evidencia académica principal: secuencia Conexión web > Fuente activa > Asistente > Necesidad de negocio > Interpretación español/origen > Propuesta > Validación > Aprobación/Rechazo; Explorador se documenta como soporte técnico.
+- Chat conversacional general.
+- Edición manual del alcance técnico.
+- Grafo interactivo de las 71 tablas.
+- Dashboard y resultados calculados.
+- ETL, datamart físico y pronóstico.
 
-## 10. Riesgos y decisiones
+## 12. Resultado de implementación
 
-- Un diagrama completo de 71 tablas sería ilegible y no ayuda al gerente; Sprint 3 prioriza conceptos de negocio y conserva lista, detalle y relaciones en el modo avanzado. Un grafo interactivo queda como mejora posterior.
-- El panel de Copiloto de la referencia visual no será un chat general; en este sprint se usa una experiencia guiada y verificable.
-- La interpretación puede requerir varias llamadas; la UI muestra progreso por etapa y un error recuperable, no texto de razonamiento interno.
-- Depende de SPR-03-01, SPR-03-02, SPR-03-04 y del cascarón definido en SPR-02-04.
-
-## 11. Resultado de implementación
-
-Pendiente. Al cierre se registrarán capturas, pruebas, SHA, desviaciones y estado final.
+Pendiente. Al cerrar se incorporarán capturas, pruebas, SHA, desviaciones y estado final.

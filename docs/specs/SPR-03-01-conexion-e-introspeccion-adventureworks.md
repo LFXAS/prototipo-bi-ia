@@ -39,8 +39,8 @@ El objetivo es implementar el conector `sqlserver` sobre el catálogo parametriz
 1. La persona con `connections.write` registra o edita una conexión en **Parámetros generales > Conexiones de datos** según SPR-03-04.
 2. La persona con `connections.test` selecciona **Probar conexión**. FastAPI recupera el secreto cifrado, abre una conexión con intención de lectura, comprueba capacidades y devuelve un mensaje seguro.
 3. Después de una prueba exitosa, la persona activa la conexión; sólo una queda activa.
-4. La persona con `metadata.read` consulta el estado de **Fuente activa**.
-5. La persona con `metadata.refresh` selecciona **Actualizar metadatos**.
+4. La persona con `metadata.read` consulta el estado integrado en **Conexiones de datos**.
+5. La persona con `metadata.refresh` selecciona **Actualizar metadatos** desde la conexión activa.
 6. FastAPI obtiene los metadatos mediante el adaptador activo, en una transacción de lectura con tiempo máximo, los transforma al contrato canónico y los valida.
 7. Se calcula `content_hash`. Si coincide con la última instantánea exitosa de esa conexión, la API informa “Sin cambios” y reutiliza la captura vigente sin duplicarla.
 8. Si cambió, PostgreSQL conserva una nueva instantánea inmutable y registra el evento de auditoría.
@@ -134,7 +134,7 @@ Parámetros de paginación: `limit` de 1 a 100 y `offset` no negativo. La búsqu
 ### 4.4 Pantallas y menús
 
 - Grupo **Datos**.
-- **Fuente activa**: ficha de la conexión seleccionada, motor, base, estado, última prueba, última captura, totales y acciones autorizadas; enlaza a su configuración sin mostrar secretos.
+- **Conexiones de datos**: integra conexión seleccionada, motor, base, estado, última prueba, última captura, totales y acciones autorizadas sin mostrar secretos.
 - **Explorador de esquema**: vista avanzada definida en [SPR-03-03](SPR-03-03-explorador-esquema-y-trazabilidad.md); no es un prerrequisito de navegación para el gerente.
 
 ## 5. Seguridad y auditoría

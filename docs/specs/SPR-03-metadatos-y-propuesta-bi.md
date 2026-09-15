@@ -22,12 +22,39 @@ Este sprint no construye todavía el datamart ni ejecuta el ETL. Su resultado ob
 
 | Capacidad | Especificación | Resultado esperado |
 |---|---|---|
-| Configuración web y secretos | [SPR-03-04-configuracion-web-conexiones-y-secretos.md](SPR-03-04-configuracion-web-conexiones-y-secretos.md) | CRUD web de conexiones y credenciales cifradas, con interfaz extensible de conectores y SQL Server como primer motor funcional. |
+| Configuración web y secretos | [SPR-03-04-configuracion-web-conexiones-y-secretos.md](SPR-03-04-configuracion-web-conexiones-y-secretos.md) | Una conexión SQL Server configurable, credenciales cifradas y cuatro parámetros consumidos; la extensibilidad queda preparada, no implementada. |
 | Conexión e introspección | [SPR-03-01-conexion-e-introspeccion-adventureworks.md](SPR-03-01-conexion-e-introspeccion-adventureworks.md) | Instantánea reproducible de tablas, columnas, claves y relaciones de la conexión SQL Server activa, validada con AdventureWorks y sin extraer filas del negocio. |
 | Propuesta BI asistida | [SPR-03-02-propuesta-bi-asistida-por-ia.md](SPR-03-02-propuesta-bi-asistida-por-ia.md) | Solicitud de negocio guiada y propuesta JSON de hecho, dimensiones, medidas, KPIs y plan ETL, validada y sometida a aprobación humana. |
 | Exploración y trazabilidad | [SPR-03-03-explorador-esquema-y-trazabilidad.md](SPR-03-03-explorador-esquema-y-trazabilidad.md) | Experiencia responsive con recorrido principal no técnico y explorador avanzado opcional, sin exigir tablas ni SQL al usuario de negocio. |
 
 La decisión arquitectónica se registra en [ADR 0003](../decisions/0003-metadatos-y-propuesta-bi-supervisada.md).
+
+### 2.1 Compromiso de implementación
+
+Para mantener un trabajo de titulación sólido y alcanzable, el alcance se divide en tres niveles:
+
+| Nivel | Compromiso |
+|---|---|
+| Obligatorio en Sprint 3 | Configuración web mínima, conexión SQL Server, instantánea de metadatos, solicitud de negocio, interpretación dinámica en español, propuesta estructurada, validación determinística y aprobación humana. |
+| Preparado, no implementado | Interfaz interna para futuros conectores y posibilidad de sustituir el almacén local de secretos. No se muestran capacidades que aún no funcionan. |
+| Sprints posteriores | Construcción física del datamart, ETL, KPIs calculados, dashboard, hallazgos y pronóstico. |
+
+La contribución académica no consiste en ofrecer muchos motores ni controles empresariales. Consiste en demostrar un proceso reproducible donde el LLM interpreta metadatos, el software comprueba que no invente objetos y una persona de negocio supervisa el resultado antes de materializarlo.
+
+### 2.2 Valor observable para el usuario final
+
+El gerente o analista de negocio no administra infraestructura. En Sprint 3 puede expresar una necesidad de ventas, recibir conceptos comprensibles en español y revisar qué modelo, dimensiones y KPIs propone el asistente. En Sprint 4 esa propuesta aprobada producirá resultados calculados. Esta continuidad es la razón funcional del software: reducir la distancia entre una base técnica y una decisión de negocio sin eliminar el control humano.
+
+### 2.3 Evidencia académica
+
+La demostración del sprint conservará la instantánea y su hash, la solicitud usada, los conceptos propuestos, las referencias rechazadas por el validador y la decisión humana. La evaluación reportará:
+
+- porcentaje de referencias técnicas válidas antes y después del validador;
+- cumplimiento del contrato estructurado;
+- trazabilidad completa entre concepto español y tabla/columna real;
+- valoración humana de claridad, coherencia y utilidad mediante una rúbrica breve.
+
+Estas evidencias permiten evaluar el aporte de IA y el control del software sin añadir motores, dashboards ni algoritmos fuera del sprint.
 
 ## 3. Actores y responsabilidades
 
@@ -58,15 +85,15 @@ El Sprint 3 debe probar la participación real del usuario final sin presentar c
 2. FastAPI valida los campos, cifra el secreto, construye internamente la conexión mediante el adaptador `sqlserver` y nunca devuelve la credencial al navegador.
 3. La persona activa la fuente y solicita actualizar metadatos. FastAPI consulta catálogos del sistema, normaliza el resultado, calcula un hash y crea o reutiliza una instantánea inmutable.
 4. El gerente o analista abre **IA > Asistente de análisis** e indica en español el objetivo, preguntas comerciales, periodo y dimensiones de interés mediante controles guiados.
-5. FastAPI crea resúmenes determinísticos por bloques de tablas, columnas, PK y FK. El LLM interpreta cada bloque según la solicitud y propone candidatos y nombres de negocio en español.
-6. FastAPI descarta toda referencia inexistente, combina los candidatos válidos y exige que las relaciones procedan de la instantánea. Si el contexto requiere varios bloques, el proceso conserva sus etapas y huellas.
+5. FastAPI divide los metadatos en bloques de tamaño parametrizado. El LLM interpreta cada bloque según la solicitud y propone candidatos y nombres de negocio en español.
+6. FastAPI descarta toda referencia inexistente y combina únicamente candidatos relacionados mediante claves declaradas.
 7. La aplicación presenta dinámicamente el alcance sugerido y su mapa semántico: concepto español, descripción y origen técnico. El usuario confirma los conceptos; los identificadores permanecen en una sección avanzada.
 8. La persona solicita la propuesta dimensional. FastAPI exige una configuración LLM activa y probada, prepara el paquete compacto final y registra su huella, no la credencial.
 9. El LLM devuelve una propuesta JSON en español de modelo dimensional, KPIs y plan ETL declarativo.
 10. FastAPI valida tablas, columnas, tipos, claves, relaciones, granularidad, medidas, KPIs y operaciones permitidas.
-11. Si hay errores, la propuesta queda en `validation_failed` y no puede aprobarse. Si no los hay, queda en `ready_for_review`.
-12. Un analista BI o responsable autorizado revisa el significado de negocio, los supuestos, advertencias y validaciones; puede aprobar, rechazar con comentario o solicitar otra versión.
-13. Una aprobación genera un artefacto inmutable para el Sprint 4; no crea tablas, no ejecuta SQL y no inicia cargas.
+11. Si hay errores, la propuesta no puede aprobarse. Si no los hay, queda lista para revisión.
+12. Un analista BI o responsable autorizado revisa significado, supuestos, advertencias y validaciones; puede aprobar o rechazar con comentario.
+13. Una aprobación genera el artefacto de entrada del Sprint 4; no crea tablas ni ejecuta cargas.
 
 ## 5. Reglas globales
 
@@ -81,7 +108,7 @@ El Sprint 3 debe probar la participación real del usuario final sin presentar c
 9. Ningún texto o SQL producido por el LLM se ejecuta. El Sprint 4 deberá construir las consultas mediante un generador determinístico implementado una sola vez por el equipo y ejecutarlas desde el backend con permisos mínimos.
 10. La salida del LLM debe cumplir el contrato JSON versionado; una respuesta libre, incompleta o inválida se rechaza.
 11. La validación determinística y la aprobación de negocio son obligatorias y diferentes: superar reglas técnicas no equivale a que el resultado sea útil para el gerente.
-12. Una propuesta aprobada es inmutable. Una revisión posterior crea una nueva versión y conserva la anterior como `superseded` sólo después de confirmación explícita.
+12. Una propuesta aprobada es inmutable. Un nuevo intento crea otro registro y conserva el anterior.
 13. Los datos sintéticos se limitan a pruebas automatizadas y escenarios controlados; no constituyen una segunda fuente funcional.
 14. Los límites de tiempo, tamaño del paquete y reintentos son controlados por FastAPI; una falla de proveedor no debe bloquear el resto de la plataforma.
 
@@ -103,7 +130,7 @@ Se incorporan mediante migración y semilla idempotente. El rol Administrador pr
 La navegación añade únicamente rutas funcionales y respeta los permisos del actor:
 
 - **Parámetros generales**: Conexiones de datos y Configuración LLM.
-- **Datos**: Fuente activa y Explorador de esquema, orientados a diagnóstico y revisión avanzada.
+- **Datos**: Explorador de esquema, orientado a diagnóstico y trazabilidad avanzada de sólo lectura.
 - **IA**: Asistente de análisis, recorrido principal para formular la necesidad y revisar la propuesta BI.
 
 ## 7. Exclusiones explícitas
@@ -122,25 +149,22 @@ La navegación añade únicamente rutas funcionales y respeta los permisos del a
 
 El sprint puede cerrarse cuando:
 
-- las cuatro especificaciones hijas hayan sido aprobadas y reflejadas en código;
-- una instalación limpia pueda introspeccionar AdventureWorks y crear una instantánea consistente;
-- un proveedor simulado en CI y al menos un proveedor real local o cloud produzcan una propuesta contractual;
-- un usuario de negocio pueda iniciar una propuesta desde un objetivo guiado sin seleccionar tablas ni escribir SQL;
-- una persona administradora pueda registrar y probar AdventureWorks desde la web sin editar archivos ni la base interna;
-- los parámetros operativos declarados por cada módulo puedan administrarse desde la web con tipo, rango, valor predeterminado y auditoría, sin aceptar claves arbitrarias;
-- los secretos de fuente y LLM queden cifrados, no recuperables y excluidos de logs/auditoría;
-- el LLM genere dinámicamente una correspondencia entre el concepto español y el origen técnico, y el backend descarte cualquier referencia inexistente;
-- las validaciones impidan aprobar referencias inventadas o relaciones inexistentes;
-- la aprobación humana quede separada de la generación y registrada en auditoría;
-- la UI funcione en 320, 768, 1024 y 1440 px sin desplazamiento horizontal involuntario;
-- `make verify` y CI concluyan correctamente;
-- bitácora, manual técnico e informe del Sprint 3 se actualicen al finalizar la implementación.
+- una persona administradora configure y pruebe LLM y AdventureWorks desde la web;
+- una instalación limpia cree una instantánea consistente de metadatos sin extraer filas;
+- un usuario de negocio formule su necesidad y reciba conceptos en español sin seleccionar tablas ni escribir SQL;
+- un proveedor simulado en CI y Ollama o un proveedor cloud real produzcan la propuesta contractual;
+- cualquier tabla, columna o relación inventada sea rechazada por el backend;
+- una persona autorizada pueda aprobar o rechazar y la decisión quede auditada;
+- la evidencia permita calcular validez referencial y aplicar la rúbrica de claridad, coherencia y utilidad;
+- los cuatro parámetros operativos funcionen dentro de sus rangos;
+- el recorrido sea usable en móvil y escritorio;
+- `make verify`, CI, bitácora, manual técnico e informe del Sprint 3 queden aprobados.
 
 ## 9. Decisiones incorporadas durante la revisión
 
-- El recorrido predeterminado es guiado por objetivo de negocio e interpretación semántica dinámica; la selección manual de tablas existe sólo como modo avanzado para el analista BI.
+- El recorrido es guiado por objetivo de negocio e interpretación semántica dinámica. El explorador avanzado permite verificar referencias, pero no editar manualmente el alcance en Sprint 3.
 - La revisión usa el permiso independiente `copilot.proposals.review` y evalúa significado de negocio, advertencias y trazabilidad; no exige aprobar SQL.
-- Una nueva propuesta aprobada sustituye a la anterior únicamente mediante confirmación explícita y conserva la versión previa como `superseded`.
+- Cada nuevo intento conserva el anterior; no se sobrescriben propuestas ni decisiones.
 - Las etiquetas y explicaciones visibles se generan dinámicamente en español desde los metadatos técnicos y conservan siempre los identificadores originales; toda referencia inventada se rechaza.
 - Las conexiones y credenciales operativas se administran desde la plataforma. SQL Server es el único adaptador funcional de Sprint 3, pero el contrato permite incorporar otros motores sin rediseñar el flujo.
 - La generación y ejecución de consultas no forman parte del Sprint 3. El Sprint 4 deberá especificar un constructor determinístico y un ejecutor backend; ningún programador redactará consultas por solicitud en la operación normal.

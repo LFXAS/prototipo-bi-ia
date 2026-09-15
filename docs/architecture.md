@@ -84,7 +84,7 @@ La administración técnica configura desde la web fuente, credenciales, proveed
 
 ## Contrato de configuración LLM
 
-El módulo `parameters` conserva una única configuración LLM activa con tipo de proveedor, URL base, modelo, límites y referencia opaca de credencial. Sprint 3 añade un almacén cifrado para registrar o reemplazar la clave desde la web. PostgreSQL conserva exclusivamente el sobre cifrado; React y auditoría no reciben el secreto. Las referencias `GEMINI_API_KEY` y `DASHSCOPE_API_KEY` quedan como transición de instalaciones anteriores, no como requisito de operación cotidiana.
+El módulo `parameters` conserva una única configuración LLM activa con tipo de proveedor, URL base, modelo, límites y referencia opaca de credencial. Antes del flujo funcional del Sprint 3 se corrige el módulo de Sprint 2 con un almacén cifrado para registrar o reemplazar la clave desde la web. PostgreSQL conserva exclusivamente el valor cifrado; React y auditoría no reciben el secreto. Las referencias `GEMINI_API_KEY` y `DASHSCOPE_API_KEY` quedan como transición de instalaciones anteriores, no como requisito de operación cotidiana.
 
 La raíz criptográfica se genera automáticamente en el primer arranque local y se conserva con permisos restrictivos en un volumen Docker separado de PostgreSQL. Una instalación productiva deberá sustituir ese proveedor por un gestor de secretos externo. Puertos, redes, imágenes, volúmenes y credenciales internas siguen siendo infraestructura de despliegue y no se modifican desde la aplicación.
 

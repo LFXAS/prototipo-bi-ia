@@ -30,11 +30,11 @@ Desarrollar un prototipo web de inteligencia de negocios asistido por IA que per
 
 ## Incluido por el anteproyecto
 
-- Catálogo web extensible de conexiones con una sola fuente activa; Sprint 3 implementa SQL Server y se valida con AdventureWorks.
+- Una conexión SQL Server parametrizable desde la web y una sola fuente activa, validada con AdventureWorks; la interfaz interna permite añadir adaptadores futuros sin implementarlos ahora.
 - Credenciales de fuente y LLM ingresadas desde la plataforma y almacenadas mediante referencia cifrada, sin exposición posterior.
 - Introspección de tablas, columnas, tipos, claves primarias, claves foráneas y relaciones declaradas.
 - Metadatos estructurados enviados por bloques a un LLM para interpretar nombres técnicos en inglés y generar conceptos comprensibles en español sin inventar referencias.
-- Solicitud guiada en español y descubrimiento dinámico del alcance técnico, con modo avanzado opcional para un analista BI.
+- Solicitud guiada en español y descubrimiento dinámico del alcance técnico, con explorador de sólo lectura para trazabilidad.
 - Aprobación humana del significado de negocio y validación determinística antes de ejecutar SQL o transformaciones.
 - Datamart PostgreSQL con `fact_ventas`, `dim_fecha`, `dim_producto`, `dim_cliente` y `dim_territorio`.
 - ETL de carga completa con uniones simples, fechas/tipos, nulos e importes.

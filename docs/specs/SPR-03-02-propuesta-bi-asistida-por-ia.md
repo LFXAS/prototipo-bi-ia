@@ -19,15 +19,14 @@ El objetivo es integrar la configuración LLM activa del Sprint 2 para convertir
 - Captura guiada en español del objetivo, preguntas de negocio, periodo y dimensiones de interés.
 - Descubrimiento semántico dinámico por bloques para interpretar tablas, columnas y relaciones técnicas según la solicitud de ventas.
 - Confirmación de conceptos y alcance en lenguaje de negocio, sin requerir identificadores técnicos.
-- Modo avanzado opcional para que un analista BI ajuste el alcance; nunca es obligatorio para el gerente.
-- Inclusión automática y visible de tablas/columnas requeridas por claves declaradas.
+- Inclusión automática de tablas y columnas relacionadas por claves declaradas; el usuario sólo las consulta como trazabilidad.
 - Mapa semántico versionado generado para cada instantánea: concepto, nombre y explicación en español, referencias técnicas y confianza declarada.
 - Paquete compacto de metadatos con hash, versión y presupuesto de tamaño.
 - Adaptadores para usar la única configuración LLM activa y previamente probada.
 - Plantilla de instrucciones versionada y salida JSON contractual.
 - Validación sintáctica, referencial, semántica mínima y de operaciones permitidas.
 - Persistencia de propuesta, resultados de validación, proveedor/modelo y decisión humana.
-- Versionado por regeneración; las propuestas y revisiones no se sobrescriben.
+- Conservación de cada intento; las propuestas y decisiones no se sobrescriben.
 
 ### Excluido
 
@@ -53,22 +52,16 @@ Si falta un prerrequisito, la interfaz explica el paso necesario y no envía una
 
 ### 3.2 Flujo principal
 
-1. El gerente comercial o analista elige una plantilla como **Analizar ventas** y expresa qué necesita conocer mediante campos y opciones en español.
-2. FastAPI valida longitud, formato y catálogo de la solicitud; el texto se trata como dato de negocio, no como una instrucción del sistema.
-3. FastAPI divide determinísticamente la instantánea en bloques que conservan nombres, tipos, PK, FK y componentes relacionados, dentro del presupuesto del proveedor.
-4. El LLM procesa cada bloque con la tarea `discover_sales_semantics`: identifica candidatos vinculados con la solicitud y propone conceptos y explicaciones en español.
-5. FastAPI valida cada tabla, columna y relación contra la instantánea. Descarta referencias inventadas, registra el resultado de cada bloque y combina sólo candidatos válidos.
-6. Cuando existen candidatos válidos, FastAPI prepara un mapa semántico y un alcance compacto. Si existen ambigüedades, la interfaz solicita una aclaración de negocio antes de continuar.
-7. La aplicación muestra conceptos, relaciones y advertencias en español. El detalle de tablas queda plegado como información avanzada.
-8. La persona confirma el alcance de negocio. Un analista con permiso puede abrir el modo avanzado y ajustar tablas sin introducir nombres libres.
-9. FastAPI crea el paquete final y calcula `input_hash`.
-10. FastAPI recupera la configuración LLM activa y su secreto cifrado mediante el almacén definido en SPR-03-04.
-11. El adaptador solicita una propuesta dimensional con tiempo máximo y límites de salida.
-12. La respuesta se analiza contra el esquema JSON. Si no cumple, queda `validation_failed`.
-13. Los validadores comparan cada referencia con la instantánea y producen errores, advertencias e información.
-14. Sin errores, la propuesta queda `ready_for_review`.
-15. El revisor evalúa granularidad, dimensiones, KPIs, traducciones, supuestos y utilidad para el negocio; puede aprobar, rechazar con motivo o solicitar otra versión. No revisa SQL porque el Sprint 3 no lo genera.
-16. Al aprobar una sustitución, la persona confirma expresamente el reemplazo y la propuesta aprobada anterior del mismo análisis pasa a `superseded` dentro de la misma transacción.
+1. El gerente o analista elige **Analizar ventas** y expresa qué necesita conocer mediante campos de negocio en español.
+2. FastAPI valida la solicitud y divide la instantánea en bloques que conservan nombres, tipos, PK y FK.
+3. El LLM identifica en cada bloque posibles conceptos de ventas y los explica en español.
+4. FastAPI elimina cualquier referencia inexistente y une únicamente candidatos conectados por relaciones declaradas.
+5. Si el resultado es ambiguo o vacío, la pantalla pide al usuario precisar su necesidad; no exige seleccionar tablas.
+6. La pantalla presenta concepto, explicación y origen técnico plegable para que la persona confirme el significado.
+7. FastAPI recupera la configuración LLM activa, forma el paquete final y solicita una propuesta dimensional JSON.
+8. Los validadores comprueban contrato, referencias, relaciones, granularidad, medidas, KPIs y operaciones permitidas.
+9. Una propuesta con errores queda bloqueada; una propuesta válida queda lista para revisión.
+10. Una persona autorizada aprueba o rechaza con comentario. La decisión queda auditada y el registro no se sobrescribe.
 
 No existe una lista codificada de tablas AdventureWorks que se presente como interpretación de IA. La misma secuencia debe operar sobre otra base relacional de ventas cuando se implemente su conector: cambian los metadatos y el mapa producido, no el contrato de la experiencia. AdventureWorks sigue siendo la única fuente exigida para las pruebas funcionales de esta investigación.
 
@@ -80,11 +73,10 @@ No existe una lista codificada de tablas AdventureWorks que se presente como int
 | `provider_failed` | Proveedor inaccesible, tiempo agotado o respuesta no utilizable. | Nueva propuesta. |
 | `validation_failed` | Contrato o reglas incumplidos. | Nueva propuesta. |
 | `ready_for_review` | Sin errores determinísticos; puede contener advertencias. | `approved`, `rejected`, nueva propuesta. |
-| `approved` | Decisión humana favorable e inmutable. | `superseded`. |
-| `rejected` | Decisión humana negativa con comentario. | Nueva propuesta. |
-| `superseded` | Sustituida de forma explícita por otra aprobación. | Ninguna. |
+| `approved` | Decisión humana favorable e inmutable. | Ninguna. |
+| `rejected` | Decisión humana negativa con comentario. | Ninguna; un nuevo intento crea otro registro. |
 
-Cerrar el navegador no cancela la trazabilidad del intento ya aceptado por el backend. La recuperación de trabajos asíncronos se limitará a un tiempo de solicitud razonable; una cola distribuida queda fuera del prototipo.
+Cada intento aceptado por el backend conserva su estado aunque se cierre el navegador. Una cola distribuida queda fuera del prototipo.
 
 ## 4. Datos y contratos
 
@@ -96,10 +88,8 @@ Tabla `app.bi_proposals`:
 |---|---|
 | `id` | Identificador interno. |
 | `metadata_snapshot_id` | FK a la instantánea inmutable. |
-| `parent_proposal_id` | FK opcional a la versión que motivó la regeneración. |
 | `business_goal` | Objetivo de negocio normalizado, de longitud limitada y sin instrucciones técnicas ejecutables. |
 | `business_questions` | Lista controlada de preguntas o intereses comerciales. |
-| `scope_mode` | `guided` por defecto o `advanced` cuando un analista autorizado ajustó la selección. |
 | `scope_document` | Conceptos solicitados, objetos técnicos derivados, dependencias y versión del proceso de descubrimiento. |
 | `semantic_map_document` | Equivalencias dinámicas entre conceptos españoles y el origen técnico, explicaciones, confianza, referencias y validación. |
 | `status` | Catálogo cerrado de estados. |
@@ -153,7 +143,6 @@ FastAPI no acepta un candidato hasta comprobar que todas sus referencias pertene
   },
   "scope": {
     "origin": "semantic-discovery:v1",
-    "mode": "guided",
     "tables": [
       {
         "schema": "Sales",
@@ -254,9 +243,9 @@ Por tanto, un programador construye el motor como parte del producto, pero no pa
 - Contrato JSON inválido, campos requeridos ausentes o versión desconocida.
 - Tabla, columna, PK o FK inexistente en la instantánea referenciada.
 - Tabla usada fuera del alcance confirmado.
-- Objeto candidato que no existe en la instantánea, no pertenece al bloque procesado o no está conectado mediante relaciones declaradas.
+- Objeto candidato que no existe en la instantánea o no está conectado mediante relaciones declaradas.
 - Traducción o concepto sin referencia técnica verificable.
-- Solicitud de negocio que intenta introducir instrucciones del sistema, código o identificadores técnicos libres fuera del modo avanzado.
+- Solicitud de negocio que intenta introducir instrucciones del sistema, código o identificadores técnicos libres.
 - Medida basada en un tipo no numérico sin transformación declarativa permitida.
 - Agregación fuera del catálogo `sum`, `count`, `count_distinct`, `average`, `min` o `max`.
 - KPI que referencia una medida inexistente o usa fórmula libre.
@@ -283,9 +272,8 @@ El validador devuelve códigos estables y mensajes en español. El revisor debe 
 | `GET /api/v1/copilot/proposals/{id}` | `copilot.proposals.read` | Propuesta, validaciones, procedencia y revisión. |
 | `POST /api/v1/copilot/proposals/{id}/approve` | `copilot.proposals.review` | Aprueba sólo `ready_for_review`, con confirmación de advertencias. |
 | `POST /api/v1/copilot/proposals/{id}/reject` | `copilot.proposals.review` | Rechaza con comentario obligatorio. |
-| `POST /api/v1/copilot/proposals/{id}/regenerate` | `copilot.proposals.generate` | Genera otra versión con observación humana y referencia al padre. |
 
-La solicitud de creación admite `metadata_snapshot_id`, `business_goal` de 20 a 500 caracteres, uno o más códigos de preguntas aprobadas y una periodicidad inicial `month`. El texto libre complementa el objetivo, pero no amplía el dominio ni habilita operaciones. Una petición de inventario, compras, finanzas u otro dominio se rechaza antes de consumir el proveedor con una explicación de alcance. Los conceptos o dimensiones no se vinculan a tablas predefinidas: se descubren desde los metadatos. `scope_mode=advanced` y las referencias de tabla sólo se aceptan con `metadata.read`; cada referencia debe proceder de la instantánea seleccionada.
+La solicitud de creación admite `metadata_snapshot_id`, `business_goal` de 20 a 500 caracteres, uno o más códigos de preguntas aprobadas y una periodicidad inicial `month`. El texto libre complementa el objetivo, pero no amplía el dominio ni habilita operaciones. Una petición de inventario, compras, finanzas u otro dominio se rechaza antes de consumir el proveedor con una explicación de alcance. Los conceptos o dimensiones no se vinculan a tablas predefinidas: se descubren desde los metadatos.
 
 Las operaciones de revisión son idempotentes por estado: repetir una aprobación no duplica eventos; intentar cambiar una decisión final devuelve 409.
 
@@ -293,15 +281,14 @@ Las operaciones de revisión son idempotentes por estado: repetir una aprobació
 
 La ruta visible **IA > Asistente de análisis** usa un flujo guiado:
 
-1. Objetivo y preguntas de negocio.
-2. Conceptos y alcance sugerido.
-3. Generación.
-4. Validación automática.
-5. Revisión de negocio.
+1. Necesidad de negocio.
+2. Conceptos encontrados y su origen.
+3. Propuesta y validación automática.
+4. Revisión humana.
 
 El recorrido principal usa las etiquetas españolas generadas para la fuente activa y explica qué podrá obtenerse. Cada concepto muestra su explicación y un acceso **Ver origen técnico**. La propuesta se presenta por secciones: significado de la venta, granularidad, dimensiones, medidas, KPIs, plan ETL, reglas de calidad, supuestos y advertencias. Los nombres de tablas, relaciones y el JSON permanecen en **Detalles técnicos**, que puede consultar el analista, pero no son obligatorios para el gerente.
 
-Estados obligatorios: prerrequisito faltante, listo para generar, generando, proveedor agotado/inaccesible, respuesta inválida, errores de validación, listo para revisar, aprobado, rechazado y sustituido.
+Estados obligatorios: prerrequisito faltante, generando, proveedor inaccesible, validación fallida, listo para revisar, aprobado y rechazado.
 
 En móvil, cada sección es un acordeón y las acciones de decisión permanecen visibles sin cubrir contenido. En escritorio amplio, el resumen puede convivir con un panel de explicación, pero no habrá chat abierto en Sprint 3. El foco, mensajes y confirmaciones cumplen SPR-02-04.
 
@@ -313,7 +300,7 @@ En móvil, cada sección es un acordeón y las acciones de decisión permanecen 
 - El paquete se construye en backend. El cliente no puede inyectar metadatos ni instrucciones del sistema.
 - La solicitud de negocio se delimita, normaliza y limita; nunca se concatena con instrucciones privilegiadas ni se interpreta como SQL.
 - Se limita tamaño, duración, reintentos y respuesta. No se reintenta automáticamente una operación que pueda duplicar consumo sin idempotencia.
-- Eventos: `copilot.proposal.generate`, `provider_failed`, `validation_failed`, `ready_for_review`, `approve`, `reject`, `regenerate` y `supersede`.
+- Eventos: `copilot.proposal.generate`, `provider_failed`, `validation_failed`, `ready_for_review`, `approve` y `reject`.
 - La auditoría contiene ids, hashes, estado, proveedor/modelo y códigos de validación; nunca clave, prompt completo, cabeceras ni razonamiento del modelo.
 
 ## 9. Criterios de aceptación verificables
@@ -321,15 +308,13 @@ En móvil, cada sección es un acordeón y las acciones de decisión permanecen 
 - [ ] Sólo se puede generar con instantánea válida, solicitud de negocio confirmada, alcance derivado, permiso y configuración LLM activa/probada.
 - [ ] Un gerente puede completar el recorrido guiado sin seleccionar tablas, escribir identificadores ni conocer SQL.
 - [ ] El descubrimiento por bloques deriva un alcance reproducible usando únicamente objetos y PK/FK existentes.
-- [ ] El modo avanzado está claramente separado y no acepta identificadores técnicos escritos libremente.
 - [ ] El proveedor recibe exclusivamente el paquete de metadatos permitido y nunca filas, secretos o usuarios.
 - [ ] La respuesta se acepta únicamente si cumple el contrato JSON versionado.
 - [ ] Una referencia inventada produce error determinístico y bloquea aprobación.
 - [ ] Una propuesta válida presenta hecho, granularidad, dimensiones, medidas, al menos un KPI y plan ETL declarativo.
 - [ ] Ninguna propuesta contiene SQL o código ejecutable utilizable por el sistema.
 - [ ] Sólo `ready_for_review` puede aprobarse y las advertencias requieren confirmación.
-- [ ] Rechazar requiere comentario; regenerar crea otra versión y no sobrescribe la anterior.
-- [ ] Una sola propuesta queda aprobada por análisis y la sustitución es explícita y transaccional.
+- [ ] Rechazar requiere comentario y un nuevo intento crea otro registro sin sobrescribir el anterior.
 - [ ] La interfaz diferencia claramente contenido propuesto por IA, resultado del validador y decisión humana.
 - [ ] El LLM interpreta nombres técnicos en inglés y genera conceptos comprensibles en español para la fuente activa.
 - [ ] La explicación relaciona cada concepto con identificadores técnicos consultables y cualquier tabla o columna inventada queda descartada y auditada.
@@ -341,10 +326,10 @@ En móvil, cada sección es un acordeón y las acciones de decisión permanecen 
 ## 10. Plan de pruebas y evidencia
 
 - Unitarias: solicitud de negocio, partición estable, descubrimiento semántico, combinación de candidatos, esquema JSON, referencias inventadas, joins, tipos numéricos, granularidad, fórmulas KPI y operaciones ETL.
-- Integración: estados, inmutabilidad, versiones, aprobación única, transacciones y auditoría.
+- Integración: estados, inmutabilidad, aprobación, rechazo y auditoría.
 - Adaptadores: Gemini, Qwen Cloud y Ollama mediante respuestas simuladas; Ollama real como alternativa local.
 - Seguridad: 401/403, inyección de metadatos, URL no permitida, tamaño excesivo y sanitización de errores.
-- Frontend: recorrido no técnico, modo avanzado, prerrequisitos, secciones, advertencias, confirmaciones, estados y responsive.
+- Frontend: recorrido no técnico, prerrequisitos, secciones, advertencias, confirmaciones, estados y responsive.
 - Evidencia académica: hash de entrada, versión de prompt/contrato, proveedor/modelo, propuesta validada y decisión humana.
 
 ## 11. Riesgos, dependencias y decisiones
@@ -352,7 +337,7 @@ En móvil, cada sección es un acordeón y las acciones de decisión permanecen 
 - `qwen2.5:3b` prioriza agilidad, pero puede producir propuestas menos completas: el contrato y el validador deben funcionar igual con cualquier proveedor aprobado.
 - El contexto local es limitado: FastAPI procesa bloques con presupuesto estable y conserva trazabilidad; esto puede requerir varias llamadas y debe mostrar progreso y consumo.
 - Una salida válida sintácticamente puede ser inadecuada para negocio: por eso la aprobación humana no se reemplaza por validación automática.
-- Un gerente puede validar utilidad y significado, pero no necesariamente relaciones técnicas: los validadores cubren integridad estructural y el modo avanzado queda para un analista BI.
+- Un gerente puede validar utilidad y significado, pero no necesariamente relaciones técnicas: los validadores cubren integridad estructural y el explorador de sólo lectura permite al analista BI comprobar el origen.
 - La interpretación dinámica puede asignar etiquetas imprecisas aunque las referencias existan: por eso cada concepto muestra confianza, explicación y origen, y requiere aprobación humana.
 - Depende de SPR-03-01, SPR-03-04 y ADR 0003.
 
