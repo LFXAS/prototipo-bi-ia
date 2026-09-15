@@ -23,6 +23,7 @@ El objetivo es implementar una introspección de sólo lectura que obtenga tabla
 - Persistencia de instantáneas inmutables y consulta de la última captura.
 - Búsqueda, filtros y detalle de tabla a partir de la instantánea, no mediante consultas repetidas al origen.
 - Métricas técnicas: cantidad de esquemas, tablas, columnas y relaciones.
+- Glosario `adventureworks-sales-v1` que relaciona conceptos visibles en español con identificadores técnicos sin modificar el origen.
 
 ### Excluido
 
@@ -114,7 +115,13 @@ Las instantáneas no tienen edición ni eliminación desde la interfaz. Una pol�
 
 No se fija en esta especificación la cantidad exacta de objetos: las pruebas comparan el resultado con los catálogos de la instancia restaurada y con invariantes, no con una cifra frágil.
 
-### 4.3 Endpoints previstos
+### 4.3 Glosario semántico controlado
+
+La instantánea conserva los nombres técnicos originales como fuente de verdad. De forma separada, el backend mantiene un glosario versionado para presentar equivalencias comprensibles, por ejemplo `Sales.SalesOrderHeader` como **Venta**, `Production.Product` como **Producto** y `Sales.SalesTerritory` como **Territorio**.
+
+Cada entrada contiene `concept_code`, `display_name_es`, `description_es`, referencias técnicas permitidas y versión. El glosario se mantiene como catálogo versionado del producto, no es una traducción física de AdventureWorks ni una respuesta libre del LLM. Una referencia inexistente en la instantánea invalida el alcance derivado.
+
+### 4.4 Endpoints previstos
 
 | Método y ruta | Permiso | Resultado |
 |---|---|---|
@@ -125,14 +132,15 @@ No se fija en esta especificación la cantidad exacta de objetos: las pruebas co
 | `GET /api/v1/metadata/snapshots/{id}` | `metadata.read` | Resumen y documento canónico. |
 | `GET /api/v1/metadata/snapshots/{id}/tables` | `metadata.read` | Tablas paginadas con búsqueda y filtro de esquema. |
 | `GET /api/v1/metadata/snapshots/{id}/tables/{schema}/{table}` | `metadata.read` | Columnas, claves y relaciones de una tabla. |
+| `GET /api/v1/metadata/snapshots/{id}/business-concepts` | `metadata.read` | Conceptos en español, referencias técnicas y versión del glosario aplicable. |
 
 Parámetros de paginación: `limit` de 1 a 100 y `offset` no negativo. La búsqueda tiene longitud máxima y no se usa para construir SQL dinámico sobre AdventureWorks.
 
-### 4.4 Pantallas y menús
+### 4.5 Pantallas y menús
 
 - Grupo **Datos**.
 - **Fuente AdventureWorks**: ficha de fuente, estado, última prueba, última captura, totales y acciones autorizadas.
-- **Explorador de esquema**: definido en [SPR-03-03](SPR-03-03-explorador-esquema-y-trazabilidad.md).
+- **Explorador de esquema**: vista avanzada definida en [SPR-03-03](SPR-03-03-explorador-esquema-y-trazabilidad.md); no es un prerrequisito de navegación para el gerente.
 
 ## 5. Seguridad y auditoría
 
@@ -162,6 +170,7 @@ Parámetros de paginación: `limit` de 1 a 100 y `offset` no negativo. La búsqu
 - [ ] La misma estructura normalizada produce el mismo hash y no crea un duplicado.
 - [ ] Un cambio controlado de metadatos produce otra instantánea sin modificar la anterior.
 - [ ] Ninguna instantánea contiene filas, valores de negocio, credenciales o cadenas de conexión.
+- [ ] El glosario presenta etiquetas españolas con referencia técnica trazable y rechaza objetos inexistentes.
 - [ ] La interrupción de SQL Server conserva la última captura válida y devuelve un error seguro.
 - [ ] Un usuario sin `metadata.read` recibe 403; sin `metadata.refresh` puede consultar, pero no probar ni actualizar.
 - [ ] Los endpoints de listas respetan paginación, búsqueda limitada y orden estable.
@@ -171,7 +180,7 @@ Parámetros de paginación: `limit` de 1 a 100 y `offset` no negativo. La búsqu
 
 ## 8. Plan de pruebas y evidencia
 
-- Unitarias: normalización, orden canónico, hash, tipos compuestos, PK/FK y sanitización de errores.
+- Unitarias: normalización, orden canónico, hash, tipos compuestos, PK/FK, glosario y sanitización de errores.
 - Integración PostgreSQL: migración, inmutabilidad, deduplicación y actor histórico.
 - Integración SQL Server: captura real desde AdventureWorks y prueba negativa de escritura.
 - API: 401, 403, 404, 409, falla de origen y respuestas paginadas.
@@ -183,7 +192,7 @@ Parámetros de paginación: `limit` de 1 a 100 y `offset` no negativo. La búsqu
 
 - SQL Server puede tardar en restaurar: la interfaz debe distinguir “fuente iniciando” de “fuente inválida”.
 - Los tipos SQL Server requieren un mapeo canónico documentado; se conserva el nombre nativo además de la categoría normalizada.
-- Un esquema completo puede ser grande para un LLM local; la instantánea completa se conserva, pero el paquete de IA usa sólo el alcance seleccionado definido en SPR-03-02.
+- Un esquema completo puede ser grande para un LLM local; la instantánea completa se conserva, pero el paquete de IA usa sólo el alcance derivado o ajustado definido en SPR-03-02.
 - Depende de la seguridad y auditoría de Sprint 2; no implementa autenticación alternativa.
 
 ## 10. Resultado de implementación

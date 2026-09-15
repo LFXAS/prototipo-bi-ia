@@ -501,9 +501,10 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   \midrule
   \endhead
   Alcance de investigación & \statusok & Se registra el título vigente, los cinco objetivos y la regla de que AdventureWorks es la única fuente funcional; los datos sintéticos se reservan para pruebas controladas. \\
-  Especificaciones & \statusok & Se crean el índice SPR-03 y tres contratos para conexión e introspección, propuesta BI asistida y experiencia de exploración/revisión. Todos permanecen en borrador hasta aprobación humana. \\
-  Separación de responsabilidades & \statusok & La aplicación conecta, normaliza, valida y audita; el LLM propone un documento estructurado; una persona aprueba o rechaza. Ninguna propuesta ejecuta SQL o ETL. \\
-  Decisión arquitectónica & \statusok & El ADR 0003 propone instantáneas inmutables, paquete compacto de metadatos, contrato JSON versionado, validadores determinísticos y puerta de aprobación. \\
+  Especificaciones & \statusok & Se crean y refinan el índice SPR-03 y tres contratos para conexión e introspección, solicitud guiada, propuesta BI asistida y experiencia de exploración/revisión. Todos permanecen en borrador hasta aprobación humana. \\
+  Usuario objetivo & \statusok & El gerente o analista expresa una necesidad en español sin seleccionar tablas ni escribir SQL; el explorador técnico queda como modo avanzado opcional. \\
+  Separación de responsabilidades & \statusok & La aplicación conecta, normaliza, preselecciona, valida y audita; el LLM propone un documento estructurado; una persona aprueba el significado de negocio. Ninguna propuesta ejecuta SQL o ETL. \\
+  Decisión arquitectónica & \statusok & El ADR 0003 define instantáneas inmutables, perfil y glosario de ventas, contrato JSON, validadores y puerta de aprobación. Sprint 4 deberá incorporar un constructor determinístico y ejecutor backend, no consultas manuales por análisis. \\
   Límite del sprint & \statusok & Sprint 3 termina con una propuesta aprobada como entrada de Sprint 4; datamart físico, ETL, KPIs calculados, dashboard y pronóstico permanecen pendientes. \\
   \bottomrule
 \end{longtable}
@@ -533,7 +534,7 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
 
 \begin{enumerate}
   \item Revisar y aprobar las especificaciones SPR-03-01, SPR-03-02 y SPR-03-03 antes de escribir código funcional.
-  \item Resolver las tres decisiones humanas pendientes: selección del alcance, permiso de aprobación y sustitución de versiones.
+  \item Confirmar que el recorrido de usuario, permiso de aprobación y sustitución explícita incorporados representan la decisión final del equipo.
   \item Tras la aprobación, implementar Sprint 3 en una rama nueva desde \file{develop} y verificarlo íntegramente dentro de Docker.
   \item Conservar ETL, datamart físico, dashboard y pronóstico para los sprints posteriores definidos por sus propias especificaciones.
   \item Promover a \file{main} únicamente una integración estable, revisada y con CI aprobada.
@@ -579,6 +580,7 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   0.2.16 & 11-09-2026 & Migraciones y catálogo base reproducible: servicio \file{seed} idempotente posterior a Alembic, sin compartir volúmenes ni datos sensibles entre equipos. \\
   0.2.17 & 11-09-2026 & Modelo local predeterminado \file{qwen2.5:3b} y contexto 2048 para una experiencia Ollama ágil; \file{qwen3:4b} queda como alternativa opcional de mayor capacidad. \\
   0.3.0 & 14-09-2026 & Borradores SDD del Sprint 3 para introspección de AdventureWorks, propuesta BI estructurada, validación determinística, aprobación humana y experiencia responsive. \\
+  0.3.1 & 14-09-2026 & Redefinición del Sprint 3 para el usuario final: solicitud comercial guiada, alcance técnico automático, glosario español, modo avanzado y futura generación determinística de SQL sin intervención de un programador por análisis. \\
   \bottomrule
 \end{longtable}
 

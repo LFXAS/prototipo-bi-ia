@@ -44,8 +44,8 @@ No se recomienda una VM ARM para este conjunto porque SQL Server para Linux requ
 - `security`: autenticación y RBAC mínimo.
 - `parameters`: parámetros del prototipo, conexiones aprobadas y configuración no secreta del proveedor LLM activo.
 - `metadata`: introspección determinística de AdventureWorks.
-- `copilot`: propuestas estructuradas del LLM, nunca ejecución directa.
-- `etl`: vista previa, validación, ejecución y trazabilidad de cargas.
+- `copilot`: solicitud guiada de negocio y propuestas estructuradas del LLM, nunca ejecución directa.
+- `etl`: constructor determinístico, vista previa, validación, ejecución backend y trazabilidad de cargas; no depende de SQL escrito por cada usuario.
 - `analytics`: KPIs, gráficos e insights.
 - `forecasting`: regresión lineal y métricas MAPE/RMSE.
 - `reports`: evidencias y reportes académicos.
@@ -76,6 +76,10 @@ Desde Sprint 2, cada módulo que incorpore interfaz se integra en un cascarón R
 
 Los menús son una representación de permisos ya autorizados por FastAPI. En escritorio pueden permanecer visibles; en móvil deben abrirse y cerrarse con teclado o táctil. Formularios, tablas y acciones administrativas definen estados de carga, vacío, éxito, error, sesión vencida y acceso denegado. La accesibilidad mínima incluye foco visible, etiquetas de campos, mensajes que no dependan sólo del color y contraste suficiente para lectura.
 
+### Perfiles de uso
+
+La administración técnica configura fuente, proveedor LLM y permisos una vez. El gerente comercial o solicitante expresa objetivos y preguntas en español, revisa conceptos y consume resultados sin escribir SQL. El analista BI o responsable de datos utiliza detalles avanzados y aprueba el significado de negocio. Las programadoras mantienen el motor y sus plantillas, pero no intervienen en cada análisis de operación.
+
 ## Contrato de configuración LLM
 
 El módulo `parameters` conserva una única configuración LLM activa con valores no secretos: tipo de proveedor, URL base, modelo, límites y referencia de credencial. El catálogo inicial es `gemini` (referencia `GEMINI_API_KEY`), `qwen-cloud` (referencia `DASHSCOPE_API_KEY`) y `ollama-local` (referencia `none`, servicio interno). La clave real vive sólo en variables de entorno o en el mecanismo de secretos del despliegue; ni PostgreSQL, ni React, ni los eventos de auditoría la almacenan o la devuelven.
@@ -86,9 +90,9 @@ El módulo `copilot` posterior consumirá este contrato mediante una interfaz in
 
 ## Contrato propuesto para Sprint 3
 
-Sprint 3 separa introspección y razonamiento asistido. El módulo `metadata` consulta catálogos de AdventureWorks, normaliza una instantánea inmutable y calcula su hash. El módulo `copilot` sólo recibe un paquete compacto derivado de esa instantánea y confirmado por una persona; devuelve un documento JSON versionado con modelo dimensional, KPIs y plan ETL declarativo.
+Sprint 3 separa introspección y razonamiento asistido. El módulo `metadata` consulta catálogos de AdventureWorks, normaliza una instantánea inmutable y calcula su hash. El módulo `copilot` recibe una solicitud guiada de negocio y un paquete compacto derivado por el perfil `adventureworks-sales-v1`; devuelve un documento JSON versionado con modelo dimensional, KPIs y plan ETL declarativo. El glosario presenta conceptos en español y conserva los identificadores técnicos como trazabilidad.
 
-FastAPI valida que todas las tablas, columnas, claves, relaciones y operaciones propuestas existan o pertenezcan a catálogos aprobados. Sólo después un permiso independiente permite aprobar o rechazar. Una aprobación no ejecuta SQL: conserva una entrada inmutable para el módulo `etl` de Sprint 4. Este límite se detalla en [`decisions/0003-metadatos-y-propuesta-bi-supervisada.md`](decisions/0003-metadatos-y-propuesta-bi-supervisada.md).
+FastAPI valida que todas las tablas, columnas, claves, relaciones y operaciones propuestas existan o pertenezcan a catálogos aprobados. Sólo después un permiso independiente permite aprobar o rechazar el significado de negocio. Una aprobación no genera ni ejecuta SQL: conserva una entrada inmutable para el módulo `etl` de Sprint 4. Ese módulo deberá construir consultas parametrizadas mediante operaciones tipadas y plantillas autorizadas, presentar una vista previa y ejecutarlas desde el backend con permisos mínimos. Este límite se detalla en [`decisions/0003-metadatos-y-propuesta-bi-supervisada.md`](decisions/0003-metadatos-y-propuesta-bi-supervisada.md).
 
 ## Datos
 

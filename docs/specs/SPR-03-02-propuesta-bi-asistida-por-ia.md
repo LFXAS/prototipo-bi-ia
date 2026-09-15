@@ -8,16 +8,20 @@
 
 ## 1. Problema y objetivo
 
-Una instantánea técnica no determina por sí sola qué tabla representa el proceso de ventas, cuál debe ser la granularidad del hecho, qué dimensiones son pertinentes ni qué KPIs son calculables. El proyecto necesita demostrar la asistencia de IA sin delegarle la ejecución ni aceptar referencias inventadas.
+Una instantánea técnica no determina por sí sola qué tabla representa el proceso de ventas, cuál debe ser la granularidad del hecho, qué dimensiones son pertinentes ni qué KPIs son calculables. Tampoco es razonable exigir que un gerente seleccione tablas o que un programador prepare SQL para cada análisis. El proyecto necesita demostrar asistencia de IA para transformar una necesidad comercial en una propuesta BI, sin delegarle la ejecución ni aceptar referencias inventadas.
 
-El objetivo es integrar la configuración LLM activa del Sprint 2 para convertir un alcance de metadatos aprobado en una propuesta BI estructurada, validarla con reglas determinísticas y someterla a una decisión humana explícita. La propuesta aprobada será una entrada versionada del Sprint 4, no una ejecución.
+El objetivo es integrar la configuración LLM activa del Sprint 2 para convertir una solicitud de negocio guiada y un alcance técnico preparado por la aplicación en una propuesta BI estructurada, validarla con reglas determinísticas y someter su significado a una decisión humana explícita. La propuesta aprobada será una entrada versionada del Sprint 4, no una ejecución.
 
 ## 2. Alcance y exclusiones
 
 ### Incluido
 
-- Selección humana de un conjunto de tablas desde una instantánea de AdventureWorks.
+- Captura guiada en español del objetivo, preguntas de negocio, periodo y dimensiones de interés.
+- Perfil determinístico `adventureworks-sales-v1` para preseleccionar tablas ancla, relaciones y dependencias de ventas.
+- Confirmación de conceptos y alcance en lenguaje de negocio, sin requerir identificadores técnicos.
+- Modo avanzado opcional para que un analista BI ajuste el alcance; nunca es obligatorio para el gerente.
 - Inclusión automática y visible de tablas/columnas requeridas por claves declaradas.
+- Glosario versionado entre español e identificador técnico para presentación y trazabilidad.
 - Paquete compacto de metadatos con hash, versión y presupuesto de tamaño.
 - Adaptadores para usar la única configuración LLM activa y previamente probada.
 - Plantilla de instrucciones versionada y salida JSON contractual.
@@ -33,6 +37,8 @@ El objetivo es integrar la configuración LLM activa del Sprint 2 para convertir
 - Creación de tablas, transformación, carga, KPI calculado, dashboard o pronóstico.
 - Aprobación automática por puntaje del modelo.
 - Comparación automática de proveedores o selección del “mejor” LLM.
+- Selección manual obligatoria de tablas o escritura de SQL por parte del usuario de negocio.
+- Intervención de un programador para preparar consultas por cada solicitud.
 
 ## 3. Actores, flujo y estados
 
@@ -40,23 +46,28 @@ El objetivo es integrar la configuración LLM activa del Sprint 2 para convertir
 
 - Sesión válida y permisos correspondientes.
 - Instantánea de metadatos vigente.
-- Alcance con al menos una tabla y relaciones suficientes para justificar ventas.
+- Solicitud de negocio válida y perfil de ventas capaz de producir un alcance técnico no vacío.
 - Una sola configuración LLM activa, cuya última prueba sea exitosa.
 
 Si falta un prerrequisito, la interfaz explica el paso necesario y no envía una solicitud al proveedor.
 
 ### 3.2 Flujo principal
 
-1. El analista abre una instantánea y selecciona tablas candidatas.
-2. La aplicación muestra las relaciones y añade dependencias técnicas necesarias; la persona confirma el alcance final.
-3. FastAPI crea un paquete canónico y calcula `input_hash`.
-4. FastAPI recupera la configuración activa y su credencial por referencia desde el entorno.
-5. El adaptador solicita una única propuesta con tiempo máximo y límites de salida.
-6. La respuesta se analiza contra el esquema JSON. Si no cumple, queda `validation_failed`.
-7. Los validadores comparan cada referencia con la instantánea y producen errores, advertencias e información.
-8. Sin errores, la propuesta queda `ready_for_review`.
-9. El revisor puede aprobar, rechazar con motivo o solicitar otra versión con observaciones.
-10. Al aprobar, cualquier propuesta aprobada anterior del mismo análisis pasa a `superseded` dentro de la misma transacción.
+1. El gerente comercial o analista elige una plantilla como **Analizar ventas** y expresa qué necesita conocer mediante campos y opciones en español.
+2. FastAPI valida longitud, formato y catálogo de la solicitud; el texto se trata como dato de negocio, no como una instrucción del sistema.
+3. El perfil `adventureworks-sales-v1` parte de las tablas ancla aprobadas y recorre únicamente PK/FK de la instantánea para preparar un alcance técnico reproducible.
+4. La aplicación muestra conceptos, relaciones y advertencias en español. El detalle de tablas queda plegado como información avanzada.
+5. La persona confirma el alcance de negocio. Un analista con permiso puede abrir el modo avanzado y ajustar tablas sin introducir nombres libres.
+6. FastAPI crea un paquete canónico y calcula `input_hash`.
+7. FastAPI recupera la configuración activa y su credencial por referencia desde el entorno.
+8. El adaptador solicita una única propuesta con tiempo máximo y límites de salida.
+9. La respuesta se analiza contra el esquema JSON. Si no cumple, queda `validation_failed`.
+10. Los validadores comparan cada referencia con la instantánea y producen errores, advertencias e información.
+11. Sin errores, la propuesta queda `ready_for_review`.
+12. El revisor evalúa granularidad, dimensiones, KPIs, supuestos y utilidad para el negocio; puede aprobar, rechazar con motivo o solicitar otra versión. No revisa SQL porque el Sprint 3 no lo genera.
+13. Al aprobar una sustitución, la persona confirma expresamente el reemplazo y la propuesta aprobada anterior del mismo análisis pasa a `superseded` dentro de la misma transacción.
+
+El perfil parte obligatoriamente de `Sales.SalesOrderHeader` y `Sales.SalesOrderDetail`. Según los conceptos solicitados, puede incorporar por relaciones declaradas `Production.Product`, `Sales.Customer`, `Person.Person`, `Sales.Store` y `Sales.SalesTerritory`. **Fecha** se deriva de `Sales.SalesOrderHeader.OrderDate`. Si una ruta necesaria no existe en la instantánea, el sistema informa el problema y no sustituye la relación con una inferencia del LLM.
 
 ### 3.3 Estados
 
@@ -83,6 +94,10 @@ Tabla `app.bi_proposals`:
 | `id` | Identificador interno. |
 | `metadata_snapshot_id` | FK a la instantánea inmutable. |
 | `parent_proposal_id` | FK opcional a la versión que motivó la regeneración. |
+| `business_goal` | Objetivo de negocio normalizado, de longitud limitada y sin instrucciones técnicas ejecutables. |
+| `business_questions` | Lista controlada de preguntas o intereses comerciales. |
+| `scope_mode` | `guided` por defecto o `advanced` cuando un analista autorizado ajustó la selección. |
+| `scope_document` | Conceptos solicitados, objetos técnicos derivados, dependencias y versión del perfil/glosario. |
 | `status` | Catálogo cerrado de estados. |
 | `input_hash` | Huella del paquete enviado, sin secreto. |
 | `prompt_version` | Versión de instrucciones del sistema. |
@@ -104,7 +119,14 @@ No se persisten claves, encabezados HTTP, cadena de conexión, razonamiento inte
   "language": "es",
   "task": "propose_sales_dimensional_model",
   "source": {"code": "adventureworks", "snapshot_hash": "..."},
+  "business_request": {
+    "goal": "Analizar las ventas mensuales por producto, cliente y territorio.",
+    "questions": ["¿Cuánto se vendió por mes?", "¿Qué productos venden más?"],
+    "requested_dimensions": ["fecha", "producto", "cliente", "territorio"]
+  },
   "scope": {
+    "origin": "profile:adventureworks-sales-v1",
+    "mode": "guided",
     "tables": [
       {
         "schema": "Sales",
@@ -117,12 +139,13 @@ No se persisten claves, encabezados HTTP, cadena de conexión, razonamiento inte
   "constraints": {
     "no_sql": true,
     "human_approval_required": true,
-    "allowed_etl_operations": ["extract", "join", "filter", "derive", "aggregate", "load"]
+    "allowed_etl_operations": ["extract", "join", "filter", "derive", "aggregate", "load"],
+    "technical_names_must_exist": true
   }
 }
 ```
 
-El paquete incluye únicamente objetos seleccionados y dependencias confirmadas. Si excede el presupuesto del proveedor, FastAPI no lo trunca silenciosamente: solicita reducir el alcance o aplica una compactación determinística que conserva nombres, tipos, PK y FK e informa el cambio.
+El paquete incluye únicamente la solicitud de negocio normalizada, los objetos derivados y las dependencias confirmadas. El texto del usuario queda claramente delimitado como dato y no puede modificar las instrucciones del sistema. Si excede el presupuesto del proveedor, FastAPI no lo trunca silenciosamente: solicita reducir el alcance o aplica una compactación determinística que conserva nombres, tipos, PK y FK e informa el cambio.
 
 ### 4.3 Contrato de salida del LLM
 
@@ -131,6 +154,7 @@ El paquete incluye únicamente objetos seleccionados y dependencias confirmadas.
   "contract_version": 1,
   "domain": "ventas",
   "summary": "Modelo dimensional propuesto para analizar ventas.",
+  "business_explanation": "Cada registro representará una línea vendida y podrá analizarse por fecha, producto, cliente y territorio.",
   "grain": {
     "description": "Una fila por línea de pedido de venta.",
     "source_tables": ["Sales.SalesOrderDetail"]
@@ -177,6 +201,19 @@ El paquete incluye únicamente objetos seleccionados y dependencias confirmadas.
 
 Los nombres de destino permitidos en el alcance académico son `fact_ventas`, `dim_fecha`, `dim_producto`, `dim_cliente` y `dim_territorio`. Una propuesta puede justificar que una dimensión no aplica, pero no puede inventar otros módulos o ampliar el dominio.
 
+### 4.4 Límite con la generación y ejecución de SQL
+
+El LLM no produce SQL ejecutable. El equipo de desarrollo implementará una sola vez, dentro del Sprint 4, un constructor determinístico que traduzca el documento aprobado a operaciones tipadas y consultas parametrizadas. Ese módulo deberá:
+
+- generar extracción de sólo lectura sobre AdventureWorks con `bi_reader`;
+- materializar y cargar únicamente el esquema `mart` de PostgreSQL con una cuenta técnica de permisos mínimos;
+- usar tablas, columnas, relaciones y operaciones incluidas en el contrato aprobado;
+- presentar vista previa y validaciones antes de ejecutar;
+- ejecutar desde FastAPI con transacciones, límites y auditoría;
+- impedir que gerente, analista, navegador o LLM introduzcan SQL libre.
+
+Por tanto, un programador construye el motor como parte del producto, pero no participa en la operación normal ni redacta consultas por cada usuario.
+
 ## 5. Validaciones determinísticas
 
 ### Errores que impiden revisión/aprobación
@@ -184,6 +221,8 @@ Los nombres de destino permitidos en el alcance académico son `fact_ventas`, `d
 - Contrato JSON inválido, campos requeridos ausentes o versión desconocida.
 - Tabla, columna, PK o FK inexistente en la instantánea referenciada.
 - Tabla usada fuera del alcance confirmado.
+- Objeto incorporado por el perfil que no existe en la instantánea o no está conectado mediante relaciones declaradas.
+- Solicitud de negocio que intenta introducir instrucciones del sistema, código o identificadores técnicos libres fuera del modo avanzado.
 - Medida basada en un tipo no numérico sin transformación declarativa permitida.
 - Agregación fuera del catálogo `sum`, `count`, `count_distinct`, `average`, `min` o `max`.
 - KPI que referencia una medida inexistente o usa fórmula libre.
@@ -205,26 +244,28 @@ El validador devuelve códigos estables y mensajes en español. El revisor debe 
 
 | Método y ruta | Permiso | Resultado |
 |---|---|---|
-| `POST /api/v1/copilot/proposals` | `copilot.proposals.generate` | Crea un intento a partir de instantánea y tablas seleccionadas. |
+| `POST /api/v1/copilot/proposals` | `copilot.proposals.generate` | Crea un intento desde una solicitud de negocio; FastAPI deriva el alcance técnico. |
 | `GET /api/v1/copilot/proposals` | `copilot.proposals.read` | Lista paginada por estado, fecha y snapshot. |
 | `GET /api/v1/copilot/proposals/{id}` | `copilot.proposals.read` | Propuesta, validaciones, procedencia y revisión. |
 | `POST /api/v1/copilot/proposals/{id}/approve` | `copilot.proposals.review` | Aprueba sólo `ready_for_review`, con confirmación de advertencias. |
 | `POST /api/v1/copilot/proposals/{id}/reject` | `copilot.proposals.review` | Rechaza con comentario obligatorio. |
 | `POST /api/v1/copilot/proposals/{id}/regenerate` | `copilot.proposals.generate` | Genera otra versión con observación humana y referencia al padre. |
 
+La solicitud de creación admite `metadata_snapshot_id`, `business_goal` de 20 a 500 caracteres, uno o más códigos de preguntas aprobadas, `periodicity` limitada inicialmente a `month` y dimensiones del catálogo `date`, `product`, `customer` y `territory`. El texto libre complementa el objetivo, pero no amplía el dominio ni habilita operaciones. Una petición de inventario, compras, finanzas u otro dominio se rechaza antes de consumir el proveedor con una explicación de alcance. `scope_mode=advanced` y las referencias de tabla sólo se aceptan con `metadata.read`; cada referencia debe proceder de la instantánea seleccionada.
+
 Las operaciones de revisión son idempotentes por estado: repetir una aprobación no duplica eventos; intentar cambiar una decisión final devuelve 409.
 
 ## 7. Interfaz y experiencia
 
-La ruta **IA > Propuesta BI** usa un flujo guiado:
+La ruta visible **IA > Asistente de análisis** usa un flujo guiado:
 
-1. Fuente e instantánea.
-2. Alcance de tablas.
+1. Objetivo y preguntas de negocio.
+2. Conceptos y alcance sugerido.
 3. Generación.
-4. Validación.
-5. Revisión humana.
+4. Validación automática.
+5. Revisión de negocio.
 
-La propuesta se presenta por secciones: granularidad, hecho, dimensiones, relaciones, medidas, KPIs, plan ETL, reglas de calidad, supuestos y advertencias. Nunca se muestra como un bloque JSON obligatorio para la persona; el JSON puede descargarse como evidencia técnica autorizada.
+El recorrido principal usa etiquetas españolas y explica qué podrá obtenerse. La propuesta se presenta por secciones: significado de la venta, granularidad, dimensiones, medidas, KPIs, plan ETL, reglas de calidad, supuestos y advertencias. Los nombres de tablas, relaciones y el JSON permanecen en **Detalles técnicos**, que puede consultar el analista, pero no son obligatorios para el gerente.
 
 Estados obligatorios: prerrequisito faltante, listo para generar, generando, proveedor agotado/inaccesible, respuesta inválida, errores de validación, listo para revisar, aprobado, rechazado y sustituido.
 
@@ -236,13 +277,17 @@ En móvil, cada sección es un acordeón y las acciones de decisión permanecen 
 - FastAPI obtiene la única configuración LLM activa y verifica una prueba exitosa; React no elige credenciales.
 - La URL se valida según el catálogo del proveedor del Sprint 2; no se aceptan destinos arbitrarios ni redirecciones.
 - El paquete se construye en backend. El cliente no puede inyectar metadatos ni instrucciones del sistema.
+- La solicitud de negocio se delimita, normaliza y limita; nunca se concatena con instrucciones privilegiadas ni se interpreta como SQL.
 - Se limita tamaño, duración, reintentos y respuesta. No se reintenta automáticamente una operación que pueda duplicar consumo sin idempotencia.
 - Eventos: `copilot.proposal.generate`, `provider_failed`, `validation_failed`, `ready_for_review`, `approve`, `reject`, `regenerate` y `supersede`.
 - La auditoría contiene ids, hashes, estado, proveedor/modelo y códigos de validación; nunca clave, prompt completo, cabeceras ni razonamiento del modelo.
 
 ## 9. Criterios de aceptación verificables
 
-- [ ] Sólo se puede generar con instantánea válida, alcance confirmado, permiso y configuración LLM activa/probada.
+- [ ] Sólo se puede generar con instantánea válida, solicitud de negocio confirmada, alcance derivado, permiso y configuración LLM activa/probada.
+- [ ] Un gerente puede completar el recorrido guiado sin seleccionar tablas, escribir identificadores ni conocer SQL.
+- [ ] El perfil de ventas deriva un alcance reproducible usando únicamente objetos y PK/FK existentes.
+- [ ] El modo avanzado está claramente separado y no acepta identificadores técnicos escritos libremente.
 - [ ] El proveedor recibe exclusivamente el paquete de metadatos permitido y nunca filas, secretos o usuarios.
 - [ ] La respuesta se acepta únicamente si cumple el contrato JSON versionado.
 - [ ] Una referencia inventada produce error determinístico y bloquea aprobación.
@@ -252,23 +297,26 @@ En móvil, cada sección es un acordeón y las acciones de decisión permanecen 
 - [ ] Rechazar requiere comentario; regenerar crea otra versión y no sobrescribe la anterior.
 - [ ] Una sola propuesta queda aprobada por análisis y la sustitución es explícita y transaccional.
 - [ ] La interfaz diferencia claramente contenido propuesto por IA, resultado del validador y decisión humana.
+- [ ] La explicación en español relaciona cada concepto de negocio con su identificador técnico consultable y no altera el esquema de origen.
+- [ ] La documentación declara que el futuro SQL será generado por el motor determinístico del Sprint 4 y no por el LLM ni por un programador durante cada análisis.
 - [ ] Errores, cuotas y tiempos agotados no exponen secretos ni dejan estados engañosos.
 - [ ] Todo el flujo se prueba con proveedor simulado en CI y al menos una prueba manual real documentada.
 
 ## 10. Plan de pruebas y evidencia
 
-- Unitarias: esquema JSON, tablas/columnas inventadas, joins, tipos numéricos, granularidad, fórmulas KPI y operaciones ETL.
+- Unitarias: solicitud de negocio, preselección por perfil, glosario, esquema JSON, tablas/columnas inventadas, joins, tipos numéricos, granularidad, fórmulas KPI y operaciones ETL.
 - Integración: estados, inmutabilidad, versiones, aprobación única, transacciones y auditoría.
 - Adaptadores: Gemini, Qwen Cloud y Ollama mediante respuestas simuladas; Ollama real como alternativa local.
 - Seguridad: 401/403, inyección de metadatos, URL no permitida, tamaño excesivo y sanitización de errores.
-- Frontend: prerrequisitos, secciones, advertencias, confirmaciones, estados y responsive.
+- Frontend: recorrido no técnico, modo avanzado, prerrequisitos, secciones, advertencias, confirmaciones, estados y responsive.
 - Evidencia académica: hash de entrada, versión de prompt/contrato, proveedor/modelo, propuesta validada y decisión humana.
 
 ## 11. Riesgos, dependencias y decisiones
 
 - `qwen2.5:3b` prioriza agilidad, pero puede producir propuestas menos completas: el contrato y el validador deben funcionar igual con cualquier proveedor aprobado.
-- El contexto local es limitado: el alcance de tablas es obligatorio y visible.
+- El contexto local es limitado: el alcance es compacto y visible, pero lo deriva la aplicación en el recorrido principal.
 - Una salida válida sintácticamente puede ser inadecuada para negocio: por eso la aprobación humana no se reemplaza por validación automática.
+- Un gerente puede validar utilidad y significado, pero no necesariamente relaciones técnicas: los validadores cubren integridad estructural y el modo avanzado queda para un analista BI.
 - Depende de SPR-03-01, configuración LLM de Sprint 2 y ADR 0003.
 
 ## 12. Resultado de implementación
