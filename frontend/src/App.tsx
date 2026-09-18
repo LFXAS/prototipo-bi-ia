@@ -1,8 +1,9 @@
-import { FormEvent, useEffect, useMemo, useState } from 'react'
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
   api,
   type AuditEvent,
+  type DataConnection,
   type LlmConfiguration,
   type Menu,
   type Page,
@@ -21,6 +22,7 @@ type PageData =
   | Page<Menu>
   | Page<Parameter>
   | Page<LlmConfiguration>
+  | Page<DataConnection>
   | Page<AuditEvent>
   | null
 type Row = Record<string, unknown>
@@ -36,6 +38,7 @@ const labels: Record<string, string> = {
   '/menus': 'Menús',
   '/parametros': 'Parámetros',
   '/llm': 'Configuración LLM',
+  '/conexiones': 'Conexiones de datos',
   '/auditoria': 'Auditoría',
 }
 
@@ -45,7 +48,8 @@ const writePermissions: Record<string, string> = {
   '/permisos': 'security.permissions.write',
   '/menus': 'security.menus.write',
   '/parametros': 'parameters.write',
-  '/llm': 'parameters.write',
+  '/llm': 'parameters.llm.write',
+  '/conexiones': 'connections.write',
 }
 
 const auditActionLabels: Record<string, string> = {
@@ -65,6 +69,8 @@ const auditActionLabels: Record<string, string> = {
   'security.menu.update': 'Actualización de menú',
   'security.menu.delete': 'Eliminación de menú',
   'parameters.llm.delete': 'Eliminación de configuración LLM',
+  'parameters.llm.credential.register': 'Registro de credencial LLM',
+  'parameters.llm.credential.replace': 'Reemplazo de credencial LLM',
   'security.menu.protected_change_rejected': 'Cambio rechazado en menú protegido',
   'security.menu.create_rejected': 'Creación manual de menú rechazada',
 }
@@ -92,6 +98,7 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({})
   const [sidebarHidden, setSidebarHidden] = useState(false)
+  const loadedPage = useRef(page)
 
   useEffect(() => {
     if (!token) return
@@ -113,9 +120,13 @@ export default function App() {
       '/menus': () => api.menus(token, pageSize, offset),
       '/parametros': () => api.parameters(token, pageSize, offset),
       '/llm': () => api.llm(token, pageSize, offset),
+      '/conexiones': () => api.connections(token, pageSize, offset),
       '/auditoria': () => api.audit(token, pageSize, offset),
     }
-    setData(null)
+    if (loadedPage.current !== page) {
+      loadedPage.current = page
+      setData(null)
+    }
     setMessage('')
     loads[page]?.().then(setData).catch((error: Error) => setMessage(error.message))
   }, [offset, page, revision, session, token])
@@ -183,7 +194,11 @@ export default function App() {
           <h1>{labels[page]}</h1>
           {page === '/'
             ? <Home session={session} />
-            : <ResourcePage key={page} page={page} data={data} message={message} token={token} canWrite={session.permissions.includes(writePermissions[page])} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />}
+            : page === '/conexiones'
+              ? <ConnectionsPage data={data as Page<DataConnection> | null} message={message} token={token} canWrite={session.permissions.includes('connections.write')} canTest={session.permissions.includes('connections.test')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
+              : page === '/parametros'
+                ? <ParametersPage data={data as Page<Parameter> | null} message={message} token={token} canWrite={session.permissions.includes('parameters.write')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
+                : <ResourcePage key={page} page={page} data={data} message={message} token={token} canWrite={session.permissions.includes(writePermissions[page])} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />}
         </section>
       </div>
     </main>
@@ -206,6 +221,9 @@ function Home({ session }: { session: Session }) {
 function ResourcePage({ page, data, message, token, canWrite, onSaved, onChangePage }: { page: string; data: PageData; message: string; token: string; canWrite: boolean; onSaved: () => void; onChangePage: (offset: number) => void }) {
   const [selected, setSelected] = useState<Row | null>(null)
   const [feedback, setFeedback] = useState<{ message: string; kind: 'success' | 'error' } | null>(null)
+  const [credentialTarget, setCredentialTarget] = useState<Row | null>(null)
+  const [credentialValue, setCredentialValue] = useState('')
+  const [credentialError, setCredentialError] = useState('')
   const rows = (data?.items ?? []) as unknown as Row[]
 
   async function toggleActive(row: Row) {
@@ -235,6 +253,28 @@ function ResourcePage({ page, data, message, token, canWrite, onSaved, onChangeP
     }
   }
 
+  async function saveCredential(event: FormEvent) {
+    event.preventDefault()
+    if (!credentialTarget) return
+    setCredentialError('')
+    setFeedback(null)
+    try {
+      const result = await api.saveLlmCredential(token, Number(credentialTarget.id), credentialValue)
+      setCredentialValue('')
+      setCredentialTarget(null)
+      setFeedback({ message: result.message, kind: 'success' })
+      onSaved()
+    } catch (caught) {
+      setCredentialError(caught instanceof Error ? caught.message : 'No fue posible proteger la credencial.')
+    }
+  }
+
+  function cancelCredential() {
+    setCredentialValue('')
+    setCredentialError('')
+    setCredentialTarget(null)
+  }
+
   async function remove(row: Row) {
     const label = readLabel(row)
     if (!window.confirm(`Eliminar definitivamente “${label}”? Esta acción no se puede deshacer.`)) return
@@ -259,17 +299,134 @@ function ResourcePage({ page, data, message, token, canWrite, onSaved, onChangeP
     {canWrite && !['/auditoria', '/permisos', '/parametros'].includes(page) && (page !== '/menus' || selected) && <CrudForm page={page} token={token} selected={selected} onSaved={() => { setSelected(null); onSaved() }} />}
     {canWrite && page === '/menus' && !selected && <p className="notice">Seleccione Editar en un menú registrado para ajustar su etiqueta, orden o permisos. Las rutas y claves internas las administra el sistema.</p>}
     {page === '/permisos' && <p className="notice">Este catálogo explica los permisos registrados por los módulos del sistema. Los permisos técnicos no se crean desde el navegador.</p>}
-    {page === '/parametros' && <p className="notice">No hay parámetros operativos habilitados todavía. Esta pantalla mostrará únicamente valores aprobados por un módulo que los consuma.</p>}
+    {credentialTarget && <form className="crud-form credential-form" onSubmit={saveCredential}>
+      <div className="form-title"><h2>{credentialTarget.credential_configured === true ? 'Reemplazar credencial' : 'Registrar credencial'}</h2><span>{String(credentialTarget.name)}</span></div>
+      <p>La clave se enviará una sola vez, se almacenará cifrada y no volverá a mostrarse.</p>
+      <label>API key<input type="password" autoComplete="new-password" minLength={8} maxLength={4096} value={credentialValue} onChange={(event) => setCredentialValue(event.target.value)} required autoFocus /></label>
+      <div className="form-actions"><button>Guardar credencial</button><button type="button" className="secondary" onClick={cancelCredential}>Cancelar</button></div>
+      {credentialError && <p className="notice error" role="alert">{credentialError}</p>}
+    </form>}
     {feedback && <p className={`notice ${feedback.kind}`} role={feedback.kind === 'error' ? 'alert' : 'status'}>{feedback.message}</p>}
     <div className="table-wrap">
       <table>
         <thead><tr><th>Elemento</th><th>Detalle</th><th>Estado</th>{canWrite && page !== '/auditoria' && <th>Acciones</th>}</tr></thead>
-        <tbody>{rows.map((row) => <tr key={String(row.id)}><td>{readLabel(row)}</td><td>{String(row.actor_label ?? row.email ?? row.description ?? row.provider_kind ?? row.resource_type ?? '—')}</td><td>{String(row.is_active ?? row.last_test_status ?? row.resource_type ?? 'Registrado')}</td>{canWrite && !['/auditoria', '/permisos', '/parametros'].includes(page) && <td><div className="row-actions"><button className="table-action" onClick={() => setSelected(row)}>Editar</button>{row.is_system_protected === true ? <span className="protected-label">Protegido</span> : <><button className="table-action secondary" onClick={() => toggleActive(row)}>{row.is_active === true ? 'Desactivar' : 'Activar'}</button><button className="table-action danger" onClick={() => remove(row)}>Eliminar</button></>}{page === '/llm' && <button className="table-action secondary" onClick={() => testLlm(row)}>Probar conexión</button>}</div></td>}</tr>)}</tbody>
+        <tbody>{rows.map((row) => <tr key={String(row.id)}><td>{readLabel(row)}</td><td>{page === '/llm' ? <><span>{String(row.provider_kind)}</span><br /><small>{row.provider_kind === 'ollama-local' ? 'No requiere credencial' : row.credential_configured === true ? 'Credencial configurada' : 'Credencial pendiente'}</small></> : String(row.actor_label ?? row.email ?? row.description ?? row.resource_type ?? '—')}</td><td>{String(row.is_active ?? row.last_test_status ?? row.resource_type ?? 'Registrado')}</td>{canWrite && !['/auditoria', '/permisos', '/parametros'].includes(page) && <td><div className="row-actions"><button className="table-action" onClick={() => setSelected(row)}>Editar</button>{row.is_system_protected === true ? <span className="protected-label">Protegido</span> : <><button className="table-action secondary" onClick={() => toggleActive(row)}>{row.is_active === true ? 'Desactivar' : 'Activar'}</button><button className="table-action danger" onClick={() => remove(row)}>Eliminar</button></>}{page === '/llm' && row.provider_kind !== 'ollama-local' && <button className="table-action secondary" onClick={() => { setCredentialTarget(row); setCredentialValue(''); setCredentialError('') }}>{row.credential_configured === true ? 'Reemplazar credencial' : 'Registrar credencial'}</button>}{page === '/llm' && <button className="table-action secondary" onClick={() => testLlm(row)}>Probar conexión</button>}</div></td>}</tr>)}</tbody>
       </table>
-      {page === '/llm' && <p className="notice">Las credenciales se leen por referencia desde el entorno y nunca se almacenan aquí.</p>}
+      {page === '/llm' && <p className="notice">Las credenciales cloud se registran desde esta pantalla, se almacenan cifradas y nunca se muestran nuevamente. Ollama local no requiere API key.</p>}
       {page === '/auditoria' && <p className="notice">La auditoría es de consulta: registra las acciones críticas, no se modifica desde la interfaz.</p>}
       <Pagination page={data} onChange={onChangePage} />
     </div>
+  </>
+}
+
+const emptyConnection = {
+  name: '', host: '', port: '1433', database_name: '', username: '', password: '', encrypt: true, trust_server_certificate: true,
+}
+
+function ConnectionsPage({ data, message, token, canWrite, canTest, onSaved, onChangePage }: { data: Page<DataConnection> | null; message: string; token: string; canWrite: boolean; canTest: boolean; onSaved: () => void; onChangePage: (offset: number) => void }) {
+  const [selected, setSelected] = useState<DataConnection | null>(null)
+  const [values, setValues] = useState(emptyConnection)
+  const [feedback, setFeedback] = useState<{ message: string; kind: 'success' | 'error' } | null>(null)
+
+  function beginEdit(item: DataConnection) {
+    setSelected(item)
+    setValues({ name: item.name, host: item.host, port: String(item.port), database_name: item.database_name, username: item.username, password: '', encrypt: item.encrypt, trust_server_certificate: item.trust_server_certificate })
+    setFeedback(null)
+  }
+
+  function cancelEdit() {
+    setSelected(null)
+    setValues(emptyConnection)
+  }
+
+  async function submit(event: FormEvent) {
+    event.preventDefault()
+    setFeedback(null)
+    const body = { connector_kind: 'sqlserver', name: values.name, host: values.host, port: Number(values.port), database_name: values.database_name, username: values.username, encrypt: values.encrypt, trust_server_certificate: values.trust_server_certificate, ...(!selected || values.password ? { password: values.password } : {}) }
+    try {
+      if (selected) await api.upsert(`/connections/${selected.id}`, token, body)
+      else await api.create('/connections', token, body)
+      cancelEdit()
+      onSaved()
+    } catch (caught) {
+      setFeedback({ message: caught instanceof Error ? caught.message : 'No fue posible guardar la conexión.', kind: 'error' })
+    }
+  }
+
+  async function perform(item: DataConnection, action: 'test' | 'activate' | 'deactivate' | 'delete') {
+    if (action === 'delete' && !window.confirm(`Eliminar definitivamente “${item.name}”?`)) return
+    setFeedback(null)
+    try {
+      if (action === 'test') {
+        const result = await api.testConnection(token, item.id)
+        setFeedback({ message: result.message, kind: result.ok ? 'success' : 'error' })
+      } else if (action === 'activate') {
+        await api.activateConnection(token, item.id)
+        setFeedback({ message: 'La fuente quedó activa para los siguientes pasos del Sprint 3.', kind: 'success' })
+      } else if (action === 'deactivate') {
+        await api.deactivateConnection(token, item.id)
+        setFeedback({ message: 'La fuente fue desactivada.', kind: 'success' })
+      } else {
+        await api.remove(`/connections/${item.id}`, token)
+        setFeedback({ message: 'La conexión y su contraseña cifrada fueron eliminadas.', kind: 'success' })
+      }
+      onSaved()
+    } catch (caught) {
+      setFeedback({ message: caught instanceof Error ? caught.message : 'No fue posible completar la acción.', kind: 'error' })
+    }
+  }
+
+  if (message) return <p className="notice error">{message}</p>
+  if (!data) return <p className="notice">Cargando información…</p>
+  return <>
+    <p className="lead">Registre una fuente SQL Server sin editar archivos. La contraseña se cifra y nunca vuelve a mostrarse.</p>
+    {canWrite && <form className="crud-form" onSubmit={submit}>
+      <div className="form-title"><h2>{selected ? 'Editar conexión' : 'Registrar conexión'}</h2><span>En este sprint se admite una única fuente activa y sólo el motor SQL Server.</span></div>
+      <div className="form-grid">
+        <label>Nombre visible<input required minLength={3} maxLength={120} value={values.name} onChange={(event) => setValues({ ...values, name: event.target.value })} /></label>
+        <label>Motor<select value="sqlserver" disabled><option value="sqlserver">SQL Server</option></select></label>
+        <label>Servidor<input required placeholder="sqlserver o servidor.empresa.local" value={values.host} onChange={(event) => setValues({ ...values, host: event.target.value })} /></label>
+        <label>Puerto<input required type="number" min="1" max="65535" value={values.port} onChange={(event) => setValues({ ...values, port: event.target.value })} /></label>
+        <label>Base de datos<input required placeholder="AdventureWorks2022" value={values.database_name} onChange={(event) => setValues({ ...values, database_name: event.target.value })} /></label>
+        <label>Usuario de sólo lectura<input required value={values.username} onChange={(event) => setValues({ ...values, username: event.target.value })} /></label>
+        <label>Contraseña<input required={!selected} type="password" minLength={8} autoComplete="new-password" placeholder={selected ? 'Déjela vacía para conservarla' : ''} value={values.password} onChange={(event) => setValues({ ...values, password: event.target.value })} /></label>
+      </div>
+      <div className="connection-options"><label><input type="checkbox" checked={values.encrypt} onChange={(event) => setValues({ ...values, encrypt: event.target.checked })} /> Cifrar transporte</label><label><input type="checkbox" checked={values.trust_server_certificate} onChange={(event) => setValues({ ...values, trust_server_certificate: event.target.checked })} /> Confiar en certificado local</label></div>
+      <div className="form-actions"><button>{selected ? 'Guardar cambios' : 'Registrar conexión'}</button>{selected && <button type="button" className="secondary" onClick={cancelEdit}>Cancelar</button>}</div>
+    </form>}
+    {feedback && <p className={`notice ${feedback.kind}`} role={feedback.kind === 'error' ? 'alert' : 'status'}>{feedback.message}</p>}
+    <div className="table-wrap"><table><thead><tr><th>Fuente</th><th>Destino</th><th>Validación</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>{data.items.map((item) => <tr key={item.id}><td><strong>{item.name}</strong><br /><small>SQL Server</small></td><td>{item.host}:{item.port}<br /><small>{item.database_name} · {item.username}</small></td><td>{item.last_test_status === 'ok' ? 'Sólo lectura validada' : item.last_test_status === 'error' ? 'Prueba fallida' : 'Pendiente'}{item.last_tested_at && <><br /><small>{new Date(item.last_tested_at).toLocaleString('es-EC')}</small></>}</td><td>{item.is_active ? 'Activa' : 'Inactiva'}</td><td><div className="row-actions">{canWrite && !item.is_active && <button className="table-action" onClick={() => beginEdit(item)}>Editar</button>}{canTest && <button className="table-action secondary" onClick={() => perform(item, 'test')}>Probar conexión</button>}{canWrite && (item.is_active ? <button className="table-action secondary" onClick={() => perform(item, 'deactivate')}>Desactivar</button> : <button className="table-action secondary" disabled={item.last_test_status !== 'ok'} onClick={() => perform(item, 'activate')}>Activar</button>)}{canWrite && !item.is_active && <button className="table-action danger" onClick={() => perform(item, 'delete')}>Eliminar</button>}</div></td></tr>)}</tbody></table>{data.items.length === 0 && <p className="notice">Todavía no hay conexiones registradas.</p>}<Pagination page={data} onChange={onChangePage} /></div>
+  </>
+}
+
+function ParametersPage({ data, message, token, canWrite, onSaved, onChangePage }: { data: Page<Parameter> | null; message: string; token: string; canWrite: boolean; onSaved: () => void; onChangePage: (offset: number) => void }) {
+  const [values, setValues] = useState<Record<string, string>>({})
+  const [feedback, setFeedback] = useState<{ message: string; kind: 'success' | 'error' } | null>(null)
+  useEffect(() => { if (data) setValues(Object.fromEntries(data.items.map((item) => [item.key, item.value]))) }, [data])
+
+  async function save(item: Parameter) {
+    setFeedback(null)
+    try {
+      await api.upsert(`/parameters/${item.key}`, token, { value: values[item.key] })
+      setFeedback({ message: `${item.name} fue actualizado.`, kind: 'success' })
+      onSaved()
+    } catch (caught) { setFeedback({ message: caught instanceof Error ? caught.message : 'No fue posible guardar el parámetro.', kind: 'error' }) }
+  }
+  async function reset(item: Parameter) {
+    setFeedback(null)
+    try {
+      await api.resetParameter(token, item.key)
+      setFeedback({ message: `${item.name} volvió a su valor predeterminado.`, kind: 'success' })
+      onSaved()
+    } catch (caught) { setFeedback({ message: caught instanceof Error ? caught.message : 'No fue posible restaurar el parámetro.', kind: 'error' }) }
+  }
+  if (message) return <p className="notice error">{message}</p>
+  if (!data) return <p className="notice">Cargando información…</p>
+  return <>
+    <p className="lead">Estos son los únicos parámetros operativos aprobados. No se pueden crear claves libres ni guardar secretos aquí.</p>
+    {feedback && <p className={`notice ${feedback.kind}`} role={feedback.kind === 'error' ? 'alert' : 'status'}>{feedback.message}</p>}
+    <div className="parameter-grid">{data.items.map((item) => <article className="parameter-card" key={item.id}><div><p className="eyebrow">{item.module_code}</p><h2>{item.name}</h2><p>{item.description}</p><small>{item.key}</small></div><label>Valor<input type="number" min={item.min_value} max={item.max_value} value={values[item.key] ?? item.value} disabled={!canWrite} onChange={(event) => setValues({ ...values, [item.key]: event.target.value })} /></label><p className="parameter-range">Rango: {item.min_value}–{item.max_value} · Predeterminado: {item.default_value}</p>{canWrite && <div className="row-actions"><button onClick={() => save(item)}>Guardar</button><button className="secondary" onClick={() => reset(item)} disabled={item.value === item.default_value}>Restaurar</button></div>}</article>)}</div>
+    <Pagination page={data} onChange={onChangePage} />
   </>
 }
 
@@ -362,8 +519,8 @@ function formConfig(page: string, token: string, roles: Role[], permissions: Per
     update: (row, v) => api.update(`/menus/${row.id}`, token, { label: v.label, position: Number(v.position), permission_ids: parseSelectedIds(v.permission_ids) }),
   }
   return {
-    singular: 'configuración LLM', createTitle: 'Crear configuración LLM', help: 'Seleccione proveedor y modelo. La clave se conserva sólo en el entorno. Para Ollama Docker use http://ollama:11434 y descargue el modelo antes de probar la conexión.',
-    fields: [{ key: 'name', label: 'Nombre de configuración' }, { key: 'provider_kind', label: 'Proveedor', kind: 'select', options: [{ value: '', label: 'Seleccione un proveedor' }, { value: 'gemini', label: 'Gemini Cloud — usa GEMINI_API_KEY' }, { value: 'qwen-cloud', label: 'Qwen Cloud — usa DASHSCOPE_API_KEY' }, { value: 'ollama-local', label: 'Ollama local — red interna Docker' }] }, { key: 'base_url', label: 'URL del servicio', placeholder: 'Ollama Docker: http://ollama:11434' }, { key: 'model_id', label: 'Modelo', placeholder: 'Ejemplo local recomendado: qwen2.5:3b' }],
+    singular: 'configuración LLM', createTitle: 'Crear configuración LLM', help: 'Seleccione proveedor y modelo. Después de guardar, registre aquí la credencial del proveedor cloud. Para Ollama Docker use http://ollama:11434 y descargue el modelo antes de probar la conexión.',
+    fields: [{ key: 'name', label: 'Nombre de configuración' }, { key: 'provider_kind', label: 'Proveedor', kind: 'select', options: [{ value: '', label: 'Seleccione un proveedor' }, { value: 'gemini', label: 'Gemini Cloud' }, { value: 'qwen-cloud', label: 'Qwen Cloud' }, { value: 'ollama-local', label: 'Ollama local — no requiere API key' }] }, { key: 'base_url', label: 'URL del servicio', placeholder: 'Ollama Docker: http://ollama:11434' }, { key: 'model_id', label: 'Modelo', placeholder: 'Ejemplo local recomendado: qwen2.5:3b' }],
     empty: { name: '', provider_kind: '', base_url: '', model_id: '' }, read: (row) => ({ name: String(row.name), provider_kind: String(row.provider_kind), base_url: String(row.base_url), model_id: String(row.model_id) }),
     create: (v) => api.create('/llm-configurations', token, { ...v, is_active: false }),
     update: (row, v) => api.upsert(`/llm-configurations/${row.id}`, token, { ...v, is_active: active(row) === 'true' }),

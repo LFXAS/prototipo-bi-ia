@@ -64,8 +64,7 @@ services:
       JWT_ACCESS_TOKEN_MINUTES: ${JWT_ACCESS_TOKEN_MINUTES:-30}
       BOOTSTRAP_ADMIN_EMAIL: ${BOOTSTRAP_ADMIN_EMAIL:-admin@bi.local}
       BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-ChangeMe_Admin_2026!}
-      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
-      DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY:-}
+      SECRETS_KEY_PATH: /var/lib/bi-ia-secrets/master.key
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
       POSTGRES_DB: ${POSTGRES_DB:-bi_prototype}
@@ -84,6 +83,7 @@ services:
       - "${BACKEND_PORT:-8000}:8000"
     volumes:
       - ./backend:/app
+      - secret_key_data:/var/lib/bi-ia-secrets
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8000/api/v1/health/live"]
       interval: 10s
@@ -201,3 +201,4 @@ volumes:
   sqlserver_data:
   frontend_node_modules:
   ollama_models:
+  secret_key_data:

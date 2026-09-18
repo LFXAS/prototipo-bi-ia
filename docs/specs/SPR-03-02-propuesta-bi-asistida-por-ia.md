@@ -52,7 +52,7 @@ Si falta un prerrequisito, la interfaz explica el paso necesario y no envía una
 
 ### 3.2 Flujo principal
 
-1. El gerente o analista elige **Analizar ventas** y expresa qué necesita conocer mediante campos de negocio en español.
+1. El analista BI elige **Analizar ventas** y registra qué necesita conocer el área comercial mediante campos de negocio en español.
 2. FastAPI valida la solicitud y divide la instantánea en bloques que conservan nombres, tipos, PK y FK.
 3. El LLM identifica en cada bloque posibles conceptos de ventas y los explica en español.
 4. FastAPI elimina cualquier referencia inexistente y une únicamente candidatos conectados por relaciones declaradas.
@@ -286,7 +286,7 @@ La ruta visible **IA > Asistente de análisis** usa un flujo guiado:
 3. Propuesta y validación automática.
 4. Revisión humana.
 
-El recorrido principal usa las etiquetas españolas generadas para la fuente activa y explica qué podrá obtenerse. Cada concepto muestra su explicación y un acceso **Ver origen técnico**. La propuesta se presenta por secciones: significado de la venta, granularidad, dimensiones, medidas, KPIs, plan ETL, reglas de calidad, supuestos y advertencias. Los nombres de tablas, relaciones y el JSON permanecen en **Detalles técnicos**, que puede consultar el analista, pero no son obligatorios para el gerente.
+El recorrido principal usa las etiquetas españolas generadas para la fuente activa y explica qué podrá obtenerse. Cada concepto muestra su explicación y un acceso **Ver origen técnico**. La propuesta se presenta por secciones: significado de la venta, granularidad, dimensiones, medidas, KPIs, plan ETL, reglas de calidad, supuestos y advertencias. Los nombres de tablas, relaciones y el JSON permanecen en **Detalles técnicos**, que el analista consulta sólo cuando necesita verificar la trazabilidad.
 
 Estados obligatorios: prerrequisito faltante, generando, proveedor inaccesible, validación fallida, listo para revisar, aprobado y rechazado.
 
@@ -306,7 +306,7 @@ En móvil, cada sección es un acordeón y las acciones de decisión permanecen 
 ## 9. Criterios de aceptación verificables
 
 - [ ] Sólo se puede generar con instantánea válida, solicitud de negocio confirmada, alcance derivado, permiso y configuración LLM activa/probada.
-- [ ] Un gerente puede completar el recorrido guiado sin seleccionar tablas, escribir identificadores ni conocer SQL.
+- [ ] Un analista BI puede completar el recorrido guiado sin seleccionar manualmente tablas, escribir identificadores ni programar SQL.
 - [ ] El descubrimiento por bloques deriva un alcance reproducible usando únicamente objetos y PK/FK existentes.
 - [ ] El proveedor recibe exclusivamente el paquete de metadatos permitido y nunca filas, secretos o usuarios.
 - [ ] La respuesta se acepta únicamente si cumple el contrato JSON versionado.
@@ -337,7 +337,7 @@ En móvil, cada sección es un acordeón y las acciones de decisión permanecen 
 - `qwen2.5:3b` prioriza agilidad, pero puede producir propuestas menos completas: el contrato y el validador deben funcionar igual con cualquier proveedor aprobado.
 - El contexto local es limitado: FastAPI procesa bloques con presupuesto estable y conserva trazabilidad; esto puede requerir varias llamadas y debe mostrar progreso y consumo.
 - Una salida válida sintácticamente puede ser inadecuada para negocio: por eso la aprobación humana no se reemplaza por validación automática.
-- Un gerente puede validar utilidad y significado, pero no necesariamente relaciones técnicas: los validadores cubren integridad estructural y el explorador de sólo lectura permite al analista BI comprobar el origen.
+- El gerente aporta la necesidad y los criterios de utilidad; el analista BI revisa la propuesta. Los validadores cubren la integridad estructural y el explorador de sólo lectura permite comprobar el origen sin escribir SQL.
 - La interpretación dinámica puede asignar etiquetas imprecisas aunque las referencias existan: por eso cada concepto muestra confianza, explicación y origen, y requiere aprobación humana.
 - Depende de SPR-03-01, SPR-03-04 y ADR 0003.
 

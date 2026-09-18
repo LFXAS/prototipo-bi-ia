@@ -45,6 +45,9 @@ FROM base AS production
 RUN pip install "." \
     && addgroup --system app \
     && adduser --system --ingroup app app \
+    && mkdir -p /var/lib/bi-ia-secrets \
+    && chmod 700 /var/lib/bi-ia-secrets \
+    && chown app:app /var/lib/bi-ia-secrets \
     && chown -R app:app /app
 USER app
 EXPOSE 8000

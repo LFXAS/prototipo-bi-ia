@@ -12,9 +12,9 @@ La fuente pública funcional es AdventureWorks. Los datos sintéticos se utiliza
 
 ### Usuarios previstos
 
-El prototipo está dirigido principalmente a un gerente comercial, analista de negocio o responsable de datos de una PyME que conoce las preguntas de ventas, pero no necesita programar. Una persona administradora configura desde la plataforma las conexiones, credenciales, proveedor LLM y permisos; un analista BI puede revisar detalles avanzados. El equipo de desarrollo construye el motor general y no prepara consultas por cada análisis.
+El usuario operativo principal del Sprint 3 es el analista BI o responsable de datos. Registra la necesidad del área comercial, utiliza el asistente, resuelve ambigüedades y revisa la propuesta sin programar ni escribir SQL. Una persona administradora configura desde la plataforma las conexiones, credenciales, proveedor LLM y permisos. El equipo de desarrollo construye el motor general y no prepara consultas por cada análisis.
 
-La participación del usuario final comienza en Sprint 3 al formular y revisar una solicitud de negocio. Los resultados calculados para toma de decisiones estarán disponibles después de la materialización del datamart y el ETL en Sprint 4; los hallazgos y el pronóstico completarán la experiencia en las fases analíticas posteriores.
+El gerente comercial es el usuario final de la información: aporta las preguntas y los criterios de utilidad y, después de la materialización del datamart y el ETL, consume KPIs, visualizaciones, hallazgos y pronósticos para apoyar decisiones. No valida relaciones, granularidad ni el plan ETL. La participación funcional comienza en Sprint 3 con el analista BI; los resultados calculados estarán disponibles desde los sprints posteriores.
 
 ### Objetivo general
 

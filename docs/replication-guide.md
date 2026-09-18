@@ -64,6 +64,24 @@ curl http://localhost:8000/api/v1/health/ready
 
 Abre <http://localhost:5173> y <http://localhost:8000/docs>.
 
+### Registrar una credencial LLM cloud
+
+Las API keys de Gemini y Qwen no se escriben en `.env`. Inicia sesión como una persona con `parameters.llm.write`, abre **Parámetros generales > Configuración LLM**, guarda el proveedor y usa **Registrar credencial**. Después de guardarla, la interfaz sólo mostrará **Credencial configurada** y permitirá reemplazarla, nunca consultarla.
+
+FastAPI cifra el valor en PostgreSQL y genera automáticamente la raíz criptográfica en el volumen `secret_key_data`. Ambos elementos son necesarios para recuperar la credencial después de reiniciar. No copies ese volumen entre equipos ni lo publiques; cada instalación debe registrar sus propias claves desde la web. Ollama local no requiere credencial.
+
+### Registrar AdventureWorks como fuente activa
+
+Inicia sesión con una persona que disponga de `connections.read`, `connections.write` y `connections.test`. Abre **Parámetros generales > Conexiones de datos** y registra:
+
+- nombre visible: `AdventureWorks local`;
+- servidor: `sqlserver`;
+- puerto: `1433`;
+- base, usuario y contraseña definidos al crear la instalación;
+- cifrado de transporte y confianza del certificado local activados para el entorno Docker académico.
+
+Guarda, ejecuta **Probar conexión** y activa únicamente cuando la pantalla confirme **Sólo lectura validada**. La contraseña queda cifrada y no vuelve al navegador. Cambiar host, base, usuario u opciones invalida la prueba anterior y obliga a probar nuevamente.
+
 ### Añadir la vista Nginx de entrega
 
 Sin detener ni reemplazar los cuatro servicios de desarrollo:

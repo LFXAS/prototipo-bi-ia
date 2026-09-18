@@ -1,6 +1,6 @@
 # SPR-02-03: parámetros generales y configuración segura de LLM
 
-- Estado: **base implementada; corrección de credenciales web pendiente como prerrequisito del Sprint 3**.
+- Estado: **implementada, incluida la corrección de credenciales web del 2026-09-18**.
 - Pertenece a: [SPR-02-rbac-y-parametros.md](SPR-02-rbac-y-parametros.md).
 - Última revisión funcional: 2026-09-10.
 
@@ -59,7 +59,7 @@ Los campos se inicializan exclusivamente con una configuración LLM seleccionada
 4. La interfaz informa éxito en una notificación verde con icono o texto de confirmación, o una causa segura en una notificación roja: clave no disponible, URL no permitida, servicio inaccesible, modelo no descargado/disponible o tiempo agotado. Para Ollama, consultar `/api/tags` valida primero el servicio y después comprueba que el modelo seleccionado esté realmente descargado. El estado visual no se reutiliza entre éxito y error.
 5. Se persisten y auditan resultado, fecha y duración; no se persiste ni presenta la clave ni el contenido de la respuesta.
 
-### 3.3 Corrección requerida antes del Sprint 3
+### 3.3 Corrección completada antes del Sprint 3
 
 La versión entregada en Sprint 2 usa `GEMINI_API_KEY` y `DASHSCOPE_API_KEY` desde `.env`. Esa solución permitió comprobar los adaptadores, pero obliga a intervenir archivos y no satisface la operación esperada del producto. Se corrige dentro del mismo módulo de Configuración LLM:
 
@@ -69,7 +69,7 @@ La versión entregada en Sprint 2 usa `GEMINI_API_KEY` y `DASHSCOPE_API_KEY` des
 4. Después de una prueba exitosa, la variable anterior puede retirarse del `.env` local.
 5. No se implementa migración automática del valor ni gestión empresarial de claves.
 
-El Sprint 3 reutiliza este mismo servicio de secretos para la contraseña de la fuente SQL Server. Así la corrección no duplica mecanismos ni convierte al usuario en administrador de archivos.
+La migración `20260918_06` incorpora `app.secrets` y la referencia desde `llm_configurations`. La raíz criptográfica se genera con permisos restrictivos en el volumen `secret_key_data`; las pruebas verifican cifrado, alteración de texto cifrado, persistencia después de reiniciar y eliminación sin secretos huérfanos. El Sprint 3 reutilizará este servicio para la contraseña de la fuente SQL Server.
 
 ## 4. Reglas técnicas
 
@@ -84,14 +84,14 @@ El Sprint 3 reutiliza este mismo servicio de secretos para la contraseña de la 
 
 ## 5. Criterios de aceptación
 
-- [ ] Parámetros generales sólo presenta configuraciones del catálogo aprobado, con nombre humano, propósito, tipo, validación y módulo consumidor; no permite claves libres ni secretos.
-- [ ] Cuando no hay parámetros habilitados, se muestra estado vacío propio y no datos residuales ni `undefined` de otra pantalla.
-- [ ] Configuración LLM muestra sólo sus datos y ayudas contextuales; nunca hereda el registro seleccionado de Roles, Usuarios, Permisos, Menús o Parámetros.
-- [ ] El proveedor se selecciona de Gemini Cloud, Qwen Cloud u Ollama local; credencial, URL y modelo se validan según esa elección.
-- [ ] La prueba de conexión se ejecuta en FastAPI, no contiene datos de negocio, no revela secretos y deja resultado seguro/auditable.
-- [ ] Con Ollama local, la prueba falla de manera comprensible si el servicio no está disponible o si el modelo indicado aún no fue descargado; sólo confirma éxito cuando ambas condiciones se cumplen.
-- [ ] El perfil local de Ollama es opcional, no se inicia en el flujo normal ni en CI/CD, conserva sus modelos por equipo en un volumen propio y no expone un puerto público.
-- [ ] Una prueba LLM exitosa se muestra como confirmación visual verde y accesible; un fallo se muestra como alerta roja. No se presenta un éxito con estilo de error.
-- [ ] La API nunca devuelve claves de proveedor; PostgreSQL conserva únicamente su representación cifrada.
-- [ ] Gemini y Qwen pueden configurarse y probarse desde la web sin editar `.env` después de completar la corrección.
-- [ ] Sólo una configuración LLM queda activa y el cambio conserva auditoría.
+- [x] Parámetros generales sólo presenta configuraciones del catálogo aprobado, con nombre humano, propósito, tipo, validación y módulo consumidor; no permite claves libres ni secretos.
+- [x] Cuando no hay parámetros habilitados, se muestra estado vacío propio y no datos residuales ni `undefined` de otra pantalla.
+- [x] Configuración LLM muestra sólo sus datos y ayudas contextuales; nunca hereda el registro seleccionado de Roles, Usuarios, Permisos, Menús o Parámetros.
+- [x] El proveedor se selecciona de Gemini Cloud, Qwen Cloud u Ollama local; credencial, URL y modelo se validan según esa elección.
+- [x] La prueba de conexión se ejecuta en FastAPI, no contiene datos de negocio, no revela secretos y deja resultado seguro/auditable.
+- [x] Con Ollama local, la prueba falla de manera comprensible si el servicio no está disponible o si el modelo indicado aún no fue descargado; sólo confirma éxito cuando ambas condiciones se cumplen.
+- [x] El perfil local de Ollama es opcional, no se inicia en el flujo normal ni en CI/CD, conserva sus modelos por equipo en un volumen propio y no expone un puerto público.
+- [x] Una prueba LLM exitosa se muestra como confirmación visual verde y accesible; un fallo se muestra como alerta roja. No se presenta un éxito con estilo de error.
+- [x] La API nunca devuelve claves de proveedor; PostgreSQL conserva únicamente su representación cifrada.
+- [x] Gemini y Qwen pueden configurarse y probarse desde la web sin editar `.env` después de completar la corrección.
+- [x] Sólo una configuración LLM queda activa y el cambio conserva auditoría.

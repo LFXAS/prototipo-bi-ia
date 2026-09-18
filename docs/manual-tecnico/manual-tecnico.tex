@@ -120,7 +120,7 @@ El documento cubre tres modalidades:
   \item \textbf{Ejecución de una entrega completa}: descarga imágenes de GitHub Container Registry (GHCR) en un proyecto Compose aislado.
 \end{enumerate}
 
-La versión actual conserva la infraestructura y salud técnica del Sprint 1 e implementa el núcleo administrativo del Sprint 2: autenticación JWT, RBAC, auditoría, parámetros controlados y configuración LLM. Los módulos BI de negocio (metadatos, ETL, datamart, dashboard, reportería y Copiloto BI) continúan fuera de este incremento.
+La versión actual conserva la infraestructura del Sprint 1 y el núcleo administrativo del Sprint 2: autenticación JWT, RBAC, auditoría y configuración LLM. El primer incremento del Sprint 3 añade parámetros tipados y la administración web de una fuente SQL Server con secreto cifrado, prueba de sólo lectura y activación única. Metadatos, ETL, datamart, dashboard, reportería y Copiloto BI continúan fuera de este incremento.
 
 \section{Arquitectura operativa}
 
@@ -152,10 +152,11 @@ La versión actual conserva la infraestructura y salud técnica del Sprint 1 e i
   postgres & Configuración interna y futuro datamart & 55432 & Volumen \file{postgres\_data} \\
   sqlserver & Fuente AdventureWorks externa & 51433 & Volumen \file{sqlserver\_data} \\
   ollama & LLM local opcional, sólo red interna & No publicado & Volumen \file{ollama\_models} \\
+  raíz criptográfica & Clave local para cifrar secretos autorizados & No aplica & Volumen \file{secret\_key\_data} \\
   \bottomrule
 \end{tabularx}
 
-Compose crea la red y los volúmenes de desarrollo bajo el nombre lógico \file{bi-ia-prototype}. El perfil \file{delivery} sólo añade Nginx a esa red; el perfil opcional \file{local-llm} añade Ollama sin publicar el puerto 11434 en el host. El Compose completo de entrega usa \file{bi-ia-prototype-release}, otra red, otros puertos y otros volúmenes. Ninguno usa contenedores PostgreSQL o SQL Server ajenos al proyecto.
+Compose crea la red y los volúmenes de desarrollo bajo el nombre lógico \file{bi-ia-prototype}. El perfil \file{delivery} sólo añade Nginx a esa red; el perfil opcional \file{local-llm} añade Ollama sin publicar el puerto 11434 en el host. El volumen \file{secret\_key\_data} se monta exclusivamente en FastAPI. El Compose completo de entrega usa \file{bi-ia-prototype-release}, otra red, otros puertos y otros volúmenes. Ninguno usa contenedores PostgreSQL o SQL Server ajenos al proyecto.
 
 \subsection{Estructura del repositorio}
 
@@ -233,8 +234,7 @@ Se deben reemplazar todos los valores que empiecen con \file{ChangeMe\_*}. Las c
   \file{SQLSERVER\_SA\_PASSWORD} & secreto local & Clave administrativa usada sólo durante inicialización. \\
   \file{IMAGE\_PREFIX} & ruta GHCR & Prefijo de las imágenes publicadas. \\
   \file{IMAGE\_TAG} & \file{main} & Entrega a ejecutar; se recomienda una etiqueta versionada. \\
-  \file{GEMINI\_API\_KEY} & vacío & Clave opcional de Gemini; nunca se escribe desde la interfaz. \\
-  \file{DASHSCOPE\_API\_KEY} & vacío & Clave opcional de Qwen Cloud; nunca se escribe desde la interfaz. \\
+  Credencial Gemini/Qwen & interfaz web & Se registra o reemplaza desde Configuración LLM; no pertenece a \file{.env}. \\
   \file{OLLAMA\_MODEL} & \file{qwen2.5:3b} & Modelo local ágil que se descarga explícitamente por equipo. \\
   \file{OLLAMA\_CONTEXT\_LENGTH} & 2048 & Límite local de contexto para controlar consumo de memoria y priorizar agilidad. \\
   \bottomrule
@@ -377,7 +377,7 @@ La navegación muestra sólo menús autorizados y los organiza así:
   \midrule
   Inicio & Resumen inicial de la sesión y punto de entrada directo. \\
   Seguridad & Usuarios, Roles, Permisos, Menús y Auditoría. \\
-  Parámetros generales & Parámetros operativos aprobados y Configuración LLM. \\
+  Parámetros generales & Parámetros operativos aprobados, Configuración LLM y Conexiones de datos. \\
   \bottomrule
 \end{tabularx}
 \end{center}
@@ -402,11 +402,25 @@ Toda mutación administrativa genera un evento de auditoría con actor, fecha, a
 
 \subsection{Parámetros generales}
 
-La pantalla Parámetros no es una tabla libre de clave/valor. Sólo muestra valores previamente aprobados mediante un catálogo que define nombre humano, descripción, módulo consumidor, tipo, límites y valor permitido. Mientras el Sprint 2 no tenga un módulo consumidor que requiera parámetros operativos, la pantalla presenta un estado vacío explicativo. El catálogo queda diferido al sprint que implemente su primer consumidor, como ETL, reportería o analítica, y deberá llegar con especificación, validaciones, pruebas y auditoría. Esta decisión evita guardar valores arbitrarios que el software no interpretaría.
+La pantalla Parámetros no es una tabla libre de clave/valor. Sólo muestra valores aprobados mediante un catálogo que define nombre humano, descripción, módulo consumidor, tipo, rango y valor predeterminado. El primer incremento del Sprint 3 registra \file{UI\_PAGE\_SIZE}, \file{CONNECTION\_TIMEOUT\_SECONDS}, \file{LLM\_TIMEOUT\_SECONDS} y \file{METADATA\_BLOCK\_MAX\_ITEMS}. El administrador puede cambiar un entero dentro del rango o restaurarlo; no puede crear claves arbitrarias ni guardar secretos. FastAPI valida cada cambio y lo audita.
+
+En el estado actual, los tiempos máximos de conexión y LLM ya controlan sus respectivas pruebas. Los límites de interfaz y bloques de metadatos se consumirán por sus respectivos incrementos del Sprint 3 antes del cierre; se registran desde ahora para mantener un único catálogo versionado.
+
+\subsection{Conexiones de datos}
+
+La pantalla \textbf{Conexiones de datos} permite registrar nombre, servidor, puerto, base, usuario, contraseña y opciones controladas de cifrado para SQL Server. No acepta una cadena de conexión libre. La contraseña se cifra en \file{app.secrets}; React recibe sólo los campos no secretos y nunca recupera el valor guardado. Al editar, dejarla vacía conserva la credencial existente y cualquier cambio invalida la prueba anterior.
+
+\textbf{Probar conexión} abre SQL Server con intención de lectura, consulta el catálogo y comprueba que la cuenta no pertenezca a \file{db\_owner} o \file{db\_datawriter} ni posea permisos de inserción, actualización, eliminación, creación de tablas o control. Una prueba fallida no puede activarse. La base de datos refuerza que exista una sola conexión activa y FastAPI audita creación, edición, prueba, activación, desactivación y eliminación sin guardar cadenas completas.
+
+En el entorno Docker académico se registra el host \file{sqlserver}, puerto 1433, base \file{AdventureWorks2022} y usuario lector aprovisionado durante el arranque. Las variables de \file{.env} siguen siendo necesarias para construir la instancia local, pero la operación del flujo BI usa la credencial registrada desde la plataforma.
 
 \subsection{Configuración LLM cloud y local}
 
-La pantalla Configuración LLM mantiene configuraciones no secretas: nombre, proveedor, URL validada, modelo, estado y resultado de prueba. Puede existir una sola configuración activa. Gemini Cloud utiliza la referencia \file{GEMINI\_API\_KEY}; Qwen Cloud utiliza \file{DASHSCOPE\_API\_KEY}; ambas claves permanecen exclusivamente en \file{.env}. Para probar una configuración cloud se guarda el registro, se usa \textbf{Probar conexión} y se revisa el aviso verde de éxito o rojo con causa segura. La prueba sale desde FastAPI, con tiempo limitado y sin datos del negocio.
+La pantalla Configuración LLM mantiene nombre, proveedor, URL validada, modelo, estado y resultado de prueba. Puede existir una sola configuración activa. Para Gemini o Qwen Cloud se guarda primero el registro y después se usa \textbf{Registrar credencial}; cuando ya existe, la acción cambia a \textbf{Reemplazar credencial}. La clave se envía una sola vez y nunca vuelve al navegador. La tabla sólo presenta \textbf{Credencial pendiente} o \textbf{Credencial configurada}.
+
+FastAPI cifra la clave mediante cifrado autenticado y almacena únicamente el texto cifrado en \file{app.secrets}. La raíz criptográfica se genera automáticamente con permisos restrictivos en \file{/var/lib/bi-ia-secrets/master.key} y se conserva en el volumen \file{secret\_key\_data}, separado de PostgreSQL. Si se borra ese volumen, las credenciales existentes dejan de poder descifrarse y deberán reemplazarse desde la pantalla. No se copia el volumen entre equipos y no se versiona. \file{GEMINI\_API\_KEY} y \file{DASHSCOPE\_API\_KEY} ya no se utilizan.
+
+Para probar una configuración cloud se registra la credencial, se usa \textbf{Probar conexión} y se revisa el aviso verde de éxito o rojo con causa segura. La prueba sale desde FastAPI, descifra sólo en memoria, tiene tiempo limitado y no envía datos del negocio. La auditoría conserva la acción y el proveedor, nunca la clave ni el contenido de la respuesta.
 
 \subsection{Alternativa LLM local con Ollama}
 
@@ -998,7 +1012,7 @@ make verify
   \toprule
   Campo & Valor \\
   \midrule
-  Estado & Manual acumulativo del Sprint 1 y Sprint 2; base obligatoria para los módulos posteriores con SDD. \\
+  Estado & Manual acumulativo del Sprint 1, Sprint 2 y primer incremento del Sprint 3; base obligatoria para los módulos posteriores con SDD. \\
   Custodia & Repositorio público \file{LFXAS/prototipo-bi-ia}; escritura restringida a colaboradores. \\
   Audiencia & Autoras, tutor, revisores, colaboradores y lectores académicos. \\
   Actualización & Debe acompañar todo cambio de instalación, puertos, secretos, imágenes, pruebas o recuperación. \\
@@ -1023,6 +1037,8 @@ make verify
   1.7.0 & 02-09-2026 & Evidencias visuales de GitHub Actions y de los controles obligatorios de aprobación, CI y fusión. \\
   1.8.0 & 11-09-2026 & Consolidación del Sprint 2: operación JWT/RBAC, navegación, CRUD protegido, auditoría, parámetros, proveedores LLM y perfil Docker local de Ollama con persistencia y validación segura. \\
   1.8.1 & 11-09-2026 & Corrección de eliminación de usuarios temporales: auditoría preservada con etiqueta histórica de actor y referencia nula mediante \file{ON DELETE SET NULL}. \\
+  1.9.0 & 18-09-2026 & Credenciales LLM administradas desde la web, cifrado autenticado, volumen de raíz criptográfica y migración reproducible como cierre pendiente del Sprint 2. \\
+  2.0.0 & 18-09-2026 & Inicio del Sprint 3: conexión SQL Server administrada desde la web, contraseña cifrada, validación de sólo lectura, activación única y cuatro parámetros tipados. \\
   \bottomrule
 \end{tabularx}
 

@@ -23,7 +23,7 @@ configuración interna, RBAC, auditoría y datamart
 - `sqlserver`: instancia aislada del proyecto; descarga y restaura AdventureWorks de forma idempotente en un volumen nombrado.
 - `ollama`: perfil opcional `local-llm`; mantiene modelos locales en el volumen nombrado `ollama_models`, se comunica sólo dentro de la red Compose y no publica un puerto en el host.
 
-Sprint 3 propone un volumen nombrado adicional para la raíz criptográfica local generada automáticamente. Este volumen no contiene configuraciones de negocio, no se versiona y permanece separado de PostgreSQL; el backend lo usa únicamente para cifrar y descifrar secretos autorizados en memoria.
+El volumen nombrado `secret_key_data` conserva la raíz criptográfica local generada automáticamente. No contiene configuraciones de negocio, no se versiona y permanece separado de PostgreSQL; el backend lo usa únicamente para cifrar y descifrar secretos autorizados en memoria.
 
 ## Modos de ejecución
 
@@ -60,7 +60,7 @@ Desde el Sprint 2, cada módulo sólo incorpora capacidad funcional a partir de 
 
 ## RBAC previsto
 
-Entidades implementadas hasta Sprint 2: `users`, `roles`, `permissions`, `user_roles`, `role_permissions`, `menus`, `menu_permissions`, `audit_events`, `parameters` y `llm_configurations`, todas bajo el esquema `app`. Sprint 3 propone ampliar `parameters` como catálogo tipado y añadir `data_connections`, `secrets`, `metadata_snapshots` y `bi_proposals` mediante migraciones versionadas.
+Entidades implementadas hasta el primer incremento del Sprint 3: `users`, `roles`, `permissions`, `user_roles`, `role_permissions`, `menus`, `menu_permissions`, `audit_events`, `parameters`, `llm_configurations`, `secrets` y `data_connections`, todas bajo el esquema `app`. `parameters` ya conserva tipo, módulo, valor predeterminado y rango. Las siguientes migraciones del Sprint 3 añadirán `metadata_snapshots` y `bi_proposals`.
 
 Reglas arquitectónicas:
 
@@ -80,11 +80,11 @@ Los menús son una representación de permisos ya autorizados por FastAPI. En es
 
 ### Perfiles de uso
 
-La administración técnica configura desde la web fuente, credenciales, proveedor LLM y permisos una vez. El gerente comercial o solicitante expresa objetivos y preguntas en español, revisa conceptos y consume resultados sin escribir SQL. El analista BI o responsable de datos utiliza detalles avanzados y aprueba el significado de negocio. Las programadoras mantienen el motor y sus plantillas, pero no intervienen en cada análisis de operación.
+La administración técnica configura desde la web fuente, credenciales, proveedor LLM y permisos. El gerente comercial aporta objetivos, preguntas y criterios de utilidad y consume posteriormente los resultados. El analista BI o responsable de datos es el usuario operativo del asistente: registra la necesidad, revisa conceptos y detalles cuando corresponda, resuelve ambigüedades y aprueba o rechaza la propuesta sin escribir SQL. Las programadoras mantienen el motor y sus plantillas, pero no intervienen en cada análisis de operación.
 
 ## Contrato de configuración LLM
 
-El módulo `parameters` conserva una única configuración LLM activa con tipo de proveedor, URL base, modelo, límites y referencia opaca de credencial. Antes del flujo funcional del Sprint 3 se corrige el módulo de Sprint 2 con un almacén cifrado para registrar o reemplazar la clave desde la web. PostgreSQL conserva exclusivamente el valor cifrado; React y auditoría no reciben el secreto. Las referencias `GEMINI_API_KEY` y `DASHSCOPE_API_KEY` quedan como transición de instalaciones anteriores, no como requisito de operación cotidiana.
+El módulo `parameters` conserva una única configuración LLM activa con tipo de proveedor, URL base, modelo, límites y referencia opaca de credencial. La corrección final del Sprint 2 incorpora un almacén cifrado para registrar o reemplazar la clave desde la web. PostgreSQL conserva exclusivamente el valor cifrado; React y auditoría no reciben el secreto. `GEMINI_API_KEY` y `DASHSCOPE_API_KEY` ya no forman parte de la configuración operativa.
 
 La raíz criptográfica se genera automáticamente en el primer arranque local y se conserva con permisos restrictivos en un volumen Docker separado de PostgreSQL. Una instalación productiva deberá sustituir ese proveedor por un gestor de secretos externo. Puertos, redes, imágenes, volúmenes y credenciales internas siguen siendo infraestructura de despliegue y no se modifican desde la aplicación.
 
@@ -92,9 +92,9 @@ FastAPI encapsula las diferencias de cada servicio en adaptadores internos y só
 
 El módulo `copilot` posterior consumirá este contrato mediante una interfaz interna y será el único que pueda solicitar propuestas sobre metadatos o planes BI; ningún SQL asistido por IA se ejecutará automáticamente. La decisión se detalla en [`decisions/0002-configuracion-proveedor-llm.md`](decisions/0002-configuracion-proveedor-llm.md).
 
-## Contrato propuesto para Sprint 3
+## Contrato de Sprint 3
 
-Sprint 3 separa configuración, introspección y razonamiento asistido. La administración registra desde la web una conexión cuyo motor pertenece al catálogo de adaptadores; en este sprint sólo `sqlserver` está disponible y se valida con AdventureWorks. El módulo `metadata` consulta el conector activo, normaliza una instantánea inmutable y calcula su hash.
+Sprint 3 separa configuración, introspección y razonamiento asistido. La administración ya puede registrar desde la web una conexión `sqlserver`, cifrar su contraseña, comprobar conectividad y ausencia de permisos de escritura, y dejar una sola fuente activa; AdventureWorks valida este recorrido. El siguiente incremento del módulo `metadata` consultará el conector activo, normalizará una instantánea inmutable y calculará su hash.
 
 El módulo `copilot` recibe una solicitud guiada de negocio y procesa la instantánea en bloques compactos. El LLM interpreta dinámicamente nombres técnicos en inglés u otro idioma, propone conceptos y explicaciones de negocio en español y conserva las referencias originales. FastAPI descarta cualquier tabla, columna o relación que no exista antes de construir el paquete dimensional final. No se utiliza un glosario codificado exclusivamente para AdventureWorks.
 

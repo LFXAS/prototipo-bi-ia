@@ -2,11 +2,12 @@
 
 - Estado: **borrador simplificado para revisión y aprobación**.
 - Pertenece a: [SPR-03-metadatos-y-propuesta-bi.md](SPR-03-metadatos-y-propuesta-bi.md).
+- Su definición visual e interactiva normativa se encuentra en [SPR-03-05-ui-ux-profesional.md](SPR-03-05-ui-ux-profesional.md).
 - Fecha de revisión: 2026-09-14.
 
 ## 1. Objetivo de experiencia
 
-El producto está dirigido principalmente a un gerente comercial o analista de negocio. Su recorrido no puede comenzar con 71 tablas, identificadores en inglés, JSON o SQL. Debe comenzar con una pregunta de ventas y terminar con una propuesta comprensible que pueda aceptar o rechazar.
+El usuario principal del Sprint 3 es el analista BI o responsable de datos. Su recorrido parte de una necesidad del área comercial y no puede comenzar con 71 tablas, identificadores en inglés, JSON o SQL. Debe comenzar con una pregunta de ventas y terminar con una propuesta comprensible que pueda aceptar o rechazar. El gerente comercial aporta la necesidad y consume los resultados en las fases analíticas posteriores.
 
 El detalle técnico existe para trazabilidad y soporte, pero no constituye el recorrido principal ni una tarea obligatoria para el usuario final.
 
@@ -28,13 +29,15 @@ Este recorrido diferencia el prototipo de un visor de base de datos y demuestra 
 |---|---|---|---|
 | Parámetros generales | Conexiones de datos | Administrador | Configurar y probar SQL Server sin editar archivos. |
 | Datos | Explorador de esquema | Administrador o analista BI | Consultar la instantánea y su trazabilidad técnica. |
-| IA | Asistente de análisis | Gerente o analista de negocio | Formular la necesidad, revisar conceptos y decidir sobre la propuesta. |
+| IA | Asistente de análisis | Analista BI o responsable de datos | Registrar la necesidad comercial, revisar conceptos y decidir sobre la propuesta. |
 
 La barra superior muestra el nombre y estado de la fuente activa. No se crea una pantalla separada de **Fuente activa**: su estado, última prueba y acción **Actualizar metadatos** se integran en Conexiones de datos. Así se evita una ruta adicional sin valor propio.
 
 ETL, Datamart, Dashboard y Pronóstico no se muestran como opciones funcionales hasta que sus sprints los implementen.
 
 ## 4. Pantallas obligatorias
+
+Además de las vistas siguientes, una instalación incompleta ofrece el wizard de preparación inicial definido en SPR-03-05. El wizard orquesta la configuración LLM, la fuente y la instantánea sin duplicar los módulos administrativos.
 
 ### 4.1 Conexiones de datos
 
@@ -57,6 +60,8 @@ La propuesta diferencia visualmente:
 - **Comprobado por la aplicación**;
 - **Decidido por una persona**.
 
+El plan ETL se explica mediante un flujo visual de sólo lectura. Sprint 3 no incorpora drag and drop ni edición manual del proceso.
+
 ### 4.3 Explorador de esquema
 
 Es una vista avanzada de sólo lectura:
@@ -71,7 +76,7 @@ En Sprint 3 el explorador no permite modificar manualmente el alcance. Esa edici
 
 ## 5. Reglas de interacción
 
-1. El Asistente es el acceso principal del usuario de negocio.
+1. El Asistente es el acceso principal del analista BI.
 2. Si falta fuente, instantánea o LLM probado, la pantalla explica qué debe resolver el administrador.
 3. Sólo se envían al LLM metadatos y la solicitud normalizada; la confirmación lo indica antes de generar.
 4. Una referencia descartada por el backend nunca aparece como concepto válido.
@@ -94,6 +99,8 @@ No se muestran códigos HTTP, trazas, objetos JSON sin formato, `undefined` ni `
 
 ## 7. Responsive y accesibilidad
 
+Esta sección conserva los requisitos funcionales mínimos. Los componentes, jerarquía, microcopy, estados, anchos y criterios verificables se detallan en SPR-03-05 y prevalecen para la implementación visual.
+
 - En móvil, la navegación usa hamburguesa; formularios y secciones se apilan y la propuesta utiliza acordeones.
 - En tableta, lista y detalle del explorador alternan sin comprimir el contenido.
 - En escritorio, el asistente mantiene un ancho de lectura cómodo y puede mostrar un resumen lateral.
@@ -115,7 +122,7 @@ Se verifican 320, 768, 1024 y 1440 px.
 ## 9. Criterios de aceptación
 
 - [ ] El administrador configura y prueba SQL Server desde la web.
-- [ ] El gerente completa el asistente sin seleccionar tablas, escribir SQL ni interpretar JSON.
+- [ ] El analista BI completa el asistente sin seleccionar manualmente tablas, escribir SQL ni interpretar JSON como interfaz principal.
 - [ ] Los metadatos técnicos en inglés se presentan como conceptos comprensibles en español.
 - [ ] Cada concepto conserva un origen técnico consultable y validado.
 - [ ] Una referencia inventada no aparece como válida ni puede aprobarse.
@@ -138,6 +145,7 @@ Se verifican 320, 768, 1024 y 1440 px.
 - Chat conversacional general.
 - Edición manual del alcance técnico.
 - Grafo interactivo de las 71 tablas.
+- Editor visual con drag and drop de tablas, relaciones o pasos ETL.
 - Dashboard y resultados calculados.
 - ETL, datamart físico y pronóstico.
 

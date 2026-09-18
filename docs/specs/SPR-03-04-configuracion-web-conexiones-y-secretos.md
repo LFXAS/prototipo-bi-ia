@@ -1,6 +1,6 @@
 # SPR-03-04: parametrización web mínima de conexiones y secretos
 
-- Estado: **borrador simplificado para revisión y aprobación**.
+- Estado: **implementada salvo validación de dependencias futuras**.
 - Pertenece a: [SPR-03-metadatos-y-propuesta-bi.md](SPR-03-metadatos-y-propuesta-bi.md).
 - Complementa la corrección de credenciales LLM de [SPR-02-03](SPR-02-03-parametros-y-llm.md).
 - Fecha de revisión: 2026-09-14.
@@ -24,7 +24,7 @@ No se construirá una plataforma universal de conexiones ni un gestor empresaria
 La parametrización web permite que el software sea operado por sus perfiles reales:
 
 - el administrador prepara la fuente y el LLM sin intervenir archivos;
-- el gerente o analista de negocio utiliza el asistente sin conocer credenciales;
+- el analista BI utiliza el asistente sin conocer credenciales y el gerente consume posteriormente los resultados del negocio;
 - el experimento puede repetirse en otra instalación registrando los valores desde la misma interfaz;
 - el equipo puede demostrar separación entre configuración, interpretación del LLM, validación del sistema y decisión humana.
 
@@ -36,7 +36,7 @@ Este soporte no es la contribución principal de la tesis, pero elimina una barr
 
 En **Parámetros generales > Configuración LLM**, Gemini y Qwen Cloud incorporan la acción **Registrar/Reemplazar credencial**. La clave se envía una vez, se cifra en FastAPI y posteriormente la pantalla sólo muestra **Credencial configurada**. Ollama local conserva el estado **No requiere credencial**.
 
-La transición de una instalación existente es manual y controlada: el administrador vuelve a ingresar la clave en la web, prueba el proveedor y después puede retirar `GEMINI_API_KEY` o `DASHSCOPE_API_KEY` de su `.env`. No se implementa importación automática.
+La transición de una instalación existente es manual y controlada: el administrador vuelve a ingresar la clave en la web y prueba el proveedor. `GEMINI_API_KEY` y `DASHSCOPE_API_KEY` se retiraron de la plantilla y de Compose; no se implementa importación automática.
 
 ### 3.2 Conexión SQL Server
 
@@ -114,16 +114,16 @@ Las listas mantienen la paginación ya implementada. Cada escritura genera audit
 
 ## 7. Criterios de aceptación
 
-- [ ] Gemini o Qwen puede configurarse y probarse desde la web sin depender de una API key en `.env`.
-- [ ] AdventureWorks puede registrarse, probarse y activarse desde la web sin editar archivos ni PostgreSQL.
-- [ ] La clave LLM y la contraseña SQL Server se almacenan cifradas y nunca se devuelven al navegador.
-- [ ] Una conexión con prueba fallida o permisos incompatibles no puede activarse.
-- [ ] Sólo una fuente permanece activa.
-- [ ] Los cuatro parámetros se muestran con explicación y sólo aceptan valores dentro de su rango.
-- [ ] La auditoría identifica creación, modificación, prueba y activación sin exponer secretos.
+- [x] Gemini o Qwen puede configurarse y probarse desde la web sin depender de una API key en `.env`.
+- [x] AdventureWorks puede registrarse, probarse y activarse desde la web sin editar archivos ni PostgreSQL.
+- [x] La clave LLM y la contraseña SQL Server se almacenan cifradas y nunca se devuelven al navegador.
+- [x] Una conexión con prueba fallida o permisos incompatibles no puede activarse.
+- [x] Sólo una fuente permanece activa.
+- [x] Los cuatro parámetros se muestran con explicación y sólo aceptan valores dentro de su rango.
+- [x] La auditoría identifica creación, modificación, prueba y activación sin exponer secretos.
 - [ ] Las dependencias impiden eliminar una conexión utilizada.
-- [ ] Formularios, errores y acciones son utilizables en móvil y escritorio.
-- [ ] Las pruebas automatizadas y una demostración real verifican el recorrido completo.
+- [x] Formularios, errores y acciones son utilizables en móvil y escritorio.
+- [x] Las pruebas automatizadas y una demostración real verifican el recorrido de parametrización.
 
 ## 8. Pruebas obligatorias
 
@@ -149,4 +149,6 @@ Puertos, redes, imágenes, volúmenes, credenciales internas de PostgreSQL, migr
 
 ## 11. Resultado de implementación
 
-Pendiente. Al cerrar la implementación se registrarán migraciones, pruebas, evidencia visual, SHA y desviaciones aprobadas.
+La corrección LLM se implementó con la migración `20260918_06`, la tabla `app.secrets`, cifrado autenticado, clave maestra persistente en `secret_key_data`, endpoint de registro/reemplazo, interfaz responsive y auditoría sin secretos. La migración `20260918_07` amplió el catálogo tipado de parámetros y añadió `app.data_connections`, la restricción de una sola fuente activa y los permisos `connections.read`, `connections.write` y `connections.test`.
+
+La pantalla **Conexiones de datos** implementa registro, edición con contraseña opcional, prueba, activación, desactivación y eliminación. La prueba real con AdventureWorks confirmó conectividad y ausencia de privilegios de escritura; el estado probado y la activación permanecieron después de reiniciar FastAPI. PostgreSQL produjo cero coincidencias con las credenciales en claro. Los cuatro parámetros se pueden modificar dentro de sus rangos y restaurar, con auditoría segura. La protección por dependencias se completará cuando `metadata_snapshots` introduzca la primera relación consumidora en SPR-03-01; hasta entonces no existe un registro hijo que bloquear.

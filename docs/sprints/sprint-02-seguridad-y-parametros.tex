@@ -131,7 +131,7 @@ Proveer una administración segura, comprensible y responsive que permita contro
   Protección & Cuenta/rol base protegidos, invariantes de recuperación y validaciones de dependencias antes de eliminar. & \statusok \\
   Auditoría & Registro inmutable de inicio de sesión, creación, edición, estado, asociaciones, pruebas y eliminación. & \statusok \\
   UX administrativa & Navegación agrupada, plegable, ocultable, responsive, formularios guiados, tablas de casillas y paginación. & \statusok \\
-  Parámetros y LLM & Catálogo sin claves libres, proveedores Gemini/Qwen/Ollama y prueba limitada desde backend. & \statusok \\
+  Parámetros y LLM & Catálogo sin claves libres, credenciales cloud cifradas desde la web, proveedores Gemini/Qwen/Ollama y prueba limitada desde backend. & \statusok \\
   Ollama local & Perfil Docker opcional, modelo ágil \file{qwen2.5:3b} persistente y prueba de disponibilidad real. & \statusok \\
   \bottomrule
 \end{tabularx}
@@ -155,7 +155,7 @@ Antes de implementar se organizaron los contratos SDD en \file{docs/specs/}. La 
   \endhead
   \url{SPR-02-01-seguridad-rbac.md} & Modelo RBAC, CRUD, protección administrativa, eliminación física validada y auditoría. & API, migración y pruebas. \\
   \url{SPR-02-02-navegacion-y-experiencia.md} & Navegación responsive, agrupación, plegado, estados de pantalla, accesibilidad y controles legibles. & Prueba visual y frontend. \\
-  \url{SPR-02-03-parametros-y-llm.md} & Parámetros controlados, proveedores, secretos por entorno y prueba LLM segura. & Adaptadores, prueba unitaria y prueba real. \\
+  \url{SPR-02-03-parametros-y-llm.md} & Parámetros controlados, proveedores, credenciales web cifradas y prueba LLM segura. & Adaptadores, cifrado, prueba unitaria y prueba real. \\
   \url{SPR-02-04-identidad-visual-y-shell-bi.md} & Tokens visuales y dirección para módulos futuros sin mostrarlos prematuramente. & CSS y revisión visual. \\
   \url{SPR-02-matriz-correcciones.md} & Trazabilidad de observaciones funcionales y decisiones correctivas. & Revisión, pruebas y bitácora. \\
   \bottomrule
@@ -212,7 +212,9 @@ El primer catálogo se definirá con el módulo que lo necesite, por ejemplo ETL
 
 \subsection{Principio de seguridad}
 
-La base sólo almacena valores no secretos: nombre, proveedor, URL permitida, modelo, estado y resultado seguro de la prueba. Las claves cloud viven únicamente en variables de entorno. Gemini usa \file{GEMINI\_API\_KEY}; Qwen Cloud usa \file{DASHSCOPE\_API\_KEY}; Ollama local no requiere clave.
+La configuración conserva nombre, proveedor, URL permitida, modelo, estado y resultado seguro de la prueba. Para Gemini y Qwen Cloud, la persona administradora guarda primero la configuración y usa \textbf{Registrar credencial} o \textbf{Reemplazar credencial}. FastAPI cifra la clave; PostgreSQL conserva únicamente el texto cifrado en \file{app.secrets}, la raíz criptográfica permanece en el volumen Docker \file{secret\_key\_data} y React sólo recibe el estado \textbf{Credencial configurada}. Ollama local no requiere clave.
+
+La migración \file{20260918\_06} vincula cada configuración con, como máximo, un secreto. Cambiar de proveedor invalida la credencial anterior; eliminar una configuración inactiva elimina también su secreto. La auditoría registra alta o reemplazo sin incluir la clave. \file{GEMINI\_API\_KEY} y \file{DASHSCOPE\_API\_KEY} se retiraron de Compose y de la plantilla \file{.env.example}.
 
 \subsection{Alternativa local verificable}
 
@@ -234,11 +236,11 @@ El modelo se guarda en el volumen \file{ollama\_models}; cada programadora lo de
   Control & Resultado & Evidencia \\
   \midrule
   Compose & \statusok & Desarrollo, perfil \file{delivery}, perfil \file{local-llm} y entrega GHCR validados con configuración Compose. \\
-  Backend & \statusok & Ruff, Mypy y pruebas Pytest Docker; se añadieron casos de modelo Ollama disponible/no descargado. \\
-  Frontend & \statusok & ESLint, pruebas Vitest y construcción Vite dentro de Docker. \\
+  Backend & \statusok & Ruff, Mypy y 13 pruebas Pytest Docker; se cubren cifrado, manipulación del texto cifrado, credencial web, validación de URL y modelo Ollama disponible/no descargado. \\
+  Frontend & \statusok & ESLint, 4 pruebas Vitest y construcción Vite dentro de Docker; se cubre el formulario de credencial de un solo uso. \\
   LLM local & \statusok & \file{qwen2.5:3b} predeterminado; prueba FastAPI verifica servicio y modelo interno. \\
   Documentación & \statusok & Bitácora, informe Sprint 1, informe Sprint 2 y manual técnico compilados reproduciblemente con LaTeX Docker. \\
-  Seguridad operativa & \statusok & Configuración Ollama inactiva; la configuración Gemini existente no fue sustituida. \\
+  Seguridad operativa & \statusok & Prueba integrada con credencial temporal: cero coincidencias en texto plano, reutilización tras reiniciar y cero secretos huérfanos después de eliminar. \\
   \bottomrule
 \end{tabularx}
 
@@ -257,7 +259,7 @@ El comando no descarga modelos LLM: valida solamente que el perfil opcional sea 
   Riesgo & Control aplicado & Resultado esperado \\
   \midrule
   Pérdida de acceso administrativo & Marca protegida e invariantes verificadas en backend. & Siempre existe una vía de recuperación. \\
-  Exposición de secretos & Variables de entorno, respuesta segura y auditoría sin claves/JWT. & Ninguna API key llega a PostgreSQL o React. \\
+  Exposición de secretos & Cifrado autenticado, raíz separada, respuesta segura y auditoría sin claves/JWT. & PostgreSQL sólo recibe texto cifrado y ninguna API key vuelve a React. \\
   Borrado inconsistente & Confirmación, validación de hijos y respuesta 409; los eventos de auditoría conservan etiqueta histórica si se borra un actor temporal. & No hay borrado en cascada silencioso ni pérdida de trazabilidad. \\
   Cuota cloud agotada & Ollama local opcional y modelo persistente. & Prueba LLM sin depender de cuota. \\
   Uso excesivo de recursos & Perfil no automático, modelo explícito, límites de contexto y una sola carga. & El entorno normal no se hace más pesado. \\
@@ -291,6 +293,7 @@ Los siguientes sprints deben conservar este contrato: primero especificación SD
   Versión & Fecha & Cambio \\
   \midrule
   0.1.0 & 11-09-2026 & Primera versión: documentación del incremento administrativo, RBAC, UX, parámetros, proveedores LLM y alternativa local Ollama. \\
+  0.2.0 & 18-09-2026 & Corrección final: registro web de credenciales cloud, almacenamiento cifrado, volumen de clave maestra, migración, auditoría y verificación integrada. \\
   \bottomrule
 \end{tabularx}
 

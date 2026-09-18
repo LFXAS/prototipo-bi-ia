@@ -40,6 +40,14 @@ def ollama_configuration(model_id: str) -> SimpleNamespace:
     )
 
 
+def cloud_configuration() -> SimpleNamespace:
+    return SimpleNamespace(
+        provider_kind="gemini",
+        base_url="https://generativelanguage.googleapis.com",
+        model_id="gemini-2.5-flash",
+    )
+
+
 def test_ollama_connection_requires_downloaded_model(monkeypatch: MonkeyPatch) -> None:
     monkeypatch.setattr(
         providers.httpx,
@@ -64,3 +72,10 @@ def test_ollama_connection_accepts_downloaded_model(monkeypatch: MonkeyPatch) ->
 
     assert result.ok
     assert "modelo local validada" in result.message
+
+
+def test_cloud_connection_requires_credential_registered_in_platform() -> None:
+    result = asyncio.run(providers.test_provider(cloud_configuration()))
+
+    assert not result.ok
+    assert "desde la plataforma" in result.message

@@ -35,11 +35,9 @@ DEFAULT_PERMISSIONS: tuple[tuple[str, str, str], ...] = (
         "Administrar configuración LLM",
         "Permite parametrizar proveedores LLM.",
     ),
-    (
-        "parameters.connections.test",
-        "Probar conexiones",
-        "Permite probar conexiones externas de solo lectura.",
-    ),
+    ("connections.read", "Consultar conexiones", "Permite consultar fuentes sin secretos."),
+    ("connections.write", "Administrar conexiones", "Permite parametrizar fuentes de datos."),
+    ("connections.test", "Probar conexiones", "Permite validar fuentes de solo lectura."),
     ("audit.read", "Consultar auditoría", "Permite consultar eventos de auditoría."),
 )
 
@@ -74,6 +72,15 @@ DEFAULT_MENUS: tuple[tuple[str, str, str, int, str, str, tuple[str, ...]], ...] 
         "parameters",
         "Parámetros generales",
         ("parameters.llm.read",),
+    ),
+    (
+        "connections",
+        "Conexiones de datos",
+        "/conexiones",
+        65,
+        "parameters",
+        "Parámetros generales",
+        ("connections.read",),
     ),
     ("audit", "Auditoría", "/auditoria", 70, "security", "Seguridad", ("audit.read",)),
 )

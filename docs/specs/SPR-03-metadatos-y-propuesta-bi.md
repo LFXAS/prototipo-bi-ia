@@ -26,6 +26,7 @@ Este sprint no construye todavía el datamart ni ejecuta el ETL. Su resultado ob
 | Conexión e introspección | [SPR-03-01-conexion-e-introspeccion-adventureworks.md](SPR-03-01-conexion-e-introspeccion-adventureworks.md) | Instantánea reproducible de tablas, columnas, claves y relaciones de la conexión SQL Server activa, validada con AdventureWorks y sin extraer filas del negocio. |
 | Propuesta BI asistida | [SPR-03-02-propuesta-bi-asistida-por-ia.md](SPR-03-02-propuesta-bi-asistida-por-ia.md) | Solicitud de negocio guiada y propuesta JSON de hecho, dimensiones, medidas, KPIs y plan ETL, validada y sometida a aprobación humana. |
 | Exploración y trazabilidad | [SPR-03-03-explorador-esquema-y-trazabilidad.md](SPR-03-03-explorador-esquema-y-trazabilidad.md) | Experiencia responsive con recorrido principal no técnico y explorador avanzado opcional, sin exigir tablas ni SQL al usuario de negocio. |
+| Interfaz y experiencia | [SPR-03-05-ui-ux-profesional.md](SPR-03-05-ui-ux-profesional.md) | Sistema visual e interactivo, pantallas, estados, responsive y accesibilidad del recorrido profesional del Sprint 3. |
 
 La decisión arquitectónica se registra en [ADR 0003](../decisions/0003-metadatos-y-propuesta-bi-supervisada.md).
 
@@ -41,9 +42,9 @@ Para mantener un trabajo de titulación sólido y alcanzable, el alcance se divi
 
 La contribución académica no consiste en ofrecer muchos motores ni controles empresariales. Consiste en demostrar un proceso reproducible donde el LLM interpreta metadatos, el software comprueba que no invente objetos y una persona de negocio supervisa el resultado antes de materializarlo.
 
-### 2.2 Valor observable para el usuario final
+### 2.2 Valor observable para el usuario principal
 
-El gerente o analista de negocio no administra infraestructura. En Sprint 3 puede expresar una necesidad de ventas, recibir conceptos comprensibles en español y revisar qué modelo, dimensiones y KPIs propone el asistente. En Sprint 4 esa propuesta aprobada producirá resultados calculados. Esta continuidad es la razón funcional del software: reducir la distancia entre una base técnica y una decisión de negocio sin eliminar el control humano.
+El analista BI o responsable de datos no administra infraestructura ni escribe consultas por cada análisis. En Sprint 3 recoge la necesidad comercial, la expresa mediante un flujo guiado, recibe conceptos comprensibles en español y revisa qué modelo, dimensiones y KPIs propone el asistente. El gerente comercial aporta la necesidad y será el consumidor principal de los resultados calculados en los sprints posteriores. Esta continuidad reduce la distancia entre la fuente técnica y la decisión de negocio sin eliminar el control humano especializado.
 
 ### 2.3 Evidencia académica
 
@@ -61,8 +62,8 @@ Estas evidencias permiten evaluar el aporte de IA y el control del software sin 
 | Actor | Responsabilidad |
 |---|---|
 | Persona administradora técnica | Registra y prueba desde la web la fuente, las credenciales, el proveedor LLM, los usuarios y los permisos. No edita archivos ni crea consultas para cada análisis. |
-| Gerente comercial o solicitante de negocio | Expresa el objetivo y las preguntas de ventas en español, revisa el resumen, dimensiones y KPIs propuestos y, en sprints posteriores, consume los resultados. No selecciona tablas ni escribe SQL en el recorrido principal. |
-| Analista BI o responsable de datos | Usa la vista avanzada cuando sea necesario, revisa supuestos y advertencias y puede aprobar, rechazar o solicitar una nueva versión. Debe conocer el negocio, pero no necesita programar. |
+| Gerente comercial o solicitante de negocio | Aporta el objetivo, las preguntas y los criterios de utilidad del negocio. Puede revisar el resumen comprensible y, en sprints posteriores, consume KPIs, visualizaciones, hallazgos y pronósticos. No valida relaciones, granularidad ni el plan ETL. |
+| Analista BI o responsable de datos | Es el usuario principal del Asistente de análisis: registra la necesidad comercial, resuelve ambigüedades, revisa conceptos, supuestos, advertencias y trazabilidad, y aprueba, rechaza o solicita una nueva versión. Debe comprender el negocio y los datos, pero no necesita programar ni escribir SQL. |
 | FastAPI | Autoriza, protege secretos, usa el conector activo, normaliza y compacta metadatos, valida referencias, llama al proveedor activo y audita. |
 | LLM activo | Interpreta los nombres técnicos en su idioma original, propone conceptos comprensibles en español y devuelve una propuesta estructurada; no ejecuta operaciones. |
 | SQL Server/AdventureWorks | Primer conector y fuente pública de validación, registrados desde la plataforma y utilizados en modo de sólo lectura. |
@@ -73,7 +74,7 @@ Estas evidencias permiten evaluar el aporte de IA y el control del software sin 
 | Etapa | Valor para el usuario |
 |---|---|
 | Sprint 2 | Administración técnica; todavía no existe una función analítica para el gerente. |
-| Sprint 3 | El usuario de negocio puede crear una solicitud guiada, comprender la propuesta y revisar conceptos; todavía no recibe indicadores calculados. |
+| Sprint 3 | El analista BI crea una solicitud guiada a partir de la necesidad comercial, comprende la propuesta y revisa sus conceptos; todavía no existen indicadores calculados. |
 | Sprint 4 | La propuesta aprobada podrá materializarse mediante un motor ETL controlado y entregar los primeros KPIs y visualizaciones. |
 | Analítica y pronóstico posteriores | El gerente consumirá dashboard, hallazgos explicables, preguntas al copiloto y pronóstico de ventas. |
 
@@ -82,9 +83,10 @@ El Sprint 3 debe probar la participación real del usuario final sin presentar c
 ## 4. Flujo de negocio de extremo a extremo
 
 1. La persona administradora abre **Parámetros generales > Conexiones de datos**, registra SQL Server/AdventureWorks y su credencial mediante un formulario y ejecuta la prueba de sólo lectura.
+   En una instalación incompleta puede realizar esta preparación mediante el wizard inicial, que reutiliza las mismas pantallas y operaciones junto con la configuración LLM.
 2. FastAPI valida los campos, cifra el secreto, construye internamente la conexión mediante el adaptador `sqlserver` y nunca devuelve la credencial al navegador.
 3. La persona activa la fuente y solicita actualizar metadatos. FastAPI consulta catálogos del sistema, normaliza el resultado, calcula un hash y crea o reutiliza una instantánea inmutable.
-4. El gerente o analista abre **IA > Asistente de análisis** e indica en español el objetivo, preguntas comerciales, periodo y dimensiones de interés mediante controles guiados.
+4. El analista BI abre **IA > Asistente de análisis** y registra en español el objetivo, preguntas comerciales, periodo y dimensiones de interés mediante controles guiados.
 5. FastAPI divide los metadatos en bloques de tamaño parametrizado. El LLM interpreta cada bloque según la solicitud y propone candidatos y nombres de negocio en español.
 6. FastAPI descarta toda referencia inexistente y combina únicamente candidatos relacionados mediante claves declaradas.
 7. La aplicación presenta dinámicamente el alcance sugerido y su mapa semántico: concepto español, descripción y origen técnico. El usuario confirma los conceptos; los identificadores permanecen en una sección avanzada.
@@ -107,7 +109,7 @@ El Sprint 3 debe probar la participación real del usuario final sin presentar c
 8. El LLM recibe nombres y tipos técnicos, claves, relaciones y la solicitud de negocio; no recibe credenciales, auditoría, usuarios ni datos crudos.
 9. Ningún texto o SQL producido por el LLM se ejecuta. El Sprint 4 deberá construir las consultas mediante un generador determinístico implementado una sola vez por el equipo y ejecutarlas desde el backend con permisos mínimos.
 10. La salida del LLM debe cumplir el contrato JSON versionado; una respuesta libre, incompleta o inválida se rechaza.
-11. La validación determinística y la aprobación de negocio son obligatorias y diferentes: superar reglas técnicas no equivale a que el resultado sea útil para el gerente.
+11. La validación determinística y la revisión del analista BI son obligatorias y diferentes: superar reglas técnicas no equivale a representar correctamente la necesidad comercial.
 12. Una propuesta aprobada es inmutable. Un nuevo intento crea otro registro y conserva el anterior.
 13. Los datos sintéticos se limitan a pruebas automatizadas y escenarios controlados; no constituyen una segunda fuente funcional.
 14. Los límites de tiempo, tamaño del paquete y reintentos son controlados por FastAPI; una falla de proveedor no debe bloquear el resto de la plataforma.
@@ -151,7 +153,7 @@ El sprint puede cerrarse cuando:
 
 - una persona administradora configure y pruebe LLM y AdventureWorks desde la web;
 - una instalación limpia cree una instantánea consistente de metadatos sin extraer filas;
-- un usuario de negocio formule su necesidad y reciba conceptos en español sin seleccionar tablas ni escribir SQL;
+- un analista BI registre la necesidad comercial y reciba conceptos en español sin seleccionar manualmente tablas ni escribir SQL;
 - un proveedor simulado en CI y Ollama o un proveedor cloud real produzcan la propuesta contractual;
 - cualquier tabla, columna o relación inventada sea rechazada por el backend;
 - una persona autorizada pueda aprobar o rechazar y la decisión quede auditada;

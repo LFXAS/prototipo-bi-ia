@@ -78,6 +78,17 @@ nav button.active, nav button:hover { background: #dce8ff; color: var(--color-br
 .checkbox-table-wrap th:first-child, .checkbox-table-wrap td:first-child { width: 5.5rem; text-align: center; }
 .form-actions, .row-actions { display: flex; flex-wrap: wrap; gap: .7rem; }
 .form-actions { margin-top: 1rem; }
+.connection-options { display: flex; flex-wrap: wrap; gap: 1.25rem; margin-top: 1rem; }
+.connection-options label { display: flex; align-items: center; gap: .55rem; font-weight: 600; }
+.parameter-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+.parameter-card { display: grid; align-content: start; gap: 1rem; padding: 1.2rem; border: 1px solid var(--color-border); border-radius: .85rem; background: #fbfcff; }
+.parameter-card h2 { margin-bottom: .35rem; }
+.parameter-card p { margin: 0; }
+.parameter-card small { overflow-wrap: anywhere; color: var(--color-muted); }
+.parameter-card .parameter-range { font-size: .88rem; color: var(--color-muted); }
+.credential-form { max-width: 42rem; border-color: #b9cbed; background: #f6f9ff; }
+.credential-form > p { margin: 0 0 1rem; }
+.table-wrap small { color: var(--color-muted); }
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; min-width: 520px; }
 th, td { padding: .85rem; text-align: left; border-bottom: 1px solid var(--color-border); }
@@ -103,7 +114,7 @@ th { color: var(--color-muted); font-size: .78rem; text-transform: uppercase; }
   .app-shell { padding: .75rem; }
   .app-shell header { gap: .8rem; align-items: flex-start; }
   .header-actions { flex-direction: column; align-items: stretch; }
-  .cards, .form-grid { grid-template-columns: 1fr; }
+  .cards, .form-grid, .parameter-grid { grid-template-columns: 1fr; }
   .checkbox-table-field { grid-column: auto; width: 100%; }
   .content { padding: 1.25rem; }
   .form-title, .pagination { align-items: flex-start; flex-direction: column; gap: .35rem; }

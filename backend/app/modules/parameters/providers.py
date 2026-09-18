@@ -4,7 +4,6 @@ from dataclasses import dataclass
 
 import httpx
 
-from app.core.config import settings
 from app.modules.parameters.models import LlmConfiguration
 
 
@@ -14,24 +13,17 @@ class ProviderTestResult:
     message: str
 
 
-def credential_for(configuration: LlmConfiguration) -> str | None:
-    values = {
-        "gemini": settings.gemini_api_key,
-        "qwen-cloud": settings.dashscope_api_key,
-        "ollama-local": None,
-    }
-    secret = values[configuration.provider_kind]
-    return secret.get_secret_value() if secret is not None else None
-
-
-async def test_provider(configuration: LlmConfiguration) -> ProviderTestResult:
-    credential = credential_for(configuration)
+async def test_provider(
+    configuration: LlmConfiguration,
+    credential: str | None = None,
+    timeout_seconds: int = 12,
+) -> ProviderTestResult:
     if configuration.provider_kind != "ollama-local" and not credential:
         return ProviderTestResult(
-            False, "La referencia de credencial no está disponible en el entorno."
+            False, "Registre una credencial desde la plataforma antes de probar la conexión."
         )
     try:
-        async with httpx.AsyncClient(timeout=12, follow_redirects=False) as client:
+        async with httpx.AsyncClient(timeout=timeout_seconds, follow_redirects=False) as client:
             base_url = configuration.base_url.rstrip("/")
             if configuration.provider_kind == "ollama-local":
                 response = await client.get(f"{base_url}/api/tags")
