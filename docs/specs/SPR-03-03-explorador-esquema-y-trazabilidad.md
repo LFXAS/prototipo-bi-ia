@@ -104,6 +104,7 @@ Esta sección conserva los requisitos funcionales mínimos. Los componentes, jer
 - En móvil, la navegación usa hamburguesa; formularios y secciones se apilan y la propuesta utiliza acordeones.
 - En tableta, lista y detalle del explorador alternan sin comprimir el contenido.
 - En escritorio, el asistente mantiene un ancho de lectura cómodo y puede mostrar un resumen lateral.
+- Las tarjetas de tablas reservan una columna independiente para sus métricas; los nombres de esquema y tabla se ajustan en varias líneas cuando son extensos y nunca invaden el panel de detalle.
 - Las tablas tienen paginación y su desplazamiento queda contenido; no desplazan toda la página.
 - Casillas, acordeones, diálogos y acciones funcionan con teclado y foco visible.
 - Los estados incluyen texto y no dependen únicamente del color.
@@ -129,6 +130,7 @@ Se verifican 320, 768, 1024 y 1440 px.
 - [ ] La propuesta separa claramente IA, validación de la aplicación y decisión humana.
 - [ ] Aprobar o rechazar queda auditado y no ejecuta todavía ETL.
 - [ ] El explorador permite verificar tablas, columnas y relaciones sin editarlas.
+- [ ] Los nombres largos de tablas y esquemas permanecen legibles dentro de su tarjeta en los anchos definidos, sin solapar métricas ni detalle.
 - [ ] Los estados de error explican cómo continuar y no exponen datos sensibles.
 - [ ] El recorrido funciona con teclado y en los cuatro anchos definidos.
 
