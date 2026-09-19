@@ -457,20 +457,27 @@ function SchemaExplorerPage({ snapshots, message, token, canRefresh, onSaved, on
   }, [snapshots, token])
 
   useEffect(() => {
-    if (!snapshotId && snapshots?.items[0]) setSnapshotId(snapshots.items[0].id)
-  }, [snapshotId, snapshots])
+    const availableIds = new Set(snapshots?.items.map((item) => item.id) ?? [])
+    const firstId = snapshots?.items[0]?.id ?? null
+    setSnapshotId((current) => (current !== null && availableIds.has(current) ? current : firstId))
+  }, [snapshots])
 
   useEffect(() => {
     if (!snapshotId) return
+    let currentRequest = true
     setTables(null)
     setDetail(null)
+    setLocalFeedback(null)
     api.metadataTables(token, snapshotId, filters.search, filters.schema, pageSize, tableOffset)
       .then((result) => {
+        if (!currentRequest) return
         setTables(result)
         setSelectedTable((current) => result.items.find((item) => item.schema_name === current?.schema_name && item.table_name === current?.table_name) ?? result.items[0] ?? null)
-        setLocalFeedback(null)
       })
-      .catch((caught: Error) => setLocalFeedback({ message: caught.message, kind: 'error' }))
+      .catch((caught: Error) => {
+        if (currentRequest) setLocalFeedback({ message: caught.message, kind: 'error' })
+      })
+    return () => { currentRequest = false }
   }, [filters, snapshotId, tableOffset, token])
 
   useEffect(() => {
@@ -478,9 +485,14 @@ function SchemaExplorerPage({ snapshots, message, token, canRefresh, onSaved, on
       setDetail(null)
       return
     }
+    let currentRequest = true
+    setDetail(null)
     api.metadataTable(token, snapshotId, selectedTable.schema_name, selectedTable.table_name)
-      .then(setDetail)
-      .catch((caught: Error) => setLocalFeedback({ message: caught.message, kind: 'error' }))
+      .then((result) => { if (currentRequest) setDetail(result) })
+      .catch((caught: Error) => {
+        if (currentRequest) setLocalFeedback({ message: caught.message, kind: 'error' })
+      })
+    return () => { currentRequest = false }
   }, [selectedTable, snapshotId, token])
 
   async function capture() {
@@ -514,7 +526,7 @@ function SchemaExplorerPage({ snapshots, message, token, canRefresh, onSaved, on
   return <>
     <div className="explorer-header"><div><p className="lead">Consulte la estructura capturada de <strong>{activeSource.connection.name}</strong>. Esta vista no lee filas del negocio.</p><p className="snapshot-meta">Instantánea #{currentSnapshot.id} · {new Date(currentSnapshot.captured_at).toLocaleString('es-EC')} · huella {currentSnapshot.content_hash.slice(0, 12)}</p></div>{canRefresh && <button onClick={capture} disabled={capturing}>{capturing ? 'Leyendo estructura…' : 'Actualizar metadatos'}</button>}</div>
     <div className="snapshot-metrics" aria-label="Resumen de la instantánea"><article><strong>{currentSnapshot.schema_count}</strong><span>esquemas</span></article><article><strong>{currentSnapshot.table_count}</strong><span>tablas</span></article><article><strong>{currentSnapshot.column_count}</strong><span>columnas</span></article><article><strong>{currentSnapshot.relationship_count}</strong><span>relaciones</span></article></div>
-    {snapshots.items.length > 1 && <label className="snapshot-selector">Versión de metadatos<select value={currentSnapshot.id} onChange={(event) => { setSnapshotId(Number(event.target.value)); setTableOffset(0); setSelectedTable(null) }}>{snapshots.items.map((item) => <option key={item.id} value={item.id}>#{item.id} · {new Date(item.captured_at).toLocaleString('es-EC')} · {item.content_hash.slice(0, 8)}</option>)}</select></label>}
+    {snapshots.items.length > 1 && <label className="snapshot-selector">Versión de metadatos<select value={currentSnapshot.id} onChange={(event) => { setSnapshotId(Number(event.target.value)); setTableOffset(0); setSelectedTable(null); setLocalFeedback(null) }}>{snapshots.items.map((item) => <option key={item.id} value={item.id}>#{item.id} · {new Date(item.captured_at).toLocaleString('es-EC')} · {item.content_hash.slice(0, 8)}</option>)}</select></label>}
     <form className="explorer-filters" onSubmit={applyFilters}><label>Buscar tabla o columna<input value={searchDraft} maxLength={120} placeholder="Ejemplo: pedido, SalesOrderID" onChange={(event) => setSearchDraft(event.target.value)} /></label><label>Esquema<input value={schemaDraft} maxLength={128} placeholder="Ejemplo: Sales" onChange={(event) => setSchemaDraft(event.target.value)} /></label><button>Buscar</button></form>
     {localFeedback && <p className={`notice ${localFeedback.kind}`} role={localFeedback.kind === 'error' ? 'alert' : 'status'}>{localFeedback.message}</p>}
     <div className="schema-explorer">

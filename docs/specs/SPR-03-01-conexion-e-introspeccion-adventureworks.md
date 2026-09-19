@@ -195,4 +195,6 @@ La migración `20260918_08` crea `app.metadata_snapshots` con documento JSONB, h
 
 La captura real desde la conexión activa AdventureWorks produjo 6 esquemas, 71 tablas, 444 columnas y 90 relaciones. Una segunda ejecución generó el mismo hash SHA-256, reutilizó la instantánea y mantuvo estable el total. El explorador permite buscar por esquema, tabla o columna y consultar columnas, PK, relaciones entrantes y salientes sin leer filas del negocio.
 
-La validación automatizada incluye orden canónico, hash reproducible, claves foráneas, búsqueda segura y recorrido React del explorador. El SHA y el PR se incorporarán al publicar esta rama hacia `develop`.
+La interfaz sincroniza el identificador seleccionado con las instantáneas disponibles al cambiar de módulo o actualizar la lista; si una versión deja de pertenecer a la página actual, selecciona automáticamente la primera válida, limpia la carga anterior y descarta respuestas atrasadas. Así, una lectura persistida no depende de presionar nuevamente **Actualizar metadatos**.
+
+La validación automatizada incluye orden canónico, hash reproducible, claves foráneas, búsqueda segura, recorrido React del explorador y compilación frontend. El SHA y el PR se incorporarán al publicar esta rama hacia `develop`.
