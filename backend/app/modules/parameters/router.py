@@ -596,6 +596,17 @@ async def delete_data_connection(
     connection = await _get_data_connection(connection_id, session)
     if connection.is_active:
         raise HTTPException(status_code=422, detail="Desactive la conexión antes de eliminarla.")
+    from app.modules.metadata.service import count_snapshots_for_connection
+
+    snapshot_count = await count_snapshots_for_connection(session, connection.id)
+    if snapshot_count:
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "No se puede eliminar la conexión porque conserva "
+                f"{snapshot_count} instantánea(s) de metadatos para trazabilidad."
+            ),
+        )
     secret = await session.get(Secret, connection.secret_id)
     await add_audit_event(
         session, actor.id, "connections.delete", "data_connection", str(connection.id)

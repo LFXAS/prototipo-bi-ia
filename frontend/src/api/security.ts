@@ -8,6 +8,11 @@ export type Session = { user: User; permissions: string[]; menus: Menu[] }
 export type Parameter = { id: number; key: string; name: string; module_code: string; value_type: string; value: string; default_value: string; min_value?: number; max_value?: number; description?: string; is_active: boolean }
 export type LlmConfiguration = { id: number; name: string; provider_kind: string; base_url: string; model_id: string; credential_configured: boolean; is_active: boolean; last_test_status?: string; last_test_message?: string }
 export type DataConnection = { id: number; name: string; connector_kind: 'sqlserver'; host: string; port: number; database_name: string; username: string; encrypt: boolean; trust_server_certificate: boolean; is_active: boolean; last_test_status?: string; last_test_message?: string; last_tested_at?: string }
+export type MetadataSnapshot = { id: number; data_connection_id: number; connector_code: string; database_name: string; contract_version: number; content_hash: string; schema_count: number; table_count: number; column_count: number; relationship_count: number; captured_by_label: string; captured_at: string }
+export type ActiveSource = { status: 'ready' | 'missing'; connection?: { id: number; name: string; connector_kind: string; database_name: string; last_test_status?: string; last_tested_at?: string }; latest_snapshot?: MetadataSnapshot }
+export type SnapshotCapture = { created: boolean; message: string; snapshot: MetadataSnapshot }
+export type MetadataTable = { schema_name: string; table_name: string; column_count: number; relationship_count: number }
+export type MetadataTableDetail = { schema_name: string; table_name: string; columns: Array<{ name: string; ordinal: number; data_type: string; max_length: number; precision: number; scale: number; nullable: boolean; primary_key: boolean }>; foreign_keys: Array<{ name: string; columns: string[]; referenced_schema: string; referenced_table: string; referenced_columns: string[] }>; incoming_relationships: Array<{ name: string; source_schema: string; source_table: string; source_columns: string[]; referenced_columns: string[] }> }
 export type AuditEvent = { id: number; actor_user_id?: number; actor_label?: string; action: string; resource_type: string; resource_id?: string; created_at: string }
 export type Page<T> = { items: T[]; total: number; limit: number; offset: number }
 
@@ -59,6 +64,11 @@ export const api = {
   parameters: (token: string, limit: number, offset: number) => request<Page<Parameter>>(`/parameters?limit=${limit}&offset=${offset}`, token),
   llm: (token: string, limit: number, offset: number) => request<Page<LlmConfiguration>>(`/llm-configurations?limit=${limit}&offset=${offset}`, token),
   connections: (token: string, limit: number, offset: number) => request<Page<DataConnection>>(`/connections?limit=${limit}&offset=${offset}`, token),
+  activeSource: (token: string) => request<ActiveSource>('/sources/active', token),
+  metadataSnapshots: (token: string, limit: number, offset: number) => request<Page<MetadataSnapshot>>(`/metadata/snapshots?limit=${limit}&offset=${offset}`, token),
+  captureMetadata: (token: string) => request<SnapshotCapture>('/metadata/snapshots', token, { method: 'POST' }),
+  metadataTables: (token: string, snapshotId: number, search = '', schemaName = '', limit = 10, offset = 0) => request<Page<MetadataTable>>(`/metadata/snapshots/${snapshotId}/tables?search=${encodeURIComponent(search)}&schema_name=${encodeURIComponent(schemaName)}&limit=${limit}&offset=${offset}`, token),
+  metadataTable: (token: string, snapshotId: number, schemaName: string, tableName: string) => request<MetadataTableDetail>(`/metadata/snapshots/${snapshotId}/tables/${encodeURIComponent(schemaName)}/${encodeURIComponent(tableName)}`, token),
   audit: (token: string, limit: number, offset: number) => request<Page<AuditEvent>>(`/audit-events?limit=${limit}&offset=${offset}`, token),
   testLlm: (token: string, id: number) => request<{ ok: boolean; message: string }>(`/llm-configurations/${id}/test`, token, { method: 'POST' }),
   saveLlmCredential: (token: string, id: number, apiKey: string) => request<{ credential_configured: boolean; message: string }>(`/llm-configurations/${id}/secret`, token, { method: 'PUT', body: JSON.stringify({ api_key: apiKey }) }),

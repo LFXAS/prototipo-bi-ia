@@ -1,6 +1,6 @@
 # Prototipo web de inteligencia de negocios asistido por IA
 
-Base técnica del proyecto de titulación **“Prototipo web de inteligencia de negocios asistido por IA para la construcción semiautomatizada y supervisada de un datamart de ventas con datos públicos y sintéticos”**. El entorno **Docker-first** ejecuta React + Vite, FastAPI, PostgreSQL y AdventureWorks en SQL Server con un usuario de solo lectura. El producto permite configurar desde la web la fuente y sus secretos, y permitirá que una persona de negocio formule una necesidad en español sin seleccionar tablas ni escribir SQL. El LLM interpretará dinámicamente metadatos técnicos en inglés, los explicará como conceptos de negocio en español y toda referencia será validada antes de presentar una propuesta. El Sprint 2 incorpora RBAC, JWT, auditoría y configuración LLM segura; Sprint 3 inició con conexión SQL Server y parámetros operativos administrados desde la plataforma.
+Base técnica del proyecto de titulación **“Prototipo web de inteligencia de negocios asistido por IA para la construcción semiautomatizada y supervisada de un datamart de ventas con datos públicos y sintéticos”**. El entorno **Docker-first** ejecuta React + Vite, FastAPI, PostgreSQL y AdventureWorks en SQL Server con un usuario de solo lectura. El producto permite configurar desde la web la fuente y sus secretos, capturar su estructura sin extraer filas y explorar tablas, columnas y relaciones desde una instantánea trazable. El LLM interpretará dinámicamente esos metadatos técnicos en inglés, los explicará como conceptos de negocio en español y toda referencia será validada antes de presentar una propuesta.
 
 La guía operativa completa para replicar, restaurar, publicar y probar el entorno está en [docs/replication-guide.md](docs/replication-guide.md).
 
@@ -12,7 +12,7 @@ La trazabilidad del trabajo se mantiene en LaTeX y PDF. La bitácora vive en `do
 
 El anteproyecto define una prueba de concepto académica con una sola fuente SQL Server/AdventureWorks, introspección de metadatos, propuestas de un LLM sujetas a aprobación humana y validaciones determinísticas, ETL básico hacia un datamart PostgreSQL, cinco KPIs, tres gráficos, insights explicables y un pronóstico mensual por regresión lineal evaluado con MAPE y RMSE.
 
-El Sprint 1 implementó el entorno y la observabilidad mínima. El Sprint 2 implementa la base de seguridad: autenticación JWT, usuarios, roles, permisos, menús autorizados, auditoría, parámetros y pruebas seguras de conexión. Su corrección final permite registrar desde la web las credenciales cloud LLM, cifrarlas y conservar la clave maestra fuera de PostgreSQL. El primer incremento del Sprint 3 añade el catálogo tipado de cuatro parámetros y la administración web de una fuente SQL Server con contraseña cifrada, prueba de sólo lectura y una única conexión activa. El resto está definido en [`docs/specs/SPR-03-metadatos-y-propuesta-bi.md`](docs/specs/SPR-03-metadatos-y-propuesta-bi.md): incorporará introspección, solicitud de negocio guiada, interpretación semántica dinámica, explorador avanzado y propuestas BI supervisadas, pero no ejecutará todavía ETL, datamart, KPIs, tableros ni pronóstico.
+El Sprint 1 implementó el entorno y la observabilidad mínima. El Sprint 2 implementa la base de seguridad: autenticación JWT, usuarios, roles, permisos, menús autorizados, auditoría, parámetros y pruebas seguras de conexión. Su corrección final permite registrar desde la web las credenciales cloud LLM, cifrarlas y conservar la clave maestra fuera de PostgreSQL. Sprint 3 ya incorpora el catálogo tipado de parámetros, la administración web de una fuente SQL Server y la introspección determinística: una captura real de AdventureWorks produjo 6 esquemas, 71 tablas, 444 columnas y 90 relaciones, con hash estable y deduplicación. El resto está definido en [`docs/specs/SPR-03-metadatos-y-propuesta-bi.md`](docs/specs/SPR-03-metadatos-y-propuesta-bi.md): añadirá solicitud de negocio guiada, interpretación semántica dinámica y propuestas BI supervisadas, pero no ejecutará todavía ETL, datamart, KPIs, tableros ni pronóstico.
 
 Consulta [docs/scope.md](docs/scope.md) y [docs/architecture.md](docs/architecture.md) para el detalle.
 
@@ -48,7 +48,7 @@ No es necesario instalar Node.js ni Python en el equipo anfitrión.
    - Estado básico: <http://localhost:8000/api/v1/health/live>
    - Estado de PostgreSQL: <http://localhost:8000/api/v1/health/ready>
 
-La comprobación `live` confirma que FastAPI funciona. `ready` confirma además la conexión a PostgreSQL. En un volumen vacío, SQL Server descarga el respaldo oficial de AdventureWorks 2022, lo restaura y crea el usuario `bi_reader` sin permisos de escritura. Para usarla como fuente de negocio, abra **Parámetros generales > Conexiones de datos**, registre servidor `sqlserver`, puerto `1433`, base y usuario configurados para la instalación, pruebe el modo de sólo lectura y active el registro.
+La comprobación `live` confirma que FastAPI funciona. `ready` confirma además la conexión a PostgreSQL. En un volumen vacío, SQL Server descarga el respaldo oficial de AdventureWorks 2022, lo restaura y crea el usuario `bi_reader` sin permisos de escritura. Para usarla como fuente de negocio, abra **Parámetros generales > Conexiones de datos**, registre servidor `sqlserver`, puerto `1433`, base y usuario configurados para la instalación, pruebe el modo de sólo lectura, active el registro y seleccione **Actualizar metadatos**. El resultado se consulta en **Datos > Explorador de esquema**.
 
 En el primer inicio el servicio `migrate` aplica automáticamente las migraciones y el servicio `seed` carga de forma idempotente el catálogo protegido aprobado: permisos, menús, rol administrador y usuario inicial definidos por `BOOTSTRAP_ADMIN_EMAIL` y `BOOTSTRAP_ADMIN_PASSWORD`. Ingrese desde el frontend con esos valores; cámbielos antes de cualquier demostración compartida. Las claves de Gemini y Qwen se registran con **Registrar credencial** en **Configuración LLM**; no se agregan a `.env`. FastAPI las cifra y la raíz criptográfica se genera automáticamente en el volumen Docker `secret_key_data`, separado de PostgreSQL. El catálogo no copia cuentas de prueba, auditoría, configuraciones LLM, claves ni volúmenes entre equipos.
 
@@ -157,8 +157,8 @@ compose*.yaml            desarrollo autocontenido, publicación y producción
 
 ## Próxima iteración
 
-1. Implementar la instantánea determinística de metadatos sobre la conexión SQL Server activa.
-2. Añadir el explorador de esquema basado en la instantánea, sin consultar filas del negocio.
-3. Implementar interpretación semántica dinámica de nombres técnicos a conceptos españoles antes de la propuesta dimensional.
-4. Construir el asistente guiado, la validación de referencias y la aprobación supervisada.
-5. Registrar auditoría de solicitudes, validaciones y aprobaciones; el SQL determinístico se especificará antes de implementar el Sprint 4.
+1. Implementar interpretación semántica dinámica de nombres técnicos a conceptos españoles antes de la propuesta dimensional.
+2. Construir la solicitud de negocio guiada y asociarla a una instantánea inmutable.
+3. Generar una propuesta BI estructurada y validar que todas sus referencias existan en la instantánea.
+4. Incorporar revisión, corrección y aprobación supervisada con auditoría completa.
+5. Especificar el SQL determinístico antes de implementar el ETL y la materialización del datamart en el Sprint 4.

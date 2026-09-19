@@ -180,4 +180,49 @@ describe('App', () => {
     expect(screen.getByText('Activa')).toBeInTheDocument()
     expect(screen.queryByText(/password|contraseña guardada/i)).not.toBeInTheDocument()
   })
+
+  it('explora una instantánea sin consultar filas ni mostrar credenciales', async () => {
+    localStorage.setItem('bi_ia_access_token', 'test-token')
+    const snapshot = { id: 4, data_connection_id: 1, connector_code: 'sqlserver', database_name: 'AdventureWorks2022', contract_version: 1, content_hash: 'a'.repeat(64), schema_count: 6, table_count: 71, column_count: 444, relationship_count: 90, captured_by_label: 'Administradora', captured_at: '2026-09-18T20:00:00Z' }
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input)
+      if (url.includes('/auth/me')) return {
+        ok: true, status: 200, json: async () => ({
+          user: { id: 1, email: 'admin@example.test', full_name: 'Administradora', is_active: true, roles: [] },
+          permissions: ['metadata.read', 'metadata.refresh'],
+          menus: [{ id: 10, code: 'schema-explorer', label: 'Explorador de esquema', path: '/esquema', position: 10, module_code: 'data', module_label: 'Datos', is_active: true, permissions: [] }],
+        }),
+      }
+      if (url.endsWith('/sources/active')) return {
+        ok: true, status: 200, json: async () => ({ status: 'ready', connection: { id: 1, name: 'AdventureWorks local', connector_kind: 'sqlserver', database_name: 'AdventureWorks2022', last_test_status: 'ok' }, latest_snapshot: snapshot }),
+      }
+      if (url.endsWith('/metadata/snapshots') && init?.method === 'POST') return {
+        ok: true, status: 200, json: async () => ({ created: false, message: 'La estructura no cambió; se mantiene la instantánea vigente.', snapshot }),
+      }
+      if (url.includes('/metadata/snapshots/4/tables/Sales/SalesOrderHeader')) return {
+        ok: true, status: 200, json: async () => ({ schema_name: 'Sales', table_name: 'SalesOrderHeader', columns: [{ name: 'SalesOrderID', ordinal: 1, data_type: 'int', max_length: 4, precision: 10, scale: 0, nullable: false, primary_key: true }], foreign_keys: [{ name: 'FK_Customer', columns: ['CustomerID'], referenced_schema: 'Sales', referenced_table: 'Customer', referenced_columns: ['CustomerID'] }], incoming_relationships: [] }),
+      }
+      if (url.includes('/metadata/snapshots/4/tables?')) return {
+        ok: true, status: 200, json: async () => ({ items: [{ schema_name: 'Sales', table_name: 'SalesOrderHeader', column_count: 9, relationship_count: 3 }], total: 1, limit: 10, offset: 0 }),
+      }
+      if (url.includes('/metadata/snapshots')) return {
+        ok: true, status: 200, json: async () => ({ items: [snapshot], total: 1, limit: 10, offset: 0 }),
+      }
+      throw new Error(`Solicitud inesperada: ${url}`)
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    render(<App />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Datos' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Explorador de esquema' }))
+
+    expect(await screen.findByText('SalesOrderHeader')).toBeInTheDocument()
+    expect(await screen.findByText('SalesOrderID')).toBeInTheDocument()
+    expect(screen.getByText('PK')).toBeInTheDocument()
+    expect(screen.getByText(/Sales\.Customer/)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Actualizar metadatos' }))
+    expect(await screen.findByText(/La estructura no cambió/)).toBeInTheDocument()
+    expect(fetchMock.mock.calls.some(([input, init]) => String(input).endsWith('/metadata/snapshots') && init?.method === 'POST')).toBe(true)
+    expect(screen.queryByText(/contraseña|password/i)).not.toBeInTheDocument()
+  })
 })

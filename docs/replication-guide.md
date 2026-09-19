@@ -82,6 +82,8 @@ Inicia sesión con una persona que disponga de `connections.read`, `connections.
 
 Guarda, ejecuta **Probar conexión** y activa únicamente cuando la pantalla confirme **Sólo lectura validada**. La contraseña queda cifrada y no vuelve al navegador. Cambiar host, base, usuario u opciones invalida la prueba anterior y obliga a probar nuevamente.
 
+Con la fuente activa, selecciona **Actualizar metadatos**. FastAPI leerá únicamente catálogos de tablas, columnas, claves y relaciones; no extrae filas de ventas. La primera ejecución crea una instantánea y las siguientes reutilizan la misma versión mientras su hash no cambie. Abre **Datos > Explorador de esquema** para buscar por esquema, tabla o columna y consultar el detalle técnico. Una conexión con instantáneas no puede eliminarse, porque sus capturas forman parte de la trazabilidad del análisis.
+
 ### Añadir la vista Nginx de entrega
 
 Sin detener ni reemplazar los cuatro servicios de desarrollo:

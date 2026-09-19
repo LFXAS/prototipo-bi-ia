@@ -120,7 +120,7 @@ El documento cubre tres modalidades:
   \item \textbf{Ejecución de una entrega completa}: descarga imágenes de GitHub Container Registry (GHCR) en un proyecto Compose aislado.
 \end{enumerate}
 
-La versión actual conserva la infraestructura del Sprint 1 y el núcleo administrativo del Sprint 2: autenticación JWT, RBAC, auditoría y configuración LLM. El primer incremento del Sprint 3 añade parámetros tipados y la administración web de una fuente SQL Server con secreto cifrado, prueba de sólo lectura y activación única. Metadatos, ETL, datamart, dashboard, reportería y Copiloto BI continúan fuera de este incremento.
+La versión actual conserva la infraestructura del Sprint 1 y el núcleo administrativo del Sprint 2: autenticación JWT, RBAC, auditoría y configuración LLM. Sprint 3 añade parámetros tipados, administración web de una fuente SQL Server e introspección determinística con instantáneas inmutables y explorador de esquema. Interpretación semántica, propuesta asistida, ETL, datamart, dashboard, reportería y Copiloto BI continúan fuera de este incremento.
 
 \section{Arquitectura operativa}
 
@@ -414,11 +414,19 @@ La pantalla \textbf{Conexiones de datos} permite registrar nombre, servidor, pue
 
 En el entorno Docker académico se registra el host \file{sqlserver}, puerto 1433, base \file{AdventureWorks2022} y usuario lector aprovisionado durante el arranque. Las variables de \file{.env} siguen siendo necesarias para construir la instancia local, pero la operación del flujo BI usa la credencial registrada desde la plataforma.
 
+\subsection{Instantáneas y explorador de esquema}
+
+La acción \textbf{Actualizar metadatos} está disponible sobre la fuente activa para personas con el permiso \path{metadata.refresh}. FastAPI descifra la contraseña sólo en memoria, consulta exclusivamente los catálogos de SQL Server y normaliza esquemas, tablas, columnas, tipos, nulabilidad, claves primarias y claves foráneas. No consulta filas, valores de ventas, procedimientos ni código SQL almacenado.
+
+El documento canónico se ordena de forma estable y se almacena como JSONB en \path{app.metadata_snapshots}. Su hash SHA-256 permite reconocer la misma estructura: si no cambió, se reutiliza la instantánea vigente y no se duplica. Cada captura conserva conexión, base, versión contractual, totales, actor histórico y fecha. La migración \path{20260918_08} impide eliminar una conexión que tenga instantáneas asociadas.
+
+La pantalla \textbf{Datos > Explorador de esquema} consulta la captura persistida, no la fuente original. Permite buscar por esquema, tabla o columna y presenta detalle de columnas, PK y relaciones entrantes y salientes. La prueba real registró 6 esquemas, 71 tablas, 444 columnas y 90 relaciones en AdventureWorks; una segunda captura produjo el mismo hash y no añadió otro registro.
+
 \subsection{Configuración LLM cloud y local}
 
 La pantalla Configuración LLM mantiene nombre, proveedor, URL validada, modelo, estado y resultado de prueba. Puede existir una sola configuración activa. Para Gemini o Qwen Cloud se guarda primero el registro y después se usa \textbf{Registrar credencial}; cuando ya existe, la acción cambia a \textbf{Reemplazar credencial}. La clave se envía una sola vez y nunca vuelve al navegador. La tabla sólo presenta \textbf{Credencial pendiente} o \textbf{Credencial configurada}.
 
-FastAPI cifra la clave mediante cifrado autenticado y almacena únicamente el texto cifrado en \file{app.secrets}. La raíz criptográfica se genera automáticamente con permisos restrictivos en \file{/var/lib/bi-ia-secrets/master.key} y se conserva en el volumen \file{secret\_key\_data}, separado de PostgreSQL. Si se borra ese volumen, las credenciales existentes dejan de poder descifrarse y deberán reemplazarse desde la pantalla. No se copia el volumen entre equipos y no se versiona. \file{GEMINI\_API\_KEY} y \file{DASHSCOPE\_API\_KEY} ya no se utilizan.
+FastAPI cifra la clave mediante cifrado autenticado y almacena únicamente el texto cifrado en \path{app.secrets}. La raíz criptográfica se genera automáticamente con permisos restrictivos en \path{/var/lib/bi-ia-secrets/master.key} y se conserva en el volumen \path{secret_key_data}, separado de PostgreSQL. Si se borra ese volumen, las credenciales existentes dejan de poder descifrarse y deberán reemplazarse desde la pantalla. No se copia el volumen entre equipos y no se versiona. \path{GEMINI_API_KEY} y \path{DASHSCOPE_API_KEY} ya no se utilizan.
 
 Para probar una configuración cloud se registra la credencial, se usa \textbf{Probar conexión} y se revisa el aviso verde de éxito o rojo con causa segura. La prueba sale desde FastAPI, descifra sólo en memoria, tiene tiempo limitado y no envía datos del negocio. La auditoría conserva la acción y el proveedor, nunca la clave ni el contenido de la respuesta.
 
@@ -1012,7 +1020,7 @@ make verify
   \toprule
   Campo & Valor \\
   \midrule
-  Estado & Manual acumulativo del Sprint 1, Sprint 2 y primer incremento del Sprint 3; base obligatoria para los módulos posteriores con SDD. \\
+  Estado & Manual acumulativo del Sprint 1, Sprint 2 y dos incrementos funcionales del Sprint 3; base obligatoria para los módulos posteriores con SDD. \\
   Custodia & Repositorio público \file{LFXAS/prototipo-bi-ia}; escritura restringida a colaboradores. \\
   Audiencia & Autoras, tutor, revisores, colaboradores y lectores académicos. \\
   Actualización & Debe acompañar todo cambio de instalación, puertos, secretos, imágenes, pruebas o recuperación. \\
@@ -1039,6 +1047,7 @@ make verify
   1.8.1 & 11-09-2026 & Corrección de eliminación de usuarios temporales: auditoría preservada con etiqueta histórica de actor y referencia nula mediante \file{ON DELETE SET NULL}. \\
   1.9.0 & 18-09-2026 & Credenciales LLM administradas desde la web, cifrado autenticado, volumen de raíz criptográfica y migración reproducible como cierre pendiente del Sprint 2. \\
   2.0.0 & 18-09-2026 & Inicio del Sprint 3: conexión SQL Server administrada desde la web, contraseña cifrada, validación de sólo lectura, activación única y cuatro parámetros tipados. \\
+  2.1.0 & 18-09-2026 & Introspección determinística, instantáneas JSONB inmutables, hash reproducible, deduplicación y explorador responsive de tablas, columnas y relaciones. \\
   \bottomrule
 \end{tabularx}
 

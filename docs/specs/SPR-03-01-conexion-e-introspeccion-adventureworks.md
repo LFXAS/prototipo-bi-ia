@@ -1,6 +1,6 @@
 # SPR-03-01: conexión parametrizable e introspección SQL Server
 
-- Estado: **borrador para revisión y aprobación**.
+- Estado: **implementada y verificada localmente**.
 - Pertenece a: [SPR-03-metadatos-y-propuesta-bi.md](SPR-03-metadatos-y-propuesta-bi.md).
 - Fecha de creación: 2026-09-14.
 - Rama prevista de implementación: `feature/sprint-03-metadata-copilot`.
@@ -191,4 +191,8 @@ Parámetros de paginación: `limit` de 1 a 100 y `offset` no negativo. La búsqu
 
 ## 10. Resultado de implementación
 
-Pendiente. Al cerrar el PR se registrarán migración, SHA, pruebas, evidencia real, desviaciones aprobadas y estado final.
+La migración `20260918_08` crea `app.metadata_snapshots` con documento JSONB, hash, totales, actor histórico, unicidad por fuente/contrato/hash y claves foráneas que conservan la trazabilidad. FastAPI incorpora los seis endpoints previstos, serializa capturas concurrentes mediante un bloqueo asesor de PostgreSQL y registra creación, ausencia de cambios o falla segura.
+
+La captura real desde la conexión activa AdventureWorks produjo 6 esquemas, 71 tablas, 444 columnas y 90 relaciones. Una segunda ejecución generó el mismo hash SHA-256, reutilizó la instantánea y mantuvo estable el total. El explorador permite buscar por esquema, tabla o columna y consultar columnas, PK, relaciones entrantes y salientes sin leer filas del negocio.
+
+La validación automatizada incluye orden canónico, hash reproducible, claves foráneas, búsqueda segura y recorrido React del explorador. El SHA y el PR se incorporarán al publicar esta rama hacia `develop`.

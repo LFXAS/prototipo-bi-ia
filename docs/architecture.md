@@ -60,7 +60,7 @@ Desde el Sprint 2, cada módulo sólo incorpora capacidad funcional a partir de 
 
 ## RBAC previsto
 
-Entidades implementadas hasta el primer incremento del Sprint 3: `users`, `roles`, `permissions`, `user_roles`, `role_permissions`, `menus`, `menu_permissions`, `audit_events`, `parameters`, `llm_configurations`, `secrets` y `data_connections`, todas bajo el esquema `app`. `parameters` ya conserva tipo, módulo, valor predeterminado y rango. Las siguientes migraciones del Sprint 3 añadirán `metadata_snapshots` y `bi_proposals`.
+Entidades implementadas hasta el segundo incremento del Sprint 3: `users`, `roles`, `permissions`, `user_roles`, `role_permissions`, `menus`, `menu_permissions`, `audit_events`, `parameters`, `llm_configurations`, `secrets`, `data_connections` y `metadata_snapshots`, todas bajo el esquema `app`. `parameters` conserva tipo, módulo, valor predeterminado y rango; `metadata_snapshots` conserva el documento canónico JSONB, su hash, totales y actor histórico. Una migración posterior añadirá las solicitudes y propuestas BI.
 
 Reglas arquitectónicas:
 
@@ -94,7 +94,7 @@ El módulo `copilot` posterior consumirá este contrato mediante una interfaz in
 
 ## Contrato de Sprint 3
 
-Sprint 3 separa configuración, introspección y razonamiento asistido. La administración ya puede registrar desde la web una conexión `sqlserver`, cifrar su contraseña, comprobar conectividad y ausencia de permisos de escritura, y dejar una sola fuente activa; AdventureWorks valida este recorrido. El siguiente incremento del módulo `metadata` consultará el conector activo, normalizará una instantánea inmutable y calculará su hash.
+Sprint 3 separa configuración, introspección y razonamiento asistido. La administración puede registrar desde la web una conexión `sqlserver`, cifrar su contraseña, comprobar conectividad y ausencia de permisos de escritura, y dejar una sola fuente activa. El módulo `metadata` consulta catálogos del conector activo, normaliza una instantánea inmutable, calcula su hash y reutiliza la captura vigente cuando la estructura no cambió. El explorador consulta exclusivamente PostgreSQL y no vuelve a leer filas ni metadatos de la fuente por cada búsqueda.
 
 El módulo `copilot` recibe una solicitud guiada de negocio y procesa la instantánea en bloques compactos. El LLM interpreta dinámicamente nombres técnicos en inglés u otro idioma, propone conceptos y explicaciones de negocio en español y conserva las referencias originales. FastAPI descarta cualquier tabla, columna o relación que no exista antes de construir el paquete dimensional final. No se utiliza un glosario codificado exclusivamente para AdventureWorks.
 

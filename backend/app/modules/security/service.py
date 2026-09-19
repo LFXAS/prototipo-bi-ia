@@ -38,6 +38,12 @@ DEFAULT_PERMISSIONS: tuple[tuple[str, str, str], ...] = (
     ("connections.read", "Consultar conexiones", "Permite consultar fuentes sin secretos."),
     ("connections.write", "Administrar conexiones", "Permite parametrizar fuentes de datos."),
     ("connections.test", "Probar conexiones", "Permite validar fuentes de solo lectura."),
+    ("metadata.read", "Consultar metadatos", "Permite consultar instantáneas del esquema."),
+    (
+        "metadata.refresh",
+        "Actualizar metadatos",
+        "Permite leer la estructura de la fuente activa.",
+    ),
     ("audit.read", "Consultar auditoría", "Permite consultar eventos de auditoría."),
 )
 
@@ -81,6 +87,15 @@ DEFAULT_MENUS: tuple[tuple[str, str, str, int, str, str, tuple[str, ...]], ...] 
         "parameters",
         "Parámetros generales",
         ("connections.read",),
+    ),
+    (
+        "schema-explorer",
+        "Explorador de esquema",
+        "/esquema",
+        10,
+        "data",
+        "Datos",
+        ("metadata.read",),
     ),
     ("audit", "Auditoría", "/auditoria", 70, "security", "Seguridad", ("audit.read",)),
 )

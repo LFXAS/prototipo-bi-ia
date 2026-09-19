@@ -2,10 +2,14 @@ import { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
   api,
+  type ActiveSource,
   type AuditEvent,
   type DataConnection,
   type LlmConfiguration,
   type Menu,
+  type MetadataSnapshot,
+  type MetadataTable,
+  type MetadataTableDetail,
   type Page,
   type Parameter,
   type Permission,
@@ -23,6 +27,8 @@ type PageData =
   | Page<Parameter>
   | Page<LlmConfiguration>
   | Page<DataConnection>
+  | Page<MetadataSnapshot>
+  | Page<MetadataTable>
   | Page<AuditEvent>
   | null
 type Row = Record<string, unknown>
@@ -39,6 +45,7 @@ const labels: Record<string, string> = {
   '/parametros': 'Parámetros',
   '/llm': 'Configuración LLM',
   '/conexiones': 'Conexiones de datos',
+  '/esquema': 'Explorador de esquema',
   '/auditoria': 'Auditoría',
 }
 
@@ -71,6 +78,9 @@ const auditActionLabels: Record<string, string> = {
   'parameters.llm.delete': 'Eliminación de configuración LLM',
   'parameters.llm.credential.register': 'Registro de credencial LLM',
   'parameters.llm.credential.replace': 'Reemplazo de credencial LLM',
+  'metadata.snapshot.create': 'Creación de instantánea de metadatos',
+  'metadata.snapshot.unchanged': 'Comprobación de metadatos sin cambios',
+  'metadata.snapshot.failed': 'Fallo controlado al actualizar metadatos',
   'security.menu.protected_change_rejected': 'Cambio rechazado en menú protegido',
   'security.menu.create_rejected': 'Creación manual de menú rechazada',
 }
@@ -121,6 +131,7 @@ export default function App() {
       '/parametros': () => api.parameters(token, pageSize, offset),
       '/llm': () => api.llm(token, pageSize, offset),
       '/conexiones': () => api.connections(token, pageSize, offset),
+      '/esquema': () => api.metadataSnapshots(token, pageSize, offset),
       '/auditoria': () => api.audit(token, pageSize, offset),
     }
     if (loadedPage.current !== page) {
@@ -195,7 +206,9 @@ export default function App() {
           {page === '/'
             ? <Home session={session} />
             : page === '/conexiones'
-              ? <ConnectionsPage data={data as Page<DataConnection> | null} message={message} token={token} canWrite={session.permissions.includes('connections.write')} canTest={session.permissions.includes('connections.test')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
+              ? <ConnectionsPage data={data as Page<DataConnection> | null} message={message} token={token} canWrite={session.permissions.includes('connections.write')} canTest={session.permissions.includes('connections.test')} canRefresh={session.permissions.includes('metadata.refresh')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
+              : page === '/esquema'
+                ? <SchemaExplorerPage snapshots={data as Page<MetadataSnapshot> | null} message={message} token={token} canRefresh={session.permissions.includes('metadata.refresh')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
               : page === '/parametros'
                 ? <ParametersPage data={data as Page<Parameter> | null} message={message} token={token} canWrite={session.permissions.includes('parameters.write')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
                 : <ResourcePage key={page} page={page} data={data} message={message} token={token} canWrite={session.permissions.includes(writePermissions[page])} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />}
@@ -323,10 +336,16 @@ const emptyConnection = {
   name: '', host: '', port: '1433', database_name: '', username: '', password: '', encrypt: true, trust_server_certificate: true,
 }
 
-function ConnectionsPage({ data, message, token, canWrite, canTest, onSaved, onChangePage }: { data: Page<DataConnection> | null; message: string; token: string; canWrite: boolean; canTest: boolean; onSaved: () => void; onChangePage: (offset: number) => void }) {
+function ConnectionsPage({ data, message, token, canWrite, canTest, canRefresh, onSaved, onChangePage }: { data: Page<DataConnection> | null; message: string; token: string; canWrite: boolean; canTest: boolean; canRefresh: boolean; onSaved: () => void; onChangePage: (offset: number) => void }) {
   const [selected, setSelected] = useState<DataConnection | null>(null)
   const [values, setValues] = useState(emptyConnection)
   const [feedback, setFeedback] = useState<{ message: string; kind: 'success' | 'error' } | null>(null)
+  const [activeSource, setActiveSource] = useState<ActiveSource | null>(null)
+  const [capturing, setCapturing] = useState(false)
+
+  useEffect(() => {
+    api.activeSource(token).then(setActiveSource).catch(() => setActiveSource(null))
+  }, [data, token])
 
   function beginEdit(item: DataConnection) {
     setSelected(item)
@@ -376,10 +395,31 @@ function ConnectionsPage({ data, message, token, canWrite, canTest, onSaved, onC
     }
   }
 
+  async function captureMetadata() {
+    setFeedback(null)
+    setCapturing(true)
+    try {
+      const result = await api.captureMetadata(token)
+      setFeedback({ message: result.message, kind: 'success' })
+      setActiveSource(await api.activeSource(token))
+      onSaved()
+    } catch (caught) {
+      setFeedback({ message: caught instanceof Error ? caught.message : 'No fue posible actualizar los metadatos.', kind: 'error' })
+    } finally {
+      setCapturing(false)
+    }
+  }
+
   if (message) return <p className="notice error">{message}</p>
   if (!data) return <p className="notice">Cargando información…</p>
   return <>
     <p className="lead">Registre una fuente SQL Server sin editar archivos. La contraseña se cifra y nunca vuelve a mostrarse.</p>
+    {activeSource?.connection && <section className="source-summary" aria-label="Fuente activa">
+      <div><p className="eyebrow">Fuente activa</p><h2>{activeSource.connection.name}</h2><p>{activeSource.connection.database_name} · Sólo lectura validada</p></div>
+      <div className="source-metrics"><span><strong>{activeSource.latest_snapshot?.table_count ?? '—'}</strong> tablas</span><span><strong>{activeSource.latest_snapshot?.column_count ?? '—'}</strong> columnas</span><span><strong>{activeSource.latest_snapshot?.relationship_count ?? '—'}</strong> relaciones</span></div>
+      {canRefresh && <button onClick={captureMetadata} disabled={capturing}>{capturing ? 'Leyendo estructura…' : 'Actualizar metadatos'}</button>}
+      <small>{activeSource.latest_snapshot ? `Última instantánea: ${new Date(activeSource.latest_snapshot.captured_at).toLocaleString('es-EC')}` : 'Todavía no existe una instantánea. Esta acción lee estructura, nunca filas.'}</small>
+    </section>}
     {canWrite && <form className="crud-form" onSubmit={submit}>
       <div className="form-title"><h2>{selected ? 'Editar conexión' : 'Registrar conexión'}</h2><span>En este sprint se admite una única fuente activa y sólo el motor SQL Server.</span></div>
       <div className="form-grid">
@@ -396,6 +436,92 @@ function ConnectionsPage({ data, message, token, canWrite, canTest, onSaved, onC
     </form>}
     {feedback && <p className={`notice ${feedback.kind}`} role={feedback.kind === 'error' ? 'alert' : 'status'}>{feedback.message}</p>}
     <div className="table-wrap"><table><thead><tr><th>Fuente</th><th>Destino</th><th>Validación</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>{data.items.map((item) => <tr key={item.id}><td><strong>{item.name}</strong><br /><small>SQL Server</small></td><td>{item.host}:{item.port}<br /><small>{item.database_name} · {item.username}</small></td><td>{item.last_test_status === 'ok' ? 'Sólo lectura validada' : item.last_test_status === 'error' ? 'Prueba fallida' : 'Pendiente'}{item.last_tested_at && <><br /><small>{new Date(item.last_tested_at).toLocaleString('es-EC')}</small></>}</td><td>{item.is_active ? 'Activa' : 'Inactiva'}</td><td><div className="row-actions">{canWrite && !item.is_active && <button className="table-action" onClick={() => beginEdit(item)}>Editar</button>}{canTest && <button className="table-action secondary" onClick={() => perform(item, 'test')}>Probar conexión</button>}{canWrite && (item.is_active ? <button className="table-action secondary" onClick={() => perform(item, 'deactivate')}>Desactivar</button> : <button className="table-action secondary" disabled={item.last_test_status !== 'ok'} onClick={() => perform(item, 'activate')}>Activar</button>)}{canWrite && !item.is_active && <button className="table-action danger" onClick={() => perform(item, 'delete')}>Eliminar</button>}</div></td></tr>)}</tbody></table>{data.items.length === 0 && <p className="notice">Todavía no hay conexiones registradas.</p>}<Pagination page={data} onChange={onChangePage} /></div>
+  </>
+}
+
+function SchemaExplorerPage({ snapshots, message, token, canRefresh, onSaved, onChangePage }: { snapshots: Page<MetadataSnapshot> | null; message: string; token: string; canRefresh: boolean; onSaved: () => void; onChangePage: (offset: number) => void }) {
+  const [activeSource, setActiveSource] = useState<ActiveSource | null>(null)
+  const [snapshotId, setSnapshotId] = useState<number | null>(null)
+  const [searchDraft, setSearchDraft] = useState('')
+  const [schemaDraft, setSchemaDraft] = useState('')
+  const [filters, setFilters] = useState({ search: '', schema: '' })
+  const [tables, setTables] = useState<Page<MetadataTable> | null>(null)
+  const [tableOffset, setTableOffset] = useState(0)
+  const [selectedTable, setSelectedTable] = useState<MetadataTable | null>(null)
+  const [detail, setDetail] = useState<MetadataTableDetail | null>(null)
+  const [localFeedback, setLocalFeedback] = useState<{ message: string; kind: 'success' | 'error' } | null>(null)
+  const [capturing, setCapturing] = useState(false)
+
+  useEffect(() => {
+    api.activeSource(token).then(setActiveSource).catch((caught: Error) => setLocalFeedback({ message: caught.message, kind: 'error' }))
+  }, [snapshots, token])
+
+  useEffect(() => {
+    if (!snapshotId && snapshots?.items[0]) setSnapshotId(snapshots.items[0].id)
+  }, [snapshotId, snapshots])
+
+  useEffect(() => {
+    if (!snapshotId) return
+    setTables(null)
+    setDetail(null)
+    api.metadataTables(token, snapshotId, filters.search, filters.schema, pageSize, tableOffset)
+      .then((result) => {
+        setTables(result)
+        setSelectedTable((current) => result.items.find((item) => item.schema_name === current?.schema_name && item.table_name === current?.table_name) ?? result.items[0] ?? null)
+        setLocalFeedback(null)
+      })
+      .catch((caught: Error) => setLocalFeedback({ message: caught.message, kind: 'error' }))
+  }, [filters, snapshotId, tableOffset, token])
+
+  useEffect(() => {
+    if (!snapshotId || !selectedTable) {
+      setDetail(null)
+      return
+    }
+    api.metadataTable(token, snapshotId, selectedTable.schema_name, selectedTable.table_name)
+      .then(setDetail)
+      .catch((caught: Error) => setLocalFeedback({ message: caught.message, kind: 'error' }))
+  }, [selectedTable, snapshotId, token])
+
+  async function capture() {
+    setCapturing(true)
+    setLocalFeedback(null)
+    try {
+      const result = await api.captureMetadata(token)
+      setLocalFeedback({ message: result.message, kind: 'success' })
+      setSnapshotId(result.snapshot.id)
+      setTableOffset(0)
+      onSaved()
+    } catch (caught) {
+      setLocalFeedback({ message: caught instanceof Error ? caught.message : 'No fue posible actualizar los metadatos.', kind: 'error' })
+    } finally {
+      setCapturing(false)
+    }
+  }
+
+  function applyFilters(event: FormEvent) {
+    event.preventDefault()
+    setTableOffset(0)
+    setFilters({ search: searchDraft.trim(), schema: schemaDraft.trim() })
+  }
+
+  if (message) return <p className="notice error">{message}</p>
+  if (!snapshots) return <p className="notice">Cargando instantáneas…</p>
+  if (!activeSource?.connection) return <div className="empty-state"><h2>No hay una fuente activa</h2><p>Un administrador debe probar y activar una conexión SQL Server antes de leer su estructura.</p></div>
+  if (snapshots.items.length === 0) return <div className="empty-state"><h2>Todavía no hay metadatos</h2><p>La instantánea incluirá tablas, columnas y relaciones declaradas, pero nunca filas ni credenciales.</p>{canRefresh && <button onClick={capture} disabled={capturing}>{capturing ? 'Leyendo estructura…' : 'Crear primera instantánea'}</button>}{localFeedback && <p className={`notice ${localFeedback.kind}`} role={localFeedback.kind === 'error' ? 'alert' : 'status'}>{localFeedback.message}</p>}</div>
+
+  const currentSnapshot = snapshots.items.find((item) => item.id === snapshotId) ?? snapshots.items[0]
+  return <>
+    <div className="explorer-header"><div><p className="lead">Consulte la estructura capturada de <strong>{activeSource.connection.name}</strong>. Esta vista no lee filas del negocio.</p><p className="snapshot-meta">Instantánea #{currentSnapshot.id} · {new Date(currentSnapshot.captured_at).toLocaleString('es-EC')} · huella {currentSnapshot.content_hash.slice(0, 12)}</p></div>{canRefresh && <button onClick={capture} disabled={capturing}>{capturing ? 'Leyendo estructura…' : 'Actualizar metadatos'}</button>}</div>
+    <div className="snapshot-metrics" aria-label="Resumen de la instantánea"><article><strong>{currentSnapshot.schema_count}</strong><span>esquemas</span></article><article><strong>{currentSnapshot.table_count}</strong><span>tablas</span></article><article><strong>{currentSnapshot.column_count}</strong><span>columnas</span></article><article><strong>{currentSnapshot.relationship_count}</strong><span>relaciones</span></article></div>
+    {snapshots.items.length > 1 && <label className="snapshot-selector">Versión de metadatos<select value={currentSnapshot.id} onChange={(event) => { setSnapshotId(Number(event.target.value)); setTableOffset(0); setSelectedTable(null) }}>{snapshots.items.map((item) => <option key={item.id} value={item.id}>#{item.id} · {new Date(item.captured_at).toLocaleString('es-EC')} · {item.content_hash.slice(0, 8)}</option>)}</select></label>}
+    <form className="explorer-filters" onSubmit={applyFilters}><label>Buscar tabla o columna<input value={searchDraft} maxLength={120} placeholder="Ejemplo: pedido, SalesOrderID" onChange={(event) => setSearchDraft(event.target.value)} /></label><label>Esquema<input value={schemaDraft} maxLength={128} placeholder="Ejemplo: Sales" onChange={(event) => setSchemaDraft(event.target.value)} /></label><button>Buscar</button></form>
+    {localFeedback && <p className={`notice ${localFeedback.kind}`} role={localFeedback.kind === 'error' ? 'alert' : 'status'}>{localFeedback.message}</p>}
+    <div className="schema-explorer">
+      <section className="schema-table-list" aria-label="Tablas de la instantánea"><h2>Tablas</h2>{!tables ? <p>Cargando tablas…</p> : tables.items.length === 0 ? <p className="notice">No se encontraron coincidencias.</p> : <>{tables.items.map((item) => <button key={`${item.schema_name}.${item.table_name}`} className={selectedTable?.schema_name === item.schema_name && selectedTable?.table_name === item.table_name ? 'selected' : ''} onClick={() => setSelectedTable(item)}><span><small>{item.schema_name}</small><strong>{item.table_name}</strong></span><span>{item.column_count} columnas<br /><small>{item.relationship_count} relaciones salientes</small></span></button>)}<Pagination page={tables} onChange={setTableOffset} /></>}</section>
+      <section className="schema-table-detail" aria-live="polite">{!selectedTable ? <div className="empty-state"><h2>Seleccione una tabla</h2><p>Verá columnas, claves y relaciones declaradas.</p></div> : !detail ? <p>Cargando detalle…</p> : <><div className="detail-title"><div><p className="eyebrow">{detail.schema_name}</p><h2>{detail.table_name}</h2></div><span>{detail.columns.length} columnas</span></div><div className="table-wrap"><table><thead><tr><th>Columna</th><th>Tipo</th><th>Permite nulos</th><th>Clave</th></tr></thead><tbody>{detail.columns.map((column) => <tr key={column.name}><td><strong>{column.name}</strong><br /><small>Posición {column.ordinal}</small></td><td>{column.data_type}{column.max_length > 0 && !['int', 'date', 'datetime', 'datetime2', 'bit'].includes(column.data_type) ? ` (${column.max_length})` : ''}</td><td>{column.nullable ? 'Sí' : 'No'}</td><td>{column.primary_key ? 'PK' : '—'}</td></tr>)}</tbody></table></div><div className="relationship-grid"><article><h3>Relaciones salientes</h3>{detail.foreign_keys.length === 0 ? <p>No registra claves foráneas salientes.</p> : detail.foreign_keys.map((relation) => <p key={relation.name}><strong>{relation.columns.join(', ')}</strong> → {relation.referenced_schema}.{relation.referenced_table} ({relation.referenced_columns.join(', ')})</p>)}</article><article><h3>Relaciones entrantes</h3>{detail.incoming_relationships.length === 0 ? <p>No registra relaciones entrantes.</p> : detail.incoming_relationships.map((relation) => <p key={`${relation.source_schema}.${relation.source_table}.${relation.name}`}><strong>{relation.source_schema}.{relation.source_table}</strong> ({relation.source_columns.join(', ')}) → {relation.referenced_columns.join(', ')}</p>)}</article></div></>}</section>
+    </div>
+    <Pagination page={snapshots} onChange={onChangePage} />
   </>
 }
 
