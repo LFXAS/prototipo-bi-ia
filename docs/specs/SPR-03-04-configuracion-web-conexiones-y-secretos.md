@@ -15,7 +15,7 @@ La implementación se limita a una solución académica segura y comprobable:
 - un formulario de conexión SQL Server;
 - una sola fuente activa;
 - un almacén cifrado común para ambas credenciales;
-- cuatro parámetros operativos realmente consumidos por el Sprint 3.
+- cuatro parámetros numéricos y un catálogo analítico por dominio, con permisos separados, realmente consumidos por el Sprint 3.
 
 No se construirá una plataforma universal de conexiones ni un gestor empresarial de secretos.
 
@@ -35,6 +35,8 @@ Este soporte no es la contribución principal de la tesis, pero elimina una barr
 ### 3.1 Corrección del Sprint 2: credencial LLM
 
 En **Parámetros generales > Configuración LLM**, Gemini y Qwen Cloud incorporan la acción **Registrar/Reemplazar credencial**. La clave se envía una vez, se cifra en FastAPI y posteriormente la pantalla sólo muestra **Credencial configurada**. Ollama local conserva el estado **No requiere credencial**.
+
+Cada configuración incorpora un **Nivel de razonamiento** controlado: automático, mínimo, bajo, medio o alto. El adaptador Gemini aplica el valor soportado por el modelo; mínimo es el valor inicial para priorizar rapidez y evitar que una respuesta JSON acotada consuma su presupuesto en razonamiento interno. Cambiar proveedor, URL, modelo o nivel invalida la última prueba y exige ejecutar **Probar conexión** nuevamente. Ollama y Qwen conservan en este sprint el comportamiento seguro definido por sus adaptadores; la interfaz no promete niveles que el modelo no soporte.
 
 La transición de una instalación existente es manual y controlada: el administrador vuelve a ingresar la clave en la web y prueba el proveedor. `GEMINI_API_KEY` y `DASHSCOPE_API_KEY` se retiraron de la plantilla y de Compose; no se implementa importación automática.
 
@@ -109,17 +111,21 @@ El backend implementa `SqlServerConnector` con cuatro responsabilidades: validar
 | `GET /api/v1/parameters` | Listar parámetros habilitados. |
 | `PUT /api/v1/parameters/{key}` | Cambiar un valor permitido. |
 | `POST /api/v1/parameters/{key}/reset` | Restaurar el valor predeterminado. |
+| `GET /api/v1/analysis-catalog/domains` | Listar dominios con catálogo implementado. |
+| `GET/PUT /api/v1/analysis-catalog/domains/{code}` | Consultar o guardar preguntas y periodicidades del dominio. |
+| `POST /api/v1/analysis-catalog/domains/{code}/reset` | Restaurar el catálogo validado. |
 
 Las listas mantienen la paginación ya implementada. Cada escritura genera auditoría segura.
 
 ## 7. Criterios de aceptación
 
 - [x] Gemini o Qwen puede configurarse y probarse desde la web sin depender de una API key en `.env`.
+- [x] El nivel de razonamiento se selecciona desde la configuración LLM y un cambio obliga a probar nuevamente proveedor y modelo.
 - [x] AdventureWorks puede registrarse, probarse y activarse desde la web sin editar archivos ni PostgreSQL.
 - [x] La clave LLM y la contraseña SQL Server se almacenan cifradas y nunca se devuelven al navegador.
 - [x] Una conexión con prueba fallida o permisos incompatibles no puede activarse.
 - [x] Sólo una fuente permanece activa.
-- [x] Los cuatro parámetros se muestran con explicación y sólo aceptan valores dentro de su rango.
+- [x] Los cuatro parámetros numéricos se muestran con explicación y sólo aceptan valores dentro de su rango; el catálogo analítico tiene pantalla, permisos y CRUD separados por dominio.
 - [x] La auditoría identifica creación, modificación, prueba y activación sin exponer secretos.
 - [ ] Las dependencias impiden eliminar una conexión utilizada.
 - [x] Formularios, errores y acciones son utilizables en móvil y escritorio.
@@ -127,7 +133,7 @@ Las listas mantienen la paginación ya implementada. Cada escritura genera audit
 
 ## 8. Pruebas obligatorias
 
-- Unitarias: cifrado, ocultamiento, validación de campos, rangos y activación única.
+- Unitarias: cifrado, ocultamiento, validación de campos, nivel de razonamiento permitido, rangos y activación única.
 - API: permisos, CRUD, prueba, reemplazo de secreto, errores seguros y dependencias.
 - Integración: reinicio de contenedores sin perder configuración ni capacidad de descifrar.
 - Real: Gemini u Ollama para el proveedor y SQL Server/AdventureWorks para la fuente.
@@ -151,4 +157,4 @@ Puertos, redes, imágenes, volúmenes, credenciales internas de PostgreSQL, migr
 
 La corrección LLM se implementó con la migración `20260918_06`, la tabla `app.secrets`, cifrado autenticado, clave maestra persistente en `secret_key_data`, endpoint de registro/reemplazo, interfaz responsive y auditoría sin secretos. La migración `20260918_07` amplió el catálogo tipado de parámetros y añadió `app.data_connections`, la restricción de una sola fuente activa y los permisos `connections.read`, `connections.write` y `connections.test`.
 
-La pantalla **Conexiones de datos** implementa registro, edición con contraseña opcional, prueba, activación, desactivación y eliminación. La prueba real con AdventureWorks confirmó conectividad y ausencia de privilegios de escritura; el estado probado y la activación permanecieron después de reiniciar FastAPI. PostgreSQL produjo cero coincidencias con las credenciales en claro. Los cuatro parámetros se pueden modificar dentro de sus rangos y restaurar, con auditoría segura. La protección por dependencias se completará cuando `metadata_snapshots` introduzca la primera relación consumidora en SPR-03-01; hasta entonces no existe un registro hijo que bloquear.
+La pantalla **Conexiones de datos** implementa registro, edición con contraseña opcional, prueba, activación, desactivación y eliminación. La prueba real con AdventureWorks confirmó conectividad y ausencia de privilegios de escritura; el estado probado y la activación permanecieron después de reiniciar FastAPI. PostgreSQL produjo cero coincidencias con las credenciales en claro. Los cuatro parámetros numéricos se pueden modificar dentro de sus rangos y restaurar, con auditoría segura. El catálogo analítico se administra en un menú independiente: permite CRUD de preguntas y varias periodicidades soportadas, pero no almacena objetivos ni dimensiones. La protección por dependencias se completará cuando `metadata_snapshots` introduzca la primera relación consumidora en SPR-03-01; hasta entonces no existe un registro hijo que bloquear.

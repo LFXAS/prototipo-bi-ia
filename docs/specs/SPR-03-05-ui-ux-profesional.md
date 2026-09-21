@@ -1,10 +1,10 @@
 # SPR-03-05: interfaz y experiencia profesional del asistente BI
 
-- Estado: **borrador para revisión y aprobación**.
+- Estado: **implementado y verificado localmente; pendiente de validación del usuario**.
 - Pertenece a: [SPR-03-metadatos-y-propuesta-bi.md](SPR-03-metadatos-y-propuesta-bi.md).
 - Complementa: [SPR-03-03-explorador-esquema-y-trazabilidad.md](SPR-03-03-explorador-esquema-y-trazabilidad.md).
 - Fecha de creación: 2026-09-18.
-- Alcance: definición UI/UX; no autoriza todavía la implementación.
+- Alcance: definición UI/UX implementada para la validación local del Sprint 3.
 
 ## 1. Objetivo de experiencia
 
@@ -38,9 +38,9 @@ La interfaz adapta acciones a permisos, pero conserva los mismos nombres, estado
 | Acceso directo | Inicio | Estado general, prerrequisitos y accesos permitidos. |
 | Parámetros generales | Conexiones de datos | Registrar, probar, activar y actualizar metadatos de SQL Server. |
 | Parámetros generales | Configuración LLM | Registrar o reemplazar credencial, configurar modelo y probar proveedor. |
-| Parámetros generales | Parámetros | Administrar únicamente los cuatro parámetros operativos aprobados. |
+| Parámetros generales | Parámetros | Administrar los cuatro parámetros numéricos aprobados y el catálogo estructurado de necesidades analíticas. |
 | Datos | Explorador de esquema | Consultar la instantánea técnica de sólo lectura. |
-| IA | Asistente de análisis | Crear la solicitud, revisar conceptos, propuesta y decisión. |
+| IA | Asistente de datamart | Seleccionar un dominio habilitado, crear la solicitud, revisar conceptos, personalizar la propuesta y decidir. |
 
 No se mostrarán ETL, Datamart, Dashboard, Reportes, Alertas, Predicciones ni chat analítico hasta que exista una capacidad funcional aprobada.
 
@@ -98,7 +98,7 @@ Estos distintivos no sugieren que la IA tenga autoridad para aprobar o ejecutar.
 | `StatusBadge` | Estado con texto, icono y color semántico. |
 | `InlineAlert` | Resultado persistente relacionado con la pantalla; nunca se reemplaza por un `alert()` del navegador. |
 | `Toast` | Confirmación breve de una operación ya visible; no contiene errores que requieren decisión. |
-| `Stepper` | Cuatro pasos del asistente, con estado actual y completado; no permite saltar prerrequisitos. |
+| `Stepper` | Cinco pasos del asistente, con estado actual y completado; no permite saltar prerrequisitos. |
 | `SetupWizard` | Preparación inicial del administrador; reutiliza los formularios reales y puede retomarse sin crear una segunda configuración paralela. |
 | `SectionCard` | Agrupa información con título y descripción; evita tarjetas anidadas sin necesidad. |
 | `Disclosure` | Muestra detalles técnicos opcionales con estado expandido accesible. |
@@ -116,7 +116,7 @@ Se incorpora un **wizard de configuración inicial** para evitar que una instala
 
 ### 6.1 Activación
 
-- Se ofrece desde Inicio cuando falta uno o más prerrequisitos del Asistente de análisis.
+- Se ofrece desde Inicio cuando falta uno o más prerrequisitos del Asistente de datamart.
 - Sólo lo puede ejecutar un perfil con los permisos administrativos necesarios.
 - Después de completar la preparación, no se abre automáticamente en cada sesión; Inicio conserva una acción **Revisar configuración**.
 - El avance se deriva del estado real persistido. No se almacena una copia de credenciales o formularios en el navegador.
@@ -127,7 +127,7 @@ Se incorpora un **wizard de configuración inicial** para evitar que una instala
 2. **Proveedor de IA:** seleccionar proveedor/modelo, registrar la credencial cuando aplique y probar la conexión.
 3. **Fuente de ventas:** ingresar SQL Server, base y credencial, probar conexión y confirmar sólo lectura.
 4. **Activación y metadatos:** activar la fuente, crear o reutilizar la instantánea y mostrar cantidades de tablas, columnas y relaciones.
-5. **Resumen:** comprobar todos los prerrequisitos y ofrecer **Crear primer análisis de ventas**.
+5. **Resumen:** comprobar todos los prerrequisitos y ofrecer **Abrir Asistente de datamart**.
 
 Cada paso permite volver sin borrar una configuración ya guardada. **Salir y continuar después** conserva exclusivamente lo confirmado en backend. Un paso incompleto no se marca como terminado.
 
@@ -158,7 +158,7 @@ Inicio deja de ser una portada vacía y actúa como orientación, sin convertirs
 2. tarjeta **Fuente de datos** con nombre, estado, última prueba e instantánea vigente;
 3. tarjeta **Asistente de IA** con proveedor/modelo, estado de prueba y acceso autorizado;
 4. tarjeta **Preparación del análisis** con los prerrequisitos en orden;
-5. acceso principal **Crear análisis de ventas** cuando todo esté disponible;
+5. acceso principal **Crear propuesta de datamart** cuando todo esté disponible;
 6. acción **Completar configuración inicial** cuando falten prerrequisitos;
 7. explicación honesta de que Sprint 3 prepara una propuesta y todavía no ejecuta el ETL.
 
@@ -205,9 +205,11 @@ La corrección del Sprint 2 adopta el mismo patrón visual de Conexiones:
 
 La interfaz no atribuye un fallo de cuota, credencial, red o modelo a una misma causa genérica cuando el backend pueda distinguirlas de forma segura.
 
-## 10. Pantalla Asistente de análisis
+## 10. Pantalla Asistente de datamart
 
-Es la experiencia central del Sprint 3 y usa un flujo de cuatro pasos. En escritorio, el stepper se muestra horizontal; en móvil se presenta compacto y anuncia **Paso N de 4**.
+Es la experiencia central del Sprint 3. No abre directamente un formulario de ventas: primero presenta un catálogo de tipos de datamart calculado por el backend. **Datamart de ventas** es el único perfil funcional de la prueba de concepto; otros dominios aparecen deshabilitados o se incorporan después con su propio perfil, reglas y pruebas, sin crear otra pantalla.
+
+Después de seleccionar un dominio, el asistente usa un flujo de cinco pasos. En escritorio, el stepper se muestra horizontal; en móvil se presenta compacto y anuncia **Paso N de 5**.
 
 ### 10.1 Prerrequisitos
 
@@ -226,9 +228,11 @@ Campos visibles:
 
 - objetivo de análisis, con ejemplo en lenguaje comercial;
 - preguntas de negocio mediante opciones comprensibles y selección múltiple;
-- periodicidad mensual;
-- dimensiones de interés expresadas como conceptos de negocio cuando estén disponibles;
+- una periodicidad elegida entre las estrategias habilitadas para el dominio;
+- una explicación visible de que las dimensiones serán propuestas por la IA desde los metadatos y revisadas en los pasos posteriores;
 - texto complementario limitado, sin aceptar SQL ni identificadores técnicos.
+
+Las preguntas orientadoras y periodicidades se reciben desde `GET /copilot/catalog` para la instantánea vigente. El objetivo se escribe en cada análisis y el paso 1 no solicita dimensiones. La IA debe inferirlas desde los metadatos; recién después se muestran con su evidencia para revisión y personalización humana. React no contiene un modelo dimensional fijo de AdventureWorks.
 
 La pantalla explica qué se enviará: solicitud normalizada y metadatos estructurales; nunca credenciales ni filas de ventas. **Analizar metadatos** es la acción primaria.
 
@@ -263,7 +267,21 @@ Los detalles técnicos —identificadores, joins, documento contractual y códig
 
 Si existen errores, la propuesta muestra **No puede aprobarse**, agrupa los problemas por sección y ofrece **Crear una nueva versión**. Las advertencias permiten continuar sólo después de su lectura y confirmación.
 
-### 10.5 Paso 4: revisión humana
+### 10.5 Paso 4: personalización supervisada
+
+Si la propuesta técnicamente válida no representa por completo la necesidad, el analista puede ajustar, sin SQL:
+
+- resumen y descripción de granularidad;
+- dimensiones entre las ya verificadas;
+- medidas entre las ya verificadas y su agregación permitida;
+- KPIs compatibles con las medidas seleccionadas;
+- justificación obligatoria del cambio.
+
+La interfaz elimina un KPI dependiente cuando se retira su medida y no permite inventar tablas, columnas, relaciones ni fórmulas. **Guardar como nueva versión** envía el ajuste al backend, vuelve a ejecutar las reglas determinísticas y conserva el vínculo con la versión de origen. La propuesta original nunca se sobrescribe.
+
+Cada KPI muestra su función semántica y un selector con únicamente las medidas compatibles ya verificadas. Cuando no existe una medida compatible, el control queda deshabilitado y explica dos acciones concretas: excluir el KPI o generar una nueva versión que solicite la medida faltante. La pantalla separa **Ajustes automáticos aplicados**, **Advertencias pendientes**, **Decisiones excluidas** y **Observaciones originales del proveedor**; estas últimas son trazabilidad, no evidencia validada.
+
+### 10.6 Paso 5: revisión humana
 
 La vista resume:
 
@@ -276,7 +294,23 @@ La vista resume:
 
 **Aprobar propuesta** exige confirmación y aclara que no ejecutará ETL todavía. **Rechazar propuesta** exige comentario. Una decisión final reemplaza los controles por un comprobante con estado, persona, fecha y comentario; el registro queda inmutable.
 
-### 10.6 Generación y espera
+### 10.7 Versiones generadas
+
+El asistente conserva una tabla paginada de resultados persistidos con versión, origen, necesidad, proveedor/modelo, estado y fecha. El filtro inicial **Lista para revisar** concentra el trabajo pendiente; se puede cambiar a aprobadas, rechazadas, con problemas o todas. El filtrado y la paginación se ejecutan en servidor.
+
+Una propuesta aprobada dispone de **Retirar aprobación** con motivo obligatorio. Una versión no aprobada dispone de **Descartar versión**. Ambas acciones conservan historial y auditoría; el filtro **Retiradas o descartadas** permite recuperarlas como evidencia sin mezclarlas con el trabajo vigente.
+
+**Abrir resultado** selecciona una fila y repone su contenido validado sin volver a ejecutar el proveedor. La fila abierta se diferencia visualmente y la selección anuncia el proveedor y modelo mediante una región de estado.
+
+Este mecanismo permite revisar propuestas producidas en momentos distintos, escoger cuál someter a aprobación y reutilizar durante una demostración un resultado local cuya generación haya requerido varios minutos. La comparación es humana: la interfaz no puntúa ni declara automáticamente un modelo superior.
+
+### 10.8 Validación estructural visible
+
+La sección **Validación estructural de la propuesta - Sprint 3** muestra únicamente evidencia que puede comprobarse antes de materializar el datamart: integridad de metadatos, referencias técnicas, consistencia del contrato y reproducción determinística del artefacto guardado. Un aviso explícito aclara que todavía no existe conciliación de filas, unidades o importes.
+
+El mismo expediente crecerá en Sprint 4 con la conciliación OLTP-datamart y, en incrementos posteriores, con contraste AdventureWorksDW, juicio de expertos, MAPE y RMSE. No se mezclan controles pendientes con tarjetas de cumplimiento.
+
+### 10.9 Generación y espera
 
 Durante operaciones LLM:
 
@@ -378,12 +412,18 @@ El objetivo mínimo es WCAG 2.1 AA en los recorridos implementados:
 - [ ] Una instalación incompleta ofrece el wizard de cinco pasos y una configuración completada no vuelve a imponerlo.
 - [ ] El wizard reutiliza los datos reales de los módulos, puede retomarse y nunca conserva secretos en el navegador.
 - [ ] Inicio comunica los prerrequisitos reales y ofrece el siguiente paso autorizado.
-- [ ] El flujo de cuatro pasos conserva contexto y no permite saltar dependencias.
+- [ ] La entrada genérica muestra el catálogo de dominios y habilita únicamente perfiles respaldados por metadatos y validadores.
+- [ ] Las preguntas y periodicidades se obtienen del backend; el objetivo se escribe por análisis y el paso 1 no predefine dimensiones.
+- [ ] El flujo de cinco pasos conserva contexto y no permite saltar dependencias.
+- [ ] El analista puede personalizar decisiones verificadas, crear una versión derivada y justificarla sin escribir SQL.
+- [ ] Versiones generadas filtra por defecto **Lista para revisar**, permite cambiar de estado y pagina en servidor.
+- [ ] La validación del Sprint 3 distingue controles estructurales cumplidos de conciliaciones futuras.
 - [ ] IA, validador y decisión humana se distinguen mediante texto, icono y estilo consistente.
 - [ ] Cargas externas muestran progreso comprensible sin porcentajes ficticios y bloquean duplicados.
 - [ ] Éxito, error, vacío, acceso denegado, sesión vencida y dependencia pendiente tienen una presentación definida.
 - [ ] Los errores quedan junto a su contexto y siempre ofrecen una acción posible cuando existe.
 - [ ] Aprobar y rechazar explican su efecto; rechazar requiere comentario y ninguna decisión ejecuta ETL.
+- [ ] Versiones generadas permite abrir y decidir un resultado persistido sin volver a consumir el proveedor; proveedor y modelo permanecen visibles.
 - [ ] Las tablas y detalles técnicos no producen desplazamiento horizontal de toda la aplicación.
 - [ ] Los recorridos son utilizables en 320, 768, 1024 y 1440 px.
 - [ ] Los recorridos principales funcionan con teclado, foco visible, etiquetas y contraste AA.
@@ -433,7 +473,7 @@ Antes de escribir código deben aprobarse:
 
 1. los tres perfiles y sus responsabilidades;
 2. la navegación mínima;
-3. el wizard inicial de cinco pasos y el flujo analítico de cuatro pasos;
+3. el wizard inicial de cinco pasos, el catálogo de dominios y el flujo analítico de cinco pasos;
 4. la separación visible entre IA, validador y persona;
 5. la vista visual no editable del plan ETL;
 6. la ausencia de chat, drag and drop funcional, diseñador gráfico y módulos futuros;
@@ -441,4 +481,4 @@ Antes de escribir código deben aprobarse:
 
 ## 21. Resultado de implementación
 
-Pendiente. Al cerrar el PR de implementación se registrarán componentes creados o reutilizados, capturas por ancho, resultados de accesibilidad, pruebas, SHA y desviaciones aprobadas.
+Implementado localmente y pendiente de la prueba de aceptación usuaria. La aplicación incorpora catálogo de dominios, opciones dinámicas según la instantánea, recorrido de cinco pasos, personalización supervisada, filtro y paginación de versiones, y delimitación visible de la evidencia de Sprint 3. La evidencia definitiva de capturas, SHA y CI se completará antes del PR de cierre.

@@ -9,18 +9,18 @@ from app.modules.parameters import providers
 
 
 class FakeResponse:
-    status_code = 200
-
-    def __init__(self, payload: dict[str, object]) -> None:
+    def __init__(self, payload: dict[str, object], status_code: int = 200) -> None:
         self.payload = payload
+        self.status_code = status_code
 
     def json(self) -> dict[str, object]:
         return self.payload
 
 
 class FakeAsyncClient:
-    def __init__(self, payload: dict[str, object], **_: object) -> None:
+    def __init__(self, payload: dict[str, object], status_code: int = 200, **_: object) -> None:
         self.payload = payload
+        self.status_code = status_code
 
     async def __aenter__(self) -> FakeAsyncClient:
         return self
@@ -29,7 +29,10 @@ class FakeAsyncClient:
         return None
 
     async def get(self, _: str, **__: object) -> FakeResponse:
-        return FakeResponse(self.payload)
+        return FakeResponse(self.payload, self.status_code)
+
+    async def post(self, _: str, **__: object) -> FakeResponse:
+        return FakeResponse(self.payload, self.status_code)
 
 
 def ollama_configuration(model_id: str) -> SimpleNamespace:
@@ -37,6 +40,7 @@ def ollama_configuration(model_id: str) -> SimpleNamespace:
         provider_kind="ollama-local",
         base_url="http://ollama:11434",
         model_id=model_id,
+        reasoning_level="minimal",
     )
 
 
@@ -44,7 +48,8 @@ def cloud_configuration() -> SimpleNamespace:
     return SimpleNamespace(
         provider_kind="gemini",
         base_url="https://generativelanguage.googleapis.com",
-        model_id="gemini-2.5-flash",
+        model_id="gemini-3.6-flash",
+        reasoning_level="minimal",
     )
 
 
@@ -79,3 +84,48 @@ def test_cloud_connection_requires_credential_registered_in_platform() -> None:
 
     assert not result.ok
     assert "desde la plataforma" in result.message
+
+
+def test_gemini_connection_rejects_unavailable_model(monkeypatch: MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        providers.httpx,
+        "AsyncClient",
+        lambda **kwargs: FakeAsyncClient({}, status_code=404, **kwargs),
+    )
+
+    result = asyncio.run(providers.test_provider(cloud_configuration(), "credential"))
+
+    assert not result.ok
+    assert "no está disponible" in result.message
+
+
+def test_provider_json_parser_accepts_json_fence() -> None:
+    assert providers._json_object('```json\n{"contract_version": 1}\n```') == {
+        "contract_version": 1
+    }
+
+
+def test_gemini_structured_generation_uses_minimal_thinking() -> None:
+    assert providers._gemini_thinking_config("gemini-3.6-flash", "minimal") == {
+        "thinkingConfig": {"thinkingLevel": "minimal"}
+    }
+    assert providers._gemini_thinking_config("gemini-2.5-flash", "minimal") == {
+        "thinkingConfig": {"thinkingBudget": 0}
+    }
+    assert providers._gemini_thinking_config("gemini-3.6-flash", "medium") == {
+        "thinkingConfig": {"thinkingLevel": "medium"}
+    }
+    assert providers._gemini_thinking_config("gemini-3.6-flash", "automatic") == {}
+
+
+def test_gemini_saturation_has_safe_actionable_message(monkeypatch: MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        providers.httpx,
+        "AsyncClient",
+        lambda **kwargs: FakeAsyncClient({}, status_code=503, **kwargs),
+    )
+
+    result = asyncio.run(providers.test_provider(cloud_configuration(), "credential"))
+
+    assert not result.ok
+    assert "temporalmente saturado" in result.message

@@ -46,6 +46,7 @@ La configuración LLM prepara una única integración activa para una fase poste
 | Proveedor | Selector cerrado: Gemini Cloud, Qwen Cloud u Ollama local. Cambia las ayudas y validaciones aplicables. |
 | URL de servicio | Se propone desde el adaptador del proveedor y se valida. No se acepta una URL arbitraria. |
 | Modelo | Selector o campo validado según proveedor, con ejemplo y ayuda. Para Ollama local, `qwen2.5:3b` es la referencia inicial recomendada por agilidad; `qwen3:4b` puede seleccionarse como alternativa de mayor capacidad. |
+| Nivel de razonamiento | Selector cerrado: automático, mínimo, bajo, medio o alto. Se aplica cuando el adaptador/modelo lo admite; modificarlo invalida la última prueba. |
 | Credencial | Para Gemini y Qwen permite registrar o reemplazar la API key desde la web. Después de guardar sólo muestra `Credencial configurada`; Ollama local no requiere clave. |
 | Estado y última prueba | Muestra si la configuración está activa, fecha, duración y resultado seguro de la última prueba. |
 
@@ -76,7 +77,7 @@ La migración `20260918_06` incorpora `app.secrets` y la referencia desde `llm_c
 - Sólo una configuración puede estar activa. Activar una desactiva la anterior en una operación auditada.
 - Una configuración LLM sólo se elimina físicamente si está inactiva y tras confirmación explícita; la auditoría de su creación, prueba, actualización y eliminación se conserva.
 - Gemini y Qwen Cloud usan el secreto cifrado registrado desde la web; Ollama local no requiere clave dentro de la red Docker.
-- Ollama se inicia sólo bajo el perfil Compose `local-llm`. El modelo inicial `qwen2.5:3b` se descarga explícitamente con `make ollama-pull`, usa un contexto predeterminado de 2048, se conserva en el volumen local `ollama_models` y no se descarga en CI/CD ni se publica en GHCR. `qwen3:4b` es una alternativa opcional que puede requerir más tiempo y recursos.
+- Ollama se inicia sólo bajo el perfil Compose `local-llm`. El modelo inicial `qwen2.5:3b` se descarga explícitamente con `make ollama-pull`, usa un contexto predeterminado de 4096 para completar respuestas JSON estructuradas, se conserva en el volumen local `ollama_models` y no se descarga en CI/CD ni se publica en GHCR. `qwen3:4b` es una alternativa opcional que puede requerir más tiempo y recursos.
 - La configuración de Ollama Docker usa la URL interna `http://ollama:11434`. No se publica el puerto de Ollama en el host ni se requiere una API key.
 - La prueba ocurre desde FastAPI, no desde React. Se validan proveedor, URL aprobada, modelo, permiso y límites antes de la llamada.
 - La API responde con errores consistentes y seguros; las listas son paginadas.

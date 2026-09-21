@@ -42,6 +42,8 @@ _CREDENTIAL_REFERENCES = {
 _secret_cipher = SecretCipher(settings.secrets_key_path)
 
 _PARAMETER_CATALOG = APPROVED_PARAMETERS
+_INTERNAL_PARAMETER_KEYS = frozenset({"COPILOT_SALES_NEEDS_CATALOG"})
+_PUBLIC_PARAMETER_KEYS = frozenset(_PARAMETER_CATALOG) - _INTERNAL_PARAMETER_KEYS
 
 
 def _validated_parameter_value(key: str, value: str) -> str:
@@ -51,12 +53,22 @@ def _validated_parameter_value(key: str, value: str) -> str:
             status_code=422,
             detail="No existe un parámetro operativo aprobado para esta clave.",
         )
+    if key in _INTERNAL_PARAMETER_KEYS:
+        raise HTTPException(
+            status_code=422,
+            detail="Administre este catálogo desde la opción Catálogo analítico.",
+        )
     try:
         parsed = int(value)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail="El valor debe ser un número entero.") from exc
-    minimum = int(definition["min_value"])
-    maximum = int(definition["max_value"])
+    minimum = definition["min_value"]
+    maximum = definition["max_value"]
+    if minimum is None or maximum is None:
+        raise HTTPException(
+            status_code=500,
+            detail="El parámetro numérico no tiene un rango técnico configurado.",
+        )
     if parsed < minimum or parsed > maximum:
         raise HTTPException(
             status_code=422,
@@ -78,17 +90,19 @@ async def list_parameters(
     limit: int = Query(default=10, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
 ) -> PageRead[ParameterRead]:
-    if not _PARAMETER_CATALOG:
+    if not _PUBLIC_PARAMETER_KEYS:
         return PageRead(items=[], total=0, limit=limit, offset=offset)
     total = (
         await session.scalar(
-            select(func.count()).select_from(Parameter).where(Parameter.key.in_(_PARAMETER_CATALOG))
+            select(func.count())
+            .select_from(Parameter)
+            .where(Parameter.key.in_(_PUBLIC_PARAMETER_KEYS))
         )
     ) or 0
     items = (
         await session.execute(
             select(Parameter)
-            .where(Parameter.key.in_(_PARAMETER_CATALOG))
+            .where(Parameter.key.in_(_PUBLIC_PARAMETER_KEYS))
             .order_by(Parameter.key)
             .limit(limit)
             .offset(offset)
@@ -134,6 +148,11 @@ async def reset_parameter(
     session: AsyncSession = Depends(get_session),
 ) -> Parameter:
     definition = _PARAMETER_CATALOG.get(key)
+    if key in _INTERNAL_PARAMETER_KEYS:
+        raise HTTPException(
+            status_code=422,
+            detail="Administre este catálogo desde la opción Catálogo analítico.",
+        )
     parameter = (
         await session.execute(select(Parameter).where(Parameter.key == key))
     ).scalar_one_or_none()
@@ -171,6 +190,12 @@ async def list_llm_configurations(
 async def _apply_llm_configuration(
     configuration: LlmConfiguration, payload: LlmConfigurationCreate, session: AsyncSession
 ) -> None:
+    generation_settings_changed = bool(configuration.id) and (
+        configuration.provider_kind != payload.provider_kind
+        or configuration.base_url.rstrip("/") != payload.base_url.rstrip("/")
+        or configuration.model_id != payload.model_id
+        or configuration.reasoning_level != payload.reasoning_level
+    )
     provider_changed = bool(configuration.id) and (
         configuration.provider_kind != payload.provider_kind
     )
@@ -206,8 +231,13 @@ async def _apply_llm_configuration(
     configuration.provider_kind = payload.provider_kind
     configuration.base_url = payload.base_url.rstrip("/")
     configuration.model_id = payload.model_id
+    configuration.reasoning_level = payload.reasoning_level
     configuration.credential_reference = _CREDENTIAL_REFERENCES[payload.provider_kind]
     configuration.is_active = payload.is_active
+    if generation_settings_changed:
+        configuration.last_test_status = None
+        configuration.last_test_message = None
+        configuration.last_tested_at = None
 
 
 async def _credential_for_configuration(
@@ -237,6 +267,7 @@ async def create_llm_configuration(
         provider_kind=payload.provider_kind,
         base_url=payload.base_url.rstrip("/"),
         model_id=payload.model_id,
+        reasoning_level=payload.reasoning_level,
         credential_reference=_CREDENTIAL_REFERENCES[payload.provider_kind],
         is_active=False,
     )

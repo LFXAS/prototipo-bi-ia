@@ -11,7 +11,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
 from app.core.pagination import PageRead
 from app.db.session import get_session
-from app.modules.metadata.introspection import CONTRACT_VERSION, introspect_sqlserver
+from app.modules.metadata.connectors import read_metadata
+from app.modules.metadata.introspection import CONTRACT_VERSION
 from app.modules.metadata.models import MetadataSnapshot
 from app.modules.metadata.schemas import (
     ActiveConnectionSummary,
@@ -115,7 +116,7 @@ async def capture_metadata_snapshot(
             raise SecretDecryptionError("missing secret")
         password = _secret_cipher.decrypt(secret.ciphertext)
         timeout = await _timeout_seconds(session)
-        result = await asyncio.to_thread(introspect_sqlserver, connection, password, timeout)
+        result = await asyncio.to_thread(read_metadata, connection, password, timeout)
     except (pyodbc.Error, SecretDecryptionError, OSError):
         await add_audit_event(
             session,

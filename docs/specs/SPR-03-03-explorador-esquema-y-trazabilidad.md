@@ -1,6 +1,6 @@
 # SPR-03-03: experiencia del asistente y trazabilidad comprensible
 
-- Estado: **borrador simplificado para revisión y aprobación**.
+- Estado: **implementado y verificado localmente; pendiente de validación del usuario**.
 - Pertenece a: [SPR-03-metadatos-y-propuesta-bi.md](SPR-03-metadatos-y-propuesta-bi.md).
 - Su definición visual e interactiva normativa se encuentra en [SPR-03-05-ui-ux-profesional.md](SPR-03-05-ui-ux-profesional.md).
 - Fecha de revisión: 2026-09-14.
@@ -29,7 +29,7 @@ Este recorrido diferencia el prototipo de un visor de base de datos y demuestra 
 |---|---|---|---|
 | Parámetros generales | Conexiones de datos | Administrador | Configurar y probar SQL Server sin editar archivos. |
 | Datos | Explorador de esquema | Administrador o analista BI | Consultar la instantánea y su trazabilidad técnica. |
-| IA | Asistente de análisis | Analista BI o responsable de datos | Registrar la necesidad comercial, revisar conceptos y decidir sobre la propuesta. |
+| IA | Asistente de datamart | Analista BI o responsable de datos | Seleccionar un dominio habilitado, registrar la necesidad, personalizar y decidir sobre la propuesta. |
 
 La barra superior muestra el nombre y estado de la fuente activa. No se crea una pantalla separada de **Fuente activa**: su estado, última prueba y acción **Actualizar metadatos** se integran en Conexiones de datos. Así se evita una ruta adicional sin valor propio.
 
@@ -43,16 +43,19 @@ Además de las vistas siguientes, una instalación incompleta ofrece el wizard d
 
 Contiene el formulario SQL Server, estado de credencial, acciones de prueba y activación, fecha de última prueba y fecha de última instantánea. La acción **Actualizar metadatos** aclara que sólo lee la estructura y no modifica ni carga datos.
 
-### 4.2 Asistente de análisis
+### 4.2 Asistente de datamart
 
-Usa cuatro pasos visibles:
+Antes del recorrido muestra un catálogo de dominios calculado desde la instantánea. Sólo ventas está habilitado en Sprint 3; esta entrada evita crear una pantalla distinta cuando se incorpore inventario u otro perfil.
+
+Usa cinco pasos visibles:
 
 1. **Necesidad:** objetivo, preguntas y periodo de análisis en español.
 2. **Conceptos encontrados:** etiquetas de negocio, explicación y confianza; el origen técnico permanece plegado.
 3. **Propuesta validada:** significado del hecho, granularidad, dimensiones, medidas, KPIs, plan ETL declarativo, supuestos y advertencias.
-4. **Revisión:** aprobar o rechazar con comentario y explicación de que aún no se ejecuta ETL.
+4. **Personalización:** ajustar dimensiones, medidas, agregaciones y KPIs ya verificados, con justificación y sin SQL.
+5. **Revisión:** aprobar o rechazar con comentario y explicación de que aún no se ejecuta ETL.
 
-El usuario no selecciona tablas, no escribe identificadores y no edita JSON. Si la interpretación es ambigua, la aplicación solicita precisar la necesidad en español.
+El usuario no selecciona tablas, no escribe identificadores y no edita JSON. Las preguntas y dimensiones del paso 1 proceden del catálogo del backend y reflejan los metadatos vigentes. Si la interpretación es ambigua, la aplicación solicita precisar la necesidad en español.
 
 La propuesta diferencia visualmente:
 
@@ -86,6 +89,8 @@ En Sprint 3 el explorador no permite modificar manualmente el alcance. Esa edici
 8. Aprobar y rechazar requieren confirmación; rechazar exige comentario.
 9. Cambiar de pantalla no mezcla formularios, selecciones, errores ni resultados.
 10. No se guardan credenciales ni respuestas LLM en el almacenamiento del navegador.
+11. El historial muestra por defecto versiones listas para revisar, permite filtrar por estado y pagina en servidor.
+12. Una personalización crea otra versión enlazada; nunca sobrescribe el resultado original ni una decisión final.
 
 ## 6. Estados mínimos
 

@@ -44,6 +44,31 @@ DEFAULT_PERMISSIONS: tuple[tuple[str, str, str], ...] = (
         "Actualizar metadatos",
         "Permite leer la estructura de la fuente activa.",
     ),
+    (
+        "copilot.proposals.read",
+        "Consultar propuestas BI",
+        "Permite consultar solicitudes, propuestas y decisiones del asistente.",
+    ),
+    (
+        "copilot.proposals.generate",
+        "Generar propuestas BI",
+        "Permite solicitar interpretación semántica y propuestas de ventas.",
+    ),
+    (
+        "copilot.proposals.review",
+        "Revisar propuestas BI",
+        "Permite aprobar o rechazar propuestas validadas.",
+    ),
+    (
+        "copilot.catalog.read",
+        "Consultar catálogo analítico",
+        "Permite consultar preguntas de negocio y periodicidades por dominio.",
+    ),
+    (
+        "copilot.catalog.write",
+        "Administrar catálogo analítico",
+        "Permite crear, modificar, habilitar y retirar guías analíticas por dominio.",
+    ),
     ("audit.read", "Consultar auditoría", "Permite consultar eventos de auditoría."),
 )
 
@@ -96,6 +121,24 @@ DEFAULT_MENUS: tuple[tuple[str, str, str, int, str, str, tuple[str, ...]], ...] 
         "data",
         "Datos",
         ("metadata.read",),
+    ),
+    (
+        "analysis-catalog",
+        "Catálogo analítico",
+        "/catalogo-analitico",
+        5,
+        "ai",
+        "IA",
+        ("copilot.catalog.read",),
+    ),
+    (
+        "analysis-assistant",
+        "Asistente de datamart",
+        "/asistente",
+        10,
+        "ai",
+        "IA",
+        ("copilot.proposals.read",),
     ),
     ("audit", "Auditoría", "/auditoria", 70, "security", "Seguridad", ("audit.read",)),
 )

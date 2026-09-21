@@ -37,3 +37,22 @@ def test_llm_endpoint_validation_rejects_similar_untrusted_hostname() -> None:
             base_url="https://generativelanguage.googleapis.com.example.test",
             model_id="gemini-2.5-flash",
         )
+
+
+def test_llm_reasoning_level_is_controlled_and_defaults_to_minimal() -> None:
+    configuration = LlmConfigurationCreate(
+        name="Gemini de prueba",
+        provider_kind="gemini",
+        base_url="https://generativelanguage.googleapis.com",
+        model_id="gemini-3.6-flash",
+    )
+
+    assert configuration.reasoning_level == "minimal"
+    with pytest.raises(ValidationError):
+        LlmConfigurationCreate(
+            name="Gemini de prueba",
+            provider_kind="gemini",
+            base_url="https://generativelanguage.googleapis.com",
+            model_id="gemini-3.6-flash",
+            reasoning_level="extremo",  # type: ignore[arg-type]
+        )

@@ -6,7 +6,7 @@ Fuente: anteproyecto corregido `A15_E25 (LVelásquez - ERobles) (ANTEPROYECTO).p
 
 Título acordado el 14 de septiembre de 2026:
 
-> **Prototipo web de inteligencia de negocios asistido por IA para la construcción semiautomatizada y supervisada de un datamart de ventas con datos públicos y sintéticos.**
+> **Prueba de concepto de un prototipo funcional de BI asistido por IA para la construcción semiautomatizada y supervisada de un datamart de ventas.**
 
 La fuente pública funcional es AdventureWorks. Los datos sintéticos se utilizan únicamente para pruebas controladas y valores faltantes; no representan una segunda fuente que el prototipo deba conectar o validar.
 
@@ -26,7 +26,7 @@ Desarrollar un prototipo web de inteligencia de negocios asistido por IA que per
 2. Diseñar la arquitectura y el flujo de trabajo del prototipo, integrando conexión de sólo lectura, introspección del esquema, interpretación de metadatos mediante un LLM, validación humana y ejecución controlada del proceso ETL.
 3. Desarrollar una aplicación web que permita obtener los metadatos de la fuente relacional y generar propuestas supervisadas de modelo dimensional, KPIs y plan ETL mediante inteligencia artificial.
 4. Implementar un proceso ETL trazable que construya y cargue un datamart de ventas desde una base destino vacía, y que genere KPIs, visualizaciones, hallazgos analíticos explicables y un pronóstico de ventas mediante regresión lineal.
-5. Validar el funcionamiento del prototipo mediante consultas y resultados de referencia, controles de calidad de datos y las métricas MAPE y RMSE para evaluar el pronóstico de ventas.
+5. Validar la exactitud, reproducibilidad y utilidad del prototipo mediante consultas de referencia, controles de calidad, reejecución determinística de la propuesta aprobada, contraste posterior con AdventureWorksDW, juicio de expertos y las métricas MAPE y RMSE para el pronóstico.
 
 ## Incluido por el anteproyecto
 
@@ -73,6 +73,8 @@ El anteproyecto requiere un LLM que proponga artefactos BI, siempre con validaci
 
 ## Límite aprobado para especificar el Sprint 3
 
-Sprint 3 cubre el catálogo web de conexiones, secretos cifrados, el adaptador SQL Server, introspección determinística, solicitud guiada de negocio, interpretación dinámica del inglés al español, descubrimiento del alcance de ventas, exploración técnica opcional y generación de una propuesta BI estructurada por el LLM activo. FastAPI valida las referencias contra una instantánea inmutable y una persona autorizada aprueba o rechaza el significado de negocio. El gerente no edita archivos, selecciona tablas ni escribe SQL en el recorrido principal.
+Sprint 3 cubre el catálogo web de conexiones, secretos cifrados, el adaptador SQL Server, introspección determinística, solicitud guiada de negocio, interpretación dinámica del inglés al español, descubrimiento del alcance de ventas, exploración técnica opcional y generación de una propuesta BI estructurada por el LLM activo. Las preguntas y periodicidades se administran por dominio con permisos propios; el objetivo se escribe por análisis. Las dimensiones, hechos, medidas, KPIs y plan ETL no se predefinen en el catálogo: los propone la IA desde los metadatos, FastAPI valida las referencias contra una instantánea inmutable y una persona autorizada supervisa la decisión. El gerente no edita archivos, selecciona tablas ni escribe SQL en el recorrido principal.
 
 La creación física del datamart, generación determinística de consultas, ejecución del ETL, KPIs calculados, visualizaciones, hallazgos y pronóstico permanecen fuera de Sprint 3. La propuesta aprobada será la entrada controlada del Sprint 4, donde un motor construido una sola vez deberá materializarla sin intervención de un programador por análisis.
+
+La validación se construye de forma acumulativa según `docs/validation-plan.md`. Sprint 3 ya comprueba desde la plataforma integridad de la instantánea, referencias, contrato y reejecución determinística de la propuesta guardada. La conciliación de cantidades e importes OLTP–datamart, el contraste secundario con AdventureWorksDW, el juicio formal de expertos y MAPE/RMSE se incorporan únicamente cuando existan los artefactos que permiten medirlos.

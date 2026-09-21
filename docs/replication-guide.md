@@ -66,7 +66,7 @@ Abre <http://localhost:5173> y <http://localhost:8000/docs>.
 
 ### Registrar una credencial LLM cloud
 
-Las API keys de Gemini y Qwen no se escriben en `.env`. Inicia sesión como una persona con `parameters.llm.write`, abre **Parámetros generales > Configuración LLM**, guarda el proveedor y usa **Registrar credencial**. Después de guardarla, la interfaz sólo mostrará **Credencial configurada** y permitirá reemplazarla, nunca consultarla.
+Las API keys de Gemini y Qwen no se escriben en `.env`. Inicia sesión como una persona con `parameters.llm.write`, abre **Parámetros generales > Configuración LLM**, guarda el proveedor, modelo y nivel de razonamiento, y usa **Registrar credencial**. Después de guardarla, la interfaz sólo mostrará **Credencial configurada** y permitirá reemplazarla, nunca consultarla. Para una demostración ágil con Gemini se recomienda comenzar con razonamiento **mínimo** y aumentar el nivel sólo después de repetir **Probar conexión**.
 
 FastAPI cifra el valor en PostgreSQL y genera automáticamente la raíz criptográfica en el volumen `secret_key_data`. Ambos elementos son necesarios para recuperar la credencial después de reiniciar. No copies ese volumen entre equipos ni lo publiques; cada instalación debe registrar sus propias claves desde la web. Ollama local no requiere credencial.
 
@@ -83,6 +83,28 @@ Inicia sesión con una persona que disponga de `connections.read`, `connections.
 Guarda, ejecuta **Probar conexión** y activa únicamente cuando la pantalla confirme **Sólo lectura validada**. La contraseña queda cifrada y no vuelve al navegador. Cambiar host, base, usuario u opciones invalida la prueba anterior y obliga a probar nuevamente.
 
 Con la fuente activa, selecciona **Actualizar metadatos**. FastAPI leerá únicamente catálogos de tablas, columnas, claves y relaciones; no extrae filas de ventas. La primera ejecución crea una instantánea y las siguientes reutilizan la misma versión mientras su hash no cambie. Abre **Datos > Explorador de esquema** para buscar por esquema, tabla o columna y consultar el detalle técnico. Una conexión con instantáneas no puede eliminarse, porque sus capturas forman parte de la trazabilidad del análisis.
+
+### Probar el asistente supervisado del Sprint 3
+
+Antes de entrar en **IA > Asistente de datamart**, comprueba que exista una fuente activa probada, una instantánea vigente y una configuración LLM activa que haya superado **Probar conexión**. La página Inicio muestra estos tres prerrequisitos como un recorrido guiado.
+
+1. Selecciona **Datamart de ventas** en el catálogo. Comprueba que se muestren preguntas de negocio y varias periodicidades, pero ninguna dimensión preseleccionada.
+2. Describe una necesidad, selecciona las opciones habilitadas y genera un intento inmutable.
+3. Revisa los conceptos, su explicación española y el origen técnico; excluye únicamente los que no representen la necesidad.
+4. En la propuesta válida, abre **Personalizar propuesta**, retira o incorpora dimensiones, medidas o KPIs ya comprobados, cambia una agregación permitida y registra una justificación. Debe crearse otra versión enlazada, sin llamar nuevamente al LLM.
+5. En **Versiones generadas**, confirma que el filtro inicial sea **Lista para revisar**, cambia a otros estados y recorre la paginación cuando exista más de una página.
+6. Aprueba o rechaza una versión. Aprobar sólo registra el contrato para el Sprint 4: no crea tablas ni ejecuta ETL.
+7. Ejecuta **Verificar evidencia** y confirma los cuatro controles estructurales. El aviso debe aclarar que la conciliación de filas, unidades e importes empezará después de materializar el datamart.
+
+Una persona con `copilot.catalog.write` puede abrir **IA > Catálogo analítico**, escoger primero el dominio y administrar preguntas de negocio y periodicidades. El objetivo se escribe directamente en el asistente para cada análisis. No se parametrizan dimensiones: el LLM debe proponerlas desde la estructura de la fuente y la aplicación debe validarlas antes de mostrarlas. Guardar el catálogo afecta sólo propuestas nuevas; no borra ni reescribe versiones históricas.
+
+Si una propuesta anterior muestra **Compatibilidad entre versiones**, revisa los controles antes de tomar una decisión. Esa advertencia no significa que la fuente o las medidas sean incorrectas. Si la aprobación había sido retirada automáticamente por una verificación previa y ahora no existen errores bloqueantes, la pantalla permite **Restaurar aprobación** con una justificación y confirmación de las advertencias. No restaures una versión que todavía muestre errores de referencias, contrato o semántica.
+
+La interfaz separa claramente conceptos sugeridos por IA, referencias técnicas comprobadas, propuesta dimensional, personalización del analista, resultado de validación y decisión humana. No permite escribir SQL libre ni crear relaciones inexistentes.
+
+En equipos que usan `qwen2.5:3b` por CPU, la interpretación puede tardar varios minutos. El parámetro web **Tiempo máximo del asistente** admite hasta 900 segundos y su valor inicial es 600. Los proveedores cloud suelen responder más rápido, pero **Probar conexión** realiza una generación mínima para detectar una clave válida cuyo proyecto no tenga acceso al modelo configurado.
+
+El valor `OLLAMA_CONTEXT_LENGTH=4096` debe permanecer en `.env`. El contexto anterior de 2048 podía dejar sin terminar el JSON cuando el bloque de metadatos y la respuesta compartían la misma ventana. Después de cambiarlo se debe recrear únicamente Ollama; el volumen del modelo no se elimina.
 
 ### Añadir la vista Nginx de entrega
 

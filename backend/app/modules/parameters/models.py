@@ -50,6 +50,7 @@ class LlmConfiguration(Base):
     provider_kind: Mapped[str] = mapped_column(String(40), index=True)
     base_url: Mapped[str] = mapped_column(String(300))
     model_id: Mapped[str] = mapped_column(String(160))
+    reasoning_level: Mapped[str] = mapped_column(String(20), default="minimal", nullable=False)
     credential_reference: Mapped[str] = mapped_column(String(80))
     secret_id: Mapped[int | None] = mapped_column(
         ForeignKey("app.secrets.id", ondelete="SET NULL"), nullable=True, unique=True

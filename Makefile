@@ -1,4 +1,4 @@
-.PHONY: help env bootstrap build up seed delivery-preview-up ollama-up ollama-pull ollama-status ollama-down release-up release-down down logs ps test lint format-check compose-check workflow-test doctor docs-image logbook sprint-report sprint2-report technical-manual docs verify
+.PHONY: help env bootstrap build up seed delivery-preview-up ollama-up ollama-pull ollama-status ollama-down release-up release-down down logs ps test lint format-check compose-check workflow-test doctor docs-image logbook sprint-report sprint2-report sprint3-report technical-manual docs verify
 
 COMPOSE := docker compose
 
@@ -25,6 +25,7 @@ help:
 	@echo "  make logbook        Regenera la bitacora PDF con LaTeX en Docker"
 	@echo "  make sprint-report  Regenera el informe PDF del Sprint 1"
 	@echo "  make sprint2-report Regenera el informe PDF del Sprint 2"
+	@echo "  make sprint3-report Regenera el informe PDF del Sprint 3"
 	@echo "  make technical-manual Regenera el manual tecnico PDF"
 	@echo "  make docs           Regenera todos los documentos PDF"
 	@echo "  make doctor         Muestra estado de contenedores y endpoints"
@@ -129,12 +130,18 @@ sprint2-report: docs-image
 		-v "$$(pwd)/docs:/workspace" -w /workspace/sprints \
 		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error sprint-02-seguridad-y-parametros.tex
 
+sprint3-report: docs-image
+	docker run --rm --user "$$(id -u):$$(id -g)" \
+		-e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts \
+		-v "$$(pwd)/docs:/workspace" -w /workspace/sprints \
+		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error sprint-03-metadatos-y-propuesta-bi.tex
+
 technical-manual: docs-image
 	docker run --rm --user "$$(id -u):$$(id -g)" \
 		-e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts \
 		-v "$$(pwd)/docs:/workspace" -w /workspace/manual-tecnico \
 		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error manual-tecnico.tex
 
-docs: logbook sprint-report sprint2-report technical-manual
+docs: logbook sprint-report sprint2-report sprint3-report technical-manual
 
 verify: compose-check workflow-test test docs

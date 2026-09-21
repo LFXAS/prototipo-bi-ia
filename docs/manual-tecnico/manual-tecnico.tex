@@ -85,17 +85,17 @@
 
   {\color{deepgreen}\fontsize{30}{35}\selectfont\textbf{Manual técnico}}\\[0.7em]
   {\LARGE Instalación, operación y réplica del entorno}\\[0.6em]
-  {\large Prototipo web de inteligencia de negocios asistido por IA}
+  {\large Prueba de concepto de un prototipo funcional de BI asistido por IA para la construcción semiautomatizada y supervisada de un datamart de ventas}
 
   \vspace{1.5cm}
 
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
-    Versión del manual & 1.8.0 \\
+    Versión del manual & 2.3.5 \\
     Línea base & Ramas \file{develop} y \file{main} \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
     Clasificación & Uso académico y técnico - repositorio público \\
-    Fecha & 10 de septiembre de 2026 \\
+    Fecha & 20 de septiembre de 2026 \\
   \end{tabularx}
 
   \vfill
@@ -120,7 +120,7 @@ El documento cubre tres modalidades:
   \item \textbf{Ejecución de una entrega completa}: descarga imágenes de GitHub Container Registry (GHCR) en un proyecto Compose aislado.
 \end{enumerate}
 
-La versión actual conserva la infraestructura del Sprint 1 y el núcleo administrativo del Sprint 2: autenticación JWT, RBAC, auditoría y configuración LLM. Sprint 3 añade parámetros tipados, administración web de una fuente SQL Server e introspección determinística con instantáneas inmutables y explorador de esquema. Interpretación semántica, propuesta asistida, ETL, datamart, dashboard, reportería y Copiloto BI continúan fuera de este incremento.
+La versión actual conserva la infraestructura del Sprint 1 y el núcleo administrativo del Sprint 2: autenticación JWT, RBAC, auditoría y configuración LLM. Sprint 3 añade parámetros tipados, administración web de una fuente SQL Server, introspección determinística con instantáneas inmutables, explorador de esquema y asistente supervisado para formular, validar y decidir una propuesta de datamart de ventas. ETL ejecutable, datamart físico, dashboard, reportería y pronóstico continúan fuera de este incremento.
 
 \section{Arquitectura operativa}
 
@@ -236,7 +236,7 @@ Se deben reemplazar todos los valores que empiecen con \file{ChangeMe\_*}. Las c
   \file{IMAGE\_TAG} & \file{main} & Entrega a ejecutar; se recomienda una etiqueta versionada. \\
   Credencial Gemini/Qwen & interfaz web & Se registra o reemplaza desde Configuración LLM; no pertenece a \file{.env}. \\
   \file{OLLAMA\_MODEL} & \file{qwen2.5:3b} & Modelo local ágil que se descarga explícitamente por equipo. \\
-  \file{OLLAMA\_CONTEXT\_LENGTH} & 2048 & Límite local de contexto para controlar consumo de memoria y priorizar agilidad. \\
+  \file{OLLAMA\_CONTEXT\_LENGTH} & 4096 & Contexto local que permite completar los contratos JSON del asistente sin abandonar un consumo moderado. \\
   \bottomrule
 \end{longtable}
 
@@ -402,9 +402,9 @@ Toda mutación administrativa genera un evento de auditoría con actor, fecha, a
 
 \subsection{Parámetros generales}
 
-La pantalla Parámetros no es una tabla libre de clave/valor. Sólo muestra valores aprobados mediante un catálogo que define nombre humano, descripción, módulo consumidor, tipo, rango y valor predeterminado. El primer incremento del Sprint 3 registra \file{UI\_PAGE\_SIZE}, \file{CONNECTION\_TIMEOUT\_SECONDS}, \file{LLM\_TIMEOUT\_SECONDS} y \file{METADATA\_BLOCK\_MAX\_ITEMS}. El administrador puede cambiar un entero dentro del rango o restaurarlo; no puede crear claves arbitrarias ni guardar secretos. FastAPI valida cada cambio y lo audita.
+La pantalla Parámetros no es una tabla libre de clave/valor. Sólo muestra cuatro enteros operativos aprobados: \path{UI_PAGE_SIZE}, \path{CONNECTION_TIMEOUT_SECONDS}, \path{LLM_TIMEOUT_SECONDS} y \path{METADATA_BLOCK_MAX_ITEMS}. El catálogo analítico se almacena internamente mediante \path{COPILOT_SALES_NEEDS_CATALOG}, pero no se expone como parámetro genérico: se administra en \textbf{IA > Catálogo analítico} con los permisos independientes \path{copilot.catalog.read} y \path{copilot.catalog.write}. Allí se gestionan preguntas de negocio y periodicidades por dominio. El objetivo pertenece a cada análisis y las dimensiones no son un parámetro. FastAPI valida y audita cada cambio.
 
-En el estado actual, los tiempos máximos de conexión y LLM ya controlan sus respectivas pruebas. Los límites de interfaz y bloques de metadatos se consumirán por sus respectivos incrementos del Sprint 3 antes del cierre; se registran desde ahora para mantener un único catálogo versionado.
+Los tiempos máximos de conexión y LLM controlan sus respectivas operaciones. \file{LLM\_TIMEOUT\_SECONDS} inicia en 600 segundos y admite hasta 900 para modelos locales ejecutados por CPU; los proveedores cloud normalmente terminan antes. El tamaño de bloque participa en la preparación del contexto y el perfil de dominio aplica además un alcance técnico acotado para no enviar las 71 tablas completas a un modelo pequeño.
 
 \subsection{Conexiones de datos}
 
@@ -422,9 +422,45 @@ El documento canónico se ordena de forma estable y se almacena como JSONB en \p
 
 La pantalla \textbf{Datos > Explorador de esquema} consulta la captura persistida, no la fuente original. Permite buscar por esquema, tabla o columna y presenta detalle de columnas, PK y relaciones entrantes y salientes. La prueba real registró 6 esquemas, 71 tablas, 444 columnas y 90 relaciones en AdventureWorks; una segunda captura produjo el mismo hash y no añadió otro registro.
 
+\subsection{Asistente de datamart supervisado}
+
+La pantalla \textbf{IA > Asistente de datamart} requiere tres condiciones comprobables: fuente activa con prueba de sólo lectura, instantánea vigente de esa fuente y proveedor LLM activo con prueba satisfactoria. La entrada no abre directamente ventas: consulta \file{GET /api/v1/copilot/catalog} y muestra los dominios que disponen de perfil, metadatos y validadores. Sprint 3 habilita únicamente \textbf{Datamart de ventas}; un dominio futuro puede añadirse al catálogo sin crear otra pantalla.
+
+Al elegir el dominio, el backend devuelve preguntas orientadoras y periodicidades compatibles con la instantánea. React no contiene un modelo dimensional fijo de AdventureWorks. El catálogo se administra por dominio desde \textbf{IA > Catálogo analítico}. Las preguntas guían la interpretación, pero no fijan tablas, columnas ni dimensiones. El analista BI continúa por cinco pasos:
+
+\begin{enumerate}
+  \item escribir el objetivo comercial, seleccionar preguntas orientadoras y escoger una periodicidad soportada;
+  \item revisar conceptos de negocio propuestos en español y revelar, cuando se necesite, su origen técnico;
+  \item examinar granularidad, hecho, medidas, dimensiones, uniones, KPIs y plan ETL declarativo;
+  \item personalizar, de forma opcional, resumen, granularidad, dimensiones, medidas, agregaciones y KPIs ya verificados, con una justificación;
+  \item aprobar o rechazar con comentario y confirmación explícita de advertencias.
+\end{enumerate}
+
+Cada intento se almacena en \path{app.bi_proposals} y queda ligado a la huella de la instantánea, proveedor, modelo, versión de prompt, entrada, mapa semántico, alcance, validación y decisión histórica del actor. Excluir conceptos, cambiar la necesidad o personalizar decisiones crea otra versión; \file{source\_proposal\_id} conserva su origen y nunca sobrescribe el registro anterior. La personalización no llama al LLM y no admite tablas, columnas, relaciones ni fórmulas libres: \file{POST /api/v1/copilot/proposals/\{id\}/revisions} aplica únicamente selecciones válidas y repite la validación determinística.
+
+La sección \textbf{Versiones generadas} consulta el servidor por dominio y estado, muestra inicialmente \textbf{Lista para revisar} y pagina los resultados. Permite abrir cualquier artefacto persistido y escoger cuál revisar o aprobar sin volver a consumir el proveedor. Esto facilita preparar una ejecución local lenta antes de una demostración y conservar, al mismo tiempo, resultados cloud comparables. Los permisos \path{copilot.proposals.read}, \path{copilot.proposals.generate} y \path{copilot.proposals.review} separan consulta, generación y decisión.
+
+\subsection{Validación acumulativa visible}
+
+La versión seleccionada incorpora \textbf{Validación estructural de la propuesta - Sprint 3}. La acción \textbf{Verificar evidencia} llama a \file{POST /api/v1/copilot/proposals/\{id\}/verify}; FastAPI no vuelve a consumir el LLM ni ejecuta el ETL. Comprueba la huella de los metadatos, referencias técnicas, consistencia del contrato BI y reproducción determinística desde \file{ai\_decisions}. Para propuestas creadas con la versión vigente del motor, la propuesta persistida y la reejecutada deben tener la misma huella SHA-256. En propuestas históricas, una diferencia debida exclusivamente a la evolución del motor se presenta como advertencia de compatibilidad y no como error de datos.
+
+Este control permite al analista BI verificar en Sprint 3 que la estructura utilizada procede del OLTP y que la propuesta aprobada no cambió. No demuestra todavía igualdad de cantidades o importes. El plan \file{docs/validation-plan.md} exige que Sprint 4 amplíe la misma vista con consultas de referencia y una conciliación OLTP--datamart: filas al grano aprobado, pedidos distintos, unidades, importe total y ventas mensuales, mostrando ambos valores y su diferencia. AdventureWorksDW será un contraste secundario, no la fuente primaria de verdad de la carga. El juicio de expertos y MAPE/RMSE se incorporarán cuando existan el instrumento y el pronóstico.
+
+Cada comprobación muestra \textbf{Cumple} o \textbf{Revisar}; el evento \file{copilot.proposal.verify} conserva identificador y prefijos de huella sin metadatos completos, filas ni secretos. La reproducibilidad se refiere a reejecutar decisiones persistidas con reglas determinísticas, no a exigir que dos llamadas nuevas al LLM generen exactamente la misma respuesta.
+
+El LLM no constituye la autoridad técnica. Primero interpreta conceptos y luego devuelve decisiones compactas de hecho, medidas, dimensiones y KPI mediante un esquema JSON construido desde el alcance. FastAPI completa mecánicamente PK, FK, atributos, reglas y operaciones ETL; conserva las decisiones originales bajo \file{ai\_decisions} y valida el contrato expandido. También bloquea instrucciones SQL o ejecutables en la entrada y en la respuesta. Una propuesta con errores permanece en \textbf{Validación fallida}; sólo una versión válida pasa a \textbf{Lista para revisar}.
+
+Cada medida y KPI declara una función tipada: importe, cantidad, conteo de clientes o conteo de transacciones. FastAPI contrasta esa función con columna, agregación y operación, y excluye un KPI que apunte a una medida incompatible. Las frases libres del proveedor se conservan como observaciones de trazabilidad, separadas de ajustes automáticos y advertencias determinísticas. El analista puede excluir o reasignar un KPI a otra medida compatible ya verificada; si no existe, la interfaz explica que debe retirar el KPI o generar una propuesta con la medida faltante. Las dimensiones proceden de la propuesta del LLM y sólo sobreviven cuando sus fuentes pertenecen al alcance verificado; la prueba real identificó \file{dim\_fecha} desde \file{Sales.SalesOrderHeader.OrderDate}. Sin una fuente comprobable, no se inventa.
+
+La aprobación no crea tablas ni ejecuta transformaciones. Produce un contrato humano y técnicamente aceptado para el Sprint 4. La propuesta aprobada compatible más reciente se preseleccionará, pero el analista deberá confirmarla y podrá comparar otras aprobadas; cada ejecución conservará el identificador elegido. El perfil \path{ventas} encapsula reglas semánticas, periodicidades soportadas, términos de descubrimiento, destinos y validadores; las preguntas se administran en el catálogo. El registro de conectores desacopla la lectura canónica del motor. Añadir inventario o MySQL exige implementar y probar el perfil o adaptador correspondiente antes de exponerlo.
+
+Una aprobación puede retirarse desde la web con motivo obligatorio y una versión no aprobada puede descartarse. No se eliminan físicamente los registros porque conservan evidencia y auditoría. La migración \file{20260920\_13} amplía la restricción de estados de \file{app.bi\_proposals} con \file{invalidated} y \file{discarded}, evitando divergencias entre la lógica de aplicación y PostgreSQL. La verificación invalida una propuesta aprobada sólo cuando detecta un error bloqueante vigente; una diferencia histórica del motor no basta. Si una aprobación fue retirada por una comprobación anterior y ahora supera las reglas, \file{POST /api/v1/copilot/proposals/\{id\}/restore-approval} permite restaurarla con motivo y confirmación de advertencias, dejando evento de auditoría. El constructor del Sprint 4 deberá repetir esta comprobación inmediatamente antes de aceptar el contrato; un estado histórico por sí solo nunca autoriza el ETL.
+
 \subsection{Configuración LLM cloud y local}
 
 La pantalla Configuración LLM mantiene nombre, proveedor, URL validada, modelo, estado y resultado de prueba. Puede existir una sola configuración activa. Para Gemini o Qwen Cloud se guarda primero el registro y después se usa \textbf{Registrar credencial}; cuando ya existe, la acción cambia a \textbf{Reemplazar credencial}. La clave se envía una sola vez y nunca vuelve al navegador. La tabla sólo presenta \textbf{Credencial pendiente} o \textbf{Credencial configurada}.
+
+El identificador del modelo se parametriza porque el catálogo del proveedor cambia. En la prueba del 19 de septiembre de 2026, Google informó que \file{gemini-2.5-flash} ya no estaba disponible para usuarios nuevos; la misma clave de nivel gratuito permitió probar \file{gemini-3.6-flash}. La pantalla incorpora \textbf{Nivel de razonamiento}: automático, mínimo, bajo, medio o alto. Para la demostración rápida se validó \textbf{mínimo}; FastAPI envía el nivel cuando Gemini lo admite, reserva un presupuesto de salida suficiente y mantiene la validación determinística. Cambiar URL, modelo o razonamiento invalida la prueba anterior. Si un modelo deja de estar disponible, se actualiza desde esta pantalla y se repite \textbf{Probar conexión}; no se modifica código ni \file{.env}.
 
 FastAPI cifra la clave mediante cifrado autenticado y almacena únicamente el texto cifrado en \path{app.secrets}. La raíz criptográfica se genera automáticamente con permisos restrictivos en \path{/var/lib/bi-ia-secrets/master.key} y se conserva en el volumen \path{secret_key_data}, separado de PostgreSQL. Si se borra ese volumen, las credenciales existentes dejan de poder descifrarse y deberán reemplazarse desde la pantalla. No se copia el volumen entre equipos y no se versiona. \path{GEMINI_API_KEY} y \path{DASHSCOPE_API_KEY} ya no se utilizan.
 
@@ -526,7 +562,7 @@ make doctor
 make verify
 \end{lstlisting}
 
-El control completo valida desarrollo, el perfil de entrega, el perfil local de Ollama y la entrega GHCR; además construye y prueba frontend/backend y regenera los cuatro PDF oficiales.
+El control completo valida desarrollo, el perfil de entrega, el perfil local de Ollama y la entrega GHCR; además construye y prueba frontend/backend y regenera los cinco PDF oficiales.
 
 \subsection{Contrato OpenAPI}
 
@@ -846,7 +882,7 @@ En GitHub se abre la pestaña \textbf{Actions}. Cada fila representa una ejecuci
   \toprule
   Flujo & Cuándo se ejecuta & Resultado esperado \\
   \midrule
-  CI & Push o pull request hacia \file{develop} o \file{main}. & Valida flujo de ramas, Compose, backend, frontend, infraestructura y los cuatro PDF. No publica ni deja contenedores activos ni descarga modelos LLM. \\
+  CI & Push o pull request hacia \file{develop} o \file{main}. & Valida flujo de ramas, Compose, backend, frontend, infraestructura y los cinco PDF. No publica ni deja contenedores activos ni descarga modelos LLM. \\
   CD & Cambio ya fusionado en \file{main} o etiqueta \file{v*}. & Revalida backend/frontend y publica cinco imágenes de producción en GHCR con etiqueta de rama, SHA y, cuando aplique, versión. No despliega aún una VM Azure. \\
   Dependabot & Según su programación. & Abre un PR temporal de actualización; se revisa y prueba igual que un cambio humano. \\
   \bottomrule
@@ -1020,7 +1056,7 @@ make verify
   \toprule
   Campo & Valor \\
   \midrule
-  Estado & Manual acumulativo del Sprint 1, Sprint 2 y dos incrementos funcionales del Sprint 3; base obligatoria para los módulos posteriores con SDD. \\
+  Estado & Manual acumulativo del Sprint 1, Sprint 2 y cierre funcional del Sprint 3; base obligatoria para los módulos posteriores con SDD. \\
   Custodia & Repositorio público \file{LFXAS/prototipo-bi-ia}; escritura restringida a colaboradores. \\
   Audiencia & Autoras, tutor, revisores, colaboradores y lectores académicos. \\
   Actualización & Debe acompañar todo cambio de instalación, puertos, secretos, imágenes, pruebas o recuperación. \\
@@ -1048,6 +1084,16 @@ make verify
   1.9.0 & 18-09-2026 & Credenciales LLM administradas desde la web, cifrado autenticado, volumen de raíz criptográfica y migración reproducible como cierre pendiente del Sprint 2. \\
   2.0.0 & 18-09-2026 & Inicio del Sprint 3: conexión SQL Server administrada desde la web, contraseña cifrada, validación de sólo lectura, activación única y cuatro parámetros tipados. \\
   2.1.0 & 18-09-2026 & Introspección determinística, instantáneas JSONB inmutables, hash reproducible, deduplicación y explorador responsive de tablas, columnas y relaciones. \\
+  2.2.0 & 19-09-2026 & Asistente supervisado del Sprint 3: solicitud guiada, interpretación semántica, propuesta dimensional versionada, validación determinística, decisión humana, conectores y perfiles de dominio extensibles. \\
+  2.2.1 & 19-09-2026 & Selección de resultados persistidos por proveedor/modelo y validación real de Gemini 3.6 Flash con nivel gratuito. \\
+  2.2.2 & 19-09-2026 & Nivel de razonamiento por configuración y expediente visible de validación acumulativa con reejecución determinística. \\
+  2.2.3 & 19-09-2026 & Contexto Ollama ampliado a 4096 y presupuestos de salida ajustados para impedir respuestas JSON truncadas con \file{qwen2.5:3b}. \\
+  2.3.0 & 19-09-2026 & Asistente de datamart genérico, catálogo dinámico de capacidades, personalización versionada, historial filtrable, validación estructural visible y selección prevista para el ETL. \\
+  2.3.1 & 20-09-2026 & Contrato semántico de medidas y KPI, mensajes accionables, reasignación supervisada, retiro de aprobaciones y descarte auditable de versiones. \\
+  2.3.2 & 20-09-2026 & Corrección de persistencia para los estados auditables de aprobación retirada y descarte mediante la migración \file{20260920\_13}. \\
+  2.3.3 & 20-09-2026 & Catálogo web de necesidades analíticas, validación compatible con versiones históricas, restauración auditada de aprobaciones y exclusión de identificadores como medidas monetarias. \\
+  2.3.4 & 20-09-2026 & Incorporación determinística de dimensiones solicitadas omitidas por el LLM cuando existe una fuente inequívoca en los metadatos verificados. \\
+  2.3.5 & 20-09-2026 & Catálogo analítico separado por permisos y dominio, CRUD de preguntas, múltiples periodicidades y dimensiones propuestas por IA en lugar de predefinidas en la necesidad. \\
   \bottomrule
 \end{tabularx}
 

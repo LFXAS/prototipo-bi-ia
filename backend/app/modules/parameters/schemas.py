@@ -7,6 +7,7 @@ from urllib.parse import urlsplit
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 ProviderKind = Literal["gemini", "qwen-cloud", "ollama-local"]
+ReasoningLevel = Literal["automatic", "minimal", "low", "medium", "high"]
 
 
 class ParameterRead(BaseModel):
@@ -26,7 +27,7 @@ class ParameterRead(BaseModel):
 
 
 class ParameterUpdate(BaseModel):
-    value: str = Field(min_length=1, max_length=100)
+    value: str = Field(min_length=1, max_length=10000)
 
 
 class LlmConfigurationRead(BaseModel):
@@ -37,6 +38,7 @@ class LlmConfigurationRead(BaseModel):
     provider_kind: ProviderKind
     base_url: str
     model_id: str
+    reasoning_level: ReasoningLevel
     credential_configured: bool
     is_active: bool
     last_test_status: str | None = None
@@ -49,6 +51,7 @@ class LlmConfigurationCreate(BaseModel):
     provider_kind: ProviderKind
     base_url: str = Field(min_length=10, max_length=300)
     model_id: str = Field(min_length=2, max_length=160)
+    reasoning_level: ReasoningLevel = "minimal"
     is_active: bool = False
 
     @model_validator(mode="after")
