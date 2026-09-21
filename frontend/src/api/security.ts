@@ -5,13 +5,73 @@ export type Role = { id: number; code: string; name: string; description?: strin
 export type Menu = { id: number; code: string; label: string; path: string; position: number; module_code: string; module_label: string; is_active: boolean; is_system_protected?: boolean; permissions: Permission[] }
 export type User = { id: number; email: string; full_name: string; is_active: boolean; is_system_protected?: boolean; roles: Role[] }
 export type Session = { user: User; permissions: string[]; menus: Menu[] }
-export type Parameter = { id: number; key: string; value: string; description?: string; is_active: boolean }
-export type LlmConfiguration = { id: number; name: string; provider_kind: string; base_url: string; model_id: string; credential_reference: string; is_active: boolean; last_test_status?: string; last_test_message?: string }
+export type Parameter = { id: number; key: string; name: string; module_code: string; value_type: string; value: string; default_value: string; min_value?: number; max_value?: number; description?: string; is_active: boolean }
+export type LlmConfiguration = { id: number; name: string; provider_kind: string; base_url: string; model_id: string; reasoning_level: 'automatic' | 'minimal' | 'low' | 'medium' | 'high'; credential_configured: boolean; is_active: boolean; last_test_status?: string; last_test_message?: string }
+export type DataConnection = { id: number; name: string; connector_kind: 'sqlserver'; host: string; port: number; database_name: string; username: string; encrypt: boolean; trust_server_certificate: boolean; is_active: boolean; last_test_status?: string; last_test_message?: string; last_tested_at?: string }
+export type MetadataSnapshot = { id: number; data_connection_id: number; connector_code: string; database_name: string; contract_version: number; content_hash: string; schema_count: number; table_count: number; column_count: number; relationship_count: number; captured_by_label: string; captured_at: string }
+export type ActiveSource = { status: 'ready' | 'missing'; connection?: { id: number; name: string; connector_kind: string; database_name: string; last_test_status?: string; last_tested_at?: string }; latest_snapshot?: MetadataSnapshot }
+export type SnapshotCapture = { created: boolean; message: string; snapshot: MetadataSnapshot }
+export type MetadataTable = { schema_name: string; table_name: string; column_count: number; relationship_count: number }
+export type MetadataTableDetail = { schema_name: string; table_name: string; columns: Array<{ name: string; ordinal: number; data_type: string; max_length: number; precision: number; scale: number; nullable: boolean; primary_key: boolean }>; foreign_keys: Array<{ name: string; columns: string[]; referenced_schema: string; referenced_table: string; referenced_columns: string[] }>; incoming_relationships: Array<{ name: string; source_schema: string; source_table: string; source_columns: string[]; referenced_columns: string[] }> }
 export type AuditEvent = { id: number; actor_user_id?: number; actor_label?: string; action: string; resource_type: string; resource_id?: string; created_at: string }
+export type ReadinessComponent = { ready: boolean; label: string; detail: string; path?: string }
+export type CopilotReadiness = { ready: boolean; source: ReadinessComponent; metadata: ReadinessComponent; llm: ReadinessComponent }
+export type CapabilityOption = { code: string; label: string; description: string; available: boolean; reason: string; evidence: string[] }
+export type DomainCapability = { code: string; label: string; description: string; available: boolean; reason: string; questions: CapabilityOption[]; periodicities: CapabilityOption[] }
+export type CopilotCatalog = { metadata_snapshot_id: number; domains: DomainCapability[] }
+export type AnalysisCatalogQuestion = { code: string; label: string; description: string; prompt_instruction: string; enabled: boolean }
+export type AnalysisCatalogPeriodicity = { code: 'day' | 'week' | 'month' | 'quarter' | 'year'; label: string; description: string; enabled: boolean }
+export type AnalysisCatalogConfiguration = { version: 2; domain_code: string; questions: AnalysisCatalogQuestion[]; periodicities: AnalysisCatalogPeriodicity[] }
+export type AnalysisCatalogDomain = { code: string; label: string; description: string; enabled: boolean; implementation_status: 'implemented' }
+export type SemanticCandidate = { business_concept: string; business_name_es: string; description_es: string; technical_refs: string[]; confidence: 'high' | 'medium' | 'low'; reason: string; references_validated: boolean }
+export type ValidationIssue = { code: string; level: 'error' | 'warning'; path: string; message: string }
+export type BiProposal = {
+  id: number
+  source_proposal_id?: number
+  metadata_snapshot_id: number
+  business_goal: string
+  business_questions: string[]
+  requested_dimensions: string[]
+  periodicity: string
+  domain_code: string
+  scope_document: { origin?: string; tables?: Array<{ ref: string }> }
+  semantic_map_document: { candidates?: SemanticCandidate[]; rejected_references?: Array<{ code: string; message: string }>; excluded_by_analyst?: string[] }
+  status: 'generating' | 'provider_failed' | 'validation_failed' | 'ready_for_review' | 'approved' | 'rejected' | 'invalidated' | 'discarded'
+  input_hash: string
+  prompt_version: string
+  contract_version: number
+  provider_kind: string
+  model_id: string
+  proposal_document: Record<string, unknown>
+  validation_document: { valid: boolean; errors: number; warnings: number; issues: ValidationIssue[] }
+  review_comment?: string
+  warnings_confirmed: boolean
+  created_by_label: string
+  reviewed_by_label?: string
+  created_at: string
+  reviewed_at?: string
+}
+export type ProposalVerification = {
+  proposal_id: number
+  verified: boolean
+  approval_safe: boolean
+  compatibility_warning: boolean
+  approval_invalidated: boolean
+  checks: Array<{ code: string; label: string; passed: boolean; detail: string }>
+  snapshot_hash: string
+  proposal_hash: string
+  replay_hash: string
+  validated_reference_count: number
+  rejected_reference_count: number
+  validation_errors: number
+  validation_warnings: number
+  pending_validations: string[]
+}
 export type Page<T> = { items: T[]; total: number; limit: number; offset: number }
+export type ProposalRevision = { summary: string; grain_description: string; dimension_names: string[]; measure_names: string[]; kpi_codes: string[]; kpi_measure_names: Record<string, string>; measure_aggregations: Record<string, 'sum' | 'count' | 'count_distinct' | 'average' | 'min' | 'max'>; comment: string }
 
-type ValidationIssue = { loc?: (string | number)[]; msg?: string }
-type ErrorBody = { detail?: string | ValidationIssue[] }
+type ApiValidationIssue = { loc?: (string | number)[]; msg?: string }
+type ErrorBody = { detail?: string | ApiValidationIssue[] }
 
 function readableError(detail: ErrorBody['detail']) {
   if (typeof detail === 'string') return detail
@@ -23,6 +83,9 @@ function readableError(detail: ErrorBody['detail']) {
     password: 'Contraseña',
     name: 'Nombre',
     provider_kind: 'Proveedor',
+    host: 'Servidor',
+    database_name: 'Base de datos',
+    username: 'Usuario',
   }
   return detail.map((issue) => {
     const field = String(issue.loc?.at(-1) ?? '')
@@ -54,8 +117,39 @@ export const api = {
   menus: (token: string, limit: number, offset: number) => request<Page<Menu>>(`/menus?limit=${limit}&offset=${offset}`, token),
   parameters: (token: string, limit: number, offset: number) => request<Page<Parameter>>(`/parameters?limit=${limit}&offset=${offset}`, token),
   llm: (token: string, limit: number, offset: number) => request<Page<LlmConfiguration>>(`/llm-configurations?limit=${limit}&offset=${offset}`, token),
+  connections: (token: string, limit: number, offset: number) => request<Page<DataConnection>>(`/connections?limit=${limit}&offset=${offset}`, token),
+  activeSource: (token: string) => request<ActiveSource>('/sources/active', token),
+  metadataSnapshots: (token: string, limit: number, offset: number) => request<Page<MetadataSnapshot>>(`/metadata/snapshots?limit=${limit}&offset=${offset}`, token),
+  captureMetadata: (token: string) => request<SnapshotCapture>('/metadata/snapshots', token, { method: 'POST' }),
+  metadataTables: (token: string, snapshotId: number, search = '', schemaName = '', limit = 10, offset = 0) => request<Page<MetadataTable>>(`/metadata/snapshots/${snapshotId}/tables?search=${encodeURIComponent(search)}&schema_name=${encodeURIComponent(schemaName)}&limit=${limit}&offset=${offset}`, token),
+  metadataTable: (token: string, snapshotId: number, schemaName: string, tableName: string) => request<MetadataTableDetail>(`/metadata/snapshots/${snapshotId}/tables/${encodeURIComponent(schemaName)}/${encodeURIComponent(tableName)}`, token),
+  copilotReadiness: (token: string) => request<CopilotReadiness>('/copilot/readiness', token),
+  copilotCatalog: (token: string, snapshotId: number) => request<CopilotCatalog>(`/copilot/catalog?metadata_snapshot_id=${snapshotId}`, token),
+  analysisCatalogDomains: (token: string) => request<AnalysisCatalogDomain[]>('/analysis-catalog/domains', token),
+  analysisCatalog: (token: string, domainCode: string) => request<AnalysisCatalogConfiguration>(`/analysis-catalog/domains/${encodeURIComponent(domainCode)}`, token),
+  saveAnalysisCatalog: (token: string, domainCode: string, body: AnalysisCatalogConfiguration) => request<AnalysisCatalogConfiguration>(`/analysis-catalog/domains/${encodeURIComponent(domainCode)}`, token, { method: 'PUT', body: JSON.stringify(body) }),
+  resetAnalysisCatalog: (token: string, domainCode: string) => request<AnalysisCatalogConfiguration>(`/analysis-catalog/domains/${encodeURIComponent(domainCode)}/reset`, token, { method: 'POST' }),
+  proposals: (token: string, limit = 10, offset = 0, statuses: string[] = [], domainCode?: string) => {
+    const query = new URLSearchParams({ limit: String(limit), offset: String(offset) })
+    statuses.forEach((status) => query.append('status', status))
+    if (domainCode) query.set('domain_code', domainCode)
+    return request<Page<BiProposal>>(`/copilot/proposals?${query.toString()}`, token)
+  },
+  createProposal: (token: string, body: object) => request<BiProposal>('/copilot/proposals', token, { method: 'POST', body: JSON.stringify(body) }),
+  reviseProposal: (token: string, id: number, body: ProposalRevision) => request<BiProposal>(`/copilot/proposals/${id}/revisions`, token, { method: 'POST', body: JSON.stringify(body) }),
+  approveProposal: (token: string, id: number, body: { comment?: string; warnings_confirmed: boolean }) => request<BiProposal>(`/copilot/proposals/${id}/approve`, token, { method: 'POST', body: JSON.stringify(body) }),
+  rejectProposal: (token: string, id: number, comment: string) => request<BiProposal>(`/copilot/proposals/${id}/reject`, token, { method: 'POST', body: JSON.stringify({ comment }) }),
+  invalidateProposal: (token: string, id: number, comment: string) => request<BiProposal>(`/copilot/proposals/${id}/invalidate`, token, { method: 'POST', body: JSON.stringify({ comment }) }),
+  restoreProposalApproval: (token: string, id: number, body: { comment?: string; warnings_confirmed: boolean }) => request<BiProposal>(`/copilot/proposals/${id}/restore-approval`, token, { method: 'POST', body: JSON.stringify(body) }),
+  discardProposal: (token: string, id: number, comment: string) => request<BiProposal>(`/copilot/proposals/${id}/discard`, token, { method: 'POST', body: JSON.stringify({ comment }) }),
+  verifyProposal: (token: string, id: number) => request<ProposalVerification>(`/copilot/proposals/${id}/verify`, token, { method: 'POST' }),
   audit: (token: string, limit: number, offset: number) => request<Page<AuditEvent>>(`/audit-events?limit=${limit}&offset=${offset}`, token),
   testLlm: (token: string, id: number) => request<{ ok: boolean; message: string }>(`/llm-configurations/${id}/test`, token, { method: 'POST' }),
+  saveLlmCredential: (token: string, id: number, apiKey: string) => request<{ credential_configured: boolean; message: string }>(`/llm-configurations/${id}/secret`, token, { method: 'PUT', body: JSON.stringify({ api_key: apiKey }) }),
+  testConnection: (token: string, id: number) => request<{ ok: boolean; message: string }>(`/connections/${id}/test`, token, { method: 'POST' }),
+  activateConnection: (token: string, id: number) => request<DataConnection>(`/connections/${id}/activate`, token, { method: 'POST' }),
+  deactivateConnection: (token: string, id: number) => request<DataConnection>(`/connections/${id}/deactivate`, token, { method: 'POST' }),
+  resetParameter: (token: string, key: string) => request<Parameter>(`/parameters/${key}/reset`, token, { method: 'POST' }),
   create: <T>(path: string, token: string, body: object) => request<T>(path, token, { method: 'POST', body: JSON.stringify(body) }),
   update: <T>(path: string, token: string, body: object) => request<T>(path, token, { method: 'PATCH', body: JSON.stringify(body) }),
   upsert: <T>(path: string, token: string, body: object) => request<T>(path, token, { method: 'PUT', body: JSON.stringify(body) }),

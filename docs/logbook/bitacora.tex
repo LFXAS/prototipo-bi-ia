@@ -59,7 +59,7 @@
   \vfill
 
   {\color{deepgreen}\fontsize{30}{35}\selectfont\textbf{Bitácora técnica}}\\[0.8em]
-  {\LARGE Prototipo web de BI asistido por IA}
+  {\LARGE Prueba de concepto de un prototipo funcional de BI asistido por IA para la construcción semiautomatizada y supervisada de un datamart de ventas}
 
   \vspace{1.6cm}
 
@@ -67,7 +67,7 @@
     Estudiantes & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPIs, insights y pronóstico \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.2.3 \\
+    Versión de la bitácora & 0.3.18 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -488,6 +488,190 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   \bottomrule
 \end{longtable}
 
+\clearpage
+\subsection{14 de septiembre de 2026 - Especificación SDD del Sprint 3}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Alcance de investigación & \statusok & Se registra el título vigente, los cinco objetivos y la regla de que AdventureWorks es la única fuente funcional; los datos sintéticos se reservan para pruebas controladas. \\
+  Especificaciones & \statusok & Se refinan el índice SPR-03 y cuatro contratos para configuración web, conexión e introspección, propuesta BI asistida y experiencia de exploración/revisión. Todos permanecen en borrador hasta aprobación humana. \\
+  Usuario objetivo & \statusok & El gerente o analista expresa una necesidad en español sin seleccionar tablas ni escribir SQL; el explorador técnico queda como consulta avanzada de sólo lectura. \\
+  Separación de responsabilidades & \statusok & La aplicación conecta, normaliza, preselecciona, valida y audita; el LLM propone un documento estructurado; una persona aprueba el significado de negocio. Ninguna propuesta ejecuta SQL o ETL. \\
+  Parametrización segura & \statusok & Conexiones, claves LLM y parámetros operativos tipados se administrarán desde la web; los secretos se cifran, SQL Server es el primer adaptador y el contrato admite motores futuros. \\
+  Interpretación dinámica & \statusok & El LLM interpreta metadatos técnicos por bloques, propone conceptos comprensibles en español y FastAPI descarta toda tabla, columna o relación inexistente. \\
+  Decisión arquitectónica & \statusok & El ADR 0003 define instantáneas inmutables, mapa semántico dinámico, contrato JSON, validadores y puerta de aprobación. Sprint 4 deberá incorporar un constructor determinístico y ejecutor backend, no consultas manuales por análisis. \\
+  Límite del sprint & \statusok & Sprint 3 termina con una propuesta aprobada como entrada de Sprint 4; datamart físico, ETL, KPIs calculados, dashboard y pronóstico permanecen pendientes. \\
+  Simplificación de alcance & \statusok & Se separa lo obligatorio, lo preparado y lo futuro. Sprint 3 implementará un solo motor, una sola fuente, cuatro parámetros consumidos, un recorrido de negocio de cuatro pasos y un explorador técnico de sólo lectura. \\
+  Valor para usuario final & \statusok & El gerente formula una necesidad, comprende los conceptos detectados y aprueba o rechaza una propuesta sin seleccionar tablas, editar archivos, escribir SQL ni interpretar JSON. \\
+  \bottomrule
+\end{longtable}
+
+\clearpage
+\subsection{18 de septiembre de 2026 - Especificación UI/UX profesional del Sprint 3}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Especificación UI/UX & \statusok & Se incorpora \file{SPR-03-05} como contrato normativo para la navegación, lenguaje visual, componentes, estados, contenido, responsive y accesibilidad del Sprint 3. Permanece en borrador hasta aprobación humana. \\
+  Perfiles de uso & \statusok & Se separan los recorridos del administrador, gerente o solicitante y analista BI. El asistente es el acceso principal del usuario de negocio y la trazabilidad técnica queda disponible sin convertirse en una tarea obligatoria. \\
+  Usuario principal & \statusok & Se precisa que el analista BI o responsable de datos opera el asistente, resuelve ambigüedades y aprueba o rechaza. El gerente aporta la necesidad y consume posteriormente los resultados; no valida relaciones, granularidad ni el plan ETL. \\
+  Flujo principal & \statusok & El Asistente de análisis utiliza cuatro pasos: necesidad de negocio, conceptos encontrados, propuesta validada y revisión humana. La experiencia diferencia contenido propuesto por IA, comprobación de la aplicación y decisión de una persona. \\
+  Preparación inicial & \statusok & Se añade un wizard de cinco pasos que orquesta la configuración LLM, la fuente SQL Server, las pruebas, la activación y la instantánea. Reutiliza los módulos reales, permite continuar después y deja de ser obligatorio al completar los prerrequisitos. \\
+  Drag and drop & \statusok & Se descarta un editor funcional en Sprint 3 porque trasladaría al usuario el diseño técnico y requeriría grafos, reglas, deshacer, persistencia y accesibilidad adicional. El plan ETL se explica mediante una vista visual no editable; un editor avanzado requerirá otra especificación en Sprint 4. \\
+  Pantallas & \statusok & Se definen Inicio orientador, Conexiones de datos, Configuración LLM, Asistente de análisis y Explorador de esquema, con acciones, estados, mensajes y comportamiento móvil y de escritorio. \\
+  Consistencia visual & \statusok & Se reutilizan los tokens y el cascarón del Sprint 2; no se incorpora otra identidad ni una biblioteca visual completa. Se especifican componentes compartidos, jerarquía, microcopy y una sola acción primaria por contexto. \\
+  Accesibilidad & \statusok & Se establece WCAG 2.1 AA como objetivo para los recorridos implementados, con teclado, foco visible, etiquetas, contraste, regiones vivas, movimiento reducido y verificación a 320, 768, 1024 y 1440 píxeles. \\
+  Viabilidad & \statusok & Se excluyen chat abierto, diseñador gráfico, arrastrar y soltar, grafo completo, temas por usuario y módulos futuros. Las esperas no muestran porcentajes ficticios y ninguna pantalla presenta datos simulados como resultados reales. \\
+  \bottomrule
+\end{longtable}
+
+\clearpage
+\subsection{18 de septiembre de 2026 - Cierre de credenciales LLM web del Sprint 2}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Migración & \statusok & La revisión Alembic \file{20260918\_06} incorpora \file{app.secrets} y una relación uno a uno opcional desde \file{llm\_configurations}; no migra valores desde archivos locales. \\
+  Protección & \statusok & FastAPI cifra cada API key con cifrado autenticado. La raíz se genera con permisos restrictivos en el volumen \file{secret\_key\_data}, separado de PostgreSQL y no versionado. \\
+  API y autorización & \statusok & \file{PUT /api/v1/llm-configurations/\{id\}/secret} exige \file{parameters.llm.write}, registra o reemplaza la clave y responde sólo con su estado. La auditoría no contiene credenciales. \\
+  Interfaz & \statusok & Gemini y Qwen ofrecen \textbf{Registrar/Reemplazar credencial}; la tabla muestra \textbf{Credencial pendiente/configurada}. Ollama indica que no requiere API key. El formulario de contraseña se limpia al guardar o cancelar. \\
+  Despliegue & \statusok & Compose dejó de inyectar \file{GEMINI\_API\_KEY} y \file{DASHSCOPE\_API\_KEY}. Desarrollo y entrega declaran el volumen persistente de clave maestra. \\
+  Pruebas automáticas & \statusok & Ruff, formato, Mypy, 13 pruebas Pytest, 4 pruebas Vitest, ESLint y construcción Vite finalizaron correctamente dentro de Docker. \\
+  Prueba integrada & \statusok & Una credencial temporal produjo cero coincidencias en claro en PostgreSQL, permaneció utilizable después de reiniciar el backend y su eliminación dejó cero secretos huérfanos. \\
+  Evidencia visual & \statusok & Se revisó la pantalla real en ancho móvil: formulario, estado, acciones y microcopy permanecen legibles, accesibles y sin mostrar la clave. \\
+  Documentación & \statusok & README, guía de réplica, arquitectura, ADR 0002, especificaciones, informe del Sprint 2 y manual técnico reflejan el nuevo flujo. \\
+  \bottomrule
+\end{longtable}
+
+\subsection{18 de septiembre de 2026 - Primer incremento funcional del Sprint 3}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Migración & \statusok & La revisión Alembic \file{20260918\_07} amplía \file{app.parameters}, crea \file{app.data\_connections}, relaciona cada conexión con un secreto y refuerza una sola fuente activa mediante índice parcial. \\
+  Conexión web & \statusok & React y FastAPI permiten registrar, editar, probar, activar, desactivar y eliminar una fuente SQL Server. Los campos se validan por separado y no se acepta una cadena de conexión libre. \\
+  Sólo lectura & \statusok & La prueba consulta el catálogo y rechaza cuentas con membresía o privilegios de escritura. AdventureWorks con \file{bi\_reader} fue validada y activada desde la API. \\
+  Parámetros & \statusok & Se habilitaron cuatro claves tipadas con nombre, explicación, módulo, rango y valor predeterminado. La pantalla permite guardar dentro del rango y restaurar. \\
+  Seguridad & \statusok & La contraseña se cifra con la misma raíz local de secretos, no se carga al listar conexiones y se delimita como un solo valor ODBC aunque contenga separadores. La inspección integrada produjo cero coincidencias de credenciales en claro en PostgreSQL. \\
+  Persistencia & \statusok & Después de reiniciar FastAPI permanecieron una conexión activa y el estado de prueba correcto, sin exponer el secreto al cliente. \\
+  Autorización y auditoría & \statusok & Se añadieron \file{connections.read}, \file{connections.write} y \file{connections.test}; las mutaciones conservan eventos seguros sin host completo, contraseña ni cadena ODBC. \\
+  Pruebas & \statusok & 18 pruebas Pytest y 6 pruebas Vitest, Ruff, formato, Mypy, ESLint y construcción Vite finalizaron correctamente dentro de Docker. \\
+  Límite & \statuspending & El bloqueo por dependencias se verificará cuando la siguiente migración incorpore \file{metadata\_snapshots}; introspección, propuesta con IA y ETL no pertenecen a este incremento. \\
+  \bottomrule
+\end{longtable}
+
+\subsection{18 de septiembre de 2026 - Segundo incremento funcional del Sprint 3}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Migración & \statusok & La revisión Alembic \file{20260918\_08} crea \file{app.metadata\_snapshots} con JSONB, hash, totales, actor histórico, unicidad y relaciones restrictivas para conservar trazabilidad. \\
+  Introspección & \statusok & FastAPI consulta catálogos SQL Server de tablas, columnas, PK y FK con la fuente activa de sólo lectura; no extrae filas, valores, procedimientos ni código SQL. \\
+  Canonicalización & \statusok & El documento se ordena por esquema, tabla, posición y relación. SHA-256 identifica el contenido y una segunda captura idéntica reutiliza la versión vigente. \\
+  Evidencia real & \statusok & AdventureWorks produjo 6 esquemas, 71 tablas, 444 columnas y 90 relaciones. La repetición conservó el mismo hash de 64 caracteres y no aumentó el total de instantáneas. \\
+  API & \statusok & Se incorporaron fuente activa, captura, listado, detalle, búsqueda paginada y detalle de tabla; un bloqueo asesor evita actualizaciones simultáneas por conexión. \\
+  Interfaz & \statusok & Conexiones muestra la fuente activa, sus totales y \textbf{Actualizar metadatos}. \textbf{Datos > Explorador de esquema} permite buscar y revisar columnas y relaciones con diseño apilable. \\
+  Seguridad & \statusok & La contraseña se descifra únicamente en memoria; respuestas, auditoría e instantánea omiten host, credencial, cadena ODBC y filas del negocio. Una conexión con capturas no puede eliminarse. \\
+  Autorización & \statusok & Se añadieron \file{metadata.read} y \file{metadata.refresh}, menú protegido e incorporación idempotente al rol administrador. \\
+  Pruebas & \statusok & 21 pruebas Pytest y 7 pruebas Vitest, Ruff, formato, Mypy, ESLint y construcción Vite finalizaron correctamente dentro de Docker. \\
+  Límite & \statusok & El incremento no invoca al LLM, no interpreta conceptos de negocio y no crea ETL ni datamart; esas capacidades conservan sus especificaciones posteriores. \\
+  \bottomrule
+\end{longtable}
+
+\subsection{19 de septiembre de 2026 - Cierre funcional del Sprint 3}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Persistencia & \statusok & Las revisiones \file{20260919\_09} a \file{20260920\_13} crean propuestas BI inmutables, registran el perfil \file{ventas}, enlazan revisiones, parametrizan el razonamiento LLM y admiten estados auditables de aprobación retirada y descarte, ligando cada intento con instantánea, entrada, proveedor, versión, resultado y decisión. \\
+  Asistente & \statusok & \textbf{Asistente de datamart} incorpora un catálogo de dominios y un recorrido de cinco pasos: necesidad comercial, conceptos españoles, propuesta validada, personalización opcional y decisión supervisada. Sólo ventas está habilitado; las capacidades visibles se derivan de los metadatos. \\
+  Copiloto IA & \statusok & Los adaptadores Ollama, Gemini y Qwen Cloud pueden solicitar JSON acotado. La IA interpreta metadatos y decide granularidad, hecho, medidas, dimensiones y KPIs; FastAPI completa claves, relaciones, reglas y plan ETL de forma determinística sin recibir filas ni secretos. \\
+  Validación & \statusok & FastAPI comprueba referencias, alcance, columnas, agregaciones, FK, KPI, operaciones y ausencia de instrucciones ejecutables. Los errores no pueden aprobarse y las advertencias requieren confirmación. \\
+  Evidencia técnica & \statusok & La plataforma delimita la \textbf{Validación estructural de la propuesta - Sprint 3}: integridad de metadatos, referencias, contrato y reproducción determinística. Las propuestas reales de Ollama y Gemini coincidieron en huella; permanecen explícitamente pendientes la conciliación OLTP--datamart, contraste DW, juicio de expertos y MAPE/RMSE. \\
+  Personalización & \statusok & El analista ajusta resumen, granularidad, dimensiones, medidas, agregaciones y KPIs ya verificados. Cada ajuste exige justificación, crea una versión enlazada y vuelve a validarse sin invocar al LLM ni aceptar SQL o referencias libres. \\
+  Historial & \statusok & Las versiones se filtran en el servidor por dominio y estado, aparecen inicialmente en \textbf{Lista para revisar}, disponen de paginación y pueden abrirse sin consumir nuevamente el proveedor. \\
+  Seguridad & \statusok & Se añadieron permisos separados de consulta, generación y revisión, eventos de auditoría seguros y estados persistidos para fallo del proveedor, fallo de validación, aprobación y rechazo. \\
+  Extensibilidad & \statusok & El lector se resuelve mediante registro de conectores y el comportamiento analítico mediante perfiles de dominio. Sólo SQL Server y ventas quedan habilitados; MySQL e inventario requieren implementación y pruebas propias. \\
+  Proveedores & \statusok & Ollama validó \file{qwen2.5:3b} y produjo una propuesta real posteriormente aprobada. Tras sustituir desde la web el modelo Gemini discontinuado para usuarios nuevos, \file{gemini-3.6-flash} con razonamiento mínimo produjo una segunda propuesta real válida y lista para revisión. Ambas versiones permanecen seleccionables. \\
+  Pruebas & \statusok & Ruff, formato, Mypy y 38 pruebas Pytest; ESLint, 8 pruebas Vitest y construcción Vite finalizaron correctamente. \\
+  Límite & \statusok & No se ejecuta SQL, no se materializa el datamart y no se calculan KPIs. Aprobar prepara el contrato de entrada del Sprint 4. \\
+  Aceptación & \statuspending & Las autoras deben recorrer el Sprint 3 completo antes de crear los pull requests de integración a \file{develop}. \\
+  \bottomrule
+\end{longtable}
+
+\subsection{20 de septiembre de 2026 - Corrección semántica y depuración de propuestas}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  Contrato semántico & \statusok & Medidas y KPI declaran función tipada; el backend comprueba columna, agregación, operación y compatibilidad antes de permitir aprobación. \\
+  Mensajes & \statusok & Observaciones del proveedor, ajustes automáticos, advertencias determinísticas y decisiones excluidas se muestran por separado y con acciones concretas. \\
+  Supervisión & \statusok & El analista puede excluir o reasignar un KPI a una medida compatible verificada sin SQL; la ausencia de alternativas exige retirar el KPI o generar otra versión. \\
+  Depuración & \statusok & Una aprobación puede retirarse y las versiones no aprobadas pueden descartarse con motivo; se conserva linaje y auditoría sin borrado físico. \\
+  Compatibilidad futura & \statusok & La validación usa funciones semánticas y reglas del perfil, no excepciones ligadas a una pantalla o tabla específica. Sprint 4 deberá revalidar inmediatamente antes del ETL. \\
+  Pruebas & \statusok & Ruff, Mypy, 42 pruebas Pytest, ESLint, 8 pruebas Vitest y construcción Vite finalizaron correctamente en Docker. \\
+  \bottomrule
+\end{longtable}
+
+\subsection{20 de septiembre de 2026 - Parametrización y compatibilidad histórica}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  Catálogo analítico & \statusok & Se separó de Parámetros generales y dispone de permisos propios. Permite CRUD de preguntas por dominio y varias periodicidades soportadas. El objetivo se escribe en cada análisis y las dimensiones quedan bajo propuesta IA, validación determinística y supervisión humana. \\
+  Selección de medidas & \statusok & Los identificadores, claves y códigos dejan de competir como candidatos de importe o cantidad; una medida monetaria se elige sólo entre columnas cuantitativas compatibles. \\
+  Compatibilidad histórica & \statusok & El campo de dimensiones solicitadas se conserva únicamente para leer contratos anteriores. Las nuevas solicitudes lo envían vacío: el LLM propone las dimensiones desde la necesidad, preguntas y metadatos, y FastAPI sólo valida o completa relaciones técnicas sin imponer el modelo dimensional. \\
+  Compatibilidad & \statusok & La verificación distingue errores actuales de diferencias provocadas por versiones anteriores del motor. Una diferencia histórica se informa, pero no retira por sí sola una aprobación válida. \\
+  Recuperación & \statusok & Una aprobación retirada puede restaurarse únicamente si supera los controles vigentes, con confirmación de advertencias, justificación y evento de auditoría. \\
+  Interfaz & \statusok & Los mensajes indican si debe corregirse, descartarse, crear una versión o confirmar compatibilidad; la evidencia ya no expone referencias al número de un objetivo académico. \\
+  Prueba integrada & \statusok & La versión 26 fue reconocida como compatible y su aprobación se restauró con auditoría. Los intentos 29, 30 y 32 se descartaron con motivo trazable. Con el flujo corregido y sin dimensiones solicitadas, Qwen local generó la versión 33 con \file{sales-bi-v3}: propuso por sí mismo producto, cliente y territorio, el hecho de ventas, dos medidas y tres KPI; obtuvo cero errores y advertencias y superó los cuatro controles de evidencia. Gemini volvió a quedar activo. \\
+  Pruebas & \statusok & Ruff, Mypy y 48 pruebas Pytest; ESLint, 9 pruebas Vitest y construcción Vite finalizaron correctamente en Docker. \\
+  \bottomrule
+\end{longtable}
+
+\subsubsection{Incidente de migración y resolución}
+
+La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó una imagen local anterior y no encontró la revisión \file{20260918\_07}. No existía un defecto en la cadena Alembic ni pérdida de datos: se confirmó el estado del servicio en ejecución, se aplicó \file{alembic upgrade head} con la imagen vigente del backend y se ejecutó la siembra idempotente. La revisión \file{20260918\_08} quedó aplicada correctamente. En una réplica limpia se debe usar el procedimiento documentado con \file{docker compose up -d --build}, que reconstruye las imágenes antes de migrar.
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}X l X@{}}
@@ -496,8 +680,8 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   \midrule
   Compose autocontenido válido & \statusok & \file{docker compose config --quiet} \\
   Compose de imágenes válido & \statusok & \file{docker compose -f compose.release.yaml config --quiet} \\
-  Backend calidad y pruebas & \statusok & Ruff, Mypy y 2 pruebas Pytest dentro de Docker \\
-  Frontend calidad y pruebas & \statusok & ESLint, 1 prueba Vitest y build de Vite dentro de Docker \\
+  Backend calidad y pruebas & \statusok & Ruff, Mypy y 48 pruebas Pytest dentro de Docker \\
+  Frontend calidad y pruebas & \statusok & ESLint, 9 pruebas Vitest y build de Vite dentro de Docker \\
   PostgreSQL disponible & \statusok & Esquemas \file{app} y \file{mart}; endpoint \file{/health/ready} en \file{ok} \\
   AdventureWorks restaurada & \statusok & 71 tablas; \file{bi\_reader}: lectura 1 e inserción 0 \\
   Interfaz disponible & \statusok & Vite saludable en 5173, Nginx opcional en 8080 y API accesible mediante proxy \\
@@ -505,18 +689,18 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   PDF legible & \statusok & Todas las páginas renderizadas e inspeccionadas sin cortes ni solapamientos \\
   Git local & \statusok & \file{develop} para integración, \file{main} para entregas y ramas enfocadas por pull request \\
   GitHub/GHCR & \statusok & Repositorio público, dos colaboradoras con escritura, ramas protegidas y cinco imágenes públicas en GHCR; la réplica desde una VM Ubuntu se realizó con Docker y VS Code. \\
-  SDD y trazabilidad & \statusok & Guía SDD, plantilla y especificación inicial del Sprint 2 versionadas; toda capacidad funcional futura debe enlazarse a su especificación. \\
+  SDD y trazabilidad & \statusok & SPR-03-01 a SPR-03-05 implementadas: conexión, instantánea, explorador, propuesta asistida, validación, decisión humana y experiencia guiada. \\
   \bottomrule
 \end{tabularx}
 
 \section{Próximos pasos}
 
 \begin{enumerate}
-  \item Publicar el cierre documental mediante PR hacia \file{develop}; una vez aprobado, promoverlo hacia \file{main} como parte de la entrega estable.
-  \item Revisar individualmente los pull requests de Dependabot que queden abiertos en \file{develop}; no fusionar ninguno sin CI aprobada.
-  \item Congelar una etiqueta de ambiente inicial y registrar los digest de las imágenes.
-  \item Aprobar la especificación \file{SPR-02-rbac-y-parametros.md} antes de iniciar código de seguridad o parámetros.
-  \item Iniciar la siguiente iteración con migraciones del RBAC y parámetros, sin adelantar módulos BI, IA o ETL.
+  \item Ejecutar la prueba de aceptación del Sprint 3 y corregir observaciones antes de integrar a \file{develop}.
+  \item Especificar el contrato ejecutable del Sprint 4 a partir de una propuesta aprobada e inmutable.
+  \item Generar transformaciones determinísticas, materializar el datamart desde destino vacío y validar cifras contra consultas de referencia.
+  \item Mantener dashboards, hallazgos y pronóstico dentro del alcance aprobado de sus sprints posteriores.
+  \item Promover a \file{main} únicamente una integración estable, revisada y con CI aprobada.
 \end{enumerate}
 
 \section{Historial del documento}
@@ -558,6 +742,25 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   0.2.15 & 11-09-2026 & Corrección de auditoría para usuarios temporales: preserva eventos y etiqueta histórica del actor, permite eliminación física no protegida mediante \file{ON DELETE SET NULL}. \\
   0.2.16 & 11-09-2026 & Migraciones y catálogo base reproducible: servicio \file{seed} idempotente posterior a Alembic, sin compartir volúmenes ni datos sensibles entre equipos. \\
   0.2.17 & 11-09-2026 & Modelo local predeterminado \file{qwen2.5:3b} y contexto 2048 para una experiencia Ollama ágil; \file{qwen3:4b} queda como alternativa opcional de mayor capacidad. \\
+  0.3.0 & 14-09-2026 & Borradores SDD del Sprint 3 para introspección de AdventureWorks, propuesta BI estructurada, validación determinística, aprobación humana y experiencia responsive. \\
+  0.3.1 & 14-09-2026 & Redefinición del Sprint 3 para el usuario final: solicitud comercial guiada, alcance técnico automático, glosario español, modo avanzado y futura generación determinística de SQL sin intervención de un programador por análisis. \\
+  0.3.2 & 14-09-2026 & Parametrización web de conexiones y secretos, interfaz extensible de conectores e interpretación dinámica de metadatos técnicos a conceptos españoles, sin referencias inventadas ni configuración manual cotidiana. \\
+  0.3.3 & 14-09-2026 & Simplificación del Sprint 3 para viabilidad académica: SQL Server único, alcance técnico de sólo lectura, cuatro parámetros reales, credenciales LLM como corrección del Sprint 2 y recorrido centrado en usuario final. \\
+  0.3.4 & 18-09-2026 & Especificación UI/UX profesional del Sprint 3: perfiles, wizard inicial, navegación, pantallas, flujo guiado, vista visual del ETL sin drag and drop, responsive, accesibilidad y pruebas de experiencia. \\
+  0.3.5 & 18-09-2026 & Cierre pendiente del Sprint 2: credenciales LLM registradas desde la web, cifrado autenticado, clave maestra en volumen separado, migración, pruebas y documentación. \\
+  0.3.6 & 18-09-2026 & Inicio funcional del Sprint 3: fuente SQL Server administrada desde la web, prueba de sólo lectura, activación única, secreto cifrado y parámetros tipados. \\
+  0.3.7 & 18-09-2026 & Introspección determinística de AdventureWorks: instantánea inmutable, hash estable, deduplicación, búsqueda segura y explorador responsive. \\
+  0.3.8 & 19-09-2026 & Cierre funcional del Sprint 3: asistente guiado, interpretación y propuesta IA, validación determinística, revisión humana, trazabilidad y arquitectura extensible. \\
+  0.3.9 & 19-09-2026 & Comparación de versiones persistidas, prueba real con Gemini 3.6 Flash y nivel de razonamiento parametrizable por configuración LLM. \\
+  0.3.10 & 19-09-2026 & Validación acumulativa visible: integridad, referencias, calidad, coherencia y reejecución determinística; plan de conciliación OLTP--datamart para Sprint 4. \\
+  0.3.11 & 19-09-2026 & Corrección de Ollama local: contexto 4096 y mayor presupuesto de salida para evitar el truncamiento del contrato JSON de \file{qwen2.5:3b}. \\
+  0.3.12 & 19-09-2026 & Catálogo dinámico de dominios y capacidades, Asistente de datamart genérico, personalización supervisada, historial filtrable y paginado, alcance visible de validación y criterio de selección para Sprint 4. \\
+  0.3.13 & 20-09-2026 & Corrección semántica de medidas y KPI, mensajes accionables, reasignación supervisada, retiro de aprobaciones y descarte auditable de versiones. \\
+  0.3.14 & 20-09-2026 & Migración correctiva del ciclo de vida de propuestas para persistir los estados de aprobación retirada y descarte sin infringir las restricciones de PostgreSQL. \\
+  0.3.15 & 20-09-2026 & Catálogo web de necesidades, selección semántica sin identificadores, compatibilidad histórica y restauración auditada de aprobaciones. \\
+  0.3.16 & 20-09-2026 & Corrección determinística de dimensiones solicitadas omitidas por el LLM, depuración auditada de la versión anterior y validación real sin advertencias con Qwen. \\
+  0.3.17 & 20-09-2026 & Separación del catálogo analítico por dominio y permisos, CRUD de preguntas, periodicidades múltiples y retiro de dimensiones predefinidas para reforzar la propuesta IA supervisada. \\
+  0.3.18 & 20-09-2026 & Validación integrada del flujo sin dimensiones solicitadas: Qwen propuso el modelo de la versión 33, superó los cuatro controles reproducibles y Gemini fue restaurado como proveedor activo. \\
   \bottomrule
 \end{longtable}
 

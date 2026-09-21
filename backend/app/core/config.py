@@ -27,8 +27,7 @@ class Settings(BaseSettings):
     bootstrap_admin_email: str = "admin@bi.local"
     bootstrap_admin_password: SecretStr = SecretStr("ChangeMe_Admin_2026!")
 
-    gemini_api_key: SecretStr | None = None
-    dashscope_api_key: SecretStr | None = None
+    secrets_key_path: str = "/var/lib/bi-ia-secrets/master.key"
 
     postgres_host: str = "postgres"
     postgres_port: int = 5432

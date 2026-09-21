@@ -1,10 +1,11 @@
 # Índice de documentación técnica
 
-La documentación forma parte del producto versionado. Las fuentes Markdown y LaTeX se revisan mediante pull request; los cuatro PDF oficiales se regeneran dentro de Docker y CI comprueba que coincidan con sus fuentes.
+La documentación forma parte del producto versionado. Las fuentes Markdown y LaTeX se revisan mediante pull request; los cinco PDF oficiales se regeneran dentro de Docker y CI comprueba que coincidan con sus fuentes.
 
-## Entregables oficiales del Sprint 1
+## Entregables oficiales del proyecto
 
 - [`manual-tecnico/manual-tecnico.pdf`](manual-tecnico/manual-tecnico.pdf): instalación, operación, reconstrucción y explicación detallada del ciclo Docker, Git y CI/CD.
+- [`sprints/sprint-03-metadatos-y-propuesta-bi.pdf`](sprints/sprint-03-metadatos-y-propuesta-bi.pdf): alcance, arquitectura, validación y evidencias del asistente supervisado del Sprint 3.
 - [`sprints/sprint-01-entorno.pdf`](sprints/sprint-01-entorno.pdf): objetivo, backlog, ejecución, trazabilidad, evidencias, incidentes, revisión y retrospectiva del Sprint 1.
 - [`sprints/sprint-02-seguridad-y-parametros.pdf`](sprints/sprint-02-seguridad-y-parametros.pdf): objetivo, especificaciones SDD, incremento administrativo, controles RBAC/LLM, evidencias y límites del Sprint 2.
 - [`logbook/bitacora.pdf`](logbook/bitacora.pdf): registro cronológico de decisiones, cambios, verificaciones, incidentes y pendientes.
@@ -18,6 +19,7 @@ Las fuentes editables se encuentran junto a cada PDF. `referencia-devops-sprint1
 - [`decisions/`](decisions/): decisiones duraderas de arquitectura (ADR), incluido el catálogo inicial de proveedores LLM configurables.
 - [`git-workflow.md`](git-workflow.md): ramas, PR, protecciones, revisión y promoción.
 - [`replication-guide.md`](replication-guide.md): comandos de instalación y réplica.
+- [`validation-plan.md`](validation-plan.md): plan acumulativo de validación técnica, evidencia visible de Sprint 3 y conciliación OLTP–datamart prevista.
 - [`sdd-workflow.md`](sdd-workflow.md) y [`specs/`](specs/README.md): proceso y contratos SDD desde el Sprint 2.
 
 ## Regeneración y verificación
@@ -29,7 +31,7 @@ make docs
 make verify
 ```
 
-`make docs` compila los cuatro PDF con la imagen LaTeX del proyecto. `make verify` agrega validación Compose, política de ramas y pruebas de frontend/backend. Un cambio documental no se considera terminado hasta que las fuentes y los PDF estén actualizados y legibles.
+`make docs` compila los cinco PDF con la imagen LaTeX del proyecto. `make verify` agrega validación Compose, política de ramas y pruebas de frontend/backend. Un cambio documental no se considera terminado hasta que las fuentes y los PDF estén actualizados y legibles.
 
 ## Separación de material externo
 

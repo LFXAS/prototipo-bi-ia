@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
+from typing import Any
 
 import httpx
 
-from app.core.config import settings
 from app.modules.parameters.models import LlmConfiguration
 
 
@@ -14,24 +15,169 @@ class ProviderTestResult:
     message: str
 
 
-def credential_for(configuration: LlmConfiguration) -> str | None:
-    values = {
-        "gemini": settings.gemini_api_key,
-        "qwen-cloud": settings.dashscope_api_key,
-        "ollama-local": None,
-    }
-    secret = values[configuration.provider_kind]
-    return secret.get_secret_value() if secret is not None else None
+class ProviderGenerationError(RuntimeError):
+    """Safe provider failure that never contains a credential or raw response."""
 
 
-async def test_provider(configuration: LlmConfiguration) -> ProviderTestResult:
-    credential = credential_for(configuration)
+def _gemini_thinking_config(model_id: str, reasoning_level: str) -> dict[str, object]:
+    """Keep bounded structured responses from spending their output budget on reasoning."""
+    if reasoning_level == "automatic":
+        return {}
+    if model_id.startswith("gemini-3"):
+        return {"thinkingConfig": {"thinkingLevel": reasoning_level}}
+    if model_id.startswith("gemini-2.5-flash") and reasoning_level == "minimal":
+        return {"thinkingConfig": {"thinkingBudget": 0}}
+    if reasoning_level in {"low", "medium", "high"}:
+        return {"thinkingConfig": {"thinkingLevel": reasoning_level}}
+    return {}
+
+
+def _generation_error(provider_kind: str, status_code: int) -> ProviderGenerationError:
+    if provider_kind == "gemini" and status_code == 503:
+        return ProviderGenerationError(
+            "Gemini está temporalmente saturado. Reintente la generación en unos minutos."
+        )
+    if status_code == 429:
+        return ProviderGenerationError("El proveedor agotó temporalmente su cuota disponible.")
+    return ProviderGenerationError(f"El proveedor respondió con estado HTTP {status_code}.")
+
+
+def _json_object(value: object) -> dict[str, Any]:
+    if not isinstance(value, str):
+        raise ProviderGenerationError("El proveedor no devolvió una respuesta utilizable.")
+    candidate = value.strip()
+    if candidate.startswith("```"):
+        candidate = candidate.removeprefix("```json").removeprefix("```")
+        candidate = candidate.removesuffix("```").strip()
+    try:
+        parsed = json.loads(candidate)
+    except json.JSONDecodeError as exc:
+        start, end = candidate.find("{"), candidate.rfind("}")
+        if start < 0 or end <= start:
+            raise ProviderGenerationError(
+                "El proveedor no devolvió un documento JSON válido."
+            ) from exc
+        try:
+            parsed = json.loads(candidate[start : end + 1])
+        except json.JSONDecodeError as nested_exc:
+            raise ProviderGenerationError(
+                "El proveedor no devolvió un documento JSON válido."
+            ) from nested_exc
+    if not isinstance(parsed, dict):
+        raise ProviderGenerationError("El proveedor no devolvió un objeto JSON.")
+    return parsed
+
+
+async def generate_json(
+    configuration: LlmConfiguration,
+    system_instruction: str,
+    payload: dict[str, Any],
+    credential: str | None = None,
+    timeout_seconds: int = 30,
+    max_output_tokens: int = 2048,
+    response_schema: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Request a bounded JSON document from an approved provider endpoint."""
+    if configuration.provider_kind != "ollama-local" and not credential:
+        raise ProviderGenerationError("La configuración activa no tiene una credencial disponible.")
+    user_content = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    try:
+        async with httpx.AsyncClient(timeout=timeout_seconds, follow_redirects=False) as client:
+            base_url = configuration.base_url.rstrip("/")
+            if configuration.provider_kind == "ollama-local":
+                response = await client.post(
+                    f"{base_url}/api/chat",
+                    json={
+                        "model": configuration.model_id,
+                        "stream": False,
+                        "format": response_schema or "json",
+                        "think": False,
+                        "options": {"temperature": 0, "num_predict": max_output_tokens},
+                        "messages": [
+                            {"role": "system", "content": system_instruction},
+                            {"role": "user", "content": user_content},
+                        ],
+                    },
+                )
+                if not 200 <= response.status_code < 300:
+                    raise ProviderGenerationError(
+                        f"El proveedor respondió con estado HTTP {response.status_code}."
+                    )
+                content = response.json().get("message", {}).get("content")
+            elif configuration.provider_kind == "gemini":
+                response = await client.post(
+                    f"{base_url}/v1beta/models/{configuration.model_id}:generateContent",
+                    params={"key": credential},
+                    json={
+                        "systemInstruction": {"parts": [{"text": system_instruction}]},
+                        "contents": [{"role": "user", "parts": [{"text": user_content}]}],
+                        "generationConfig": {
+                            "temperature": 0,
+                            "responseMimeType": "application/json",
+                            "maxOutputTokens": max_output_tokens,
+                            **_gemini_thinking_config(
+                                configuration.model_id,
+                                configuration.reasoning_level,
+                            ),
+                            **(
+                                {"responseJsonSchema": response_schema}
+                                if response_schema is not None
+                                else {}
+                            ),
+                        },
+                    },
+                )
+                if not 200 <= response.status_code < 300:
+                    raise _generation_error(configuration.provider_kind, response.status_code)
+                candidates = response.json().get("candidates", [])
+                content = (
+                    candidates[0].get("content", {}).get("parts", [{}])[0].get("text")
+                    if candidates
+                    else None
+                )
+            else:
+                response = await client.post(
+                    f"{base_url}/api/v1/services/aigc/text-generation/generation",
+                    headers={"Authorization": f"Bearer {credential}"},
+                    json={
+                        "model": configuration.model_id,
+                        "input": {
+                            "messages": [
+                                {"role": "system", "content": system_instruction},
+                                {"role": "user", "content": user_content},
+                            ]
+                        },
+                        "parameters": {
+                            "temperature": 0,
+                            "result_format": "message",
+                            "max_tokens": max_output_tokens,
+                        },
+                    },
+                )
+                if not 200 <= response.status_code < 300:
+                    raise ProviderGenerationError(
+                        f"El proveedor respondió con estado HTTP {response.status_code}."
+                    )
+                choices = response.json().get("output", {}).get("choices", [])
+                content = choices[0].get("message", {}).get("content") if choices else None
+    except httpx.TimeoutException as exc:
+        raise ProviderGenerationError("El proveedor excedió el tiempo máximo configurado.") from exc
+    except httpx.HTTPError as exc:
+        raise ProviderGenerationError("No fue posible conectar con el proveedor activo.") from exc
+    return _json_object(content)
+
+
+async def test_provider(
+    configuration: LlmConfiguration,
+    credential: str | None = None,
+    timeout_seconds: int = 12,
+) -> ProviderTestResult:
     if configuration.provider_kind != "ollama-local" and not credential:
         return ProviderTestResult(
-            False, "La referencia de credencial no está disponible en el entorno."
+            False, "Registre una credencial desde la plataforma antes de probar la conexión."
         )
     try:
-        async with httpx.AsyncClient(timeout=12, follow_redirects=False) as client:
+        async with httpx.AsyncClient(timeout=timeout_seconds, follow_redirects=False) as client:
             base_url = configuration.base_url.rstrip("/")
             if configuration.provider_kind == "ollama-local":
                 response = await client.get(f"{base_url}/api/tags")
@@ -52,7 +198,33 @@ async def test_provider(configuration: LlmConfiguration) -> ProviderTestResult:
                         "Conexión con Ollama y modelo local validada sin enviar datos del negocio.",
                     )
             elif configuration.provider_kind == "gemini":
-                response = await client.get(f"{base_url}/v1beta/models", params={"key": credential})
+                response = await client.post(
+                    f"{base_url}/v1beta/models/{configuration.model_id}:generateContent",
+                    params={"key": credential},
+                    json={
+                        "contents": [
+                            {
+                                "role": "user",
+                                "parts": [
+                                    {
+                                        "text": (
+                                            'Responde únicamente con el objeto JSON {"ok":true}.'
+                                        )
+                                    }
+                                ],
+                            }
+                        ],
+                        "generationConfig": {
+                            "temperature": 0,
+                            "responseMimeType": "application/json",
+                            "maxOutputTokens": 20,
+                            **_gemini_thinking_config(
+                                configuration.model_id,
+                                configuration.reasoning_level,
+                            ),
+                        },
+                    },
+                )
             else:
                 response = await client.post(
                     f"{base_url}/api/v1/services/aigc/text-generation/generation",
@@ -69,6 +241,23 @@ async def test_provider(configuration: LlmConfiguration) -> ProviderTestResult:
         return ProviderTestResult(
             True, "Conexión con el proveedor validada sin enviar datos del negocio."
         )
+    if configuration.provider_kind == "gemini" and response.status_code == 404:
+        return ProviderTestResult(
+            False,
+            "El modelo Gemini configurado no está disponible para este proyecto.",
+        )
+    if configuration.provider_kind == "gemini" and response.status_code == 403:
+        return ProviderTestResult(
+            False,
+            "El proyecto asociado a la clave no tiene acceso al modelo Gemini configurado.",
+        )
+    if configuration.provider_kind == "gemini" and response.status_code == 503:
+        return ProviderTestResult(
+            False,
+            "Gemini está temporalmente saturado. Reintente la prueba en unos minutos.",
+        )
+    if response.status_code == 429:
+        return ProviderTestResult(False, "El proveedor agotó temporalmente su cuota disponible.")
     return ProviderTestResult(
         False, f"El proveedor respondió con estado HTTP {response.status_code}."
     )

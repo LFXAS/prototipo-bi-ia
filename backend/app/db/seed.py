@@ -11,6 +11,7 @@ from __future__ import annotations
 import asyncio
 
 from app.db.session import async_session_factory, dispose_engine
+from app.modules.parameters.service import seed_parameters
 from app.modules.security.service import seed_security
 
 
@@ -18,6 +19,7 @@ async def seed_application_data() -> None:
     """Apply the approved baseline catalog using the application's database session."""
     async with async_session_factory() as session:
         await seed_security(session)
+        await seed_parameters(session)
 
 
 async def main() -> None:

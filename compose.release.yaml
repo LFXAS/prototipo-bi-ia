@@ -55,6 +55,12 @@ services:
       APP_DEBUG: "false"
       APP_VERSION: ${APP_VERSION:-0.1.0}
       CORS_ORIGINS: ${CORS_ORIGINS:-["http://localhost:8080"]}
+      JWT_SECRET: ${JWT_SECRET:-ChangeMe_JWT_2026!}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+      JWT_ACCESS_TOKEN_MINUTES: ${JWT_ACCESS_TOKEN_MINUTES:-30}
+      BOOTSTRAP_ADMIN_EMAIL: ${BOOTSTRAP_ADMIN_EMAIL:-admin@bi.local}
+      BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-ChangeMe_Admin_2026!}
+      SECRETS_KEY_PATH: /var/lib/bi-ia-secrets/master.key
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
       POSTGRES_DB: ${POSTGRES_DB:-bi_prototype}
@@ -71,11 +77,15 @@ services:
       SQLSERVER_APPLICATION_INTENT: ReadOnly
     ports:
       - "${BACKEND_PORT:-18000}:8000"
+    volumes:
+      - secret_key_data:/var/lib/bi-ia-secrets
     depends_on:
       postgres:
         condition: service_healthy
       sqlserver:
         condition: service_healthy
+      seed:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8000/api/v1/health/live"]
       interval: 10s
@@ -83,6 +93,37 @@ services:
       retries: 5
       start_period: 10s
     restart: unless-stopped
+
+  migrate:
+    image: ${IMAGE_PREFIX:-ghcr.io/lfxas/prototipo-bi-ia}-backend:${IMAGE_TAG:-main}
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-bi_prototype}
+      POSTGRES_USER: ${POSTGRES_USER:-bi_app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMe_Postgres_2026!}
+    command: alembic upgrade head
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  seed:
+    image: ${IMAGE_PREFIX:-ghcr.io/lfxas/prototipo-bi-ia}-backend:${IMAGE_TAG:-main}
+    environment:
+      APP_ENV: production
+      BOOTSTRAP_ADMIN_EMAIL: ${BOOTSTRAP_ADMIN_EMAIL:-admin@bi.local}
+      BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-ChangeMe_Admin_2026!}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-bi_prototype}
+      POSTGRES_USER: ${POSTGRES_USER:-bi_app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMe_Postgres_2026!}
+    command: python -m app.db.seed
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: "no"
 
   frontend:
     image: ${IMAGE_PREFIX:-ghcr.io/lfxas/prototipo-bi-ia}-frontend:${IMAGE_TAG:-main}
@@ -96,3 +137,4 @@ services:
 volumes:
   postgres_data:
   sqlserver_data:
+  secret_key_data:

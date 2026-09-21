@@ -23,6 +23,8 @@ configuración interna, RBAC, auditoría y datamart
 - `sqlserver`: instancia aislada del proyecto; descarga y restaura AdventureWorks de forma idempotente en un volumen nombrado.
 - `ollama`: perfil opcional `local-llm`; mantiene modelos locales en el volumen nombrado `ollama_models`, se comunica sólo dentro de la red Compose y no publica un puerto en el host.
 
+El volumen nombrado `secret_key_data` conserva la raíz criptográfica local generada automáticamente. No contiene configuraciones de negocio, no se versiona y permanece separado de PostgreSQL; el backend lo usa únicamente para cifrar y descifrar secretos autorizados en memoria.
+
 ## Modos de ejecución
 
 1. **Desarrollo:** `compose.yaml` inicia Vite, FastAPI y las dos bases bajo `bi-ia-prototype`.
@@ -42,15 +44,15 @@ No se recomienda una VM ARM para este conjunto porque SQL Server para Linux requ
 
 - `system`: salud y diagnóstico técnico mínimo.
 - `security`: autenticación y RBAC mínimo.
-- `parameters`: parámetros del prototipo, conexiones aprobadas y configuración no secreta del proveedor LLM activo.
-- `metadata`: introspección determinística de AdventureWorks.
-- `copilot`: propuestas estructuradas del LLM, nunca ejecución directa.
-- `etl`: vista previa, validación, ejecución y trazabilidad de cargas.
+- `parameters`: parámetros del prototipo, catálogo web de conexiones, referencias a secretos cifrados y configuración del proveedor LLM activo.
+- `metadata`: introspección determinística mediante la interfaz del conector activo; SQL Server es el primer adaptador.
+- `copilot`: solicitud guiada de negocio y propuestas estructuradas del LLM, nunca ejecución directa.
+- `etl`: constructor determinístico, vista previa, validación, ejecución backend y trazabilidad de cargas; no depende de SQL escrito por cada usuario.
 - `analytics`: KPIs, gráficos e insights.
 - `forecasting`: regresión lineal y métricas MAPE/RMSE.
 - `reports`: evidencias y reportes académicos.
 
-En el Sprint 2, `system`, `security` y `parameters` contienen comportamiento. Los demás módulos siguen siendo límites arquitectónicos reservados para sprints posteriores.
+Al cierre local del Sprint 3, `system`, `security`, `parameters`, `metadata` y `copilot` contienen comportamiento. `etl`, `analytics`, `forecasting` y `reports` siguen siendo límites arquitectónicos reservados para sprints posteriores.
 
 ## Contrato de evolución (SDD)
 
@@ -58,14 +60,14 @@ Desde el Sprint 2, cada módulo sólo incorpora capacidad funcional a partir de 
 
 ## RBAC previsto
 
-Entidades implementadas: `users`, `roles`, `permissions`, `user_roles`, `role_permissions`, `menus`, `menu_permissions`, `audit_events`, `parameters` y `llm_configurations`, todas bajo el esquema `app`.
+Entidades implementadas hasta el cierre local del Sprint 3: `users`, `roles`, `permissions`, `user_roles`, `role_permissions`, `menus`, `menu_permissions`, `audit_events`, `parameters`, `llm_configurations`, `secrets`, `data_connections`, `metadata_snapshots` y `bi_proposals`, todas bajo el esquema `app`. `parameters` conserva tipo, módulo, valor predeterminado y rango; `metadata_snapshots` conserva el documento canónico JSONB, su hash, totales y actor histórico; `bi_proposals` conserva solicitud, perfil de dominio, mapa semántico, alcance, propuesta, validación, proveedor/modelo y decisión humana inmutable. `source_proposal_id` enlaza generaciones y personalizaciones sin sobrescribir su origen.
 
 Reglas arquitectónicas:
 
 1. React puede ocultar opciones, pero FastAPI autoriza cada operación.
 2. Denegar por defecto cuando un permiso no esté asignado.
 3. Los tokens no almacenan secretos ni reemplazan el estado activo del usuario.
-4. Las aprobaciones de propuestas/SQL quedan auditadas.
+4. Las aprobaciones de propuestas y las futuras ejecuciones quedan auditadas.
 5. Menús y permisos comparten códigos estables, no nombres visibles.
 6. La cuenta inicial, su rol de recuperación, los permisos mínimos y los menús base quedan protegidos en datos persistidos; el sistema rechaza su desactivación para conservar una vía de administración.
 7. Los permisos y menús técnicos se incorporan con un módulo aprobado y su migración/versionamiento, nunca como texto libre en la pantalla administrativa.
@@ -76,13 +78,43 @@ Desde Sprint 2, cada módulo que incorpore interfaz se integra en un cascarón R
 
 Los menús son una representación de permisos ya autorizados por FastAPI. En escritorio pueden permanecer visibles; en móvil deben abrirse y cerrarse con teclado o táctil. Formularios, tablas y acciones administrativas definen estados de carga, vacío, éxito, error, sesión vencida y acceso denegado. La accesibilidad mínima incluye foco visible, etiquetas de campos, mensajes que no dependan sólo del color y contraste suficiente para lectura.
 
+### Perfiles de uso
+
+La administración técnica configura desde la web fuente, credenciales, proveedor LLM y permisos. El gerente comercial aporta objetivos, preguntas y criterios de utilidad y consume posteriormente los resultados. El analista BI o responsable de datos es el usuario operativo del asistente: selecciona el dominio habilitado, registra la necesidad, revisa conceptos, personaliza decisiones de negocio ya verificadas y aprueba o rechaza la propuesta sin escribir SQL. Las programadoras mantienen el motor y sus plantillas, pero no intervienen en cada análisis de operación.
+
 ## Contrato de configuración LLM
 
-El módulo `parameters` conserva una única configuración LLM activa con valores no secretos: tipo de proveedor, URL base, modelo, límites y referencia de credencial. El catálogo inicial es `gemini` (referencia `GEMINI_API_KEY`), `qwen-cloud` (referencia `DASHSCOPE_API_KEY`) y `ollama-local` (referencia `none`, servicio interno). La clave real vive sólo en variables de entorno o en el mecanismo de secretos del despliegue; ni PostgreSQL, ni React, ni los eventos de auditoría la almacenan o la devuelven.
+El módulo `parameters` conserva una única configuración LLM activa con tipo de proveedor, URL base, modelo, nivel de razonamiento controlado, límites y referencia opaca de credencial. La corrección final del Sprint 2 incorpora un almacén cifrado para registrar o reemplazar la clave desde la web. PostgreSQL conserva exclusivamente el valor cifrado; React y auditoría no reciben el secreto. `GEMINI_API_KEY` y `DASHSCOPE_API_KEY` ya no forman parte de la configuración operativa. Un cambio de proveedor, URL, modelo o razonamiento invalida la prueba anterior para impedir que el copiloto use una combinación no verificada.
+
+La raíz criptográfica se genera automáticamente en el primer arranque local y se conserva con permisos restrictivos en un volumen Docker separado de PostgreSQL. Una instalación productiva deberá sustituir ese proveedor por un gestor de secretos externo. Puertos, redes, imágenes, volúmenes y credenciales internas siguen siendo infraestructura de despliegue y no se modifican desde la aplicación.
 
 FastAPI encapsula las diferencias de cada servicio en adaptadores internos y sólo habilita uno a la vez. En Sprint 2 permite probar de forma real y limitada la conexión configurada, sin enviar datos de negocio ni conservar contenido de respuesta. El perfil Docker opcional `local-llm` inicia Ollama aislado de la red pública; `qwen2.5:3b` es el modelo local inicial recomendado por su equilibrio entre agilidad, uso de memoria y respuestas directas en español. `qwen3:4b` es una alternativa de mayor capacidad, pero puede tardar más por el razonamiento interno. La prueba verifica tanto el servicio como que el modelo configurado esté descargado. Gemini y Qwen Cloud conservan la elección de modelo en configuración porque su catálogo y sus cuotas pueden cambiar.
 
-El módulo `copilot` posterior consumirá este contrato mediante una interfaz interna y será el único que pueda solicitar propuestas sobre metadatos o planes BI; ningún SQL asistido por IA se ejecutará automáticamente. La decisión se detalla en [`decisions/0002-configuracion-proveedor-llm.md`](decisions/0002-configuracion-proveedor-llm.md).
+El módulo `copilot` consume este contrato mediante una interfaz interna y es el único que puede solicitar interpretaciones de metadatos o propuestas BI; ningún SQL asistido por IA se ejecuta automáticamente. La decisión se detalla en [`decisions/0002-configuracion-proveedor-llm.md`](decisions/0002-configuracion-proveedor-llm.md).
+
+## Contrato de Sprint 3
+
+Sprint 3 separa configuración, introspección y razonamiento asistido. La administración puede registrar desde la web una conexión `sqlserver`, cifrar su contraseña, comprobar conectividad y ausencia de permisos de escritura, y dejar una sola fuente activa. El módulo `metadata` consulta catálogos del conector activo, normaliza una instantánea inmutable, calcula su hash y reutiliza la captura vigente cuando la estructura no cambió. El explorador consulta exclusivamente PostgreSQL y no vuelve a leer filas ni metadatos de la fuente por cada búsqueda.
+
+El módulo `copilot` calcula primero un catálogo de dominios y capacidades desde la instantánea vigente. El frontend consume ese contrato y no conserva preguntas ni dimensiones de AdventureWorks codificadas. El perfil `ventas` es el único habilitado; incorporar otro dominio exige registrar sus capacidades y validadores.
+
+La orientación funcional del perfil de ventas se desacopla de sus reglas mediante el catálogo estructurado interno `COPILOT_SALES_NEEDS_CATALOG`, administrado exclusivamente por la API y pantalla **Catálogo analítico**. Una persona autorizada puede crear, editar, habilitar o retirar preguntas de negocio y seleccionar varias periodicidades soportadas. El objetivo se escribe para cada análisis y las dimensiones no forman parte del catálogo: el LLM las propone desde los metadatos, FastAPI comprueba sus referencias y el analista las supervisa. Un nuevo dominio o motor sigue requiriendo un perfil o adaptador implementado y probado.
+
+Después, `copilot` recibe una solicitud guiada de negocio y procesa la instantánea en bloques compactos. El LLM interpreta dinámicamente nombres técnicos en inglés u otro idioma, propone conceptos y explicaciones de negocio en español y conserva las referencias originales. En una segunda llamada toma decisiones analíticas compactas —hecho, medidas, dimensiones y KPI— restringidas por un esquema JSON derivado del alcance. FastAPI descarta referencias inexistentes y expande esas decisiones con PK, FK, atributos, reglas de calidad y operaciones ETL determinísticas. Así un modelo local pequeño no debe repetir información mecánica y queda explícita la frontera entre propuesta de IA y control de la aplicación. No se utiliza un glosario codificado exclusivamente para AdventureWorks.
+
+FastAPI valida que todas las tablas, columnas, claves, relaciones y operaciones propuestas existan o pertenezcan a catálogos aprobados. El analista puede derivar una versión ajustando únicamente resumen, granularidad, dimensiones, medidas, agregaciones y KPIs ya verificados; el backend vuelve a validar, conserva el vínculo de origen y audita el cambio. Sólo después un permiso independiente permite aprobar o rechazar el significado de negocio. Una aprobación no genera ni ejecuta SQL: conserva una entrada inmutable para el módulo `etl` de Sprint 4. Ese módulo preseleccionará la propuesta aprobada compatible más reciente, exigirá confirmación explícita, permitirá comparar otras aprobadas y fijará el `proposal_id` en cada ejecución. Después construirá consultas parametrizadas mediante operaciones tipadas y plantillas autorizadas, presentará una vista previa y las ejecutará desde el backend con permisos mínimos. Este límite se detalla en [`decisions/0003-metadatos-y-propuesta-bi-supervisada.md`](decisions/0003-metadatos-y-propuesta-bi-supervisada.md) y [`specs/SPR-04-01-seleccion-propuesta-y-validacion-etl.md`](specs/SPR-04-01-seleccion-propuesta-y-validacion-etl.md).
+
+### Extensibilidad por motor y dominio
+
+La arquitectura no está cerrada a AdventureWorks ni a SQL Server. La instantánea usa un contrato canónico independiente del motor y registra `connector_code`; un registro interno despacha la introspección al adaptador habilitado. SQL Server es la implementación validada. Incorporar MySQL, PostgreSQL u otro motor exige implementar su prueba de sólo lectura, lectura de catálogo, normalización de tipos y relaciones, campos web y pruebas; después puede habilitarse como opción parametrizable sin cambiar el contrato del copiloto.
+
+El razonamiento también se aísla por perfiles de dominio. Cada perfil declara código, preguntas, conceptos, dimensiones, periodicidades, destinos, prompt contractual y reglas determinísticas. `GET /copilot/catalog` cruza estas definiciones con los términos presentes en la instantánea y devuelve disponibilidad, causa y evidencia. Sprint 3 habilita y valida únicamente `ventas`. Un futuro datamart de inventario deberá incorporar el perfil `inventario`, sus reglas de existencias y movimientos y un conjunto de referencia antes de ofrecerse en la web. Autenticación, secretos, auditoría, versionado, flujo de revisión y adaptadores LLM se reutilizan.
+
+La validación es un expediente acumulativo visible desde el asistente. En Sprint 3, `POST /copilot/proposals/{id}/verify` comprueba la huella de la instantánea, vuelve a ejecutar el validador y reconstruye la propuesta desde `ai_decisions` sin invocar al LLM. La igualdad de hashes demuestra reproducibilidad del artefacto aprobado, no determinismo del proveedor probabilístico. Sprint 4 ampliará el expediente con consultas de referencia que concilien conteos, unidades e importes entre AdventureWorks OLTP y el datamart; las métricas predictivas y el juicio de expertos se agregan en sus fases respectivas.
+
+La comparación considera la versión del motor que creó el artefacto. En la versión vigente, una diferencia de huella o validación es bloqueante. Para una propuesta histórica, una diferencia causada únicamente por evolución del motor se muestra como advertencia de compatibilidad y no retira por sí sola una aprobación sin errores. Una aprobación previamente retirada puede restaurarse sólo después de superar los controles actuales, confirmar advertencias y registrar una justificación auditada.
+
+Parametrizar significa seleccionar entre capacidades implementadas y validadas; no convertir un nombre libre en soporte automático. Esta restricción evita declarar portabilidad ficticia y permite ampliar el prototipo con evidencia técnica.
 
 ## Datos
 
