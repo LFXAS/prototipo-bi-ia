@@ -24,7 +24,9 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY pyproject.toml README.md ./
+COPY alembic.ini ./
 COPY app ./app
+COPY migrations ./migrations
 
 FROM base AS development
 RUN pip install --editable ".[dev]"
@@ -32,6 +34,7 @@ EXPOSE 8000
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
 FROM development AS test
+ENV APP_ENV=test
 COPY tests ./tests
 RUN ruff check . \
     && ruff format --check . \
@@ -42,6 +45,9 @@ FROM base AS production
 RUN pip install "." \
     && addgroup --system app \
     && adduser --system --ingroup app app \
+    && mkdir -p /var/lib/bi-ia-secrets \
+    && chmod 700 /var/lib/bi-ia-secrets \
+    && chown app:app /var/lib/bi-ia-secrets \
     && chown -R app:app /app
 USER app
 EXPOSE 8000

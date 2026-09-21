@@ -1,5 +1,13 @@
-# Security / RBAC (scaffolding)
+# Módulo de seguridad RBAC
 
-En la próxima iteración este módulo contendrá autenticación, usuarios, roles, permisos, asignaciones, menús por permiso y auditoría. El backend será siempre la autoridad de acceso; el frontend sólo reflejará permisos ya concedidos.
+Este módulo implementa autenticación JWT, usuarios, roles, permisos, menús autorizados y auditoría en el esquema PostgreSQL `app`. FastAPI es la autoridad de autorización: el frontend sólo representa las opciones que la sesión ya tiene permitidas.
 
-No hay modelos, endpoints ni credenciales iniciales implementados en esta fase.
+## Protección administrativa
+
+La cuenta inicial, el rol administrativo inicial y el catálogo de permisos/menús de sistema se marcan como `is_system_protected`. La API rechaza acciones que desactiven la cuenta o rol protegidos, o que retiren del rol administrativo los permisos mínimos para recuperar la gestión de Usuarios, Roles, Permisos y Menús. La protección no depende de un ID fijo ni de que React oculte un botón.
+
+## Contrato de interfaz
+
+Los roles se seleccionan por nombre y descripción al administrar usuarios. Los permisos se seleccionan por nombre y descripción al administrar roles o menús. Los identificadores numéricos y códigos técnicos se conservan sólo dentro del contrato API, migraciones y reglas de autorización; no se solicitan a la persona administradora como texto libre.
+
+La especificación normativa está en [`docs/specs/SPR-02-01-seguridad-rbac.md`](../../../docs/specs/SPR-02-01-seguridad-rbac.md).

@@ -17,5 +17,10 @@ async def get_db_session() -> AsyncIterator[AsyncSession]:
         yield session
 
 
+# Nombre homogéneo para los módulos nuevos; se mantiene get_db_session por compatibilidad.
+get_session = get_db_session
+async_session_factory = AsyncSessionFactory
+
+
 async def dispose_engine() -> None:
     await engine.dispose()

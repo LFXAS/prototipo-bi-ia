@@ -14,7 +14,7 @@ Se versionan en GitHub:
 - Dockerfiles de frontend, backend, PostgreSQL y SQL Server;
 - scripts para crear los esquemas PostgreSQL;
 - script que descarga y restaura AdventureWorks desde el respaldo oficial de Microsoft;
-- migraciones y datos sintéticos controlados que se incorporen después;
+- migraciones y semillas aprobadas, idempotentes y sin secretos;
 - flujos CI/CD.
 
 Se publican en GHCR cinco imágenes propias:
@@ -25,12 +25,12 @@ Se publican en GHCR cinco imágenes propias:
 - `...-sqlserver` (SQL Server más restauración idempotente de AdventureWorks).
 - `...-docs` (entorno LaTeX usado para regenerar la bitácora).
 
-No se publican volúmenes Docker ni contraseñas. Los volúmenes son estado local y no forman una imagen reproducible. AdventureWorks se restaura al iniciar un volumen vacío; PostgreSQL se reconstruye mediante scripts/migraciones. Éste es el patrón que permite repetir el entorno con control de versiones.
+No se publican volúmenes Docker ni contraseñas. Los volúmenes son estado local y no forman una imagen reproducible. AdventureWorks se restaura al iniciar un volumen vacío; PostgreSQL se reconstruye mediante migraciones y el catálogo base `seed`. Éste es el patrón que permite repetir el entorno con control de versiones.
 
 ## 2. Requisitos en cualquier equipo
 
 1. Instalar Docker Desktop en Windows/macOS, o Docker Engine más el complemento Compose en Linux.
-2. Asignar al menos 6 GB de memoria a Docker; se recomiendan 8 GB por SQL Server.
+2. Asignar al menos 6 GB de memoria a Docker; se recomiendan 8 GB por SQL Server. Si se usará el LLM local Ollama, disponer además de al menos 8 GB libres de disco para su imagen/modelo y, de preferencia, 16 GB de memoria total en el equipo.
 3. Tener libres estos puertos o cambiarlos en `.env`:
    - `5173`: frontend de desarrollo;
    - `8080`: vista Nginx local o frontend desde imágenes publicadas;
@@ -64,6 +64,48 @@ curl http://localhost:8000/api/v1/health/ready
 
 Abre <http://localhost:5173> y <http://localhost:8000/docs>.
 
+### Registrar una credencial LLM cloud
+
+Las API keys de Gemini y Qwen no se escriben en `.env`. Inicia sesión como una persona con `parameters.llm.write`, abre **Parámetros generales > Configuración LLM**, guarda el proveedor, modelo y nivel de razonamiento, y usa **Registrar credencial**. Después de guardarla, la interfaz sólo mostrará **Credencial configurada** y permitirá reemplazarla, nunca consultarla. Para una demostración ágil con Gemini se recomienda comenzar con razonamiento **mínimo** y aumentar el nivel sólo después de repetir **Probar conexión**.
+
+FastAPI cifra el valor en PostgreSQL y genera automáticamente la raíz criptográfica en el volumen `secret_key_data`. Ambos elementos son necesarios para recuperar la credencial después de reiniciar. No copies ese volumen entre equipos ni lo publiques; cada instalación debe registrar sus propias claves desde la web. Ollama local no requiere credencial.
+
+### Registrar AdventureWorks como fuente activa
+
+Inicia sesión con una persona que disponga de `connections.read`, `connections.write` y `connections.test`. Abre **Parámetros generales > Conexiones de datos** y registra:
+
+- nombre visible: `AdventureWorks local`;
+- servidor: `sqlserver`;
+- puerto: `1433`;
+- base, usuario y contraseña definidos al crear la instalación;
+- cifrado de transporte y confianza del certificado local activados para el entorno Docker académico.
+
+Guarda, ejecuta **Probar conexión** y activa únicamente cuando la pantalla confirme **Sólo lectura validada**. La contraseña queda cifrada y no vuelve al navegador. Cambiar host, base, usuario u opciones invalida la prueba anterior y obliga a probar nuevamente.
+
+Con la fuente activa, selecciona **Actualizar metadatos**. FastAPI leerá únicamente catálogos de tablas, columnas, claves y relaciones; no extrae filas de ventas. La primera ejecución crea una instantánea y las siguientes reutilizan la misma versión mientras su hash no cambie. Abre **Datos > Explorador de esquema** para buscar por esquema, tabla o columna y consultar el detalle técnico. Una conexión con instantáneas no puede eliminarse, porque sus capturas forman parte de la trazabilidad del análisis.
+
+### Probar el asistente supervisado del Sprint 3
+
+Antes de entrar en **IA > Asistente de datamart**, comprueba que exista una fuente activa probada, una instantánea vigente y una configuración LLM activa que haya superado **Probar conexión**. La página Inicio muestra estos tres prerrequisitos como un recorrido guiado.
+
+1. Selecciona **Datamart de ventas** en el catálogo. Comprueba que se muestren preguntas de negocio y varias periodicidades, pero ninguna dimensión preseleccionada.
+2. Describe una necesidad, selecciona las opciones habilitadas y genera un intento inmutable.
+3. Revisa los conceptos, su explicación española y el origen técnico; excluye únicamente los que no representen la necesidad.
+4. En la propuesta válida, abre **Personalizar propuesta**, retira o incorpora dimensiones, medidas o KPIs ya comprobados, cambia una agregación permitida y registra una justificación. Debe crearse otra versión enlazada, sin llamar nuevamente al LLM.
+5. En **Versiones generadas**, confirma que el filtro inicial sea **Lista para revisar**, cambia a otros estados y recorre la paginación cuando exista más de una página.
+6. Aprueba o rechaza una versión. Aprobar sólo registra el contrato para el Sprint 4: no crea tablas ni ejecuta ETL.
+7. Ejecuta **Verificar evidencia** y confirma los cuatro controles estructurales. El aviso debe aclarar que la conciliación de filas, unidades e importes empezará después de materializar el datamart.
+
+Una persona con `copilot.catalog.write` puede abrir **IA > Catálogo analítico**, escoger primero el dominio y administrar preguntas de negocio y periodicidades. El objetivo se escribe directamente en el asistente para cada análisis. No se parametrizan dimensiones: el LLM debe proponerlas desde la estructura de la fuente y la aplicación debe validarlas antes de mostrarlas. Guardar el catálogo afecta sólo propuestas nuevas; no borra ni reescribe versiones históricas.
+
+Si una propuesta anterior muestra **Compatibilidad entre versiones**, revisa los controles antes de tomar una decisión. Esa advertencia no significa que la fuente o las medidas sean incorrectas. Si la aprobación había sido retirada automáticamente por una verificación previa y ahora no existen errores bloqueantes, la pantalla permite **Restaurar aprobación** con una justificación y confirmación de las advertencias. No restaures una versión que todavía muestre errores de referencias, contrato o semántica.
+
+La interfaz separa claramente conceptos sugeridos por IA, referencias técnicas comprobadas, propuesta dimensional, personalización del analista, resultado de validación y decisión humana. No permite escribir SQL libre ni crear relaciones inexistentes.
+
+En equipos que usan `qwen2.5:3b` por CPU, la interpretación puede tardar varios minutos. El parámetro web **Tiempo máximo del asistente** admite hasta 900 segundos y su valor inicial es 600. Los proveedores cloud suelen responder más rápido, pero **Probar conexión** realiza una generación mínima para detectar una clave válida cuyo proyecto no tenga acceso al modelo configurado.
+
+El valor `OLLAMA_CONTEXT_LENGTH=4096` debe permanecer en `.env`. El contexto anterior de 2048 podía dejar sin terminar el JSON cuando el bloque de metadatos y la respuesta compartían la misma ventana. Después de cambiarlo se debe recrear únicamente Ollama; el volumen del modelo no se elimina.
+
 ### Añadir la vista Nginx de entrega
 
 Sin detener ni reemplazar los cuatro servicios de desarrollo:
@@ -73,6 +115,38 @@ make delivery-preview-up
 ```
 
 Vite continúa en <http://localhost:5173> y el frontend compilado con Nginx queda en <http://localhost:8080>. Ambos usan la misma API en `8000` y los mismos volúmenes. Esta modalidad prueba la construcción del frontend, no sustituye la validación del entorno completo publicado.
+
+### Alternativa local sin cuota cloud: Ollama
+
+Ollama es una alternativa opcional para probar el contrato LLM sin una clave cloud. No inicia con `make bootstrap` ni `make up`; no tiene puerto publicado en el host y no reemplaza una configuración Gemini/Qwen que ya esté activa.
+
+Desde la raíz del repositorio, en cada equipo que vaya a probarlo:
+
+```bash
+make ollama-up
+make ollama-pull
+make ollama-status
+```
+
+`make ollama-pull` descarga una vez `qwen2.5:3b` al volumen local `ollama_models`. Es el valor predeterminado por su agilidad y sus respuestas directas en español. Git no versiona ese volumen y CI/CD no descarga el modelo: por ello, después de clonar o actualizar el repositorio, cada programadora ejecuta el mismo comando en su equipo si desea usarlo. `qwen3:4b` queda disponible como alternativa de mayor capacidad si el equipo dispone de más recursos.
+
+En la pantalla **Configuración LLM**, crear una configuración con:
+
+| Campo | Valor |
+|---|---|
+| Nombre | Ollama local de prueba |
+| Proveedor | Ollama local |
+| URL de servicio | `http://ollama:11434` |
+| Modelo | `qwen2.5:3b` |
+| Estado inicial | Inactivo, para no sustituir otro proveedor activo |
+
+Guardar y usar **Probar conexión**. La confirmación sólo será exitosa cuando el servicio y el modelo estén disponibles. Para detener el servicio conservando el modelo:
+
+```bash
+make ollama-down
+```
+
+No se necesita ni se debe crear `OLLAMA_API_KEY`. Las variables `OLLAMA_*` de `.env.example` sólo controlan imagen, modelo y límites locales; se pueden conservar con sus valores sugeridos.
 
 ## 4. Reproducir absolutamente todo desde cero en otra ruta
 
@@ -121,7 +195,7 @@ git commit -m "feat: descripcion breve"
 git push -u origin feature/nombre-cambio
 ```
 
-Abre un pull request hacia `develop`. CI valida Compose, código, pruebas y los tres documentos PDF. Para publicar una entrega, abre otro pull request de `develop` hacia `main`; sólo esa fusión activa CD y publica las cinco imágenes con las etiquetas `main` y `sha-*`. Una etiqueta Git `v1.0.0` produce además la imagen `v1.0.0`. Consulta `docs/git-workflow.md` para el procedimiento completo y las reglas de protección.
+Abre un pull request hacia `develop`. CI valida Compose, código, pruebas y los cuatro documentos PDF. Para publicar una entrega, abre otro pull request de `develop` hacia `main`; sólo esa fusión activa CD y publica las cinco imágenes con las etiquetas `main` y `sha-*`. Una etiqueta Git `v1.0.0` produce además la imagen `v1.0.0`. Consulta `docs/git-workflow.md` para el procedimiento completo y las reglas de protección.
 
 ## 6. Levantar el entorno publicado en otra máquina (sin compilar)
 
@@ -190,7 +264,15 @@ Con imágenes GHCR:
 make release-up
 ```
 
-Las migraciones futuras se ejecutarán como un paso controlado antes de iniciar una nueva versión del backend; nunca se copiará un volumen manualmente como mecanismo normal de despliegue.
+Las migraciones futuras se ejecutarán como un paso controlado antes de iniciar una nueva versión del backend. Después se ejecuta el servicio `seed`, que actualiza sin duplicar el catálogo protegido de permisos, menús, rol administrador y cuenta inicial. Las cuentas temporales, auditoría, claves, configuraciones cloud y datos de negocio permanecen locales: nunca se copiará un volumen manualmente como mecanismo normal de despliegue.
+
+Si se necesita repetir el catálogo sin reiniciar PostgreSQL, desde la raíz del repositorio se puede ejecutar:
+
+```bash
+make seed
+```
+
+La operación es idempotente. Para datos de demostración adicionales se incorporará una semilla opcional y anonimizada junto con la especificación del módulo que los consume; no se exportará una base de datos personal de una integrante del equipo.
 
 Si se actualiza documentación o una especificación SDD, el procedimiento es el mismo: obtener la rama aprobada, ejecutar `make docs` si se modificó LaTeX y comprobar que `git status` sólo muestra los archivos esperados. No se vuelve a clonar el repositorio para cada cambio; se usa `git pull --ff-only` cuando no existen modificaciones locales pendientes.
 
@@ -201,6 +283,7 @@ docker compose ps
 docker compose logs --tail=200 backend
 docker compose logs --tail=200 frontend
 docker compose logs --tail=200 postgres sqlserver
+docker compose --profile local-llm logs --tail=200 ollama
 ```
 
 - API viva pero `ready` falla: revisa PostgreSQL, credenciales y puerto.
@@ -209,6 +292,7 @@ docker compose logs --tail=200 postgres sqlserver
 - `5173` funciona y `8080` no responde: inicia la vista con `make delivery-preview-up` o la entrega completa con `make release-up`.
 - GHCR responde `denied`: el paquete es privado o falta `docker login ghcr.io`.
 - En ARM el inicio es lento: verifica que la emulación `linux/amd64` esté habilitada.
+- La prueba de Ollama indica que falta el modelo: ejecuta `make ollama-pull` desde la raíz del repositorio y repite la prueba; el valor predeterminado es `qwen2.5:3b`, elegido para una respuesta local ágil. No copies el volumen de otra máquina.
 
 ## 10. Evidencias para la tesis
 

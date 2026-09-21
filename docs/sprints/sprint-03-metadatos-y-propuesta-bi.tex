@@ -1,0 +1,238 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage[letterpaper,margin=2.2cm,headheight=15pt]{geometry}
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{xurl}
+
+\ifdefined\pdfinfoomitdate\pdfinfoomitdate=1\fi
+\ifdefined\pdftrailerid\pdftrailerid{}\fi
+\ifdefined\pdfsuppressptexinfo\pdfsuppressptexinfo=15\fi
+
+\definecolor{ugblue}{HTML}{006A8D}
+\definecolor{deepgreen}{HTML}{123D3A}
+\definecolor{softgray}{HTML}{F1F5F4}
+\definecolor{success}{HTML}{157A57}
+\definecolor{warning}{HTML}{A45A00}
+\hypersetup{colorlinks=true,linkcolor=ugblue,urlcolor=ugblue,hypertexnames=false,
+pdftitle={Informe Sprint 3 - Metadatos y propuesta BI supervisada},
+pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Informe Sprint 3}
+\rhead{Prototipo BI asistido por IA}
+\cfoot{\thepage}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.52em}
+\setlist[itemize]{leftmargin=1.5em,itemsep=0.22em}
+\setlist[enumerate]{leftmargin=1.7em,itemsep=0.28em}
+\renewcommand{\arraystretch}{1.18}
+\newcommand{\file}[1]{\texttt{#1}}
+\newcommand{\ok}{\textcolor{success}{\textbf{Completado}}}
+\newcommand{\review}{\textcolor{warning}{\textbf{Pendiente de aceptación usuaria}}}
+\newcommand{\notebox}[1]{\begin{center}\fcolorbox{ugblue}{softgray}{\begin{minipage}{0.90\textwidth}\textcolor{ugblue}{\textbf{Nota.}} #1\end{minipage}}\end{center}}
+
+\begin{document}
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+  \thispagestyle{empty}
+  \vspace*{0.8cm}
+  {\color{ugblue}\rule{\textwidth}{2.8pt}}
+  \vspace{1.2cm}
+  {\Large Universidad de Guayaquil\\[0.25em]
+  Facultad de Ciencias Matemáticas y Físicas\\
+  Carrera de Software}
+  \vfill
+  {\color{deepgreen}\fontsize{28}{34}\selectfont\textbf{Informe del Sprint 3}}\\[0.7em]
+  {\LARGE Metadatos y propuesta BI supervisada}\\[0.6em]
+  {\large Prueba de concepto de un prototipo funcional de BI asistido por IA\\
+  para la construcción semiautomatizada y supervisada\\
+  de un datamart de ventas\par}
+  \vspace{1.4cm}
+  \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
+    Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
+    Versión & 0.1.5 \\
+    Periodo de referencia & 14 al 20 de septiembre de 2026 \\
+    Rama de trabajo & \file{feature/sprint-03-metadata-introspection} \\
+    Estado & Implementación y verificación técnica completadas; pendiente prueba de aceptación \\
+    Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
+  \end{tabularx}
+  \vfill
+  {\color{ugblue}\rule{\textwidth}{2.8pt}}
+\end{titlepage}
+\hypersetup{pageanchor=true}
+\pagenumbering{roman}
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+\section{Resumen ejecutivo}
+
+El Sprint 3 convierte la administración del Sprint 2 en el primer flujo analítico del producto. La aplicación registra y prueba una fuente SQL Server de sólo lectura, captura sus metadatos sin extraer filas, conserva instantáneas inmutables y permite explorarlas. Sobre una instantánea vigente, un proveedor LLM interpreta conceptos técnicos y produce una propuesta de datamart de ventas que FastAPI valida antes de una decisión humana.
+
+El factor diferenciador no es un chat libre ni la generación directa de SQL. La IA reduce el trabajo técnico inicial al traducir metadatos, sugerir granularidad, hecho, dimensiones, KPIs y plan ETL. El software conserva el control: ninguna referencia inventada supera la validación y ninguna propuesta se ejecuta sin aprobación del analista BI.
+
+\notebox{El Sprint 3 termina en un contrato aprobado o rechazado. La materialización del datamart, el ETL ejecutable, los dashboards y el pronóstico pertenecen a los sprints posteriores.}
+
+\section{Objetivo y usuarios}
+
+\subsection{Objetivo}
+
+Construir un asistente web que, a partir de metadatos persistidos de una fuente de ventas, permita expresar una necesidad comercial, obtener una propuesta dimensional asistida por IA, comprobarla mediante reglas determinísticas y someterla a aprobación o rechazo auditado.
+
+\subsection{Roles}
+
+\begin{tabularx}{\textwidth}{@{}p{0.25\textwidth}X@{}}
+  \toprule
+  Rol & Responsabilidad \\
+  \midrule
+  Administrador & Configura fuente, credencial y proveedor; asigna permisos. \\
+  Analista BI & Selecciona el dominio, formula la necesidad, revisa conceptos, personaliza decisiones verificadas, examina la propuesta y decide. \\
+  Gerente comercial & Consumirá KPIs, visualizaciones y hallazgos cuando los siguientes sprints materialicen y publiquen el datamart. \\
+  LLM & Interpreta metadatos y propone; no ejecuta SQL ni decide la validez técnica. \\
+  Aplicación & Lee catálogos, conserva versiones, valida referencias, aplica permisos y audita. \\
+  \bottomrule
+\end{tabularx}
+
+\section{Alcance entregado}
+
+\begin{longtable}{@{}p{0.25\textwidth}p{0.56\textwidth}p{0.13\textwidth}@{}}
+  \toprule
+  Capacidad & Evidencia funcional & Estado \\
+  \midrule
+  \endfirsthead
+  \toprule
+  Capacidad & Evidencia funcional & Estado \\
+  \midrule
+  \endhead
+  Fuente web & CRUD controlado, secreto cifrado, prueba de sólo lectura y activación única. & \ok \\
+  Metadatos & Esquemas, tablas, columnas, PK y FK canónicas; hash y deduplicación. & \ok \\
+  Explorador & Búsqueda paginada, tarjetas responsive y detalle técnico persistente. & \ok \\
+  Preparación & Inicio y wizard muestran fuente, instantánea y LLM requeridos. & \ok \\
+  Solicitud guiada & Catálogo de dominios y capacidades calculado desde los metadatos; objetivo, preguntas y dimensiones disponibles. & \ok \\
+  Interpretación IA & Conceptos españoles con referencias exactas y confianza visible. & \ok \\
+  Propuesta BI & Granularidad, hecho, medidas, dimensiones, uniones, KPIs y plan ETL declarativo. & \ok \\
+  Validación & Contrato, tablas, columnas, FK, agregaciones, KPI, operaciones y ausencia de SQL libre. & \ok \\
+  Evidencia visible & Integridad, referencias, coherencia y reejecución determinística consultables en la plataforma. & \ok \\
+  Supervisión & Intentos inmutables, exclusiones, personalización sin SQL, versiones enlazadas, filtro paginado, aprobación/rechazo y auditoría. & \ok \\
+  Extensibilidad & Registro de conectores y perfiles de dominio; sólo SQL Server/ventas habilitados. & \ok \\
+  Aceptación & Recorrido manual por las autoras sobre el entorno integrado. & \review \\
+  \bottomrule
+\end{longtable}
+
+\section{Avance de los objetivos del anteproyecto}
+
+\begin{tabularx}{\textwidth}{@{}p{0.10\textwidth}p{0.57\textwidth}X@{}}
+  \toprule
+  Objetivo & Evidencia disponible al cierre de Sprint 3 & Estado acumulado \\
+  \midrule
+  1 & Requisitos funcionales, técnicos, seguridad, calidad y validación especificados para la fuente y la propuesta. & Cumplido en el alcance actual. \\
+  2 & Arquitectura Docker, sólo lectura, introspección, LLM supervisado, versionado y validación implementados. & Sustancial; falta el ejecutor ETL. \\
+  3 & Aplicación funcional que obtiene metadatos y produce propuestas dimensionales, KPIs y plan ETL verificables. & Cumplido para la propuesta. \\
+  4 & Existe vista previa declarativa, pero aún no se materializa ni carga el datamart. & Pendiente de Sprint 4 y posteriores. \\
+  5 & Integridad, referencias, contrato y reproducción del artefacto aprobado son visibles. & Parcial; faltan conciliación cuantitativa, contraste DW, expertos, MAPE y RMSE. \\
+  \bottomrule
+\end{tabularx}
+
+\section{Arquitectura}
+
+\begin{center}
+\fcolorbox{ugblue}{softgray}{\begin{minipage}{0.90\textwidth}
+\centering
+\textbf{Necesidad comercial guiada}\\
+$\downarrow$\\
+\textbf{Instantánea canónica} $\rightarrow$ \textbf{contexto técnico acotado}\\
+$\downarrow$\\
+\textbf{LLM: interpretación y propuesta}\\
+$\downarrow$\\
+\textbf{validación determinística} $\rightarrow$ \textbf{revisión del analista BI}\\
+$\downarrow$\\
+\textbf{versión aprobada para Sprint 4}
+\end{minipage}}
+\end{center}
+
+\subsection{Persistencia y trazabilidad}
+
+Las migraciones \file{20260918\_07} y \file{20260918\_08} incorporan conexiones e instantáneas. Las revisiones \file{20260919\_09} a \file{20260919\_11} incorporan propuestas, perfil de dominio y vínculo entre versiones. La revisión \file{20260919\_12} agrega el nivel de razonamiento controlado a cada configuración LLM y \file{20260920\_13} habilita en PostgreSQL los estados auditables de aprobación retirada y versión descartada. \file{app.bi\_proposals} conserva entrada, huella, versiones de prompt y contrato, proveedor, modelo, mapa semántico, alcance, propuesta, validación, estado y decisión histórica.
+
+\subsection{Contrato de IA}
+
+El backend envía estructura técnica, nunca filas ni secretos. El contexto se ordena y se acota mediante el perfil de ventas para que un modelo local pequeño no reciba objetos ajenos a la necesidad. La IA devuelve primero conceptos y después decisiones compactas de hecho, medidas, dimensiones y KPI. FastAPI expande esas decisiones con claves, atributos, relaciones, reglas y un plan ETL determinístico, y conserva \file{ai\_decisions} para la trazabilidad. No se envían dimensiones preseleccionadas desde el paso inicial: cada dimensión debe surgir de la propuesta y conservar una fuente inequívoca dentro del alcance verificado. Los errores del proveedor, JSON inválido y tiempos agotados producen estados persistidos y comprensibles.
+
+\subsection{Validación antes de aprobación}
+
+\begin{itemize}
+  \item bloquea tablas o columnas inexistentes o fuera del alcance;
+  \item acepta sólo \file{fact\_ventas} y dimensiones destino aprobadas;
+  \item verifica uniones contra claves foráneas declaradas;
+  \item limita agregaciones y operaciones del plan ETL;
+  \item exige que cada KPI use una medida propuesta;
+  \item detecta instrucciones SQL o ejecutables;
+  \item obliga a confirmar advertencias antes de aprobar.
+\end{itemize}
+
+\subsection{Expediente acumulativo de validación técnica}
+
+La plataforma añade \textbf{Validación estructural de la propuesta - Sprint 3} para la versión seleccionada. Sin llamar otra vez al LLM, FastAPI verifica la huella de los metadatos, repite los controles de referencias y contrato y reconstruye la propuesta a partir de las decisiones IA guardadas. En la versión vigente del motor, las huellas de propuesta y reejecución deben coincidir. Para artefactos históricos, una diferencia causada por evolución del motor se clasifica como compatibilidad y no retira una aprobación sin errores bloqueantes. Así, la reproducibilidad recae sobre el artefacto aprobado y el motor determinístico, no sobre obtener dos respuestas idénticas de un modelo probabilístico.
+
+La vista separa las evidencias ya disponibles de las pendientes. En Sprint 3 confirma correspondencia estructural con el OLTP, pero aún no compara importes ni cantidades. Sprint 4 deberá presentar conciliaciones de filas, pedidos, unidades, ventas totales y ventas mensuales entre AdventureWorks OLTP y el datamart. El contraste con AdventureWorksDW, la evaluación formal por expertos y MAPE/RMSE se incorporarán posteriormente según \file{docs/validation-plan.md}.
+
+\section{Experiencia UI/UX}
+
+El acceso \textbf{Asistente de datamart} presenta primero un catálogo genérico; sólo ventas se habilita porque es el perfil implementado y validado. Después, el analista avanza por cinco pasos: necesidad, conceptos, propuesta, personalización opcional y decisión. El objetivo se escribe para cada análisis; las preguntas y periodicidades proceden de un catálogo administrable por dominio. El paso inicial no muestra dimensiones: la IA debe proponerlas desde los metadatos y el backend debe comprobarlas antes de la supervisión humana. Las acciones de IA, las comprobaciones de la aplicación y la aprobación humana tienen etiquetas diferentes para evitar atribuir certeza automática al modelo.
+
+La sección \textbf{Versiones generadas} filtra inicialmente \textbf{Lista para revisar}, permite cambiar de estado, pagina los resultados e identifica proveedor, modelo, fecha, estado y versión de origen. No se implementa drag and drop libre ni un editor SQL. La personalización controlada permite ajustar resumen, granularidad, dimensiones, medidas, agregaciones y KPIs existentes con justificación; el backend crea una versión derivada y vuelve a validarla. Esto cubre desviaciones razonables del modelo sin convertir el prototipo en una herramienta de programación.
+
+La prueba de aceptación detectó que una propuesta podía asociar un KPI de clientes con una medida monetaria, mezclar observaciones libres del proveedor con advertencias comprobadas o no reconocer una fecha existente. La corrección incorpora funciones semánticas tipadas para medidas y KPI, compatibilidad de columna y agregación, exclusión explicada de decisiones incoherentes y reasignación supervisada. La revisión posterior eliminó las dimensiones predefinidas del paso inicial: ahora el LLM las propone y el backend acepta sólo referencias verificadas. Los ajustes automáticos, advertencias, decisiones excluidas y observaciones originales se presentan por separado con acciones concretas.
+
+Para depurar versiones ya aprobadas, el analista puede retirar la aprobación con motivo obligatorio; los demás intentos pueden descartarse. Ambos estados quedan fuera del flujo operativo sin borrar linaje ni auditoría. Verificar una aprobación vuelve a ejecutar las reglas actuales y sólo la invalida ante errores bloqueantes. Las diferencias de una versión anterior del motor se explican como compatibilidad; si una aprobación fue retirada por ese falso positivo, puede restaurarse con revisión y auditoría. Sprint 4 deberá repetir el control antes de materializarla.
+
+\section{Extensibilidad controlada}
+
+La instantánea usa un contrato canónico independiente del lector. \file{CONNECTOR\_READERS} registra adaptadores y actualmente habilita \file{sqlserver}. Para MySQL se deberá implementar lectura de \file{information\_schema}, mapeo canónico, campos de configuración, prueba de sólo lectura y pruebas automatizadas antes de mostrarlo en la interfaz.
+
+El perfil \file{ventas} reúne reglas semánticas, periodicidades soportadas, términos, destinos y límites. El catálogo funcional aporta preguntas dinámicas que orientan al LLM sin predefinir el modelo. Un futuro datamart de inventario requiere otro perfil, prompts, reglas, consultas de referencia y criterios de aceptación; una vez registrado aparecerá en la misma entrada. Parametrizar preguntas no convierte una opción de texto en un motor o dominio funcional.
+
+\section{Pruebas y resultados}
+
+\begin{tabularx}{\textwidth}{@{}p{0.28\textwidth}X@{}}
+  \toprule
+  Control & Resultado \\
+  \midrule
+  Backend & Ruff, Mypy y 48 pruebas Pytest satisfactorias. \\
+  Frontend & ESLint, 9 pruebas Vitest y construcción Vite satisfactoria. \\
+  Fuente real & AdventureWorks: 6 esquemas, 71 tablas, 444 columnas y 90 relaciones. \\
+  Seguridad & Sin filas ni secretos en contexto LLM; permisos separados y auditoría. \\
+  Ollama & Servicio y modelo \file{qwen2.5:3b} comprobados; la versión 33 se generó sin dimensiones predefinidas y quedó lista para revisar con cero errores y advertencias. El modelo propuso producto, cliente y territorio, un hecho de ventas, dos medidas y tres KPI; los cuatro controles de evidencia fueron satisfactorios. La ejecución local por CPU requiere tiempo extendido parametrizable. \\
+  Gemini & \file{gemini-3.6-flash}, razonamiento mínimo y propuesta real válida lista para revisión; el modelo se cambió desde la web. \\
+  Reproducibilidad & Las propuestas reales de Ollama y Gemini superaron los cuatro controles visibles y produjeron la misma huella al reejecutarse. \\
+  Documentos & Bitácora, manual acumulativo e informe reproducibles con la imagen LaTeX. \\
+  \bottomrule
+\end{tabularx}
+
+\section{Límites y riesgos}
+
+\begin{itemize}
+  \item Un modelo de 3B es una alternativa local de respaldo y puede tardar varios minutos; la calidad final debe compararse con un proveedor cloud disponible.
+  \item La prueba de conexión cloud ahora realiza una generación mínima, pues listar modelos no garantiza derecho de uso.
+  \item Una propuesta válida sigue siendo una propuesta; las consultas de referencia y la ejecución determinística del Sprint 4 deberán comprobar cifras.
+  \item Sólo el perfil ventas y el conector SQL Server están habilitados. La arquitectura prepara extensiones, pero no declara compatibilidad no probada.
+\end{itemize}
+
+\section{Criterio de cierre}
+
+El incremento se considera técnicamente listo cuando código, migraciones, pruebas, documentación y entorno integrado superan \file{make verify}. La fusión a \file{develop} se realizará después de la prueba funcional de las autoras y la corrección de cualquier observación. No se crea un pull request desde este informe antes de esa aceptación.
+
+\section{Conclusión}
+
+Sprint 3 demuestra el núcleo del título: la IA interviene en la construcción semiautomatizada del datamart, mientras la aplicación valida y el analista supervisa. El resultado evita tanto el extremo manual de escribir SQL como el extremo inseguro de ejecutar una respuesta libre del modelo. El contrato aprobado será la entrada controlada para materializar y verificar el datamart de ventas en el siguiente sprint.
+
+\end{document}

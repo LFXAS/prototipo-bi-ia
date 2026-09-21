@@ -1,6 +1,8 @@
-# Prototipo web de BI asistido por IA
+# Prototipo web de inteligencia de negocios asistido por IA
 
-Base técnica del proyecto de titulación de Emily Robles y Lesly Velásquez. Esta primera entrega deja un entorno **Docker-first** ejecutable con React + Vite, FastAPI, PostgreSQL y la configuración para consultar AdventureWorks en SQL Server con un usuario de solo lectura. No contiene todavía lógica de negocio.
+Base técnica del proyecto de titulación **“Prueba de concepto de un prototipo funcional de BI asistido por IA para la construcción semiautomatizada y supervisada de un datamart de ventas”**. El entorno **Docker-first** ejecuta React + Vite, FastAPI, PostgreSQL y AdventureWorks en SQL Server con un usuario de solo lectura. El producto permite configurar desde la web la fuente y sus secretos, capturar su estructura sin extraer filas y explorar tablas, columnas y relaciones desde una instantánea trazable. El asistente interpreta dinámicamente los metadatos técnicos, los explica como conceptos de negocio en español y propone un modelo dimensional, KPIs y plan ETL. Cada referencia se valida antes de permitir una aprobación humana; en este sprint no se ejecuta SQL ni se materializa el datamart.
+
+La versión seleccionada puede verificarse desde la misma plataforma: se comprueban la integridad de metadatos, las referencias, los controles de calidad y la reejecución determinística sin consumir nuevamente el LLM. El [plan acumulativo de validación](docs/validation-plan.md) define cómo Sprint 4 ampliará esta evidencia con la conciliación de cifras entre AdventureWorks OLTP y el datamart.
 
 La guía operativa completa para replicar, restaurar, publicar y probar el entorno está en [docs/replication-guide.md](docs/replication-guide.md).
 
@@ -12,14 +14,14 @@ La trazabilidad del trabajo se mantiene en LaTeX y PDF. La bitácora vive en `do
 
 El anteproyecto define una prueba de concepto académica con una sola fuente SQL Server/AdventureWorks, introspección de metadatos, propuestas de un LLM sujetas a aprobación humana y validaciones determinísticas, ETL básico hacia un datamart PostgreSQL, cinco KPIs, tres gráficos, insights explicables y un pronóstico mensual por regresión lineal evaluado con MAPE y RMSE.
 
-Esta fase implementa únicamente el entorno, la observabilidad mínima y la estructura modular. El RBAC es obligatorio por los requisitos académicos del módulo de seguridad, pero aquí queda sólo previsto; no hay autenticación, usuarios, roles, permisos ni menús funcionales todavía.
+El Sprint 1 implementó el entorno y la observabilidad mínima. El Sprint 2 implementó autenticación, RBAC, auditoría, parámetros y credenciales LLM cifradas desde la web. El Sprint 3 incorpora la administración de una fuente SQL Server, introspección determinística y el flujo guiado del asistente: necesidad de negocio, conceptos españoles con origen técnico, propuesta versionada, validación automática y aprobación o rechazo auditado. El catálogo analítico permite administrar preguntas y varias periodicidades por dominio con permisos propios; el objetivo se escribe por análisis y las dimensiones son propuestas por la IA desde los metadatos, no predefinidas en la pantalla. Una captura real de AdventureWorks produjo 6 esquemas, 71 tablas, 444 columnas y 90 relaciones, con hash estable y deduplicación. El alcance mantiene fuera la ejecución ETL, el datamart físico, dashboards y pronóstico, reservados para los siguientes sprints. Véase [`docs/specs/SPR-03-metadatos-y-propuesta-bi.md`](docs/specs/SPR-03-metadatos-y-propuesta-bi.md).
 
 Consulta [docs/scope.md](docs/scope.md) y [docs/architecture.md](docs/architecture.md) para el detalle.
 
 ## Requisitos
 
 - Docker Engine 24 o superior con Docker Compose v2.
-- Al menos 8 GB de memoria disponibles para ejecutar el conjunto de contenedores.
+- Al menos 8 GB de memoria disponibles para ejecutar el conjunto de contenedores. Para la alternativa local con Ollama se recomiendan 16 GB de memoria total y al menos 8 GB adicionales de disco libre para la imagen y el modelo.
 - Conexión a Internet en el primer arranque para descargar las imágenes base y el respaldo oficial de AdventureWorks.
 
 No es necesario instalar Node.js ni Python en el equipo anfitrión.
@@ -48,7 +50,9 @@ No es necesario instalar Node.js ni Python en el equipo anfitrión.
    - Estado básico: <http://localhost:8000/api/v1/health/live>
    - Estado de PostgreSQL: <http://localhost:8000/api/v1/health/ready>
 
-La comprobación `live` confirma que FastAPI funciona. `ready` confirma además la conexión a PostgreSQL. En un volumen vacío, SQL Server descarga el respaldo oficial de AdventureWorks 2022, lo restaura y crea el usuario `bi_reader` sin permisos de escritura. La conexión de negocio a AdventureWorks se implementará en la siguiente iteración; sus variables y controlador ODBC ya forman parte del entorno.
+La comprobación `live` confirma que FastAPI funciona. `ready` confirma además la conexión a PostgreSQL. En un volumen vacío, SQL Server descarga el respaldo oficial de AdventureWorks 2022, lo restaura y crea el usuario `bi_reader` sin permisos de escritura. Para usarla como fuente de negocio, abra **Parámetros generales > Conexiones de datos**, registre servidor `sqlserver`, puerto `1433`, base y usuario configurados para la instalación, pruebe el modo de sólo lectura, active el registro y seleccione **Actualizar metadatos**. El resultado se consulta en **Datos > Explorador de esquema**.
+
+En el primer inicio el servicio `migrate` aplica automáticamente las migraciones y el servicio `seed` carga de forma idempotente el catálogo protegido aprobado: permisos, menús, rol administrador y usuario inicial definidos por `BOOTSTRAP_ADMIN_EMAIL` y `BOOTSTRAP_ADMIN_PASSWORD`. Ingrese desde el frontend con esos valores; cámbielos antes de cualquier demostración compartida. Las claves de Gemini y Qwen se registran con **Registrar credencial** en **Configuración LLM**; no se agregan a `.env`. FastAPI las cifra y la raíz criptográfica se genera automáticamente en el volumen Docker `secret_key_data`, separado de PostgreSQL. El catálogo no copia cuentas de prueba, auditoría, configuraciones LLM, claves ni volúmenes entre equipos.
 
 La alternativa más automática es `make bootstrap`: crea `.env` si falta, construye todo, espera la restauración y no finaliza hasta que los servicios estén saludables.
 
@@ -68,15 +72,37 @@ Quedan disponibles simultáneamente:
 
 Esta vista comprueba el artefacto web de producción, pero sigue usando el backend de desarrollo. Para probar las cinco imágenes publicadas como un ambiente completamente independiente, copia `.env.release.example` a `.env.release` y ejecuta `make release-up`; ese segundo proyecto usa API `18000`, PostgreSQL `55433` y SQL Server `51434`, por lo que puede convivir con desarrollo.
 
+### Alternativa LLM local con Ollama
+
+Ollama es opcional: no se inicia con `make up`, no reemplaza Gemini o Qwen Cloud y no requiere una API key. Se usa como respaldo local cuando no se desea depender de cuotas cloud. Desde la raíz del repositorio:
+
+```bash
+make ollama-up
+make ollama-pull
+make ollama-status
+```
+
+La primera descarga guarda `qwen2.5:3b` en el volumen Docker `ollama_models`; se conserva al detener el servicio y cada programadora debe descargarlo una vez en su propio equipo. Es el modelo local recomendado por su respuesta ágil y directa en español. El contexto predeterminado es 4096 para que las respuestas JSON del asistente puedan completarse. No se sincroniza con Git, no se publica en GHCR y CI/CD nunca lo descarga. Luego, en **Configuración LLM**, cree un registro inactivo con proveedor **Ollama local**, URL `http://ollama:11434` y modelo `qwen2.5:3b`; use **Probar conexión**. `qwen3:4b` permanece como alternativa de mayor capacidad, pero puede tardar más por su razonamiento interno. La aplicación confirma tanto el servicio como la presencia del modelo. Para detener Ollama sin borrar el modelo:
+
+```bash
+make ollama-down
+```
+
+Ollama sólo es accesible desde los contenedores del proyecto; el puerto `11434` no se publica en el computador anfitrión.
+
 ## Flujo diario
 
 ```bash
 make up             # construir y levantar
+make seed           # volver a aplicar el catálogo base aprobado sin duplicarlo
 make delivery-preview-up # anadir Nginx en 8080 sin detener Vite
+make ollama-up      # iniciar alternativa local de LLM, sin descargar aún
+make ollama-pull    # descargar qwen2.5:3b una vez por equipo
+make ollama-down    # detener Ollama y conservar el modelo
 make logs           # seguir los registros
 make test           # pruebas de backend y frontend en imagenes Docker
 make lint           # calidad estatica en contenedores
-make compose-check  # validar las dos variantes de Compose
+make compose-check  # validar desarrollo, entrega y perfil local de Ollama
 make docs           # regenerar bitacora, informe de sprint y manual
 make down           # detener la aplicacion
 ```
@@ -85,7 +111,7 @@ Los volúmenes del código habilitan recarga automática en FastAPI y Vite. Las 
 
 ## Seguridad de AdventureWorks
 
-`SQLSERVER_APPLICATION_INTENT=ReadOnly` expresa la intención de conexión, pero **no reemplaza los permisos del motor**. El usuario configurado en `SQLSERVER_USER` debe tener sólo `CONNECT` y lectura (`db_datareader` o permisos `SELECT` más restringidos), sin pertenecer a `db_owner`, `db_ddladmin` ni roles de escritura. Las credenciales reales viven únicamente en `.env`, archivo ignorado por Git.
+`SQLSERVER_APPLICATION_INTENT=ReadOnly` expresa la intención de conexión, pero **no reemplaza los permisos del motor**. El usuario configurado en `SQLSERVER_USER` debe tener sólo `CONNECT` y lectura (`db_datareader` o permisos `SELECT` más restringidos), sin pertenecer a `db_owner`, `db_ddladmin` ni roles de escritura. Las variables de `.env` aprovisionan el contenedor local; la credencial que usa el flujo BI se registra desde la web, se cifra en `app.secrets` y no vuelve al navegador.
 
 ## Git, CI y CD
 
@@ -133,7 +159,8 @@ compose*.yaml            desarrollo autocontenido, publicación y producción
 
 ## Próxima iteración
 
-1. Crear la migración inicial del RBAC y los parámetros de conexión.
-2. Implementar autenticación y autorización en el backend antes del menú dinámico.
-3. Probar la conexión de sólo lectura e introspección contra AdventureWorks.
-4. Registrar auditoría de aprobaciones y SQL validado desde el primer flujo de negocio.
+1. Convertir únicamente una propuesta aprobada en un contrato ejecutable del Sprint 4.
+2. Generar SQL determinístico desde plantillas controladas, nunca SQL libre producido por el LLM.
+3. Materializar el datamart en PostgreSQL partiendo de un destino vacío y registrar su ejecución.
+4. Verificar conteos, importes, claves y consultas de referencia antes de publicar KPIs.
+5. Mantener inventario y otros motores como extensiones futuras mediante perfiles y conectores validados.

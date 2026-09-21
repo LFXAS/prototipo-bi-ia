@@ -85,17 +85,17 @@
 
   {\color{deepgreen}\fontsize{30}{35}\selectfont\textbf{Manual técnico}}\\[0.7em]
   {\LARGE Instalación, operación y réplica del entorno}\\[0.6em]
-  {\large Prototipo web de inteligencia de negocios asistido por IA}
+  {\large Prueba de concepto de un prototipo funcional de BI asistido por IA para la construcción semiautomatizada y supervisada de un datamart de ventas}
 
   \vspace{1.5cm}
 
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
-    Versión del manual & 1.7.0 \\
+    Versión del manual & 2.3.5 \\
     Línea base & Ramas \file{develop} y \file{main} \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
     Clasificación & Uso académico y técnico - repositorio público \\
-    Fecha & 2 de septiembre de 2026 \\
+    Fecha & 20 de septiembre de 2026 \\
   \end{tabularx}
 
   \vfill
@@ -120,7 +120,7 @@ El documento cubre tres modalidades:
   \item \textbf{Ejecución de una entrega completa}: descarga imágenes de GitHub Container Registry (GHCR) en un proyecto Compose aislado.
 \end{enumerate}
 
-La versión actual contiene infraestructura y salud técnica. El RBAC y los módulos de negocio todavía no están implementados.
+La versión actual conserva la infraestructura del Sprint 1 y el núcleo administrativo del Sprint 2: autenticación JWT, RBAC, auditoría y configuración LLM. Sprint 3 añade parámetros tipados, administración web de una fuente SQL Server, introspección determinística con instantáneas inmutables, explorador de esquema y asistente supervisado para formular, validar y decidir una propuesta de datamart de ventas. ETL ejecutable, datamart físico, dashboard, reportería y pronóstico continúan fuera de este incremento.
 
 \section{Arquitectura operativa}
 
@@ -151,10 +151,12 @@ La versión actual contiene infraestructura y salud técnica. El RBAC y los mód
   backend & API FastAPI, configuración y salud & 8000 & Código montado \\
   postgres & Configuración interna y futuro datamart & 55432 & Volumen \file{postgres\_data} \\
   sqlserver & Fuente AdventureWorks externa & 51433 & Volumen \file{sqlserver\_data} \\
+  ollama & LLM local opcional, sólo red interna & No publicado & Volumen \file{ollama\_models} \\
+  raíz criptográfica & Clave local para cifrar secretos autorizados & No aplica & Volumen \file{secret\_key\_data} \\
   \bottomrule
 \end{tabularx}
 
-Compose crea la red y los volúmenes de desarrollo bajo el nombre lógico \file{bi-ia-prototype}. El perfil \file{delivery} sólo añade Nginx a esa red. El Compose completo de entrega usa \file{bi-ia-prototype-release}, otra red, otros puertos y otros volúmenes. Ninguno usa contenedores PostgreSQL o SQL Server ajenos al proyecto.
+Compose crea la red y los volúmenes de desarrollo bajo el nombre lógico \file{bi-ia-prototype}. El perfil \file{delivery} sólo añade Nginx a esa red; el perfil opcional \file{local-llm} añade Ollama sin publicar el puerto 11434 en el host. El volumen \file{secret\_key\_data} se monta exclusivamente en FastAPI. El Compose completo de entrega usa \file{bi-ia-prototype-release}, otra red, otros puertos y otros volúmenes. Ninguno usa contenedores PostgreSQL o SQL Server ajenos al proyecto.
 
 \subsection{Estructura del repositorio}
 
@@ -179,7 +181,7 @@ Makefile                  comandos operativos abreviados
 \begin{itemize}
   \item Procesador de 64 bits con virtualización habilitada.
   \item 8 GB de memoria disponibles para Docker; 6 GB es el mínimo práctico.
-  \item 15 GB libres para imágenes, capas, respaldo y volúmenes.
+  \item 15 GB libres para imágenes, capas, respaldo y volúmenes; reservar al menos 8 GB adicionales si se descargará el modelo local de Ollama.
   \item Conexión a Internet durante la primera construcción y restauración.
 \end{itemize}
 
@@ -232,6 +234,9 @@ Se deben reemplazar todos los valores que empiecen con \file{ChangeMe\_*}. Las c
   \file{SQLSERVER\_SA\_PASSWORD} & secreto local & Clave administrativa usada sólo durante inicialización. \\
   \file{IMAGE\_PREFIX} & ruta GHCR & Prefijo de las imágenes publicadas. \\
   \file{IMAGE\_TAG} & \file{main} & Entrega a ejecutar; se recomienda una etiqueta versionada. \\
+  Credencial Gemini/Qwen & interfaz web & Se registra o reemplaza desde Configuración LLM; no pertenece a \file{.env}. \\
+  \file{OLLAMA\_MODEL} & \file{qwen2.5:3b} & Modelo local ágil que se descarga explícitamente por equipo. \\
+  \file{OLLAMA\_CONTEXT\_LENGTH} & 4096 & Contexto local que permite completar los contratos JSON del asistente sin abandonar un consumo moderado. \\
   \bottomrule
 \end{longtable}
 
@@ -257,6 +262,8 @@ make bootstrap
   \item inicia PostgreSQL y espera su estado saludable;
   \item inicia SQL Server, descarga y restaura AdventureWorks si el volumen está vacío;
   \item crea y prueba el usuario \file{bi\_reader};
+  \item aplica las migraciones Alembic pendientes;
+  \item ejecuta el servicio \file{seed}, que incorpora sin duplicar el catálogo protegido aprobado;
   \item inicia FastAPI y después React;
   \item espera hasta que los cuatro servicios respondan correctamente.
 \end{enumerate}
@@ -337,6 +344,172 @@ El comando construye la etapa \file{production} del frontend y añade \file{fron
 
 Esta modalidad valida el frontend que se empaquetará, pero no representa un ambiente productivo totalmente independiente porque comparte el backend de desarrollo.
 
+\section{Operación funcional del Sprint 2}
+
+El Sprint 2 se opera sobre el mismo ambiente levantado con \file{make bootstrap} o \file{make up}. No se crea una instalación ni un conjunto de contenedores adicional para seguridad: React, FastAPI y PostgreSQL ya contienen el incremento. La migración se aplica mediante el servicio \file{migrate}; después, el servicio \file{seed} carga de forma idempotente el catálogo protegido antes de iniciar FastAPI.
+
+\subsection{Migraciones y datos semilla por equipo}
+
+Cada volumen PostgreSQL pertenece exclusivamente al equipo que lo creó y nunca se transmite por GitHub. Cuando una programadora actualiza \file{develop} y levanta Compose, Alembic aplica el cambio de estructura y \file{seed} incorpora o actualiza los permisos, menús, rol administrador y cuenta inicial aprobados. Este orden permite que una base vacía quede operativa y que una base ya existente conserve sus datos locales no protegidos.
+
+Para repetir sólo el catálogo base, sin borrar ni exportar PostgreSQL, se ejecuta desde la raíz del repositorio:
+
+\begin{lstlisting}[style=terminal,language=bash]
+make seed
+\end{lstlisting}
+
+La operación no duplica registros. No distribuye cuentas temporales, auditoría, contraseñas, tokens, configuraciones LLM ni datos de negocio. Una semilla demostrativa futura deberá ser sintética, opcional y aprobada con la especificación del módulo que la consuma.
+
+\subsection{Acceso inicial y sesión}
+
+El primer arranque crea la cuenta administradora inicial desde las variables de administración definidas en \file{.env}. Estos valores son secretos locales: se cambian antes de una demostración compartida y nunca se incorporan a Git, capturas ni bitácora. Se abre la interfaz en el puerto configurado, se ingresa con esas credenciales y se cierra la sesión desde el encabezado al terminar.
+
+FastAPI valida la contraseña con Argon2 y entrega un JWT de vida limitada. React conserva únicamente el token de sesión necesario para consultar la API; el token no contiene contraseñas, claves LLM ni permisos que sustituyan la comprobación del servidor. Cada endpoint administrativo comprueba de nuevo el usuario activo y su permiso efectivo.
+
+\subsection{Navegación administrativa}
+
+La navegación muestra sólo menús autorizados y los organiza así:
+
+\begin{center}
+\begin{tabularx}{0.88\textwidth}{@{}l X@{}}
+  \toprule
+  Grupo o acceso & Pantallas y finalidad \\
+  \midrule
+  Inicio & Resumen inicial de la sesión y punto de entrada directo. \\
+  Seguridad & Usuarios, Roles, Permisos, Menús y Auditoría. \\
+  Parámetros generales & Parámetros operativos aprobados, Configuración LLM y Conexiones de datos. \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+Los grupos Seguridad y Parámetros generales se pueden plegar o desplegar, incluso si contienen la pantalla activa. En escritorio, el panel lateral se contrae o restaura mediante el chevrón de su borde; en tableta y móvil se abre con menú hamburguesa. La visibilidad en React facilita la experiencia, pero no es una autorización: una URL o petición directa sin permiso recibe una respuesta de acceso denegado desde FastAPI.
+
+\subsection{Usuarios, roles, permisos y menús}
+
+La administración no solicita IDs ni códigos técnicos a la persona usuaria. En \textbf{Usuarios}, se registra correo, nombre, contraseña inicial y roles mediante una tabla de casillas con nombre y descripción. Durante una edición, dejar la contraseña vacía mantiene la contraseña existente; escribir una nueva la reemplaza de forma segura.
+
+En \textbf{Roles}, los permisos se asignan o retiran mediante otra tabla de casillas legible. La actualización de asociaciones usa el contrato \file{PUT /roles/\{id\}/permissions}; el código técnico interno del rol no se digita desde la pantalla. Permisos y Menús son catálogos controlados: una pantalla administrativa no puede inventar un permiso, ruta o módulo que no exista en una especificación, migración y endpoint reales.
+
+Las listas administrativas son paginadas desde el servidor. Usuarios, Roles y Menús permiten crear, editar, activar/desactivar y, cuando corresponde, eliminar definitivamente. Las acciones de registros base de recuperación muestran el estado \textbf{Protegido}; FastAPI impide desactivar, eliminar o debilitar la cuenta y rol administrativos iniciales.
+
+\subsection{Eliminación y auditoría}
+
+Eliminar no significa ocultar un registro. Para una eliminación física permitida, la interfaz pide confirmación y FastAPI comprueba primero las asociaciones hijas. Por ejemplo, un rol con usuarios o permisos asignados no se borra hasta resolver esas relaciones; la API responde con conflicto y una explicación. No existe borrado en cascada silencioso.
+
+Una cuenta temporal no protegida sí puede eliminarse después de retirar sus roles. Sus eventos de auditoría no son una dependencia bloqueante: la migración \file{20260911\_05} configura la referencia de actor con \file{ON DELETE SET NULL}. Al borrar la cuenta, el identificador técnico queda vacío, pero cada evento conserva la etiqueta histórica segura del actor (nombre y correo en el momento de la acción). Así se mantiene la trazabilidad sin conservar una cuenta de prueba ni borrar eventos de auditoría.
+
+Toda mutación administrativa genera un evento de auditoría con actor, fecha, acción, tipo de recurso, identificador y resumen seguro. Se registran inicio de sesión, altas, actualizaciones, cambios de estado, asociaciones, pruebas de conexión y eliminaciones. La vista Auditoría es sólo de consulta, paginada e inmutable; para actores ya eliminados muestra la etiqueta histórica y nunca presenta contraseñas, JWT, API keys ni cadenas de conexión completas.
+
+\subsection{Parámetros generales}
+
+La pantalla Parámetros no es una tabla libre de clave/valor. Sólo muestra cuatro enteros operativos aprobados: \path{UI_PAGE_SIZE}, \path{CONNECTION_TIMEOUT_SECONDS}, \path{LLM_TIMEOUT_SECONDS} y \path{METADATA_BLOCK_MAX_ITEMS}. El catálogo analítico se almacena internamente mediante \path{COPILOT_SALES_NEEDS_CATALOG}, pero no se expone como parámetro genérico: se administra en \textbf{IA > Catálogo analítico} con los permisos independientes \path{copilot.catalog.read} y \path{copilot.catalog.write}. Allí se gestionan preguntas de negocio y periodicidades por dominio. El objetivo pertenece a cada análisis y las dimensiones no son un parámetro. FastAPI valida y audita cada cambio.
+
+Los tiempos máximos de conexión y LLM controlan sus respectivas operaciones. \file{LLM\_TIMEOUT\_SECONDS} inicia en 600 segundos y admite hasta 900 para modelos locales ejecutados por CPU; los proveedores cloud normalmente terminan antes. El tamaño de bloque participa en la preparación del contexto y el perfil de dominio aplica además un alcance técnico acotado para no enviar las 71 tablas completas a un modelo pequeño.
+
+\subsection{Conexiones de datos}
+
+La pantalla \textbf{Conexiones de datos} permite registrar nombre, servidor, puerto, base, usuario, contraseña y opciones controladas de cifrado para SQL Server. No acepta una cadena de conexión libre. La contraseña se cifra en \file{app.secrets}; React recibe sólo los campos no secretos y nunca recupera el valor guardado. Al editar, dejarla vacía conserva la credencial existente y cualquier cambio invalida la prueba anterior.
+
+\textbf{Probar conexión} abre SQL Server con intención de lectura, consulta el catálogo y comprueba que la cuenta no pertenezca a \file{db\_owner} o \file{db\_datawriter} ni posea permisos de inserción, actualización, eliminación, creación de tablas o control. Una prueba fallida no puede activarse. La base de datos refuerza que exista una sola conexión activa y FastAPI audita creación, edición, prueba, activación, desactivación y eliminación sin guardar cadenas completas.
+
+En el entorno Docker académico se registra el host \file{sqlserver}, puerto 1433, base \file{AdventureWorks2022} y usuario lector aprovisionado durante el arranque. Las variables de \file{.env} siguen siendo necesarias para construir la instancia local, pero la operación del flujo BI usa la credencial registrada desde la plataforma.
+
+\subsection{Instantáneas y explorador de esquema}
+
+La acción \textbf{Actualizar metadatos} está disponible sobre la fuente activa para personas con el permiso \path{metadata.refresh}. FastAPI descifra la contraseña sólo en memoria, consulta exclusivamente los catálogos de SQL Server y normaliza esquemas, tablas, columnas, tipos, nulabilidad, claves primarias y claves foráneas. No consulta filas, valores de ventas, procedimientos ni código SQL almacenado.
+
+El documento canónico se ordena de forma estable y se almacena como JSONB en \path{app.metadata_snapshots}. Su hash SHA-256 permite reconocer la misma estructura: si no cambió, se reutiliza la instantánea vigente y no se duplica. Cada captura conserva conexión, base, versión contractual, totales, actor histórico y fecha. La migración \path{20260918_08} impide eliminar una conexión que tenga instantáneas asociadas.
+
+La pantalla \textbf{Datos > Explorador de esquema} consulta la captura persistida, no la fuente original. Permite buscar por esquema, tabla o columna y presenta detalle de columnas, PK y relaciones entrantes y salientes. La prueba real registró 6 esquemas, 71 tablas, 444 columnas y 90 relaciones en AdventureWorks; una segunda captura produjo el mismo hash y no añadió otro registro.
+
+\subsection{Asistente de datamart supervisado}
+
+La pantalla \textbf{IA > Asistente de datamart} requiere tres condiciones comprobables: fuente activa con prueba de sólo lectura, instantánea vigente de esa fuente y proveedor LLM activo con prueba satisfactoria. La entrada no abre directamente ventas: consulta \file{GET /api/v1/copilot/catalog} y muestra los dominios que disponen de perfil, metadatos y validadores. Sprint 3 habilita únicamente \textbf{Datamart de ventas}; un dominio futuro puede añadirse al catálogo sin crear otra pantalla.
+
+Al elegir el dominio, el backend devuelve preguntas orientadoras y periodicidades compatibles con la instantánea. React no contiene un modelo dimensional fijo de AdventureWorks. El catálogo se administra por dominio desde \textbf{IA > Catálogo analítico}. Las preguntas guían la interpretación, pero no fijan tablas, columnas ni dimensiones. El analista BI continúa por cinco pasos:
+
+\begin{enumerate}
+  \item escribir el objetivo comercial, seleccionar preguntas orientadoras y escoger una periodicidad soportada;
+  \item revisar conceptos de negocio propuestos en español y revelar, cuando se necesite, su origen técnico;
+  \item examinar granularidad, hecho, medidas, dimensiones, uniones, KPIs y plan ETL declarativo;
+  \item personalizar, de forma opcional, resumen, granularidad, dimensiones, medidas, agregaciones y KPIs ya verificados, con una justificación;
+  \item aprobar o rechazar con comentario y confirmación explícita de advertencias.
+\end{enumerate}
+
+Cada intento se almacena en \path{app.bi_proposals} y queda ligado a la huella de la instantánea, proveedor, modelo, versión de prompt, entrada, mapa semántico, alcance, validación y decisión histórica del actor. Excluir conceptos, cambiar la necesidad o personalizar decisiones crea otra versión; \file{source\_proposal\_id} conserva su origen y nunca sobrescribe el registro anterior. La personalización no llama al LLM y no admite tablas, columnas, relaciones ni fórmulas libres: \file{POST /api/v1/copilot/proposals/\{id\}/revisions} aplica únicamente selecciones válidas y repite la validación determinística.
+
+La sección \textbf{Versiones generadas} consulta el servidor por dominio y estado, muestra inicialmente \textbf{Lista para revisar} y pagina los resultados. Permite abrir cualquier artefacto persistido y escoger cuál revisar o aprobar sin volver a consumir el proveedor. Esto facilita preparar una ejecución local lenta antes de una demostración y conservar, al mismo tiempo, resultados cloud comparables. Los permisos \path{copilot.proposals.read}, \path{copilot.proposals.generate} y \path{copilot.proposals.review} separan consulta, generación y decisión.
+
+\subsection{Validación acumulativa visible}
+
+La versión seleccionada incorpora \textbf{Validación estructural de la propuesta - Sprint 3}. La acción \textbf{Verificar evidencia} llama a \file{POST /api/v1/copilot/proposals/\{id\}/verify}; FastAPI no vuelve a consumir el LLM ni ejecuta el ETL. Comprueba la huella de los metadatos, referencias técnicas, consistencia del contrato BI y reproducción determinística desde \file{ai\_decisions}. Para propuestas creadas con la versión vigente del motor, la propuesta persistida y la reejecutada deben tener la misma huella SHA-256. En propuestas históricas, una diferencia debida exclusivamente a la evolución del motor se presenta como advertencia de compatibilidad y no como error de datos.
+
+Este control permite al analista BI verificar en Sprint 3 que la estructura utilizada procede del OLTP y que la propuesta aprobada no cambió. No demuestra todavía igualdad de cantidades o importes. El plan \file{docs/validation-plan.md} exige que Sprint 4 amplíe la misma vista con consultas de referencia y una conciliación OLTP--datamart: filas al grano aprobado, pedidos distintos, unidades, importe total y ventas mensuales, mostrando ambos valores y su diferencia. AdventureWorksDW será un contraste secundario, no la fuente primaria de verdad de la carga. El juicio de expertos y MAPE/RMSE se incorporarán cuando existan el instrumento y el pronóstico.
+
+Cada comprobación muestra \textbf{Cumple} o \textbf{Revisar}; el evento \file{copilot.proposal.verify} conserva identificador y prefijos de huella sin metadatos completos, filas ni secretos. La reproducibilidad se refiere a reejecutar decisiones persistidas con reglas determinísticas, no a exigir que dos llamadas nuevas al LLM generen exactamente la misma respuesta.
+
+El LLM no constituye la autoridad técnica. Primero interpreta conceptos y luego devuelve decisiones compactas de hecho, medidas, dimensiones y KPI mediante un esquema JSON construido desde el alcance. FastAPI completa mecánicamente PK, FK, atributos, reglas y operaciones ETL; conserva las decisiones originales bajo \file{ai\_decisions} y valida el contrato expandido. También bloquea instrucciones SQL o ejecutables en la entrada y en la respuesta. Una propuesta con errores permanece en \textbf{Validación fallida}; sólo una versión válida pasa a \textbf{Lista para revisar}.
+
+Cada medida y KPI declara una función tipada: importe, cantidad, conteo de clientes o conteo de transacciones. FastAPI contrasta esa función con columna, agregación y operación, y excluye un KPI que apunte a una medida incompatible. Las frases libres del proveedor se conservan como observaciones de trazabilidad, separadas de ajustes automáticos y advertencias determinísticas. El analista puede excluir o reasignar un KPI a otra medida compatible ya verificada; si no existe, la interfaz explica que debe retirar el KPI o generar una propuesta con la medida faltante. Las dimensiones proceden de la propuesta del LLM y sólo sobreviven cuando sus fuentes pertenecen al alcance verificado; la prueba real identificó \file{dim\_fecha} desde \file{Sales.SalesOrderHeader.OrderDate}. Sin una fuente comprobable, no se inventa.
+
+La aprobación no crea tablas ni ejecuta transformaciones. Produce un contrato humano y técnicamente aceptado para el Sprint 4. La propuesta aprobada compatible más reciente se preseleccionará, pero el analista deberá confirmarla y podrá comparar otras aprobadas; cada ejecución conservará el identificador elegido. El perfil \path{ventas} encapsula reglas semánticas, periodicidades soportadas, términos de descubrimiento, destinos y validadores; las preguntas se administran en el catálogo. El registro de conectores desacopla la lectura canónica del motor. Añadir inventario o MySQL exige implementar y probar el perfil o adaptador correspondiente antes de exponerlo.
+
+Una aprobación puede retirarse desde la web con motivo obligatorio y una versión no aprobada puede descartarse. No se eliminan físicamente los registros porque conservan evidencia y auditoría. La migración \file{20260920\_13} amplía la restricción de estados de \file{app.bi\_proposals} con \file{invalidated} y \file{discarded}, evitando divergencias entre la lógica de aplicación y PostgreSQL. La verificación invalida una propuesta aprobada sólo cuando detecta un error bloqueante vigente; una diferencia histórica del motor no basta. Si una aprobación fue retirada por una comprobación anterior y ahora supera las reglas, \file{POST /api/v1/copilot/proposals/\{id\}/restore-approval} permite restaurarla con motivo y confirmación de advertencias, dejando evento de auditoría. El constructor del Sprint 4 deberá repetir esta comprobación inmediatamente antes de aceptar el contrato; un estado histórico por sí solo nunca autoriza el ETL.
+
+\subsection{Configuración LLM cloud y local}
+
+La pantalla Configuración LLM mantiene nombre, proveedor, URL validada, modelo, estado y resultado de prueba. Puede existir una sola configuración activa. Para Gemini o Qwen Cloud se guarda primero el registro y después se usa \textbf{Registrar credencial}; cuando ya existe, la acción cambia a \textbf{Reemplazar credencial}. La clave se envía una sola vez y nunca vuelve al navegador. La tabla sólo presenta \textbf{Credencial pendiente} o \textbf{Credencial configurada}.
+
+El identificador del modelo se parametriza porque el catálogo del proveedor cambia. En la prueba del 19 de septiembre de 2026, Google informó que \file{gemini-2.5-flash} ya no estaba disponible para usuarios nuevos; la misma clave de nivel gratuito permitió probar \file{gemini-3.6-flash}. La pantalla incorpora \textbf{Nivel de razonamiento}: automático, mínimo, bajo, medio o alto. Para la demostración rápida se validó \textbf{mínimo}; FastAPI envía el nivel cuando Gemini lo admite, reserva un presupuesto de salida suficiente y mantiene la validación determinística. Cambiar URL, modelo o razonamiento invalida la prueba anterior. Si un modelo deja de estar disponible, se actualiza desde esta pantalla y se repite \textbf{Probar conexión}; no se modifica código ni \file{.env}.
+
+FastAPI cifra la clave mediante cifrado autenticado y almacena únicamente el texto cifrado en \path{app.secrets}. La raíz criptográfica se genera automáticamente con permisos restrictivos en \path{/var/lib/bi-ia-secrets/master.key} y se conserva en el volumen \path{secret_key_data}, separado de PostgreSQL. Si se borra ese volumen, las credenciales existentes dejan de poder descifrarse y deberán reemplazarse desde la pantalla. No se copia el volumen entre equipos y no se versiona. \path{GEMINI_API_KEY} y \path{DASHSCOPE_API_KEY} ya no se utilizan.
+
+Para probar una configuración cloud se registra la credencial, se usa \textbf{Probar conexión} y se revisa el aviso verde de éxito o rojo con causa segura. La prueba sale desde FastAPI, descifra sólo en memoria, tiene tiempo limitado y no envía datos del negocio. La auditoría conserva la acción y el proveedor, nunca la clave ni el contenido de la respuesta.
+
+\subsection{Alternativa LLM local con Ollama}
+
+Ollama es un respaldo opcional para probar la integración LLM cuando no se dispone de una cuota cloud o se desea evitar usarla. No reemplaza Gemini ni Qwen Cloud, no se inicia con \file{make up}, no requiere API key y no publica un puerto en el computador anfitrión. Sólo FastAPI, dentro de la red del proyecto, puede acceder al servicio por \file{http://ollama:11434}.
+
+\subsection{Preparar y descargar el modelo}
+
+Todos los comandos se ejecutan desde la raíz del repositorio. Antes de la descarga se recomienda comprobar que el equipo tenga al menos 8 GB de disco libre adicionales. El perfil inicia el servicio, pero no descarga automáticamente un modelo:
+
+\begin{lstlisting}[style=terminal,language=bash]
+make ollama-up
+make ollama-pull
+make ollama-status
+\end{lstlisting}
+
+El primer comando activa el perfil \file{local-llm}; el segundo descarga \file{qwen2.5:3b}, salvo que \file{OLLAMA\_MODEL} tenga otro valor local aprobado; el tercero muestra los modelos disponibles. Esta opción se adopta como predeterminada porque ofrece respuestas directas en español con menor consumo que \file{qwen3:4b}. La descarga se conserva en el volumen \file{ollama\_models}. Por tanto, cada programadora debe ejecutar este procedimiento una vez en su propio computador: Git no versiona el modelo, GitHub Container Registry no lo publica y CI/CD no lo descarga.
+
+\subsection{Registrar y probar la configuración}
+
+En la pantalla \textbf{Configuración LLM} crear un registro con los valores siguientes, inicialmente inactivo para no sustituir una configuración cloud que ya esté funcionando:
+
+\begin{center}
+\begin{tabularx}{0.88\textwidth}{@{}l X@{}}
+  \toprule
+  Campo & Valor \\
+  \midrule
+  Nombre & Ollama local de prueba \\
+  Proveedor & Ollama local \\
+  URL de servicio & \file{http://ollama:11434} \\
+  Modelo & \file{qwen2.5:3b} \\
+  Estado & Inactivo hasta que una persona autorizada decida activarlo \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+Después de guardar, seleccionar \textbf{Probar conexión}. FastAPI consulta \file{/api/tags} sin enviar datos del negocio. El resultado es verde sólo si Ollama responde y el modelo configurado está descargado; si el servicio responde pero falta el modelo, la interfaz muestra una alerta roja comprensible y se corrige ejecutando \file{make ollama-pull}. \file{qwen3:4b} sigue disponible para pruebas de mayor capacidad, pero puede requerir más tiempo por su razonamiento interno. La prueba, creación y cambios quedan auditados sin almacenar una clave ni el contenido de una respuesta del modelo.
+
+\subsection{Detener sin borrar el modelo}
+
+\begin{lstlisting}[style=terminal,language=bash]
+make ollama-down
+\end{lstlisting}
+
+Este comando detiene únicamente Ollama y conserva \file{ollama\_models}. También \file{make down} detiene el servicio si está activo y conserva el volumen. No se debe usar \file{docker compose down --volumes} si se desea conservar el modelo local y las bases del proyecto.
+
 \section{Ejecución desde imágenes de GHCR}
 
 Esta modalidad permite levantar una entrega completa sin compilar el código y sin reemplazar desarrollo. Usa los puertos 8080, 18000, 55433 y 51434, además de volúmenes independientes.
@@ -389,7 +562,7 @@ make doctor
 make verify
 \end{lstlisting}
 
-El control completo valida las dos variantes de Compose, construye y prueba frontend/backend y regenera toda la documentación PDF.
+El control completo valida desarrollo, el perfil de entrega, el perfil local de Ollama y la entrega GHCR; además construye y prueba frontend/backend y regenera los cinco PDF oficiales.
 
 \subsection{Contrato OpenAPI}
 
@@ -443,7 +616,7 @@ En otro equipo se sustituye esa ruta por la carpeta donde se clonó el repositor
 
 \subsection{Ciclo del ambiente de desarrollo}
 
-El ambiente de desarrollo contiene \file{frontend}, \file{backend}, \file{postgres} y \file{sqlserver}.
+El ambiente de desarrollo contiene \file{frontend}, \file{backend}, \file{postgres} y \file{sqlserver}. El perfil opcional \file{local-llm} puede añadir \file{ollama}.
 
 \textbf{Construir y levantar:}
 
@@ -466,6 +639,17 @@ make down
 \end{lstlisting}
 
 Después de \file{make down}, \file{docker compose start} ya no aplica porque los contenedores fueron retirados. Para crearlos nuevamente se usa \file{make up}; los volúmenes existentes se reutilizan.
+
+\subsection{Ciclo del LLM local opcional}
+
+\begin{lstlisting}[style=terminal,language=bash]
+make ollama-up
+make ollama-pull
+make ollama-status
+make ollama-down
+\end{lstlisting}
+
+La secuencia inicia el servicio, descarga el modelo una única vez, lista lo disponible y finalmente detiene sólo Ollama. El último comando conserva el volumen \file{ollama\_models}. El perfil no publica el puerto 11434, no se inicia al levantar desarrollo normal y no forma parte de \file{compose.release.yaml}; por ello no cambia la superficie de red de una entrega ni agrega una descarga pesada a CI.
 
 \subsection{Ciclo de la vista local de entrega}
 
@@ -542,6 +726,10 @@ El primer comando retira desarrollo y \file{frontend-delivery}; el segundo retir
   \file{make bootstrap} & Prepara secretos locales, construye y espera la salud del primer arranque. \\
   \file{make up} & Construye cambios y levanta desarrollo en segundo plano. \\
   \file{make delivery-preview-up} & Añade Nginx en 8080 y conserva Vite en 5173. \\
+  \file{make ollama-up} & Inicia Ollama local opcional sin descargar un modelo. \\
+  \file{make ollama-pull} & Descarga \file{OLLAMA\_MODEL} una vez por equipo. \\
+  \file{make ollama-status} & Lista los modelos presentes en el volumen local. \\
+  \file{make ollama-down} & Detiene Ollama y conserva el modelo. \\
   \file{make release-up} & Descarga y levanta las cinco imágenes en un proyecto aislado. \\
   \file{make release-down} & Retira sólo la entrega completa y conserva sus volúmenes. \\
   \file{make down} & Retira desarrollo y su red, conservando los volúmenes. \\
@@ -549,8 +737,8 @@ El primer comando retira desarrollo y \file{frontend-delivery}; el segundo retir
   \file{make logs} & Sigue los registros recientes. \\
   \file{make test} & Ejecuta pruebas en las etapas Docker de backend y frontend. \\
   \file{make lint} & Ejecuta Ruff, Mypy y ESLint en contenedores. \\
-  \file{make compose-check} & Valida Compose de desarrollo y de entrega. \\
-  \file{make docs} & Regenera bitácora, informe de sprint y manual. \\
+  \file{make compose-check} & Valida Compose de desarrollo, entrega y perfil Ollama opcional. \\
+  \file{make docs} & Regenera bitácora, informes de Sprint 1 y Sprint 2, y manual. \\
   \file{make verify} & Ejecuta la verificación completa antes de entregar. \\
   \bottomrule
 \end{tabularx}
@@ -694,7 +882,7 @@ En GitHub se abre la pestaña \textbf{Actions}. Cada fila representa una ejecuci
   \toprule
   Flujo & Cuándo se ejecuta & Resultado esperado \\
   \midrule
-  CI & Push o pull request hacia \file{develop} o \file{main}. & Valida flujo de ramas, Compose, backend, frontend, infraestructura y los tres PDF. No publica ni deja contenedores activos. \\
+  CI & Push o pull request hacia \file{develop} o \file{main}. & Valida flujo de ramas, Compose, backend, frontend, infraestructura y los cinco PDF. No publica ni deja contenedores activos ni descarga modelos LLM. \\
   CD & Cambio ya fusionado en \file{main} o etiqueta \file{v*}. & Revalida backend/frontend y publica cinco imágenes de producción en GHCR con etiqueta de rama, SHA y, cuando aplique, versión. No despliega aún una VM Azure. \\
   Dependabot & Según su programación. & Abre un PR temporal de actualización; se revisa y prueba igual que un cambio humano. \\
   \bottomrule
@@ -746,7 +934,7 @@ El Sprint 1 no se rehace con SDD porque ya se cerró como una base técnica. Des
   \item Gestionar la visibilidad de cada paquete GHCR de forma independiente y no incluir secretos ni datos reales en ninguna imagen.
   \item Otorgar acceso únicamente a cuentas identificadas y revocar colaboradores que ya no participen.
   \item Revisar los cambios de Dependabot y no fusionarlos sin CI aprobada.
-  \item Cuando se implemente RBAC, FastAPI debe autorizar cada endpoint; ocultar menús en React no es un control de seguridad.
+  \item RBAC ya exige que FastAPI autorice cada endpoint; ocultar menús en React no es un control de seguridad.
 \end{enumerate}
 
 \section{Diagnóstico de fallos}
@@ -780,6 +968,7 @@ docker compose logs --tail=200 backend
 docker compose logs --tail=200 frontend
 docker compose logs --tail=200 postgres
 docker compose logs --tail=200 sqlserver
+docker compose --profile local-llm logs --tail=200 ollama
 \end{lstlisting}
 
 \section{Lista de comprobación para una demostración}
@@ -803,6 +992,7 @@ Los documentos se compilan dentro de la imagen \file{bi-ia-docs}; no se instala 
 \begin{lstlisting}[style=terminal,language=bash]
 make logbook
 make sprint-report
+make sprint2-report
 make technical-manual
 make docs
 \end{lstlisting}
@@ -818,7 +1008,7 @@ Después de cambios técnicos se deben actualizar, según corresponda, README, a
   Autoras & Aprobar alcance, secretos, accesos, datos de prueba y entregas académicas. \\
   Colaborador técnico & Trabajar por rama, ejecutar pruebas, actualizar documentación y solicitar revisión. \\
   CI/CD & Repetir controles y publicar imágenes después de la integración autorizada. \\
-  FastAPI futuro & Aplicar autorización real, validaciones determinísticas y auditoría. \\
+  FastAPI & Aplica autorización RBAC, validaciones determinísticas, auditoría y pruebas LLM seguras. \\
   Responsable de datos & Confirmar que la fuente externa permanezca en lectura y que no se incorporen datos productivos. \\
   \bottomrule
 \end{tabularx}
@@ -866,7 +1056,7 @@ make verify
   \toprule
   Campo & Valor \\
   \midrule
-  Estado & Cierre documental del Sprint 1; base obligatoria para el Sprint 2 con SDD. \\
+  Estado & Manual acumulativo del Sprint 1, Sprint 2 y cierre funcional del Sprint 3; base obligatoria para los módulos posteriores con SDD. \\
   Custodia & Repositorio público \file{LFXAS/prototipo-bi-ia}; escritura restringida a colaboradores. \\
   Audiencia & Autoras, tutor, revisores, colaboradores y lectores académicos. \\
   Actualización & Debe acompañar todo cambio de instalación, puertos, secretos, imágenes, pruebas o recuperación. \\
@@ -889,6 +1079,21 @@ make verify
   1.5.0 & 01-09-2026 & Explicación ampliada de CI, CD y DevOps; procedimiento SDD, plantillas versionadas y primera especificación del Sprint 2. \\
   1.6.0 & 02-09-2026 & Reconstrucción operativa del Sprint 1 y referencia comentada de variables, Compose, Dockerfiles, Makefile, Git, GitHub, CI/CD, persistencia y verificación. \\
   1.7.0 & 02-09-2026 & Evidencias visuales de GitHub Actions y de los controles obligatorios de aprobación, CI y fusión. \\
+  1.8.0 & 11-09-2026 & Consolidación del Sprint 2: operación JWT/RBAC, navegación, CRUD protegido, auditoría, parámetros, proveedores LLM y perfil Docker local de Ollama con persistencia y validación segura. \\
+  1.8.1 & 11-09-2026 & Corrección de eliminación de usuarios temporales: auditoría preservada con etiqueta histórica de actor y referencia nula mediante \file{ON DELETE SET NULL}. \\
+  1.9.0 & 18-09-2026 & Credenciales LLM administradas desde la web, cifrado autenticado, volumen de raíz criptográfica y migración reproducible como cierre pendiente del Sprint 2. \\
+  2.0.0 & 18-09-2026 & Inicio del Sprint 3: conexión SQL Server administrada desde la web, contraseña cifrada, validación de sólo lectura, activación única y cuatro parámetros tipados. \\
+  2.1.0 & 18-09-2026 & Introspección determinística, instantáneas JSONB inmutables, hash reproducible, deduplicación y explorador responsive de tablas, columnas y relaciones. \\
+  2.2.0 & 19-09-2026 & Asistente supervisado del Sprint 3: solicitud guiada, interpretación semántica, propuesta dimensional versionada, validación determinística, decisión humana, conectores y perfiles de dominio extensibles. \\
+  2.2.1 & 19-09-2026 & Selección de resultados persistidos por proveedor/modelo y validación real de Gemini 3.6 Flash con nivel gratuito. \\
+  2.2.2 & 19-09-2026 & Nivel de razonamiento por configuración y expediente visible de validación acumulativa con reejecución determinística. \\
+  2.2.3 & 19-09-2026 & Contexto Ollama ampliado a 4096 y presupuestos de salida ajustados para impedir respuestas JSON truncadas con \file{qwen2.5:3b}. \\
+  2.3.0 & 19-09-2026 & Asistente de datamart genérico, catálogo dinámico de capacidades, personalización versionada, historial filtrable, validación estructural visible y selección prevista para el ETL. \\
+  2.3.1 & 20-09-2026 & Contrato semántico de medidas y KPI, mensajes accionables, reasignación supervisada, retiro de aprobaciones y descarte auditable de versiones. \\
+  2.3.2 & 20-09-2026 & Corrección de persistencia para los estados auditables de aprobación retirada y descarte mediante la migración \file{20260920\_13}. \\
+  2.3.3 & 20-09-2026 & Catálogo web de necesidades analíticas, validación compatible con versiones históricas, restauración auditada de aprobaciones y exclusión de identificadores como medidas monetarias. \\
+  2.3.4 & 20-09-2026 & Incorporación determinística de dimensiones solicitadas omitidas por el LLM cuando existe una fuente inequívoca en los metadatos verificados. \\
+  2.3.5 & 20-09-2026 & Catálogo analítico separado por permisos y dominio, CRUD de preguntas, múltiples periodicidades y dimensiones propuestas por IA en lugar de predefinidas en la necesidad. \\
   \bottomrule
 \end{tabularx}
 

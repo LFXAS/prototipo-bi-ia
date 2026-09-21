@@ -21,6 +21,13 @@ class Settings(BaseSettings):
     app_version: str = "0.1.0"
     api_v1_prefix: str = "/api/v1"
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
+    jwt_secret: SecretStr = SecretStr("ChangeMe_JWT_2026!")
+    jwt_algorithm: str = "HS256"
+    jwt_access_token_minutes: int = 30
+    bootstrap_admin_email: str = "admin@bi.local"
+    bootstrap_admin_password: SecretStr = SecretStr("ChangeMe_Admin_2026!")
+
+    secrets_key_path: str = "/var/lib/bi-ia-secrets/master.key"
 
     postgres_host: str = "postgres"
     postgres_port: int = 5432
@@ -62,7 +69,11 @@ class Settings(BaseSettings):
 
     @property
     def adventureworks_url(self) -> str:
-        options = (
+        return f"mssql+pyodbc:///?odbc_connect={quote_plus(self.adventureworks_odbc_connection_string)}"
+
+    @property
+    def adventureworks_odbc_connection_string(self) -> str:
+        return (
             f"DRIVER={{{self.sqlserver_driver}}};"
             f"SERVER={self.sqlserver_host},{self.sqlserver_port};"
             f"DATABASE={self.sqlserver_database};"
@@ -72,9 +83,11 @@ class Settings(BaseSettings):
             f"TrustServerCertificate={'yes' if self.sqlserver_trust_server_certificate else 'no'};"
             f"ApplicationIntent={self.sqlserver_application_intent};"
         )
-        return f"mssql+pyodbc:///?odbc_connect={quote_plus(options)}"
 
 
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
+
+
+settings = get_settings()

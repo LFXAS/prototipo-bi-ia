@@ -7,10 +7,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.router import api_router
 from app.core.config import get_settings
 from app.db.session import dispose_engine
+from app.modules.parameters.secrets import SecretCipher
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    SecretCipher(get_settings().secrets_key_path).ensure_ready()
     yield
     await dispose_engine()
 
