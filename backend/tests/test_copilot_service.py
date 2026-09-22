@@ -15,6 +15,7 @@ from app.modules.copilot.service import (
     compact_metadata_blocks,
     derived_scope,
     expand_proposal_blueprint,
+    proposal_blueprint_schema,
     validate_proposal,
     validated_semantic_candidates,
     verify_proposal_evidence,
@@ -174,6 +175,17 @@ def test_metadata_is_partitioned_without_rows_or_secrets() -> None:
     assert all(len(block["metadata"]) == 1 for block in blocks)
     assert "password" not in str(blocks).casefold()
     assert "rows" not in str(blocks).casefold()
+
+
+def test_kpi_suggestions_are_variable_without_a_fixed_business_catalog() -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+
+    schema = proposal_blueprint_schema(scope, semantic_map)
+
+    assert schema["properties"]["measures"]["maxItems"] == 6
+    assert schema["properties"]["kpis"]["maxItems"] == 12
+    assert schema["properties"]["kpis"]["items"]["properties"]["measure_index"]["maximum"] == 5
 
 
 def test_catalog_is_derived_from_snapshot_metadata() -> None:

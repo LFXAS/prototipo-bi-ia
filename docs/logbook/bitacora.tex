@@ -668,6 +668,26 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   \bottomrule
 \end{longtable}
 
+\subsection{21 de septiembre de 2026 - Preparación de KPI sugeridos por IA para Sprint 4}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  KPI dinámicos & \statusok & El LLM propone una cantidad variable de KPI desde la necesidad y metadatos comprobados; no existe un catálogo fijo ni se fuerza una lista en el frontend. \\
+  Semántica & \statusok & Cada sugerencia declara medida, dimensiones, período, unidad y receta; clientes nuevos, margen y estados sólo se admiten cuando sus requisitos sean verificables. \\
+  IA supervisada & \statusok & FastAPI asignará recetas determinísticas de agregación, razón o participación y no aceptará SQL, fórmulas libres, columnas, relaciones o denominadores inventados. \\
+  Experiencia profesional & \statusok & Se especificó un recorrido de selección, revisión de indicadores, confirmación, materialización y validación con estados persistidos, trazabilidad desplegable, recuperación, diseño responsive y accesibilidad. \\
+  Validación & \statusok & El expediente de Sprint 4 deberá contrastar cada KPI contra AdventureWorks OLTP y conservar receta, filtros, período, propuesta y ejecución; la demostración final evidenciará al menos cinco KPI sugeridos por IA y conciliados. \\
+  Límite & \statusok & No se modificó la entrega ni la aprobación del Sprint 3: el cambio prepara el contrato ejecutable de Sprint 4 y mantiene sus KPI como propuestas estructurales, todavía no calculadas. \\
+  \bottomrule
+\end{longtable}
+
 \subsubsection{Incidente de migración y resolución}
 
 La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó una imagen local anterior y no encontró la revisión \file{20260918\_07}. No existía un defecto en la cadena Alembic ni pérdida de datos: se confirmó el estado del servicio en ejecución, se aplicó \file{alembic upgrade head} con la imagen vigente del backend y se ejecutó la siembra idempotente. La revisión \file{20260918\_08} quedó aplicada correctamente. En una réplica limpia se debe usar el procedimiento documentado con \file{docker compose up -d --build}, que reconstruye las imágenes antes de migrar.
@@ -761,6 +781,7 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   0.3.16 & 20-09-2026 & Corrección determinística de dimensiones solicitadas omitidas por el LLM, depuración auditada de la versión anterior y validación real sin advertencias con Qwen. \\
   0.3.17 & 20-09-2026 & Separación del catálogo analítico por dominio y permisos, CRUD de preguntas, periodicidades múltiples y retiro de dimensiones predefinidas para reforzar la propuesta IA supervisada. \\
   0.3.18 & 20-09-2026 & Validación integrada del flujo sin dimensiones solicitadas: Qwen propuso el modelo de la versión 33, superó los cuatro controles reproducibles y Gemini fue restaurado como proveedor activo. \\
+  0.4.0 & 21-09-2026 & Preparación de Sprint 4: contrato de KPI variables sugeridos por IA, recetas determinísticas de agregación, razón y participación, límite técnico ampliado y experiencia profesional de materialización y validación. \\
   \bottomrule
 \end{longtable}
 

@@ -46,8 +46,8 @@ PROPOSAL_SYSTEM_INSTRUCTION = (
     "cada dimensión tiene name, source_tables, business_key y attributes; cada KPI tiene code, "
     "name, formula con operation y measure, y unit. Cada paso ETL tiene order, operation, inputs, "
     "output y description. Usa arreglos para joins, dimensions, kpis, etl_plan, quality_rules, "
-    "assumptions y warnings. Sé conciso: máximo tres medidas, cuatro dimensiones, seis uniones, "
-    "cuatro KPI y seis pasos ETL; cada explicación debe tener menos de 160 caracteres."
+    "assumptions y warnings. Sé conciso: hasta seis medidas, cuatro dimensiones, seis uniones, "
+    "hasta doce KPI y seis pasos ETL; cada explicación debe tener menos de 160 caracteres."
 )
 
 TEXT_SCHEMA: dict[str, Any] = {"type": "string", "maxLength": 160}
@@ -144,7 +144,7 @@ PROPOSAL_RESPONSE_SCHEMA: dict[str, Any] = {
                 "measures": {
                     "type": "array",
                     "minItems": 1,
-                    "maxItems": 3,
+                    "maxItems": 6,
                     "items": {
                         "type": "object",
                         "additionalProperties": False,
@@ -202,7 +202,7 @@ PROPOSAL_RESPONSE_SCHEMA: dict[str, Any] = {
         "kpis": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 4,
+            "maxItems": 12,
             "items": {
                 "type": "object",
                 "additionalProperties": False,
@@ -252,8 +252,8 @@ PROPOSAL_RESPONSE_SCHEMA: dict[str, Any] = {
 PROPOSAL_BLUEPRINT_SYSTEM_INSTRUCTION = (
     "Eres el copiloto de un analista de BI. Decide un modelo dimensional de ventas usando "
     "exclusivamente las tablas y columnas del alcance recibido. No generes SQL ni código. "
-    "Devuelve sólo JSON válido y breve. Selecciona una tabla de hechos, hasta dos medidas, "
-    "entre una y cuatro dimensiones y hasta tres KPI. Cada medida debe usar una columna de la "
+    "Devuelve sólo JSON válido y breve. Selecciona una tabla de hechos, hasta seis medidas, "
+    "entre una y cuatro dimensiones y hasta doce KPI. Cada medida debe usar una columna de la "
     "tabla de hechos y priorizar importe, total o cantidad; no sumes identificadores. Declara "
     "semantic_role en cada medida y KPI usando sales_amount, quantity, customer_count o "
     "transaction_count. Cada KPI usa measure_index=0 para la primera medida o 1 para la segunda "
@@ -380,7 +380,7 @@ def proposal_blueprint_schema(
             "measures": {
                 "type": "array",
                 "minItems": 1,
-                "maxItems": 2,
+                "maxItems": 6,
                 "items": {
                     "type": "object",
                     "additionalProperties": False,
@@ -419,7 +419,7 @@ def proposal_blueprint_schema(
             "kpis": {
                 "type": "array",
                 "minItems": 1,
-                "maxItems": 3,
+                "maxItems": 12,
                 "items": {
                     "type": "object",
                     "additionalProperties": False,
@@ -434,7 +434,7 @@ def proposal_blueprint_schema(
                     "properties": {
                         "code": short_text,
                         "name": short_text,
-                        "measure_index": {"type": "integer", "enum": [0, 1]},
+                        "measure_index": {"type": "integer", "minimum": 0, "maximum": 5},
                         "operation": {
                             "type": "string",
                             "enum": sorted(ALLOWED_AGGREGATIONS),
