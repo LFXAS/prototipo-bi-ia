@@ -14,6 +14,7 @@ El Sprint 4 no utilizará silenciosamente cualquier propuesta aprobada. La panta
 4. contrato soportado por la versión del ejecutor;
 5. ausencia de una invalidación administrativa posterior.
 6. revalidación semántica vigente de función, columna, agregación y compatibilidad KPI--medida.
+7. para cada KPI, una receta de cálculo admitida por `SPR-04-02`; una etiqueta de negocio no es suficiente para habilitar una ejecución.
 
 La versión aprobada más reciente y compatible aparecerá **preseleccionada**, pero el analista BI deberá confirmar explícitamente **Usar como base del ETL**. Esta regla agiliza el caso normal sin ocultar la decisión humana.
 
@@ -44,6 +45,7 @@ La plataforma mantendrá un apartado **Validación del datamart** vinculado a la
 |---|---|
 | Sprint 3 | Integridad de metadatos, referencias, contrato y reproducción determinística del artefacto aprobado. |
 | Sprint 4 | Conteo al grano, pedidos distintos, unidades e importes totales y mensuales entre AdventureWorks OLTP y el datamart. |
+| Sprint 4 | Definiciones y conciliación de los KPI variables sugeridos por IA para la necesidad aprobada. La demostración final evidencia al menos cinco. |
 | Incremento posterior | Contraste secundario con AdventureWorksDW cuando exista correspondencia semántica documentada. |
 | Evaluación final | Rúbrica de juicio de expertos sobre claridad, coherencia y utilidad. |
 | Pronóstico | MAPE y RMSE sobre un conjunto temporal de prueba separado. |
@@ -59,6 +61,7 @@ Cada control mostrará fuente, resultado esperado, resultado obtenido, diferenci
 - [ ] La vista previa muestra las operaciones determinísticas que se materializarán y no acepta SQL libre.
 - [ ] La ejecución parte de una base destino vacía, es transaccional, auditable y reejecutable.
 - [ ] La conciliación OLTP-datamart evidencia filas, pedidos, unidades e importes con tolerancias documentadas.
+- [ ] Cada KPI calculado usa una receta declarativa conocida, conserva su versión y se concilia con la fuente OLTP.
 - [ ] Un fallo conserva la evidencia y permite reintento seguro sin alterar la fuente.
 
 ## 6. Exclusiones de esta especificación
