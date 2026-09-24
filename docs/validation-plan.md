@@ -15,8 +15,8 @@ La persona usuaria principal de esta evidencia es el analista BI. La pantalla **
 | Controles de calidad del contrato | Granularidad, hecho, dimensiones, medidas, uniones, KPI y operaciones ETL cumplen reglas determinísticas. | Sprint 3 | Implementado y visible. |
 | Reproducibilidad de la propuesta aprobada | Las decisiones IA persistidas se reejecutan con el motor determinístico y deben producir la misma huella de propuesta. No se exige que una nueva llamada al LLM repita literalmente su respuesta. | Sprint 3 | Implementado y visible. |
 | Utilidad inicial | Decisión y comentario del analista BI sobre claridad, coherencia y pertinencia de la propuesta. | Sprint 3 | Revisión supervisada disponible; rúbrica formal pendiente. |
-| Conciliación OLTP–datamart | Consultas de referencia comparan filas, pedidos distintos, unidades e importes totales y mensuales entre la fuente y el datamart. | Sprint 4 | Pendiente de materialización del datamart. |
-| Exactitud de KPI calculados | Los KPI variables sugeridos por IA usan recetas declarativas conocidas y contrastan su resultado OLTP--datamart con período y filtros equivalentes. La demostración final evidencia al menos cinco. | Sprint 4 | Pendiente de implementación de `SPR-04-02`. |
+| Conciliación OLTP–datamart | Consultas de referencia comparan filas, pedidos distintos, unidades e importes totales y mensuales entre la fuente y el datamart. | Sprint 4 | Implementado y visible en el expediente ETL. |
+| Exactitud de KPI calculados | Los KPI variables sugeridos por IA usan recetas declarativas conocidas y contrastan su resultado OLTP--datamart con período y filtros equivalentes. La demostración final evidencia al menos cinco. | Sprint 4 | Implementado: seis KPI en la ejecución 6. |
 | Contraste secundario | Resultados equivalentes se contrastan posteriormente con AdventureWorksDW cuando exista correspondencia semántica documentada. | Sprint posterior a ETL | Pendiente. |
 | Utilidad formal | Juicio de expertos mediante instrumento y escala definidos, sin sustituir la validación técnica. | Evaluación final | Pendiente. |
 | Pronóstico | MAPE y RMSE sobre un conjunto temporal separado de prueba. | Sprint de analítica predictiva | Pendiente. |
@@ -50,6 +50,12 @@ Cada ejecución conservará consulta de referencia versionada, parámetros, inst
 Además de los controles de carga, Sprint 4 calculará los KPI variables que el LLM haya sugerido desde la necesidad y los metadatos comprobados. FastAPI sólo ejecutará recetas declarativas como agregación, razón o participación y rechazará fórmulas libres. La demostración final seleccionará al menos cinco KPI sugeridos por IA y conciliados. El contrato y las exclusiones se detallan en `docs/specs/SPR-04-02-kpis-controlados-y-calculables.md`.
 
 La versión aprobada más reciente y compatible será la sugerencia inicial para el ETL, pero el analista deberá confirmarla. También podrá comparar propuestas aprobadas de distintos modelos o revisiones; cada ejecución conservará el `proposal_id` elegido. Esta regla se desarrolla en `docs/specs/SPR-04-01-seleccion-propuesta-y-validacion-etl.md`.
+
+## Evidencia implementada en Sprint 4
+
+La propuesta 52 generó la ejecución 6 como expediente de referencia. La plataforma conservó las huellas de propuesta e instantánea, compiló 27 operaciones y cargó 121317 líneas tanto en origen como en destino, con diferencia cero. Las dimensiones registraron 1124 fechas, 504 productos, 19820 clientes y 10 territorios; se conciliaron 274914 unidades y 31465 pedidos distintos.
+
+Los seis KPI quedaron asociados a recetas versionadas. Los importes se enriquecieron posteriormente con la moneda base USD comprobada mediante `Sales.CurrencyRate.FromCurrencyCode`, sin repetir el ETL. La interpretación española publicó únicamente las etiquetas territoriales revisadas, conservó los valores originales y registró responsable, comentario y fecha. Una selección idéntica ya ejecutada abre el expediente existente en lugar de materializar nuevamente.
 
 ## Regla de interpretación
 

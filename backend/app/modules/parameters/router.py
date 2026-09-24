@@ -36,6 +36,7 @@ router = APIRouter(tags=["parameters"])
 
 _CREDENTIAL_REFERENCES = {
     "gemini": "encrypted-store",
+    "groq-cloud": "encrypted-store",
     "qwen-cloud": "encrypted-store",
     "ollama-local": "none",
 }

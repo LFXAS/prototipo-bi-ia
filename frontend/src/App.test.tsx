@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import App from './App'
@@ -119,6 +119,43 @@ describe('App', () => {
     const secretRequest = fetchMock.mock.calls.find(([input]) => String(input).includes('/llm-configurations/7/secret'))
     expect(secretRequest?.[1]?.body).toBe(JSON.stringify({ api_key: 'gemini-key-de-prueba' }))
     expect(screen.queryByDisplayValue('gemini-key-de-prueba')).not.toBeInTheDocument()
+  })
+
+  it('preconfigura Groq Cloud con GPT-OSS 120B sin exponer la credencial', async () => {
+    localStorage.setItem('bi_ia_access_token', 'test-token')
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input)
+      if (url.includes('/auth/me')) return { ok: true, status: 200, json: async () => ({
+        user: { id: 1, email: 'admin@example.test', full_name: 'Administradora', is_active: true, roles: [] },
+        permissions: ['parameters.llm.write'],
+        menus: [{ id: 1, code: 'llm', label: 'Configuración LLM', path: '/llm', position: 60, module_code: 'parameters', module_label: 'Parámetros generales', is_active: true, permissions: [] }],
+      }) }
+      if (url.includes('/llm-configurations') && init?.method === 'POST') return { ok: true, status: 201, json: async () => ({ id: 8 }) }
+      if (url.includes('/llm-configurations')) return { ok: true, status: 200, json: async () => ({ items: [], total: 0, limit: 10, offset: 0 }) }
+      throw new Error(`Solicitud inesperada: ${url}`)
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    render(<App />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Parámetros generales' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Configuración LLM' }))
+    fireEvent.change(await screen.findByLabelText('Nombre de configuración'), { target: { value: 'Groq para análisis BI' } })
+    fireEvent.change(screen.getByLabelText('Proveedor'), { target: { value: 'groq-cloud' } })
+
+    expect(screen.getByLabelText('URL del servicio')).toHaveValue('https://api.groq.com/openai/v1')
+    expect(screen.getByLabelText('Modelo')).toHaveValue('openai/gpt-oss-120b')
+    expect(screen.getByLabelText('Nivel de razonamiento')).toHaveValue('low')
+    fireEvent.click(screen.getByRole('button', { name: 'Crear registro' }))
+
+    await waitFor(() => expect(fetchMock.mock.calls.some(([input, init]) => String(input).includes('/llm-configurations') && init?.method === 'POST')).toBe(true))
+    const request = fetchMock.mock.calls.find(([input, init]) => String(input).includes('/llm-configurations') && init?.method === 'POST')
+    expect(JSON.parse(String(request?.[1]?.body))).toMatchObject({
+      provider_kind: 'groq-cloud',
+      base_url: 'https://api.groq.com/openai/v1',
+      model_id: 'openai/gpt-oss-120b',
+      reasoning_level: 'low',
+      is_active: false,
+    })
   })
 
   it('edita únicamente parámetros aprobados dentro de su rango visible', async () => {
@@ -278,11 +315,11 @@ describe('App', () => {
       id: 12, metadata_snapshot_id: 4,
       business_goal: 'Analizar las ventas mensuales por producto y cliente.',
       business_questions: ['sales_over_time'], requested_dimensions: ['date', 'product'], periodicity: 'month', domain_code: 'ventas',
-      scope_document: { origin: 'semantic-discovery:v1', tables: [{ ref: 'Sales.SalesOrderDetail' }] },
-      semantic_map_document: { candidates: [{ business_concept: 'venta', business_name_es: 'Detalle de venta', description_es: 'Cada registro representa una línea vendida.', technical_refs: ['Sales.SalesOrderDetail'], confidence: 'high', reason: 'Contiene cantidad e importe.', references_validated: true }] },
+      scope_document: { origin: 'semantic-discovery:v1', tables: [{ ref: 'Sales.SalesOrderDetail', columns: [{ name: 'UnitPrice', type: 'money' }, { name: 'UnitPriceDiscount', type: 'money' }, { name: 'OrderQty', type: 'smallint' }] }] },
+      semantic_map_document: { candidates: [{ business_concept: 'venta', business_name_es: 'Detalle de venta', description_es: 'Cada registro representa una línea vendida.', technical_refs: ['Sales.SalesOrderDetail'], confidence: 'high', reason: 'Contiene cantidad e importe.', references_validated: true }, { business_concept: 'sales_reason', business_name_es: 'Motivo de venta', description_es: 'Razón asociada al pedido.', technical_refs: ['Sales.SalesReason'], confidence: 'low', reason: 'La relación puede ser opcional o múltiple.', references_validated: true, selected: false, evidence: { status: 'decision_required', recommended_action: 'exclude', guidance: 'Se excluyó preventivamente porque la evidencia semántica es débil.', checks: [{ code: 'reference_exists', passed: true, label: 'Referencia comprobada', detail: 'Sales.SalesReason existe en la instantánea vigente.' }] } }] },
       status: 'ready_for_review', input_hash: 'a'.repeat(64), prompt_version: 'sales-bi-v1', contract_version: 1,
       provider_kind: 'ollama-local', model_id: 'qwen2.5:3b',
-      proposal_document: { contract_version: 1, domain: 'ventas', summary: 'Modelo de ventas', business_explanation: 'Una fila por línea vendida.', grain: { description: 'Una fila por línea.' }, fact: { name: 'fact_ventas', measures: [{ name: 'importe_venta', aggregation: 'sum', semantic_role: 'sales_amount' }] }, dimensions: [{ name: 'dim_producto', attributes: ['Name'] }], kpis: [{ name: 'Ventas totales', code: 'ventas_totales', semantic_role: 'sales_amount' }], etl_plan: [{ operation: 'extract', description: 'Extraer campos aprobados.' }], automatic_adjustments: ['La medida importe_venta se vinculó con LineTotal.'], decision_diagnostics: [{ kind: 'kpi', code: 'clientes_activos', status: 'excluded', reason: 'Clientes activos requiere una medida de clientes.', compatible_measures: [] }], ai_decisions: { summary: 'Modelo de ventas', grain_description: 'Una fila por línea vendida.', fact_source: 'Sales.SalesOrderDetail', measures: [{ name: 'importe_venta', source_column: 'LineTotal', aggregation: 'sum', semantic_role: 'sales_amount' }], dimensions: [{ name: 'dim_producto', source_table: 'Production.Product' }], kpis: [{ code: 'ventas_totales', name: 'Ventas totales', measure_index: 0, operation: 'sum', unit: 'moneda', semantic_role: 'sales_amount' }, { code: 'clientes_activos', name: 'Clientes activos', measure_index: 0, operation: 'count_distinct', unit: 'clientes', semantic_role: 'customer_count' }] } },
+      proposal_document: { contract_version: 1, domain: 'ventas', summary: 'Modelo de ventas', business_explanation: 'Una fila por línea vendida.', grain: { description: 'Una fila por línea.' }, fact: { name: 'fact_ventas', measures: [{ name: 'importe_venta', aggregation: 'sum', semantic_role: 'sales_amount', source_columns: ['UnitPrice', 'UnitPriceDiscount', 'OrderQty'], calculation: { operation: 'multiply', inputs: ['UnitPrice', 'UnitPriceDiscount', 'OrderQty'] } }] }, dimensions: [{ name: 'dim_producto', attributes: ['Name'] }], kpis: [{ name: 'Ventas totales', code: 'ventas_totales', semantic_role: 'sales_amount' }], etl_plan: [{ operation: 'extract', description: 'Extraer campos aprobados.' }], automatic_adjustments: ['La medida importe_venta se derivará mediante multiply usando exclusivamente columnas verificadas.'], decision_diagnostics: [{ kind: 'kpi', code: 'clientes_activos', status: 'excluded', reason: 'Clientes activos requiere una medida de clientes.', compatible_measures: [] }], ai_decisions: { summary: 'Modelo de ventas', grain_description: 'Una fila por línea vendida.', fact_source: 'Sales.SalesOrderDetail', measures: [{ name: 'importe_venta', source_column: 'UnitPrice', aggregation: 'sum', semantic_role: 'sales_amount', calculation: { operation: 'multiply', inputs: ['UnitPrice', 'UnitPriceDiscount', 'OrderQty'] } }], dimensions: [{ name: 'dim_producto', source_table: 'Production.Product' }], kpis: [{ code: 'ventas_totales', name: 'Ventas totales', measure_index: 0, operation: 'sum', unit: 'moneda', semantic_role: 'sales_amount' }, { code: 'clientes_activos', name: 'Clientes activos', measure_index: 0, operation: 'count_distinct', unit: 'clientes', semantic_role: 'customer_count' }] } },
       validation_document: { valid: true, errors: 0, warnings: 0, issues: [] }, warnings_confirmed: false,
       created_by_label: 'Administradora', created_at: '2026-09-19T10:00:00Z',
     }
@@ -312,6 +349,8 @@ describe('App', () => {
       if (url.endsWith('/copilot/proposals/12/revisions') && init?.method === 'POST') return { ok: true, status: 201, json: async () => revisedProposal }
       if (url.endsWith('/copilot/proposals/11/verify') && init?.method === 'POST') return { ok: true, status: 200, json: async () => ({ proposal_id: 11, verified: true, approval_safe: true, compatibility_warning: false, approval_invalidated: false, checks: [{ code: 'snapshot.integrity', label: 'Integridad de los metadatos', passed: true, detail: 'La huella coincide con la instantánea estructural persistida.' }, { code: 'proposal.replay', label: 'Reproducción determinística del contrato', passed: true, detail: 'Las decisiones persistidas reconstruyen exactamente el mismo contrato.' }], snapshot_hash: 'b'.repeat(64), proposal_hash: 'c'.repeat(64), replay_hash: 'c'.repeat(64), validated_reference_count: 1, rejected_reference_count: 0, validation_errors: 0, validation_warnings: 0, pending_validations: ['Contraste de cifras después de materializar el datamart.'] }) }
       if (url.endsWith('/copilot/proposals/11/invalidate') && init?.method === 'POST') return { ok: true, status: 200, json: async () => ({ ...previousProposal, status: 'invalidated', review_comment: 'La versión contiene una asociación semántica que debe corregirse.' }) }
+      if (url.includes('/copilot/proposals/12/semantic-advice?')) return { ok: true, status: 200, json: async () => [] }
+      if (url.endsWith('/copilot/proposals/12/semantic-advice') && init?.method === 'POST') return { ok: true, status: 201, json: async () => ({ id: 1, proposal_id: 12, concept_code: 'sales_reason', question: '¿Qué riesgo tendría incluir este concepto en el datamart?', response_document: { conclusion: 'exclude', answer_es: 'Puede existir más de un motivo por pedido.', evidence: [{ technical_ref: 'Sales.SalesReason', detail_es: 'La referencia existe y requiere una relación intermedia.' }], risk_es: 'Podría multiplicar las ventas.', include_consequence_es: 'Requiere una tabla puente.', exclude_consequence_es: 'No se analizarán motivos.', recommended_action_es: 'Mantener excluido salvo necesidad expresa.', confidence: 'medium', selection_changed: false }, provider_kind: 'groq-cloud', model_id: 'openai/gpt-oss-120b', created_by_label: 'Administradora', created_at: '2026-09-23T10:00:00Z' }) }
       if (url.includes('/copilot/proposals') && init?.method === 'POST') return { ok: true, status: 201, json: async () => proposal }
       if (url.includes('/copilot/proposals')) return { ok: true, status: 200, json: async () => ({ items: [previousProposal], total: 6, limit: 5, offset: 0 }) }
       throw new Error(`Solicitud inesperada: ${url}`)
@@ -330,14 +369,28 @@ describe('App', () => {
 
     expect(await screen.findByRole('heading', { name: 'Conceptos encontrados' })).toBeInTheDocument()
     expect(screen.getByText('Detalle de venta')).toBeInTheDocument()
+    expect(screen.getByText('Motivo de venta')).toBeInTheDocument()
+    expect(screen.getByText('Decisión de negocio requerida')).toBeInTheDocument()
+    expect(screen.getAllByLabelText('Incluir')[1]).not.toBeChecked()
     expect(screen.getByText(/referencias ya fueron comprobadas/i)).toBeInTheDocument()
+    fireEvent.click(screen.getAllByRole('button', { name: 'Consultar al copiloto' })[1])
+    expect(await screen.findByText(/Todavía no hay consultas/)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: '¿Qué riesgo tendría incluir este concepto en el datamart?' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Preguntar al copiloto' }))
+    expect(await screen.findByText('Recomienda excluir')).toBeInTheDocument()
+    expect(screen.getByText('Podría multiplicar las ventas.')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Aplicar recomendación' }))
+    expect(screen.getAllByLabelText('Incluir')[1]).not.toBeChecked()
+    fireEvent.click(screen.getByRole('button', { name: 'Cerrar' }))
     fireEvent.click(screen.getByRole('button', { name: 'Generar propuesta BI' }))
     expect(await screen.findByText('Referencias y contrato validados')).toBeInTheDocument()
+    expect(screen.getByText('Cálculo por fila: UnitPrice × UnitPriceDiscount × OrderQty')).toBeInTheDocument()
     expect(screen.getByText('Decisiones que requieren intervención')).toBeInTheDocument()
     expect(screen.getByText('Ajustes automáticos aplicados')).toBeInTheDocument()
-    expect(screen.getByText(/Ninguna operación se ejecuta/i)).toBeInTheDocument()
+    expect(screen.getByText(/La carga se ejecutará únicamente después de aprobar/i)).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Personalizar propuesta' }))
     expect(await screen.findByRole('heading', { name: 'Personalizar sin escribir SQL' })).toBeInTheDocument()
+    expect(screen.getByText('Columna calculada controlada')).toBeInTheDocument()
     expect(screen.getByText(/no existe una medida seleccionada con la misma función semántica/i)).toBeInTheDocument()
     fireEvent.change(screen.getByLabelText('Justificación del ajuste'), { target: { value: 'Ajuste validado por el analista BI.' } })
     fireEvent.click(screen.getByRole('button', { name: 'Guardar como nueva versión' }))
@@ -356,5 +409,85 @@ describe('App', () => {
     expect(await screen.findByText(/Se retiró la aprobación de la versión #11/)).toBeInTheDocument()
     expect(fetchMock.mock.calls.some(([input]) => String(input).endsWith('/copilot/proposals/11/invalidate'))).toBe(true)
     expect(fetchMock.mock.calls.some(([input]) => String(input).includes('status=ready_for_review'))).toBe(true)
+  })
+
+  it('guía la preparación ETL con KPI variables e interpretación segura en español', async () => {
+    localStorage.setItem('bi_ia_access_token', 'test-token')
+    const candidate = {
+      proposal_id: 21, metadata_snapshot_id: 2, business_goal: 'Analizar ventas por producto y período.', periodicity: 'month',
+      provider_kind: 'gemini', model_id: 'gemini-3.6-flash', created_at: '2026-09-22T10:00:00Z', reviewed_at: '2026-09-22T10:10:00Z',
+      reviewed_by_label: 'Analista BI', proposal_hash: 'a'.repeat(64), snapshot_hash: 'b'.repeat(64), summary: 'Modelo de ventas mensual',
+      grain: 'Una fila por detalle vendido.', fact_name: 'fact_ventas', dimensions: ['dim_producto', 'dim_fecha'], measures: ['sales_amount'],
+      kpi_count: 1, kpi_recipes: [{ code: 'ventas_netas', name: 'Ventas netas', description: 'Importe vendido.', kind: 'aggregate', unit: 'moneda de origen', declared_unit: 'EUR', adjustments: ['La unidad EUR no está comprobada en los metadatos.'], periodicity: 'inherit', definition_version: 'sales-kpi-v1', inputs: ['sales_amount'], recipe: { template: 'aggregate', measure: 'sales_amount', operation: 'sum' } }],
+      transformation_plan: [{ order: 1, code: 'extract.approved_columns', stage: 'extract', label: 'Extraer sólo columnas aprobadas', detail: 'Mantiene SQL Server en modo de sólo lectura.', severity: 'required', definition_version: 'sales-transform-v1' }, { order: 2, code: 'localize.dim_producto.labels', stage: 'transform', label: 'Preparar etiquetas españolas', detail: 'Conserva el valor original.', severity: 'optional', definition_version: 'sales-transform-v1' }],
+      warnings: [], eligible: true, blocking_reasons: [], recommended: true,
+    }
+    const executedCandidate = {
+      ...candidate,
+      proposal_id: 22,
+      summary: 'Modelo de ventas ya materializado',
+      recommended: false,
+      latest_execution_id: 5,
+      latest_execution_status: 'validation_warning',
+      latest_execution_at: '2026-09-22T10:20:00Z',
+      latest_execution_kpi_codes: ['ventas_netas'],
+    }
+    const execution = {
+      id: 5, proposal_id: 22, metadata_snapshot_id: 2, status: 'validation_warning', domain_code: 'ventas',
+      builder_version: 'sales-etl-builder-v1', proposal_hash: 'a'.repeat(64), snapshot_hash: 'b'.repeat(64),
+      selection_document: {}, plan_document: {},
+      validation_document: { message: 'El datamart quedó conciliado; revise la interpretación española propuesta.' },
+      metrics_document: {
+        reconciliation: { passed: true, source_rows: 10, datamart_rows: 10, difference_rows: 0 },
+        tables: [{ table: 'fact_ventas', source_rows: 10, loaded_rows: 10, deduplicated_rows: 0 }],
+        kpis: [{ code: 'ventas_netas', name: 'Ventas netas', value: '100', unit: 'moneda de origen', status: 'reconciled' }],
+        semantic_interpretation: { status: 'review_required', message: 'Revise las etiquetas.', mappings: [{ dimension: 'dim_territorio', target_column: 'group', mappings: [{ original: 'Europe', label_es: 'Europa' }] }] },
+      },
+      created_by_label: 'Analista BI', created_at: '2026-09-22T10:20:00Z', finished_at: '2026-09-22T10:21:00Z',
+    }
+    const currencyVerifiedExecution = {
+      ...execution,
+      metrics_document: {
+        ...execution.metrics_document,
+        currency_context: { status: 'verified', currency_code: 'USD', source_reference: 'Sales.CurrencyRate.FromCurrencyCode', message: 'La divisa USD fue comprobada como moneda de origen.' },
+        kpis: [{ code: 'ventas_netas', name: 'Ventas netas', value: '100', unit: 'USD', status: 'reconciled' }],
+      },
+    }
+    vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input)
+      if (url.includes('/auth/me')) return { ok: true, status: 200, json: async () => ({ user: { id: 1, email: 'analista@example.test', full_name: 'Analista BI', is_active: true, roles: [] }, permissions: ['etl.executions.read', 'etl.executions.write'], menus: [{ id: 20, code: 'sales-datamart', label: 'Datamart de ventas', path: '/datamart-ventas', position: 20, module_code: 'data', module_label: 'Datos', is_active: true, permissions: [] }] }) }
+      if (url.endsWith('/etl/proposals')) return { ok: true, status: 200, json: async () => ({ items: [candidate, executedCandidate], blocked_items: [], recommended_proposal_id: 21, guidance: [] }) }
+      if (url.endsWith('/etl/executions/5/verify-currency')) return { ok: true, status: 200, json: async () => currencyVerifiedExecution }
+      if (url.includes('/etl/executions')) return { ok: true, status: 200, json: async () => ({ items: [execution], total: 1, limit: 5, offset: 0 }) }
+      throw new Error(`Solicitud inesperada: ${url}`)
+    }))
+
+    render(<App />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Datos' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Datamart de ventas' }))
+
+    expect(await screen.findByText('Sugerencia automática, decisión humana')).toBeInTheDocument()
+    expect(screen.getByText('Versión #21 seleccionada')).toBeInTheDocument()
+    expect(screen.getByText('Ya ejecutada · expediente #5')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Revisar indicadores' }))
+    expect(await screen.findByText('Ajuste de seguridad')).toBeInTheDocument()
+    expect(screen.getByText(/unidad EUR no está comprobada/i)).toBeInTheDocument()
+    expect(screen.getByText('Mensual')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Revisar transformaciones' }))
+    expect(await screen.findByRole('heading', { name: 'Interpretación dinámica en español' })).toBeInTheDocument()
+    expect(screen.getByText(/no se traducen identificadores, nombres de personas/i)).toBeInTheDocument()
+    expect(screen.getByText('No requiere acción en esta pantalla')).toBeInTheDocument()
+    expect(screen.getAllByText('Revisar en el paso 5')).not.toHaveLength(0)
+    expect(screen.queryByText('Supervisada')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir expediente #5' }))
+    expect(await screen.findByRole('heading', { name: 'Conciliación OLTP–datamart' })).toBeInTheDocument()
+    expect(screen.getByText('100,00 moneda de origen')).toBeInTheDocument()
+    expect(screen.getByText('Divisa pendiente de comprobación')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Comprobar divisa sin repetir el ETL' }))
+    expect(await screen.findByText('Divisa comprobada: USD')).toBeInTheDocument()
+    expect(screen.getByText(/Referencia: Sales\.CurrencyRate\.FromCurrencyCode/)).toBeInTheDocument()
+    expect(screen.getByText(/USD.*100,00/)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Interpretación semántica' })).toBeInTheDocument()
+    expect(screen.getByDisplayValue('Europa')).toBeInTheDocument()
   })
 })

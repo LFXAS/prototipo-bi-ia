@@ -16,6 +16,7 @@ from app.modules.copilot.service import (
     derived_scope,
     expand_proposal_blueprint,
     proposal_blueprint_schema,
+    semantic_advice_response_schema,
     validate_proposal,
     validated_semantic_candidates,
     verify_proposal_evidence,
@@ -184,8 +185,29 @@ def test_kpi_suggestions_are_variable_without_a_fixed_business_catalog() -> None
     schema = proposal_blueprint_schema(scope, semantic_map)
 
     assert schema["properties"]["measures"]["maxItems"] == 6
+    measure_schema = schema["properties"]["measures"]["items"]
+    assert "calculation_operation" in measure_schema["required"]
+    assert measure_schema["properties"]["calculation_operation"]["enum"] == [
+        "direct",
+        "add",
+        "divide",
+        "multiply",
+        "subtract",
+    ]
     assert schema["properties"]["kpis"]["maxItems"] == 12
     assert schema["properties"]["kpis"]["items"]["properties"]["measure_index"]["maximum"] == 5
+
+
+def test_semantic_advice_can_only_cite_verified_candidate_references() -> None:
+    schema = semantic_advice_response_schema(["Sales.SalesReason"])
+
+    evidence = schema["properties"]["evidence"]["items"]
+    assert evidence["properties"]["technical_ref"]["enum"] == ["Sales.SalesReason"]
+    assert schema["properties"]["conclusion"]["enum"] == [
+        "include",
+        "exclude",
+        "define_business",
+    ]
 
 
 def test_catalog_is_derived_from_snapshot_metadata() -> None:
@@ -256,6 +278,42 @@ def test_semantic_reference_must_exist_before_scope_is_derived() -> None:
     )
     assert semantic_map["candidates"] == []
     assert rejected[0]["code"] == "semantic.unknown_reference"
+
+
+def test_low_confidence_concept_is_kept_for_audit_but_excluded_from_scope() -> None:
+    response = semantic_response()
+    candidates = response["candidates"]
+    assert isinstance(candidates, list) and isinstance(candidates[0], dict)
+    candidates[0]["confidence"] = "low"
+
+    semantic_map, rejected = validated_semantic_candidates([response], DOCUMENT)
+    candidate = semantic_map["candidates"][0]
+
+    assert rejected == []
+    assert candidate["selected"] is False
+    assert candidate["evidence"]["status"] == "decision_required"
+    assert candidate["evidence"]["recommended_action"] == "exclude"
+    assert derived_scope(DOCUMENT, semantic_map)["tables"] == []
+
+
+def test_medium_confidence_is_structurally_supported_by_key_and_relationship() -> None:
+    response = semantic_response("Production.Product")
+    candidates = response["candidates"]
+    assert isinstance(candidates, list) and isinstance(candidates[0], dict)
+    candidates[0]["confidence"] = "medium"
+    candidates[0]["business_concept"] = "product"
+
+    semantic_map, rejected = validated_semantic_candidates([response], DOCUMENT)
+    candidate = semantic_map["candidates"][0]
+
+    assert rejected == []
+    assert candidate["selected"] is True
+    assert candidate["evidence"]["status"] == "structurally_supported"
+    assert candidate["evidence"]["recommended_action"] == "include"
+    assert any(
+        check["code"] == "relationship_available" and check["passed"]
+        for check in candidate["evidence"]["checks"]
+    )
 
 
 def test_scope_adds_only_declared_related_tables() -> None:
@@ -374,6 +432,139 @@ def test_incompatible_kpi_is_excluded_and_explained() -> None:
     assert "fue excluido" in proposal["warnings"][0]
     assert validation["valid"] is True
     assert validation["warnings"] == 1
+
+
+def test_customer_measure_using_order_identifier_is_excluded_before_review() -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+    blueprint = valid_blueprint()
+    blueprint["measures"].append(
+        {
+            "name": "Clientes únicos",
+            "source_column": "OrderID",
+            "aggregation": "count_distinct",
+            "semantic_role": "customer_count",
+        }
+    )
+    blueprint["kpis"].append(
+        {
+            "code": "clientes_unicos",
+            "name": "Clientes únicos",
+            "measure_index": 1,
+            "operation": "count_distinct",
+            "unit": "clientes",
+            "semantic_role": "customer_count",
+        }
+    )
+
+    proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
+    validation = validate_proposal(proposal, scope, DOCUMENT)
+
+    assert [item["name"] for item in proposal["fact"]["measures"]] == ["importe_venta"]
+    assert [item["code"] for item in proposal["kpis"]] == ["ventas_totales"]
+    assert any("OrderID no representa customer_count" in item for item in proposal["warnings"])
+    assert validation["valid"] is True
+
+
+def test_discount_rate_is_autocorrected_into_a_verified_monetary_measure() -> None:
+    document = deepcopy(DOCUMENT)
+    fact_columns = document["schemas"][0]["tables"][0]["columns"]
+    fact_columns.extend(
+        [
+            {"name": "SalesOrderDetailID", "data_type": "int", "primary_key": True},
+            {"name": "UnitPrice", "data_type": "money", "primary_key": False},
+            {"name": "UnitPriceDiscount", "data_type": "money", "primary_key": False},
+            {"name": "OrderQty", "data_type": "smallint", "primary_key": False},
+        ]
+    )
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], document)
+    scope = derived_scope(document, semantic_map)
+    blueprint = valid_blueprint()
+    blueprint["measures"] = [
+        {
+            "name": "Precio unitario promedio",
+            "source_column": "UnitPrice",
+            "aggregation": "average",
+            "semantic_role": "sales_amount",
+        },
+        {
+            "name": "Descuento total",
+            "source_column": "UnitPriceDiscount",
+            "aggregation": "sum",
+            "semantic_role": "sales_amount",
+            "calculation_operation": "multiply",
+            "calculation_inputs": ["UnitPriceDiscount", "OrderQty"],
+        },
+        {
+            "name": "Número de pedidos",
+            "source_column": "SalesOrderDetailID",
+            "aggregation": "count",
+            "semantic_role": "transaction_count",
+        },
+    ]
+    blueprint["kpis"] = []
+
+    proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
+    measures = proposal["fact"]["measures"]
+
+    assert measures[0]["source_columns"] == ["UnitPrice"]
+    assert measures[1]["source_columns"] == [
+        "UnitPrice",
+        "UnitPriceDiscount",
+        "OrderQty",
+    ]
+    assert measures[1]["calculation"] == {
+        "operation": "multiply",
+        "inputs": ["UnitPrice", "UnitPriceDiscount", "OrderQty"],
+        "null_policy": "preserve_null",
+    }
+    assert measures[2]["source_columns"] == ["OrderID"]
+    assert measures[2]["aggregation"] == "count_distinct"
+    assert any("corrigió automáticamente" in item for item in proposal["automatic_adjustments"])
+
+
+def test_discount_rate_without_unambiguous_factors_is_blocked_before_approval() -> None:
+    document = deepcopy(DOCUMENT)
+    document["schemas"][0]["tables"][0]["columns"].append(
+        {"name": "DiscountRate", "data_type": "numeric", "primary_key": False}
+    )
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], document)
+    scope = derived_scope(document, semantic_map)
+    candidate = valid_proposal()
+    candidate["fact"]["measures"][0] = {
+        "name": "Descuento total",
+        "source_columns": ["LineTotal"],
+        "aggregation": "sum",
+        "semantic_role": "sales_amount",
+    }
+    candidate["fact"]["measures"][0]["source_columns"] = ["DiscountRate"]
+
+    validation = validate_proposal(candidate, scope, document)
+
+    assert validation["valid"] is False
+    assert "measure.discount_rate_as_amount" in {item["code"] for item in validation["issues"]}
+
+
+def test_incomplete_discount_calculation_is_blocked_before_approval() -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+    candidate = valid_proposal()
+    candidate["fact"]["measures"][0] = {
+        "name": "Descuento total",
+        "source_columns": ["DiscountRate", "OrderQty"],
+        "aggregation": "sum",
+        "semantic_role": "sales_amount",
+        "calculation": {
+            "operation": "multiply",
+            "inputs": ["DiscountRate", "OrderQty"],
+            "null_policy": "preserve_null",
+        },
+    }
+
+    validation = validate_proposal(candidate, scope, DOCUMENT)
+
+    assert validation["valid"] is False
+    assert "measure.discount_amount_incomplete" in {item["code"] for item in validation["issues"]}
 
 
 def test_semantic_mismatch_in_a_saved_kpi_blocks_validation() -> None:

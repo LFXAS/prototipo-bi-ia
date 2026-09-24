@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from app.modules.metadata.introspection import normalize_metadata
+from app.modules.metadata.introspection import _COLUMN_QUERY, normalize_metadata
 from app.modules.metadata.router import _matching_tables
 from app.modules.parameters.models import DataConnection
 
@@ -52,6 +52,12 @@ def test_metadata_document_is_canonical_and_reproducible() -> None:
     assert set(first.document) == {"contract_version", "source", "schemas"}
     assert "password" not in str(first.document).lower()
     assert "sqlserver" not in str(first.document["source"]["database"]).lower()
+
+
+def test_introspection_uses_base_type_so_alias_typed_columns_are_not_lost() -> None:
+    """AdventureWorks uses aliases such as dbo.Name that a reader cannot describe directly."""
+    assert "columns.system_type_id" in _COLUMN_QUERY
+    assert "types.user_type_id = types.system_type_id" in _COLUMN_QUERY
 
 
 def test_foreign_key_keeps_valid_source_and_target_columns() -> None:

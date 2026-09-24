@@ -1,0 +1,541 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage[letterpaper,margin=2.5cm,headheight=15pt]{geometry}
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{xurl}
+\usepackage{caption}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,shapes.geometric}
+
+\ifdefined\pdfinfoomitdate\pdfinfoomitdate=1\fi
+\ifdefined\pdftrailerid\pdftrailerid{}\fi
+\ifdefined\pdfsuppressptexinfo\pdfsuppressptexinfo=15\fi
+
+\definecolor{ugblue}{HTML}{006A8D}
+\definecolor{deepgreen}{HTML}{123D3A}
+\definecolor{softgray}{HTML}{F1F5F4}
+\definecolor{success}{HTML}{157A57}
+\definecolor{warning}{HTML}{A45A00}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=ugblue,
+  urlcolor=ugblue,
+  hypertexnames=false,
+  pdftitle={Capitulo III - Propuesta tecnologica},
+  pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Capítulo III -- Propuesta tecnológica}
+\rhead{Prototipo BI asistido por IA}
+\cfoot{\thepage}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.52em}
+\setlist[itemize]{leftmargin=1.5em,itemsep=0.22em}
+\setlist[enumerate]{leftmargin=1.7em,itemsep=0.28em}
+\renewcommand{\arraystretch}{1.18}
+\newcommand{\file}[1]{\texttt{#1}}
+\newcommand{\ok}{\textcolor{success}{\textbf{Completado}}}
+\newcommand{\statuspartial}{\textcolor{warning}{\textbf{Parcial}}}
+\newcommand{\notebox}[1]{\begin{center}\fcolorbox{ugblue}{softgray}{\begin{minipage}{0.90\textwidth}\textcolor{ugblue}{\textbf{Criterio académico.}} #1\end{minipage}}\end{center}}
+
+\tikzset{
+  uml/.style={draw=ugblue, rounded corners=2pt, fill=white, align=center, minimum height=8mm, text width=3.2cm, font=\small},
+  actor/.style={draw=deepgreen, rounded corners=2pt, fill=softgray, align=center, minimum height=8mm, text width=2.65cm, font=\small\bfseries},
+  component/.style={draw=ugblue, rounded corners=3pt, fill=softgray, align=center, minimum height=11mm, text width=3.4cm, font=\small},
+  datastore/.style={cylinder, shape border rotate=90, aspect=0.30, draw=deepgreen, fill=white, align=center, minimum height=12mm, text width=2.7cm, font=\small},
+  flow/.style={-{Latex[length=2mm]}, thick, draw=ugblue},
+  dependency/.style={-{Latex[length=2mm]}, dashed, draw=deepgreen}
+}
+
+\begin{document}
+\hypersetup{pageanchor=false}
+
+\begin{titlepage}
+  \thispagestyle{empty}
+  \vspace*{0.7cm}
+  {\color{ugblue}\rule{\textwidth}{2.8pt}}
+  \vspace{1.1cm}
+
+  {\Large Universidad de Guayaquil\\[0.25em]
+  Facultad de Ciencias Matemáticas y Físicas\\
+  Carrera de Software}
+
+  \vfill
+
+  {\color{deepgreen}\fontsize{27}{33}\selectfont\textbf{Capítulo III}}\\[0.55em]
+  {\LARGE Propuesta tecnológica e ingeniería de software}\\[0.75em]
+  {\large Prueba de concepto de un prototipo funcional de BI asistido por IA\\
+  para la construcción semiautomatizada y supervisada\\
+  de un datamart de ventas\par}
+
+  \vspace{1.3cm}
+
+  \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
+    Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
+    Tipo de documento & Texto base para integración en el trabajo de titulación \\
+    Código documental & TES-CAP-03 \\
+    Versión & 1.0.0 \\
+    Periodo cubierto & Sprints 1 al 4; agosto--septiembre de 2026 \\
+    Estado & Ingeniería implementada y evidencia acumulada; capítulos posteriores pendientes \\
+  \end{tabularx}
+
+  \vfill
+  {\large Guayaquil, Ecuador -- septiembre de 2026\par}
+  \vspace{0.65cm}
+  {\color{ugblue}\rule{\textwidth}{2.8pt}}
+\end{titlepage}
+
+\hypersetup{pageanchor=true}
+\pagenumbering{roman}
+\tableofcontents
+\newpage
+\listoftables
+\listoffigures
+\newpage
+\pagenumbering{arabic}
+
+\section{Presentación del capítulo}
+
+Este capítulo documenta la propuesta tecnológica y la ingeniería de software aplicada al prototipo. Reúne el análisis de factibilidad, la metodología de desarrollo, los requisitos, el modelado del sistema, la arquitectura, los incrementos construidos mediante Scrum y la evidencia de verificación disponible al cierre del Sprint 4.
+
+El texto es deliberadamente consolidado: explica qué problema resuelve el sistema y cómo se diseñó. Los informes completos de cada sprint, el manual técnico y la bitácora constituyen anexos de evidencia y conservan decisiones, incidentes, comandos y resultados que no deben repetirse íntegramente en el cuerpo de la tesis.
+
+\notebox{La estructura se alinea con antecedentes del repositorio institucional que ubican en el Capítulo III la propuesta tecnológica, factibilidad, metodología, sprints, entregables y validación. Los nombres definitivos de capítulos, numeración y portada deben integrarse en la plantilla oficial vigente del trabajo de titulación.}
+
+\section{Descripción de la propuesta tecnológica}
+
+La propuesta consiste en una plataforma web que permite a un analista BI configurar una fuente de ventas, explorar sus metadatos, expresar una necesidad de negocio y obtener de un LLM una propuesta de modelo dimensional y KPI. La aplicación comprueba cada referencia contra una instantánea estructural, exige una decisión humana y materializa el datamart mediante un ejecutor determinístico. El resultado queda conciliado y trazable en PostgreSQL.
+
+El uso de IA es semiautomatizado y supervisado. El modelo interpreta y recomienda; no recibe credenciales, no consulta filas libremente, no genera SQL ejecutable y no aprueba sus propias decisiones. FastAPI controla permisos, contratos, uniones, transformaciones, fórmulas, materialización y evidencias. El analista interviene sólo cuando existe una ambigüedad semántica o de negocio que no puede resolverse con certeza estructural.
+
+\subsection{Escenario de estudio}
+
+AdventureWorks 2022 representa el sistema transaccional de ventas. SQL Server se consulta con un usuario de sólo lectura; PostgreSQL conserva configuración, auditoría, instantáneas, propuestas, decisiones y el esquema dimensional \file{mart}. La arquitectura permanece preparada para futuros dominios y conectores, pero la prueba de concepto sólo declara como implementado y validado el dominio ventas sobre SQL Server.
+
+\section{Análisis de factibilidad}
+
+\subsection{Factibilidad técnica}
+
+El sistema es técnicamente factible porque se construye con componentes reproducibles y disponibles: React/Vite, FastAPI, PostgreSQL, SQL Server, Docker Compose, GitHub Actions y proveedores LLM configurables. Las dependencias quedan fijadas, las migraciones son versionadas y las verificaciones se ejecutan dentro de contenedores. La alternativa Ollama permite una prueba local; Gemini Cloud y Groq Cloud cubren escenarios de mayor capacidad o menor latencia.
+
+\subsection{Factibilidad operativa}
+
+El flujo se diseñó para que el analista BI trabaje desde una única plataforma. Los pasos muestran prerrequisitos, evidencia, confianza, acciones y consecuencias. Las tareas rutinarias se automatizan; las decisiones supervisadas incluyen explicaciones y no exigen escribir SQL. El historial permite cerrar y reabrir una propuesta o ejecución sin repetir procesos costosos.
+
+\subsection{Factibilidad económica}
+
+La prueba de concepto utiliza software de código abierto y puede ejecutarse en equipos de desarrollo mediante Docker. Los proveedores cloud se consumen con credenciales propias y límites configurables; Ollama reduce dependencia externa a cambio de mayor consumo local. Una eventual publicación en Azure requiere presupuestar una máquina virtual suficiente para SQL Server y vigilar crédito, almacenamiento y transferencia.
+
+\subsection{Factibilidad de seguridad y cumplimiento}
+
+Las credenciales se cifran antes de persistir, los secretos permanecen fuera de Git y la conexión de origen se valida como sólo lectura. JWT y RBAC restringen acciones; la auditoría registra mutaciones. El contrato del LLM excluye filas, datos personales, secretos y SQL libre. Para una implantación real deberán añadirse políticas institucionales de retención, privacidad, respaldo, continuidad y gestión de proveedores.
+
+\section{Metodología de desarrollo}
+
+Se aplicó Scrum de forma incremental, complementado con desarrollo guiado por especificaciones (SDD) y prácticas DevOps. Cada sprint conserva objetivo, alcance, backlog, criterios de aceptación, incremento, verificación, revisión y retrospectiva. Las especificaciones se aprueban antes de implementar; código, migraciones, pruebas y documentos avanzan mediante pull requests protegidos.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[node distance=8mm and 8mm]
+  \node[component] (need) {Necesidad y riesgo};
+  \node[component, right=of need] (spec) {Especificación y criterios};
+  \node[component, right=of spec] (build) {Implementación incremental};
+  \node[component, below=of build] (verify) {Pruebas y evidencia};
+  \node[component, left=of verify] (review) {Revisión humana y PR};
+  \node[component, left=of review] (learn) {Retrospectiva y ajuste};
+  \draw[flow] (need) -- (spec);
+  \draw[flow] (spec) -- (build);
+  \draw[flow] (build) -- (verify);
+  \draw[flow] (verify) -- (review);
+  \draw[flow] (review) -- (learn);
+  \draw[flow] (learn) -- (need);
+\end{tikzpicture}
+\caption{Ciclo de desarrollo aplicado en los sprints.}
+\end{figure}
+
+\section{Requisitos del sistema}
+
+\subsection{Actores}
+
+\begin{table}[ht]
+\centering
+\caption{Actores y responsabilidades principales.}
+\begin{tabularx}{\textwidth}{@{}p{0.23\textwidth}X@{}}
+  \toprule
+  Actor & Responsabilidad \\
+  \midrule
+  Administrador de plataforma & Gestionar usuarios, roles, permisos, parámetros generales y configuraciones LLM. \\
+  Analista BI & Configurar el catálogo analítico, formular necesidades, revisar propuestas, aprobar contratos, ejecutar ETL y decidir sobre evidencia semántica. \\
+  Usuario de negocio & Proporcionar preguntas y consumir resultados analíticos cuando se habiliten dashboard e insights. \\
+  Proveedor LLM & Interpretar metadatos y devolver recomendaciones estructuradas; no ejecutar operaciones ni decidir validez. \\
+  SQL Server & Proveer metadatos y datos de ventas mediante credenciales de sólo lectura. \\
+  PostgreSQL & Persistir configuración, auditoría, expedientes y el datamart materializado. \\
+  \bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Requisitos funcionales}
+
+\begin{longtable}{@{}p{0.12\textwidth}p{0.63\textwidth}p{0.17\textwidth}@{}}
+  \caption{Requisitos funcionales consolidados.}\\
+  \toprule
+  ID & Requisito & Estado \\
+  \midrule
+  \endfirsthead
+  \toprule
+  ID & Requisito & Estado \\
+  \midrule
+  \endhead
+  RF-01 & Autenticar usuarios y autorizar cada operación mediante roles y permisos. & \ok \\
+  RF-02 & Administrar parámetros, configuraciones LLM y credenciales cifradas. & \ok \\
+  RF-03 & Registrar y probar una fuente SQL Server de sólo lectura. & \ok \\
+  RF-04 & Capturar instantáneas inmutables de tablas, columnas, PK y FK. & \ok \\
+  RF-05 & Administrar por dominio preguntas de negocio y periodicidades soportadas. & \ok \\
+  RF-06 & Generar conceptos y una propuesta dimensional mediante IA. & \ok \\
+  RF-07 & Validar referencias, agregaciones, uniones, fórmulas y ausencia de SQL libre. & \ok \\
+  RF-08 & Permitir personalizar, aprobar, rechazar, retirar o descartar versiones con auditoría. & \ok \\
+  RF-09 & Compilar una propuesta aprobada a un plan ETL determinístico. & \ok \\
+  RF-10 & Materializar dimensiones, hecho y KPI; conciliar origen y destino. & \ok \\
+  RF-11 & Guiar la revisión semántica y publicar etiquetas sin reemplazar originales. & \ok \\
+  RF-12 & Presentar dashboard, hallazgos y pronóstico mensual evaluado. & \statuspartial \\
+  \bottomrule
+\end{longtable}
+
+\subsection{Requisitos no funcionales}
+
+\begin{table}[ht]
+\centering
+\caption{Requisitos no funcionales relevantes.}
+\begin{tabularx}{\textwidth}{@{}p{0.19\textwidth}X@{}}
+  \toprule
+  Atributo & Criterio \\
+  \midrule
+  Seguridad & Secretos fuera de Git, cifrado autenticado, RBAC, auditoría y lectura restringida del origen. \\
+  Reproducibilidad & Docker, migraciones, datos base versionados, dependencias fijadas y construcción verificable. \\
+  Trazabilidad & Relación entre necesidad, instantánea, respuesta LLM, validación, decisión, ejecución y responsable. \\
+  Usabilidad & Flujo guiado, lenguaje comprensible, estado visible, acciones reversibles y mensajes accionables. \\
+  Integridad & Transacciones, claves, grano explícito, conteos, tolerancias y conciliación origen--destino. \\
+  Extensibilidad & Interfaces para conectores, perfiles de dominio, proveedores LLM y recetas KPI. \\
+  Mantenibilidad & Módulos separados, pruebas automatizadas, CI/CD, bitácora y manual técnico acumulativo. \\
+  \bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Modelado UML y casos de uso}
+
+\subsection{Diagrama general de casos de uso}
+
+\begin{figure}[ht]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[node distance=7mm and 14mm]
+  \node[actor] (admin) {$\langle\!\langle$actor$\rangle\!\rangle$\\Administrador};
+  \node[actor, below=22mm of admin] (analyst) {$\langle\!\langle$actor$\rangle\!\rangle$\\Analista BI};
+  \node[actor, below=22mm of analyst] (business) {$\langle\!\langle$actor$\rangle\!\rangle$\\Usuario de negocio};
+
+  \node[uml, right=22mm of admin] (security) {Administrar seguridad y parámetros};
+  \node[uml, below=of security] (source) {Configurar fuente y metadatos};
+  \node[uml, below=of source] (need) {Definir necesidad analítica};
+  \node[uml, below=of need] (proposal) {Generar y validar propuesta BI};
+  \node[uml, below=of proposal] (approve) {Supervisar y aprobar versión};
+  \node[uml, below=of approve] (etl) {Materializar y conciliar datamart};
+  \node[uml, below=of etl] (consume) {Consultar resultados analíticos};
+
+  \node[actor, right=24mm of proposal] (llm) {$\langle\!\langle$external$\rangle\!\rangle$\\Proveedor LLM};
+  \node[actor, right=24mm of etl] (db) {$\langle\!\langle$external$\rangle\!\rangle$\\SQL Server};
+
+  \draw[flow] (admin) -- (security);
+  \draw[flow] (admin) -- (source);
+  \draw[flow] (analyst) -- (need);
+  \draw[flow] (analyst) -- (proposal);
+  \draw[flow] (analyst) -- (approve);
+  \draw[flow] (analyst) -- (etl);
+  \draw[flow] (business) -- (consume);
+  \draw[dependency] (proposal) -- (llm);
+  \draw[dependency] (source) -| (db);
+  \draw[dependency] (etl) -- (db);
+  \draw[dependency] (etl) -- (consume);
+\end{tikzpicture}}
+\caption{Diagrama UML general de actores y casos de uso.}
+\end{figure}
+
+\subsection{Especificaciones resumidas de casos de uso}
+
+\begin{longtable}{@{}p{0.12\textwidth}p{0.22\textwidth}p{0.52\textwidth}@{}}
+  \caption{Casos de uso principales.}\\
+  \toprule
+  ID & Caso de uso & Flujo y resultado \\
+  \midrule
+  \endfirsthead
+  \toprule
+  ID & Caso de uso & Flujo y resultado \\
+  \midrule
+  \endhead
+  CU-01 & Configurar plataforma & El administrador autentica, asigna permisos y registra parámetros o proveedor LLM. El sistema cifra credenciales y audita la mutación. \\
+  CU-02 & Preparar fuente & El administrador registra SQL Server, prueba sólo lectura y actualiza metadatos. El sistema crea una instantánea inmutable y verificable. \\
+  CU-03 & Definir necesidad & El analista selecciona dominio, redacta el objetivo, elige preguntas y periodicidad. La aplicación entrega sólo el contexto permitido. \\
+  CU-04 & Generar propuesta & El LLM sugiere conceptos, grano, hecho, dimensiones y KPI. FastAPI comprueba todas las referencias y muestra errores o advertencias accionables. \\
+  CU-05 & Decidir versión & El analista personaliza, consulta al copiloto contextual y aprueba, rechaza o descarta. La decisión queda auditada y es reversible según reglas. \\
+  CU-06 & Ejecutar ETL & El analista confirma una selección; el backend recompueba el contrato, compila recetas, carga el datamart y conserva métricas. \\
+  CU-07 & Validar resultado & La plataforma contrasta origen y destino, identifica moneda, presenta KPI y permite revisar etiquetas semánticas sin alterar valores originales. \\
+  \bottomrule
+\end{longtable}
+
+\subsection{Precondiciones y excepciones del caso crítico CU-06}
+
+\begin{table}[ht]
+\centering
+\caption{Contrato resumido del caso de uso Ejecutar ETL.}
+\begin{tabularx}{\textwidth}{@{}>{\bfseries}p{0.25\textwidth}X@{}}
+  \toprule
+  Elemento & Descripción \\
+  \midrule
+  Actor principal & Analista BI con permiso de materialización. \\
+  Precondiciones & Fuente activa, instantánea vigente, propuesta aprobada, referencias válidas y selección KPI compatible. \\
+  Flujo normal & Preparar selección, revisar plan, confirmar, ejecutar, conciliar y abrir expediente. \\
+  Excepción de contrato & Si cambió la instantánea o una referencia dejó de existir, se bloquea y se explica la corrección. \\
+  Excepción de ejecución & La transacción revierte el destino, conserva diagnóstico y habilita reintento controlado. \\
+  Duplicado & Si ya existe la misma selección, se abre el expediente vigente y no se repite la carga. \\
+  Postcondición & Tablas materializadas, métricas persistidas, conciliación visible y evento auditado. \\
+  \bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Arquitectura y diseño del sistema}
+
+\subsection{Diagrama de componentes}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[node distance=10mm and 16mm]
+  \node[component] (ui) {$\langle\!\langle$component$\rangle\!\rangle$\\React / Vite\\Interfaz guiada};
+  \node[component, right=of ui] (api) {$\langle\!\langle$component$\rangle\!\rangle$\\FastAPI\\API y orquestación};
+  \node[component, right=of api] (llm) {$\langle\!\langle$external$\rangle\!\rangle$\\Gemini, Groq u Ollama};
+  \node[datastore, below=of api] (pg) {PostgreSQL\\app + mart};
+  \node[datastore, left=of pg] (sql) {SQL Server\\AdventureWorks};
+  \node[component, right=of pg] (ci) {$\langle\!\langle$component$\rangle\!\rangle$\\GitHub Actions\\CI/CD};
+  \draw[flow] (ui) -- node[above,font=\scriptsize]{HTTPS/JSON} (api);
+  \draw[dependency] (api) -- node[above,font=\scriptsize]{contrato estructurado} (llm);
+  \draw[flow] (api) -- node[right,font=\scriptsize]{SQL controlado} (pg);
+  \draw[flow] (sql) -- node[left,font=\scriptsize]{sólo lectura} (api);
+  \draw[dependency] (ci) -- (api);
+  \draw[dependency] (ci) -- (ui);
+\end{tikzpicture}
+\caption{Diagrama UML de componentes principales.}
+\end{figure}
+
+\subsection{Diagrama de despliegue}
+
+\begin{figure}[ht]
+\centering
+\resizebox{0.96\textwidth}{!}{%
+\begin{tikzpicture}[node distance=10mm and 13mm]
+  \node[component] (browser) {$\langle\!\langle$device$\rangle\!\rangle$\\Navegador del analista};
+  \node[component, right=of browser] (front) {$\langle\!\langle$container$\rangle\!\rangle$\\Frontend / Nginx};
+  \node[component, right=of front] (back) {$\langle\!\langle$container$\rangle\!\rangle$\\Backend FastAPI};
+  \node[datastore, below=of back] (pg) {$\langle\!\langle$container$\rangle\!\rangle$\\PostgreSQL};
+  \node[datastore, left=of pg] (sql) {$\langle\!\langle$container$\rangle\!\rangle$\\SQL Server};
+  \node[component, right=of pg] (ollama) {$\langle\!\langle$optional$\rangle\!\rangle$\\Ollama local};
+  \draw[flow] (browser) -- (front);
+  \draw[flow] (front) -- (back);
+  \draw[flow] (back) -- (pg);
+  \draw[flow] (back) -- (sql);
+  \draw[dependency] (back) -- (ollama);
+  \node[draw=deepgreen, dashed, rounded corners, fit=(front)(back)(pg)(sql)(ollama), inner sep=7mm, label={[font=\small\bfseries]above:Host Docker / red aislada}] {};
+\end{tikzpicture}}
+\caption{Diagrama UML de despliegue local reproducible.}
+\end{figure}
+
+\subsection{Secuencia de generación y aprobación}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,font=\scriptsize]
+  \foreach \x/\name in {0/Analista,3/React,6/FastAPI,9/LLM,12/PostgreSQL}{
+    \node[uml,text width=2.2cm] (n\x) at (\x,0) {\name};
+    \draw[dashed,gray] (\x,-0.45) -- (\x,-6.2);
+  }
+  \draw[flow] (0,-1) -- node[above]{necesidad y preguntas} (3,-1);
+  \draw[flow] (3,-1.7) -- node[above]{solicitar análisis} (6,-1.7);
+  \draw[flow] (6,-2.4) -- node[above]{metadatos permitidos} (9,-2.4);
+  \draw[flow] (9,-3.1) -- node[above]{propuesta JSON} (6,-3.1);
+  \draw[flow] (6,-3.8) -- node[above]{persistir y validar} (12,-3.8);
+  \draw[flow] (6,-4.5) -- node[above]{resultado + evidencia} (3,-4.5);
+  \draw[flow] (0,-5.2) -- node[above]{aprobar/rechazar} (3,-5.2);
+  \draw[flow] (3,-5.9) -- node[above]{decisión auditada} (12,-5.9);
+\end{tikzpicture}
+\caption{Diagrama de secuencia para una propuesta BI supervisada.}
+\end{figure}
+
+\subsection{Secuencia de materialización y conciliación}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,font=\scriptsize]
+  \foreach \x/\name in {0/Analista,3/React,6/FastAPI,9/SQL Server,12/PostgreSQL}{
+    \node[uml,text width=2.2cm] (m\x) at (\x,0) {\name};
+    \draw[dashed,gray] (\x,-0.45) -- (\x,-6.2);
+  }
+  \draw[flow] (0,-1) -- node[above]{confirmar plan} (3,-1);
+  \draw[flow] (3,-1.7) -- node[above]{crear ejecución} (6,-1.7);
+  \draw[flow] (6,-2.4) -- node[above]{revalidar metadatos} (9,-2.4);
+  \draw[flow] (6,-3.1) -- node[above]{extraer con SQL controlado} (9,-3.1);
+  \draw[flow] (6,-3.8) -- node[above]{cargar transacción} (12,-3.8);
+  \draw[flow] (6,-4.5) -- node[above]{comparar métricas} (9,-4.5);
+  \draw[flow] (6,-5.2) -- node[above]{persistir conciliación} (12,-5.2);
+  \draw[flow] (6,-5.9) -- node[above]{expediente final} (3,-5.9);
+\end{tikzpicture}
+\caption{Diagrama de secuencia para materialización y conciliación.}
+\end{figure}
+
+\subsection{Modelo de información}
+
+El esquema \file{app} conserva identidad, permisos, configuración, auditoría, instantáneas, propuestas y ejecuciones. El esquema \file{mart} contiene el modelo dimensional. La relación lógica principal es:
+
+\begin{center}
+\begin{tikzpicture}[node distance=8mm and 11mm]
+  \node[component] (source) {Fuente de datos};
+  \node[component, right=of source] (snapshot) {Instantánea de metadatos};
+  \node[component, right=of snapshot] (request) {Solicitud analítica};
+  \node[component, below=of request] (proposal) {Versión de propuesta};
+  \node[component, left=of proposal] (validation) {Validación y decisión};
+  \node[component, left=of validation] (execution) {Ejecución ETL};
+  \node[component, below=of execution] (mart) {Datamart y métricas};
+  \node[component, right=of mart] (semantic) {Revisión semántica};
+  \draw[flow] (source) -- (snapshot);
+  \draw[flow] (snapshot) -- (request);
+  \draw[flow] (request) -- (proposal);
+  \draw[flow] (proposal) -- (validation);
+  \draw[flow] (validation) -- (execution);
+  \draw[flow] (execution) -- (mart);
+  \draw[flow] (mart) -- (semantic);
+\end{tikzpicture}
+\captionof{figure}{Trazabilidad lógica de los artefactos persistidos.}
+\end{center}
+
+\section{Desarrollo por sprints}
+
+\subsection{Sprint 1: ambiente reproducible y DevOps}
+
+El primer incremento redujo el riesgo técnico: repositorio protegido, Docker Compose, frontend, backend, PostgreSQL, SQL Server con AdventureWorks, pruebas, CI/CD, imágenes y documentación reproducible. Su definición de terminado exigió reconstrucción limpia, servicios saludables, usuario SQL de sólo lectura y canal de integración verificable.
+
+\subsection{Sprint 2: seguridad, administración y LLM}
+
+El segundo incremento incorporó JWT, RBAC, usuarios, roles, permisos, menús, auditoría, parámetros y configuraciones LLM con credenciales cifradas. También añadió Ollama como respaldo local opcional. La interfaz separó funciones del administrador y del analista para evitar privilegios implícitos.
+
+\subsection{Sprint 3: metadatos y propuesta BI supervisada}
+
+El tercer incremento implementó conexión SQL Server administrada, instantáneas inmutables, exploración de esquema, catálogo analítico por dominio, necesidad de negocio libre y propuesta dimensional generada por IA. FastAPI validó tablas, columnas, relaciones, agregaciones y plan declarativo antes de permitir una aprobación auditada.
+
+\subsection{Sprint 4: materialización, KPI y conciliación}
+
+El cuarto incremento convirtió el contrato aprobado en un datamart físico. El ejecutor produjo dimensiones y hecho, compiló KPI variables a recetas controladas, evitó duplicados, concilió origen y destino, confirmó la moneda y habilitó interpretación española supervisada. La ejecución de referencia cargó 121317 filas con diferencia cero en cinco tablas.
+
+\begin{longtable}{@{}p{0.10\textwidth}p{0.21\textwidth}p{0.43\textwidth}p{0.16\textwidth}@{}}
+  \caption{Resumen de incrementos y evidencia.}\\
+  \toprule
+  Sprint & Objetivo & Evidencia principal & Estado \\
+  \midrule
+  \endfirsthead
+  \toprule
+  Sprint & Objetivo & Evidencia principal & Estado \\
+  \midrule
+  \endhead
+  1 & Base reproducible & Docker, AdventureWorks, pruebas, CI/CD y documentación. & \ok \\
+  2 & Gobierno y seguridad & JWT, RBAC, auditoría, parámetros y LLM cifrado. & \ok \\
+  3 & Diseño asistido & Metadatos, necesidad, propuesta, validación y decisión. & \ok \\
+  4 & Datamart verificable & ETL, KPI variables, 121317 filas, diferencia cero y evidencia semántica. & \ok \\
+  \bottomrule
+\end{longtable}
+
+\section{Estrategia de pruebas y validación}
+
+La validación combina cuatro niveles: análisis estático y pruebas unitarias; integración con PostgreSQL y SQL Server; comprobación del contrato BI; y aceptación funcional en la interfaz. CI reconstruye imágenes, valida Compose, aplica la política de ramas y compila la documentación.
+
+\begin{table}[ht]
+\centering
+\caption{Matriz de verificación acumulada al Sprint 4.}
+\begin{tabularx}{\textwidth}{@{}p{0.24\textwidth}p{0.47\textwidth}X@{}}
+  \toprule
+  Dimensión & Evidencia & Resultado \\
+  \midrule
+  Calidad de código & Ruff, formato, Mypy, ESLint y construcción Vite. & Satisfactorio. \\
+  Pruebas automatizadas & 76 pruebas backend y 11 frontend. & Satisfactorio. \\
+  Infraestructura & Compose de desarrollo, entrega, Ollama y release. & Válido. \\
+  Seguridad & Denegación por defecto, cifrado, auditoría y lector SQL. & Verificado. \\
+  Contrato BI & Referencias, FK, grano, KPI, operaciones y reproducción. & Verificado. \\
+  Conciliación & 121317 filas origen y destino; diferencia cero. & Conciliado. \\
+  Trazabilidad & Propuesta 52 y ejecución 6 reabribles. & Verificado. \\
+  \bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Resultados, limitaciones y trabajo posterior}
+
+La propuesta demuestra que la IA puede reducir el trabajo operativo del analista sin convertirse en un ejecutor autónomo inseguro. El sistema identifica conceptos, sugiere una cantidad variable de KPI y ayuda a resolver ambigüedades; las reglas determinísticas evitan referencias inexistentes, SQL libre y fórmulas incompatibles con el significado de los datos.
+
+El alcance vigente se limita a ventas, SQL Server, carga completa y un datamart específico. Aún deben implementarse dashboard ejecutivo, hallazgos explicables, contraste con AdventureWorksDW, validación mediante expertos y pronóstico mensual con MAPE y RMSE. La arquitectura prepara esas extensiones, pero el capítulo no las declara terminadas.
+
+\section{Conclusiones del capítulo}
+
+La ingeniería de software aplicada produjo un sistema reproducible, seguro y trazable. Scrum permitió separar riesgos e incrementar valor en cuatro entregas; SDD evitó que las decisiones funcionales quedaran implícitas; UML y los contratos de casos de uso muestran responsabilidades y límites; DevOps conserva una línea verificable entre código, pruebas, documentos y entregas.
+
+La principal decisión arquitectónica es separar recomendación de ejecución. El LLM propone con contexto restringido; la aplicación valida y materializa; el analista conserva autoridad sobre la decisión de negocio. La ejecución de referencia confirma que esta separación puede producir un datamart conciliado sin exigir SQL manual al usuario.
+
+\section{Trazabilidad documental}
+
+\begin{table}[ht]
+\centering
+\caption{Documentos fuente que sustentan el capítulo.}
+\begin{tabularx}{\textwidth}{@{}p{0.27\textwidth}X@{}}
+  \toprule
+  Documento & Función \\
+  \midrule
+  Informes INF-SPR-01 a INF-SPR-04 & Alcance, decisiones, ejecución, incidencias, evidencias y retrospectivas completas. \\
+  Manual MAN-TEC-01 & Instalación, configuración, operación, diagnóstico, réplica y recuperación. \\
+  Bitácora técnica & Secuencia cronológica de decisiones y verificaciones. \\
+  Especificaciones SPR & Contratos previos de comportamiento y aceptación. \\
+  Arquitectura y ADR & Límites de módulos y decisiones duraderas. \\
+  Plan de validación & Controles acumulativos y evidencia pendiente. \\
+  \bottomrule
+\end{tabularx}
+\end{table}
+
+\section*{Referencias institucionales consultadas}
+
+\begin{thebibliography}{9}
+\bibitem{ug-instructivo}
+Universidad de Guayaquil. \emph{Instructivo del proceso de titulación de grado}. Normativa institucional vigente consultada en septiembre de 2026. \url{https://ug.edu.ec/secretaria-general-r/normativa/vigente/INSTRUCTIVO%20DEL%20PROCESO%20DE%20TITULACI%C3%93N%20DE%20GRADO%20DE%20LA%20UNIVERSIDAD%20DE%20GUAYAQUIL%202021.pdf}
+
+\bibitem{ug-repositorio-scrum}
+Universidad de Guayaquil. \emph{Trabajo de titulación con Capítulo III de propuesta tecnológica, factibilidad, metodología y sprints}. Repositorio institucional. \url{https://repositorio.ug.edu.ec/bitstreams/6196a0d7-4c4a-4503-bf50-1c7705267831/download}
+\end{thebibliography}
+
+\section*{Control documental}
+
+\begin{tabularx}{\textwidth}{@{}>{\bfseries}p{0.25\textwidth}X@{}}
+  \toprule
+  Campo & Valor \\
+  \midrule
+  Código & TES-CAP-03 \\
+  Fuente editable & \path{docs/tesis/capitulo-03-propuesta-tecnologica.tex} \\
+  Compilación & \path{make thesis-chapter3} o \path{make docs} \\
+  Versión & 1.0.0 -- 24-09-2026 \\
+  Regla de uso & Integrar en la plantilla final y actualizar figuras, requisitos, resultados y referencias al cerrar nuevos sprints. \\
+  \bottomrule
+\end{tabularx}
+
+\end{document}

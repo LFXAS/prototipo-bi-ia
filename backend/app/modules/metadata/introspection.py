@@ -39,7 +39,9 @@ SELECT
 FROM sys.tables AS tables
 JOIN sys.schemas AS schemas ON schemas.schema_id = tables.schema_id
 JOIN sys.columns AS columns ON columns.object_id = tables.object_id
-JOIN sys.types AS types ON types.user_type_id = columns.user_type_id
+JOIN sys.types AS types
+  ON types.user_type_id = columns.system_type_id
+ AND types.user_type_id = types.system_type_id
 LEFT JOIN (
     SELECT index_columns.object_id, index_columns.column_id
     FROM sys.indexes AS indexes

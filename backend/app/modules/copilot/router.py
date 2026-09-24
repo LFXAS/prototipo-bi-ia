@@ -19,7 +19,7 @@ from app.modules.copilot.domains import (
     domain_profile,
     normalize_needs_catalog_configuration,
 )
-from app.modules.copilot.models import BiProposal
+from app.modules.copilot.models import BiProposal, SemanticAdvice
 from app.modules.copilot.schemas import (
     AnalysisCatalogConfiguration,
     AnalysisCatalogDomainRead,
@@ -33,11 +33,14 @@ from app.modules.copilot.schemas import (
     ProposalStatus,
     ProposalVerificationRead,
     ReadinessComponent,
+    SemanticAdviceCreate,
+    SemanticAdviceRead,
 )
 from app.modules.copilot.service import (
     CONTRACT_VERSION,
     PROMPT_VERSION,
     PROPOSAL_BLUEPRINT_SYSTEM_INSTRUCTION,
+    SEMANTIC_ADVICE_SYSTEM_INSTRUCTION,
     SEMANTIC_RESPONSE_SCHEMA,
     SEMANTIC_SYSTEM_INSTRUCTION,
     apply_analyst_adjustments,
@@ -47,6 +50,8 @@ from app.modules.copilot.service import (
     expand_proposal_blueprint,
     proposal_blueprint_schema,
     proposal_payload,
+    selected_semantic_candidates,
+    semantic_advice_response_schema,
     validate_proposal,
     validated_semantic_candidates,
     verify_proposal_evidence,
@@ -496,7 +501,13 @@ async def create_proposal(
                     block,
                     credential=credential,
                     timeout_seconds=timeout,
-                    max_output_tokens=(700 if configuration.provider_kind == "gemini" else 600),
+                    max_output_tokens=(
+                        700
+                        if configuration.provider_kind == "gemini"
+                        else 1200
+                        if configuration.provider_kind == "groq-cloud"
+                        else 600
+                    ),
                     response_schema=SEMANTIC_RESPONSE_SCHEMA,
                 )
                 for block in compact_metadata_blocks(
@@ -507,24 +518,30 @@ async def create_proposal(
                 semantic_responses, snapshot.schema_document
             )
         excluded = {item.casefold() for item in payload.excluded_concepts}
-        if excluded:
-            raw_candidates = semantic_map.get("candidates", [])
-            candidates = (
-                [item for item in raw_candidates if isinstance(item, dict)]
-                if isinstance(raw_candidates, list)
-                else []
-            )
-            semantic_map["candidates"] = [
-                candidate
-                for candidate in candidates
-                if str(candidate.get("business_concept", "")).casefold() not in excluded
-                and str(candidate.get("business_name_es", "")).casefold() not in excluded
-            ]
-            semantic_map["excluded_by_analyst"] = payload.excluded_concepts
+        raw_candidates = semantic_map.get("candidates", [])
+        candidates = (
+            [item for item in raw_candidates if isinstance(item, dict)]
+            if isinstance(raw_candidates, list)
+            else []
+        )
+        if source_proposal is not None or excluded:
+            for candidate in candidates:
+                concept = str(candidate.get("business_concept", "")).casefold()
+                name = str(candidate.get("business_name_es", "")).casefold()
+                candidate["selected"] = concept not in excluded and name not in excluded
+                candidate["selection_source"] = "analyst"
+        semantic_map["candidates"] = candidates
+        semantic_map["excluded_by_analyst"] = payload.excluded_concepts
+        semantic_map["excluded_by_system"] = [
+            str(candidate.get("business_concept", ""))
+            for candidate in candidates
+            if not bool(candidate.get("selected", True))
+            and candidate.get("selection_source") == "automatic"
+        ]
         record.semantic_map_document = semantic_map
         scope = derived_scope(snapshot.schema_document, semantic_map)
         record.scope_document = scope
-        if not semantic_map["candidates"] or not scope["tables"]:
+        if not selected_semantic_candidates(semantic_map) or not scope["tables"]:
             issues = [
                 *rejected,
                 {
@@ -557,7 +574,13 @@ async def create_proposal(
                 ),
                 credential=credential,
                 timeout_seconds=timeout,
-                max_output_tokens=(800 if configuration.provider_kind == "gemini" else 700),
+                max_output_tokens=(
+                    800
+                    if configuration.provider_kind == "gemini"
+                    else 2400
+                    if configuration.provider_kind == "groq-cloud"
+                    else 700
+                ),
                 response_schema=proposal_blueprint_schema(scope, semantic_map),
             )
             # The LLM proposes dimensions from verified metadata; the catalog never forces them.
@@ -642,6 +665,210 @@ async def get_proposal(
     session: AsyncSession = Depends(get_session),
 ) -> BiProposal:
     return await _proposal_or_404(proposal_id, session)
+
+
+def _semantic_candidate_or_404(proposal: BiProposal, concept_code: str) -> dict[str, object]:
+    candidates = proposal.semantic_map_document.get("candidates", [])
+    if not isinstance(candidates, list):
+        candidates = []
+    candidate = next(
+        (
+            item
+            for item in candidates
+            if isinstance(item, dict)
+            and str(item.get("business_concept", "")).casefold() == concept_code.casefold()
+        ),
+        None,
+    )
+    if candidate is None:
+        raise HTTPException(
+            status_code=404,
+            detail="El concepto no pertenece al expediente semántico de esta propuesta.",
+        )
+    return cast(dict[str, object], candidate)
+
+
+@router.get(
+    "/copilot/proposals/{proposal_id}/semantic-advice",
+    response_model=list[SemanticAdviceRead],
+)
+async def list_semantic_advice(
+    proposal_id: int,
+    concept_code: str = Query(min_length=1, max_length=80),
+    _: User = Depends(require_permission("copilot.proposals.read")),
+    session: AsyncSession = Depends(get_session),
+) -> list[SemanticAdvice]:
+    proposal = await _proposal_or_404(proposal_id, session)
+    _semantic_candidate_or_404(proposal, concept_code)
+    records = (
+        await session.execute(
+            select(SemanticAdvice)
+            .where(
+                SemanticAdvice.proposal_id == proposal.id,
+                SemanticAdvice.concept_code == concept_code,
+            )
+            .order_by(SemanticAdvice.created_at, SemanticAdvice.id)
+            .limit(30)
+        )
+    ).scalars()
+    return list(records)
+
+
+@router.post(
+    "/copilot/proposals/{proposal_id}/semantic-advice",
+    response_model=SemanticAdviceRead,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_semantic_advice(
+    proposal_id: int,
+    payload: SemanticAdviceCreate,
+    actor: User = Depends(require_permission("copilot.proposals.generate")),
+    session: AsyncSession = Depends(get_session),
+) -> SemanticAdvice:
+    proposal = await _proposal_or_404(proposal_id, session)
+    candidate = _semantic_candidate_or_404(proposal, payload.concept_code)
+    if re.search(
+        r"\b(select|insert|update|delete|drop|alter|create table|exec(?:ute)?)\b",
+        payload.question.casefold(),
+    ):
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "El copiloto explica decisiones mediante evidencia verificada; no genera "
+                "ni ejecuta SQL libre. Formule la pregunta en términos de negocio."
+            ),
+        )
+    configuration = await _active_configuration(session)
+    if configuration is None:
+        raise HTTPException(status_code=422, detail="No existe una configuración LLM activa.")
+    credential = await _credential(configuration, session)
+    timeout = await _parameter(session, "LLM_TIMEOUT_SECONDS")
+    previous = list(
+        (
+            await session.execute(
+                select(SemanticAdvice)
+                .where(
+                    SemanticAdvice.proposal_id == proposal.id,
+                    SemanticAdvice.concept_code == payload.concept_code,
+                )
+                .order_by(SemanticAdvice.created_at.desc(), SemanticAdvice.id.desc())
+                .limit(6)
+            )
+        ).scalars()
+    )
+    raw_technical_refs = candidate.get("technical_refs", [])
+    technical_refs = (
+        [str(item) for item in raw_technical_refs if isinstance(item, str)]
+        if isinstance(raw_technical_refs, list)
+        else []
+    )
+    request_document = {
+        "task": "explain_semantic_decision",
+        "language": "es",
+        "business_goal": proposal.business_goal,
+        "business_questions": proposal.business_questions,
+        "concept": candidate,
+        "analyst_question": payload.question,
+        "previous_turns": [
+            {
+                "question": item.question,
+                "conclusion": str(item.response_document.get("conclusion", "")),
+                "answer_es": str(item.response_document.get("answer_es", ""))[:500],
+            }
+            for item in reversed(previous)
+        ],
+        "constraints": {
+            "no_sql": True,
+            "no_rows": True,
+            "no_credentials": True,
+            "technical_references_must_match": technical_refs,
+            "advice_does_not_change_selection": True,
+        },
+    }
+    try:
+        raw_response = await generate_json(
+            configuration,
+            SEMANTIC_ADVICE_SYSTEM_INSTRUCTION,
+            request_document,
+            credential=credential,
+            timeout_seconds=timeout,
+            max_output_tokens=(
+                900
+                if configuration.provider_kind == "gemini"
+                else 1800
+                if configuration.provider_kind == "groq-cloud"
+                else 900
+            ),
+            response_schema=semantic_advice_response_schema(technical_refs),
+        )
+    except ProviderGenerationError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    allowed_refs = set(technical_refs)
+    raw_evidence = raw_response.get("evidence", [])
+    evidence = [
+        {
+            "technical_ref": str(item.get("technical_ref", "")),
+            "detail_es": str(item.get("detail_es", ""))[:240],
+        }
+        for item in raw_evidence
+        if isinstance(item, dict)
+        and str(item.get("technical_ref", "")) in allowed_refs
+        and str(item.get("detail_es", "")).strip()
+    ]
+    if not evidence and technical_refs:
+        evidence = [
+            {
+                "technical_ref": technical_refs[0],
+                "detail_es": "Referencia técnica comprobada en la instantánea vigente.",
+            }
+        ]
+    conclusion = str(raw_response.get("conclusion", "define_business"))
+    if conclusion not in {"include", "exclude", "define_business"}:
+        conclusion = "define_business"
+    confidence = str(raw_response.get("confidence", "low"))
+    if confidence not in {"high", "medium", "low"}:
+        confidence = "low"
+    response_document: dict[str, object] = {
+        "conclusion": conclusion,
+        "answer_es": str(raw_response.get("answer_es", ""))[:800],
+        "evidence": evidence,
+        "risk_es": str(raw_response.get("risk_es", ""))[:400],
+        "include_consequence_es": str(raw_response.get("include_consequence_es", ""))[:400],
+        "exclude_consequence_es": str(raw_response.get("exclude_consequence_es", ""))[:400],
+        "recommended_action_es": str(raw_response.get("recommended_action_es", ""))[:400],
+        "confidence": confidence,
+        "selection_changed": False,
+    }
+    record = SemanticAdvice(
+        proposal_id=proposal.id,
+        concept_code=payload.concept_code,
+        question=payload.question,
+        response_document=response_document,
+        provider_kind=configuration.provider_kind,
+        model_id=configuration.model_id,
+        created_by_user_id=actor.id,
+        created_by_label=f"{actor.full_name} <{actor.email}>",
+    )
+    session.add(record)
+    await session.flush()
+    await add_audit_event(
+        session,
+        actor.id,
+        "copilot.semantic_advice.create",
+        "semantic_advice",
+        str(record.id),
+        {
+            "proposal_id": proposal.id,
+            "concept_code": payload.concept_code,
+            "conclusion": conclusion,
+            "provider": configuration.provider_kind,
+            "model": configuration.model_id,
+        },
+    )
+    await session.commit()
+    await session.refresh(record)
+    return record
 
 
 @router.post(

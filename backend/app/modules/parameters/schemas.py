@@ -6,7 +6,7 @@ from urllib.parse import urlsplit
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-ProviderKind = Literal["gemini", "qwen-cloud", "ollama-local"]
+ProviderKind = Literal["gemini", "groq-cloud", "qwen-cloud", "ollama-local"]
 ReasoningLevel = Literal["automatic", "minimal", "low", "medium", "high"]
 
 
@@ -56,21 +56,26 @@ class LlmConfigurationCreate(BaseModel):
 
     @model_validator(mode="after")
     def validate_provider_endpoint(self) -> LlmConfigurationCreate:
-        expected: dict[ProviderKind, set[tuple[str, str, int | None]]] = {
-            "gemini": {("https", "generativelanguage.googleapis.com", None)},
+        expected: dict[ProviderKind, set[tuple[str, str, int | None, str]]] = {
+            "gemini": {("https", "generativelanguage.googleapis.com", None, "")},
+            "groq-cloud": {("https", "api.groq.com", None, "/openai/v1")},
             "qwen-cloud": {
-                ("https", "dashscope.aliyuncs.com", None),
-                ("https", "dashscope-intl.aliyuncs.com", None),
+                ("https", "dashscope.aliyuncs.com", None, ""),
+                ("https", "dashscope-intl.aliyuncs.com", None, ""),
             },
-            "ollama-local": {("http", "ollama", 11434)},
+            "ollama-local": {("http", "ollama", 11434, "")},
         }
         parsed = urlsplit(self.base_url.rstrip("/"))
-        endpoint = (parsed.scheme.lower(), (parsed.hostname or "").lower(), parsed.port)
+        endpoint = (
+            parsed.scheme.lower(),
+            (parsed.hostname or "").lower(),
+            parsed.port,
+            parsed.path.rstrip("/"),
+        )
         if (
             endpoint not in expected[self.provider_kind]
             or parsed.username is not None
             or parsed.password is not None
-            or parsed.path not in ("", "/")
             or parsed.query
             or parsed.fragment
         ):

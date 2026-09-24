@@ -23,7 +23,24 @@ export type AnalysisCatalogQuestion = { code: string; label: string; description
 export type AnalysisCatalogPeriodicity = { code: 'day' | 'week' | 'month' | 'quarter' | 'year'; label: string; description: string; enabled: boolean }
 export type AnalysisCatalogConfiguration = { version: 2; domain_code: string; questions: AnalysisCatalogQuestion[]; periodicities: AnalysisCatalogPeriodicity[] }
 export type AnalysisCatalogDomain = { code: string; label: string; description: string; enabled: boolean; implementation_status: 'implemented' }
-export type SemanticCandidate = { business_concept: string; business_name_es: string; description_es: string; technical_refs: string[]; confidence: 'high' | 'medium' | 'low'; reason: string; references_validated: boolean }
+export type SemanticEvidenceCheck = { code: string; passed: boolean; label: string; detail: string }
+export type SemanticCandidate = {
+  business_concept: string
+  business_name_es: string
+  description_es: string
+  technical_refs: string[]
+  confidence: 'high' | 'medium' | 'low'
+  reason: string
+  references_validated: boolean
+  selected?: boolean
+  selection_source?: 'automatic' | 'analyst'
+  evidence?: {
+    status: 'confirmed' | 'structurally_supported' | 'review_required' | 'decision_required'
+    recommended_action: 'include' | 'exclude' | 'review'
+    guidance: string
+    checks: SemanticEvidenceCheck[]
+  }
+}
 export type ValidationIssue = { code: string; level: 'error' | 'warning'; path: string; message: string }
 export type BiProposal = {
   id: number
@@ -34,8 +51,8 @@ export type BiProposal = {
   requested_dimensions: string[]
   periodicity: string
   domain_code: string
-  scope_document: { origin?: string; tables?: Array<{ ref: string }> }
-  semantic_map_document: { candidates?: SemanticCandidate[]; rejected_references?: Array<{ code: string; message: string }>; excluded_by_analyst?: string[] }
+  scope_document: { origin?: string; tables?: Array<{ ref: string; columns?: Array<{ name: string; type: string; pk?: boolean; nullable?: boolean }> }> }
+  semantic_map_document: { candidates?: SemanticCandidate[]; rejected_references?: Array<{ code: string; message: string }>; excluded_by_analyst?: string[]; excluded_by_system?: string[] }
   status: 'generating' | 'provider_failed' | 'validation_failed' | 'ready_for_review' | 'approved' | 'rejected' | 'invalidated' | 'discarded'
   input_hash: string
   prompt_version: string
@@ -67,8 +84,101 @@ export type ProposalVerification = {
   validation_warnings: number
   pending_validations: string[]
 }
+export type SemanticAdvice = {
+  id: number
+  proposal_id: number
+  concept_code: string
+  question: string
+  response_document: {
+    conclusion: 'include' | 'exclude' | 'define_business'
+    answer_es: string
+    evidence: Array<{ technical_ref: string; detail_es: string }>
+    risk_es: string
+    include_consequence_es: string
+    exclude_consequence_es: string
+    recommended_action_es: string
+    confidence: 'high' | 'medium' | 'low'
+    selection_changed: boolean
+  }
+  provider_kind: string
+  model_id: string
+  created_by_label: string
+  created_at: string
+}
 export type Page<T> = { items: T[]; total: number; limit: number; offset: number }
-export type ProposalRevision = { summary: string; grain_description: string; dimension_names: string[]; measure_names: string[]; kpi_codes: string[]; kpi_measure_names: Record<string, string>; measure_aggregations: Record<string, 'sum' | 'count' | 'count_distinct' | 'average' | 'min' | 'max'>; comment: string }
+export type ControlledMeasureCalculation = { operation: 'multiply' | 'add' | 'subtract' | 'divide'; inputs: string[] }
+export type ProposalRevision = { summary: string; grain_description: string; dimension_names: string[]; measure_names: string[]; kpi_codes: string[]; kpi_measure_names: Record<string, string>; measure_aggregations: Record<string, 'sum' | 'count' | 'count_distinct' | 'average' | 'min' | 'max'>; measure_calculations: Record<string, ControlledMeasureCalculation>; comment: string }
+export type EtlKpiRecipe = {
+  code: string
+  name: string
+  description: string
+  kind: 'aggregate' | 'ratio' | 'share'
+  unit: string
+  declared_unit?: string
+  adjustments?: string[]
+  periodicity: string
+  definition_version: string
+  inputs: string[]
+  recipe: Record<string, unknown>
+}
+export type EtlTransformation = {
+  order: number
+  code: string
+  stage: 'extract' | 'clean' | 'transform' | 'load' | 'validate'
+  label: string
+  detail: string
+  severity: 'required' | 'optional'
+  definition_version: string
+}
+export type EtlProposalCandidate = {
+  proposal_id: number
+  metadata_snapshot_id: number
+  business_goal: string
+  periodicity: string
+  provider_kind: string
+  model_id: string
+  created_at: string
+  reviewed_at?: string
+  reviewed_by_label?: string
+  review_comment?: string
+  proposal_hash: string
+  snapshot_hash: string
+  summary: string
+  grain: string
+  fact_name: string
+  dimensions: string[]
+  measures: string[]
+  kpi_count: number
+  kpi_recipes: EtlKpiRecipe[]
+  transformation_plan: EtlTransformation[]
+  warnings: string[]
+  eligible: boolean
+  blocking_reasons: string[]
+  recommended: boolean
+  latest_execution_id?: number
+  latest_execution_status?: EtlExecution['status']
+  latest_execution_at?: string
+  latest_execution_kpi_codes: string[]
+}
+export type EtlProposalCatalog = { items: EtlProposalCandidate[]; blocked_items: EtlProposalCandidate[]; recommended_proposal_id?: number; guidance: string[] }
+export type EtlExecution = {
+  id: number
+  proposal_id: number
+  metadata_snapshot_id: number
+  status: 'prepared' | 'running' | 'succeeded' | 'validation_warning' | 'failed'
+  domain_code: string
+  builder_version: string
+  proposal_hash: string
+  snapshot_hash: string
+  selection_document: Record<string, unknown>
+  plan_document: Record<string, unknown>
+  validation_document: Record<string, unknown>
+  metrics_document: Record<string, unknown>
+  created_by_label: string
+  created_at: string
+  started_at?: string
+  finished_at?: string
+}
 
 type ApiValidationIssue = { loc?: (string | number)[]; msg?: string }
 type ErrorBody = { detail?: string | ApiValidationIssue[] }
@@ -143,6 +253,16 @@ export const api = {
   restoreProposalApproval: (token: string, id: number, body: { comment?: string; warnings_confirmed: boolean }) => request<BiProposal>(`/copilot/proposals/${id}/restore-approval`, token, { method: 'POST', body: JSON.stringify(body) }),
   discardProposal: (token: string, id: number, comment: string) => request<BiProposal>(`/copilot/proposals/${id}/discard`, token, { method: 'POST', body: JSON.stringify({ comment }) }),
   verifyProposal: (token: string, id: number) => request<ProposalVerification>(`/copilot/proposals/${id}/verify`, token, { method: 'POST' }),
+  semanticAdvice: (token: string, id: number, conceptCode: string) => request<SemanticAdvice[]>(`/copilot/proposals/${id}/semantic-advice?concept_code=${encodeURIComponent(conceptCode)}`, token),
+  askSemanticAdvice: (token: string, id: number, body: { concept_code: string; question: string }) => request<SemanticAdvice>(`/copilot/proposals/${id}/semantic-advice`, token, { method: 'POST', body: JSON.stringify(body) }),
+  etlProposals: (token: string) => request<EtlProposalCatalog>('/etl/proposals', token),
+  prepareEtlExecution: (token: string, body: { proposal_id: number; selected_kpi_codes: string[]; confirmation: boolean; analyst_comment: string }) => request<EtlExecution>('/etl/executions', token, { method: 'POST', body: JSON.stringify(body) }),
+  runEtlExecution: (token: string, id: number) => request<EtlExecution>(`/etl/executions/${id}/run`, token, { method: 'POST' }),
+  etlExecution: (token: string, id: number) => request<EtlExecution>(`/etl/executions/${id}`, token),
+  verifyEtlCurrency: (token: string, id: number) => request<EtlExecution>(`/etl/executions/${id}/verify-currency`, token, { method: 'POST' }),
+  retryEtlSpanishInterpretation: (token: string, id: number) => request<EtlExecution>(`/etl/executions/${id}/interpret-spanish`, token, { method: 'POST' }),
+  applyEtlSpanishInterpretation: (token: string, id: number, body: { confirmation: boolean; analyst_comment: string; groups: Array<{ dimension: string; target_column: string; mappings: Array<{ original: string; label_es: string }> }> }) => request<EtlExecution>(`/etl/executions/${id}/interpret-spanish/apply`, token, { method: 'POST', body: JSON.stringify(body) }),
+  etlExecutions: (token: string, limit = 10, offset = 0) => request<Page<EtlExecution>>(`/etl/executions?limit=${limit}&offset=${offset}`, token),
   audit: (token: string, limit: number, offset: number) => request<Page<AuditEvent>>(`/audit-events?limit=${limit}&offset=${offset}`, token),
   testLlm: (token: string, id: number) => request<{ ok: boolean; message: string }>(`/llm-configurations/${id}/test`, token, { method: 'POST' }),
   saveLlmCredential: (token: string, id: number, apiKey: string) => request<{ credential_configured: boolean; message: string }>(`/llm-configurations/${id}/secret`, token, { method: 'PUT', body: JSON.stringify({ api_key: apiKey }) }),

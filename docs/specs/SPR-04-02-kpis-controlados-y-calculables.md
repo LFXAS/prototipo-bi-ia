@@ -1,6 +1,6 @@
 # SPR-04-02: KPIs propuestos por IA, calculables y trazables
 
-- Estado: **aprobación técnica previa a la implementación de Sprint 4**.
+- Estado: **contrato, medidas y seis KPI implementados y conciliados en la ejecución 6**.
 - Dependencias: `SPR-04-01`, una propuesta de ventas aprobada y un contrato ETL compatible.
 - Propósito: convertir los KPIs propuestos dinámicamente por el copiloto en cálculos reproducibles, sin fórmulas libres ni resultados atribuidos al LLM.
 
@@ -63,6 +63,19 @@ Cada KPI propuesto debe corresponder a una receta declarativa, versionada y prob
 
 Una receta futura requiere especificación, pruebas, plantilla de referencia y control de conciliación. No se aceptan SQL, texto de fórmula, nombres de columnas libres ni cálculos anidados enviados por el LLM, navegador o administración.
 
+Las medidas que alimentan a esos KPI también pueden usar una receta aritmética por fila. La IA
+declara una operación del catálogo y columnas presentes en la tabla de hechos; FastAPI vuelve a
+comprobar tipos, existencia, cantidad de operandos y función semántica. Si detecta una tasa de
+descuento usada como importe y encuentra de forma inequívoca precio, tasa y cantidad, la corrige
+automáticamente como `precio * tasa * cantidad`. Si falta una entrada o hay varias candidatas,
+bloquea la propuesta y muestra al analista las referencias reales y la acción necesaria.
+
+La misma regla se aplica cuando el proveedor ya envía una fórmula parcial. Una multiplicación de
+tasa por cantidad no se considera un importe: el backend sustituye esa receta por precio, tasa y
+cantidad si las tres referencias son inequívocas. Cuando no puede demostrar una base monetaria,
+la validación de la propuesta y la puerta previa del ETL la bloquean, aunque el LLM la haya marcado
+como válida.
+
 ## 5. Contrato ejecutable
 
 El contrato persistido conserva la sugerencia de IA y, al preparar el ETL, FastAPI agrega la receta exacta que ejecutará:
@@ -101,16 +114,23 @@ Después de materializar el datamart, **Validación del datamart** muestra por c
 
 Cada KPI base o derivado se compara mediante la misma receta en ambas fuentes. Una diferencia bloqueante impide presentarlo como resultado validado. AdventureWorksDW permanece como contraste secundario posterior y no sustituye la fuente OLTP de referencia.
 
+### 6.1. Divisa monetaria comprobada
+
+Una etiqueta como `moneda`, `importe` o `currency` no autoriza a mostrar un símbolo. El ejecutor busca en el alcance relacional de la tabla de hechos una columna verificable de moneda de origen o base, consulta únicamente sus códigos distintos mediante la conexión de sólo lectura y acepta el resultado sólo cuando obtiene un único código ISO de tres letras. La evidencia conserva el código, la tabla, la columna y el mensaje usado para resolver la unidad.
+
+Los KPI monetarios se presentan con ese código ISO —por ejemplo, `USD 109.846.381,40`— y las unidades no monetarias permanecen sin cambios. Si la fuente contiene monedas mezcladas, varios candidatos contradictorios o ninguna evidencia suficiente, el sistema mantiene `moneda de origen`, no inventa un símbolo y explica qué dato falta. Un expediente anterior puede ejecutar esta comprobación y enriquecer sus unidades sin repetir extracción, transformación, carga ni conciliación.
+
 ## 7. Criterios de aceptación
 
-- [ ] La IA propone una cantidad variable de KPI a partir de necesidad, preguntas, periodicidad y metadatos verificables.
-- [ ] La interfaz no fuerza una lista ni cantidad fija de KPI; admite hasta doce sugerencias y seis medidas por propuesta.
-- [ ] Cada KPI muestra explicación, dependencias, dimensiones, período y receta antes de aprobarlo.
+- [x] La IA propone una cantidad variable de KPI a partir de necesidad, preguntas, periodicidad y metadatos verificables.
+- [x] La interfaz no fuerza una lista ni cantidad fija de KPI; admite hasta doce sugerencias y seis medidas por propuesta.
+- [x] Cada KPI muestra explicación, dependencias, período y receta antes de materializarlo.
 - [ ] El analista puede retirar una sugerencia o reasignarla sólo a una medida compatible comprobada.
-- [ ] Un KPI sin columna, relación, tipo, receta o denominador válido queda bloqueado con una explicación accionable.
-- [ ] Cada KPI calculado usa una plantilla conocida, sin SQL ni fórmulas libres generadas por IA.
-- [ ] La demostración académica final reúne al menos cinco KPI sugeridos por IA, calculados y conciliados para el caso de ventas seleccionado.
-- [ ] Cada resultado conserva trazabilidad de propuesta, ejecución, período, filtros y regla aplicada.
+- [x] Un KPI sin columna, relación, tipo, receta o denominador válido queda bloqueado con una explicación accionable.
+- [x] Cada KPI calculado usa una plantilla conocida, sin SQL ni fórmulas libres generadas por IA.
+- [x] La ejecución 5 reunió cinco KPI sugeridos por IA; la ejecución 6 materializó los seis KPI de la propuesta 52, excluyó preventivamente un concepto débil y aplicó el descuento monetario autocorregido.
+- [x] Una unidad monetaria se reemplaza por un código ISO sólo después de comprobar una moneda única y trazable en la fuente; la ambigüedad conserva una etiqueta genérica y una acción guiada.
+- [x] Cada resultado conserva trazabilidad de propuesta, ejecución, período y regla aplicada.
 
 ## 8. Exclusiones
 

@@ -1,0 +1,319 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage[letterpaper,margin=2.2cm,headheight=15pt]{geometry}
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{xurl}
+
+\ifdefined\pdfinfoomitdate\pdfinfoomitdate=1\fi
+\ifdefined\pdftrailerid\pdftrailerid{}\fi
+\ifdefined\pdfsuppressptexinfo\pdfsuppressptexinfo=15\fi
+
+\definecolor{ugblue}{HTML}{006A8D}
+\definecolor{deepgreen}{HTML}{123D3A}
+\definecolor{softgray}{HTML}{F1F5F4}
+\definecolor{success}{HTML}{157A57}
+\definecolor{warning}{HTML}{A45A00}
+\hypersetup{colorlinks=true,linkcolor=ugblue,urlcolor=ugblue,hypertexnames=false,
+pdftitle={Informe Sprint 4 - Materializacion y validacion del datamart},
+pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Informe Sprint 4}
+\rhead{Prototipo BI asistido por IA}
+\cfoot{\thepage}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.52em}
+\setlist[itemize]{leftmargin=1.5em,itemsep=0.22em}
+\setlist[enumerate]{leftmargin=1.7em,itemsep=0.28em}
+\renewcommand{\arraystretch}{1.18}
+\newcommand{\file}[1]{\texttt{#1}}
+\newcommand{\ok}{\textcolor{success}{\textbf{Completado}}}
+\newcommand{\pending}{\textcolor{warning}{\textbf{Posterior}}}
+\newcommand{\notebox}[1]{\begin{center}\fcolorbox{ugblue}{softgray}{\begin{minipage}{0.90\textwidth}\textcolor{ugblue}{\textbf{Nota.}} #1\end{minipage}}\end{center}}
+
+\begin{document}
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+  \thispagestyle{empty}
+  \vspace*{0.8cm}
+  {\color{ugblue}\rule{\textwidth}{2.8pt}}
+  \vspace{1.2cm}
+  {\Large Documentación técnica del producto\\[0.25em]
+  Prototipo BI asistido por inteligencia artificial}
+  \vfill
+  {\color{deepgreen}\fontsize{28}{34}\selectfont\textbf{Informe del Sprint 4}}\\[0.7em]
+  {\LARGE Materialización, ETL y validación del datamart}\\[0.6em]
+  {\large Prueba de concepto de un prototipo funcional de BI asistido por IA\\
+  para la construcción semiautomatizada y supervisada\\
+  de un datamart de ventas\par}
+  \vspace{1.4cm}
+  \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
+    Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
+    Código documental & INF-SPR-04 \\
+    Versión & 1.0.0 \\
+    Periodo de referencia & 21 al 24 de septiembre de 2026 \\
+    Rama de trabajo & \file{feature/sprint-04-materializacion-etl} \\
+    Estado & Implementación, prueba funcional y verificación técnica completadas \\
+    Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
+  \end{tabularx}
+  \vfill
+  {\color{ugblue}\rule{\textwidth}{2.8pt}}
+\end{titlepage}
+\hypersetup{pageanchor=true}
+\pagenumbering{roman}
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+\section{Resumen ejecutivo}
+
+El Sprint 4 convierte una propuesta BI aprobada en un datamart físico, reproducible y conciliado. El analista selecciona una versión elegible, revisa los KPI sugeridos por la IA, confirma un plan declarativo y permite que FastAPI ejecute consultas construidas exclusivamente desde metadatos, claves y operaciones autorizadas. El LLM no genera ni ejecuta SQL libre.
+
+El resultado de referencia es la propuesta 52, generada con Groq Cloud y el modelo \path{openai/gpt-oss-120b}. La ejecución 6 materializó cinco tablas en PostgreSQL, leyó y cargó 121317 líneas de venta sin diferencia, calculó seis KPI y publicó etiquetas españolas territoriales después de revisión humana. La fuente confirmó \file{USD} como moneda base; el expediente fue enriquecido con esa evidencia sin repetir el ETL.
+
+\notebox{El logro no es solamente que la carga termine. El producto conserva propuesta, instantánea, selección, plan, reglas, conteos, KPI, decisiones semánticas, moneda, responsable y fechas dentro de un expediente que puede reabrirse sin recrear datos.}
+
+\section{Objetivo y criterio de éxito}
+
+\subsection{Objetivo del sprint}
+
+Implementar un motor ETL controlado que tome una propuesta dimensional aprobada, materialice un datamart de ventas desde AdventureWorks OLTP, calcule KPI variables sugeridos por IA mediante recetas determinísticas y presente al analista una conciliación cuantitativa y semántica comprensible.
+
+\subsection{Criterios de éxito}
+
+\begin{itemize}
+  \item ninguna carga usa SQL producido por el LLM o escrito por el analista;
+  \item la propuesta y la instantánea se revalidan inmediatamente antes de ejecutar;
+  \item el hecho y las dimensiones se construyen dentro de una transacción controlada;
+  \item las filas, unidades, pedidos e importes se contrastan entre origen y destino;
+  \item los KPI variables se compilan a recetas conocidas y trazables;
+  \item las decisiones semánticas y la moneda se publican sólo con evidencia suficiente;
+  \item una misma selección no puede materializarse dos veces por error;
+  \item el expediente persiste y guía recuperación, revisión y auditoría.
+\end{itemize}
+
+\subsection{Metodología y validez de la evidencia}
+
+El incremento se desarrolló mediante Scrum y desarrollo guiado por especificaciones. Cada capacidad parte de un contrato versionado, continúa con migraciones, API, interfaz y pruebas, y termina con evidencia reproducible. Se distingue entre evidencia estructural, prueba automatizada y aceptación funcional; ninguna captura aislada sustituye la conciliación ni los registros persistidos por la plataforma.
+
+\section{Alcance entregado}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.56\textwidth}p{0.16\textwidth}@{}}
+  \toprule
+  Capacidad & Evidencia funcional & Estado \\
+  \midrule
+  \endfirsthead
+  \toprule
+  Capacidad & Evidencia funcional & Estado \\
+  \midrule
+  \endhead
+  Selección elegible & Lista propuestas aprobadas, compatibles y asociadas a una fuente activa de sólo lectura. & \ok \\
+  Contrato ejecutable & Fija propuesta, instantánea, KPI elegidos, huellas, versión del constructor y plan. & \ok \\
+  Transformaciones & Limpieza, tipos, nulos, deduplicación, claves sustitutas, calendario y columnas calculadas mediante operaciones tipadas. & \ok \\
+  Materialización & Crea y reemplaza transaccionalmente \file{mart.fact\_ventas} y cuatro dimensiones. & \ok \\
+  KPI variables & Compila hasta doce sugerencias a recetas de agregación, razón o participación, sin catálogo obligatorio. & \ok \\
+  Guardarraíl monetario & Detecta tasas usadas como importes y completa precio por tasa por cantidad sólo con referencias inequívocas. & \ok \\
+  Conciliación & Compara origen y destino durante la misma ejecución y conserva diferencias, conteos y estados. & \ok \\
+  Interpretación española & Propone etiquetas para categorías aptas, conserva originales y exige revisión antes de publicar. & \ok \\
+  Copiloto contextual & Explica inclusión o exclusión de conceptos con evidencia, riesgo y consecuencias, sin filas ni SQL. & \ok \\
+  Prevención de duplicados & Reemplaza una segunda carga por acceso al expediente existente y repite el bloqueo en FastAPI. & \ok \\
+  Moneda verificable & Usa código ISO sólo cuando encuentra una moneda única y relacionada con el hecho. & \ok \\
+  Historial recuperable & Permite reabrir ejecuciones preparadas, fallidas, conciliadas o pendientes de revisión. & \ok \\
+  Dashboard ejecutivo & Visualizaciones, hallazgos y consumo gerencial. & \pending \\
+  Pronóstico & Regresión lineal, MAPE y RMSE. & \pending \\
+  \bottomrule
+\end{longtable}
+
+\section{Arquitectura del incremento}
+
+\begin{center}
+\fcolorbox{ugblue}{softgray}{\begin{minipage}{0.90\textwidth}
+\centering
+\textbf{Propuesta IA aprobada} $+$ \textbf{instantánea inmutable}\\
+$\downarrow$\\
+\textbf{revalidación y compilación determinística}\\
+$\downarrow$\\
+\textbf{plan ETL versionado y confirmación humana}\\
+$\downarrow$\\
+\textbf{SQL Server de sólo lectura} $\rightarrow$ \textbf{FastAPI} $\rightarrow$ \textbf{PostgreSQL / mart}\\
+$\downarrow$\\
+\textbf{conciliación, KPI, interpretación y expediente auditable}
+\end{minipage}}
+\end{center}
+
+El módulo \file{etl} es la única frontera autorizada para materializar. Consume el contrato de \file{copilot}, la instantánea de \file{metadata}, la conexión cifrada de \file{parameters} y la identidad autorizada de \file{security}. El constructor usa nombres permitidos, relaciones verificadas y plantillas internas; no evalúa expresiones arbitrarias.
+
+\subsection{Persistencia y migraciones}
+
+La revisión \path{20260922_14} crea \path{app.etl_executions}. Cada registro conserva \path{proposal_id}, \path{metadata_snapshot_id}, estado, dominio, versión del constructor, huellas, selección, plan, validación, métricas, responsable y marcas de tiempo. Los estados permitidos son preparado, en ejecución, exitoso, con revisión y fallido.
+
+La revisión \path{20260923_15} crea \path{app.semantic_advice} para las conversaciones contextuales. Conserva propuesta, concepto, pregunta, respuesta estructurada, proveedor, modelo, responsable y fecha. La respuesta no se interpreta como autorización y una recomendación sólo cambia la selección cuando el analista pulsa la acción correspondiente.
+
+\section{Recorrido profesional del analista BI}
+
+\begin{enumerate}
+  \item \textbf{Elegir propuesta}: la plataforma recomienda la aprobación compatible más reciente y explica cualquier bloqueo.
+  \item \textbf{Revisar indicadores}: muestra nombre, objetivo, receta, medida, periodicidad, unidad y advertencias de cada KPI sugerido por IA.
+  \item \textbf{Confirmar ejecución}: presenta hecho, dimensiones, granularidad, transformaciones y controles previos; requiere confirmación explícita.
+  \item \textbf{Materializar y cargar}: registra progreso y estado persistente, con reintento únicamente cuando la ejecución falló.
+  \item \textbf{Validar resultados}: reúne conteos, KPI, diferencias, evidencia monetaria e interpretación semántica.
+\end{enumerate}
+
+Las transformaciones que requieren supervisión no piden decisiones abstractas antes de existir datos. Se identifican como \textbf{Revisar en el paso 5}. Después de cargar, el expediente muestra los candidatos reales y permite publicar, corregir o excluir etiquetas sin alterar los valores originales.
+
+La tabla \textbf{Expedientes recientes} es parte del flujo, no sólo un registro histórico. Un analista puede cerrar el navegador, volver a iniciar sesión y continuar la revisión sin repetir la materialización. Cuando una propuesta y el mismo conjunto de KPI ya tienen una ejecución vigente, la acción cambia a \textbf{Abrir expediente}.
+
+\section{IA supervisada y resolución de ambigüedades}
+
+\subsection{Confianza y selección preventiva}
+
+La confianza del proveedor no sustituye evidencia. Los conceptos de confianza alta se incluyen cuando sus referencias son válidas; los de confianza media necesitan respaldo estructural suficiente; los de confianza baja o evidencia insuficiente nacen desmarcados. La aplicación muestra tabla, columnas, clave y relaciones verificadas, además de una recomendación comprensible.
+
+En la propuesta 52, \textbf{Motivo de venta} quedó excluido porque no aportaba evidencia directa al objetivo de ventas netas, unidades, producto, cliente y territorio. El copiloto contextual explicó el riesgo de complejidad sin valor analítico y citó únicamente \file{Sales.SalesOrderHeaderSalesReason}. La selección no cambió silenciosamente.
+
+\subsection{KPI sugeridos, no predefinidos}
+
+El LLM decide cuántos KPI son pertinentes para cada necesidad. FastAPI admite una cantidad variable, impone límites de seguridad y acepta únicamente recetas soportadas. Para la propuesta 52 se compilaron seis indicadores:
+
+\begin{itemize}
+  \item ventas netas totales;
+  \item unidades vendidas totales;
+  \item descuento promedio por línea;
+  \item número de pedidos distintos;
+  \item ventas netas mensuales;
+  \item unidades vendidas mensuales.
+\end{itemize}
+
+La medida de descuento se corrigió antes de ejecutar. \file{UnitPriceDiscount} es una tasa y no un importe; por ello, la receta monetaria usa precio por tasa por cantidad. Si las tres referencias no fueran inequívocas, el sistema bloquearía la propuesta y explicaría el requisito faltante.
+
+\section{Limpieza, transformación y capa española}
+
+El plan de la ejecución 6 fijó 27 operaciones. Incluye selección de columnas aprobadas, uniones mediante claves foráneas, normalización de texto, control de nulos, conversión de tipos, deduplicación al grano, derivación de calendario, claves sustitutas, medidas calculadas y carga del hecho al final para preservar integridad referencial.
+
+La interpretación española distingue metadatos de datos. Los nombres técnicos conservan trazabilidad y reciben explicación de negocio. En valores sólo se consideran categorías descriptivas no sensibles y de baja cardinalidad. Se excluyen identificadores, nombres de personas, direcciones, texto libre y códigos que no deban traducirse.
+
+La revisión publicada para la ejecución 6 agregó \file{group\_es} junto a \file{group}: Europe a Europa, North America a Norteamérica y Pacific a Pacífico. Los códigos de país se conservaron sin cambios. Responsable, fecha, comentario y mapeos permanecen en el expediente.
+
+\section{Evidencia cuantitativa de la ejecución 6}
+
+\begin{tabularx}{\textwidth}{@{}p{0.38\textwidth}X@{}}
+  \toprule
+  Control & Resultado \\
+  \midrule
+  Propuesta & Versión 52, aprobada y vinculada a la instantánea vigente. \\
+  Filas de origen & 121317 líneas de venta. \\
+  Filas cargadas & 121317; diferencia 0 y sin rechazos. \\
+  Tablas creadas & Cinco: hecho de ventas y dimensiones de fecha, producto, cliente y territorio. \\
+  Fecha & 1124 miembros cargados desde 31465 pedidos; 30341 repeticiones controladas por deduplicación. \\
+  Producto & 504 de 504. \\
+  Cliente & 19820 de 19820. \\
+  Territorio & 10 de 10. \\
+  Ventas & 121317 de 121317. \\
+  Ventas netas & \file{USD 109846381.40}, conciliadas. \\
+  Unidades & 274914, conciliadas. \\
+  Pedidos distintos & 31465, conciliados. \\
+  Descuento promedio por línea & \file{USD 4.35}, calculado como importe monetario. \\
+  Periodicidad & KPI mensuales de ventas y unidades conciliados con la misma selección. \\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Comprobación de la moneda}
+
+La interfaz no debe sustituir \textit{moneda} por un símbolo basándose en el idioma o en el nombre de la base. El ejecutor busca una columna de moneda de origen o base dentro del alcance relacional del hecho y consulta sus códigos distintos con la conexión de sólo lectura. AdventureWorks devolvió un único valor \file{USD} mediante \path{Sales.CurrencyRate.FromCurrencyCode}.
+
+La operación actualizó las unidades monetarias del expediente 6 sin leer ni cargar nuevamente las 121317 filas. En una fuente con códigos mixtos, candidatos contradictorios o evidencia ausente, el sistema conserva \textit{moneda de origen}, no inventa un símbolo y explica la acción necesaria.
+
+\section{Seguridad, trazabilidad y recuperación}
+
+\begin{itemize}
+  \item AdventureWorks se consulta con una cuenta validada de sólo lectura.
+  \item Las credenciales se descifran únicamente en memoria y nunca llegan a React, auditoría o contratos LLM.
+  \item El LLM recibe estructura y categorías permitidas, no filas completas, secretos ni datos personales.
+  \item FastAPI autoriza lectura y escritura de ejecuciones mediante permisos independientes.
+  \item Cada mutación registra un evento seguro de auditoría.
+  \item Una falla semántica posterior no invalida la conciliación numérica ni obliga a repetir el ETL.
+  \item Las ejecuciones fallidas conservan causa y evidencia previa para un reintento controlado.
+  \item Las cargas idénticas se bloquean también en el backend, incluso ante solicitudes simultáneas.
+\end{itemize}
+
+\section{Pruebas y verificación}
+
+\begin{tabularx}{\textwidth}{@{}p{0.30\textwidth}X@{}}
+  \toprule
+  Control & Resultado \\
+  \midrule
+  Backend & Ruff, formato, Mypy y 76 pruebas Pytest satisfactorias. \\
+  Frontend & ESLint, 11 pruebas Vitest y construcción Vite satisfactoria. \\
+  Compose & Desarrollo, entrega, perfil Ollama y archivo de release válidos. \\
+  Flujo de ramas & La política acepta \file{feature/*} hacia \file{develop} y sólo \file{develop} hacia \file{main}. \\
+  Prueba integrada & Propuesta 52, ejecución 6, publicación semántica, prevención de duplicados y verificación USD comprobadas en la interfaz. \\
+  Documentación & Bitácora, manual e informes compilados en la imagen LaTeX y revisados visualmente. \\
+  \bottomrule
+\end{tabularx}
+
+\section{Avance de los objetivos del anteproyecto}
+
+\begin{tabularx}{\textwidth}{@{}p{0.10\textwidth}p{0.58\textwidth}X@{}}
+  \toprule
+  Objetivo & Evidencia acumulada al cierre de Sprint 4 & Estado \\
+  \midrule
+  1 & Requisitos, perfiles, calidad y controles de una fuente de ventas documentados. & Cumplido en el alcance. \\
+  2 & Arquitectura Docker, LLM supervisado, ETL controlado y trazabilidad implementados. & Cumplido para ventas. \\
+  3 & La aplicación obtiene metadatos y genera propuestas dimensionales, KPI y planes verificables. & Cumplido. \\
+  4 & El datamart se materializa y carga; los KPI se calculan. Faltan gráficos, hallazgos y pronóstico. & Parcial avanzado. \\
+  5 & Existe conciliación OLTP--datamart y reproducibilidad. Faltan contraste DW, expertos y métricas predictivas. & Parcial acumulativo. \\
+  \bottomrule
+\end{tabularx}
+
+\section{Límites y trabajo posterior}
+
+\begin{itemize}
+  \item el incremento implementa carga completa; CDC, cargas incrementales y dimensiones lentamente cambiantes complejas permanecen fuera del alcance;
+  \item sólo SQL Server y el dominio ventas están habilitados, aunque existen interfaces para futuros adaptadores y perfiles;
+  \item no se publica todavía un dashboard ejecutivo ni se generan hallazgos analíticos;
+  \item AdventureWorksDW se mantiene como contraste secundario pendiente y no sustituye el OLTP;
+  \item el juicio de expertos y el pronóstico con MAPE y RMSE pertenecen a fases posteriores.
+\end{itemize}
+
+\section{Criterio de cierre}
+
+El Sprint 4 se considera técnicamente terminado cuando código, migraciones, pruebas, documentos y PDFs superan \file{make verify}; la propuesta 52 y la ejecución 6 permanecen como expediente de referencia; y los cambios avanzan mediante un pull request desde \file{feature/sprint-04-materializacion-etl} hacia \file{develop}. La promoción estable se realiza después mediante otro pull request de \file{develop} hacia \file{main}.
+
+\section{Conclusión}
+
+El incremento demuestra la razón de ser del prototipo: la IA acelera descubrimiento, explicación y propuesta, mientras el software valida, transforma, materializa y concilia mediante reglas reproducibles. El analista BI no escribe SQL ni abandona la plataforma para resolver decisiones habituales, pero conserva control y evidencia sobre cada inclusión, cálculo y etiqueta publicada.
+
+\section{Control documental}
+
+\begin{tabularx}{\textwidth}{@{}>{\bfseries}p{0.28\textwidth}X@{}}
+  \toprule
+  Campo & Valor \\
+  \midrule
+  Código & INF-SPR-04 \\
+  Fuente editable & \path{docs/sprints/sprint-04-materializacion-etl.tex} \\
+  Compilación & \path{make sprint4-report} o \path{make docs} \\
+  Evidencia relacionada & Especificaciones SPR-04, bitácora, manual técnico y expediente de ejecución 6. \\
+  Actualización & Ante cambios de alcance, arquitectura, evidencia, pruebas o conclusiones del Sprint 4. \\
+  \bottomrule
+\end{tabularx}
+
+\subsection*{Historial de cambios}
+
+\begin{tabularx}{\textwidth}{@{}p{0.14\textwidth}p{0.18\textwidth}X@{}}
+  \toprule
+  Versión & Fecha & Cambio \\
+  \midrule
+  1.0.0 & 24-09-2026 & Edición profesional de cierre: implementación, evidencia cuantitativa, control semántico, moneda, pruebas y trazabilidad. \\
+  \bottomrule
+\end{tabularx}
+
+\end{document}

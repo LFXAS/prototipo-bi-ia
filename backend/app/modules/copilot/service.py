@@ -12,6 +12,7 @@ PROMPT_VERSION = "sales-bi-v3"
 CONTRACT_VERSION = 1
 ALLOWED_OPERATIONS = {"extract", "join", "filter", "derive", "aggregate", "load"}
 ALLOWED_AGGREGATIONS = {"sum", "count", "count_distinct", "average", "min", "max"}
+ALLOWED_CALCULATED_MEASURE_OPERATIONS = {"multiply", "add", "subtract", "divide"}
 ALLOWED_DESTINATIONS = SALES_PROFILE.destination_names
 PROPOSAL_SCOPE_MAX_TABLES = 8
 
@@ -28,6 +29,15 @@ SEMANTIC_SYSTEM_INSTRUCTION = (
     '"business_name_es":"Detalle de venta","description_es":"Línea vendida",'
     '"technical_refs":["Sales.SalesOrderDetail"],"confidence":"high",'
     '"reason":"Contiene cantidades e importes"}],"ambiguities":[]}.'
+)
+
+SEMANTIC_ADVICE_SYSTEM_INSTRUCTION = (
+    "Actúas como copiloto de un analista BI dentro de una decisión semántica controlada. "
+    "Responde únicamente con el objetivo, el concepto y la evidencia estructural recibida. "
+    "No inventes tablas, columnas, relaciones, resultados ni reglas del negocio; no produzcas "
+    "SQL y reconoce expresamente cuando la evidencia no permite concluir. Explica en español "
+    "para una persona que inicia en BI. Distingue evidencia técnica de una definición que sólo "
+    "puede confirmar el negocio. Devuelve exclusivamente el JSON solicitado."
 )
 
 PROPOSAL_SYSTEM_INSTRUCTION = (
@@ -99,6 +109,51 @@ SEMANTIC_RESPONSE_SCHEMA: dict[str, Any] = {
         "ambiguities": STRING_ARRAY_SCHEMA,
     },
 }
+
+
+def semantic_advice_response_schema(technical_refs: list[str]) -> dict[str, Any]:
+    reference_enum = technical_refs or ["sin_referencia"]
+    return {
+        "type": "object",
+        "additionalProperties": False,
+        "required": [
+            "conclusion",
+            "answer_es",
+            "evidence",
+            "risk_es",
+            "include_consequence_es",
+            "exclude_consequence_es",
+            "recommended_action_es",
+            "confidence",
+        ],
+        "properties": {
+            "conclusion": {
+                "type": "string",
+                "enum": ["include", "exclude", "define_business"],
+            },
+            "answer_es": {"type": "string", "maxLength": 800},
+            "evidence": {
+                "type": "array",
+                "maxItems": 6,
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "required": ["technical_ref", "detail_es"],
+                    "properties": {
+                        "technical_ref": {"type": "string", "enum": reference_enum},
+                        "detail_es": {"type": "string", "maxLength": 240},
+                    },
+                },
+            },
+            "risk_es": {"type": "string", "maxLength": 400},
+            "include_consequence_es": {"type": "string", "maxLength": 400},
+            "exclude_consequence_es": {"type": "string", "maxLength": 400},
+            "recommended_action_es": {"type": "string", "maxLength": 400},
+            "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+        },
+    }
+
+
 PROPOSAL_RESPONSE_SCHEMA: dict[str, Any] = {
     "type": "object",
     "additionalProperties": False,
@@ -253,14 +308,26 @@ PROPOSAL_BLUEPRINT_SYSTEM_INSTRUCTION = (
     "Eres el copiloto de un analista de BI. Decide un modelo dimensional de ventas usando "
     "exclusivamente las tablas y columnas del alcance recibido. No generes SQL ni código. "
     "Devuelve sólo JSON válido y breve. Selecciona una tabla de hechos, hasta seis medidas, "
-    "entre una y cuatro dimensiones y hasta doce KPI. Cada medida debe usar una columna de la "
-    "tabla de hechos y priorizar importe, total o cantidad; no sumes identificadores. Declara "
+    "entre una y cuatro dimensiones y hasta doce KPI. Cada medida directa usa una columna de "
+    "la tabla de hechos. Si un importe requiere cálculo por fila, usa calculation_operation "
+    "multiply, add, subtract o divide y calculation_inputs con columnas numéricas existentes; "
+    "usa direct y una lista vacía cuando no haya cálculo. Nunca inventes una fórmula libre. "
+    "Una tasa de descuento no es un importe: para descuento monetario combina, cuando existan "
+    "de forma inequívoca, precio por tasa de descuento por cantidad. Prioriza importe, total o "
+    "cantidad y no sumes identificadores. Declara "
     "semantic_role en cada medida y KPI usando sales_amount, quantity, customer_count o "
     "transaction_count. Cada KPI usa measure_index=0 para la primera medida o 1 para la segunda "
     "y debe tener el mismo semantic_role que su medida. Un KPI customer_count requiere una "
-    "medida customer_count con conteo distinto de un identificador de cliente. Asocia producto, "
+    "medida customer_count con conteo distinto de un identificador de cliente. CustomerID, "
+    "cliente, account, person o store pueden representar clientes; OrderID, SalesOrderID y "
+    "transaction no los representan. Si la tabla de hechos elegida no contiene una columna de "
+    "cliente compatible, omite la medida y los KPI customer_count. Para transaction_count usa "
+    "el identificador del pedido con count_distinct, nunca el identificador del detalle. "
+    "Conserva columnas monetarias específicas: precio usa price, descuento usa discount y el "
+    "importe de venta usa amount o total. Asocia producto, "
     "cliente y territorio con la tabla técnica cuyo nombre corresponda. No inventes "
-    "identificadores. Las explicaciones y nombres de negocio deben estar en español."
+    "identificadores. Las explicaciones, resúmenes y nombres de negocio deben estar en español "
+    "y no superar 160 caracteres por texto."
 )
 
 SEMANTIC_ROLES = {
@@ -273,7 +340,7 @@ ROLE_AGGREGATIONS = {
     "sales_amount": {"sum", "average", "min", "max"},
     "quantity": {"sum", "average", "min", "max"},
     "customer_count": {"count_distinct"},
-    "transaction_count": {"count", "count_distinct"},
+    "transaction_count": {"count_distinct"},
 }
 ROLE_DEFAULT_AGGREGATION = {
     "sales_amount": "sum",
@@ -296,7 +363,7 @@ def proposal_blueprint_schema(
     fact_candidates = list(
         dict.fromkeys(
             str(reference)
-            for candidate in semantic_map.get("candidates", [])
+            for candidate in selected_semantic_candidates(semantic_map)
             if isinstance(candidate, dict)
             and any(
                 token in str(candidate.get("business_concept", "")).casefold()
@@ -318,6 +385,7 @@ def proposal_blueprint_schema(
         "cost",
         "tax",
         "freight",
+        "discount",
         "importe",
         "cantidad",
         "customer",
@@ -355,7 +423,7 @@ def proposal_blueprint_schema(
             }
         )
     column_enum = measure_columns or ["sin_columna"]
-    short_text = {"type": "string", "maxLength": 120}
+    short_text = {"type": "string", "maxLength": 160}
     return {
         "type": "object",
         "additionalProperties": False,
@@ -384,7 +452,14 @@ def proposal_blueprint_schema(
                 "items": {
                     "type": "object",
                     "additionalProperties": False,
-                    "required": ["name", "source_column", "aggregation", "semantic_role"],
+                    "required": [
+                        "name",
+                        "source_column",
+                        "aggregation",
+                        "semantic_role",
+                        "calculation_operation",
+                        "calculation_inputs",
+                    ],
                     "properties": {
                         "name": short_text,
                         "source_column": {"type": "string", "enum": column_enum},
@@ -395,6 +470,18 @@ def proposal_blueprint_schema(
                         "semantic_role": {
                             "type": "string",
                             "enum": sorted(SEMANTIC_ROLES),
+                        },
+                        "calculation_operation": {
+                            "type": "string",
+                            "enum": [
+                                "direct",
+                                *sorted(ALLOWED_CALCULATED_MEASURE_OPERATIONS),
+                            ],
+                        },
+                        "calculation_inputs": {
+                            "type": "array",
+                            "maxItems": 4,
+                            "items": {"type": "string", "enum": column_enum},
                         },
                     },
                 },
@@ -611,6 +698,127 @@ def metadata_tables(document: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return result
 
 
+def _semantic_candidate_evidence(
+    references: list[str], existing: dict[str, dict[str, Any]], confidence: str
+) -> dict[str, Any]:
+    """Build deterministic, human-readable evidence without querying business rows."""
+    reference_set = set(references)
+    relation_sources: dict[str, list[str]] = {reference: [] for reference in references}
+    relation_targets: dict[str, list[str]] = {reference: [] for reference in references}
+    for source, table in existing.items():
+        for relation in table.get("foreign_keys", []):
+            if not isinstance(relation, dict):
+                continue
+            target = (
+                f"{relation.get('referenced_schema', '')}.{relation.get('referenced_table', '')}"
+            )
+            if source in reference_set and target in existing:
+                relation_targets[source].append(target)
+            if target in reference_set:
+                relation_sources[target].append(source)
+
+    checks: list[dict[str, object]] = []
+    for reference in references:
+        table = existing[reference]
+        columns = [item for item in table.get("columns", []) if isinstance(item, dict)]
+        primary_keys = [
+            str(item.get("name", ""))
+            for item in columns
+            if bool(item.get("primary_key", False)) and item.get("name")
+        ]
+        related = sorted(set(relation_sources[reference] + relation_targets[reference]))
+        checks.extend(
+            [
+                {
+                    "code": "reference_exists",
+                    "passed": True,
+                    "label": "Referencia comprobada",
+                    "detail": f"{reference} existe en la instantánea vigente.",
+                },
+                {
+                    "code": "columns_available",
+                    "passed": bool(columns),
+                    "label": "Estructura disponible",
+                    "detail": (
+                        f"{len(columns)} columnas detectadas."
+                        if columns
+                        else "No se detectaron columnas utilizables."
+                    ),
+                },
+                {
+                    "code": "business_key_available",
+                    "passed": bool(primary_keys),
+                    "label": "Clave identificadora",
+                    "detail": (
+                        f"Clave verificada: {', '.join(primary_keys)}."
+                        if primary_keys
+                        else "No se encontró una clave primaria declarada."
+                    ),
+                },
+                {
+                    "code": "relationship_available",
+                    "passed": bool(related),
+                    "label": "Relación estructural",
+                    "detail": (
+                        f"Se relaciona con: {', '.join(related[:4])}."
+                        if related
+                        else "No se encontró una relación declarada con otra tabla."
+                    ),
+                },
+            ]
+        )
+
+    structural_checks = [
+        item
+        for item in checks
+        if item["code"] in {"columns_available", "business_key_available", "relationship_available"}
+    ]
+    structurally_supported = bool(structural_checks) and all(
+        bool(item["passed"]) for item in structural_checks
+    )
+    if confidence == "low":
+        status = "decision_required"
+        recommendation = "exclude"
+        guidance = (
+            "Se excluyó preventivamente porque la evidencia semántica es débil. "
+            "Inclúyalo sólo si la necesidad del negocio lo requiere y confirme la decisión."
+        )
+    elif confidence == "medium" and structurally_supported:
+        status = "structurally_supported"
+        recommendation = "include"
+        guidance = (
+            "La asociación inicial era intermedia, pero las claves y relaciones declaradas "
+            "respaldan su inclusión. No necesita consultar la base manualmente."
+        )
+    elif confidence == "medium":
+        status = "review_required"
+        recommendation = "exclude"
+        guidance = (
+            "La estructura no aporta evidencia suficiente y el concepto se excluyó "
+            "preventivamente. Revise la explicación y decida dentro de la plataforma; "
+            "no es necesario escribir SQL."
+        )
+    else:
+        status = "confirmed"
+        recommendation = "include"
+        guidance = "La referencia y su asociación semántica tienen evidencia suficiente."
+    return {
+        "status": status,
+        "recommended_action": recommendation,
+        "guidance": guidance,
+        "checks": checks,
+    }
+
+
+def selected_semantic_candidates(semantic_map: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return selected candidates while keeping legacy proposals compatible."""
+    return [
+        item
+        for item in semantic_map.get("candidates", [])
+        if isinstance(item, dict) and bool(item.get("selected", True))
+    ]
+
+
 def compact_metadata_blocks(
     document: dict[str, Any], business_request: dict[str, Any], max_items: int
 ) -> list[dict[str, Any]]:
@@ -651,7 +859,16 @@ def compact_metadata_blocks(
 
 def _search_tokens(value: object) -> set[str]:
     text = re.sub(r"([a-z0-9])([A-Z])", r"\1 \2", str(value))
-    return {token for token in re.findall(r"[a-záéíóúñ0-9]+", text.casefold()) if len(token) >= 3}
+    tokens = {token for token in re.findall(r"[a-záéíóúñ0-9]+", text.casefold()) if len(token) >= 3}
+    # A question may use a plural (products/productos) while a technical table uses
+    # the singular (Product). Retaining both forms improves discovery without choosing
+    # the model on behalf of the LLM.
+    singulars = {
+        token[:-2] if token.endswith("es") and len(token) > 5 else token[:-1]
+        for token in tokens
+        if token.endswith("s") and len(token) > 4
+    }
+    return tokens | {token for token in singulars if len(token) >= 3}
 
 
 def _compact_columns(table: dict[str, Any], limit: int = 8) -> list[dict[str, object]]:
@@ -784,6 +1001,12 @@ def validated_semantic_candidates(
             if key in seen:
                 continue
             seen.add(key)
+            confidence = (
+                str(raw.get("confidence", "low"))
+                if str(raw.get("confidence", "low")) in {"high", "medium", "low"}
+                else "low"
+            )
+            evidence = _semantic_candidate_evidence(normalized, existing, confidence)
             candidates.append(
                 {
                     "business_concept": str(raw.get("business_concept", "concepto"))[:80],
@@ -792,11 +1015,12 @@ def validated_semantic_candidates(
                     ],
                     "description_es": str(raw.get("description_es", ""))[:500],
                     "technical_refs": normalized,
-                    "confidence": str(raw.get("confidence", "low"))
-                    if str(raw.get("confidence", "low")) in {"high", "medium", "low"}
-                    else "low",
+                    "confidence": confidence,
                     "reason": str(raw.get("reason", ""))[:500],
                     "references_validated": True,
+                    "evidence": evidence,
+                    "selected": evidence["recommended_action"] != "exclude",
+                    "selection_source": "automatic",
                 }
             )
     return {
@@ -811,7 +1035,7 @@ def derived_scope(document: dict[str, Any], semantic_map: dict[str, Any]) -> dic
     selected = list(
         dict.fromkeys(
             reference
-            for candidate in semantic_map.get("candidates", [])
+            for candidate in selected_semantic_candidates(semantic_map)
             for reference in candidate.get("technical_refs", [])
             if reference in tables
         )
@@ -850,6 +1074,45 @@ def derived_scope(document: dict[str, Any], semantic_map: dict[str, Any]) -> dic
                 if reference not in expanded_order:
                     expanded_order.append(reference)
     expanded = set(expanded_order[:PROPOSAL_SCOPE_MAX_TABLES])
+    concept_neighbor_terms = {
+        "product": {"product", "producto"},
+        "customer": {"customer", "cliente"},
+        "territory": {"territory", "territorio"},
+        "date": {"date", "fecha", "calendar"},
+    }
+    preferred_neighbors: list[str] = []
+    for candidate in selected_semantic_candidates(semantic_map):
+        if not isinstance(candidate, dict):
+            continue
+        concept_tokens = _search_tokens(
+            {
+                "code": candidate.get("business_concept", ""),
+                "name": candidate.get("business_name_es", ""),
+            }
+        )
+        exact_names = {
+            term
+            for concept, terms in concept_neighbor_terms.items()
+            if concept in concept_tokens or bool(concept_tokens & terms)
+            for term in terms
+        }
+        if not exact_names:
+            continue
+        for reference in candidate.get("technical_refs", []):
+            reference = str(reference)
+            if reference not in graph:
+                continue
+            current_name = reference.rsplit(".", 1)[-1].casefold()
+            if current_name in exact_names:
+                continue
+            for neighbor in sorted(graph[reference]):
+                neighbor_name = neighbor.rsplit(".", 1)[-1].casefold()
+                if neighbor_name in exact_names and neighbor not in preferred_neighbors:
+                    preferred_neighbors.append(neighbor)
+    for reference in preferred_neighbors:
+        if len(expanded) >= PROPOSAL_SCOPE_MAX_TABLES:
+            break
+        expanded.add(reference)
     outbound_neighbors: set[str] = set()
     for reference in selected:
         for relation in tables[reference].get("foreign_keys", []):
@@ -863,7 +1126,8 @@ def derived_scope(document: dict[str, Any], semantic_map: dict[str, Any]) -> dic
     ranked_neighbors = sorted(
         outbound_neighbors - expanded,
         key=lambda ref: (
-            -len(_search_tokens(ref) & SALES_PROFILE.discovery_terms),
+            -len(_search_tokens(ref.rsplit(".", 1)[-1]) & SALES_PROFILE.discovery_terms),
+            len(_search_tokens(ref.rsplit(".", 1)[-1])),
             ref,
         ),
     )
@@ -896,7 +1160,7 @@ def proposal_payload(
         "task": "propose_sales_dimensional_model",
         "source": {"connector": connector, "snapshot_hash": snapshot_hash},
         "business_request": business_request,
-        "semantic_map": semantic_map.get("candidates", []),
+        "semantic_map": selected_semantic_candidates(semantic_map),
         "scope": scope,
         "constraints": {
             "no_sql": True,
@@ -933,7 +1197,24 @@ def _semantic_role(value: dict[str, Any], source_column: str = "") -> str:
 
 def _measure_candidates_for_role(role: str, fact_columns: list[dict[str, Any]]) -> list[str]:
     role_terms = {
-        "sales_amount": {"amount", "total", "line", "sales", "importe", "monto"},
+        "sales_amount": {
+            "amount",
+            "total",
+            "line",
+            "sales",
+            "importe",
+            "monto",
+            "price",
+            "precio",
+            "cost",
+            "costo",
+            "tax",
+            "impuesto",
+            "freight",
+            "flete",
+            "discount",
+            "descuento",
+        },
         "quantity": {"qty", "quantity", "cantidad", "unidades", "units"},
         "customer_count": {"customer", "cliente", "account"},
         "transaction_count": {"order", "sale", "venta", "transaction", "pedido"},
@@ -950,6 +1231,16 @@ def _measure_candidates_for_role(role: str, fact_columns: list[dict[str, Any]]) 
         )
         if role in {"sales_amount", "quantity"} and identifier_like:
             continue
+        if role == "transaction_count" and tokens & {"detail", "line", "detalle", "linea"}:
+            continue
+        if role == "transaction_count" and tokens & {
+            "qty",
+            "quantity",
+            "cantidad",
+            "units",
+            "unidades",
+        }:
+            continue
         if tokens & terms:
             candidates.append(name)
     return candidates
@@ -958,12 +1249,108 @@ def _measure_candidates_for_role(role: str, fact_columns: list[dict[str, Any]]) 
 def _column_supports_role(role: str, column: str) -> bool:
     tokens = _search_tokens(column)
     required_terms = {
-        "sales_amount": {"amount", "total", "line", "sales", "importe", "monto"},
+        "sales_amount": {
+            "amount",
+            "total",
+            "line",
+            "sales",
+            "importe",
+            "monto",
+            "price",
+            "precio",
+            "cost",
+            "costo",
+            "tax",
+            "impuesto",
+            "freight",
+            "flete",
+            "discount",
+            "descuento",
+        },
         "quantity": {"qty", "quantity", "cantidad", "unidades", "units"},
         "customer_count": {"customer", "cliente", "account", "person", "store"},
         "transaction_count": {"order", "sale", "sales", "venta", "transaction", "pedido"},
     }
     return bool(tokens & required_terms.get(role, set()))
+
+
+def _looks_like_discount_rate(value: object) -> bool:
+    tokens = _search_tokens(value)
+    return bool(tokens & {"discount", "descuento"}) and not bool(
+        tokens & {"amount", "importe", "monto", "total", "value", "valor"}
+    )
+
+
+def _numeric_fact_columns(fact_columns: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [
+        column
+        for column in fact_columns
+        if re.search(
+            r"tinyint|smallint|int|bigint|decimal|numeric|money|float|real",
+            str(column.get("type", column.get("data_type", ""))).casefold(),
+        )
+    ]
+
+
+def _discount_amount_suggestion(
+    measure_name: str,
+    proposed_column: str,
+    fact_columns: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    """Infer a monetary discount recipe only when every semantic factor is unambiguous."""
+    if not (
+        _looks_like_discount_rate(proposed_column)
+        and bool(_search_tokens(measure_name) & {"discount", "descuento", "total", "importe"})
+    ):
+        return None
+    numeric_names = [str(column.get("name", "")) for column in _numeric_fact_columns(fact_columns)]
+    discount_candidates = [name for name in numeric_names if _looks_like_discount_rate(name)]
+    price_candidates = [
+        name
+        for name in numeric_names
+        if bool(_search_tokens(name) & {"price", "precio"})
+        and not bool(_search_tokens(name) & {"discount", "descuento"})
+    ]
+    quantity_candidates = [
+        name
+        for name in numeric_names
+        if bool(_search_tokens(name) & {"qty", "quantity", "cantidad", "units", "unidades"})
+    ]
+    if (
+        discount_candidates == [proposed_column]
+        and len(price_candidates) == 1
+        and len(quantity_candidates) == 1
+    ):
+        return {
+            "operation": "multiply",
+            "inputs": [price_candidates[0], proposed_column, quantity_candidates[0]],
+            "null_policy": "preserve_null",
+            "reason": (
+                "La columna de descuento representa una tasa; el importe monetario por fila "
+                "requiere precio por tasa por cantidad."
+            ),
+        }
+    return None
+
+
+def _discount_amount_recipe_is_complete(operation: str, inputs: list[str]) -> bool:
+    """Accept a discount amount only when a verified monetary base accompanies its rate."""
+    if operation != "multiply" or not any(_looks_like_discount_rate(value) for value in inputs):
+        return False
+    non_discount = [value for value in inputs if not _looks_like_discount_rate(value)]
+    has_price = any(bool(_search_tokens(value) & {"price", "precio"}) for value in non_discount)
+    has_quantity = any(
+        bool(_search_tokens(value) & {"qty", "quantity", "cantidad", "units", "unidades"})
+        for value in non_discount
+    )
+    has_amount_base = any(
+        bool(
+            _search_tokens(value)
+            & {"amount", "importe", "monto", "value", "valor", "gross", "bruto", "subtotal"}
+        )
+        for value in non_discount
+    )
+    return (has_price and has_quantity) or has_amount_base
 
 
 def expand_proposal_blueprint(
@@ -990,14 +1377,192 @@ def expand_proposal_blueprint(
 
     automatic_adjustments: list[str] = []
     proposal_warnings: list[str] = []
+    decision_diagnostics: list[dict[str, Any]] = []
+    measure_index_map: dict[int, int] = {}
     measures: list[dict[str, Any]] = []
-    for item in blueprint.get("measures", []):
+    fact_columns_by_name = {str(item.get("name")): item for item in fact_columns}
+    for source_index, item in enumerate(blueprint.get("measures", [])):
         if not isinstance(item, dict):
             continue
         name = str(item.get("name", "medida_ventas"))
+        calculation = item.get("calculation") if isinstance(item.get("calculation"), dict) else None
+        provider_calculation_operation = str(item.get("calculation_operation", "direct"))
+        provider_calculation_inputs = item.get("calculation_inputs", [])
+        if (
+            calculation is None
+            and provider_calculation_operation != "direct"
+            and isinstance(provider_calculation_inputs, list)
+        ):
+            calculation = {
+                "operation": provider_calculation_operation,
+                "inputs": [str(value) for value in provider_calculation_inputs],
+            }
+        calculation_inputs = (
+            [str(value) for value in calculation.get("inputs", [])]
+            if calculation is not None and isinstance(calculation.get("inputs"), list)
+            else []
+        )
         proposed_column = str(item.get("source_column", ""))
-        role = _semantic_role(item, proposed_column)
+        role = _semantic_role(item, " ".join(calculation_inputs) or proposed_column)
+        suggested_calculation: dict[str, Any] | None = None
+        discount_input = next(
+            (value for value in calculation_inputs if _looks_like_discount_rate(value)),
+            proposed_column if _looks_like_discount_rate(proposed_column) else "",
+        )
+        if calculation is not None and role == "sales_amount" and discount_input:
+            operation = str(calculation.get("operation", ""))
+            if not _discount_amount_recipe_is_complete(operation, calculation_inputs):
+                suggested_calculation = _discount_amount_suggestion(
+                    name, discount_input, fact_columns
+                )
+                if suggested_calculation is None:
+                    reason = (
+                        f"La medida {name} fue excluida porque usa una tasa de descuento sin "
+                        "una base monetaria verificable. Defina precio y cantidad, o un importe "
+                        "base inequívoco, antes de calcular el descuento."
+                    )
+                    proposal_warnings.append(reason)
+                    decision_diagnostics.append(
+                        {
+                            "kind": "measure",
+                            "code": name,
+                            "status": "excluded",
+                            "reason": reason,
+                            "compatible_measures": [],
+                        }
+                    )
+                    continue
+                calculation = suggested_calculation
+                calculation_inputs = [str(value) for value in suggested_calculation["inputs"]]
+                automatic_adjustments.append(
+                    f"La medida {name} se corrigió automáticamente como importe monetario: "
+                    f"{' × '.join(calculation_inputs)}. La receta incompleta del proveedor "
+                    "fue sustituida por columnas verificadas."
+                )
+                decision_diagnostics.append(
+                    {
+                        "kind": "measure",
+                        "code": name,
+                        "status": "auto_corrected",
+                        "reason": str(suggested_calculation["reason"]),
+                        "suggested_calculation": {
+                            "operation": "multiply",
+                            "inputs": calculation_inputs,
+                        },
+                    }
+                )
+        if calculation is None:
+            suggested_calculation = _discount_amount_suggestion(name, proposed_column, fact_columns)
+            if suggested_calculation is not None:
+                calculation = suggested_calculation
+                calculation_inputs = [str(value) for value in suggested_calculation["inputs"]]
+                automatic_adjustments.append(
+                    f"La medida {name} se corrigió automáticamente como importe monetario: "
+                    f"{' × '.join(calculation_inputs)}. La tasa original se conserva como entrada."
+                )
+                decision_diagnostics.append(
+                    {
+                        "kind": "measure",
+                        "code": name,
+                        "status": "auto_corrected",
+                        "reason": str(suggested_calculation["reason"]),
+                        "suggested_calculation": {
+                            "operation": "multiply",
+                            "inputs": calculation_inputs,
+                        },
+                    }
+                )
+        if calculation is not None:
+            operation = str(calculation.get("operation", ""))
+            valid_width = 2 <= len(calculation_inputs) <= 4
+            if operation in {"subtract", "divide"}:
+                valid_width = len(calculation_inputs) == 2
+            if (
+                operation not in ALLOWED_CALCULATED_MEASURE_OPERATIONS
+                or not valid_width
+                or len(set(calculation_inputs)) != len(calculation_inputs)
+                or any(value not in fact_columns_by_name for value in calculation_inputs)
+            ):
+                reason = (
+                    f"La medida calculada {name} fue excluida porque su receta no usa una "
+                    "operacion controlada y columnas verificadas de la tabla de hechos."
+                )
+                proposal_warnings.append(reason)
+                decision_diagnostics.append(
+                    {
+                        "kind": "measure",
+                        "code": name,
+                        "status": "excluded",
+                        "reason": reason,
+                        "compatible_measures": [],
+                    }
+                )
+                continue
+            non_numeric = [
+                value
+                for value in calculation_inputs
+                if not re.search(
+                    r"tinyint|smallint|int|bigint|decimal|numeric|money|float|real",
+                    str(fact_columns_by_name[value].get("type", "")).casefold(),
+                )
+            ]
+            if non_numeric:
+                reason = (
+                    f"La medida calculada {name} fue excluida porque las entradas "
+                    f"{', '.join(non_numeric)} no son numericas."
+                )
+                proposal_warnings.append(reason)
+                decision_diagnostics.append(
+                    {
+                        "kind": "measure",
+                        "code": name,
+                        "status": "excluded",
+                        "reason": reason,
+                        "compatible_measures": [],
+                    }
+                )
+                continue
+            source_column = calculation_inputs[0]
+            aggregation = str(item.get("aggregation", "sum"))
+            if aggregation not in ROLE_AGGREGATIONS[role]:
+                aggregation = ROLE_DEFAULT_AGGREGATION[role]
+            measure_index_map[source_index] = len(measures)
+            measures.append(
+                {
+                    "name": name,
+                    "source_columns": calculation_inputs,
+                    "aggregation": aggregation,
+                    "semantic_role": role,
+                    "calculation": {
+                        "operation": operation,
+                        "inputs": calculation_inputs,
+                        "null_policy": "preserve_null",
+                    },
+                }
+            )
+            if suggested_calculation is None:
+                automatic_adjustments.append(
+                    f"La medida {name} se derivará mediante {operation} usando exclusivamente "
+                    "columnas verificadas, sin SQL libre."
+                )
+            continue
         candidates = _measure_candidates_for_role(role, fact_columns)
+        if not candidates and not _column_supports_role(role, proposed_column):
+            reason = (
+                f"La medida {name} fue excluida porque {proposed_column or 'la columna elegida'} "
+                f"no representa {role} en la tabla de hechos verificada."
+            )
+            proposal_warnings.append(reason)
+            decision_diagnostics.append(
+                {
+                    "kind": "measure",
+                    "code": name,
+                    "status": "excluded",
+                    "reason": reason,
+                    "compatible_measures": [],
+                }
+            )
+            continue
         source_column = proposed_column
         if candidates and proposed_column not in candidates:
             source_column = max(
@@ -1020,6 +1585,7 @@ def expand_proposal_blueprint(
                 f"{adjusted_aggregation} según su función semántica."
             )
             aggregation = adjusted_aggregation
+        measure_index_map[source_index] = len(measures)
         measures.append(
             {
                 "name": name,
@@ -1162,13 +1728,13 @@ def expand_proposal_blueprint(
             break
 
     kpis: list[dict[str, Any]] = []
-    decision_diagnostics: list[dict[str, Any]] = []
     for item in blueprint.get("kpis", []):
         if not isinstance(item, dict):
             continue
         raw_index = item.get("measure_index", 0)
         index = raw_index if isinstance(raw_index, int) else 0
-        measure = measures[min(max(index, 0), len(measures) - 1)] if measures else {}
+        effective_index = measure_index_map.get(index)
+        measure = measures[effective_index] if effective_index is not None else {}
         measure_name = str(measure.get("name", ""))
         measure_role = str(measure.get("semantic_role", ""))
         kpi_role = _semantic_role(item)
@@ -1281,7 +1847,7 @@ def expand_proposal_blueprint(
         "business_explanation": (
             f"{summary} La aplicación expandió y validó las decisiones técnicas del copiloto."
         ),
-        "semantic_mapping": semantic_map.get("candidates", []),
+        "semantic_mapping": selected_semantic_candidates(semantic_map),
         "grain": {
             "description": str(
                 blueprint.get("grain_description", "Una fila por transacción de venta.")
@@ -1345,6 +1911,7 @@ def apply_analyst_adjustments(
     if not requested_measures or not set(requested_measures).issubset(measures_by_name):
         raise ValueError("Seleccione únicamente medidas incluidas en la propuesta de origen.")
     aggregation_changes = adjustments.get("measure_aggregations", {})
+    calculation_changes = adjustments.get("measure_calculations", {})
     selected_measures: list[dict[str, Any]] = []
     index_map: dict[int, int] = {}
     for new_index, name in enumerate(requested_measures):
@@ -1352,6 +1919,16 @@ def apply_analyst_adjustments(
         measure = deepcopy(source_measure)
         if name in aggregation_changes:
             measure["aggregation"] = aggregation_changes[name]
+        if name in calculation_changes:
+            calculation = calculation_changes[name]
+            if not isinstance(calculation, dict):
+                raise ValueError(f"El calculo de {name} no tiene una estructura valida.")
+            measure["calculation"] = deepcopy(calculation)
+            inputs = calculation.get("inputs", [])
+            if isinstance(inputs, list) and inputs:
+                measure["source_column"] = str(inputs[0])
+        else:
+            measure.pop("calculation", None)
         selected_measures.append(measure)
         index_map[old_index] = new_index
     blueprint["measures"] = selected_measures
@@ -1554,7 +2131,33 @@ def validate_proposal(
                 )
                 role = _semantic_role(measure, source_column)
                 measure_semantics[name] = (role, aggregation)
-                if source_column and not _column_supports_role(role, source_column):
+                calculation = (
+                    measure.get("calculation")
+                    if isinstance(measure.get("calculation"), dict)
+                    else None
+                )
+                if (
+                    calculation is None
+                    and role == "sales_amount"
+                    and _looks_like_discount_rate(source_column)
+                ):
+                    issues.append(
+                        _issue(
+                            "measure.discount_rate_as_amount",
+                            "error",
+                            f"fact.measures.{index}",
+                            (
+                                f"{name} usa {source_column}, que parece una tasa de descuento, "
+                                "como si fuera un importe monetario. Defina una medida calculada "
+                                "con columnas verificadas de precio, tasa y cantidad."
+                            ),
+                        )
+                    )
+                if (
+                    calculation is None
+                    and source_column
+                    and not _column_supports_role(role, source_column)
+                ):
                     issues.append(
                         _issue(
                             "measure.semantic_source",
@@ -1593,6 +2196,60 @@ def validate_proposal(
                                 "error",
                                 f"fact.measures.{index}.source_columns",
                                 f"La columna {column} no existe en las fuentes del hecho.",
+                            )
+                        )
+                if calculation is not None:
+                    operation = str(calculation.get("operation", ""))
+                    inputs = calculation.get("inputs", [])
+                    if operation not in ALLOWED_CALCULATED_MEASURE_OPERATIONS:
+                        issues.append(
+                            _issue(
+                                "measure.calculation_operation",
+                                "error",
+                                f"fact.measures.{index}.calculation.operation",
+                                "La operacion de la medida calculada no esta permitida.",
+                            )
+                        )
+                    if not isinstance(inputs, list) or inputs != columns:
+                        issues.append(
+                            _issue(
+                                "measure.calculation_inputs",
+                                "error",
+                                f"fact.measures.{index}.calculation.inputs",
+                                "Las entradas del calculo deben coincidir con sus columnas fuente.",
+                            )
+                        )
+                    elif (
+                        len(inputs) < 2
+                        or len(inputs) > 4
+                        or (operation in {"subtract", "divide"} and len(inputs) != 2)
+                    ):
+                        issues.append(
+                            _issue(
+                                "measure.calculation_arity",
+                                "error",
+                                f"fact.measures.{index}.calculation.inputs",
+                                "La cantidad de entradas no corresponde a la operacion controlada.",
+                            )
+                        )
+                    if (
+                        role == "sales_amount"
+                        and isinstance(inputs, list)
+                        and any(_looks_like_discount_rate(value) for value in inputs)
+                        and not _discount_amount_recipe_is_complete(
+                            operation, [str(value) for value in inputs]
+                        )
+                    ):
+                        issues.append(
+                            _issue(
+                                "measure.discount_amount_incomplete",
+                                "error",
+                                f"fact.measures.{index}.calculation.inputs",
+                                (
+                                    f"{name} usa una tasa de descuento, pero el cálculo no "
+                                    "incluye una base monetaria verificable. Use precio por tasa "
+                                    "por cantidad o un importe base inequívoco por tasa."
+                                ),
                             )
                         )
 

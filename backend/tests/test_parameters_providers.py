@@ -53,6 +53,15 @@ def cloud_configuration() -> SimpleNamespace:
     )
 
 
+def groq_configuration() -> SimpleNamespace:
+    return SimpleNamespace(
+        provider_kind="groq-cloud",
+        base_url="https://api.groq.com/openai/v1",
+        model_id="openai/gpt-oss-120b",
+        reasoning_level="minimal",
+    )
+
+
 def test_ollama_connection_requires_downloaded_model(monkeypatch: MonkeyPatch) -> None:
     monkeypatch.setattr(
         providers.httpx,
@@ -129,3 +138,77 @@ def test_gemini_saturation_has_safe_actionable_message(monkeypatch: MonkeyPatch)
 
     assert not result.ok
     assert "temporalmente saturado" in result.message
+
+
+def test_groq_minimal_reasoning_maps_to_supported_low_level() -> None:
+    assert providers._groq_reasoning_effort("minimal") == "low"
+    assert providers._groq_reasoning_effort("automatic") is None
+    assert providers._groq_reasoning_effort("high") == "high"
+
+
+def test_groq_connection_uses_cloud_credential(monkeypatch: MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        providers.httpx,
+        "AsyncClient",
+        lambda **kwargs: FakeAsyncClient(
+            {"choices": [{"message": {"content": '{"ok":true}'}}]}, **kwargs
+        ),
+    )
+
+    result = asyncio.run(providers.test_provider(groq_configuration(), "groq-secret"))
+
+    assert result.ok
+
+
+def test_groq_invalid_key_has_safe_message(monkeypatch: MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        providers.httpx,
+        "AsyncClient",
+        lambda **kwargs: FakeAsyncClient({}, status_code=401, **kwargs),
+    )
+
+    result = asyncio.run(providers.test_provider(groq_configuration(), "invalid-secret"))
+
+    assert not result.ok
+    assert "API key de Groq" in result.message
+
+
+def test_groq_generation_requests_strict_json_schema(monkeypatch: MonkeyPatch) -> None:
+    captured: dict[str, object] = {}
+
+    class RecordingClient(FakeAsyncClient):
+        async def post(self, url: str, **kwargs: object) -> FakeResponse:
+            captured["url"] = url
+            captured["json"] = kwargs.get("json", {})
+            return FakeResponse({"choices": [{"message": {"content": '{"answer":"ok"}'}}]})
+
+    monkeypatch.setattr(
+        providers.httpx,
+        "AsyncClient",
+        lambda **kwargs: RecordingClient({}, **kwargs),
+    )
+
+    result = asyncio.run(
+        providers.generate_json(
+            groq_configuration(),
+            "Devuelve el contrato solicitado.",
+            {"request": "test"},
+            credential="groq-secret",
+            response_schema={
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["answer"],
+                "properties": {"answer": {"type": "string"}},
+            },
+        )
+    )
+
+    assert result == {"answer": "ok"}
+    assert captured["url"] == "https://api.groq.com/openai/v1/chat/completions"
+    body = captured["json"]
+    assert isinstance(body, dict)
+    assert body["reasoning_effort"] == "low"
+    response_format = body["response_format"]
+    assert isinstance(response_format, dict)
+    assert response_format["type"] == "json_schema"
+    assert response_format["json_schema"]["strict"] is True  # type: ignore[index]
