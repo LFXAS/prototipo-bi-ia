@@ -69,6 +69,16 @@ DEFAULT_PERMISSIONS: tuple[tuple[str, str, str], ...] = (
         "Administrar catálogo analítico",
         "Permite crear, modificar, habilitar y retirar guías analíticas por dominio.",
     ),
+    (
+        "etl.executions.read",
+        "Consultar materializaciones",
+        "Permite revisar propuestas elegibles, planes y evidencia de ejecuciones ETL.",
+    ),
+    (
+        "etl.executions.write",
+        "Preparar materializaciones",
+        "Permite seleccionar una propuesta y preparar una ejecución ETL controlada.",
+    ),
     ("audit.read", "Consultar auditoría", "Permite consultar eventos de auditoría."),
 )
 
@@ -139,6 +149,15 @@ DEFAULT_MENUS: tuple[tuple[str, str, str, int, str, str, tuple[str, ...]], ...] 
         "ai",
         "IA",
         ("copilot.proposals.read",),
+    ),
+    (
+        "sales-datamart",
+        "Datamart de ventas",
+        "/datamart-ventas",
+        20,
+        "data",
+        "Datos",
+        ("etl.executions.read",),
     ),
     ("audit", "Auditoría", "/auditoria", 70, "security", "Seguridad", ("audit.read",)),
 )

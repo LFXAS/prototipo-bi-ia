@@ -17,6 +17,7 @@ ProposalStatus = Literal[
     "discarded",
 ]
 AggregationCode = Literal["sum", "count", "count_distinct", "average", "min", "max"]
+CalculatedMeasureOperation = Literal["multiply", "add", "subtract", "divide"]
 
 
 class CapabilityOptionRead(BaseModel):
@@ -103,6 +104,19 @@ class ProposalReject(BaseModel):
     comment: str = Field(min_length=10, max_length=500)
 
 
+class ControlledMeasureCalculation(BaseModel):
+    operation: CalculatedMeasureOperation
+    inputs: list[str] = Field(min_length=2, max_length=4)
+
+    @field_validator("inputs")
+    @classmethod
+    def unique_inputs(cls, value: list[str]) -> list[str]:
+        normalized = [item.strip() for item in value if item.strip()]
+        if len(normalized) != len(value) or len(set(normalized)) != len(normalized):
+            raise ValueError("Las entradas del calculo deben ser columnas unicas y no vacias.")
+        return normalized
+
+
 class ProposalRevision(BaseModel):
     summary: str = Field(min_length=10, max_length=160)
     grain_description: str = Field(min_length=10, max_length=240)
@@ -111,6 +125,7 @@ class ProposalRevision(BaseModel):
     kpi_codes: list[str] = Field(min_length=1, max_length=12)
     kpi_measure_names: dict[str, str] = Field(default_factory=dict)
     measure_aggregations: dict[str, AggregationCode] = Field(default_factory=dict)
+    measure_calculations: dict[str, ControlledMeasureCalculation] = Field(default_factory=dict)
     comment: str = Field(min_length=10, max_length=500)
 
     @field_validator("summary", "grain_description", "comment")
@@ -151,6 +166,30 @@ class ProposalRead(BaseModel):
     reviewed_by_label: str | None = None
     created_at: datetime
     reviewed_at: datetime | None = None
+
+
+class SemanticAdviceCreate(BaseModel):
+    concept_code: str = Field(min_length=1, max_length=80)
+    question: str = Field(min_length=10, max_length=500)
+
+    @field_validator("concept_code", "question")
+    @classmethod
+    def normalized_advice_text(cls, value: str) -> str:
+        return " ".join(value.split())
+
+
+class SemanticAdviceRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    proposal_id: int
+    concept_code: str
+    question: str
+    response_document: dict[str, Any]
+    provider_kind: str
+    model_id: str
+    created_by_label: str
+    created_at: datetime
 
 
 class ProposalVerificationCheck(BaseModel):

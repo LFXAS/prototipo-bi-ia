@@ -1,6 +1,6 @@
 # SPR-04-01: selección de propuesta aprobada y expediente de validación ETL
 
-- Estado: **borrador preparado desde Sprint 3; no implementado**.
+- Estado: **implementación y conciliación de referencia completadas con la ejecución 6**.
 - Dependencias: Sprint 3 aceptado, propuesta BI aprobada e instantánea vigente.
 - Propósito: fijar la lógica de entrada del ETL y de conciliación antes de programar Sprint 4.
 
@@ -35,7 +35,9 @@ La aplicación no declarará qué LLM es mejor ni fusionará propuestas automát
 
 ## 3. Inmutabilidad y trazabilidad
 
-Cada ejecución ETL conservará el `proposal_id` confirmado, la instantánea, la versión del constructor, los parámetros y las huellas de entrada. Cambiar de propuesta no modifica una ejecución anterior: crea un nuevo intento. Una propuesta aprobada tampoco se edita; cualquier ajuste vuelve al flujo de versión derivada y aprobación del Sprint 3.
+Cada ejecución ETL conservará el `proposal_id` confirmado, la instantánea, la versión del constructor, los parámetros y las huellas de entrada. Cambiar de propuesta o seleccionar un conjunto distinto de KPI crea un nuevo contrato y, por tanto, puede originar un nuevo intento. Una propuesta aprobada tampoco se edita; cualquier ajuste vuelve al flujo de versión derivada y aprobación del Sprint 3.
+
+Una ejecución idéntica no se interpreta como actualización de datos. Si ya existe un expediente preparado, en curso, conciliado o validado con la misma huella de propuesta y el mismo conjunto de KPI, la interfaz abre ese expediente y la API rechaza un segundo intento con una respuesta accionable. La comprobación se repite dentro de una transacción con bloqueo de la propuesta para cubrir solicitudes simultáneas. Sólo un intento fallido puede reintentarse mediante la acción controlada correspondiente. Una futura actualización periódica de datos deberá tener una operación explícita de refresco y una nueva identidad de ejecución; nunca reutilizará silenciosamente el botón de carga inicial.
 
 ## 4. Expediente acumulativo de validación
 
@@ -52,17 +54,18 @@ La plataforma mantendrá un apartado **Validación del datamart** vinculado a la
 
 Cada control mostrará fuente, resultado esperado, resultado obtenido, diferencia absoluta y relativa, tolerancia, fecha y estado. No se marcará como cumplida una validación que todavía no disponga del artefacto necesario.
 
-## 5. Criterios de aceptación futuros
+## 5. Criterios de aceptación
 
-- [ ] La lista contiene sólo propuestas aprobadas y compatibles.
-- [ ] La más reciente aparece preseleccionada, pero no puede ejecutarse sin confirmación del analista.
-- [ ] Se pueden comparar al menos dos propuestas aprobadas sin llamar nuevamente al LLM.
-- [ ] Cada ejecución conserva de forma inmutable la versión seleccionada.
-- [ ] La vista previa muestra las operaciones determinísticas que se materializarán y no acepta SQL libre.
-- [ ] La ejecución parte de una base destino vacía, es transaccional, auditable y reejecutable.
-- [ ] La conciliación OLTP-datamart evidencia filas, pedidos, unidades e importes con tolerancias documentadas.
-- [ ] Cada KPI calculado usa una receta declarativa conocida, conserva su versión y se concilia con la fuente OLTP.
-- [ ] Un fallo conserva la evidencia y permite reintento seguro sin alterar la fuente.
+- [x] La lista contiene sólo propuestas aprobadas y compatibles; las bloqueadas conservan causas accionables.
+- [x] La más reciente aparece preseleccionada, pero no puede ejecutarse sin confirmación del analista.
+- [x] Se pueden comparar al menos dos propuestas aprobadas sin llamar nuevamente al LLM.
+- [x] Cada ejecución conserva de forma inmutable la versión seleccionada.
+- [x] La vista previa muestra las operaciones determinísticas que se materializarán y no acepta SQL libre.
+- [x] La carga completa es transaccional, auditable y reemplaza el destino sólo después de terminar correctamente.
+- [x] La conciliación OLTP-datamart evidencia filas, pedidos, unidades e importes con tolerancias documentadas.
+- [x] Cada KPI calculado usa una receta declarativa conocida, conserva su versión y el resultado del control.
+- [x] Un fallo conserva la evidencia y permite reintento seguro sin alterar la fuente; la interpretación puede reintentarse sin repetir el ETL.
+- [x] Un contrato ya preparado o ejecutado no puede materializarse de nuevo por error: la interfaz abre el expediente existente y la API bloquea también las solicitudes duplicadas o simultáneas.
 
 ## 6. Exclusiones de esta especificación
 

@@ -49,3 +49,25 @@ class BiProposal(Base):
         DateTime(timezone=True), server_default=func.now(), nullable=False, index=True
     )
     reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class SemanticAdvice(Base):
+    __tablename__ = "semantic_advice"
+    __table_args__ = {"schema": "app"}
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    proposal_id: Mapped[int] = mapped_column(
+        ForeignKey("app.bi_proposals.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    concept_code: Mapped[str] = mapped_column(String(80), nullable=False, index=True)
+    question: Mapped[str] = mapped_column(Text, nullable=False)
+    response_document: Mapped[dict[str, object]] = mapped_column(JSONB, nullable=False)
+    provider_kind: Mapped[str] = mapped_column(String(40), nullable=False)
+    model_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    created_by_user_id: Mapped[int | None] = mapped_column(
+        ForeignKey("app.users.id", ondelete="SET NULL"), nullable=True
+    )
+    created_by_label: Mapped[str] = mapped_column(String(320), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False, index=True
+    )

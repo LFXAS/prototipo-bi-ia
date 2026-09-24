@@ -66,9 +66,9 @@ Abre <http://localhost:5173> y <http://localhost:8000/docs>.
 
 ### Registrar una credencial LLM cloud
 
-Las API keys de Gemini y Qwen no se escriben en `.env`. Inicia sesión como una persona con `parameters.llm.write`, abre **Parámetros generales > Configuración LLM**, guarda el proveedor, modelo y nivel de razonamiento, y usa **Registrar credencial**. Después de guardarla, la interfaz sólo mostrará **Credencial configurada** y permitirá reemplazarla, nunca consultarla. Para una demostración ágil con Gemini se recomienda comenzar con razonamiento **mínimo** y aumentar el nivel sólo después de repetir **Probar conexión**.
+Las API keys de Gemini, Groq y Qwen no se escriben en `.env`. Inicia sesión como una persona con `parameters.llm.write`, abre **Parámetros generales > Configuración LLM**, guarda el proveedor, modelo y nivel de razonamiento, y usa **Registrar credencial**. Después de guardarla, la interfaz sólo mostrará **Credencial configurada** y permitirá reemplazarla, nunca consultarla. Para continuar con baja latencia se recomienda **Groq Cloud**, URL `https://api.groq.com/openai/v1`, modelo `openai/gpt-oss-120b` y razonamiento **bajo**. La pantalla completa esos valores al seleccionar el proveedor; compruébalos, registra la clave y pulsa **Probar conexión** antes de activarlo. Para Gemini se recomienda comenzar con razonamiento **mínimo**.
 
-FastAPI cifra el valor en PostgreSQL y genera automáticamente la raíz criptográfica en el volumen `secret_key_data`. Ambos elementos son necesarios para recuperar la credencial después de reiniciar. No copies ese volumen entre equipos ni lo publiques; cada instalación debe registrar sus propias claves desde la web. Ollama local no requiere credencial.
+FastAPI cifra el valor en PostgreSQL y genera automáticamente la raíz criptográfica en el volumen `secret_key_data`. Ambos elementos son necesarios para recuperar la credencial después de reiniciar. No copies ese volumen entre equipos ni lo publiques; cada instalación debe registrar sus propias claves desde la web. Gemini, Groq y Qwen requieren una API key propia por instalación; Ollama local no requiere credencial.
 
 ### Registrar AdventureWorks como fuente activa
 
@@ -93,8 +93,8 @@ Antes de entrar en **IA > Asistente de datamart**, comprueba que exista una fuen
 3. Revisa los conceptos, su explicación española y el origen técnico; excluye únicamente los que no representen la necesidad.
 4. En la propuesta válida, abre **Personalizar propuesta**, retira o incorpora dimensiones, medidas o KPIs ya comprobados, cambia una agregación permitida y registra una justificación. Debe crearse otra versión enlazada, sin llamar nuevamente al LLM.
 5. En **Versiones generadas**, confirma que el filtro inicial sea **Lista para revisar**, cambia a otros estados y recorre la paginación cuando exista más de una página.
-6. Aprueba o rechaza una versión. Aprobar sólo registra el contrato para el Sprint 4: no crea tablas ni ejecuta ETL.
-7. Ejecuta **Verificar evidencia** y confirma los cuatro controles estructurales. El aviso debe aclarar que la conciliación de filas, unidades e importes empezará después de materializar el datamart.
+6. Aprueba o rechaza una versión. Aprobar registra el contrato, pero no crea tablas ni ejecuta ETL automáticamente.
+7. Ejecuta **Verificar evidencia** y confirma los cuatro controles estructurales antes de materializar.
 
 Una persona con `copilot.catalog.write` puede abrir **IA > Catálogo analítico**, escoger primero el dominio y administrar preguntas de negocio y periodicidades. El objetivo se escribe directamente en el asistente para cada análisis. No se parametrizan dimensiones: el LLM debe proponerlas desde la estructura de la fuente y la aplicación debe validarlas antes de mostrarlas. Guardar el catálogo afecta sólo propuestas nuevas; no borra ni reescribe versiones históricas.
 
@@ -105,6 +105,21 @@ La interfaz separa claramente conceptos sugeridos por IA, referencias técnicas 
 En equipos que usan `qwen2.5:3b` por CPU, la interpretación puede tardar varios minutos. El parámetro web **Tiempo máximo del asistente** admite hasta 900 segundos y su valor inicial es 600. Los proveedores cloud suelen responder más rápido, pero **Probar conexión** realiza una generación mínima para detectar una clave válida cuyo proyecto no tenga acceso al modelo configurado.
 
 El valor `OLLAMA_CONTEXT_LENGTH=4096` debe permanecer en `.env`. El contexto anterior de 2048 podía dejar sin terminar el JSON cuando el bloque de metadatos y la respuesta compartían la misma ventana. Después de cambiarlo se debe recrear únicamente Ollama; el volumen del modelo no se elimina.
+
+### Probar la materialización y validación del Sprint 4
+
+Con una propuesta aprobada y compatible, abre **Datos > Datamart de ventas**:
+
+1. Confirma la versión recomendada o compara otra aprobación disponible.
+2. Revisa los KPI sugeridos por IA, sus medidas, periodicidad, unidad y receta controlada.
+3. Abre las transformaciones y confirma que ninguna requiera SQL libre. Las etiquetas españolas indican **Revisar en el paso 5**: no se aprueban antes de existir datos.
+4. Confirma el plan y ejecuta una sola vez. La pantalla debe conservar el número de expediente y mostrar progreso o una causa recuperable.
+5. En **Validar resultados**, comprueba filas de origen y destino, diferencia, tablas, KPI y calidad por tabla.
+6. Si los importes muestran **moneda de origen**, usa **Comprobar divisa sin repetir el ETL**. El sistema sólo publicará un código ISO cuando encuentre una moneda única y trazable; una fuente mixta conservará la etiqueta genérica y explicará el problema.
+7. Revisa la interpretación semántica. Corrige o excluye mapeos, escribe un comentario, confirma y publica. Los valores originales deben permanecer disponibles.
+8. Abre el expediente desde **Expedientes recientes** y verifica que no se solicite repetir la carga. La misma propuesta y selección de KPI debe mostrar **Abrir expediente**, no otro botón de ejecución.
+
+La prueba de referencia usa la propuesta 52 y la ejecución 6: 121317 filas de origen y destino, diferencia cero, cinco tablas, seis KPI y USD comprobado mediante `Sales.CurrencyRate.FromCurrencyCode`. Estos identificadores son evidencia de la instalación original; en otra máquina los números de propuesta y ejecución pueden cambiar, pero los controles deben ser equivalentes.
 
 ### Añadir la vista Nginx de entrega
 
@@ -195,7 +210,7 @@ git commit -m "feat: descripcion breve"
 git push -u origin feature/nombre-cambio
 ```
 
-Abre un pull request hacia `develop`. CI valida Compose, código, pruebas y los cuatro documentos PDF. Para publicar una entrega, abre otro pull request de `develop` hacia `main`; sólo esa fusión activa CD y publica las cinco imágenes con las etiquetas `main` y `sha-*`. Una etiqueta Git `v1.0.0` produce además la imagen `v1.0.0`. Consulta `docs/git-workflow.md` para el procedimiento completo y las reglas de protección.
+Abre un pull request hacia `develop`. CI valida Compose, código, pruebas y los siete documentos PDF: seis entregables técnicos completos y el Capítulo III académico. Para publicar una entrega, abre otro pull request de `develop` hacia `main`; sólo esa fusión activa CD y publica las cinco imágenes con las etiquetas `main` y `sha-*`. Una etiqueta Git `v1.0.0` produce además la imagen `v1.0.0`. Consulta `docs/git-workflow.md` para el procedimiento completo y las reglas de protección.
 
 ## 6. Levantar el entorno publicado en otra máquina (sin compilar)
 

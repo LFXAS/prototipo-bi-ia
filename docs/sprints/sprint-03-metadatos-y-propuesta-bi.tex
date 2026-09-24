@@ -47,9 +47,8 @@ pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}}
   \vspace*{0.8cm}
   {\color{ugblue}\rule{\textwidth}{2.8pt}}
   \vspace{1.2cm}
-  {\Large Universidad de Guayaquil\\[0.25em]
-  Facultad de Ciencias Matemáticas y Físicas\\
-  Carrera de Software}
+  {\Large Documentación técnica del producto\\[0.25em]
+  Prototipo BI asistido por inteligencia artificial}
   \vfill
   {\color{deepgreen}\fontsize{28}{34}\selectfont\textbf{Informe del Sprint 3}}\\[0.7em]
   {\LARGE Metadatos y propuesta BI supervisada}\\[0.6em]
@@ -58,11 +57,12 @@ pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}}
   de un datamart de ventas\par}
   \vspace{1.4cm}
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
-    Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
-    Versión & 0.1.5 \\
+    Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
+    Código documental & INF-SPR-03 \\
+    Versión & 1.0.0 \\
     Periodo de referencia & 14 al 20 de septiembre de 2026 \\
     Rama de trabajo & \file{feature/sprint-03-metadata-introspection} \\
-    Estado & Implementación y verificación técnica completadas; pendiente prueba de aceptación \\
+    Estado & Aprobado e integrado mediante PR \#35; promoción mediante PR \#36 \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
   \end{tabularx}
   \vfill
@@ -104,7 +104,7 @@ Construir un asistente web que, a partir de metadatos persistidos de una fuente 
 
 \section{Alcance entregado}
 
-\begin{longtable}{@{}p{0.25\textwidth}p{0.56\textwidth}p{0.13\textwidth}@{}}
+\begin{longtable}{@{}p{0.23\textwidth}p{0.55\textwidth}p{0.16\textwidth}@{}}
   \toprule
   Capacidad & Evidencia funcional & Estado \\
   \midrule
@@ -124,7 +124,7 @@ Construir un asistente web que, a partir de metadatos persistidos de una fuente 
   Evidencia visible & Integridad, referencias, coherencia y reejecución determinística consultables en la plataforma. & \ok \\
   Supervisión & Intentos inmutables, exclusiones, personalización sin SQL, versiones enlazadas, filtro paginado, aprobación/rechazo y auditoría. & \ok \\
   Extensibilidad & Registro de conectores y perfiles de dominio; sólo SQL Server/ventas habilitados. & \ok \\
-  Aceptación & Recorrido manual por las autoras sobre el entorno integrado. & \review \\
+  Aceptación & Recorrido manual por las responsables sobre el entorno integrado y cierre por pull request. & \ok \\
   \bottomrule
 \end{longtable}
 
@@ -161,7 +161,7 @@ $\downarrow$\\
 
 \subsection{Persistencia y trazabilidad}
 
-Las migraciones \file{20260918\_07} y \file{20260918\_08} incorporan conexiones e instantáneas. Las revisiones \file{20260919\_09} a \file{20260919\_11} incorporan propuestas, perfil de dominio y vínculo entre versiones. La revisión \file{20260919\_12} agrega el nivel de razonamiento controlado a cada configuración LLM y \file{20260920\_13} habilita en PostgreSQL los estados auditables de aprobación retirada y versión descartada. \file{app.bi\_proposals} conserva entrada, huella, versiones de prompt y contrato, proveedor, modelo, mapa semántico, alcance, propuesta, validación, estado y decisión histórica.
+Las migraciones \file{20260918\_07} y \file{20260918\_08} incorporan conexiones e instantáneas. Las revisiones \file{20260919\_09} a \file{20260919\_11} incorporan propuestas, perfil de dominio y vínculo entre versiones. La revisión \file{20260919\_12} agrega el nivel de razonamiento controlado a cada configuración LLM y \file{20260920\_13} habilita en PostgreSQL los estados auditables de aprobación retirada y versión descartada. \path{app.bi_proposals} conserva entrada, huella, versiones de prompt y contrato, proveedor, modelo, mapa semántico, alcance, propuesta, validación, estado y decisión histórica.
 
 \subsection{Contrato de IA}
 
@@ -197,7 +197,7 @@ Para depurar versiones ya aprobadas, el analista puede retirar la aprobación co
 
 \section{Extensibilidad controlada}
 
-La instantánea usa un contrato canónico independiente del lector. \file{CONNECTOR\_READERS} registra adaptadores y actualmente habilita \file{sqlserver}. Para MySQL se deberá implementar lectura de \file{information\_schema}, mapeo canónico, campos de configuración, prueba de sólo lectura y pruebas automatizadas antes de mostrarlo en la interfaz.
+La instantánea usa un contrato canónico independiente del lector. \file{CONNECTOR\_READERS} registra adaptadores y actualmente habilita \file{sqlserver}. Para MySQL se deberá implementar lectura de \path{information_schema}, mapeo canónico, campos de configuración, prueba de sólo lectura y pruebas automatizadas antes de mostrarlo en la interfaz.
 
 El perfil \file{ventas} reúne reglas semánticas, periodicidades soportadas, términos, destinos y límites. El catálogo funcional aporta preguntas dinámicas que orientan al LLM sin predefinir el modelo. Un futuro datamart de inventario requiere otro perfil, prompts, reglas, consultas de referencia y criterios de aceptación; una vez registrado aparecerá en la misma entrada. Parametrizar preguntas no convierte una opción de texto en un motor o dominio funcional.
 
@@ -229,10 +229,33 @@ El perfil \file{ventas} reúne reglas semánticas, periodicidades soportadas, t�
 
 \section{Criterio de cierre}
 
-El incremento se considera técnicamente listo cuando código, migraciones, pruebas, documentación y entorno integrado superan \file{make verify}. La fusión a \file{develop} se realizará después de la prueba funcional de las autoras y la corrección de cualquier observación. No se crea un pull request desde este informe antes de esa aceptación.
+El incremento quedó técnicamente cerrado cuando código, migraciones, pruebas, documentación y entorno integrado superaron \file{make verify}. La aceptación se registró al integrar el PR \#35 en \file{develop} y promover el resultado mediante el PR \#36 hacia \file{main}.
 
 \section{Conclusión}
 
 Sprint 3 demuestra el núcleo del título: la IA interviene en la construcción semiautomatizada del datamart, mientras la aplicación valida y el analista supervisa. El resultado evita tanto el extremo manual de escribir SQL como el extremo inseguro de ejecutar una respuesta libre del modelo. El contrato aprobado será la entrada controlada para materializar y verificar el datamart de ventas en el siguiente sprint.
+
+\section{Control documental}
+
+\begin{tabularx}{\textwidth}{@{}>{\bfseries}p{0.28\textwidth}X@{}}
+  \toprule
+  Campo & Valor \\
+  \midrule
+  Código & INF-SPR-03 \\
+  Fuente editable & \path{docs/sprints/sprint-03-metadatos-y-propuesta-bi.tex} \\
+  Compilación & \path{make sprint3-report} o \path{make docs} \\
+  Evidencia relacionada & Especificaciones SPR-03, bitácora, manual técnico y PR \#35. \\
+  \bottomrule
+\end{tabularx}
+
+\subsection*{Historial de cambios}
+
+\begin{tabularx}{\textwidth}{@{}p{0.14\textwidth}p{0.18\textwidth}X@{}}
+  \toprule
+  Versión & Fecha & Cambio \\
+  \midrule
+  1.0.0 & 24-09-2026 & Normalización profesional y actualización de aceptación, integración y promoción del Sprint 3. \\
+  \bottomrule
+\end{tabularx}
 
 \end{document}

@@ -1,4 +1,4 @@
-.PHONY: help env bootstrap build up seed delivery-preview-up ollama-up ollama-pull ollama-status ollama-down release-up release-down down logs ps test lint format-check compose-check workflow-test doctor docs-image logbook sprint-report sprint2-report sprint3-report technical-manual docs verify
+.PHONY: help env bootstrap build up seed delivery-preview-up ollama-up ollama-pull ollama-status ollama-down release-up release-down down logs ps test lint format-check compose-check workflow-test doctor docs-image logbook sprint-report sprint2-report sprint3-report sprint4-report thesis-chapter3 technical-manual docs verify
 
 COMPOSE := docker compose
 
@@ -26,6 +26,8 @@ help:
 	@echo "  make sprint-report  Regenera el informe PDF del Sprint 1"
 	@echo "  make sprint2-report Regenera el informe PDF del Sprint 2"
 	@echo "  make sprint3-report Regenera el informe PDF del Sprint 3"
+	@echo "  make sprint4-report Regenera el informe PDF del Sprint 4"
+	@echo "  make thesis-chapter3 Regenera el Capitulo III academico"
 	@echo "  make technical-manual Regenera el manual tecnico PDF"
 	@echo "  make docs           Regenera todos los documentos PDF"
 	@echo "  make doctor         Muestra estado de contenedores y endpoints"
@@ -136,12 +138,24 @@ sprint3-report: docs-image
 		-v "$$(pwd)/docs:/workspace" -w /workspace/sprints \
 		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error sprint-03-metadatos-y-propuesta-bi.tex
 
+sprint4-report: docs-image
+	docker run --rm --user "$$(id -u):$$(id -g)" \
+		-e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts \
+		-v "$$(pwd)/docs:/workspace" -w /workspace/sprints \
+		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error sprint-04-materializacion-etl.tex
+
+thesis-chapter3: docs-image
+	docker run --rm --user "$$(id -u):$$(id -g)" \
+		-e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts \
+		-v "$$(pwd)/docs:/workspace" -w /workspace/tesis \
+		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error capitulo-03-propuesta-tecnologica.tex
+
 technical-manual: docs-image
 	docker run --rm --user "$$(id -u):$$(id -g)" \
 		-e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts \
 		-v "$$(pwd)/docs:/workspace" -w /workspace/manual-tecnico \
 		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error manual-tecnico.tex
 
-docs: logbook sprint-report sprint2-report sprint3-report technical-manual
+docs: logbook sprint-report sprint2-report sprint3-report sprint4-report thesis-chapter3 technical-manual
 
 verify: compose-check workflow-test test docs
