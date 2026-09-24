@@ -116,18 +116,39 @@ jobs:
           -e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts
           -v "$PWD/docs:/workspace" -w /workspace/sprints
           bi-ia-docs:test -pdf -interaction=nonstopmode -halt-on-error sprint-02-seguridad-y-parametros.tex
+      - name: Compile Sprint 3 report
+        run: >-
+          docker run --rm --user "$(id -u):$(id -g)"
+          -e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts
+          -v "$PWD/docs:/workspace" -w /workspace/sprints
+          bi-ia-docs:test -pdf -interaction=nonstopmode -halt-on-error sprint-03-metadatos-y-propuesta-bi.tex
+      - name: Compile Sprint 4 report
+        run: >-
+          docker run --rm --user "$(id -u):$(id -g)"
+          -e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts
+          -v "$PWD/docs:/workspace" -w /workspace/sprints
+          bi-ia-docs:test -pdf -interaction=nonstopmode -halt-on-error sprint-04-materializacion-etl.tex
       - name: Compile technical manual
         run: >-
           docker run --rm --user "$(id -u):$(id -g)"
           -e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts
           -v "$PWD/docs:/workspace" -w /workspace/manual-tecnico
           bi-ia-docs:test -pdf -interaction=nonstopmode -halt-on-error manual-tecnico.tex
+      - name: Compile academic Chapter III
+        run: >-
+          docker run --rm --user "$(id -u):$(id -g)"
+          -e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts
+          -v "$PWD/docs:/workspace" -w /workspace/tesis
+          bi-ia-docs:test -pdf -interaction=nonstopmode -halt-on-error capitulo-03-propuesta-tecnologica.tex
       - name: Ensure versioned PDFs are current
         run: >-
           git diff --exit-code --
           docs/logbook/bitacora.pdf
           docs/sprints/sprint-01-entorno.pdf
           docs/sprints/sprint-02-seguridad-y-parametros.pdf
+          docs/sprints/sprint-03-metadatos-y-propuesta-bi.pdf
+          docs/sprints/sprint-04-materializacion-etl.pdf
+          docs/tesis/capitulo-03-propuesta-tecnologica.pdf
           docs/manual-tecnico/manual-tecnico.pdf
       - uses: actions/upload-artifact@v7
         with:
@@ -136,4 +157,7 @@ jobs:
             docs/logbook/bitacora.pdf
             docs/sprints/sprint-01-entorno.pdf
             docs/sprints/sprint-02-seguridad-y-parametros.pdf
+            docs/sprints/sprint-03-metadatos-y-propuesta-bi.pdf
+            docs/sprints/sprint-04-materializacion-etl.pdf
+            docs/tesis/capitulo-03-propuesta-tecnologica.pdf
             docs/manual-tecnico/manual-tecnico.pdf

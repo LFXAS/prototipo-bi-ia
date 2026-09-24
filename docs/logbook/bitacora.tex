@@ -54,7 +54,7 @@
   {\color{ugblue}\rule{\textwidth}{2.5pt}}
   \vspace{1.4cm}
 
-  {\Large Universidad de Guayaquil\\[0.25em]Facultad de Ciencias Matemáticas y Físicas\\Carrera de Software}
+  {\Large Documentación técnica del producto\\[0.25em]Prototipo BI asistido por inteligencia artificial}
 
   \vfill
 
@@ -64,10 +64,10 @@
   \vspace{1.6cm}
 
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
-    Estudiantes & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
+    Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPIs, insights y pronóstico \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.3.18 \\
+    Versión de la bitácora & 0.4.11 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -688,9 +688,76 @@ La plataforma usará un cascarón React reusable y menús derivados de permisos 
   \bottomrule
 \end{longtable}
 
+\subsection{23 de septiembre de 2026 - Motor ETL, conciliación y proveedor Groq}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Elegibilidad ETL & \statusok & Las propuestas aprobadas se revalidan contra la instantánea y reglas analíticas vigentes. Se bloquean dimensiones ambiguas, tablas puente, ausencia de atributos descriptivos y contradicciones de granularidad; la interfaz explica cómo corregir cada caso. \\
+  Materialización & \statusok & El constructor genera consultas desde columnas y claves foráneas verificadas, carga dimensiones con claves sustitutas, deriva calendario, limpia texto, deduplica y reemplaza transaccionalmente \file{mart\_ventas}; no ejecuta SQL producido por el LLM. \\
+  Conciliación & \statusok & La propuesta Groq 48 fue aprobada por la analista y originó la ejecución de referencia 5. Se leyeron y cargaron 121317 filas del hecho, sin rechazos ni diferencias. Las cuatro dimensiones cargaron 504 productos, 19820 clientes, 10 territorios y 1124 fechas distintas. La conciliación respeta la agregación declarada: suma, promedio o conteo distinto. \\
+  KPI & \statusok & Groq sugirió cinco KPI materializables y el sistema los compiló a recetas versionadas: ventas totales, unidades vendidas, descuento, precio medio y pedidos distintos. Los resultados fueron 109846381.399888, 274914, 342.8500, 465.0934956741429478 y 31465, respectivamente; todos quedaron conciliados contra el origen. \\
+  Español dinámico & \statusok & Esquemas, tablas y columnas mantienen referencia técnica y explicación española. En datos sólo se consideran categorías descriptivas de baja cardinalidad; se excluyen identificadores, PII y texto libre. La IA propone mapeos, pero el analista puede corregirlos, excluirlos y publicarlos sin reemplazar el valor original. Una caída del proveedor permite reintentar esta etapa sin repetir el ETL. \\
+  Incidente Gemini & \statusok & Gemini volvió a responder saturado durante la interpretación de la ejecución 3. La carga conciliada se conservó y la plataforma mostró la causa y la acción de recuperación; no se presentó como diferencia numérica. \\
+  Groq Cloud & \statusok & Se incorporó, probó y activó el proveedor \file{groq-cloud}, host restringido \file{api.groq.com}, salida JSON Schema estricta, secreto cifrado y niveles de razonamiento compatibles. \file{openai/gpt-oss-120b} generó la propuesta 48 con cero errores y cero advertencias. Se corrigieron límites de salida, semántica de medidas y selección de tablas maestras antes de habilitar la aprobación. \\
+  Interfaz & \statusok & El analista dispone de un recorrido guiado para elegir o comparar propuestas, revisar KPI, confirmar transformaciones, ejecutar y comprender la conciliación. Los mensajes diferencian carga fallida, diferencia cuantitativa e interpretación pendiente. La tabla de expedientes recientes permite reabrir una ejecución conservada y continuar su materialización o revisión semántica después de recargar la aplicación o iniciar una nueva sesión, sin repetir el ETL. \\
+  Decisión semántica guiada & \statusok & Cada concepto conserva confianza inicial y un expediente determinístico de existencia, columnas, clave y relaciones. Los conceptos de confianza baja o evidencia insuficiente quedan desmarcados; una inclusión excepcional exige confirmación dentro de la plataforma. El analista recibe causa, evidencia y acción sin abrir DBeaver ni escribir SQL. \\
+  Copiloto contextual & \statusok & El analista puede consultar a la IA sobre un concepto sin abandonar el asistente. La respuesta persiste conclusión, confianza, evidencia permitida, riesgo, consecuencias y acción recomendada. No recibe filas, credenciales ni SQL libre y nunca altera una selección sin una acción humana explícita. \\
+  Pruebas & \statusok & \file{make verify} aprobó Compose y flujo de ramas; Ruff, formato, Mypy y 74 pruebas Pytest; ESLint, 11 pruebas Vitest y construcción Vite; además compiló la documentación en Docker. \\
+  \bottomrule
+\end{longtable}
+
 \subsubsection{Incidente de migración y resolución}
 
 La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó una imagen local anterior y no encontró la revisión \file{20260918\_07}. No existía un defecto en la cadena Alembic ni pérdida de datos: se confirmó el estado del servicio en ejecución, se aplicó \file{alembic upgrade head} con la imagen vigente del backend y se ejecutó la siembra idempotente. La revisión \file{20260918\_08} quedó aplicada correctamente. En una réplica limpia se debe usar el procedimiento documentado con \file{docker compose up -d --build}, que reconstruye las imágenes antes de migrar.
+
+\subsection{24 de septiembre de 2026 - Copiloto semántico y propuesta autocorregida}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Copiloto contextual & \statusok & Se incorporó una conversación persistente por concepto con conclusión, confianza, evidencia técnica restringida, riesgo, consecuencias y acción recomendada. Nunca recibe filas, credenciales o SQL libre ni cambia una selección sin acción explícita. \\
+  Guardarraíl monetario & \statusok & El proveedor propuso una receta incompleta de tasa por cantidad. El backend ahora reconoce también fórmulas parciales, las reemplaza por precio por tasa por cantidad cuando las referencias son inequívocas y bloquea propuesta y ETL cuando no puede demostrar la base monetaria. \\
+  Ciclo de prueba & \statusok & La propuesta 50 fue descartada de manera auditable; la 51 conservó la evidencia de una cuota temporalmente agotada. La propuesta 52 quedó lista para revisión con cero errores y advertencias, seis KPI, Motivo de venta excluido por baja confianza y descuento monetario autocorregido. \\
+  Consulta guiada & \statusok & Groq explicó sobre la propuesta 52 por qué conviene excluir Motivo de venta para el objetivo actual, citó únicamente \file{Sales.SalesOrderHeaderSalesReason} y mantuvo \file{selection\_changed=false}. \\
+  Ejecución de referencia 6 & \statusok & La propuesta 52 fue aprobada y materializada en un expediente nuevo. Se conciliaron 121317 filas de origen y destino, sin diferencia ni rechazo, cinco tablas y seis KPI. La revisión semántica publicó únicamente las etiquetas españolas de agrupación territorial y conservó sin cambios los códigos de país. \\
+  Supervisión guiada & \statusok & Las transformaciones semánticas ahora indican \textbf{Revisar en el paso 5} y explican que no exigen una aprobación en la preparación. Después de cargar, el expediente conduce a Validar resultados e Interpretación semántica para publicar, corregir o excluir cada mapeo. \\
+  Prevención de duplicados & \statusok & La propuesta y el conjunto de KPI ya ejecutados muestran el estado y número de expediente, reemplazan el botón de carga por \textbf{Abrir expediente} y no vuelven a materializar el datamart. FastAPI repite el control dentro de una transacción con bloqueo, devuelve una explicación accionable ante solicitudes duplicadas o simultáneas y conserva el reintento sólo para fallos. \\
+  Divisa monetaria & \statusok & El sistema dejó de presentar la unidad genérica como resultado final. Comprueba una moneda de origen o base única dentro del alcance relacional, conserva la referencia técnica y formatea los importes con código ISO. En la ejecución 6 verificó \file{USD} mediante \file{Sales.CurrencyRate.FromCurrencyCode} y actualizó los seis KPI sin repetir el ETL; una fuente mixta o ambigua conserva \textit{moneda de origen} y muestra una acción guiada. \\
+  Pruebas de regresión & \statusok & Ruff, formato, Mypy y 76 pruebas Pytest; ESLint, 11 pruebas Vitest y construcción Vite aprobaron los cambios de recuperación, claridad, protección operacional y evidencia monetaria. \\
+  \bottomrule
+\end{longtable}
+
+\subsection{24 de septiembre de 2026 - Normalización documental y Capítulo III}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Separación editorial & \statusok & El manual, la bitácora y los cuatro informes de sprint conservan el detalle técnico completo sin identidad institucional. No se eliminaron decisiones, incidencias, comandos, resultados ni trazabilidad. \\
+  Versión académica & \statusok & Se creó un Capítulo III independiente con propuesta tecnológica, factibilidad, metodología, requisitos, casos de uso, UML, arquitectura, sprints, validación, resultados y referencias institucionales. \\
+  Ingeniería de software & \statusok & Los diagramas editables cubren ciclo de desarrollo, casos de uso, componentes, despliegue, secuencias y trazabilidad de artefactos. Los casos de uso incluyen actores, precondiciones, excepciones y postcondiciones del ETL. \\
+  Automatización documental & \statusok & Make y CI compilan siete PDF oficiales y verifican que las versiones generadas coincidan con sus fuentes. \\
+  Criterio de conservación & \statusok & El capítulo académico resume y enlaza; los informes técnicos permanecen como evidencia integral y anexos del trabajo. \\
+  \bottomrule
+\end{longtable}
 
 \section{Matriz de verificación de la fase}
 
@@ -700,8 +767,8 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \midrule
   Compose autocontenido válido & \statusok & \file{docker compose config --quiet} \\
   Compose de imágenes válido & \statusok & \file{docker compose -f compose.release.yaml config --quiet} \\
-  Backend calidad y pruebas & \statusok & Ruff, Mypy y 48 pruebas Pytest dentro de Docker \\
-  Frontend calidad y pruebas & \statusok & ESLint, 9 pruebas Vitest y build de Vite dentro de Docker \\
+  Backend calidad y pruebas & \statusok & Ruff, formato, Mypy y 76 pruebas Pytest dentro de Docker \\
+  Frontend calidad y pruebas & \statusok & ESLint, 11 pruebas Vitest y build de Vite dentro de Docker \\
   PostgreSQL disponible & \statusok & Esquemas \file{app} y \file{mart}; endpoint \file{/health/ready} en \file{ok} \\
   AdventureWorks restaurada & \statusok & 71 tablas; \file{bi\_reader}: lectura 1 e inserción 0 \\
   Interfaz disponible & \statusok & Vite saludable en 5173, Nginx opcional en 8080 y API accesible mediante proxy \\
@@ -716,9 +783,9 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
 \section{Próximos pasos}
 
 \begin{enumerate}
-  \item Ejecutar la prueba de aceptación del Sprint 3 y corregir observaciones antes de integrar a \file{develop}.
-  \item Especificar el contrato ejecutable del Sprint 4 a partir de una propuesta aprobada e inmutable.
-  \item Generar transformaciones determinísticas, materializar el datamart desde destino vacío y validar cifras contra consultas de referencia.
+  \item Integrar el Capítulo III en la plantilla definitiva del trabajo de titulación cuando se confirmen tutor, numeración general, estilo de citas y anexos exigidos.
+  \item Diseñar en un incremento posterior una operación explícita de actualización periódica de datos, diferenciada de la carga inicial y con identidad, controles y evidencia propios.
+  \item Integrar el cierre de Sprint 4 mediante pull request después de confirmar la experiencia de usuario y la documentación completa.
   \item Mantener dashboards, hallazgos y pronóstico dentro del alcance aprobado de sus sprints posteriores.
   \item Promover a \file{main} únicamente una integración estable, revisada y con CI aprobada.
 \end{enumerate}
@@ -782,6 +849,17 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   0.3.17 & 20-09-2026 & Separación del catálogo analítico por dominio y permisos, CRUD de preguntas, periodicidades múltiples y retiro de dimensiones predefinidas para reforzar la propuesta IA supervisada. \\
   0.3.18 & 20-09-2026 & Validación integrada del flujo sin dimensiones solicitadas: Qwen propuso el modelo de la versión 33, superó los cuatro controles reproducibles y Gemini fue restaurado como proveedor activo. \\
   0.4.0 & 21-09-2026 & Preparación de Sprint 4: contrato de KPI variables sugeridos por IA, recetas determinísticas de agregación, razón y participación, límite técnico ampliado y experiencia profesional de materialización y validación. \\
+  0.4.1 & 23-09-2026 & Sprint 4 funcional: selección compatible, materialización transaccional, KPI, conciliación real, interpretación española supervisada y proveedor Groq GPT-OSS 120B. \\
+  0.4.2 & 23-09-2026 & Propuesta Groq 48 aprobada y ejecución ETL 5 conciliada; métricas por agregación, dimensiones maestras y cinco KPI verificados. \\
+  0.4.3 & 23-09-2026 & Recuperación de expedientes ETL desde el historial: acceso directo a ejecuciones preparadas, conciliadas o pendientes de interpretación sin volver a ejecutar la carga. \\
+  0.4.4 & 23-09-2026 & Corrección de persistencia de la revisión semántica: las etiquetas publicadas conservan estado, responsable y comentario; el expediente validado muestra un comprobante final y no reinicia la confirmación. \\
+  0.4.5 & 23-09-2026 & Control semántico de medidas calculadas: detección de tasas usadas como importes, autocorrección declarativa, operaciones aritméticas seguras y propuesta 49 derivada de la 48 con descuento monetario reproducible. \\
+  0.4.6 & 23-09-2026 & Validación semántica guiada: evidencia estructural por concepto, exclusión preventiva de confianza baja o insuficiente y confirmación explícita para inclusiones excepcionales sin SQL externo. \\
+  0.4.7 & 23-09-2026 & Copiloto contextual auditable para resolver decisiones semánticas con evidencia restringida, riesgos y consecuencias, sin filas, credenciales, SQL libre ni cambios silenciosos. \\
+  0.4.8 & 24-09-2026 & Propuesta 52 generada con Groq: seis KPI, concepto de baja confianza excluido, consulta contextual persistida y autocorrección determinística de una receta monetaria parcial. \\
+  0.4.9 & 24-09-2026 & Ejecución ETL 6 conciliada y revisión semántica publicada; supervisión ubicada explícitamente en el paso 5 y protección integral contra materializaciones idénticas desde la interfaz y la API. \\
+  0.4.10 & 24-09-2026 & Comprobación estándar de divisa monetaria desde evidencia relacional, formato ISO trazable y enriquecimiento de la ejecución 6 como USD sin repetir el ETL. \\
+  0.4.11 & 24-09-2026 & Separación entre documentación técnica completa y Capítulo III académico; normalización profesional, UML, casos de uso y compilación de siete PDF en CI. \\
   \bottomrule
 \end{longtable}
 

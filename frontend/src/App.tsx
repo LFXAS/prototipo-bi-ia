@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
   api,
@@ -11,6 +11,10 @@ import {
   type CopilotCatalog,
   type CopilotReadiness,
   type DataConnection,
+  type EtlExecution,
+  type EtlKpiRecipe,
+  type EtlProposalCandidate,
+  type EtlTransformation,
   type LlmConfiguration,
   type Menu,
   type MetadataSnapshot,
@@ -22,6 +26,8 @@ import {
   type ProposalVerification,
   type ProposalRevision,
   type Role,
+  type SemanticAdvice,
+  type SemanticCandidate,
   type Session,
   type User,
 } from './api/security'
@@ -56,6 +62,7 @@ const labels: Record<string, string> = {
   '/esquema': 'Explorador de esquema',
   '/catalogo-analitico': 'Catálogo analítico',
   '/asistente': 'Asistente de datamart',
+  '/datamart-ventas': 'Datamart de ventas',
   '/auditoria': 'Auditoría',
 }
 
@@ -231,6 +238,8 @@ export default function App() {
                 ? <SchemaExplorerPage snapshots={data as Page<MetadataSnapshot> | null} message={message} token={token} canRefresh={session.permissions.includes('metadata.refresh')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
                 : page === '/asistente'
                   ? <AnalysisAssistantPage token={token} canGenerate={session.permissions.includes('copilot.proposals.generate')} canReview={session.permissions.includes('copilot.proposals.review')} navigate={setPage} />
+                : page === '/datamart-ventas'
+                  ? <SalesDatamartPage token={token} canWrite={session.permissions.includes('etl.executions.write')} navigate={setPage} />
                 : page === '/catalogo-analitico'
                   ? <AnalysisCatalogPage token={token} canWrite={session.permissions.includes('copilot.catalog.write')} />
               : page === '/parametros'
@@ -270,7 +279,7 @@ function Home({ session, token, navigate }: { session: Session; token: string; n
         {setupOpen && <SetupWizard readiness={readiness} navigate={navigate} />}
       </>
       : <div className="cards"><article><strong>{session.user.roles.length}</strong><span>roles asignados</span></article><article><strong>{session.permissions.length}</strong><span>permisos efectivos</span></article><article><strong>{session.menus.length}</strong><span>opciones visibles</span></article></div>}
-    <p className="notice">Sprint 3 prepara y valida una propuesta. La construcción física del datamart, los dashboards y el pronóstico pertenecen a los siguientes sprints.</p>
+    <p className="notice">El asistente prepara y valida la propuesta. Después de aprobarla podrá materializar el datamart desde el espacio de generación.</p>
   </>
 }
 
@@ -297,10 +306,22 @@ const proposalStatusLabels: Record<BiProposal['status'], string> = {
 }
 const providerLabels: Record<string, string> = {
   gemini: 'Gemini Cloud',
+  'groq-cloud': 'Groq Cloud',
   'qwen-cloud': 'Qwen Cloud',
   'ollama-local': 'Ollama local',
 }
 function providerLabel(value: string) { return providerLabels[value] ?? value }
+
+function defaultExcludedConcepts(item: BiProposal) {
+  const persisted = [
+    ...(item.semantic_map_document.excluded_by_analyst ?? []),
+    ...(item.semantic_map_document.excluded_by_system ?? []),
+  ]
+  const automatic = (item.semantic_map_document.candidates ?? [])
+    .filter((candidate) => candidate.selected === false || candidate.evidence?.recommended_action === 'exclude' || candidate.confidence === 'low')
+    .map((candidate) => candidate.business_concept)
+  return [...new Set([...persisted, ...automatic])]
+}
 
 const historyPageSize = 5
 const historyFilterOptions = [
@@ -317,6 +338,26 @@ function revisionFromProposal(item: BiProposal): ProposalRevision {
   const measures = arrayValue(decisions.measures)
   const includedKpis = new Set(arrayValue(item.proposal_document.kpis).map((kpi) => stringValue(kpi.code, '')).filter(Boolean))
   const decisionKpis = arrayValue(decisions.kpis)
+  const storedCalculations = Object.fromEntries(measures.map((measure) => {
+    const calculation = objectValue(measure.calculation)
+    const operation = stringValue(calculation.operation, '')
+    const inputs = stringArrayValue(calculation.inputs)
+    return operation && inputs.length >= 2 ? [stringValue(measure.name, ''), { operation, inputs }] : []
+  }).filter((entry) => entry.length === 2)) as ProposalRevision['measure_calculations']
+  const factSource = stringValue(decisions.fact_source, '')
+  const factColumns = (item.scope_document.tables ?? []).find((table) => table.ref === factSource)?.columns ?? []
+  const numericNames = factColumns.filter((column) => /tinyint|smallint|int|bigint|decimal|numeric|money|float|real/i.test(column.type)).map((column) => column.name)
+  const derivedCalculations = Object.fromEntries(measures.flatMap((measure) => {
+    const name = stringValue(measure.name, '')
+    const source = stringValue(measure.source_column, '')
+    if (!/(discount|descuento)/i.test(source) || /(amount|importe|monto|total|value|valor)/i.test(source)) return []
+    const discount = numericNames.filter((column) => /(discount|descuento)/i.test(column) && !/(amount|importe|monto|total|value|valor)/i.test(column))
+    const price = numericNames.filter((column) => /(price|precio)/i.test(column) && !/(discount|descuento)/i.test(column))
+    const quantity = numericNames.filter((column) => /(qty|quantity|cantidad|units|unidades)/i.test(column))
+    return discount.length === 1 && price.length === 1 && quantity.length === 1
+      ? [[name, { operation: 'multiply' as const, inputs: [price[0], discount[0], quantity[0]] }]]
+      : []
+  }))
   return {
     summary: stringValue(decisions.summary, stringValue(item.proposal_document.summary, 'Propuesta dimensional')),
     grain_description: stringValue(decisions.grain_description, stringValue(objectValue(item.proposal_document.grain).description, 'Una fila por operación de negocio.')),
@@ -328,8 +369,149 @@ function revisionFromProposal(item: BiProposal): ProposalRevision {
       return [stringValue(kpi.code, ''), stringValue(measures[index]?.name, '')]
     }).filter(([code, measure]) => code && measure)),
     measure_aggregations: Object.fromEntries(measures.map((measure) => [stringValue(measure.name, ''), stringValue(measure.aggregation, 'sum')])) as ProposalRevision['measure_aggregations'],
+    measure_calculations: { ...derivedCalculations, ...storedCalculations },
     comment: '',
   }
+}
+
+function measureCalculationExplanation(item: Record<string, unknown>) {
+  const calculation = objectValue(item.calculation)
+  const operation = stringValue(calculation.operation, '')
+  const inputs = stringArrayValue(calculation.inputs)
+  if (!operation || inputs.length < 2) return ''
+  const symbols: Record<string, string> = { multiply: '×', add: '+', subtract: '−', divide: '÷' }
+  return `Cálculo por fila: ${inputs.join(` ${symbols[operation] ?? operation} `)}`
+}
+
+function localizedAdjustment(value: string) {
+  return value
+    .replace('mediante multiply', 'mediante multiplicación')
+    .replace('mediante add', 'mediante suma por fila')
+    .replace('mediante subtract', 'mediante resta por fila')
+    .replace('mediante divide', 'mediante división protegida por fila')
+}
+
+function MeasureRevisionEditor({
+  measures,
+  draft,
+  numericColumns,
+  onChange,
+}: {
+  measures: Record<string, unknown>[]
+  draft: ProposalRevision
+  numericColumns: string[]
+  onChange: (value: ProposalRevision) => void
+}) {
+  const operationLabels = {
+    multiply: 'Multiplicar factores',
+    add: 'Sumar componentes',
+    subtract: 'Restar segundo valor al primero',
+    divide: 'Dividir el primero para el segundo',
+  }
+  return <fieldset><legend>Medidas, agregaciones y cálculos controlados</legend>
+    <p className="field-help">La plataforma aplica automáticamente las correcciones inequívocas. Si debe intervenir, sólo puede usar columnas numéricas existentes y operaciones seguras; nunca SQL libre.</p>
+    <div className="revision-grid">{measures.map((item) => {
+      const name = stringValue(item.name, '')
+      const selected = draft.measure_names.includes(name)
+      const calculation = draft.measure_calculations[name]
+      const orderedOperation = calculation?.operation === 'subtract' || calculation?.operation === 'divide'
+      const recommended = calculation && /(discount|descuento)/i.test(`${name} ${stringValue(item.source_column, '')}`)
+      const updateCalculation = (next?: ProposalRevision['measure_calculations'][string]) => {
+        const calculations = { ...draft.measure_calculations }
+        if (next) calculations[name] = next
+        else delete calculations[name]
+        onChange({ ...draft, measure_calculations: calculations })
+      }
+      return <article className={calculation ? 'calculated-measure-card' : ''} key={name}>
+        <label><input type="checkbox" checked={selected} onChange={() => {
+          const dependentKpis = Object.entries(draft.kpi_measure_names).filter(([, measure]) => measure === name).map(([code]) => code)
+          onChange({ ...draft, measure_names: selected ? draft.measure_names.filter((value) => value !== name) : [...draft.measure_names, name], kpi_codes: selected ? draft.kpi_codes.filter((code) => !dependentKpis.includes(code)) : draft.kpi_codes })
+        }} /><span>{name}<small>{semanticRoleLabel(semanticRole(item))}</small></span></label>
+        <label>Agregación<select aria-label={`Agregación de ${name}`} disabled={!selected} value={draft.measure_aggregations[name] ?? 'sum'} onChange={(event) => onChange({ ...draft, measure_aggregations: { ...draft.measure_aggregations, [name]: event.target.value as ProposalRevision['measure_aggregations'][string] } })}><option value="sum">Suma</option><option value="count">Conteo</option><option value="count_distinct">Conteo distinto</option><option value="average">Promedio</option><option value="min">Mínimo</option><option value="max">Máximo</option></select></label>
+        {calculation ? <div className="controlled-calculation">
+          <div><strong>{recommended ? 'Corrección automática recomendada' : 'Columna calculada controlada'}</strong><button className="secondary compact" type="button" onClick={() => updateCalculation()}>Usar columna directa</button></div>
+          {recommended && <p>Se detectó una tasa usada como importe. La receta precio × tasa × cantidad produce el descuento monetario por fila.</p>}
+          <label>Operación<select value={calculation.operation} onChange={(event) => updateCalculation({ operation: event.target.value as typeof calculation.operation, inputs: [] })}>{Object.entries(operationLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+          {orderedOperation ? <div className="formula-operands">
+            <label>Primer valor<select value={calculation.inputs[0] ?? ''} onChange={(event) => updateCalculation({ ...calculation, inputs: [event.target.value, calculation.inputs[1] ?? ''].filter(Boolean) })}><option value="">Seleccione una columna</option>{numericColumns.map((column) => <option key={column} value={column}>{column}</option>)}</select></label>
+            <label>Segundo valor<select value={calculation.inputs[1] ?? ''} onChange={(event) => updateCalculation({ ...calculation, inputs: [calculation.inputs[0] ?? '', event.target.value].filter(Boolean) })}><option value="">Seleccione una columna</option>{numericColumns.filter((column) => column !== calculation.inputs[0]).map((column) => <option key={column} value={column}>{column}</option>)}</select></label>
+          </div> : <fieldset className="formula-inputs"><legend>Factores o componentes, en orden</legend>{numericColumns.map((column) => <label key={column}><input type="checkbox" checked={calculation.inputs.includes(column)} disabled={!calculation.inputs.includes(column) && calculation.inputs.length >= 4} onChange={() => updateCalculation({ ...calculation, inputs: calculation.inputs.includes(column) ? calculation.inputs.filter((value) => value !== column) : [...calculation.inputs, column] })} />{column}</label>)}</fieldset>}
+          <small>El sistema verificará tipo, existencia, cantidad de entradas y trazabilidad antes de crear la versión.</small>
+        </div> : <button className="secondary compact" type="button" disabled={!selected || numericColumns.length < 2} onClick={() => updateCalculation({ operation: 'multiply', inputs: [] })}>Definir cálculo controlado</button>}
+      </article>
+    })}</div>
+  </fieldset>
+}
+
+function SemanticCopilotPanel({
+  token,
+  proposal,
+  concept,
+  canAsk,
+  onClose,
+  onApply,
+}: {
+  token: string
+  proposal: BiProposal
+  concept: SemanticCandidate
+  canAsk: boolean
+  onClose: () => void
+  onApply: (conclusion: SemanticAdvice['response_document']['conclusion']) => void
+}) {
+  const [messages, setMessages] = useState<SemanticAdvice[]>([])
+  const [question, setQuestion] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [asking, setAsking] = useState(false)
+  const [error, setError] = useState('')
+  const quickQuestions = [
+    '¿Por qué se recomienda incluir o excluir este concepto?',
+    '¿Qué riesgo tendría incluir este concepto en el datamart?',
+    'Explícame las claves y relaciones detectadas en lenguaje sencillo.',
+  ]
+
+  useEffect(() => {
+    setLoading(true); setError(''); setQuestion('')
+    void api.semanticAdvice(token, proposal.id, concept.business_concept)
+      .then(setMessages)
+      .catch((caught: Error) => setError(caught.message))
+      .finally(() => setLoading(false))
+  }, [concept.business_concept, proposal.id, token])
+
+  async function ask() {
+    if (question.trim().length < 10) return
+    setAsking(true); setError('')
+    try {
+      const response = await api.askSemanticAdvice(token, proposal.id, { concept_code: concept.business_concept, question })
+      setMessages((current) => [...current, response])
+      setQuestion('')
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'No fue posible consultar al copiloto.')
+    } finally { setAsking(false) }
+  }
+
+  return <section className="semantic-copilot" aria-label={`Copiloto para ${concept.business_name_es}`}>
+    <div className="semantic-copilot-heading"><div><p className="eyebrow">Copiloto contextual</p><h3>{concept.business_name_es}</h3><p>Pregunta con el objetivo y el expediente de esta propuesta. La conversación no modifica selecciones por sí sola.</p></div><button type="button" className="secondary compact" onClick={onClose}>Cerrar</button></div>
+    <div className="semantic-copilot-context"><span>Propuesta #{proposal.id}</span><span>{concept.technical_refs.join(', ')}</span><span>Sin filas, credenciales ni SQL libre</span></div>
+    {loading && <p className="notice">Recuperando la conversación de este expediente…</p>}
+    {!loading && messages.length === 0 && <p className="field-help">Todavía no hay consultas. Puede comenzar con una pregunta sugerida.</p>}
+    <div className="semantic-conversation">{messages.map((message) => {
+      const response = message.response_document
+      const conclusionLabel = response.conclusion === 'include' ? 'Recomienda incluir' : response.conclusion === 'exclude' ? 'Recomienda excluir' : 'Requiere definición del negocio'
+      return <article key={message.id}>
+        <div className="analyst-question"><small>Pregunta del analista</small><p>{message.question}</p></div>
+        <div className="copilot-answer"><div><strong>{conclusionLabel}</strong><span>Confianza {response.confidence === 'high' ? 'alta' : response.confidence === 'medium' ? 'media' : 'baja'}</span></div><p>{response.answer_es}</p>
+          <dl><div><dt>Riesgo</dt><dd>{response.risk_es}</dd></div><div><dt>Si se incluye</dt><dd>{response.include_consequence_es}</dd></div><div><dt>Si se excluye</dt><dd>{response.exclude_consequence_es}</dd></div><div><dt>Acción sugerida</dt><dd>{response.recommended_action_es}</dd></div></dl>
+          <details><summary>Evidencia citada</summary><ul>{response.evidence.map((item, index) => <li key={`${item.technical_ref}-${index}`}><strong>{item.technical_ref}</strong><span>{item.detail_es}</span></li>)}</ul></details>
+          {response.conclusion !== 'define_business' && <button type="button" onClick={() => onApply(response.conclusion)}>Aplicar recomendación</button>}
+          <small>{providerLabel(message.provider_kind)} · {message.model_id} · {new Date(message.created_at).toLocaleString('es-EC')}</small>
+        </div>
+      </article>
+    })}</div>
+    {error && <p className="notice error" role="alert">{error}</p>}
+    <div className="semantic-quick-questions">{quickQuestions.map((item) => <button type="button" className="secondary compact" key={item} onClick={() => setQuestion(item)}>{item}</button>)}</div>
+    <form onSubmit={(event) => { event.preventDefault(); void ask() }}><label>Pregunta para el copiloto<textarea rows={3} minLength={10} maxLength={500} value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="Ejemplo: ¿esta relación podría duplicar las ventas?" /></label><button disabled={!canAsk || asking || question.trim().length < 10}>{asking ? 'Analizando evidencia…' : 'Preguntar al copiloto'}</button></form>
+    {!canAsk && <p className="field-help">Su perfil puede leer la conversación, pero no crear nuevas consultas.</p>}
+  </section>
 }
 
 function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { token: string; canGenerate: boolean; canReview: boolean; navigate: (path: string) => void }) {
@@ -346,6 +528,8 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
   const [periodicity, setPeriodicity] = useState('month')
   const [proposal, setProposal] = useState<BiProposal | null>(null)
   const [excludedConcepts, setExcludedConcepts] = useState<string[]>([])
+  const [confirmedConcepts, setConfirmedConcepts] = useState<string[]>([])
+  const [adviceConceptCode, setAdviceConceptCode] = useState<string | null>(null)
   const [revisionDraft, setRevisionDraft] = useState<ProposalRevision | null>(null)
   const [generating, setGenerating] = useState(false)
   const [savingRevision, setSavingRevision] = useState(false)
@@ -396,6 +580,8 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
     setHistoryOffset(0)
     setProposal(null)
     setRevisionDraft(null)
+    setConfirmedConcepts([])
+    setAdviceConceptCode(null)
     setStep(1)
     setFeedback(null)
   }
@@ -420,7 +606,9 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
       })
       setProposal(result)
       setVerification(null)
-      setExcludedConcepts(result.semantic_map_document.excluded_by_analyst ?? [])
+      setExcludedConcepts(defaultExcludedConcepts(result))
+      setConfirmedConcepts([])
+      setAdviceConceptCode(null)
       setStep(2)
       await refreshHistory(selectedDomainCode, 0, historyFilter)
       setHistoryOffset(0)
@@ -438,7 +626,7 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
   }
 
   async function continueWithConcepts() {
-    const originalExcluded = proposal?.semantic_map_document.excluded_by_analyst ?? []
+    const originalExcluded = proposal ? defaultExcludedConcepts(proposal) : []
     if (proposal && [...originalExcluded].sort().join('|') !== [...excludedConcepts].sort().join('|')) await generate(excludedConcepts)
     else setStep(3)
   }
@@ -453,7 +641,7 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
       setProposal(updated); setVerification(null); setStep(5)
       await refreshHistory(selectedDomainCode, 0, historyFilter)
       setHistoryOffset(0)
-      setFeedback({ kind: 'success', message: decision === 'approve' ? 'Propuesta aprobada. Quedó preparada para el Sprint 4; no se ejecutó ningún ETL.' : 'Propuesta rechazada. Puede ajustar la necesidad y crear una nueva versión.' })
+      setFeedback({ kind: 'success', message: decision === 'approve' ? 'Propuesta aprobada. Quedó habilitada para la generación del datamart; todavía no se ejecutó ningún ETL.' : 'Propuesta rechazada. Puede ajustar la necesidad y crear una nueva versión.' })
     } catch (caught) { setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible registrar la decisión.' }) }
   }
 
@@ -467,7 +655,7 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
       setProposal(updated); setVerification(null); setCleanupReason(''); setStep(5)
       await refreshHistory(selectedDomainCode, 0, historyFilter)
       setHistoryOffset(0)
-      setFeedback({ kind: 'success', message: action === 'invalidate' ? `Se retiró la aprobación de la versión #${updated.id}. Ya no podrá utilizarse en el Sprint 4.` : `La versión #${updated.id} quedó descartada y se conserva únicamente para auditoría.` })
+      setFeedback({ kind: 'success', message: action === 'invalidate' ? `Se retiró la aprobación de la versión #${updated.id}. Ya no podrá utilizarse en nuevas ejecuciones ETL.` : `La versión #${updated.id} quedó descartada y se conserva únicamente para auditoría.` })
     } catch (caught) { setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible depurar la versión.' }) }
   }
 
@@ -476,7 +664,9 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
     setVerification(null)
     setGoal(item.business_goal)
     setQuestions(item.business_questions)
-    setExcludedConcepts(item.semantic_map_document.excluded_by_analyst ?? [])
+    setExcludedConcepts(defaultExcludedConcepts(item))
+    setConfirmedConcepts([])
+    setAdviceConceptCode(null)
     setReviewComment(item.review_comment ?? '')
     setWarningsConfirmed(item.warnings_confirmed)
     setCleanupReason('')
@@ -570,6 +760,12 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
   </>
 
   const concepts = proposal?.semantic_map_document.candidates ?? []
+  const adviceConcept = concepts.find((concept) => concept.business_concept === adviceConceptCode)
+  const pendingConceptDecisions = concepts.filter((concept) => {
+    const included = !excludedConcepts.includes(concept.business_concept)
+    const needsDecision = concept.confidence === 'low' || ['review_required', 'decision_required'].includes(concept.evidence?.status ?? '')
+    return included && needsDecision && !confirmedConcepts.includes(concept.business_concept)
+  })
   const document = proposal?.proposal_document ?? {}
   const fact = objectValue(document.fact)
   const grain = objectValue(document.grain)
@@ -584,6 +780,11 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
   const revisionDimensions = arrayValue(revisionDecisions.dimensions)
   const revisionMeasures = arrayValue(revisionDecisions.measures)
   const revisionKpis = arrayValue(revisionDecisions.kpis)
+  const revisionFactSource = stringValue(revisionDecisions.fact_source, '')
+  const revisionNumericColumns = (proposal?.scope_document.tables ?? [])
+    .find((table) => table.ref === revisionFactSource)?.columns
+    ?.filter((column) => /tinyint|smallint|int|bigint|decimal|numeric|money|float|real/i.test(column.type))
+    .map((column) => column.name) ?? []
   return <>
     <div className="assistant-context"><div><p className="eyebrow">Dominio seleccionado</p><strong>{selectedDomain.label}</strong><span>{source.connection?.name} · instantánea #{source.latest_snapshot?.id}</span></div><button className="secondary" onClick={() => setSelectedDomainCode(null)}>Cambiar tipo de datamart</button></div>
     <p className="lead">Describa una necesidad comercial. La IA interpretará metadatos, propondrá el modelo y la aplicación comprobará cada referencia antes de su revisión.</p>
@@ -600,16 +801,51 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
     </form>}
     {step === 2 && proposal && <section className="analysis-panel">
       <div className="form-title"><div><p className="eyebrow">Paso 2 · Propuesto por IA</p><h2>Conceptos encontrados</h2></div><span>Las referencias ya fueron comprobadas contra la instantánea.</span></div>
-      {concepts.length === 0 ? <p className="notice error">No se encontró un alcance verificable. Modifique la necesidad y cree otro intento.</p> : <div className="concept-grid">{concepts.map((concept) => <article className={excludedConcepts.includes(concept.business_concept) ? 'excluded' : ''} key={`${concept.business_concept}-${concept.technical_refs.join('-')}`}><div className="concept-heading"><label><input type="checkbox" checked={!excludedConcepts.includes(concept.business_concept)} onChange={() => toggleValue(concept.business_concept, excludedConcepts, setExcludedConcepts)} />Incluir</label><span className={`confidence ${concept.confidence}`}>{concept.confidence === 'high' ? 'Confianza alta' : concept.confidence === 'medium' ? 'Confianza media' : 'Revisar'}</span></div><h3>{concept.business_name_es}</h3><p>{concept.description_es}</p><details><summary>Ver origen técnico</summary><p>{concept.technical_refs.join(', ')}</p><small>{concept.reason}</small></details></article>)}</div>}
-      <div className="form-actions"><button disabled={!concepts.length || excludedConcepts.length === concepts.length || generating} onClick={() => void continueWithConcepts()}>{generating ? 'Generando nueva versión…' : 'Generar propuesta BI'}</button><button className="secondary" onClick={() => setStep(1)}>Modificar necesidad</button></div>
+      <p className="notice">La plataforma valida primero la estructura. Los conceptos con evidencia débil quedan excluidos preventivamente; puede incluirlos mediante una decisión guiada, sin abrir DBeaver ni escribir SQL.</p>
+      {concepts.length === 0 ? <p className="notice error">No se encontró un alcance verificable. Modifique la necesidad y cree otro intento.</p> : <div className="concept-grid">{concepts.map((concept) => {
+        const excluded = excludedConcepts.includes(concept.business_concept)
+        const evidenceStatus = concept.evidence?.status ?? (concept.confidence === 'low' ? 'decision_required' : concept.confidence === 'medium' ? 'review_required' : 'confirmed')
+        const needsDecision = ['review_required', 'decision_required'].includes(evidenceStatus)
+        const confirmed = confirmedConcepts.includes(concept.business_concept)
+        const evidenceLabel = evidenceStatus === 'confirmed' ? 'Confirmado automáticamente' : evidenceStatus === 'structurally_supported' ? 'Estructura respaldada' : evidenceStatus === 'review_required' ? 'Evidencia insuficiente' : 'Decisión de negocio requerida'
+        return <article className={`${excluded ? 'excluded' : ''} concept-decision-card`} key={`${concept.business_concept}-${concept.technical_refs.join('-')}`}>
+          <div className="concept-heading"><label><input type="checkbox" checked={!excluded} onChange={() => {
+            toggleValue(concept.business_concept, excludedConcepts, setExcludedConcepts)
+            setConfirmedConcepts((current) => current.filter((item) => item !== concept.business_concept))
+          }} />Incluir</label><span className={`confidence ${concept.confidence}`}>{concept.confidence === 'high' ? 'Confianza alta' : concept.confidence === 'medium' ? 'Confianza media' : 'Revisar'}</span></div>
+          <h3>{concept.business_name_es}</h3><p>{concept.description_es}</p>
+          <div className={`semantic-decision-status ${evidenceStatus}`}><strong>{evidenceLabel}</strong><span>{concept.evidence?.guidance ?? concept.reason}</span></div>
+          <details className="semantic-evidence" open={needsDecision}><summary>Ver evidencia y cómo resolver</summary>
+            <div className="semantic-origin"><strong>Origen técnico comprobado</strong><span>{concept.technical_refs.join(', ')}</span><p>{concept.reason}</p></div>
+            {(concept.evidence?.checks ?? []).map((check, index) => <div className={`semantic-check ${check.passed ? 'pass' : 'review'}`} key={`${check.code}-${index}`}><span aria-hidden="true">{check.passed ? '✓' : '!'}</span><div><strong>{check.label}</strong><small>{check.detail}</small></div></div>)}
+            {!concept.evidence?.checks?.length && <p className="field-help">La referencia existe, pero esta versión fue creada antes del expediente visual. Puede excluirla o generar un nuevo análisis para obtener comprobaciones detalladas.</p>}
+          </details>
+          {!excluded && needsDecision && <button type="button" className={confirmed ? 'secondary compact decision-confirmed' : 'secondary compact'} onClick={() => setConfirmedConcepts((current) => confirmed ? current.filter((item) => item !== concept.business_concept) : [...current, concept.business_concept])}>{confirmed ? 'Inclusión confirmada' : 'Confirmar inclusión excepcional'}</button>}
+          <button type="button" className="secondary compact" onClick={() => setAdviceConceptCode(concept.business_concept)}>Consultar al copiloto</button>
+          {excluded && needsDecision && <p className="field-help safe-exclusion">Excluido de la propuesta. No afecta la fuente ni elimina información.</p>}
+        </article>
+      })}</div>}
+      {proposal && adviceConcept && <SemanticCopilotPanel token={token} proposal={proposal} concept={adviceConcept} canAsk={canGenerate} onClose={() => setAdviceConceptCode(null)} onApply={(conclusion) => {
+        if (conclusion === 'include') {
+          setExcludedConcepts((current) => current.filter((item) => item !== adviceConcept.business_concept))
+          setConfirmedConcepts((current) => current.includes(adviceConcept.business_concept) ? current : [...current, adviceConcept.business_concept])
+          setFeedback({ kind: 'success', message: `${adviceConcept.business_name_es} quedó incluido por decisión explícita. La nueva propuesta volverá a validar el alcance.` })
+        } else if (conclusion === 'exclude') {
+          setExcludedConcepts((current) => current.includes(adviceConcept.business_concept) ? current : [...current, adviceConcept.business_concept])
+          setConfirmedConcepts((current) => current.filter((item) => item !== adviceConcept.business_concept))
+          setFeedback({ kind: 'success', message: `${adviceConcept.business_name_es} quedó excluido de esta propuesta; la fuente permanece intacta.` })
+        }
+      }} />}
+      {pendingConceptDecisions.length > 0 && <p className="notice warning">Antes de continuar, confirme la inclusión de: {pendingConceptDecisions.map((item) => item.business_name_es).join(', ')}. También puede volver a desmarcarlos.</p>}
+      <div className="form-actions"><button disabled={!concepts.length || excludedConcepts.length === concepts.length || generating || pendingConceptDecisions.length > 0} onClick={() => void continueWithConcepts()}>{generating ? 'Generando nueva versión…' : 'Generar propuesta BI'}</button>{Boolean(proposal.proposal_document.summary) && <button className="secondary" onClick={() => { setAdviceConceptCode(null); setStep(3) }}>Volver a la propuesta actual</button>}<button className="secondary" onClick={() => setStep(1)}>Modificar necesidad</button></div>
     </section>}
     {step === 3 && proposal && <section className="analysis-panel">
       <div className="proposal-heading"><div><p className="eyebrow">Paso 3 · Propuesta de IA + comprobación automática</p><h2>{stringValue(document.summary, 'Propuesta BI de ventas')}</h2></div><span className={`proposal-status ${proposal.status}`}>{proposalStatusLabels[proposal.status]}</span></div>
       <p className="business-explanation">{stringValue(document.business_explanation, 'El proveedor no entregó una explicación de negocio utilizable.')}</p>
       {validation && <div className={`validation-summary ${validation.valid ? 'success' : 'error'}`}><strong>{validation.valid ? 'Referencias y contrato validados' : 'No puede aprobarse'}</strong><span>{validation.errors} errores · {validation.warnings} advertencias</span></div>}
-      <div className="proposal-grid"><article><h3>Granularidad</h3><p>{stringValue(grain.description, '—')}</p></article><article><h3>Hecho y medidas</h3><p><strong>{stringValue(fact.name, '—')}</strong></p>{arrayValue(fact.measures).map((item, index) => <p key={index}>{stringValue(item.name, 'Medida')} · {stringValue(item.aggregation, '')}</p>)}</article><article><h3>Dimensiones</h3>{dimensionsDocument.map((item, index) => <p key={index}><strong>{stringValue(item.name, 'Dimensión')}</strong><br /><small>{stringArrayValue(item.attributes).join(', ') || 'Sin atributos propuestos'}</small></p>)}</article><article><h3>KPIs propuestos</h3>{kpis.map((item, index) => <p key={index}><strong>{stringValue(item.name, 'KPI')}</strong><br /><small>{stringValue(item.code, '')}</small></p>)}</article></div>
-      <section className="etl-preview" aria-label="Vista previa del plan ETL"><h3>Plan ETL declarativo</h3><div>{etlPlan.map((item, index) => <article key={index}><span>{index + 1}</span><strong>{etlLabel(stringValue(item.operation, ''))}</strong><small>{stringValue(item.description, '')}</small></article>)}</div><p className="field-help">Vista de sólo lectura. Ninguna operación se ejecuta en este sprint.</p></section>
-      {automaticAdjustments.length > 0 && <details className="technical-details adjustments" open><summary>Ajustes automáticos aplicados</summary><p className="field-help">El sistema corrigió estas decisiones antes de validar; no requieren confirmación.</p>{automaticAdjustments.map((item) => <p className="adjustment" key={item}><strong>Ajuste:</strong> {item}</p>)}</details>}
+      <div className="proposal-grid"><article><h3>Granularidad</h3><p>{stringValue(grain.description, '—')}</p></article><article><h3>Hecho y medidas</h3><p><strong>{stringValue(fact.name, '—')}</strong></p>{arrayValue(fact.measures).map((item, index) => <p key={index}>{stringValue(item.name, 'Medida')} · {stringValue(item.aggregation, '')}{measureCalculationExplanation(item) && <><br /><small className="calculation-summary">{measureCalculationExplanation(item)}</small></>}</p>)}</article><article><h3>Dimensiones</h3>{dimensionsDocument.map((item, index) => <p key={index}><strong>{stringValue(item.name, 'Dimensión')}</strong><br /><small>{stringArrayValue(item.attributes).join(', ') || 'Sin atributos propuestos'}</small></p>)}</article><article><h3>KPIs propuestos</h3>{kpis.map((item, index) => <p key={index}><strong>{stringValue(item.name, 'KPI')}</strong><br /><small>{stringValue(item.code, '')}</small></p>)}</article></div>
+      <section className="etl-preview" aria-label="Vista previa del plan ETL"><h3>Plan ETL declarativo</h3><div>{etlPlan.map((item, index) => <article key={index}><span>{index + 1}</span><strong>{etlLabel(stringValue(item.operation, ''))}</strong><small>{stringValue(item.description, '')}</small></article>)}</div><p className="field-help">Vista de sólo lectura. La carga se ejecutará únicamente después de aprobar y confirmar la propuesta en Generación de datamart.</p></section>
+      {automaticAdjustments.length > 0 && <details className="technical-details adjustments" open><summary>Ajustes automáticos aplicados</summary><p className="field-help">El sistema corrigió estas decisiones antes de validar; no requieren confirmación.</p>{automaticAdjustments.map((item) => <p className="adjustment" key={item}><strong>Ajuste:</strong> {localizedAdjustment(item)}</p>)}</details>}
       {validation && validation.issues.length > 0 && <details className="technical-details"><summary>Validaciones y advertencias</summary>{validation.issues.map((issue, index) => <p className={issue.level} key={`${issue.code}-${index}`}><strong>{issue.level === 'error' ? 'Error' : 'Advertencia'}:</strong> {issue.message}</p>)}</details>}
       {decisionDiagnostics.some((item) => item.status === 'excluded') && <section className="remediation-panel"><h3>Decisiones que requieren intervención</h3>{decisionDiagnostics.filter((item) => item.status === 'excluded').map((item) => <article key={stringValue(item.code, '')}><strong>{stringValue(item.code, 'KPI')}</strong><p>{stringValue(item.reason, 'La decisión no es compatible con el contrato validado.')}</p><p><b>Acción:</b> abra <em>Personalizar propuesta</em> para excluirla o reasignarla a una medida compatible. Si no aparece una medida compatible, genere una nueva versión solicitando expresamente esa medida.</p></article>)}</section>}
       <details className="technical-details"><summary>Detalles técnicos y trazabilidad</summary><p>Instantánea #{proposal.metadata_snapshot_id} · huella {proposal.input_hash.slice(0, 12)} · {providerLabel(proposal.provider_kind)} / {proposal.model_id}</p><p>Tablas incluidas: {(proposal.scope_document.tables ?? []).map((item) => item.ref).join(', ')}</p>{providerObservations.length > 0 && <><h3>Observaciones originales del proveedor</h3><p className="field-help">Se conservan sólo para trazabilidad. No se consideran comprobaciones hasta que las reglas del sistema las confirmen.</p>{providerObservations.map((item) => <p key={item}>{item}</p>)}</>}</details>
@@ -620,7 +856,7 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
       <label>Resumen de negocio<input maxLength={160} value={revisionDraft.summary} onChange={(event) => setRevisionDraft({ ...revisionDraft, summary: event.target.value })} /></label>
       <label>Granularidad propuesta<textarea rows={2} maxLength={240} value={revisionDraft.grain_description} onChange={(event) => setRevisionDraft({ ...revisionDraft, grain_description: event.target.value })} /></label>
       <fieldset><legend>Dimensiones incluidas</legend><div className="choice-grid">{revisionDimensions.map((item) => { const name = stringValue(item.name, ''); return <label key={name}><input type="checkbox" checked={revisionDraft.dimension_names.includes(name)} onChange={() => setRevisionDraft({ ...revisionDraft, dimension_names: revisionDraft.dimension_names.includes(name) ? revisionDraft.dimension_names.filter((value) => value !== name) : [...revisionDraft.dimension_names, name] })} />{name}</label> })}</div></fieldset>
-      <fieldset><legend>Medidas y agregaciones</legend><div className="revision-grid">{revisionMeasures.map((item) => { const name = stringValue(item.name, ''); const selected = revisionDraft.measure_names.includes(name); return <article key={name}><label><input type="checkbox" checked={selected} onChange={() => { const dependentKpis = Object.entries(revisionDraft.kpi_measure_names).filter(([, measure]) => measure === name).map(([code]) => code); setRevisionDraft({ ...revisionDraft, measure_names: selected ? revisionDraft.measure_names.filter((value) => value !== name) : [...revisionDraft.measure_names, name], kpi_codes: selected ? revisionDraft.kpi_codes.filter((code) => !dependentKpis.includes(code)) : revisionDraft.kpi_codes }) }} />{name}<small>{semanticRoleLabel(semanticRole(item))}</small></label><select aria-label={`Agregación de ${name}`} disabled={!selected} value={revisionDraft.measure_aggregations[name] ?? 'sum'} onChange={(event) => setRevisionDraft({ ...revisionDraft, measure_aggregations: { ...revisionDraft.measure_aggregations, [name]: event.target.value as ProposalRevision['measure_aggregations'][string] } })}><option value="sum">Suma</option><option value="count">Conteo</option><option value="count_distinct">Conteo distinto</option><option value="average">Promedio</option><option value="min">Mínimo</option><option value="max">Máximo</option></select></article> })}</div></fieldset>
+      <MeasureRevisionEditor measures={revisionMeasures} draft={revisionDraft} numericColumns={revisionNumericColumns} onChange={setRevisionDraft} />
       <fieldset><legend>KPIs incluidos y medida asociada</legend><div className="kpi-revision-grid">{revisionKpis.map((item) => { const code = stringValue(item.code, ''); const role = semanticRole(item); const compatible = revisionMeasures.filter((measure) => semanticRole(measure) === role && revisionDraft.measure_names.includes(stringValue(measure.name, ''))); const selectedMeasure = revisionDraft.kpi_measure_names[code] ?? ''; const unavailable = compatible.length === 0; const selected = revisionDraft.kpi_codes.includes(code); return <article className={unavailable ? 'unavailable-choice' : ''} key={code}><label><input type="checkbox" disabled={unavailable} checked={!unavailable && selected} onChange={() => { const nextSelected = !selected; const fallback = compatible.some((measure) => stringValue(measure.name, '') === selectedMeasure) ? selectedMeasure : stringValue(compatible[0]?.name, ''); setRevisionDraft({ ...revisionDraft, kpi_codes: nextSelected ? [...revisionDraft.kpi_codes, code] : revisionDraft.kpi_codes.filter((value) => value !== code), kpi_measure_names: { ...revisionDraft.kpi_measure_names, [code]: fallback } }) }} /><span>{stringValue(item.name, code)}<small>{semanticRoleLabel(role)}</small></span></label>{unavailable ? <p><strong>No disponible:</strong> no existe una medida seleccionada con la misma función semántica. Excluya este KPI o genere una versión que incluya esa medida.</p> : <label>Medida compatible<select aria-label={`Medida para ${stringValue(item.name, code)}`} disabled={!selected} value={compatible.some((measure) => stringValue(measure.name, '') === selectedMeasure) ? selectedMeasure : stringValue(compatible[0]?.name, '')} onChange={(event) => setRevisionDraft({ ...revisionDraft, kpi_measure_names: { ...revisionDraft.kpi_measure_names, [code]: event.target.value } })}>{compatible.map((measure) => { const name = stringValue(measure.name, ''); return <option value={name} key={name}>{name}</option> })}</select></label>}</article> })}</div></fieldset>
       <label>Justificación del ajuste<textarea required minLength={10} maxLength={500} rows={3} value={revisionDraft.comment} onChange={(event) => setRevisionDraft({ ...revisionDraft, comment: event.target.value })} placeholder="Explique por qué este ajuste representa mejor la necesidad del negocio." /></label>
       <p className="notice">No puede inventar tablas, columnas, relaciones ni fórmulas. Si una selección deja de ser coherente, el backend rechazará o bloqueará la nueva versión.</p>
@@ -628,16 +864,356 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
     </section>}
     {step === 5 && proposal && <section className="analysis-panel review-panel">
       <p className="eyebrow">Paso 5 · Decisión humana</p><h2>Revisión supervisada</h2><p><strong>Necesidad:</strong> {proposal.business_goal}</p><p><strong>Dominio:</strong> {selectedDomain.label}</p><p><strong>Fuente:</strong> {source.connection?.name} · instantánea #{proposal.metadata_snapshot_id}</p><p><strong>Validación:</strong> {proposal.validation_document.valid ? 'Aprobada por reglas estructurales' : 'Con errores'}</p>
-      {proposal.status === 'ready_for_review' && canReview ? <><label>Comentario de revisión<textarea rows={3} maxLength={500} value={reviewComment} onChange={(event) => setReviewComment(event.target.value)} placeholder="Obligatorio para rechazar; opcional para aprobar." /></label>{proposal.validation_document.warnings > 0 && <label className="confirmation"><input type="checkbox" checked={warningsConfirmed} onChange={(event) => setWarningsConfirmed(event.target.checked)} />Leí y comprendí las advertencias y las acciones indicadas.</label>}<p className="notice">Aprobar vuelve a ejecutar las reglas vigentes, registra la decisión y prepara la entrada del Sprint 4. No crea tablas ni ejecuta ETL.</p><div className="form-actions"><button disabled={proposal.validation_document.warnings > 0 && !warningsConfirmed} onClick={() => void decide('approve')}>Aprobar propuesta</button><button className="danger" disabled={reviewComment.trim().length < 10} onClick={() => void decide('reject')}>Rechazar propuesta</button>{canGenerate && <button className="secondary" onClick={() => openPersonalization()}>Personalizar antes de decidir</button>}<button className="secondary" onClick={() => setStep(3)}>Volver</button></div></> : <><div className={`decision-receipt ${proposal.status}`}><h3>{proposalStatusLabels[proposal.status]}</h3><p>{proposal.reviewed_by_label} · {proposal.reviewed_at ? new Date(proposal.reviewed_at).toLocaleString('es-EC') : ''}</p>{proposal.review_comment && <p>{proposal.review_comment}</p>}</div>{canGenerate && proposal.proposal_document.ai_decisions && proposal.status !== 'discarded' && <button className="secondary" onClick={() => openPersonalization()}>Crear versión corregida desde ésta</button>}{proposal.status === 'invalidated' && canReview && <section className="restore-panel"><h3>Restaurar aprobación</h3><p>La aplicación volverá a comprobar errores bloqueantes. Una diferencia causada únicamente por la versión del motor quedará registrada como advertencia de compatibilidad.</p><label>Justificación<textarea rows={2} minLength={10} maxLength={500} value={restoreReason} onChange={(event) => setRestoreReason(event.target.value)} placeholder="Explique por qué corresponde restaurar esta aprobación." /></label>{proposal.validation_document.warnings > 0 && <label className="confirmation"><input type="checkbox" checked={restoreWarningsConfirmed} onChange={(event) => setRestoreWarningsConfirmed(event.target.checked)} />Revisé las advertencias vigentes de esta versión.</label>}<button disabled={restoreReason.trim().length < 10 || (proposal.validation_document.warnings > 0 && !restoreWarningsConfirmed)} onClick={() => void restoreApproval()}>Restaurar aprobación</button></section>}{proposal.status !== 'discarded' && ((proposal.status === 'approved' && canReview) || (proposal.status !== 'approved' && canGenerate)) && <section className="cleanup-panel"><h3>Depurar esta versión</h3><p>{proposal.status === 'approved' ? 'Retire la aprobación para impedir que esta versión llegue al Sprint 4.' : 'Descártela de las listas operativas. La auditoría y la trazabilidad no se eliminan.'}</p><label>Motivo<textarea rows={2} minLength={10} maxLength={500} value={cleanupReason} onChange={(event) => setCleanupReason(event.target.value)} placeholder="Explique la inconsistencia o el motivo del descarte." /></label><button className="danger" disabled={cleanupReason.trim().length < 10} onClick={() => void cleanVersion(proposal.status === 'approved' ? 'invalidate' : 'discard')}>{proposal.status === 'approved' ? 'Retirar aprobación' : 'Descartar versión'}</button></section>}</>}
+      {proposal.status === 'ready_for_review' && canReview ? <><label>Comentario de revisión<textarea rows={3} maxLength={500} value={reviewComment} onChange={(event) => setReviewComment(event.target.value)} placeholder="Obligatorio para rechazar; opcional para aprobar." /></label>{proposal.validation_document.warnings > 0 && <label className="confirmation"><input type="checkbox" checked={warningsConfirmed} onChange={(event) => setWarningsConfirmed(event.target.checked)} />Leí y comprendí las advertencias y las acciones indicadas.</label>}<p className="notice">Aprobar vuelve a ejecutar las reglas vigentes, registra la decisión y habilita la propuesta en Generación de datamart. No crea tablas ni ejecuta ETL.</p><div className="form-actions"><button disabled={proposal.validation_document.warnings > 0 && !warningsConfirmed} onClick={() => void decide('approve')}>Aprobar propuesta</button><button className="danger" disabled={reviewComment.trim().length < 10} onClick={() => void decide('reject')}>Rechazar propuesta</button>{canGenerate && <button className="secondary" onClick={() => openPersonalization()}>Personalizar antes de decidir</button>}<button className="secondary" onClick={() => setStep(3)}>Volver</button></div></> : <><div className={`decision-receipt ${proposal.status}`}><h3>{proposalStatusLabels[proposal.status]}</h3><p>{proposal.reviewed_by_label} · {proposal.reviewed_at ? new Date(proposal.reviewed_at).toLocaleString('es-EC') : ''}</p>{proposal.review_comment && <p>{proposal.review_comment}</p>}</div>{canGenerate && proposal.proposal_document.ai_decisions && proposal.status !== 'discarded' && <button className="secondary" onClick={() => openPersonalization()}>Crear versión corregida desde ésta</button>}{proposal.status === 'invalidated' && canReview && <section className="restore-panel"><h3>Restaurar aprobación</h3><p>La aplicación volverá a comprobar errores bloqueantes. Una diferencia causada únicamente por la versión del motor quedará registrada como advertencia de compatibilidad.</p><label>Justificación<textarea rows={2} minLength={10} maxLength={500} value={restoreReason} onChange={(event) => setRestoreReason(event.target.value)} placeholder="Explique por qué corresponde restaurar esta aprobación." /></label>{proposal.validation_document.warnings > 0 && <label className="confirmation"><input type="checkbox" checked={restoreWarningsConfirmed} onChange={(event) => setRestoreWarningsConfirmed(event.target.checked)} />Revisé las advertencias vigentes de esta versión.</label>}<button disabled={restoreReason.trim().length < 10 || (proposal.validation_document.warnings > 0 && !restoreWarningsConfirmed)} onClick={() => void restoreApproval()}>Restaurar aprobación</button></section>}{proposal.status !== 'discarded' && ((proposal.status === 'approved' && canReview) || (proposal.status !== 'approved' && canGenerate)) && <section className="cleanup-panel"><h3>Depurar esta versión</h3><p>{proposal.status === 'approved' ? 'Retire la aprobación para impedir que esta versión se use en nuevas ejecuciones ETL.' : 'Descártela de las listas operativas. La auditoría y la trazabilidad no se eliminan.'}</p><label>Motivo<textarea rows={2} minLength={10} maxLength={500} value={cleanupReason} onChange={(event) => setCleanupReason(event.target.value)} placeholder="Explique la inconsistencia o el motivo del descarte." /></label><button className="danger" disabled={cleanupReason.trim().length < 10} onClick={() => void cleanVersion(proposal.status === 'approved' ? 'invalidate' : 'discard')}>{proposal.status === 'approved' ? 'Retirar aprobación' : 'Descartar versión'}</button></section>}</>}
     </section>}
     {proposal && Object.keys(proposal.proposal_document).length > 0 && <section className="validation-evidence" aria-label="Validación del resultado">
-      <div className="proposal-heading"><div><p className="eyebrow">Evidencia de validación técnica</p><h2>Validación estructural de la propuesta — Sprint 3</h2></div><button className="secondary" disabled={verifying} onClick={() => void verifyEvidence()}>{verifying ? 'Verificando…' : 'Verificar evidencia'}</button></div>
+      <div className="proposal-heading"><div><p className="eyebrow">Evidencia de validación técnica</p><h2>Validación estructural de la propuesta</h2></div><button className="secondary" disabled={verifying} onClick={() => void verifyEvidence()}>{verifying ? 'Verificando…' : 'Verificar evidencia'}</button></div>
       <p>Comprueba metadatos, referencias, contrato y reproducción determinística de la versión seleccionada. No vuelve a llamar al LLM, no consulta filas y no ejecuta el ETL.</p>
-      <p className="notice">Esta etapa todavía no demuestra igualdad de filas, unidades o importes. La conciliación OLTP–datamart se incorporará al expediente cuando Sprint 4 materialice y ejecute el ETL.</p>
+      <p className="notice">Esta etapa comprueba la estructura, no la igualdad de filas, unidades o importes. La conciliación OLTP–datamart se añadirá automáticamente al expediente después de materializar y ejecutar el ETL.</p>
       {verification && <><div className="evidence-grid">{verification.checks.map((check) => { const compatibilityOnly = verification.compatibility_warning && ['validation.consistency', 'proposal.replay'].includes(check.code); return <article className={check.passed ? 'passed' : compatibilityOnly ? 'warning' : 'failed'} key={check.code}><span>{check.passed ? 'Cumple' : compatibilityOnly ? 'Compatibilidad' : 'Revisar'}</span><h3>{check.label}</h3><p>{check.detail}</p></article> })}</div>{verification.compatibility_warning && <p className="notice warning">La propuesta pertenece a una versión anterior del motor. Esta diferencia se conserva para trazabilidad, pero no invalida una propuesta sin errores bloqueantes.</p>}<details className="technical-details"><summary>Validaciones que se habilitarán posteriormente</summary><p>Estas comprobaciones aparecerán cuando exista el incremento correspondiente:</p><ul>{verification.pending_validations.map((item) => <li key={item}>{item}</li>)}</ul></details><p className="field-help">Huella de propuesta: {verification.proposal_hash.slice(0, 12)} · Huella de reejecución: {verification.replay_hash.slice(0, 12) || 'no disponible'}</p></>}
     </section>}
     <section className="attempt-history"><div className="history-heading"><div><h2>Versiones generadas</h2><p className="field-help">Abra un resultado conservado para revisarlo o aprobarlo sin volver a ejecutar el modelo.</p></div><label>Mostrar<select value={historyFilter} onChange={(event) => { setHistoryFilter(event.target.value); setHistoryOffset(0) }}>{historyFilterOptions.map((item) => <option value={item.value} key={item.value}>{item.label}</option>)}</select></label></div>{historyPage.items.length > 0 ? <><div className="table-wrap"><table><thead><tr><th>Versión</th><th>Necesidad</th><th>Proveedor y modelo</th><th>Estado</th><th>Fecha</th><th>Resultado</th></tr></thead><tbody>{historyPage.items.map((item) => <tr className={proposal?.id === item.id ? 'selected-attempt' : ''} key={item.id}><td>#{item.id}{item.source_proposal_id && <small>Derivada de #{item.source_proposal_id}</small>}</td><td>{item.business_goal}</td><td>{providerLabel(item.provider_kind)} / {item.model_id}</td><td>{proposalStatusLabels[item.status]}</td><td>{new Date(item.created_at).toLocaleString('es-EC')}</td><td><button className="secondary compact" disabled={proposal?.id === item.id} onClick={() => selectSavedProposal(item)}>{proposal?.id === item.id ? 'Seleccionada' : 'Abrir resultado'}</button></td></tr>)}</tbody></table></div><Pagination page={historyPage} onChange={setHistoryOffset} /></> : <p className="notice">No hay versiones en este estado para el dominio seleccionado.</p>}</section>
   </>
+}
+
+const etlStepLabels = ['Elegir propuesta', 'Revisar indicadores', 'Confirmar ejecución', 'Materializar y cargar', 'Validar resultados']
+const executionStatusLabels: Record<EtlExecution['status'], string> = {
+  prepared: 'Preparada', running: 'En ejecución', succeeded: 'Validada', validation_warning: 'Revisión pendiente', failed: 'Fallida',
+}
+const etlStageLabels: Record<EtlTransformation['stage'], string> = {
+  extract: 'Extracción controlada',
+  clean: 'Limpieza y calidad',
+  transform: 'Transformación y enriquecimiento',
+  load: 'Carga dimensional',
+  validate: 'Conciliación y evidencia',
+}
+const recipeOperationLabels: Record<string, string> = {
+  sum: 'Suma', count: 'Conteo', count_distinct: 'Conteo distinto', average: 'Promedio', min: 'Mínimo', max: 'Máximo',
+}
+const periodicityLabels: Record<string, string> = {
+  day: 'Diaria', week: 'Semanal', month: 'Mensual', quarter: 'Trimestral', year: 'Anual',
+}
+
+function kpiRecipeExplanation(kpi: EtlKpiRecipe) {
+  if (kpi.kind === 'aggregate') {
+    const operation = stringValue(kpi.recipe.operation, 'agregación')
+    return `${recipeOperationLabels[operation] ?? operation} de ${stringValue(kpi.recipe.measure, kpi.inputs[0] ?? 'la medida validada')}.`
+  }
+  const numerator = stringValue(kpi.recipe.numerator, kpi.inputs[0] ?? 'numerador')
+  const denominator = stringValue(kpi.recipe.denominator, kpi.inputs[1] ?? 'denominador')
+  return kpi.kind === 'share'
+    ? `${numerator} dividido para ${denominator}, expresado como porcentaje.`
+    : `${numerator} dividido para ${denominator}; si el divisor es cero se informa sin valor.`
+}
+
+function businessTechnicalLabel(value: string) {
+  const normalized = value.replace(/^dim_|^fact_/, '').replaceAll('_', ' ').trim()
+  const words: Record<string, string> = {
+    sales: 'ventas', amount: 'importe', quantity: 'cantidad', customer: 'cliente', customers: 'clientes',
+    product: 'producto', products: 'productos', territory: 'territorio', date: 'fecha', order: 'pedido', orders: 'pedidos',
+  }
+  return normalized.split(' ').map((word) => words[word.toLowerCase()] ?? word).join(' ').replace(/^./, (letter) => letter.toUpperCase())
+}
+
+function formatInteger(value: unknown) {
+  const number = typeof value === 'number' ? value : Number(value)
+  return Number.isFinite(number) ? new Intl.NumberFormat('es-EC', { maximumFractionDigits: 0 }).format(number) : '—'
+}
+
+function formatKpiValue(value: unknown, unit: string) {
+  const number = typeof value === 'number' ? value : Number(value)
+  if (!Number.isFinite(number)) return '—'
+  if (/^[A-Z]{3}$/.test(unit)) {
+    return new Intl.NumberFormat('es-EC', {
+      style: 'currency', currency: unit, currencyDisplay: 'code', minimumFractionDigits: 2, maximumFractionDigits: 2,
+    }).format(number)
+  }
+  const isCount = /(unidad|pedido|cliente|registro|fila)/i.test(unit)
+  const isMoney = /moneda/i.test(unit)
+  return new Intl.NumberFormat('es-EC', {
+    minimumFractionDigits: isMoney ? 2 : 0,
+    maximumFractionDigits: isCount ? 0 : 2,
+  }).format(number)
+}
+
+function formatKpiDisplay(value: unknown, unit: string) {
+  const formatted = formatKpiValue(value, unit)
+  return /^[A-Z]{3}$/.test(unit) || formatted === '—' ? formatted : `${formatted} ${unit}`
+}
+
+function SalesDatamartPage({ token, canWrite, navigate }: { token: string; canWrite: boolean; navigate: (path: string) => void }) {
+  const [catalog, setCatalog] = useState<{ items: EtlProposalCandidate[]; blocked_items: EtlProposalCandidate[]; recommended_proposal_id?: number; guidance: string[] } | null>(null)
+  const [executions, setExecutions] = useState<Page<EtlExecution>>({ items: [], total: 0, limit: 5, offset: 0 })
+  const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [compareIds, setCompareIds] = useState<number[]>([])
+  const [selectedKpis, setSelectedKpis] = useState<string[]>([])
+  const [step, setStep] = useState(1)
+  const [comment, setComment] = useState('Revisé la necesidad, la granularidad, las transformaciones y los indicadores seleccionados.')
+  const [confirmed, setConfirmed] = useState(false)
+  const [preparing, setPreparing] = useState(false)
+  const [running, setRunning] = useState(false)
+  const [execution, setExecution] = useState<EtlExecution | null>(null)
+  const [feedback, setFeedback] = useState<{ kind: 'success' | 'warning' | 'error'; message: string } | null>(null)
+
+  const loadWorkspace = useCallback(async () => {
+    try {
+      const [available, history] = await Promise.all([api.etlProposals(token), api.etlExecutions(token, 5, 0)])
+      setCatalog(available)
+      setExecutions(history)
+      const proposedId = available.recommended_proposal_id ?? available.items[0]?.proposal_id ?? null
+      setSelectedId((current) => current && available.items.some((item) => item.proposal_id === current) ? current : proposedId)
+    } catch (caught) {
+      setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible preparar el espacio de trabajo.' })
+    }
+  }, [token])
+
+  useEffect(() => { void loadWorkspace() }, [loadWorkspace])
+
+  const selected = catalog?.items.find((item) => item.proposal_id === selectedId) ?? null
+  const latestExecutionMatchesSelection = Boolean(
+    selected?.latest_execution_id
+    && [...(selected.latest_execution_kpi_codes ?? [])].sort().join('|') === [...selectedKpis].sort().join('|'),
+  )
+
+  useEffect(() => {
+    if (!selected) return
+    setSelectedKpis(selected.kpi_recipes.map((item) => item.code))
+    setConfirmed(false)
+  }, [selected])
+
+  function chooseProposal(id: number) {
+    setSelectedId(id)
+    setExecution(null)
+    setConfirmed(false)
+    setStep(1)
+    setFeedback(null)
+  }
+
+  function openExecution(item: EtlExecution) {
+    const proposal = catalog?.items.find((candidate) => candidate.proposal_id === item.proposal_id)
+    if (!proposal) {
+      setFeedback({
+        kind: 'error',
+        message: `La ejecución #${item.id} se conserva para auditoría, pero su propuesta ya no supera los controles actuales. Revise la versión desde el asistente de datamart.`,
+      })
+      return
+    }
+    setSelectedId(item.proposal_id)
+    setSelectedKpis(proposal.kpi_recipes.map((kpi) => kpi.code))
+    setExecution(item)
+    setStep(item.status === 'prepared' ? 4 : 5)
+    setFeedback({
+      kind: item.status === 'validation_warning' ? 'warning' : 'success',
+      message: `Ejecución #${item.id} abierta. Continúe desde el estado conservado en su expediente.`,
+    })
+  }
+
+  async function openLatestExecution() {
+    if (!selected?.latest_execution_id) return
+    const cached = executions.items.find((item) => item.id === selected.latest_execution_id)
+    if (cached) {
+      openExecution(cached)
+      return
+    }
+    try {
+      openExecution(await api.etlExecution(token, selected.latest_execution_id))
+    } catch (caught) {
+      setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible abrir el expediente existente.' })
+    }
+  }
+
+  function toggleCompare(id: number) {
+    setCompareIds((current) => current.includes(id) ? current.filter((item) => item !== id) : current.length < 2 ? [...current, id] : [current[1], id])
+  }
+
+  function toggleKpi(code: string) {
+    setSelectedKpis((current) => current.includes(code) ? current.filter((item) => item !== code) : [...current, code])
+  }
+
+  async function prepareExecution() {
+    if (!selected) return
+    setPreparing(true); setFeedback(null)
+    try {
+      const created = await api.prepareEtlExecution(token, {
+        proposal_id: selected.proposal_id,
+        selected_kpi_codes: selectedKpis,
+        confirmation: confirmed,
+        analyst_comment: comment,
+      })
+      setExecution(created)
+      setStep(4)
+      setFeedback({ kind: 'success', message: `La ejecución #${created.id} quedó preparada y trazable. No se ha consultado ni alterado la fuente durante esta confirmación.` })
+      setExecutions((current) => ({ ...current, items: [created, ...current.items].slice(0, current.limit), total: current.total + 1 }))
+      await loadWorkspace()
+    } catch (caught) {
+      setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible preparar la ejecución.' })
+    } finally { setPreparing(false) }
+  }
+
+  async function runExecution() {
+    if (!execution) return
+    setRunning(true); setFeedback({ kind: 'warning', message: 'Materializando el datamart. Mantenga esta pantalla abierta; la fuente permanece en sólo lectura.' })
+    try {
+      const result = await api.runEtlExecution(token, execution.id)
+      setExecution(result)
+      setStep(5)
+      setFeedback({
+        kind: result.status === 'succeeded' ? 'success' : result.status === 'validation_warning' ? 'warning' : 'error',
+        message: stringValue(result.validation_document.message, 'La ejecución terminó. Revise el expediente.'),
+      })
+      setExecutions((current) => ({ ...current, items: current.items.map((item) => item.id === result.id ? result : item) }))
+      await loadWorkspace()
+    } catch (caught) {
+      setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible ejecutar el ETL.' })
+    } finally { setRunning(false) }
+  }
+
+  async function retrySpanishInterpretation() {
+    if (!execution) return
+    setRunning(true); setFeedback({ kind: 'warning', message: 'Interpretando categorías seguras. El ETL y los valores originales no se modificarán.' })
+    try {
+      const result = await api.retryEtlSpanishInterpretation(token, execution.id)
+      setExecution(result)
+      setFeedback({ kind: 'success', message: stringValue(result.validation_document.message, 'La interpretación española quedó actualizada.') })
+      setExecutions((current) => ({ ...current, items: current.items.map((item) => item.id === result.id ? result : item) }))
+      await loadWorkspace()
+    } catch (caught) {
+      setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible completar la interpretación española.' })
+    } finally { setRunning(false) }
+  }
+
+  async function verifyCurrency() {
+    if (!execution) return
+    setRunning(true); setFeedback({ kind: 'warning', message: 'Comprobando la divisa directamente en la fuente, sin repetir el ETL ni modificar sus datos.' })
+    try {
+      const result = await api.verifyEtlCurrency(token, execution.id)
+      const context = objectValue(result.metrics_document.currency_context)
+      setExecution(result)
+      setFeedback({
+        kind: context.status === 'verified' ? 'success' : 'warning',
+        message: stringValue(context.message, 'La comprobación monetaria quedó registrada en el expediente.'),
+      })
+      setExecutions((current) => ({ ...current, items: current.items.map((item) => item.id === result.id ? result : item) }))
+    } catch (caught) {
+      setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible comprobar la divisa.' })
+    } finally { setRunning(false) }
+  }
+
+  async function applySpanishInterpretation(groups: Array<{ dimension: string; target_column: string; mappings: Array<{ original: string; label_es: string }> }>, analystComment: string) {
+    if (!execution) return
+    setRunning(true); setFeedback({ kind: 'warning', message: 'Publicando únicamente las etiquetas revisadas; los valores originales permanecen intactos.' })
+    try {
+      const result = await api.applyEtlSpanishInterpretation(token, execution.id, { confirmation: true, analyst_comment: analystComment, groups })
+      setExecution(result)
+      setFeedback({ kind: 'success', message: stringValue(result.validation_document.message, 'La interpretación revisada quedó publicada.') })
+      setExecutions((current) => ({ ...current, items: current.items.map((item) => item.id === result.id ? result : item) }))
+      await loadWorkspace()
+    } catch (caught) {
+      setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible publicar las etiquetas revisadas.' })
+    } finally { setRunning(false) }
+  }
+
+  if (!catalog) return <><p className="lead">Convierta una propuesta aprobada en un datamart trazable mediante un recorrido guiado.</p>{feedback && <p className={`notice ${feedback.kind}`}>{feedback.message}</p>}<p className="notice">Comprobando propuestas, fuente y reglas vigentes…</p></>
+  if (catalog.items.length === 0) return <section className="etl-empty-state"><div className="etl-empty-icon" aria-hidden="true">!</div><p className="eyebrow">Preparación requerida</p><h2>No hay propuestas aprobadas compatibles</h2><p>Para materializar un datamart necesita una propuesta vigente, validada y analíticamente útil. Las versiones siguientes se conservaron para auditoría, pero no pueden ejecutarse.</p>{catalog.blocked_items.map((item) => <article className="blocked-proposal" key={item.proposal_id}><h3>Versión #{item.proposal_id}: {item.summary}</h3><ul>{item.blocking_reasons.map((reason) => <li key={reason}>{reason}</li>)}</ul></article>)}<div className="form-actions"><button onClick={() => navigate('/asistente')}>Corregir o generar una propuesta</button><button className="secondary" onClick={() => void loadWorkspace()}>Volver a comprobar</button></div>{feedback && <p className={`notice ${feedback.kind}`}>{feedback.message}</p>}</section>
+
+  const compared = compareIds.map((id) => catalog.items.find((item) => item.proposal_id === id)).filter((item): item is EtlProposalCandidate => Boolean(item))
+  const groupedTransformations = selected ? Object.entries(etlStageLabels).map(([stage, label]) => ({
+    stage: stage as EtlTransformation['stage'], label, items: selected.transformation_plan.filter((item) => item.stage === stage),
+  })).filter((group) => group.items.length > 0) : []
+
+  return <div className="etl-workspace">
+    <section className="etl-hero">
+      <div><p className="eyebrow">Espacio de trabajo del analista BI</p><h2>Materialización controlada del datamart</h2><p>Revise el contrato aprobado, los indicadores sugeridos por la IA y cada transformación antes de crear datos analíticos.</p></div>
+      <dl><div><dt>Dominio</dt><dd>Ventas</dd></div><div><dt>Fuente</dt><dd>SQL Server · sólo lectura</dd></div><div><dt>Modo</dt><dd>Supervisado y auditable</dd></div></dl>
+    </section>
+    <ol className="etl-stepper" aria-label={`Paso ${step} de 5`}>{etlStepLabels.map((label, index) => <li className={index + 1 === step ? 'current' : index + 1 < step ? 'complete' : ''} key={label}><span>{index + 1}</span><div><small>Paso {index + 1}</small><strong>{label}</strong></div></li>)}</ol>
+    {feedback && <p className={`notice ${feedback.kind}`} role={feedback.kind === 'error' ? 'alert' : 'status'}>{feedback.message}</p>}
+
+    {step === 1 && <section className="etl-stage-panel">
+      <div className="etl-section-heading"><div><p className="eyebrow">Decisión 1 de 3</p><h2>Elija la propuesta que desea materializar</h2><p>Se muestran únicamente versiones aprobadas que todavía superan las reglas, conservan su instantánea y poseen KPI calculables.</p></div><span className="etl-help-badge">Sugerencia automática, decisión humana</span></div>
+      <div className="analyst-guidance"><strong>Qué debe revisar</strong><p>Confirme que la necesidad, la granularidad y las medidas correspondan al resultado que espera el negocio. La versión más reciente compatible aparece recomendada, pero no se ejecuta sola.</p></div>
+      <div className="etl-proposal-grid">{catalog.items.map((item) => <article className={`etl-proposal-card ${selectedId === item.proposal_id ? 'selected' : ''}`} key={item.proposal_id}>
+        <div className="etl-card-top"><span>Versión #{item.proposal_id}</span>{item.latest_execution_id ? <strong>Ya ejecutada · expediente #{item.latest_execution_id}</strong> : item.recommended && <strong>Recomendada</strong>}</div><h3>{item.summary}</h3><p>{item.business_goal}</p>
+        <dl><div><dt>Granularidad</dt><dd>{item.grain}</dd></div><div><dt>Indicadores</dt><dd>{item.kpi_count} sugeridos por IA</dd></div><div><dt>Aprobación</dt><dd>{item.reviewed_at ? new Date(item.reviewed_at).toLocaleString('es-EC') : 'Fecha no disponible'}</dd></div>{item.latest_execution_status && <div><dt>Última ejecución</dt><dd>{executionStatusLabels[item.latest_execution_status]}{item.latest_execution_at ? ` · ${new Date(item.latest_execution_at).toLocaleString('es-EC')}` : ''}</dd></div>}</dl>
+        <div className="etl-card-actions"><button className={selectedId === item.proposal_id ? 'secondary' : ''} disabled={selectedId === item.proposal_id} onClick={() => chooseProposal(item.proposal_id)}>{selectedId === item.proposal_id ? 'Seleccionada' : 'Seleccionar'}</button><label><input type="checkbox" checked={compareIds.includes(item.proposal_id)} onChange={() => toggleCompare(item.proposal_id)} />Comparar</label></div>
+      </article>)}</div>
+      {compared.length > 0 && <section className="etl-comparison"><div className="etl-section-heading"><div><h3>Comparación de propuestas</h3><p>Puede contrastar hasta dos versiones antes de decidir.</p></div><button className="secondary compact" onClick={() => setCompareIds([])}>Cerrar comparación</button></div><div className="etl-comparison-grid">{compared.map((item) => <article key={item.proposal_id}><strong>Versión #{item.proposal_id}</strong><h3>{item.summary}</h3><p><b>Grano:</b> {item.grain}</p><p><b>Medidas:</b> {item.measures.map(businessTechnicalLabel).join(', ')}</p><p><b>KPI:</b> {item.kpi_recipes.map((kpi) => kpi.name).join(', ')}</p></article>)}</div></section>}
+      {catalog.blocked_items.length > 0 && <details className="blocked-versions"><summary>{catalog.blocked_items.length} versiones aprobadas fueron bloqueadas por controles actuales</summary>{catalog.blocked_items.map((item) => <article key={item.proposal_id}><h3>Versión #{item.proposal_id}</h3><ul>{item.blocking_reasons.map((reason) => <li key={reason}>{reason}</li>)}</ul></article>)}</details>}
+      {latestExecutionMatchesSelection && selected?.latest_execution_id && <p className="notice success"><strong>Este contrato ya fue ejecutado.</strong> La ejecución #{selected.latest_execution_id} conserva la materialización y sus validaciones. No se habilita otra ejecución idéntica.</p>}
+      <div className="etl-footer-actions"><span>{selected ? latestExecutionMatchesSelection && selected.latest_execution_id ? `Versión #${selected.proposal_id} ya materializada en la ejecución #${selected.latest_execution_id}` : `Versión #${selected.proposal_id} seleccionada` : 'Seleccione una propuesta'}</span>{latestExecutionMatchesSelection && selected?.latest_execution_id ? <button onClick={() => void openLatestExecution()}>Abrir expediente #{selected.latest_execution_id}</button> : <button disabled={!selected} onClick={() => setStep(2)}>Revisar indicadores</button>}</div>
+    </section>}
+
+    {step === 2 && selected && <section className="etl-stage-panel">
+      <div className="etl-section-heading"><div><p className="eyebrow">Decisión 2 de 3</p><h2>Revise los indicadores sugeridos por la IA</h2><p>La cantidad es variable. Cada indicador debe tener una receta permitida y fuentes comprobadas; la IA sugiere, pero el motor controla el cálculo.</p></div><span className="etl-count-badge">{selectedKpis.length} de {selected.kpi_recipes.length} seleccionados</span></div>
+      <div className="analyst-guidance"><strong>Cómo decidir</strong><p>Conserve sólo los indicadores que responden a la necesidad. Si un indicador no aporta a la decisión, retírelo aquí; no cambie su fórmula ni escriba SQL.</p></div>
+      <div className="etl-kpi-grid">{selected.kpi_recipes.map((kpi) => { const included = selectedKpis.includes(kpi.code); const periodicity = kpi.periodicity === 'inherit' ? selected.periodicity : kpi.periodicity; return <article className={included ? 'selected' : ''} key={kpi.code}><div className="etl-kpi-heading"><label><input type="checkbox" checked={included} onChange={() => toggleKpi(kpi.code)} /><span>Incluir indicador</span></label><span>{kpi.kind === 'aggregate' ? 'Agregación' : kpi.kind === 'ratio' ? 'Razón' : 'Participación'}</span></div><h3>{kpi.name}</h3><p>{kpi.description || 'Indicador propuesto para responder a la necesidad aprobada.'}</p><div className="etl-formula"><small>Cálculo controlado</small><strong>{kpiRecipeExplanation(kpi)}</strong></div><dl><div><dt>Unidad</dt><dd>{kpi.unit}</dd></div><div><dt>Período</dt><dd>{periodicityLabels[periodicity] ?? periodicity}</dd></div></dl>{(kpi.adjustments?.length ?? 0) > 0 && <div className="kpi-adjustment"><strong>Ajuste de seguridad</strong>{kpi.adjustments?.map((adjustment) => <p key={adjustment}>{adjustment}</p>)}</div>}<details><summary>Ver trazabilidad técnica</summary><p>Entradas verificadas: {kpi.inputs.join(', ')}.</p><p>Definición: {kpi.definition_version}.</p>{kpi.declared_unit && kpi.declared_unit !== kpi.unit && <p>Unidad sugerida originalmente: {kpi.declared_unit}.</p>}</details></article> })}</div>
+      {selectedKpis.length === 0 && <p className="notice error">Seleccione al menos un indicador. Un datamart sin resultado analítico verificable no puede prepararse.</p>}
+      <div className="etl-footer-actions"><button className="secondary" onClick={() => setStep(1)}>Volver a propuestas</button><button disabled={selectedKpis.length === 0} onClick={() => setStep(3)}>Revisar transformaciones</button></div>
+    </section>}
+
+    {step === 3 && selected && <section className="etl-stage-panel">
+      <div className="etl-section-heading"><div><p className="eyebrow">Decisión 3 de 3</p><h2>Confirme el plan de preparación de datos</h2><p>Esta vista explica limpieza, columnas derivadas, carga y controles sin exponer SQL. Nada se ejecuta hasta su confirmación.</p></div><span className="etl-help-badge">{selected.transformation_plan.length} operaciones controladas</span></div>
+      <section className="etl-model-summary"><article><small>Tabla de hechos</small><strong>{businessTechnicalLabel(selected.fact_name)}</strong><span>Referencia técnica: {selected.fact_name}</span></article><article><small>Granularidad</small><strong>{selected.grain}</strong></article><article><small>Dimensiones</small><strong>{selected.dimensions.map(businessTechnicalLabel).join(', ')}</strong><span>{selected.dimensions.length} estructuras conformadas</span></article><article><small>Medidas</small><strong>{selected.measures.map(businessTechnicalLabel).join(', ')}</strong><span>{selected.measures.length} valores calculables</span></article></section>
+      <div className="semantic-safety"><div aria-hidden="true">ES</div><section><h3>Interpretación dinámica en español</h3><p>Los nombres técnicos en inglés se explicarán en español. Los valores categóricos aptos podrán recibir una etiqueta española sin reemplazar el valor original.</p><ul><li>Si el contenido ya está en español, se conserva sin reinterpretarlo.</li><li>No se traducen identificadores, nombres de personas, direcciones, texto libre, credenciales ni categorías de alta cardinalidad.</li><li>Todo mapeo conserva original, etiqueta, idioma detectado, versión y aprobación del analista.</li></ul></section></div>
+      <div className="analyst-guidance"><strong>No requiere acción en esta pantalla</strong><p>Las operaciones marcadas como “Revisar en el paso 5” sólo buscan y preparan posibles etiquetas en español. Después de pulsar “Materializar y cargar datamart” y terminar la conciliación, esta misma pantalla avanzará a “Paso 5 · Validar resultados”. Allí, en “Interpretación semántica”, podrá publicar, corregir o excluir cada mapeo encontrado. Si no se encuentra ninguno, no habrá nada que revisar.</p></div>
+      <div className="etl-pipeline">{groupedTransformations.map((group, groupIndex) => <section key={group.stage}><div className="etl-pipeline-heading"><span>{groupIndex + 1}</span><div><small>Etapa</small><h3>{group.label}</h3></div></div><div>{group.items.map((item) => <article key={item.code}><div><strong>{item.label}</strong>{item.severity === 'optional' && <span>Revisar en el paso 5</span>}</div><p>{item.detail}</p></article>)}</div></section>)}</div>
+      {selected.warnings.length > 0 && <div className="notice warning"><strong>Advertencias heredadas</strong><ul>{selected.warnings.map((warning) => <li key={warning}>{warning}</li>)}</ul></div>}
+      <div className="etl-confirmation-box"><label>Registro de decisión<textarea rows={3} minLength={10} maxLength={500} value={comment} onChange={(event) => setComment(event.target.value)} /></label><label className="confirmation"><input type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} />Confirmo el plan de ejecución y comprendo que las etiquetas candidatas se revisarán individualmente después de la carga.</label><p>Esta confirmación crea un expediente inmutable de preparación, pero no publica ninguna etiqueta. La materialización física sólo podrá usar este contrato validado.</p></div>
+      <div className="etl-footer-actions"><button className="secondary" onClick={() => setStep(2)}>Volver a indicadores</button><button disabled={!canWrite || !confirmed || comment.trim().length < 10 || preparing} onClick={() => void prepareExecution()}>{preparing ? 'Registrando preparación…' : 'Preparar materialización'}</button></div>
+      {!canWrite && <p className="notice warning">Puede revisar el plan, pero su rol no posee permiso para preparar una ejecución.</p>}
+    </section>}
+
+    {step >= 4 && selected && execution && <section className="etl-stage-panel">
+      <div className={`etl-execution-receipt ${step === 5 ? execution.status : ''}`}><span aria-hidden="true">{execution.status === 'failed' ? '!' : '✓'}</span><div><p className="eyebrow">Ejecución #{execution.id}</p><h2>{step === 4 ? 'Contrato preparado correctamente' : execution.status === 'succeeded' ? 'Datamart materializado y conciliado' : execution.status === 'validation_warning' && objectValue(execution.metrics_document.reconciliation).passed === true ? 'Datamart conciliado; interpretación pendiente' : execution.status === 'validation_warning' ? 'Carga completada con diferencias' : 'La materialización fue revertida'}</h2><p>{step === 4 ? 'La selección quedó persistida con las huellas de la propuesta y la instantánea. Revise el comprobante antes de iniciar la lectura.' : stringValue(execution.validation_document.message, 'Revise el expediente de la ejecución.')}</p></div><strong>{step === 4 ? 'Preparada' : execution.status === 'succeeded' ? 'Validada' : execution.status === 'validation_warning' && objectValue(execution.metrics_document.reconciliation).passed === true ? 'Interpretar' : execution.status === 'validation_warning' ? 'Revisar' : 'Fallida'}</strong></div>
+      <div className="etl-progress-list"><article className="complete"><span>1</span><div><strong>Contrato y fuente revalidados</strong><p>La propuesta continúa aprobada, la fuente está activa y las referencias son compatibles.</p></div></article><article className="complete"><span>2</span><div><strong>Plan determinístico fijado</strong><p>{selectedKpis.length} indicadores y {selected.transformation_plan.length} operaciones quedaron versionados.</p></div></article><article className={step === 5 && execution.status !== 'failed' ? 'complete' : ''}><span>3</span><div><strong>{running ? 'Materializando y cargando…' : 'Materialización física'}</strong><p>{step === 4 ? 'Creará las dimensiones y el hecho en una transacción; un fallo no dejará tablas parciales.' : execution.status === 'failed' ? 'La transacción se revirtió y las tablas publicadas anteriormente no fueron sustituidas.' : 'Extracción, limpieza, claves sustitutas y carga transaccional completadas.'}</p></div></article><article className={step === 5 && objectValue(execution.metrics_document.reconciliation).passed === true ? 'complete' : ''}><span>4</span><div><strong>Conciliación cuantitativa</strong><p>{step === 4 ? 'Contrastará filas, unidades, importes e indicadores con el origen.' : 'El expediente conserva conteos, diferencias, medidas e indicadores calculados.'}</p></div></article></div>
+      {step === 4 && <div className="analyst-guidance"><strong>Antes de iniciar</strong><p>La operación leerá sólo las columnas aprobadas de SQL Server y reemplazará transaccionalmente el esquema analítico de ventas. Si un control bloqueante falla, el datamart publicado no cambia.</p></div>}
+      {step === 5 && <EtlValidationResult execution={execution} canRetry={canWrite && !running} onVerifyCurrency={() => void verifyCurrency()} onRetry={() => void retrySpanishInterpretation()} onApply={(groups, analystComment) => void applySpanishInterpretation(groups, analystComment)} />}
+      <details className="technical-details"><summary>Ver trazabilidad técnica</summary><p>Constructor: {execution.builder_version}</p><p>Huella de propuesta: {execution.proposal_hash.slice(0, 12)} · Huella de instantánea: {execution.snapshot_hash.slice(0, 12)}</p><p>Registrada por: {execution.created_by_label} · {new Date(execution.created_at).toLocaleString('es-EC')}</p></details>
+      <div className="etl-footer-actions"><button className="secondary" disabled={running} onClick={() => { setStep(1); setExecution(null); setConfirmed(false) }}>Preparar otra selección</button>{step === 4 && <button disabled={running} onClick={() => void runExecution()}>{running ? 'Materializando…' : 'Materializar y cargar datamart'}</button>}</div>
+    </section>}
+
+    <section className="etl-history"><div className="etl-section-heading"><div><h2>Expedientes recientes</h2><p>Abra una ejecución para continuar su materialización, revisar la conciliación o resolver decisiones pendientes sin repetir el ETL.</p></div><span>{executions.total} registros</span></div>{executions.items.length === 0 ? <p className="notice">Todavía no se ha preparado ninguna ejecución.</p> : <div className="table-wrap"><table><thead><tr><th>Ejecución</th><th>Propuesta</th><th>Estado</th><th>Responsable</th><th>Fecha</th><th>Acción</th></tr></thead><tbody>{executions.items.map((item) => <tr key={item.id}><td>#{item.id}</td><td>Versión #{item.proposal_id}</td><td><span className={`execution-status ${item.status}`}>{executionStatusLabels[item.status]}</span></td><td>{item.created_by_label}</td><td>{new Date(item.created_at).toLocaleString('es-EC')}</td><td><button type="button" className="secondary compact" onClick={() => openExecution(item)}>Abrir expediente #{item.id}</button></td></tr>)}</tbody></table></div>}</section>
+  </div>
+}
+
+type SpanishDecisionGroup = { dimension: string; target_column: string; mappings: Array<{ original: string; label_es: string }> }
+
+function EtlValidationResult({ execution, canRetry, onVerifyCurrency, onRetry, onApply }: { execution: EtlExecution; canRetry: boolean; onVerifyCurrency: () => void; onRetry: () => void; onApply: (groups: SpanishDecisionGroup[], analystComment: string) => void }) {
+  const reconciliation = objectValue(execution.metrics_document.reconciliation)
+  const tables = arrayValue(execution.metrics_document.tables)
+  const kpis = arrayValue(execution.metrics_document.kpis)
+  if (execution.status === 'failed') return <div className="notice error"><strong>No se publicaron cambios parciales.</strong><p>Revise la conexión, regenere la propuesta si cambió la instantánea y prepare una nueva ejecución. El código técnico queda disponible sólo en los registros del servidor.</p></div>
+  const semantic = objectValue(execution.metrics_document.semantic_interpretation)
+  const currency = objectValue(execution.metrics_document.currency_context)
+  const requiresCurrencyCheck = currency.status !== 'verified' && kpis.some((kpi) => /^(moneda|moneda de origen|currency)$/i.test(stringValue(kpi.unit, '')))
+  return <section className="etl-validation-result"><div className="etl-section-heading"><div><p className="eyebrow">Evidencia cuantitativa</p><h2>Conciliación OLTP–datamart</h2><p>Origen y destino se consultaron de forma independiente durante la misma ejecución y quedaron asociados a este expediente.</p></div><span className={reconciliation.passed === true ? 'validation-pass' : 'validation-review'}>{reconciliation.passed === true ? 'Conciliada' : 'Revisar diferencias'}</span></div><div className="reconciliation-metrics"><article><small>Filas de origen</small><strong>{formatInteger(reconciliation.source_rows)}</strong></article><article><small>Filas cargadas</small><strong>{formatInteger(reconciliation.datamart_rows)}</strong></article><article><small>Diferencia</small><strong>{formatInteger(reconciliation.difference_rows)}</strong></article><article><small>Tablas creadas</small><strong>{formatInteger(tables.length)}</strong></article></div>{currency.status === 'verified' && <div className="currency-evidence"><div><strong>Divisa comprobada: {stringValue(currency.currency_code, '')}</strong><span>{stringValue(currency.message, 'La unidad monetaria fue verificada en la fuente.')}</span></div><small>Referencia: {stringValue(currency.source_reference, 'metadatos de la fuente')}</small></div>}{requiresCurrencyCheck && <div className="currency-evidence review"><div><strong>Divisa pendiente de comprobación</strong><span>Los importes están conciliados, pero el sistema todavía no debe asumir un símbolo o código monetario.</span></div><button type="button" className="secondary compact" disabled={!canRetry} onClick={onVerifyCurrency}>Comprobar divisa sin repetir el ETL</button></div>}<div className="etl-result-grid"><section><h3>Calidad por tabla</h3>{tables.map((table) => <article key={stringValue(table.table, '')}><strong>{businessTechnicalLabel(stringValue(table.table, 'Tabla'))}</strong><span>{formatInteger(table.loaded_rows)} cargadas de {formatInteger(table.source_rows)}</span>{Number(table.deduplicated_rows ?? 0) > 0 && <small>{formatInteger(table.deduplicated_rows)} duplicados controlados</small>}</article>)}</section><section><h3>Indicadores calculados</h3>{kpis.length === 0 ? <p>No se calculó un indicador compatible.</p> : kpis.map((kpi) => { const unit = stringValue(kpi.unit, ''); return <article key={stringValue(kpi.code, '')}><strong>{stringValue(kpi.name, 'Indicador')}</strong><span title={`Valor exacto: ${String(kpi.value ?? '—')}`}>{formatKpiDisplay(kpi.value, unit)}</span><small>{kpi.status === 'reconciled' ? 'Conciliado' : 'Requiere revisión'}</small></article> })}</section></div><SemanticInterpretationReview semantic={semantic} canAct={canRetry} onRetry={onRetry} onApply={onApply} /></section>
+}
+
+function SemanticInterpretationReview({ semantic, canAct, onRetry, onApply }: { semantic: Record<string, unknown>; canAct: boolean; onRetry: () => void; onApply: (groups: SpanishDecisionGroup[], analystComment: string) => void }) {
+  const groups = useMemo(() => arrayValue(semantic.mappings), [semantic.mappings])
+  const initial = useMemo(() => groups.flatMap((group, groupIndex) => arrayValue(group.mappings).map((mapping, mappingIndex) => ({
+    key: `${groupIndex}:${mappingIndex}`,
+    groupIndex,
+    enabled: true,
+    original: stringValue(mapping.original, ''),
+    label: stringValue(mapping.label_es, ''),
+  }))), [groups])
+  const [decisions, setDecisions] = useState(initial)
+  const [comment, setComment] = useState('Revisé las etiquetas propuestas y confirmé que representan las categorías originales.')
+  const [confirmed, setConfirmed] = useState(false)
+  useEffect(() => { setDecisions(initial); setConfirmed(false) }, [initial])
+  const status = stringValue(semantic.status, '')
+  const reviewedAt = stringValue(semantic.reviewed_at, '')
+  const reviewedAtLabel = reviewedAt ? new Date(reviewedAt).toLocaleString('es-EC') : ''
+  const publish = () => {
+    const reviewed = groups.map((group, groupIndex) => ({
+      dimension: stringValue(group.dimension, ''),
+      target_column: stringValue(group.target_column, ''),
+      mappings: decisions.filter((item) => item.groupIndex === groupIndex && item.enabled).map((item) => ({ original: item.original, label_es: item.label.trim() })),
+    })).filter((group) => group.mappings.length > 0)
+    onApply(reviewed, comment)
+  }
+  return <div className="semantic-safety compact"><div aria-hidden="true">ES</div><section><h3>Interpretación semántica</h3><p>{stringValue(semantic.message, 'Los originales permanecen conservados para trazabilidad.')}</p>{status === 'pending' && <><p className="field-help">{stringValue(semantic.failure_detail, '')}</p><p className="field-help">{stringValue(semantic.resolution, 'Pruebe un proveedor activo y vuelva a intentarlo.')}</p><button type="button" className="secondary" disabled={!canAct} onClick={onRetry}>Reintentar interpretación sin repetir el ETL</button></>}{status === 'applied' && <div className="semantic-publication-receipt"><div className="semantic-publication-heading"><strong>Revisión publicada</strong><span>Decisión humana registrada</span></div><dl><div><dt>Responsable</dt><dd>{stringValue(semantic.reviewed_by, 'No disponible')}</dd></div>{reviewedAtLabel && <div><dt>Fecha</dt><dd>{reviewedAtLabel}</dd></div>}<div><dt>Comentario del analista</dt><dd>{stringValue(semantic.analyst_comment, 'Sin comentario registrado.')}</dd></div></dl><div className="semantic-applied-groups">{groups.map((group) => <article key={`${stringValue(group.dimension, '')}:${stringValue(group.label_column, '')}`}><div><strong>{businessTechnicalLabel(stringValue(group.dimension, 'Dimensión'))}</strong><small>{stringValue(group.source_column, 'categoría')} → {stringValue(group.label_column, 'etiqueta española')}</small></div><ul>{arrayValue(group.mappings).map((mapping) => <li key={`${stringValue(mapping.original, '')}:${stringValue(mapping.label_es, '')}`}><span>{stringValue(mapping.original, '')}</span><span aria-hidden="true">→</span><strong>{stringValue(mapping.label_es, '')}</strong></li>)}</ul></article>)}</div><p className="field-help">Los valores originales siguen disponibles; las etiquetas se publicaron como columnas adicionales y auditables.</p></div>}{status === 'review_required' && <div className="semantic-review"><p className="field-help">Compare cada original con su etiqueta. Puede corregir la etiqueta o excluirla; ninguna elección modifica el valor de origen.</p>{groups.map((group, groupIndex) => <fieldset key={`${stringValue(group.dimension, '')}:${stringValue(group.target_column, '')}`}><legend>{businessTechnicalLabel(stringValue(group.dimension, 'Dimensión'))} · {stringValue(group.target_column, 'categoría')}</legend>{decisions.filter((item) => item.groupIndex === groupIndex).map((item) => <div className="semantic-mapping-row" key={item.key}><label><input type="checkbox" checked={item.enabled} onChange={(event) => setDecisions((current) => current.map((decision) => decision.key === item.key ? { ...decision, enabled: event.target.checked } : decision))} />Publicar</label><span>{item.original}</span><span aria-hidden="true">→</span><label>Etiqueta en español<input value={item.label} maxLength={100} disabled={!item.enabled} onChange={(event) => setDecisions((current) => current.map((decision) => decision.key === item.key ? { ...decision, label: event.target.value } : decision))} /></label></div>)}</fieldset>)}<label>Comentario de revisión<textarea rows={2} minLength={10} maxLength={500} value={comment} onChange={(event) => setComment(event.target.value)} /></label><label className="confirmation"><input type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} />Confirmo que revisé los mapeos que se publicarán.</label><button type="button" disabled={!canAct || !confirmed || comment.trim().length < 10 || decisions.some((item) => item.enabled && !item.label.trim())} onClick={publish}>Publicar etiquetas revisadas</button></div>}</section></div>
 }
 
 function objectValue(value: unknown): Record<string, unknown> { return typeof value === 'object' && value !== null && !Array.isArray(value) ? value as Record<string, unknown> : {} }
@@ -646,7 +1222,7 @@ function stringArrayValue(value: unknown): string[] { return Array.isArray(value
 function stringValue(value: unknown, fallback: string) { return typeof value === 'string' && value.trim() ? value : fallback }
 function semanticRole(item: Record<string, unknown>) { const declared = stringValue(item.semantic_role, ''); if (declared) return declared; const text = `${stringValue(item.name, '')} ${stringValue(item.code, '')}`.toLocaleLowerCase('es'); if (/cliente|customer/.test(text)) return 'customer_count'; if (/cantidad|unidades|quantity|qty/.test(text)) return 'quantity'; if (/conteo|pedido|transacci|order/.test(text)) return 'transaction_count'; return 'sales_amount' }
 function semanticRoleLabel(value: string) { return ({ sales_amount: 'Importe de ventas', quantity: 'Cantidad vendida', customer_count: 'Conteo de clientes', transaction_count: 'Conteo de transacciones' } as Record<string, string>)[value] ?? value }
-function etlLabel(value: string) { return ({ extract: 'Extracción', join: 'Unión validada', filter: 'Filtro', derive: 'Derivación', aggregate: 'Agregación', load: 'Carga futura' } as Record<string, string>)[value] ?? value }
+function etlLabel(value: string) { return ({ extract: 'Extracción', join: 'Unión validada', filter: 'Filtro', derive: 'Derivación', aggregate: 'Agregación', load: 'Carga controlada' } as Record<string, string>)[value] ?? value }
 
 function ResourcePage({ page, data, message, token, canWrite, onSaved, onChangePage }: { page: string; data: PageData; message: string; token: string; canWrite: boolean; onSaved: () => void; onChangePage: (offset: number) => void }) {
   const [selected, setSelected] = useState<Row | null>(null)
@@ -798,7 +1374,7 @@ function ConnectionsPage({ data, message, token, canWrite, canTest, canRefresh, 
         setFeedback({ message: result.message, kind: result.ok ? 'success' : 'error' })
       } else if (action === 'activate') {
         await api.activateConnection(token, item.id)
-        setFeedback({ message: 'La fuente quedó activa para los siguientes pasos del Sprint 3.', kind: 'success' })
+        setFeedback({ message: 'La fuente quedó activa para los siguientes pasos del flujo de análisis.', kind: 'success' })
       } else if (action === 'deactivate') {
         await api.deactivateConnection(token, item.id)
         setFeedback({ message: 'La fuente fue desactivada.', kind: 'success' })
@@ -1132,7 +1708,11 @@ function CrudForm({ page, token, selected, onSaved }: { page: string; token: str
 
   return <form className="crud-form" onSubmit={submit}>
     <div className="form-title"><h2>{selected ? `Editar ${config.singular}` : config.createTitle}</h2><span>{selected ? 'Actualice los datos y guarde los cambios.' : config.help}</span></div>
-    <div className="form-grid">{config.fields.map((field) => field.kind === 'checks' ? <CheckboxTable key={field.key} field={field} value={values[field.key] ?? ''} onChange={(value) => setValues({ ...values, [field.key]: value })} /> : <label key={field.key}>{field.label}{field.kind === 'select' ? <select required={field.required ?? true} value={values[field.key] ?? ''} onChange={(event) => setValues({ ...values, [field.key]: event.target.value })}>{field.options?.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select> : <input required={(field.required ?? true) && !(selected && field.secret)} type={field.secret ? 'password' : field.inputType ?? 'text'} placeholder={selected && field.secret ? 'Déjela vacía para conservar la contraseña actual' : field.placeholder} value={values[field.key] ?? ''} onChange={(event) => setValues({ ...values, [field.key]: event.target.value })} />}</label>)}</div>
+    <div className="form-grid">{config.fields.map((field) => field.kind === 'checks' ? <CheckboxTable key={field.key} field={field} value={values[field.key] ?? ''} onChange={(value) => setValues({ ...values, [field.key]: value })} /> : <label key={field.key}>{field.label}{field.kind === 'select' ? <select required={field.required ?? true} value={values[field.key] ?? ''} onChange={(event) => {
+      const value = event.target.value
+      if (page === '/llm' && field.key === 'provider_kind') setValues({ ...values, provider_kind: value, ...(llmProviderPresets[value] ?? {}) })
+      else setValues({ ...values, [field.key]: value })
+    }}>{field.options?.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select> : <input required={(field.required ?? true) && !(selected && field.secret)} type={field.secret ? 'password' : field.inputType ?? 'text'} placeholder={selected && field.secret ? 'Déjela vacía para conservar la contraseña actual' : field.placeholder} value={values[field.key] ?? ''} onChange={(event) => setValues({ ...values, [field.key]: event.target.value })} />}</label>)}</div>
     <div className="form-actions"><button>{selected ? 'Guardar cambios' : 'Crear registro'}</button>{selected && <button type="button" className="secondary" onClick={onSaved}>Cancelar</button>}</div>
     {error && <p className="notice error">{error}</p>}
   </form>
@@ -1151,6 +1731,13 @@ function CheckboxTable({ field, value, onChange }: { field: Field; value: string
 type Choice = { value: string; label: string; detail?: string }
 type Field = { key: string; label: string; placeholder?: string; secret?: boolean; inputType?: 'email' | 'text'; required?: boolean; kind?: 'select' | 'checks'; options?: Choice[]; help?: string }
 type FormConfig = { singular: string; createTitle: string; help: string; fields: Field[]; empty: Values; read: (row: Row) => Values; create: (values: Values) => Promise<unknown>; update: (row: Row, values: Values) => Promise<unknown> }
+
+const llmProviderPresets: Record<string, Partial<Values>> = {
+  gemini: { base_url: 'https://generativelanguage.googleapis.com', model_id: 'gemini-3.6-flash', reasoning_level: 'minimal' },
+  'groq-cloud': { base_url: 'https://api.groq.com/openai/v1', model_id: 'openai/gpt-oss-120b', reasoning_level: 'low' },
+  'qwen-cloud': { base_url: 'https://dashscope-intl.aliyuncs.com', model_id: 'qwen-plus', reasoning_level: 'minimal' },
+  'ollama-local': { base_url: 'http://ollama:11434', model_id: 'qwen2.5:3b', reasoning_level: 'minimal' },
+}
 
 function formConfig(page: string, token: string, roles: Role[], permissions: Permission[], selected: Row | null): FormConfig {
   const active = (row: Row) => String(row.is_active ?? true)
@@ -1183,8 +1770,8 @@ function formConfig(page: string, token: string, roles: Role[], permissions: Per
     update: (row, v) => api.update(`/menus/${row.id}`, token, { label: v.label, position: Number(v.position), permission_ids: parseSelectedIds(v.permission_ids) }),
   }
   return {
-    singular: 'configuración LLM', createTitle: 'Crear configuración LLM', help: 'Seleccione proveedor y modelo. Después de guardar, registre aquí la credencial del proveedor cloud. Para Ollama Docker use http://ollama:11434 y descargue el modelo antes de probar la conexión.',
-    fields: [{ key: 'name', label: 'Nombre de configuración' }, { key: 'provider_kind', label: 'Proveedor', kind: 'select', options: [{ value: '', label: 'Seleccione un proveedor' }, { value: 'gemini', label: 'Gemini Cloud' }, { value: 'qwen-cloud', label: 'Qwen Cloud' }, { value: 'ollama-local', label: 'Ollama local — no requiere API key' }] }, { key: 'base_url', label: 'URL del servicio', placeholder: 'Ollama Docker: http://ollama:11434' }, { key: 'model_id', label: 'Modelo', placeholder: 'Ejemplo local recomendado: qwen2.5:3b' }, { key: 'reasoning_level', label: 'Nivel de razonamiento', kind: 'select', options: [{ value: 'automatic', label: 'Automático del proveedor' }, { value: 'minimal', label: 'Mínimo — demostración rápida' }, { value: 'low', label: 'Bajo' }, { value: 'medium', label: 'Medio' }, { value: 'high', label: 'Alto — mayor tiempo y consumo' }] }],
+    singular: 'configuración LLM', createTitle: 'Crear configuración LLM', help: 'Seleccione un proveedor para completar su URL y modelo recomendados. Después de guardar, registre aquí la credencial cloud cifrada. Puede revisar los valores antes de crear la configuración.',
+    fields: [{ key: 'name', label: 'Nombre de configuración' }, { key: 'provider_kind', label: 'Proveedor', kind: 'select', options: [{ value: '', label: 'Seleccione un proveedor' }, { value: 'groq-cloud', label: 'Groq Cloud — rápido, recomendado para continuar' }, { value: 'gemini', label: 'Gemini Cloud' }, { value: 'qwen-cloud', label: 'Qwen Cloud' }, { value: 'ollama-local', label: 'Ollama local — no requiere API key' }] }, { key: 'base_url', label: 'URL del servicio', placeholder: 'Se completa al seleccionar el proveedor' }, { key: 'model_id', label: 'Modelo', placeholder: 'Se completa al seleccionar el proveedor' }, { key: 'reasoning_level', label: 'Nivel de razonamiento', kind: 'select', options: [{ value: 'automatic', label: 'Automático del proveedor' }, { value: 'minimal', label: 'Mínimo — demostración rápida' }, { value: 'low', label: 'Bajo — rápido y económico' }, { value: 'medium', label: 'Medio — análisis equilibrado' }, { value: 'high', label: 'Alto — mayor tiempo y consumo' }] }],
     empty: { name: '', provider_kind: '', base_url: '', model_id: '', reasoning_level: 'minimal' }, read: (row) => ({ name: String(row.name), provider_kind: String(row.provider_kind), base_url: String(row.base_url), model_id: String(row.model_id), reasoning_level: String(row.reasoning_level ?? 'minimal') }),
     create: (v) => api.create('/llm-configurations', token, { ...v, is_active: false }),
     update: (row, v) => api.upsert(`/llm-configurations/${row.id}`, token, { ...v, is_active: active(row) === 'true' }),

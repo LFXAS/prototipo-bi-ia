@@ -56,3 +56,22 @@ def test_llm_reasoning_level_is_controlled_and_defaults_to_minimal() -> None:
             model_id="gemini-3.6-flash",
             reasoning_level="extremo",  # type: ignore[arg-type]
         )
+
+
+def test_groq_endpoint_and_recommended_model_are_allowed() -> None:
+    configuration = LlmConfigurationCreate(
+        name="Groq para análisis BI",
+        provider_kind="groq-cloud",
+        base_url="https://api.groq.com/openai/v1",
+        model_id="openai/gpt-oss-120b",
+        reasoning_level="low",
+    )
+
+    assert configuration.provider_kind == "groq-cloud"
+    with pytest.raises(ValidationError):
+        LlmConfigurationCreate(
+            name="Groq no confiable",
+            provider_kind="groq-cloud",
+            base_url="https://api.groq.com.example.test/openai/v1",
+            model_id="openai/gpt-oss-120b",
+        )

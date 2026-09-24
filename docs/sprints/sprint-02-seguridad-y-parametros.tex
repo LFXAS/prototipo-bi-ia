@@ -76,9 +76,8 @@
   {\color{ugblue}\rule{\textwidth}{2.8pt}}
   \vspace{1.2cm}
 
-  {\Large Universidad de Guayaquil\\[0.25em]
-  Facultad de Ciencias Matemáticas y Físicas\\
-  Carrera de Software}
+  {\Large Documentación técnica del producto\\[0.25em]
+  Prototipo BI asistido por inteligencia artificial}
 
   \vfill
 
@@ -89,13 +88,15 @@
   \vspace{1.5cm}
 
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
-    Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
-    Versión & 0.1.0 \\
+    Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
+    Código documental & INF-SPR-02 \\
+    Versión & 1.0.0 \\
     Periodo de referencia & 4 al 11 de septiembre de 2026 \\
     Rama de trabajo & \file{feature/rbac-y-parametros} \\
     Línea base & \file{develop}; promoción posterior mediante pull request \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
-    Fecha & 11 de septiembre de 2026 \\
+    Estado & Aprobado e integrado mediante PR \#28 \\
+    Fecha de cierre & 11 de septiembre de 2026 \\
   \end{tabularx}
 
   \vfill
@@ -269,7 +270,7 @@ El comando no descarga modelos LLM: valida solamente que el perfil opcional sea 
 
 \section{Cierre y siguientes pasos}
 
-El incremento administrativo está construido y verificado localmente. Antes de declararlo cerrado en control de versiones, corresponde revisar los cambios, ejecutar \file{make verify}, abrir el pull request de \file{feature/rbac-y-parametros} hacia \file{develop}, obtener la aprobación requerida, fusionar y luego promover \file{develop} hacia \file{main} mediante un nuevo pull request.
+El incremento administrativo quedó construido, verificado y fusionado en \file{develop} mediante el PR \#28. Su promoción posterior siguió el flujo protegido hacia \file{main}; por ello, el cierre documenta un resultado histórico y no instrucciones todavía pendientes.
 
 Los siguientes sprints deben conservar este contrato: primero especificación SDD aprobada; después migraciones, API, interfaz, pruebas y documentación. El próximo módulo funcional recomendado es la introspección determinística de AdventureWorks y sus metadatos, no la generación automática de SQL por IA.
 
@@ -294,6 +295,7 @@ Los siguientes sprints deben conservar este contrato: primero especificación SD
   \midrule
   0.1.0 & 11-09-2026 & Primera versión: documentación del incremento administrativo, RBAC, UX, parámetros, proveedores LLM y alternativa local Ollama. \\
   0.2.0 & 18-09-2026 & Corrección final: registro web de credenciales cloud, almacenamiento cifrado, volumen de clave maestra, migración, auditoría y verificación integrada. \\
+  1.0.0 & 24-09-2026 & Normalización profesional del informe y actualización del estado histórico de cierre. \\
   \bottomrule
 \end{tabularx}
 

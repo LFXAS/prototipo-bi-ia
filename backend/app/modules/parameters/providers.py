@@ -32,6 +32,17 @@ def _gemini_thinking_config(model_id: str, reasoning_level: str) -> dict[str, ob
     return {}
 
 
+def _groq_reasoning_effort(reasoning_level: str) -> str | None:
+    """Map the shared UI vocabulary to the levels supported by GPT-OSS on Groq."""
+    if reasoning_level == "automatic":
+        return None
+    if reasoning_level == "minimal":
+        return "low"
+    if reasoning_level in {"low", "medium", "high"}:
+        return reasoning_level
+    return "low"
+
+
 def _generation_error(provider_kind: str, status_code: int) -> ProviderGenerationError:
     if provider_kind == "gemini" and status_code == 503:
         return ProviderGenerationError(
@@ -135,6 +146,43 @@ async def generate_json(
                     if candidates
                     else None
                 )
+            elif configuration.provider_kind == "groq-cloud":
+                reasoning_effort = _groq_reasoning_effort(configuration.reasoning_level)
+                response_format: dict[str, object]
+                if response_schema is None:
+                    response_format = {"type": "json_object"}
+                else:
+                    response_format = {
+                        "type": "json_schema",
+                        "json_schema": {
+                            "name": "bi_structured_response",
+                            "strict": True,
+                            "schema": response_schema,
+                        },
+                    }
+                response = await client.post(
+                    f"{base_url}/chat/completions",
+                    headers={"Authorization": f"Bearer {credential}"},
+                    json={
+                        "model": configuration.model_id,
+                        "messages": [
+                            {"role": "system", "content": system_instruction},
+                            {"role": "user", "content": user_content},
+                        ],
+                        "temperature": 0,
+                        "max_completion_tokens": max_output_tokens,
+                        "response_format": response_format,
+                        **(
+                            {"reasoning_effort": reasoning_effort}
+                            if reasoning_effort is not None
+                            else {}
+                        ),
+                    },
+                )
+                if not 200 <= response.status_code < 300:
+                    raise _generation_error(configuration.provider_kind, response.status_code)
+                choices = response.json().get("choices", [])
+                content = choices[0].get("message", {}).get("content") if choices else None
             else:
                 response = await client.post(
                     f"{base_url}/api/v1/services/aigc/text-generation/generation",
@@ -225,6 +273,30 @@ async def test_provider(
                         },
                     },
                 )
+            elif configuration.provider_kind == "groq-cloud":
+                reasoning_effort = _groq_reasoning_effort(configuration.reasoning_level)
+                response = await client.post(
+                    f"{base_url}/chat/completions",
+                    headers={"Authorization": f"Bearer {credential}"},
+                    json={
+                        "model": configuration.model_id,
+                        "messages": [
+                            {
+                                "role": "system",
+                                "content": "Responde únicamente con un objeto JSON válido.",
+                            },
+                            {"role": "user", "content": 'Devuelve {"ok":true}.'},
+                        ],
+                        "temperature": 0,
+                        "max_completion_tokens": 32,
+                        "response_format": {"type": "json_object"},
+                        **(
+                            {"reasoning_effort": reasoning_effort}
+                            if reasoning_effort is not None
+                            else {}
+                        ),
+                    },
+                )
             else:
                 response = await client.post(
                     f"{base_url}/api/v1/services/aigc/text-generation/generation",
@@ -255,6 +327,14 @@ async def test_provider(
         return ProviderTestResult(
             False,
             "Gemini está temporalmente saturado. Reintente la prueba en unos minutos.",
+        )
+    if configuration.provider_kind == "groq-cloud" and response.status_code == 401:
+        return ProviderTestResult(False, "La API key de Groq no es válida o fue revocada.")
+    if configuration.provider_kind == "groq-cloud" and response.status_code == 404:
+        return ProviderTestResult(False, "El modelo configurado no está disponible en Groq.")
+    if configuration.provider_kind == "groq-cloud" and response.status_code == 503:
+        return ProviderTestResult(
+            False, "Groq está temporalmente saturado. Reintente la prueba en unos minutos."
         )
     if response.status_code == 429:
         return ProviderTestResult(False, "El proveedor agotó temporalmente su cuota disponible.")

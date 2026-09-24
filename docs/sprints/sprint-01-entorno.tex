@@ -76,9 +76,8 @@
   {\color{ugblue}\rule{\textwidth}{2.8pt}}
   \vspace{1.2cm}
 
-  {\Large Universidad de Guayaquil\\[0.25em]
-  Facultad de Ciencias Matemáticas y Físicas\\
-  Carrera de Software}
+  {\Large Documentación técnica del producto\\[0.25em]
+  Prototipo BI asistido por inteligencia artificial}
 
   \vfill
 
@@ -89,7 +88,9 @@
   \vspace{1.5cm}
 
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
-    Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
+    Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
+    Código documental & INF-SPR-01 \\
+    Versión & 1.0.0 \\
     Identificador & SPR-01 \\
     Fecha de ejecución & 24 de agosto al 2 de septiembre de 2026 \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
@@ -113,7 +114,7 @@ El trabajo realizado puede registrarse como el \textbf{Sprint 1} del proyecto. P
 
 El objetivo deliberado de este sprint fue reducir el riesgo tecnológico antes de desarrollar funcionalidades de negocio. Por ello, no se implementaron todavía autenticación, ETL, KPIs, copiloto con IA ni pronóstico. El módulo de seguridad RBAC quedó previsto mediante límites modulares y reglas arquitectónicas, tal como exige el alcance académico.
 
-La denominación Sprint 1 es válida porque existieron un objetivo acotado, un conjunto priorizado de elementos de trabajo, criterios de aceptación, un incremento ejecutable, revisión mediante evidencias y una retrospectiva. Este informe formaliza dichas actividades para su incorporación en la tesis; no pretende afirmar ceremonias o métricas que no se hayan observado.
+La denominación Sprint 1 es válida porque existieron un objetivo acotado, un conjunto priorizado de elementos de trabajo, criterios de aceptación, un incremento ejecutable, revisión mediante evidencias y una retrospectiva. Este informe formaliza dichas actividades para su incorporación en la documentación consolidada del proyecto; no pretende afirmar ceremonias o métricas que no se hayan observado.
 
 \section{Ficha del sprint}
 
@@ -403,6 +404,30 @@ Para efectos de la tesis, este sprint aporta evidencia de planificación increme
 \subsection{Nota de evolución posterior}
 
 El perfil Docker opcional de Ollama y su modelo local se incorporan posteriormente como extensión del Sprint 2 para probar la configuración LLM. No forman parte del alcance ni de la evidencia histórica del Sprint 1; reutilizan la base Docker, los volúmenes nombrados y las prácticas de configuración segura establecidas en este informe. Su operación y verificación se documentan en el manual técnico vigente.
+
+\section{Control documental}
+
+\begin{tabularx}{\textwidth}{@{}>{\bfseries}p{0.28\textwidth}X@{}}
+  \toprule
+  Campo & Valor \\
+  \midrule
+  Código & INF-SPR-01 \\
+  Fuente editable & \path{docs/sprints/sprint-01-entorno.tex} \\
+  Compilación & \path{make sprint-report} o \path{make docs} \\
+  Evidencia relacionada & Bitácora, manual técnico, especificación de cierre y PR \#15. \\
+  Actualización & Sólo ante corrección histórica o cambio verificable en la evidencia del Sprint 1. \\
+  \bottomrule
+\end{tabularx}
+
+\subsection*{Historial de cambios}
+
+\begin{tabularx}{\textwidth}{@{}p{0.14\textwidth}p{0.18\textwidth}X@{}}
+  \toprule
+  Versión & Fecha & Cambio \\
+  \midrule
+  1.0.0 & 24-09-2026 & Normalización profesional del informe sin eliminar el detalle técnico, las incidencias ni la evidencia histórica. \\
+  \bottomrule
+\end{tabularx}
 
 \appendix
 \section{Comandos mínimos de demostración}
