@@ -21,11 +21,15 @@ from app.modules.copilot.domains import (
     normalize_needs_catalog_configuration,
 )
 from app.modules.copilot.models import BiProposal, SemanticAdvice
+from app.modules.copilot.needs import assess_business_need
 from app.modules.copilot.schemas import (
     AnalysisCatalogConfiguration,
     AnalysisCatalogDomainRead,
+    BusinessNeedInput,
     CopilotCatalogRead,
     CopilotReadiness,
+    NeedFormulationRead,
+    NeedViabilityRead,
     ProposalCreate,
     ProposalDecision,
     ProposalRead,
@@ -69,6 +73,29 @@ from app.modules.security.service import add_audit_event, require_permission
 
 router = APIRouter(tags=["copilot"])
 _secret_cipher = SecretCipher(settings.secrets_key_path)
+
+NEED_FORMULATION_SYSTEM_INSTRUCTION = (
+    "Actúas como especialista en análisis de negocio. Mejora la redacción de una necesidad "
+    "analítica sin añadir indicadores, dimensiones, fuentes ni supuestos que el usuario no "
+    "haya solicitado. Conserva la intención y el alcance. No generes SQL. La propuesta debe "
+    "expresar propósito, indicadores esperados, comparación o segmentación y período cuando "
+    "estén presentes. Si falta información, indícalo en improvements; no la inventes. Responde "
+    "únicamente con el JSON solicitado y en español."
+)
+NEED_FORMULATION_SCHEMA: dict[str, object] = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["suggested_goal", "rationale", "improvements"],
+    "properties": {
+        "suggested_goal": {"type": "string", "minLength": 20, "maxLength": 2000},
+        "rationale": {"type": "string", "minLength": 10, "maxLength": 500},
+        "improvements": {
+            "type": "array",
+            "maxItems": 6,
+            "items": {"type": "string", "minLength": 5, "maxLength": 240},
+        },
+    },
+}
 
 
 async def _active_configuration(session: AsyncSession) -> LlmConfiguration | None:
@@ -322,7 +349,7 @@ async def reset_analysis_catalog_domain(
 
 
 def _safe_business_request(
-    payload: ProposalCreate, configuration: dict[str, object]
+    payload: BusinessNeedInput, configuration: dict[str, object]
 ) -> dict[str, object]:
     profile = domain_profile(payload.domain_code)
     lowered = payload.business_goal.casefold()
@@ -369,8 +396,134 @@ def _safe_business_request(
             "label": selected_periodicity["label"],
             "description": selected_periodicity["description"],
         },
-        "excluded_concepts": payload.excluded_concepts,
+        "excluded_concepts": getattr(payload, "excluded_concepts", []),
     }
+
+
+async def _validated_need_request(
+    payload: BusinessNeedInput, session: AsyncSession
+) -> tuple[MetadataSnapshot, dict[str, object], dict[str, object]]:
+    connection = (
+        await session.execute(select(DataConnection).where(DataConnection.is_active.is_(True)))
+    ).scalar_one_or_none()
+    snapshot = await session.get(MetadataSnapshot, payload.metadata_snapshot_id)
+    latest = await _latest_snapshot(session, connection.id if connection else None)
+    if (
+        connection is None
+        or snapshot is None
+        or latest is None
+        or snapshot.id != latest.id
+        or snapshot.data_connection_id != connection.id
+    ):
+        raise HTTPException(
+            status_code=422, detail="Seleccione la instantánea vigente de la fuente activa."
+        )
+    catalog_configuration = await _needs_catalog(session, payload.domain_code)
+    available_catalog = catalog_for_snapshot(snapshot.schema_document, catalog_configuration)
+    selected_domain = next(
+        (item for item in available_catalog if item["code"] == payload.domain_code), None
+    )
+    domain_questions = cast(list[dict[str, object]], (selected_domain or {}).get("questions", []))
+    domain_periodicities = cast(
+        list[dict[str, object]], (selected_domain or {}).get("periodicities", [])
+    )
+    available_questions = {
+        str(item["code"]) for item in domain_questions if bool(item["available"])
+    }
+    available_periodicities = {
+        str(item["code"]) for item in domain_periodicities if bool(item["available"])
+    }
+    unavailable = sorted(
+        (set(map(str, payload.business_questions)) - available_questions)
+        | ({payload.periodicity} - available_periodicities)
+    )
+    if unavailable:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "La necesidad contiene opciones deshabilitadas o no respaldadas por los "
+                f"metadatos actuales: {', '.join(unavailable)}. Actualice la selección."
+            ),
+        )
+    return snapshot, _safe_business_request(payload, catalog_configuration), catalog_configuration
+
+
+@router.post("/copilot/needs/formulate", response_model=NeedFormulationRead)
+async def formulate_business_need(
+    payload: BusinessNeedInput,
+    actor: User = Depends(require_permission("copilot.proposals.generate")),
+    session: AsyncSession = Depends(get_session),
+) -> dict[str, object]:
+    snapshot, request_document, _ = await _validated_need_request(payload, session)
+    configuration = await _active_configuration(session)
+    if configuration is None:
+        raise HTTPException(status_code=422, detail="No existe una configuración LLM activa.")
+    credential = await _credential(configuration, session)
+    timeout = await _parameter(session, "LLM_TIMEOUT_SECONDS")
+    try:
+        result = await generate_json(
+            configuration,
+            NEED_FORMULATION_SYSTEM_INSTRUCTION,
+            {
+                "goal": payload.business_goal,
+                "questions": request_document["questions"],
+                "periodicity": request_document["periodicity"],
+                "constraints": {
+                    "preserve_intent": True,
+                    "do_not_invent": True,
+                    "metadata_snapshot_hash": snapshot.content_hash,
+                },
+            },
+            credential=credential,
+            timeout_seconds=timeout,
+            max_output_tokens=900,
+            response_schema=NEED_FORMULATION_SCHEMA,
+        )
+    except ProviderGenerationError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    await add_audit_event(
+        session,
+        actor.id,
+        "copilot.need.formulated",
+        "metadata_snapshot",
+        str(snapshot.id),
+        {"provider_kind": configuration.provider_kind, "model_id": configuration.model_id},
+    )
+    await session.commit()
+    return {
+        "original_goal": payload.business_goal,
+        "suggested_goal": str(result["suggested_goal"]),
+        "rationale": str(result["rationale"]),
+        "improvements": list(result["improvements"]),
+        "provider_kind": configuration.provider_kind,
+        "model_id": configuration.model_id,
+    }
+
+
+@router.post("/copilot/needs/viability", response_model=NeedViabilityRead)
+async def validate_business_need_viability(
+    payload: BusinessNeedInput,
+    actor: User = Depends(require_permission("copilot.proposals.generate")),
+    session: AsyncSession = Depends(get_session),
+) -> dict[str, object]:
+    snapshot, request_document, _ = await _validated_need_request(payload, session)
+    assessment = assess_business_need(
+        snapshot.schema_document,
+        {**request_document, "snapshot_hash": snapshot.content_hash},
+    )
+    await add_audit_event(
+        session,
+        actor.id,
+        "copilot.need.viability_checked",
+        "metadata_snapshot",
+        str(snapshot.id),
+        {
+            "assessment_hash": assessment["assessment_hash"],
+            "counts": assessment["counts"],
+        },
+    )
+    await session.commit()
+    return assessment
 
 
 async def _credential(configuration: LlmConfiguration, session: AsyncSession) -> str | None:
@@ -443,6 +596,37 @@ async def create_proposal(
             ),
         )
     request_document = _safe_business_request(payload, catalog_configuration)
+    assessment = assess_business_need(
+        snapshot.schema_document,
+        {**request_document, "snapshot_hash": snapshot.content_hash},
+    )
+    if payload.viability_hash != assessment["assessment_hash"]:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "La necesidad o los metadatos cambiaron desde la última validación de "
+                "viabilidad. Valide nuevamente antes de generar la propuesta."
+            ),
+        )
+    required_acknowledgements = set(cast(list[str], assessment["requires_acknowledgement"]))
+    missing_acknowledgements = required_acknowledgements - set(payload.accepted_limitations)
+    if missing_acknowledgements:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "Revise y confirme las decisiones pendientes de la necesidad: "
+                f"{', '.join(sorted(missing_acknowledgements))}."
+            ),
+        )
+    if not bool(assessment["can_continue"]):
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "La necesidad no contiene todavía ningún requisito directo o derivable. "
+                "Ajústela con la guía mostrada antes de invocar al proveedor LLM."
+            ),
+        )
+    request_document["viability_assessment"] = assessment
     source_proposal = (
         await session.get(BiProposal, payload.source_proposal_id)
         if payload.source_proposal_id is not None
@@ -589,6 +773,7 @@ async def create_proposal(
             # The LLM proposes dimensions from verified metadata; the catalog never forces them.
             blueprint["requested_dimensions"] = []
             proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
+            proposal["need_assessment"] = assessment
             validation = validate_proposal(proposal, scope, snapshot.schema_document)
             record.proposal_document = proposal
             record.validation_document = validation

@@ -20,6 +20,8 @@ import {
   type MetadataSnapshot,
   type MetadataTable,
   type MetadataTableDetail,
+  type NeedFormulation,
+  type NeedViability,
   type Page,
   type Parameter,
   type Permission,
@@ -531,6 +533,11 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
   const [goal, setGoal] = useState('')
   const [questions, setQuestions] = useState<string[]>([])
   const [periodicity, setPeriodicity] = useState('month')
+  const [needFormulation, setNeedFormulation] = useState<NeedFormulation | null>(null)
+  const [viability, setViability] = useState<NeedViability | null>(null)
+  const [acceptedLimitations, setAcceptedLimitations] = useState<string[]>([])
+  const [formulatingNeed, setFormulatingNeed] = useState(false)
+  const [validatingNeed, setValidatingNeed] = useState(false)
   const [proposal, setProposal] = useState<BiProposal | null>(null)
   const [excludedConcepts, setExcludedConcepts] = useState<string[]>([])
   const [confirmedConcepts, setConfirmedConcepts] = useState<string[]>([])
@@ -583,6 +590,9 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
     setGoal('')
     setQuestions([])
     setPeriodicity(domain.periodicities.find((item) => item.available)?.code ?? 'month')
+    setNeedFormulation(null)
+    setViability(null)
+    setAcceptedLimitations([])
     setHistoryFilter('ready_for_review')
     setHistoryOffset(0)
     setProposal(null)
@@ -598,8 +608,59 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
     update(values.includes(value) ? values.filter((item) => item !== value) : [...values, value])
   }
 
+  function invalidateNeedAssessment() {
+    setViability(null)
+    setAcceptedLimitations([])
+  }
+
+  function needInput() {
+    if (!source?.latest_snapshot || !selectedDomainCode) return null
+    return {
+      metadata_snapshot_id: source.latest_snapshot.id,
+      business_goal: goal,
+      business_questions: questions,
+      periodicity,
+      domain_code: selectedDomainCode as 'ventas',
+    }
+  }
+
+  async function formulateNeed() {
+    const payload = needInput()
+    if (!payload) return
+    setFormulatingNeed(true); setFeedback(null)
+    try {
+      setNeedFormulation(await api.formulateNeed(token, payload))
+    } catch (caught) {
+      setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible ayudar a formular la necesidad.' })
+    } finally { setFormulatingNeed(false) }
+  }
+
+  async function validateNeed() {
+    const payload = needInput()
+    if (!payload) return
+    setValidatingNeed(true); setFeedback(null)
+    try {
+      const assessment = await api.validateNeed(token, payload)
+      setViability(assessment)
+      setAcceptedLimitations([])
+      setFeedback({ kind: assessment.can_continue ? (assessment.requires_acknowledgement.length ? 'warning' : 'success') : 'error', message: assessment.summary })
+    } catch (caught) {
+      setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible validar la viabilidad.' })
+    } finally { setValidatingNeed(false) }
+  }
+
   async function generate(exclusions = excludedConcepts) {
     if (!source?.latest_snapshot) return
+    if (!viability) {
+      setStep(1)
+      setFeedback({ kind: 'warning', message: 'Valide la viabilidad de la necesidad antes de invocar a la IA.' })
+      return
+    }
+    const unresolved = viability.requires_acknowledgement.filter((code) => !acceptedLimitations.includes(code))
+    if (unresolved.length) {
+      setFeedback({ kind: 'warning', message: 'Confirme cada requisito ambiguo o no disponible antes de continuar.' })
+      return
+    }
     setGenerating(true); setFeedback(null)
     try {
       const result = await api.createProposal(token, {
@@ -611,6 +672,8 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
         domain_code: selectedDomainCode,
         excluded_concepts: exclusions,
         source_proposal_id: proposal?.id,
+        viability_hash: viability.assessment_hash,
+        accepted_limitations: acceptedLimitations,
       })
       setProposal(result)
       setSemanticPreview(null)
@@ -672,6 +735,9 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
 
   function selectSavedProposal(item: BiProposal) {
     setProposal(item)
+    setViability(null)
+    setAcceptedLimitations([])
+    setNeedFormulation(null)
     setVerification(null)
     setSemanticPreview(null)
     setGoal(item.business_goal)
@@ -818,13 +884,17 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
     <p className="lead">Describa una necesidad comercial. La IA interpretará metadatos, propondrá el modelo y la aplicación comprobará cada referencia antes de su revisión.</p>
     <ol className="assistant-stepper" aria-label={`Paso ${step} de 5`}>{['Necesidad', 'Conceptos', 'Propuesta', 'Personalización', 'Revisión'].map((label, index) => <li className={step === index + 1 ? 'current' : step > index + 1 ? 'complete' : ''} key={label}><span>{index + 1}</span>{label}</li>)}</ol>
     {feedback && <p className={`notice ${feedback.kind}`} role={feedback.kind === 'error' ? 'alert' : 'status'}>{feedback.message}</p>}
-    {step === 1 && <form className="analysis-panel" onSubmit={(event) => { event.preventDefault(); void generate([]) }}>
+    {step === 1 && <form className="analysis-panel" onSubmit={(event) => { event.preventDefault(); if (viability) void generate([]); else void validateNeed() }}>
       <div className="form-title"><div><p className="eyebrow">Paso 1</p><h2>Necesidad de negocio</h2></div><span>Se enviarán la necesidad y metadatos estructurales; nunca filas ni credenciales.</span></div>
-      <label>Objetivo del análisis<textarea required minLength={20} maxLength={500} rows={4} value={goal} placeholder="Ejemplo: identificar tendencias de ventas y los factores que explican las variaciones por período." onChange={(event) => setGoal(event.target.value)} /><small className="field-help">Escriba el propósito específico de este análisis. No es un valor global ni se toma de la parametrización.</small></label>
-      <fieldset><legend>Preguntas de negocio disponibles</legend><p className="field-help">Seleccione las preguntas que orientarán a la IA. No fijan tablas, columnas ni dimensiones.</p><div className="choice-grid">{selectedDomain.questions.map((item) => <label className={!item.available ? 'unavailable-choice' : ''} title={item.reason} key={item.code}><input type="checkbox" disabled={!item.available} checked={questions.includes(item.code)} onChange={() => toggleValue(item.code, questions, setQuestions)} /><span>{item.label}<small>{item.description}</small></span></label>)}</div></fieldset>
+      <label className="need-goal-field">Objetivo del análisis<textarea required minLength={20} maxLength={2000} rows={8} value={goal} placeholder="Ejemplo: analizar ventas netas, costos y margen por producto y territorio, comparando su evolución mensual." onChange={(event) => { setGoal(event.target.value); setNeedFormulation(null); invalidateNeedAssessment() }} /><span className="character-counter" aria-live="polite">{goal.length.toLocaleString('es-EC')} / 2.000 caracteres</span><small className="field-help">Explique qué decisión desea apoyar, qué indicadores espera y cómo necesita compararlos. No escriba SQL.</small></label>
+      <div className="need-assistance-actions"><button type="button" className="secondary" disabled={!canGenerate || formulatingNeed || goal.trim().length < 20 || questions.length === 0} onClick={() => void formulateNeed()}>{formulatingNeed ? 'Preparando una redacción…' : 'Ayúdame a formular la necesidad'}</button><small>La IA sólo propone una redacción; usted decide si la usa.</small></div>
+      {needFormulation && <section className="need-formulation" aria-label="Propuesta de redacción"><div><p className="eyebrow">Sugerencia de la IA</p><h3>Redacción propuesta</h3><p>{needFormulation.suggested_goal}</p></div><p className="field-help">{needFormulation.rationale}</p>{needFormulation.improvements.length > 0 && <ul>{needFormulation.improvements.map((item) => <li key={item}>{item}</li>)}</ul>}<div className="form-actions"><button type="button" onClick={() => { setGoal(needFormulation.suggested_goal); setNeedFormulation(null); invalidateNeedAssessment() }}>Usar esta redacción</button><button type="button" className="secondary" onClick={() => setNeedFormulation(null)}>Mantener mi redacción</button></div></section>}
+      <fieldset><legend>Preguntas de negocio disponibles</legend><p className="field-help">Seleccione las preguntas que orientarán a la IA. No fijan tablas, columnas ni dimensiones.</p><div className="choice-grid">{selectedDomain.questions.map((item) => <label className={!item.available ? 'unavailable-choice' : ''} title={item.reason} key={item.code}><input type="checkbox" disabled={!item.available} checked={questions.includes(item.code)} onChange={() => { toggleValue(item.code, questions, setQuestions); setNeedFormulation(null); invalidateNeedAssessment() }} /><span>{item.label}<small>{item.description}</small></span></label>)}</div></fieldset>
       <p className="notice">La IA propondrá las dimensiones, medidas, granularidad, KPIs y plan ETL a partir del objetivo, las preguntas seleccionadas y los metadatos verificados. Usted podrá revisarlos y personalizarlos sin escribir SQL.</p>
-      <label>Periodicidad<select value={periodicity} onChange={(event) => setPeriodicity(event.target.value)}>{selectedDomain.periodicities.filter((item) => item.available).map((item) => <option value={item.code} key={item.code}>{item.label}</option>)}</select></label>
-      <button disabled={!canGenerate || generating || questions.length === 0}>{generating ? 'Preparando e interpretando metadatos…' : 'Analizar metadatos'}</button>
+      <label>Periodicidad<select value={periodicity} onChange={(event) => { setPeriodicity(event.target.value); setNeedFormulation(null); invalidateNeedAssessment() }}>{selectedDomain.periodicities.filter((item) => item.available).map((item) => <option value={item.code} key={item.code}>{item.label}</option>)}</select></label>
+      {viability && <section className="need-viability" aria-label="Cobertura de la necesidad"><div className="need-viability-heading"><div><p className="eyebrow">Comprobación previa</p><h3>Viabilidad contra los metadatos</h3></div><span>{viability.counts.direct ?? 0} directos · {viability.counts.derivable ?? 0} derivables · {(viability.counts.ambiguous ?? 0) + (viability.counts.unavailable ?? 0)} por decidir</span></div><div className="need-requirement-list">{viability.requirements.map((item) => { const pending = item.status === 'ambiguous' || item.status === 'unavailable'; return <article className={`need-requirement ${item.status}`} key={item.code}><div><span className="need-status">{item.status === 'direct' ? 'Directo' : item.status === 'derivable' ? 'Derivable' : item.status === 'ambiguous' ? 'Ambiguo' : 'No disponible'}</span><h4>{item.label}</h4></div>{item.formula && <p><strong>Fórmula controlada:</strong> {item.formula}</p>}<p>{item.resolution}</p>{item.evidence.length > 0 && <details><summary>Ver evidencia técnica</summary><ul>{item.evidence.map((evidence) => <li key={evidence}>{evidence}</li>)}</ul></details>}{pending && <label className="confirmation"><input type="checkbox" checked={acceptedLimitations.includes(item.code)} onChange={() => toggleValue(item.code, acceptedLimitations, setAcceptedLimitations)} />Comprendo esta limitación y acepto continuar sin que el sistema invente una solución.</label>}</article> })}</div></section>}
+      {!viability && <button disabled={!canGenerate || validatingNeed || questions.length === 0 || goal.trim().length < 20}>{validatingNeed ? 'Contrastando con la fuente…' : 'Validar viabilidad'}</button>}
+      {viability && <div className="form-actions"><button disabled={!canGenerate || generating || !viability.can_continue || viability.requires_acknowledgement.some((code) => !acceptedLimitations.includes(code))}>{generating ? 'Preparando e interpretando metadatos…' : 'Generar conceptos y propuesta'}</button><button type="button" className="secondary" onClick={() => { setViability(null); setAcceptedLimitations([]) }}>Volver a editar</button></div>}
       {!canGenerate && <p className="field-help">Su perfil puede consultar propuestas, pero no generar nuevos intentos.</p>}
     </form>}
     {step === 2 && proposal && <section className="analysis-panel">

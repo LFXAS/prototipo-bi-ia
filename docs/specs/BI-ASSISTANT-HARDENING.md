@@ -16,10 +16,14 @@ Este plan traduce el diagnóstico del 25 de septiembre de 2026 en cambios peque�
 | Archivo | Cambio mínimo |
 |---|---|
 | `backend/app/modules/copilot/schemas.py` | Elevar límite y definir contratos de reformulación, aprobación y cobertura. |
-| `backend/app/modules/copilot/service.py` | Clasificar cada requisito como directo, derivable, ambiguo o no disponible usando sólo metadatos verificados. |
+| `backend/app/modules/copilot/needs.py` | Clasificar cada requisito como directo, derivable, ambiguo o no disponible usando sólo metadatos verificados. |
 | `backend/app/modules/copilot/router.py` | Exponer reformulación y viabilidad como pasos separados del proveedor LLM. |
 | `frontend/src/App.tsx` | Textarea amplio, contador, comparación original/propuesta, aprobación explícita y matriz de viabilidad. |
 | pruebas backend/frontend | Necesidades completas, parciales, inviables y error de proveedor independiente. |
+
+Estado: implementada el 25 de septiembre de 2026. La creación de propuestas exige la
+huella vigente de viabilidad y la confirmación individual de las limitaciones; cambiar la
+necesidad, una pregunta, la periodicidad o los metadatos invalida esa comprobación.
 
 ## Fase 3 — Cobertura, fuentes y relaciones controladas
 

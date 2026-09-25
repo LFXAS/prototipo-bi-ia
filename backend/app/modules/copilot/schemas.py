@@ -44,13 +44,10 @@ class CopilotCatalogRead(BaseModel):
     domains: list[DomainCapabilityRead]
 
 
-class ProposalCreate(BaseModel):
+class BusinessNeedInput(BaseModel):
     metadata_snapshot_id: int = Field(gt=0)
-    business_goal: str = Field(min_length=20, max_length=500)
+    business_goal: str = Field(min_length=20, max_length=2000)
     business_questions: list[str] = Field(min_length=1, max_length=12)
-    requested_dimensions: list[DimensionCode] = Field(default_factory=list, max_length=0)
-    excluded_concepts: list[str] = Field(default_factory=list, max_length=20)
-    source_proposal_id: int | None = Field(default=None, gt=0)
     periodicity: str = Field(default="month", min_length=3, max_length=20)
     domain_code: Literal["ventas"] = "ventas"
 
@@ -59,9 +56,50 @@ class ProposalCreate(BaseModel):
     def normalized_goal(cls, value: str) -> str:
         return " ".join(value.split())
 
-    @field_validator("business_questions", "requested_dimensions", "excluded_concepts")
+    @field_validator("business_questions")
     @classmethod
     def unique_values(cls, value: list[str]) -> list[str]:
+        return list(dict.fromkeys(value))
+
+
+class NeedFormulationRead(BaseModel):
+    original_goal: str
+    suggested_goal: str
+    rationale: str
+    improvements: list[str]
+    provider_kind: str
+    model_id: str
+
+
+class NeedViabilityRequirement(BaseModel):
+    code: str
+    label: str
+    request_text: str
+    status: Literal["direct", "derivable", "ambiguous", "unavailable"]
+    evidence: list[str]
+    formula: str | None = None
+    resolution: str
+
+
+class NeedViabilityRead(BaseModel):
+    assessment_hash: str
+    requirements: list[NeedViabilityRequirement]
+    counts: dict[str, int]
+    requires_acknowledgement: list[str]
+    can_continue: bool
+    summary: str
+
+
+class ProposalCreate(BusinessNeedInput):
+    requested_dimensions: list[DimensionCode] = Field(default_factory=list, max_length=0)
+    excluded_concepts: list[str] = Field(default_factory=list, max_length=20)
+    source_proposal_id: int | None = Field(default=None, gt=0)
+    viability_hash: str = Field(min_length=64, max_length=64, pattern=r"^[a-f0-9]{64}$")
+    accepted_limitations: list[str] = Field(default_factory=list, max_length=30)
+
+    @field_validator("requested_dimensions", "excluded_concepts", "accepted_limitations")
+    @classmethod
+    def unique_proposal_values(cls, value: list[str]) -> list[str]:
         return list(dict.fromkeys(value))
 
 
