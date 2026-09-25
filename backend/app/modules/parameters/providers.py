@@ -1,12 +1,19 @@
 from __future__ import annotations
 
+import asyncio
 import json
+import logging
 from dataclasses import dataclass
 from typing import Any
 
 import httpx
 
 from app.modules.parameters.models import LlmConfiguration
+
+logger = logging.getLogger(__name__)
+
+_TRANSIENT_STATUS_CODES = frozenset({429, 500, 502, 503, 504})
+_MAX_PROVIDER_ATTEMPTS = 3
 
 
 @dataclass(frozen=True)
@@ -17,6 +24,26 @@ class ProviderTestResult:
 
 class ProviderGenerationError(RuntimeError):
     """Safe provider failure that never contains a credential or raw response."""
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        category: str = "provider_error",
+        status_code: int | None = None,
+        request_id: str | None = None,
+    ) -> None:
+        super().__init__(message)
+        self.category = category
+        self.status_code = status_code
+        self.request_id = request_id
+
+
+@dataclass(frozen=True)
+class ProviderErrorDetails:
+    message: str = ""
+    code: str = ""
+    request_id: str = ""
 
 
 def _gemini_thinking_config(model_id: str, reasoning_level: str) -> dict[str, object]:
@@ -43,36 +70,211 @@ def _groq_reasoning_effort(reasoning_level: str) -> str | None:
     return "low"
 
 
-def _provider_error_message(response: Any) -> str:
+def _groq_reasoning_options(model_id: str, reasoning_level: str) -> dict[str, object]:
+    """Use the reasoning controls documented for each Groq model family."""
+    effort = _groq_reasoning_effort(reasoning_level)
+    result: dict[str, object] = {}
+    if effort is not None:
+        result["reasoning_effort"] = effort
+    if model_id.startswith("openai/gpt-oss-"):
+        result["include_reasoning"] = False
+    else:
+        result["reasoning_format"] = "hidden"
+    return result
+
+
+def _groq_test_budget(reasoning_level: str) -> int:
+    effort = _groq_reasoning_effort(reasoning_level)
+    return {"medium": 384, "high": 512}.get(effort or "low", 256)
+
+
+def _provider_error_details(response: Any) -> ProviderErrorDetails:
+    headers = getattr(response, "headers", {})
+    request_id = str(headers.get("x-request-id", "") or headers.get("request-id", ""))[:160]
     try:
         payload = response.json()
     except (AttributeError, ValueError):
-        return ""
+        return ProviderErrorDetails(request_id=request_id)
     if not isinstance(payload, dict) or not isinstance(payload.get("error"), dict):
-        return ""
-    return str(payload["error"].get("message", ""))[:500]
+        return ProviderErrorDetails(request_id=request_id)
+    return ProviderErrorDetails(
+        message=str(payload["error"].get("message", ""))[:500],
+        code=str(payload["error"].get("code", ""))[:120],
+        request_id=request_id,
+    )
+
+
+def _provider_error_message(response: Any) -> str:
+    return _provider_error_details(response).message
+
+
+def _retry_delay_seconds(response: Any, attempt: int) -> float:
+    headers = getattr(response, "headers", {})
+    raw_retry_after = headers.get("retry-after")
+    if raw_retry_after is not None:
+        try:
+            retry_after = float(str(raw_retry_after))
+            return min(max(retry_after, 0.0), 10.0)
+        except (TypeError, ValueError):
+            pass
+    return float(min(0.25 * (2 ** (attempt - 1)), 2.0))
+
+
+def _log_provider_response(
+    provider_kind: str,
+    model_id: str,
+    attempt: int,
+    response: Any,
+) -> None:
+    status_code = int(getattr(response, "status_code", 0))
+    headers = getattr(response, "headers", {})
+    details = (
+        _provider_error_details(response)
+        if status_code >= 300
+        else ProviderErrorDetails(
+            request_id=str(headers.get("x-request-id", "") or headers.get("request-id", ""))[:160]
+        )
+    )
+    log = logger.warning if status_code >= 300 else logger.info
+    log(
+        "llm_provider_response provider=%s model=%s attempt=%s status=%s code=%s "
+        "request_id=%s remaining_requests=%s remaining_tokens=%s retry_after=%s",
+        provider_kind,
+        model_id,
+        attempt,
+        status_code,
+        details.code or "none",
+        details.request_id or "none",
+        headers.get("x-ratelimit-remaining-requests", "unknown"),
+        headers.get("x-ratelimit-remaining-tokens", "unknown"),
+        headers.get("retry-after", "none"),
+    )
+
+
+async def _post_with_retry(
+    client: httpx.AsyncClient,
+    url: str,
+    *,
+    provider_kind: str,
+    model_id: str,
+    max_attempts: int = _MAX_PROVIDER_ATTEMPTS,
+    **kwargs: Any,
+) -> Any:
+    for attempt in range(1, max_attempts + 1):
+        try:
+            response = await client.post(url, **kwargs)
+        except httpx.TimeoutException:
+            logger.warning(
+                "llm_provider_timeout provider=%s model=%s attempt=%s",
+                provider_kind,
+                model_id,
+                attempt,
+            )
+            if attempt >= max_attempts:
+                raise
+            await asyncio.sleep(min(0.25 * (2 ** (attempt - 1)), 2.0))
+            continue
+        _log_provider_response(provider_kind, model_id, attempt, response)
+        if response.status_code not in _TRANSIENT_STATUS_CODES or attempt >= max_attempts:
+            return response
+        await asyncio.sleep(_retry_delay_seconds(response, attempt))
+    raise RuntimeError("unreachable provider retry state")
 
 
 def _generation_error(
-    provider_kind: str, status_code: int, provider_message: str = ""
+    provider_kind: str,
+    status_code: int,
+    provider_message: str = "",
+    provider_code: str = "",
+    request_id: str = "",
 ) -> ProviderGenerationError:
-    if provider_kind == "gemini" and status_code == 503:
+    normalized = provider_message.casefold()
+
+    def error(message: str, category: str) -> ProviderGenerationError:
         return ProviderGenerationError(
-            "Gemini está temporalmente saturado. Reintente la generación en unos minutos."
+            message,
+            category=category,
+            status_code=status_code,
+            request_id=request_id or None,
+        )
+
+    if provider_kind == "gemini" and status_code == 404:
+        return error(
+            "El modelo Gemini configurado no está disponible para este proyecto.",
+            "model_unavailable",
+        )
+    if provider_kind == "gemini" and status_code == 403:
+        return error(
+            "El proyecto asociado a la clave no tiene acceso al modelo Gemini configurado.",
+            "authorization",
+        )
+    if provider_kind == "gemini" and status_code == 503:
+        return error(
+            "Gemini está temporalmente saturado. Reintente la generación en unos minutos.",
+            "provider_unavailable",
+        )
+    if provider_kind == "groq-cloud" and status_code == 401:
+        return error(
+            "La API key de Groq no es válida o fue revocada.",
+            "authentication",
+        )
+    if provider_kind == "groq-cloud" and status_code == 403:
+        return error(
+            "La cuenta de Groq no tiene acceso al modelo o a esta operación.",
+            "authorization",
+        )
+    if provider_kind == "groq-cloud" and status_code == 404:
+        return error(
+            "El modelo configurado no está disponible en Groq.",
+            "model_unavailable",
         )
     if status_code == 429:
-        return ProviderGenerationError("El proveedor agotó temporalmente su cuota disponible.")
-    if provider_kind == "groq-cloud" and status_code == 400:
-        if "validate json" in provider_message.casefold():
-            return ProviderGenerationError(
-                "Groq no logró completar el JSON solicitado. El nivel de razonamiento es "
-                "compatible; reintente con un presupuesto de salida suficiente."
-            )
-        return ProviderGenerationError(
-            "Groq rechazó un parámetro de generación. Revise la compatibilidad del modelo y "
-            "el nivel de razonamiento configurado."
+        return error(
+            "El proveedor alcanzó un límite temporal de solicitudes o tokens. Los reintentos "
+            "automáticos no fueron suficientes; espere el tiempo indicado y vuelva a intentar.",
+            "rate_limit",
         )
-    return ProviderGenerationError(f"El proveedor respondió con estado HTTP {status_code}.")
+    if status_code in {500, 502, 503, 504}:
+        return error(
+            "El proveedor continúa temporalmente no disponible después de los reintentos seguros.",
+            "provider_unavailable",
+        )
+    if provider_kind == "groq-cloud" and status_code == 400:
+        if provider_code == "json_validate_failed" or "validate json" in normalized:
+            return error(
+                "Groq no completó la salida JSON estructurada dentro del presupuesto disponible. "
+                "El nivel de razonamiento es compatible; reduzca la complejidad o aumente el "
+                "presupuesto de salida.",
+                "structured_output",
+            )
+        if any(
+            phrase in normalized
+            for phrase in ("context length", "max_completion_tokens", "too many tokens")
+        ):
+            return error(
+                "La solicitud excede el contexto o el presupuesto de salida permitido por Groq.",
+                "token_budget",
+            )
+        return error(
+            "Groq rechazó un parámetro de generación. Revise la compatibilidad del modelo y "
+            "la configuración enviada.",
+            "invalid_parameter",
+        )
+    return error(
+        f"El proveedor respondió con estado HTTP {status_code}.",
+        "provider_error",
+    )
+
+
+def _response_error(provider_kind: str, response: Any) -> ProviderGenerationError:
+    details = _provider_error_details(response)
+    return _generation_error(
+        provider_kind,
+        int(response.status_code),
+        details.message,
+        details.code,
+        details.request_id,
+    )
 
 
 def _json_object(value: object) -> dict[str, Any]:
@@ -118,8 +320,11 @@ async def generate_json(
         async with httpx.AsyncClient(timeout=timeout_seconds, follow_redirects=False) as client:
             base_url = configuration.base_url.rstrip("/")
             if configuration.provider_kind == "ollama-local":
-                response = await client.post(
+                response = await _post_with_retry(
+                    client,
                     f"{base_url}/api/chat",
+                    provider_kind=configuration.provider_kind,
+                    model_id=configuration.model_id,
                     json={
                         "model": configuration.model_id,
                         "stream": False,
@@ -133,13 +338,14 @@ async def generate_json(
                     },
                 )
                 if not 200 <= response.status_code < 300:
-                    raise ProviderGenerationError(
-                        f"El proveedor respondió con estado HTTP {response.status_code}."
-                    )
+                    raise _response_error(configuration.provider_kind, response)
                 content = response.json().get("message", {}).get("content")
             elif configuration.provider_kind == "gemini":
-                response = await client.post(
+                response = await _post_with_retry(
+                    client,
                     f"{base_url}/v1beta/models/{configuration.model_id}:generateContent",
+                    provider_kind=configuration.provider_kind,
+                    model_id=configuration.model_id,
                     params={"key": credential},
                     json={
                         "systemInstruction": {"parts": [{"text": system_instruction}]},
@@ -161,7 +367,7 @@ async def generate_json(
                     },
                 )
                 if not 200 <= response.status_code < 300:
-                    raise _generation_error(configuration.provider_kind, response.status_code)
+                    raise _response_error(configuration.provider_kind, response)
                 candidates = response.json().get("candidates", [])
                 content = (
                     candidates[0].get("content", {}).get("parts", [{}])[0].get("text")
@@ -169,7 +375,6 @@ async def generate_json(
                     else None
                 )
             elif configuration.provider_kind == "groq-cloud":
-                reasoning_effort = _groq_reasoning_effort(configuration.reasoning_level)
                 response_format: dict[str, object]
                 if response_schema is None:
                     response_format = {"type": "json_object"}
@@ -182,8 +387,11 @@ async def generate_json(
                             "schema": response_schema,
                         },
                     }
-                response = await client.post(
+                response = await _post_with_retry(
+                    client,
                     f"{base_url}/chat/completions",
+                    provider_kind=configuration.provider_kind,
+                    model_id=configuration.model_id,
                     headers={"Authorization": f"Bearer {credential}"},
                     json={
                         "model": configuration.model_id,
@@ -194,25 +402,22 @@ async def generate_json(
                         "temperature": 0,
                         "max_completion_tokens": max_output_tokens,
                         "response_format": response_format,
-                        "reasoning_format": "hidden",
-                        **(
-                            {"reasoning_effort": reasoning_effort}
-                            if reasoning_effort is not None
-                            else {}
+                        **_groq_reasoning_options(
+                            configuration.model_id,
+                            configuration.reasoning_level,
                         ),
                     },
                 )
                 if not 200 <= response.status_code < 300:
-                    raise _generation_error(
-                        configuration.provider_kind,
-                        response.status_code,
-                        _provider_error_message(response),
-                    )
+                    raise _response_error(configuration.provider_kind, response)
                 choices = response.json().get("choices", [])
                 content = choices[0].get("message", {}).get("content") if choices else None
             else:
-                response = await client.post(
+                response = await _post_with_retry(
+                    client,
                     f"{base_url}/api/v1/services/aigc/text-generation/generation",
+                    provider_kind=configuration.provider_kind,
+                    model_id=configuration.model_id,
                     headers={"Authorization": f"Bearer {credential}"},
                     json={
                         "model": configuration.model_id,
@@ -230,15 +435,19 @@ async def generate_json(
                     },
                 )
                 if not 200 <= response.status_code < 300:
-                    raise ProviderGenerationError(
-                        f"El proveedor respondió con estado HTTP {response.status_code}."
-                    )
+                    raise _response_error(configuration.provider_kind, response)
                 choices = response.json().get("output", {}).get("choices", [])
                 content = choices[0].get("message", {}).get("content") if choices else None
     except httpx.TimeoutException as exc:
-        raise ProviderGenerationError("El proveedor excedió el tiempo máximo configurado.") from exc
+        raise ProviderGenerationError(
+            "El proveedor excedió el tiempo máximo configurado después de los reintentos seguros.",
+            category="timeout",
+        ) from exc
     except httpx.HTTPError as exc:
-        raise ProviderGenerationError("No fue posible conectar con el proveedor activo.") from exc
+        raise ProviderGenerationError(
+            "No fue posible conectar con el proveedor activo.",
+            category="connection",
+        ) from exc
     return _json_object(content)
 
 
@@ -273,8 +482,11 @@ async def test_provider(
                         "Conexión con Ollama y modelo local validada sin enviar datos del negocio.",
                     )
             elif configuration.provider_kind == "gemini":
-                response = await client.post(
+                response = await _post_with_retry(
+                    client,
                     f"{base_url}/v1beta/models/{configuration.model_id}:generateContent",
+                    provider_kind=configuration.provider_kind,
+                    model_id=configuration.model_id,
                     params={"key": credential},
                     json={
                         "contents": [
@@ -301,9 +513,11 @@ async def test_provider(
                     },
                 )
             elif configuration.provider_kind == "groq-cloud":
-                reasoning_effort = _groq_reasoning_effort(configuration.reasoning_level)
-                response = await client.post(
+                response = await _post_with_retry(
+                    client,
                     f"{base_url}/chat/completions",
+                    provider_kind=configuration.provider_kind,
+                    model_id=configuration.model_id,
                     headers={"Authorization": f"Bearer {credential}"},
                     json={
                         "model": configuration.model_id,
@@ -315,21 +529,32 @@ async def test_provider(
                             {"role": "user", "content": 'Devuelve {"ok":true}.'},
                         ],
                         "temperature": 0,
-                        # Reasoning tokens share the completion budget. A budget of 32 can
-                        # produce a misleading HTTP 400 at medium/high before the JSON answer.
-                        "max_completion_tokens": 256,
-                        "response_format": {"type": "json_object"},
-                        "reasoning_format": "hidden",
-                        **(
-                            {"reasoning_effort": reasoning_effort}
-                            if reasoning_effort is not None
-                            else {}
+                        "max_completion_tokens": _groq_test_budget(configuration.reasoning_level),
+                        "response_format": {
+                            "type": "json_schema",
+                            "json_schema": {
+                                "name": "connection_test",
+                                "strict": True,
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {"ok": {"type": "boolean"}},
+                                    "required": ["ok"],
+                                    "additionalProperties": False,
+                                },
+                            },
+                        },
+                        **_groq_reasoning_options(
+                            configuration.model_id,
+                            configuration.reasoning_level,
                         ),
                     },
                 )
             else:
-                response = await client.post(
+                response = await _post_with_retry(
+                    client,
                     f"{base_url}/api/v1/services/aigc/text-generation/generation",
+                    provider_kind=configuration.provider_kind,
+                    model_id=configuration.model_id,
                     headers={"Authorization": f"Bearer {credential}"},
                     json={
                         "model": configuration.model_id,
@@ -337,51 +562,30 @@ async def test_provider(
                         "parameters": {"max_tokens": 1},
                     },
                 )
+    except httpx.TimeoutException:
+        return ProviderTestResult(
+            False,
+            "El proveedor excedió el tiempo máximo después de los reintentos seguros.",
+        )
     except httpx.HTTPError:
         return ProviderTestResult(False, "No fue posible conectar con el proveedor configurado.")
     if 200 <= response.status_code < 300:
+        if configuration.provider_kind == "groq-cloud":
+            choices = response.json().get("choices", [])
+            content = choices[0].get("message", {}).get("content") if choices else None
+            try:
+                connection_document = _json_object(content)
+            except ProviderGenerationError:
+                return ProviderTestResult(
+                    False,
+                    "Groq respondió, pero no produjo el JSON estructurado de comprobación.",
+                )
+            if connection_document.get("ok") is not True:
+                return ProviderTestResult(
+                    False,
+                    "Groq respondió con un JSON que no confirma la comprobación solicitada.",
+                )
         return ProviderTestResult(
             True, "Conexión con el proveedor validada sin enviar datos del negocio."
         )
-    if configuration.provider_kind == "gemini" and response.status_code == 404:
-        return ProviderTestResult(
-            False,
-            "El modelo Gemini configurado no está disponible para este proyecto.",
-        )
-    if configuration.provider_kind == "gemini" and response.status_code == 403:
-        return ProviderTestResult(
-            False,
-            "El proyecto asociado a la clave no tiene acceso al modelo Gemini configurado.",
-        )
-    if configuration.provider_kind == "gemini" and response.status_code == 503:
-        return ProviderTestResult(
-            False,
-            "Gemini está temporalmente saturado. Reintente la prueba en unos minutos.",
-        )
-    if configuration.provider_kind == "groq-cloud" and response.status_code == 401:
-        return ProviderTestResult(False, "La API key de Groq no es válida o fue revocada.")
-    if configuration.provider_kind == "groq-cloud" and response.status_code == 404:
-        return ProviderTestResult(False, "El modelo configurado no está disponible en Groq.")
-    if configuration.provider_kind == "groq-cloud" and response.status_code == 503:
-        return ProviderTestResult(
-            False, "Groq está temporalmente saturado. Reintente la prueba en unos minutos."
-        )
-    if response.status_code == 429:
-        return ProviderTestResult(False, "El proveedor agotó temporalmente su cuota disponible.")
-    if configuration.provider_kind == "groq-cloud" and response.status_code == 400:
-        provider_message = _provider_error_message(response)
-        if "validate json" in provider_message.casefold():
-            return ProviderTestResult(
-                False,
-                (
-                    "El nivel es compatible, pero Groq no completó el JSON de prueba. "
-                    "Reintente; la aplicación reservará un presupuesto de salida mayor."
-                ),
-            )
-        return ProviderTestResult(
-            False,
-            "Groq rechazó la combinación de modelo y razonamiento configurada.",
-        )
-    return ProviderTestResult(
-        False, f"El proveedor respondió con estado HTTP {response.status_code}."
-    )
+    return ProviderTestResult(False, str(_response_error(configuration.provider_kind, response)))
