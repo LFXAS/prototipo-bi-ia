@@ -43,13 +43,35 @@ def _groq_reasoning_effort(reasoning_level: str) -> str | None:
     return "low"
 
 
-def _generation_error(provider_kind: str, status_code: int) -> ProviderGenerationError:
+def _provider_error_message(response: Any) -> str:
+    try:
+        payload = response.json()
+    except (AttributeError, ValueError):
+        return ""
+    if not isinstance(payload, dict) or not isinstance(payload.get("error"), dict):
+        return ""
+    return str(payload["error"].get("message", ""))[:500]
+
+
+def _generation_error(
+    provider_kind: str, status_code: int, provider_message: str = ""
+) -> ProviderGenerationError:
     if provider_kind == "gemini" and status_code == 503:
         return ProviderGenerationError(
             "Gemini está temporalmente saturado. Reintente la generación en unos minutos."
         )
     if status_code == 429:
         return ProviderGenerationError("El proveedor agotó temporalmente su cuota disponible.")
+    if provider_kind == "groq-cloud" and status_code == 400:
+        if "validate json" in provider_message.casefold():
+            return ProviderGenerationError(
+                "Groq no logró completar el JSON solicitado. El nivel de razonamiento es "
+                "compatible; reintente con un presupuesto de salida suficiente."
+            )
+        return ProviderGenerationError(
+            "Groq rechazó un parámetro de generación. Revise la compatibilidad del modelo y "
+            "el nivel de razonamiento configurado."
+        )
     return ProviderGenerationError(f"El proveedor respondió con estado HTTP {status_code}.")
 
 
@@ -172,6 +194,7 @@ async def generate_json(
                         "temperature": 0,
                         "max_completion_tokens": max_output_tokens,
                         "response_format": response_format,
+                        "reasoning_format": "hidden",
                         **(
                             {"reasoning_effort": reasoning_effort}
                             if reasoning_effort is not None
@@ -180,7 +203,11 @@ async def generate_json(
                     },
                 )
                 if not 200 <= response.status_code < 300:
-                    raise _generation_error(configuration.provider_kind, response.status_code)
+                    raise _generation_error(
+                        configuration.provider_kind,
+                        response.status_code,
+                        _provider_error_message(response),
+                    )
                 choices = response.json().get("choices", [])
                 content = choices[0].get("message", {}).get("content") if choices else None
             else:
@@ -288,8 +315,11 @@ async def test_provider(
                             {"role": "user", "content": 'Devuelve {"ok":true}.'},
                         ],
                         "temperature": 0,
-                        "max_completion_tokens": 32,
+                        # Reasoning tokens share the completion budget. A budget of 32 can
+                        # produce a misleading HTTP 400 at medium/high before the JSON answer.
+                        "max_completion_tokens": 256,
                         "response_format": {"type": "json_object"},
+                        "reasoning_format": "hidden",
                         **(
                             {"reasoning_effort": reasoning_effort}
                             if reasoning_effort is not None
@@ -338,6 +368,20 @@ async def test_provider(
         )
     if response.status_code == 429:
         return ProviderTestResult(False, "El proveedor agotó temporalmente su cuota disponible.")
+    if configuration.provider_kind == "groq-cloud" and response.status_code == 400:
+        provider_message = _provider_error_message(response)
+        if "validate json" in provider_message.casefold():
+            return ProviderTestResult(
+                False,
+                (
+                    "El nivel es compatible, pero Groq no completó el JSON de prueba. "
+                    "Reintente; la aplicación reservará un presupuesto de salida mayor."
+                ),
+            )
+        return ProviderTestResult(
+            False,
+            "Groq rechazó la combinación de modelo y razonamiento configurada.",
+        )
     return ProviderTestResult(
         False, f"El proveedor respondió con estado HTTP {response.status_code}."
     )

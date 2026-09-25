@@ -313,6 +313,21 @@ def test_execution_readiness_accepts_descriptive_business_dimension() -> None:
             "source_tables": ["Production.Product"],
             "business_key": "ProductID",
             "attributes": ["Name", "Color"],
+            "display_label": {
+                "target_name": "nombre_producto",
+                "variants": [
+                    {
+                        "kind": "base_entity",
+                        "source_table": "Production.Product",
+                        "left_columns": [],
+                        "right_columns": [],
+                        "columns": ["Name"],
+                        "operation": "first_non_empty",
+                    }
+                ],
+                "fallback_column": "ProductID",
+                "minimum_descriptive_coverage": 0.95,
+            },
         }
     ]
     schema = {

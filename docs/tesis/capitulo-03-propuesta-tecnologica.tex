@@ -87,9 +87,9 @@
     Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tipo de documento & Texto base para integración en el trabajo de titulación \\
     Código documental & TES-CAP-03 \\
-    Versión & 1.0.0 \\
-    Periodo cubierto & Sprints 1 al 4; agosto--septiembre de 2026 \\
-    Estado & Ingeniería implementada y evidencia acumulada; capítulos posteriores pendientes \\
+    Versión & 1.1.0 \\
+    Periodo cubierto & Sprints 1 al 5; agosto--septiembre de 2026 \\
+    Estado & Núcleo funcional implementado y verificado; validación académica final pendiente \\
   \end{tabularx}
 
   \vfill
@@ -109,7 +109,7 @@
 
 \section{Presentación del capítulo}
 
-Este capítulo documenta la propuesta tecnológica y la ingeniería de software aplicada al prototipo. Reúne el análisis de factibilidad, la metodología de desarrollo, los requisitos, el modelado del sistema, la arquitectura, los incrementos construidos mediante Scrum y la evidencia de verificación disponible al cierre del Sprint 4.
+Este capítulo documenta la propuesta tecnológica y la ingeniería de software aplicada al prototipo. Reúne el análisis de factibilidad, la metodología de desarrollo, los requisitos, el modelado del sistema, la arquitectura, los incrementos construidos mediante Scrum y la evidencia de verificación disponible al cierre del Sprint 5.
 
 El texto es deliberadamente consolidado: explica qué problema resuelve el sistema y cómo se diseñó. Los informes completos de cada sprint, el manual técnico y la bitácora constituyen anexos de evidencia y conservan decisiones, incidentes, comandos y resultados que no deben repetirse íntegramente en el cuerpo de la tesis.
 
@@ -117,7 +117,7 @@ El texto es deliberadamente consolidado: explica qué problema resuelve el siste
 
 \section{Descripción de la propuesta tecnológica}
 
-La propuesta consiste en una plataforma web que permite a un analista BI configurar una fuente de ventas, explorar sus metadatos, expresar una necesidad de negocio y obtener de un LLM una propuesta de modelo dimensional y KPI. La aplicación comprueba cada referencia contra una instantánea estructural, exige una decisión humana y materializa el datamart mediante un ejecutor determinístico. El resultado queda conciliado y trazable en PostgreSQL.
+La propuesta consiste en una plataforma web que permite a un analista BI configurar una fuente de ventas, explorar sus metadatos, expresar una necesidad de negocio y obtener de un LLM una propuesta de modelo dimensional y KPI. La aplicación comprueba cada referencia contra una instantánea estructural, exige una decisión humana y materializa el datamart mediante un ejecutor determinístico. El resultado queda conciliado y trazable en PostgreSQL y se publica mediante vistas ejecutiva y analítica, hallazgos explicables, conversación contextual y reportes fieles.
 
 El uso de IA es semiautomatizado y supervisado. El modelo interpreta y recomienda; no recibe credenciales, no consulta filas libremente, no genera SQL ejecutable y no aprueba sus propias decisiones. FastAPI controla permisos, contratos, uniones, transformaciones, fórmulas, materialización y evidencias. El analista interviene sólo cuando existe una ambigüedad semántica o de negocio que no puede resolverse con certeza estructural.
 
@@ -179,7 +179,7 @@ Se aplicó Scrum de forma incremental, complementado con desarrollo guiado por e
   \midrule
   Administrador de plataforma & Gestionar usuarios, roles, permisos, parámetros generales y configuraciones LLM. \\
   Analista BI & Configurar el catálogo analítico, formular necesidades, revisar propuestas, aprobar contratos, ejecutar ETL y decidir sobre evidencia semántica. \\
-  Usuario de negocio & Proporcionar preguntas y consumir resultados analíticos cuando se habiliten dashboard e insights. \\
+  Usuario de negocio & Proporcionar preguntas y consumir el dashboard, hallazgos, conversación contextual y reportes según sus permisos. \\
   Proveedor LLM & Interpretar metadatos y devolver recomendaciones estructuradas; no ejecutar operaciones ni decidir validez. \\
   SQL Server & Proveer metadatos y datos de ventas mediante credenciales de sólo lectura. \\
   PostgreSQL & Persistir configuración, auditoría, expedientes y el datamart materializado. \\
@@ -210,7 +210,10 @@ Se aplicó Scrum de forma incremental, complementado con desarrollo guiado por e
   RF-09 & Compilar una propuesta aprobada a un plan ETL determinístico. & \ok \\
   RF-10 & Materializar dimensiones, hecho y KPI; conciliar origen y destino. & \ok \\
   RF-11 & Guiar la revisión semántica y publicar etiquetas sin reemplazar originales. & \ok \\
-  RF-12 & Presentar dashboard, hallazgos y pronóstico mensual evaluado. & \statuspartial \\
+  RF-12 & Presentar dashboard ejecutivo y analítico con filtros, KPI, gráficos y hallazgos explicables. & \ok \\
+  RF-13 & Resolver etiquetas descriptivas de entidades mediante relaciones verificadas y cobertura controlada. & \ok \\
+  RF-14 & Permitir preguntas contextuales sobre agregados visibles, con evidencia y límites explícitos. & \ok \\
+  RF-15 & Exportar PDF y Excel fieles a la vista, filtros, permisos y expediente conciliado. & \ok \\
   \bottomrule
 \end{longtable}
 
@@ -291,6 +294,8 @@ Se aplicó Scrum de forma incremental, complementado con desarrollo guiado por e
   CU-05 & Decidir versión & El analista personaliza, consulta al copiloto contextual y aprueba, rechaza o descarta. La decisión queda auditada y es reversible según reglas. \\
   CU-06 & Ejecutar ETL & El analista confirma una selección; el backend recompueba el contrato, compila recetas, carga el datamart y conserva métricas. \\
   CU-07 & Validar resultado & La plataforma contrasta origen y destino, identifica moneda, presenta KPI y permite revisar etiquetas semánticas sin alterar valores originales. \\
+  CU-08 & Consultar analítica & El usuario autorizado selecciona vista, indicador y filtros; el sistema devuelve agregados conciliados, hallazgos y calidad según su perfil. Puede formular preguntas contextuales y recibe evidencia y límites sin exponer filas. \\
+  CU-09 & Exportar reporte & El usuario solicita PDF o Excel; FastAPI vuelve a autorizar, reconstruye la misma selección y entrega un archivo con filtros, moneda, ejecución y trazabilidad. \\
   \bottomrule
 \end{longtable}
 
@@ -401,6 +406,27 @@ Se aplicó Scrum de forma incremental, complementado con desarrollo guiado por e
 \caption{Diagrama de secuencia para materialización y conciliación.}
 \end{figure}
 
+\subsection{Secuencia de consulta, copiloto y exportación}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,font=\scriptsize]
+  \foreach \x/\name in {0/Usuario,3/React,6/FastAPI,9/LLM,12/PostgreSQL}{
+    \node[uml,text width=2.2cm] (a\x) at (\x,0) {\name};
+    \draw[dashed,gray] (\x,-0.45) -- (\x,-6.2);
+  }
+  \draw[flow] (0,-1) -- node[above]{vista y filtros} (3,-1);
+  \draw[flow] (3,-1.7) -- node[above]{consultar agregados} (6,-1.7);
+  \draw[flow] (6,-2.4) -- node[above]{leer ejecución conciliada} (12,-2.4);
+  \draw[flow] (6,-3.1) -- node[above]{KPI y gráficos} (3,-3.1);
+  \draw[flow] (0,-3.8) -- node[above]{pregunta contextual} (3,-3.8);
+  \draw[flow] (6,-4.5) -- node[above]{agregados permitidos} (9,-4.5);
+  \draw[flow] (9,-5.2) -- node[above]{explicación estructurada} (6,-5.2);
+  \draw[flow] (0,-5.9) -- node[above]{exportar selección} (6,-5.9);
+\end{tikzpicture}
+\caption{Diagrama de secuencia de analítica, conversación contextual y reportería.}
+\end{figure}
+
 \subsection{Modelo de información}
 
 El esquema \file{app} conserva identidad, permisos, configuración, auditoría, instantáneas, propuestas y ejecuciones. El esquema \file{mart} contiene el modelo dimensional. La relación lógica principal es:
@@ -444,6 +470,14 @@ El tercer incremento implementó conexión SQL Server administrada, instantánea
 
 El cuarto incremento convirtió el contrato aprobado en un datamart físico. El ejecutor produjo dimensiones y hecho, compiló KPI variables a recetas controladas, evitó duplicados, concilió origen y destino, confirmó la moneda y habilitó interpretación española supervisada. La ejecución de referencia cargó 121317 filas con diferencia cero en cinco tablas.
 
+\subsection{Sprint 5: calidad semántica, analítica y reportería}
+
+El quinto incremento corrigió de raíz la identidad de la dimensión cliente. El sistema mantuvo como población a quienes participan en ventas y recorrió relaciones verificadas para resolver personas y organizaciones, sin depender del nombre literal de una tabla. La propuesta 54 produjo la ejecución 7 con 19820 clientes: 19119 personas y 701 organizaciones, sin nombres vacíos, y conservó las 121317 líneas conciliadas.
+
+Sobre ese expediente se implementaron dos vistas por perfil, filtros de servidor, KPI variables, tendencia, rankings, hallazgos determinísticos, conversación contextual y exportaciones PDF/Excel. El copiloto usa únicamente datos agregados visibles y entrega respuesta, evidencia, advertencia y preguntas de seguimiento. Los reportes se reconstruyen en FastAPI y no son capturas del navegador.
+
+Durante la revisión del alcance, el tutor retiró el pronóstico, MAPE y RMSE. Esta decisión no reduce la demostración central: separa la construcción semiautomatizada de un datamart de un problema predictivo que requeriría hipótesis y validación propias.
+
 \begin{longtable}{@{}p{0.10\textwidth}p{0.21\textwidth}p{0.43\textwidth}p{0.16\textwidth}@{}}
   \caption{Resumen de incrementos y evidencia.}\\
   \toprule
@@ -458,6 +492,7 @@ El cuarto incremento convirtió el contrato aprobado en un datamart físico. El 
   2 & Gobierno y seguridad & JWT, RBAC, auditoría, parámetros y LLM cifrado. & \ok \\
   3 & Diseño asistido & Metadatos, necesidad, propuesta, validación y decisión. & \ok \\
   4 & Datamart verificable & ETL, KPI variables, 121317 filas, diferencia cero y evidencia semántica. & \ok \\
+  5 & Analítica utilizable & Identidad descriptiva, ejecución 7, dashboard, copiloto y reportes PDF/Excel. & \ok \\
   \bottomrule
 \end{longtable}
 
@@ -467,18 +502,21 @@ La validación combina cuatro niveles: análisis estático y pruebas unitarias; 
 
 \begin{table}[ht]
 \centering
-\caption{Matriz de verificación acumulada al Sprint 4.}
+\caption{Matriz de verificación acumulada al Sprint 5.}
 \begin{tabularx}{\textwidth}{@{}p{0.24\textwidth}p{0.47\textwidth}X@{}}
   \toprule
   Dimensión & Evidencia & Resultado \\
   \midrule
   Calidad de código & Ruff, formato, Mypy, ESLint y construcción Vite. & Satisfactorio. \\
-  Pruebas automatizadas & 76 pruebas backend y 11 frontend. & Satisfactorio. \\
+  Pruebas automatizadas & Pruebas backend y frontend ejecutadas en imágenes Docker. & Satisfactorio. \\
   Infraestructura & Compose de desarrollo, entrega, Ollama y release. & Válido. \\
   Seguridad & Denegación por defecto, cifrado, auditoría y lector SQL. & Verificado. \\
   Contrato BI & Referencias, FK, grano, KPI, operaciones y reproducción. & Verificado. \\
   Conciliación & 121317 filas origen y destino; diferencia cero. & Conciliado. \\
-  Trazabilidad & Propuesta 52 y ejecución 6 reabribles. & Verificado. \\
+  Calidad descriptiva & 19820 clientes con nombre y tipo; cero etiquetas vacías. & Verificado. \\
+  Analítica y chat & Vistas por perfil, filtros, evidencia, guía de preguntas y Groq probado. & Verificado. \\
+  Reportería & PDF de seis páginas y seis hojas Excel renderizadas sin cortes. & Verificado. \\
+  Trazabilidad & Propuestas 52/54 y ejecuciones 6/7 reabribles. & Verificado. \\
   \bottomrule
 \end{tabularx}
 \end{table}
@@ -487,13 +525,13 @@ La validación combina cuatro niveles: análisis estático y pruebas unitarias; 
 
 La propuesta demuestra que la IA puede reducir el trabajo operativo del analista sin convertirse en un ejecutor autónomo inseguro. El sistema identifica conceptos, sugiere una cantidad variable de KPI y ayuda a resolver ambigüedades; las reglas determinísticas evitan referencias inexistentes, SQL libre y fórmulas incompatibles con el significado de los datos.
 
-El alcance vigente se limita a ventas, SQL Server, carga completa y un datamart específico. Aún deben implementarse dashboard ejecutivo, hallazgos explicables, contraste con AdventureWorksDW, validación mediante expertos y pronóstico mensual con MAPE y RMSE. La arquitectura prepara esas extensiones, pero el capítulo no las declara terminadas.
+El alcance vigente se limita a ventas, SQL Server, carga completa y un datamart específico. El flujo funcional central está implementado: configuración, introspección, propuesta, supervisión, materialización, conciliación, analítica, conversación y reportería. Permanecen como trabajo de cierre académico el contraste secundario con AdventureWorksDW cuando exista equivalencia semántica documentada, las pruebas formales de usabilidad, el juicio de expertos y la integración del capítulo con conclusiones, anexos y referencias definitivas. Otros dominios, motores y un despliegue Azure son extensiones futuras.
 
 \section{Conclusiones del capítulo}
 
-La ingeniería de software aplicada produjo un sistema reproducible, seguro y trazable. Scrum permitió separar riesgos e incrementar valor en cuatro entregas; SDD evitó que las decisiones funcionales quedaran implícitas; UML y los contratos de casos de uso muestran responsabilidades y límites; DevOps conserva una línea verificable entre código, pruebas, documentos y entregas.
+La ingeniería de software aplicada produjo un sistema reproducible, seguro y trazable. Scrum permitió separar riesgos e incrementar valor en cinco entregas; SDD evitó que las decisiones funcionales quedaran implícitas; UML y los contratos de casos de uso muestran responsabilidades y límites; DevOps conserva una línea verificable entre código, pruebas, documentos y entregas.
 
-La principal decisión arquitectónica es separar recomendación de ejecución. El LLM propone con contexto restringido; la aplicación valida y materializa; el analista conserva autoridad sobre la decisión de negocio. La ejecución de referencia confirma que esta separación puede producir un datamart conciliado sin exigir SQL manual al usuario.
+La principal decisión arquitectónica es separar recomendación de ejecución. El LLM propone y explica con contexto restringido; la aplicación valida, resuelve, materializa y calcula; el analista conserva autoridad sobre la decisión de negocio. La ejecución 7 confirma que esta separación puede producir un datamart conciliado y semánticamente utilizable sin exigir SQL manual ni una herramienta externa al usuario.
 
 \section{Trazabilidad documental}
 
@@ -504,7 +542,7 @@ La principal decisión arquitectónica es separar recomendación de ejecución. 
   \toprule
   Documento & Función \\
   \midrule
-  Informes INF-SPR-01 a INF-SPR-04 & Alcance, decisiones, ejecución, incidencias, evidencias y retrospectivas completas. \\
+  Informes INF-SPR-01 a INF-SPR-05 & Alcance, decisiones, ejecución, incidencias, evidencias y retrospectivas completas. \\
   Manual MAN-TEC-01 & Instalación, configuración, operación, diagnóstico, réplica y recuperación. \\
   Bitácora técnica & Secuencia cronológica de decisiones y verificaciones. \\
   Especificaciones SPR & Contratos previos de comportamiento y aceptación. \\

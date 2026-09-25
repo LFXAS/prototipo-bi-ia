@@ -119,7 +119,18 @@ Con una propuesta aprobada y compatible, abre **Datos > Datamart de ventas**:
 7. Revisa la interpretación semántica. Corrige o excluye mapeos, escribe un comentario, confirma y publica. Los valores originales deben permanecer disponibles.
 8. Abre el expediente desde **Expedientes recientes** y verifica que no se solicite repetir la carga. La misma propuesta y selección de KPI debe mostrar **Abrir expediente**, no otro botón de ejecución.
 
-La prueba de referencia usa la propuesta 52 y la ejecución 6: 121317 filas de origen y destino, diferencia cero, cinco tablas, seis KPI y USD comprobado mediante `Sales.CurrencyRate.FromCurrencyCode`. Estos identificadores son evidencia de la instalación original; en otra máquina los números de propuesta y ejecución pueden cambiar, pero los controles deben ser equivalentes.
+La primera prueba de referencia usó la propuesta 52 y la ejecución 6. La versión corregida del Sprint 5 usa la propuesta 54 y la ejecución 7: 121317 filas de origen y destino, diferencia cero, cinco tablas, 274914 unidades, 31465 pedidos, USD comprobado y 19820 clientes con nombre y tipo. Estos identificadores pertenecen a la instalación original; en otra máquina pueden cambiar, pero los controles y totales de AdventureWorks deben ser equivalentes.
+
+### Probar la analítica, el copiloto y la reportería del Sprint 5
+
+1. Abra **Análisis > Analítica de ventas**. Debe aparecer la ejecución conciliada más reciente.
+2. Compruebe que **Clientes principales** muestre nombres descriptivos, no cuentas `AW...`.
+3. Alterne **Vista ejecutiva** y **Vista analítica**; la segunda añade clientes, tablas de respaldo y trazabilidad.
+4. Aplique año o territorio y verifique que KPIs, gráficos, hallazgos y exportaciones usen la misma selección.
+5. En **Preguntar sobre estos resultados**, elija una pregunta sugerida. La respuesta debe incluir evidencia, advertencia, preguntas de seguimiento, proveedor y modelo.
+6. Exporte PDF y Excel. PDF no debe cortar gráficos o tablas; Excel debe incluir Resumen y una hoja por visual visible, además de Trazabilidad en la vista analítica.
+
+El chat envía al proveedor activo sólo agregados de la ejecución conciliada; no envía filas, nombres individuales como contexto libre, credenciales ni SQL. Si no existe una configuración LLM activa y probada, la pantalla conserva el dashboard y muestra un error accionable únicamente en el chat.
 
 ### Añadir la vista Nginx de entrega
 

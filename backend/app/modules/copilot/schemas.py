@@ -216,6 +216,32 @@ class ProposalVerificationRead(BaseModel):
     pending_validations: list[str]
 
 
+class SemanticLabelSampleRead(BaseModel):
+    business_key: str
+    display_label: str
+    entity_type: str
+
+
+class SemanticDimensionPreviewRead(BaseModel):
+    dimension: str
+    source_table: str
+    label_column: str
+    total_entities: int
+    descriptive_entities: int
+    fallback_entities: int
+    coverage: float
+    minimum_coverage: float
+    passed: bool
+    samples: list[SemanticLabelSampleRead]
+
+
+class SemanticPreviewRead(BaseModel):
+    proposal_id: int
+    dimensions: list[SemanticDimensionPreviewRead]
+    all_passed: bool
+    message: str
+
+
 class ReadinessComponent(BaseModel):
     ready: bool
     label: str

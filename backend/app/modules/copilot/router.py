@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import re
 from copy import deepcopy
@@ -35,6 +36,7 @@ from app.modules.copilot.schemas import (
     ReadinessComponent,
     SemanticAdviceCreate,
     SemanticAdviceRead,
+    SemanticPreviewRead,
 )
 from app.modules.copilot.service import (
     CONTRACT_VERSION,
@@ -56,6 +58,7 @@ from app.modules.copilot.service import (
     validated_semantic_candidates,
     verify_proposal_evidence,
 )
+from app.modules.etl.materializer import preview_dimension_labels
 from app.modules.metadata.models import MetadataSnapshot
 from app.modules.parameters.models import DataConnection, LlmConfiguration, Parameter, Secret
 from app.modules.parameters.providers import ProviderGenerationError, generate_json
@@ -665,6 +668,63 @@ async def get_proposal(
     session: AsyncSession = Depends(get_session),
 ) -> BiProposal:
     return await _proposal_or_404(proposal_id, session)
+
+
+@router.get(
+    "/copilot/proposals/{proposal_id}/semantic-preview",
+    response_model=SemanticPreviewRead,
+)
+async def preview_proposal_semantics(
+    proposal_id: int,
+    actor: User = Depends(require_permission("metadata.semantic_resolution.read")),
+    session: AsyncSession = Depends(get_session),
+) -> dict[str, object]:
+    proposal = await _proposal_or_404(proposal_id, session)
+    snapshot = await session.get(MetadataSnapshot, proposal.metadata_snapshot_id)
+    if snapshot is None:
+        raise HTTPException(status_code=409, detail="La instantánea ya no está disponible.")
+    connection = await session.get(DataConnection, snapshot.data_connection_id)
+    secret = await session.get(Secret, connection.secret_id) if connection is not None else None
+    if connection is None or secret is None:
+        raise HTTPException(status_code=409, detail="La conexión de origen no está disponible.")
+    try:
+        password = _secret_cipher.decrypt(secret.ciphertext)
+        dimensions = await asyncio.to_thread(
+            preview_dimension_labels,
+            proposal.proposal_document,
+            snapshot.schema_document,
+            connection,
+            password,
+        )
+    except (SecretDecryptionError, OSError) as exc:
+        raise HTTPException(
+            status_code=422, detail="La credencial de la fuente no pudo descifrarse."
+        ) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    all_passed = bool(dimensions) and all(bool(item.get("passed")) for item in dimensions)
+    await add_audit_event(
+        session,
+        actor.id,
+        "metadata.semantic_resolution.preview",
+        "bi_proposal",
+        str(proposal.id),
+        {
+            "dimensions": len(dimensions),
+            "all_passed": all_passed,
+        },
+    )
+    await session.commit()
+    return {
+        "proposal_id": proposal.id,
+        "dimensions": dimensions,
+        "all_passed": all_passed,
+        "message": (
+            "Las identidades descriptivas alcanzan la cobertura exigida."
+            if all_passed
+            else "Una dimensión requiere corrección antes de publicarse."
+        ),
+    }
 
 
 def _semantic_candidate_or_404(proposal: BiProposal, concept_code: str) -> dict[str, object]:

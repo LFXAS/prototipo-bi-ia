@@ -88,6 +88,11 @@ def assess_dimensional_readiness(
                 f"{name} no contiene un atributo descriptivo legible. Incorpore nombre, "
                 "descripción, categoría o código de negocio antes de cargarla."
             )
+        if name != "dim_fecha" and not isinstance(dimension.get("display_label"), dict):
+            blockers.append(
+                f"{name} no declara cómo resolver un nombre descriptivo mediante relaciones "
+                "verificadas. Genere una propuesta nueva antes de ejecutar el ETL."
+            )
 
     grain = str(proposal.get("grain", {}).get("description", "")).casefold()
     business_keys = {

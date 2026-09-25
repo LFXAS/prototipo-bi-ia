@@ -1,0 +1,261 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage[letterpaper,margin=2.2cm,headheight=15pt]{geometry}
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{xurl}
+\usepackage{tocloft}
+
+\ifdefined\pdfinfoomitdate\pdfinfoomitdate=1\fi
+\ifdefined\pdftrailerid\pdftrailerid{}\fi
+\ifdefined\pdfsuppressptexinfo\pdfsuppressptexinfo=15\fi
+
+\definecolor{ugblue}{HTML}{006A8D}
+\definecolor{deepgreen}{HTML}{123D3A}
+\definecolor{softgray}{HTML}{F1F5F4}
+\definecolor{success}{HTML}{157A57}
+\definecolor{warning}{HTML}{A45A00}
+\hypersetup{colorlinks=true,linkcolor=ugblue,urlcolor=ugblue,hypertexnames=false,
+pdftitle={Informe Sprint 5 - Analitica explicable y reporteria},
+pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Informe Sprint 5}
+\rhead{Prototipo BI asistido por IA}
+\cfoot{\thepage}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+\setlist[itemize]{leftmargin=1.5em,itemsep=0.18em}
+\setlist[enumerate]{leftmargin=1.7em,itemsep=0.24em}
+\renewcommand{\arraystretch}{1.18}
+\setlength{\cftsecnumwidth}{2.6em}
+\setlength{\cftsubsecnumwidth}{3.2em}
+\newcommand{\file}[1]{\texttt{#1}}
+\newcommand{\ok}{\textcolor{success}{\textbf{Completado}}}
+\newcommand{\pending}{\textcolor{warning}{\textbf{Cierre académico}}}
+\newcommand{\notebox}[1]{\begin{center}\fcolorbox{ugblue}{softgray}{\begin{minipage}{0.90\textwidth}\textcolor{ugblue}{\textbf{Criterio.}} #1\end{minipage}}\end{center}}
+
+\begin{document}
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+  \thispagestyle{empty}
+  \vspace*{0.8cm}
+  {\color{ugblue}\rule{\textwidth}{2.8pt}}
+  \vspace{1.2cm}
+  {\Large Documentación técnica del producto\\[0.25em]
+  Prototipo BI asistido por inteligencia artificial}
+  \vfill
+  {\color{deepgreen}\fontsize{28}{34}\selectfont\textbf{Informe del Sprint 5}}\\[0.7em]
+  {\LARGE Analítica explicable, copiloto y reportería profesional}\\[0.6em]
+  {\large Prueba de concepto de un prototipo funcional de BI asistido por IA\\
+  para la construcción semiautomatizada y supervisada\\
+  de un datamart de ventas\par}
+  \vspace{1.4cm}
+  \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
+    Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
+    Código documental & INF-SPR-05 \\
+    Versión & 1.0.0 \\
+    Periodo de referencia & 24 al 25 de septiembre de 2026 \\
+    Rama de trabajo & \file{feature/sprint-05-analitica-visual} \\
+    Estado & Incremento funcional, evidencia y documentación completados localmente \\
+    Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
+  \end{tabularx}
+  \vfill
+  {\color{ugblue}\rule{\textwidth}{2.8pt}}
+\end{titlepage}
+\hypersetup{pageanchor=true}
+\pagenumbering{roman}
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+\section{Resumen ejecutivo}
+
+El Sprint 5 convierte el datamart conciliado en una herramienta utilizable por perfiles ejecutivos y analíticos. La plataforma ofrece indicadores, filtros, tendencia, rankings, distribución territorial, hallazgos explicables, una conversación contextual guiada y exportaciones que reconstruyen la selección autorizada en PDF y Excel.
+
+El incremento también resolvió una deficiencia semántica crítica. La dimensión cliente ya no muestra sólo identificadores de \file{Sales.Customer}: recorre relaciones verificadas hasta la entidad descriptiva disponible, distingue personas y organizaciones y conserva la población que realmente participó en ventas. La propuesta 54 y la ejecución 7 registran 19820 clientes con nombre y tipo, 121317 líneas conciliadas y diferencia cero.
+
+\notebox{El resultado no depende de nombres literales como \textit{Customer} o \textit{Person}. La resolución combina claves foráneas, cobertura, cardinalidad, calidad descriptiva y participación en el hecho. Si no existe evidencia suficiente, el sistema bloquea o explica la decisión en lugar de inventar una etiqueta.}
+
+\section{Objetivo y decisión de alcance}
+
+\subsection{Objetivo del sprint}
+
+Proporcionar una experiencia analítica profesional, comprensible y segura para gerencia, usuarios de negocio y analistas BI, sustentada exclusivamente en un expediente ETL conciliado y acompañada por evidencia, límites y exportaciones fieles.
+
+\subsection{Decisión sobre pronósticos}
+
+El tutor retiró pronóstico, MAPE y RMSE del alcance vigente. La construcción semiautomatizada y supervisada de un datamart es el problema de investigación; un modelo predictivo exigiría hipótesis, variables, tratamiento temporal, entrenamiento y evaluación propios. La modificación queda registrada como control de alcance y no como funcionalidad fallida o pendiente.
+
+\section{Backlog y especificaciones implementadas}
+
+\begin{longtable}{@{}p{0.16\textwidth}p{0.58\textwidth}p{0.16\textwidth}@{}}
+  \toprule
+  Especificación & Resultado verificable & Estado \\
+  \midrule
+  \endfirsthead
+  \toprule
+  Especificación & Resultado verificable & Estado \\
+  \midrule
+  \endhead
+  SPR-05-01 & Dashboard ejecutivo y analítico, filtros de servidor, KPI variables, tendencia, rankings, distribución y hallazgos explicables. & \ok \\
+  SPR-05-02 & PDF paginado y Excel estructurado, con filtros, moneda, procedencia, permisos y selección equivalentes a la pantalla. & \ok \\
+  SPR-05-03 & Resolución general de entidades descriptivas, cobertura de nombre y tipo de cliente y diagnóstico operable dentro de la plataforma. & \ok \\
+  SPR-05-04 & Matriz de capacidades por proveedor LLM y corrección del error 400 de Groq mediante presupuesto y formato de razonamiento compatibles. & \ok \\
+  SPR-05-05 & Copiloto analítico contextual, guía de preguntas, evidencia, cautela, seguimientos y auditoría sin guardar texto libre completo. & \ok \\
+  \bottomrule
+\end{longtable}
+
+\section{Calidad semántica y resolución de entidades}
+
+\subsection{Causa identificada}
+
+La primera materialización tomó correctamente los miembros de negocio desde \file{Sales.Customer}, pero no atravesó la relación opcional hacia la tabla que contiene su descripción. Por ello, la cantidad de clientes era válida para ventas, aunque la dimensión no era útil para consumo: muchas filas tenían \file{PersonID} nulo y el dashboard mostraba números de cuenta.
+
+No era correcto reemplazar la dimensión por toda \file{Person.Person}: esa tabla incluye entidades que no necesariamente compraron. La solución conserva el conjunto de clientes que participa en el hecho y enriquece cada miembro mediante rutas relacionales verificadas.
+
+\subsection{Regla general implementada}
+
+El motor evalúa candidatos descriptivos según relaciones existentes, unicidad de la clave, cobertura no nula, cardinalidad y columnas aptas para etiqueta. Resuelve:
+
+\begin{itemize}
+  \item personas mediante nombre y apellidos cuando la relación está presente;
+  \item organizaciones mediante su razón social cuando existe tienda o entidad equivalente;
+  \item una etiqueta de respaldo auditable sólo cuando no hay descripción comprobable;
+  \item el tipo de entidad sin deducirlo del nombre físico de la tabla.
+\end{itemize}
+
+La propuesta 54 se aprobó y originó la ejecución 7. La dimensión final contiene 19119 personas y 701 organizaciones, 19820 nombres y tipos no vacíos, y mantiene las relaciones con las 121317 líneas de venta.
+
+\section{Experiencia analítica por perfil}
+
+La vista ejecutiva prioriza lectura rápida: indicadores principales, evolución, productos, clientes, territorios y hallazgos. La vista del analista agrega calidad, definición, procedencia, filtros y acceso a datos agregados. Ambas usan el mismo servicio de agregación y respetan permisos; cambiar la presentación no cambia la cifra.
+
+Los mensajes automáticos distinguen observación de explicación. Una variación entre los extremos visibles no se presenta como tendencia causal; los períodos parciales se señalan y las posibles causas sólo se plantean como asuntos por investigar cuando no existe evidencia.
+
+\subsection{Copiloto contextual}
+
+El chat ocupa un espacio de trabajo amplio y guiado. Las preguntas sugeridas enseñan a consultar tendencias, contribuciones, comparaciones, calidad y límites. La respuesta muestra conclusión, evidencia utilizada, cautela y preguntas de seguimiento; nunca modifica filtros o contratos por sí sola.
+
+FastAPI entrega al proveedor únicamente agregados ya autorizados, filtros activos, definiciones y estado de conciliación. No envía filas, nombres personales, credenciales, SQL libre ni secretos. La auditoría conserva responsable, proveedor, modelo, fecha y huella de la pregunta, no una transcripción libre completa.
+
+\section{Reportería fiel}
+
+\subsection{PDF}
+
+El reporte PDF se genera en el servidor y separa deliberadamente resumen, tendencia, productos, territorio, clientes y calidad/hallazgos. La versión de referencia tiene seis páginas legibles, sin gráficos omitidos ni tablas cortadas, e incluye fecha, vista, filtros, moneda, ejecución y estado de conciliación.
+
+\subsection{Excel}
+
+El libro contiene hojas independientes para resumen, evolución, productos, territorio, clientes y trazabilidad. Usa tipos numéricos, formatos de moneda ISO, filtros, áreas de impresión y gráficos editables. Los conteos se presentan como enteros y los importes conservan \file{USD}; no se exportan capturas ni valores formateados como texto cuando deben ser números.
+
+\section{Compatibilidad de proveedores LLM}
+
+La configuración admite Gemini, Ollama y Groq mediante un contrato común, pero respeta sus diferencias. Para \file{openai/gpt-oss-120b} en Groq, los niveles mínimo, bajo, medio y alto se convierten a valores soportados; la prueba usa salida corta y razonamiento oculto para que los tokens internos no consuman la respuesta JSON. El error 400 observado con esfuerzo medio o alto quedó corregido sin reducir la validación estructural posterior.
+
+El proveedor puede explicar y resumir; no calcula cifras de autoridad. Los indicadores, filtros, conciliación y archivos se construyen por código determinístico.
+
+\section{Evidencia cuantitativa de la ejecución 7}
+
+\begin{tabularx}{\textwidth}{@{}p{0.38\textwidth}X@{}}
+  \toprule
+  Control & Resultado \\
+  \midrule
+  Propuesta y ejecución & Propuesta 54 aprobada; ejecución 7 conciliada. \\
+  Filas de origen y destino & 121317 y 121317; diferencia 0. \\
+  Tablas materializadas & Hecho de ventas y cuatro dimensiones. \\
+  Clientes & 19820 miembros vinculados a ventas. \\
+  Cobertura descriptiva & 19820 nombres y tipos no vacíos. \\
+  Composición & 19119 personas y 701 organizaciones. \\
+  Moneda & USD comprobada desde evidencia relacional. \\
+  Reporte PDF & Seis páginas reconstruidas y revisadas visualmente. \\
+  Reporte Excel & Seis hojas estructuradas, renderizadas y revisadas visualmente. \\
+  Conversación & Groq respondió en la interfaz con evidencia, cautela y seguimientos. \\
+  \bottomrule
+\end{tabularx}
+
+\section{Seguridad, permisos y trazabilidad}
+
+\begin{itemize}
+  \item los tableros consultan exclusivamente ejecuciones exitosas y conciliadas;
+  \item los perfiles ejecutivo y analista dependen de permisos, no de rutas ocultas;
+  \item el servidor reconstruye PDF y Excel y vuelve a aplicar autorización;
+  \item el LLM recibe contexto mínimo agregado y sus respuestas no son evidencia cuantitativa primaria;
+  \item propuesta, ejecución, filtros, moneda y responsable permanecen asociados al resultado;
+  \item las versiones 52/54 y ejecuciones 6/7 se conservan para comparación y auditoría.
+\end{itemize}
+
+\section{Pruebas y verificación}
+
+\begin{tabularx}{\textwidth}{@{}p{0.30\textwidth}X@{}}
+  \toprule
+  Control & Evidencia \\
+  \midrule
+  Backend & Ruff, formato, Mypy y 84 pruebas Pytest satisfactorias dentro de Docker. \\
+  Frontend & ESLint, 11 pruebas Vitest y construcción Vite satisfactoria dentro de Docker. \\
+  Integración & Propuesta 54, ejecución 7, dashboard y conversación probados con los servicios reales. \\
+  PDF & Todas las páginas renderizadas e inspeccionadas, sin recortes ni solapamientos. \\
+  Excel & Todas las hojas recalculadas, renderizadas e inspeccionadas, con moneda y gráficos correctos. \\
+  Documentación & Bitácora, manual, informes de sprint y Capítulo III compilados con la imagen LaTeX del proyecto. \\
+  CI & La compilación de INF-SPR-05 y la comparación de su PDF se incorporan a la validación obligatoria. \\
+  \bottomrule
+\end{tabularx}
+
+\section{Revisión y retrospectiva}
+
+\subsection{Resultados de la revisión}
+
+El flujo funcional central queda completo: configuración, introspección, propuesta asistida, validación, decisión, materialización, conciliación, consumo, conversación y reportería. La corrección de clientes demuestra que una conciliación numérica no basta; una dimensión debe ser también descriptiva y utilizable.
+
+\subsection{Aprendizajes}
+
+\begin{itemize}
+  \item la entidad de negocio y la tabla descriptiva pueden ser distintas;
+  \item la IA ayuda a explorar y explicar, pero la aceptación requiere evidencia relacional;
+  \item los reportes profesionales deben reconstruirse desde datos, no imprimir la pantalla;
+  \item una guía de preguntas mejora la adopción sin convertir el chat en una caja negra;
+  \item retirar una funcionalidad ajena al problema central fortalece la validez del alcance.
+\end{itemize}
+
+\subsection{Trabajo posterior}
+
+El producto requiere todavía cierre académico, no otro núcleo funcional: pruebas formales de usabilidad, juicio de expertos, contraste secundario con AdventureWorksDW cuando exista equivalencia documentada e integración del capítulo con anexos, conclusiones y referencias definitivas. Actualización incremental, otros dominios, otros motores y despliegue en nube permanecen como extensiones.
+
+\subsection*{Trazabilidad documental}
+
+Este informe se sustenta en las especificaciones \file{SPR-05-01} a \file{SPR-05-05}, la bitácora técnica, el manual técnico, el plan de validación, la arquitectura y el Capítulo III. Las fuentes y el PDF se versionan juntos; \file{make docs} y CI comprueban su reproducibilidad.
+
+\subsection*{Control documental}
+
+\begin{tabularx}{\textwidth}{@{}>{\bfseries}p{0.25\textwidth}X@{}}
+  \toprule
+  Campo & Valor \\
+  \midrule
+  Código & INF-SPR-05 \\
+  Fuente editable & \file{docs/sprints/sprint-05-analitica-y-reporteria.tex} \\
+  PDF oficial & \file{docs/sprints/sprint-05-analitica-y-reporteria.pdf} \\
+  Compilación & \file{make sprint5-report} o \file{make docs} \\
+  Definición de terminado & Código, pruebas, especificaciones, evidencia real, documentación y revisión visual completas. \\
+  \bottomrule
+\end{tabularx}
+
+\vspace{1em}
+\begin{tabularx}{\textwidth}{@{}p{0.24\textwidth}X p{0.18\textwidth}@{}}
+  \toprule
+  Rol & Nombre y conformidad & Fecha \\
+  \midrule
+  Responsable & \rule{0.92\linewidth}{0.4pt} & \rule{0.85\linewidth}{0.4pt} \\[0.7em]
+  Responsable & \rule{0.92\linewidth}{0.4pt} & \rule{0.85\linewidth}{0.4pt} \\[0.7em]
+  Tutor/revisor & \rule{0.92\linewidth}{0.4pt} & \rule{0.85\linewidth}{0.4pt} \\
+  \bottomrule
+\end{tabularx}
+
+\end{document}

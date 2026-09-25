@@ -7,6 +7,7 @@ from copy import deepcopy
 from typing import Any
 
 from app.modules.copilot.domains import SALES_PROFILE
+from app.modules.copilot.entity_resolution import enrich_dimension_labels
 
 PROMPT_VERSION = "sales-bi-v3"
 CONTRACT_VERSION = 1
@@ -1132,6 +1133,53 @@ def derived_scope(document: dict[str, Any], semantic_map: dict[str, Any]) -> dic
         ),
     )
     expanded.update(ranked_neighbors[: max(0, PROPOSAL_SCOPE_MAX_TABLES - len(expanded))])
+    # Entity labels may live behind nullable identity branches (person, organization, etc.).
+    # Preserve those declared targets even when the dimensional connector path filled the
+    # compact scope; the deterministic resolver still decides whether they are compatible.
+    identity_terms = {
+        "customer",
+        "client",
+        "cliente",
+        "buyer",
+        "comprador",
+        "person",
+        "persona",
+        "store",
+        "tienda",
+        "company",
+        "empresa",
+        "organization",
+        "business",
+        "entity",
+        "entidad",
+    }
+    identity_neighbors: list[str] = []
+    for candidate in selected_semantic_candidates(semantic_map):
+        if not isinstance(candidate, dict):
+            continue
+        concept_tokens = _search_tokens(candidate.get("business_concept", ""))
+        if not concept_tokens & {"customer", "client", "cliente", "buyer", "comprador"}:
+            continue
+        for reference in candidate.get("technical_refs", []):
+            reference = str(reference)
+            if reference not in tables:
+                continue
+            for relation in tables[reference].get("foreign_keys", []):
+                if not isinstance(relation, dict):
+                    continue
+                target = (
+                    f"{relation.get('referenced_schema', '')}."
+                    f"{relation.get('referenced_table', '')}"
+                )
+                relation_tokens = _search_tokens(
+                    {
+                        "target": target,
+                        "columns": relation.get("columns", []),
+                    }
+                )
+                if target in tables and relation_tokens & identity_terms:
+                    identity_neighbors.append(target)
+    expanded.update(dict.fromkeys(identity_neighbors))
     # Never discard an LLM candidate merely because a connector path consumed the limit.
     expanded.update(selected_set)
     scope_tables = []
@@ -1839,6 +1887,7 @@ def expand_proposal_blueprint(
             },
         ]
     )
+    dimensions, semantic_quality = enrich_dimension_labels(dimensions, scope, semantic_map)
     summary = str(blueprint.get("summary", "Propuesta dimensional de ventas."))
     return {
         "contract_version": CONTRACT_VERSION,
@@ -1868,12 +1917,17 @@ def expand_proposal_blueprint(
             "Las claves de negocio no deben estar vacías.",
             "Las relaciones deben coincidir con claves foráneas de la instantánea.",
             "Los importes y cantidades deben conservar su tipo y signo de origen.",
+            (
+                "Cada dimensión visible debe resolver una etiqueta descriptiva con "
+                "cobertura comprobada."
+            ),
         ],
         "assumptions": list(blueprint.get("assumptions", [])),
         "warnings": proposal_warnings,
         "automatic_adjustments": automatic_adjustments,
         "provider_observations": list(blueprint.get("warnings", [])),
         "decision_diagnostics": decision_diagnostics,
+        "semantic_quality": semantic_quality,
         "ai_decisions": blueprint,
     }
 
@@ -2295,6 +2349,90 @@ def validate_proposal(
                             f"La columna {column} no existe en la dimensión propuesta.",
                         )
                     )
+            if dimension.get("name") == "dim_fecha":
+                continue
+            display_label = dimension.get("display_label")
+            if not isinstance(display_label, dict):
+                if "semantic_quality" not in proposal:
+                    continue
+                issues.append(
+                    _issue(
+                        "dimension.display_label_missing",
+                        "error",
+                        f"dimensions.{index}.display_label",
+                        (
+                            "La dimensión no resuelve una etiqueta descriptiva. Revise sus "
+                            "relaciones antes de publicarla para análisis."
+                        ),
+                    )
+                )
+                continue
+            variants = display_label.get("variants", [])
+            if not isinstance(variants, list) or not variants:
+                issues.append(
+                    _issue(
+                        "dimension.display_variants_missing",
+                        "error",
+                        f"dimensions.{index}.display_label.variants",
+                        "La etiqueta descriptiva no conserva una ruta verificable.",
+                    )
+                )
+                continue
+            base_source = source_tables[0] if len(source_tables) == 1 else ""
+            base_table = all_tables.get(base_source, {})
+            base_foreign_keys = [
+                item for item in base_table.get("foreign_keys", []) if isinstance(item, dict)
+            ]
+            for variant_index, variant in enumerate(variants):
+                if not isinstance(variant, dict):
+                    continue
+                target = str(variant.get("source_table", ""))
+                columns = [str(item) for item in variant.get("columns", [])]
+                if target not in all_tables:
+                    issues.append(
+                        _issue(
+                            "dimension.display_table_unknown",
+                            "error",
+                            f"dimensions.{index}.display_label.variants.{variant_index}",
+                            f"La ruta descriptiva {target} no existe en la instantánea.",
+                        )
+                    )
+                    continue
+                target_columns = {
+                    str(item.get("name"))
+                    for item in all_tables[target].get("columns", [])
+                    if isinstance(item, dict)
+                }
+                if not columns or any(column not in target_columns for column in columns):
+                    issues.append(
+                        _issue(
+                            "dimension.display_column_unknown",
+                            "error",
+                            f"dimensions.{index}.display_label.variants.{variant_index}",
+                            "La ruta descriptiva contiene columnas inexistentes.",
+                        )
+                    )
+                if target != base_source:
+                    left_columns = [str(item) for item in variant.get("left_columns", [])]
+                    right_columns = [str(item) for item in variant.get("right_columns", [])]
+                    relation_exists = any(
+                        f"{relation.get('referenced_schema', '')}."
+                        f"{relation.get('referenced_table', '')}"
+                        == target
+                        and [str(item) for item in relation.get("columns", [])] == left_columns
+                        and [str(item) for item in relation.get("referenced_columns", [])]
+                        == right_columns
+                        for relation in base_foreign_keys
+                    )
+                    if not relation_exists:
+                        issues.append(
+                            _issue(
+                                "dimension.display_relation_unknown",
+                                "error",
+                                f"dimensions.{index}.display_label.variants.{variant_index}",
+                                "La ruta descriptiva no coincide con una relación declarada.",
+                            )
+                        )
 
     declared_relations = set()
     for source, table in all_tables.items():

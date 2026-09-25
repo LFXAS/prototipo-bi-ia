@@ -65,9 +65,9 @@
 
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
-    Tema & Construcción asistida de un datamart, KPIs, insights y pronóstico \\
+    Tema & Construcción asistida de un datamart, KPI, analítica explicable y reportería \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.4.11 \\
+    Versión de la bitácora & 0.5.0 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -97,9 +97,9 @@ Reglas:
 
 \section{Resumen del alcance vigente}
 
-El anteproyecto corregido define una prueba de concepto académica con una fuente activa SQL Server y AdventureWorks en modo de sólo lectura. El flujo futuro extraerá metadatos, solicitará propuestas estructuradas a un LLM, exigirá aprobación humana y validaciones determinísticas, ejecutará un ETL básico hacia PostgreSQL y mostrará cinco KPIs, tres visualizaciones, insights explicables y un pronóstico mensual mediante regresión lineal con MAPE y RMSE.
+El alcance vigente define una prueba de concepto académica con una fuente activa SQL Server y AdventureWorks en modo de sólo lectura. La plataforma extrae metadatos, solicita propuestas estructuradas a un LLM, exige aprobación humana y validaciones determinísticas, ejecuta un ETL controlado hacia PostgreSQL y publica KPI variables, visualizaciones, hallazgos explicables, conversación contextual y reportes PDF/Excel.
 
-El anexo institucional exige módulos de seguridad, parámetros, negocio y reportes. Se acordó un RBAC mínimo con usuarios, roles, permisos y menús por rol. En la fase actual existe únicamente el límite arquitectónico; no hay autenticación ni lógica de negocio implementada.
+El 25 de septiembre de 2026 el tutor retiró pronóstico, MAPE y RMSE porque constituyen un problema predictivo distinto de la construcción semiautomatizada del datamart. Los módulos de seguridad, parámetros, negocio y reportes están implementados con RBAC, auditoría y separación por perfiles. El núcleo funcional se encuentra completo; permanecen el cierre académico, usabilidad formal, juicio de expertos y contraste secundario documentado.
 
 \section{Registro cronológico}
 
@@ -751,11 +751,34 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
   \midrule
   \endhead
-  Separación editorial & \statusok & El manual, la bitácora y los cuatro informes de sprint conservan el detalle técnico completo sin identidad institucional. No se eliminaron decisiones, incidencias, comandos, resultados ni trazabilidad. \\
+  Separación editorial & \statusok & El manual, la bitácora y los cinco informes de sprint conservan el detalle técnico completo sin identidad institucional. No se eliminaron decisiones, incidencias, comandos, resultados ni trazabilidad. \\
   Versión académica & \statusok & Se creó un Capítulo III independiente con propuesta tecnológica, factibilidad, metodología, requisitos, casos de uso, UML, arquitectura, sprints, validación, resultados y referencias institucionales. \\
   Ingeniería de software & \statusok & Los diagramas editables cubren ciclo de desarrollo, casos de uso, componentes, despliegue, secuencias y trazabilidad de artefactos. Los casos de uso incluyen actores, precondiciones, excepciones y postcondiciones del ETL. \\
-  Automatización documental & \statusok & Make y CI compilan siete PDF oficiales y verifican que las versiones generadas coincidan con sus fuentes. \\
+  Automatización documental & \statusok & Make y CI compilan ocho PDF oficiales y verifican que las versiones generadas coincidan con sus fuentes. \\
   Criterio de conservación & \statusok & El capítulo académico resume y enlaza; los informes técnicos permanecen como evidencia integral y anexos del trabajo. \\
+  \bottomrule
+\end{longtable}
+
+\subsection{25 de septiembre de 2026 - Cierre funcional y documental del Sprint 5}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Resolución de clientes & \statusok & Se corrigió la dimensión sin sustituirla por todas las personas del origen. El motor conserva a quienes participan en ventas, atraviesa relaciones verificadas y resuelve nombre y tipo de persona u organización según cobertura y calidad descriptiva. \\
+  Evidencia ETL & \statusok & La propuesta 54 originó la ejecución 7: 121317 filas de origen y destino, diferencia cero, 19820 clientes con nombre y tipo, 19119 personas y 701 organizaciones. Las versiones 52/54 y ejecuciones 6/7 permanecen trazables. \\
+  Analítica por perfil & \statusok & Se implementaron vistas ejecutiva y analítica con filtros de servidor, KPI variables, evolución, productos, clientes, territorios, calidad y hallazgos determinísticos. Los conteos y unidades se etiquetan por significado y los importes usan moneda ISO comprobada. \\
+  Copiloto analítico & \statusok & La conversación contextual dispone de guía de preguntas, historial visible, evidencia, cautela y seguimientos. Sólo recibe agregados autorizados; no recibe filas, PII, secretos ni SQL. La auditoría conserva huella y metadatos, no la conversación completa. \\
+  Reportería & \statusok & PDF y Excel se reconstruyen en el servidor con la selección y permisos vigentes. El PDF separa seis páginas; el Excel contiene seis hojas con números, moneda, áreas de impresión y gráficos editables. Ambos fueron renderizados para control visual. \\
+  Compatibilidad Groq & \statusok & La prueba de \file{openai/gpt-oss-120b} traduce niveles soportados, reserva salida suficiente y usa razonamiento oculto; el error 400 de esfuerzos medio y alto quedó diagnosticado y corregido. \\
+  Alcance predictivo & \statusok & El tutor retiró pronóstico, MAPE y RMSE. Se documentó como decisión controlada porque el objetivo es construir y validar un datamart, no entrenar un sistema de predicción. \\
+  SDD & \statusok & Se registraron SPR-05-01 a SPR-05-05 para dashboard, reportería, resolución de entidades, compatibilidad LLM y copiloto contextual, con criterios y evidencia verificables. \\
+  Documentación & \statusok & Se actualizaron alcance, arquitectura, réplica, validación, README, manual técnico, Capítulo III y bitácora; se creó INF-SPR-05 y se incorporó su PDF a Make y CI. \\
   \bottomrule
 \end{longtable}
 
@@ -767,7 +790,7 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \midrule
   Compose autocontenido válido & \statusok & \file{docker compose config --quiet} \\
   Compose de imágenes válido & \statusok & \file{docker compose -f compose.release.yaml config --quiet} \\
-  Backend calidad y pruebas & \statusok & Ruff, formato, Mypy y 76 pruebas Pytest dentro de Docker \\
+  Backend calidad y pruebas & \statusok & Ruff, formato, Mypy y 84 pruebas Pytest dentro de Docker \\
   Frontend calidad y pruebas & \statusok & ESLint, 11 pruebas Vitest y build de Vite dentro de Docker \\
   PostgreSQL disponible & \statusok & Esquemas \file{app} y \file{mart}; endpoint \file{/health/ready} en \file{ok} \\
   AdventureWorks restaurada & \statusok & 71 tablas; \file{bi\_reader}: lectura 1 e inserción 0 \\
@@ -776,7 +799,7 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   PDF legible & \statusok & Todas las páginas renderizadas e inspeccionadas sin cortes ni solapamientos \\
   Git local & \statusok & \file{develop} para integración, \file{main} para entregas y ramas enfocadas por pull request \\
   GitHub/GHCR & \statusok & Repositorio público, dos colaboradoras con escritura, ramas protegidas y cinco imágenes públicas en GHCR; la réplica desde una VM Ubuntu se realizó con Docker y VS Code. \\
-  SDD y trazabilidad & \statusok & SPR-03-01 a SPR-03-05 implementadas: conexión, instantánea, explorador, propuesta asistida, validación, decisión humana y experiencia guiada. \\
+  SDD y trazabilidad & \statusok & Especificaciones de Sprints 2 a 5 versionadas; SPR-05-01 a SPR-05-05 cubren dashboard, reportes, calidad semántica, proveedores y conversación. \\
   \bottomrule
 \end{tabularx}
 
@@ -784,9 +807,9 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
 
 \begin{enumerate}
   \item Integrar el Capítulo III en la plantilla definitiva del trabajo de titulación cuando se confirmen tutor, numeración general, estilo de citas y anexos exigidos.
-  \item Diseñar en un incremento posterior una operación explícita de actualización periódica de datos, diferenciada de la carga inicial y con identidad, controles y evidencia propios.
-  \item Integrar el cierre de Sprint 4 mediante pull request después de confirmar la experiencia de usuario y la documentación completa.
-  \item Mantener dashboards, hallazgos y pronóstico dentro del alcance aprobado de sus sprints posteriores.
+  \item Ejecutar pruebas formales de usabilidad con analistas y usuarios de negocio, y registrar sus instrumentos y resultados.
+  \item Realizar juicio de expertos y contraste secundario con AdventureWorksDW únicamente donde exista equivalencia semántica documentada.
+  \item Diseñar como extensión futura una actualización periódica de datos, diferenciada de la carga inicial y con controles propios.
   \item Promover a \file{main} únicamente una integración estable, revisada y con CI aprobada.
 \end{enumerate}
 
@@ -860,6 +883,7 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   0.4.9 & 24-09-2026 & Ejecución ETL 6 conciliada y revisión semántica publicada; supervisión ubicada explícitamente en el paso 5 y protección integral contra materializaciones idénticas desde la interfaz y la API. \\
   0.4.10 & 24-09-2026 & Comprobación estándar de divisa monetaria desde evidencia relacional, formato ISO trazable y enriquecimiento de la ejecución 6 como USD sin repetir el ETL. \\
   0.4.11 & 24-09-2026 & Separación entre documentación técnica completa y Capítulo III académico; normalización profesional, UML, casos de uso y compilación de siete PDF en CI. \\
+  0.5.0 & 25-09-2026 & Sprint 5: resolución descriptiva de clientes, propuesta 54, ejecución 7, paneles por perfil, copiloto analítico, PDF/Excel fieles, cinco especificaciones, INF-SPR-05 y decisión controlada de retirar pronóstico. \\
   \bottomrule
 \end{longtable}
 

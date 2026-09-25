@@ -20,8 +20,10 @@ dependencies = [
   "pydantic-settings==2.10.1",
   "psycopg[binary]==3.3.5",
   "pyodbc==5.3.0",
+  "reportlab==5.0.1",
   "sqlalchemy==2.0.52",
   "uvicorn[standard]==0.35.0",
+  "XlsxWriter==3.2.9",
 ]
 
 [project.optional-dependencies]

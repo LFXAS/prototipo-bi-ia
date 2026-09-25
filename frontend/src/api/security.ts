@@ -84,6 +84,23 @@ export type ProposalVerification = {
   validation_warnings: number
   pending_validations: string[]
 }
+export type SemanticPreview = {
+  proposal_id: number
+  all_passed: boolean
+  message: string
+  dimensions: Array<{
+    dimension: string
+    source_table: string
+    label_column: string
+    total_entities: number
+    descriptive_entities: number
+    fallback_entities: number
+    coverage: number
+    minimum_coverage: number
+    passed: boolean
+    samples: Array<{ business_key: string; display_label: string; entity_type: string }>
+  }>
+}
 export type SemanticAdvice = {
   id: number
   proposal_id: number
@@ -179,6 +196,70 @@ export type EtlExecution = {
   started_at?: string
   finished_at?: string
 }
+export type AnalyticsOption = { value: string; label: string }
+export type AnalyticsMetric = {
+  code: string
+  name: string
+  value?: number
+  unit: string
+  status: 'reconciled' | 'not_calculable'
+}
+export type AnalyticsPoint = { key: string; label: string; value: number; share?: number }
+export type AnalyticsVisual = {
+  code: string
+  title: string
+  subtitle: string
+  kind: 'line' | 'bar' | 'donut'
+  dimension: string
+  points: AnalyticsPoint[]
+}
+export type AnalyticsInsight = {
+  code: string
+  title: string
+  statement: string
+  evidence: string
+  tone: 'positive' | 'neutral' | 'attention'
+}
+export type AnalyticsDashboard = {
+  execution_id: number
+  proposal_id: number
+  title: string
+  description: string
+  grain: string
+  refreshed_at: string
+  currency_code: string
+  currency_status: string
+  reconciliation_passed: boolean
+  period_label: string
+  metric_code: string
+  available_metrics: AnalyticsOption[]
+  filters: {
+    years: AnalyticsOption[]
+    territories: AnalyticsOption[]
+    selected_year?: number
+    selected_territory?: string
+  }
+  kpis: AnalyticsMetric[]
+  visuals: AnalyticsVisual[]
+  insights: AnalyticsInsight[]
+  quality: {
+    source_rows: number
+    datamart_rows: number
+    difference_rows: number
+    reconciliation_passed: boolean
+    tables_loaded: number
+  }
+  guidance: string[]
+}
+export type AnalyticsChatTurn = { role: 'user' | 'assistant'; content: string }
+export type AnalyticsCopilotAnswer = {
+  answer: string
+  evidence: string[]
+  suggested_questions: string[]
+  caveat: string
+  provider_kind: string
+  model_id: string
+}
 
 type ApiValidationIssue = { loc?: (string | number)[]; msg?: string }
 type ErrorBody = { detail?: string | ApiValidationIssue[] }
@@ -218,6 +299,19 @@ async function request<T>(path: string, token?: string, init?: RequestInit): Pro
   return (await response.json()) as T
 }
 
+async function requestFile(path: string, token: string) {
+  const response = await fetch(`${apiBaseUrl}/api/v1${path}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  if (!response.ok) {
+    const body = (await response.json().catch(() => ({}))) as ErrorBody
+    throw new Error(readableError(body.detail))
+  }
+  const disposition = response.headers.get('Content-Disposition') ?? ''
+  const filename = disposition.match(/filename="([^"]+)"/)?.[1] ?? 'reporte-analitico'
+  return { blob: await response.blob(), filename }
+}
+
 export const api = {
   login: (email: string, password: string) => request<{ access_token: string }>('/auth/login', undefined, { method: 'POST', body: JSON.stringify({ email, password }) }),
   session: (token: string) => request<Session>('/auth/me', token),
@@ -253,6 +347,7 @@ export const api = {
   restoreProposalApproval: (token: string, id: number, body: { comment?: string; warnings_confirmed: boolean }) => request<BiProposal>(`/copilot/proposals/${id}/restore-approval`, token, { method: 'POST', body: JSON.stringify(body) }),
   discardProposal: (token: string, id: number, comment: string) => request<BiProposal>(`/copilot/proposals/${id}/discard`, token, { method: 'POST', body: JSON.stringify({ comment }) }),
   verifyProposal: (token: string, id: number) => request<ProposalVerification>(`/copilot/proposals/${id}/verify`, token, { method: 'POST' }),
+  semanticPreview: (token: string, id: number) => request<SemanticPreview>(`/copilot/proposals/${id}/semantic-preview`, token),
   semanticAdvice: (token: string, id: number, conceptCode: string) => request<SemanticAdvice[]>(`/copilot/proposals/${id}/semantic-advice?concept_code=${encodeURIComponent(conceptCode)}`, token),
   askSemanticAdvice: (token: string, id: number, body: { concept_code: string; question: string }) => request<SemanticAdvice>(`/copilot/proposals/${id}/semantic-advice`, token, { method: 'POST', body: JSON.stringify(body) }),
   etlProposals: (token: string) => request<EtlProposalCatalog>('/etl/proposals', token),
@@ -263,6 +358,22 @@ export const api = {
   retryEtlSpanishInterpretation: (token: string, id: number) => request<EtlExecution>(`/etl/executions/${id}/interpret-spanish`, token, { method: 'POST' }),
   applyEtlSpanishInterpretation: (token: string, id: number, body: { confirmation: boolean; analyst_comment: string; groups: Array<{ dimension: string; target_column: string; mappings: Array<{ original: string; label_es: string }> }> }) => request<EtlExecution>(`/etl/executions/${id}/interpret-spanish/apply`, token, { method: 'POST', body: JSON.stringify(body) }),
   etlExecutions: (token: string, limit = 10, offset = 0) => request<Page<EtlExecution>>(`/etl/executions?limit=${limit}&offset=${offset}`, token),
+  analyticsDashboard: (token: string, filters: { metricCode?: string; year?: string; territory?: string } = {}) => {
+    const query = new URLSearchParams()
+    if (filters.metricCode) query.set('metric_code', filters.metricCode)
+    if (filters.year) query.set('year', filters.year)
+    if (filters.territory) query.set('territory', filters.territory)
+    const suffix = query.size ? `?${query.toString()}` : ''
+    return request<AnalyticsDashboard>(`/analytics/dashboard${suffix}`, token)
+  },
+  analyticsReport: (token: string, format: 'pdf' | 'xlsx', filters: { metricCode?: string; year?: string; territory?: string; view: 'executive' | 'analyst' }) => {
+    const query = new URLSearchParams({ view: filters.view })
+    if (filters.metricCode) query.set('metric_code', filters.metricCode)
+    if (filters.year) query.set('year', filters.year)
+    if (filters.territory) query.set('territory', filters.territory)
+    return requestFile(`/analytics/reports/${format}?${query.toString()}`, token)
+  },
+  askAnalyticsCopilot: (token: string, body: { question: string; history: AnalyticsChatTurn[]; view: 'executive' | 'analyst'; execution_id: number; metric_code: string; year?: number; territory?: string }) => request<AnalyticsCopilotAnswer>('/analytics/copilot', token, { method: 'POST', body: JSON.stringify(body) }),
   audit: (token: string, limit: number, offset: number) => request<Page<AuditEvent>>(`/audit-events?limit=${limit}&offset=${offset}`, token),
   testLlm: (token: string, id: number) => request<{ ok: boolean; message: string }>(`/llm-configurations/${id}/test`, token, { method: 'POST' }),
   saveLlmCredential: (token: string, id: number, apiKey: string) => request<{ credential_configured: boolean; message: string }>(`/llm-configurations/${id}/secret`, token, { method: 'PUT', body: JSON.stringify({ api_key: apiKey }) }),

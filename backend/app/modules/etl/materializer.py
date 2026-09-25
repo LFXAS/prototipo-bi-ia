@@ -42,6 +42,9 @@ class DimensionPlan:
     business_key: SourceColumn
     attributes: list[SourceColumn]
     query: str
+    display_label_target: str | None = None
+    display_type_target: str | None = None
+    minimum_descriptive_coverage: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -103,6 +106,23 @@ def _column_type(table: dict[str, Any], column_name: str) -> str:
         if isinstance(column, dict) and str(column.get("name")) == column_name:
             return str(column.get("data_type", "nvarchar"))
     return "nvarchar"
+
+
+def _trimmed_text(alias: str, column: str) -> str:
+    return (
+        f"NULLIF(LTRIM(RTRIM(CAST({alias}.{_sqlserver_identifier(column)} AS nvarchar(max)))), '')"
+    )
+
+
+def _display_variant_expression(alias: str, columns: list[str], operation: str) -> str:
+    values = [_trimmed_text(alias, column) for column in columns]
+    if not values:
+        raise ValueError("La etiqueta descriptiva no conserva columnas verificables.")
+    if operation == "concat_space":
+        return f"NULLIF(CONCAT_WS(' ', {', '.join(values)}), '')"
+    if operation == "first_non_empty":
+        return values[0] if len(values) == 1 else f"COALESCE({', '.join(values)})"
+    raise ValueError("La receta de etiqueta descriptiva no pertenece al catálogo permitido.")
 
 
 def _relations(
@@ -188,13 +208,129 @@ def build_materialization_plan(
             _column_type(table, business_key_name),
         )
         selected = [key, *attributes]
-        select_sql = ", ".join(_sqlserver_identifier(item.source_name) for item in selected)
+        select_parts = [
+            f"d0.{_sqlserver_identifier(item.source_name)} AS "
+            f"{_sqlserver_identifier(item.target_name)}"
+            for item in selected
+        ]
+        display_label_target: str | None = None
+        display_type_target: str | None = None
+        minimum_descriptive_coverage = 0.0
+        dimension_joins: list[str] = []
+        display_label = raw.get("display_label")
+        if isinstance(display_label, dict):
+            display_label_target = _safe_identifier(str(display_label.get("target_name", "")))
+            default_type_target = f"tipo_{name.removeprefix('dim_')}"
+            display_type_target = _safe_identifier(
+                str(display_label.get("type_target_name", default_type_target))
+            )
+            minimum_descriptive_coverage = float(
+                display_label.get("minimum_descriptive_coverage", 0.95)
+            )
+            variants = [
+                item for item in display_label.get("variants", []) if isinstance(item, dict)
+            ]
+            expressions: list[str] = []
+            type_conditions: list[tuple[str, str]] = []
+            for variant_index, variant in enumerate(variants, start=1):
+                variant_source = str(variant.get("source_table", ""))
+                columns = [str(item) for item in variant.get("columns", [])]
+                if variant_source == source_ref:
+                    variant_alias = "d0"
+                else:
+                    if variant_source not in tables:
+                        raise ValueError("Una ruta de identidad referencia una tabla inexistente.")
+                    left_columns = [str(item) for item in variant.get("left_columns", [])]
+                    right_columns = [str(item) for item in variant.get("right_columns", [])]
+                    if not left_columns or len(left_columns) != len(right_columns):
+                        raise ValueError(
+                            "Una ruta de identidad no conserva sus claves de relación."
+                        )
+                    declared = any(
+                        target == variant_source
+                        and source_columns == left_columns
+                        and target_columns == right_columns
+                        for target, source_columns, target_columns in graph.get(source_ref, [])
+                    )
+                    if not declared:
+                        raise ValueError(
+                            "La ruta de identidad no corresponde a una relación declarada."
+                        )
+                    variant_alias = f"d{variant_index}"
+                    conditions = " AND ".join(
+                        f"d0.{_sqlserver_identifier(left)} = "
+                        f"{variant_alias}.{_sqlserver_identifier(right)}"
+                        for left, right in zip(left_columns, right_columns, strict=True)
+                    )
+                    dimension_joins.append(
+                        f"LEFT JOIN {_source_table(variant_source)} AS {variant_alias} "
+                        f"ON {conditions}"
+                    )
+                variant_table = tables[variant_source]
+                available_columns = {
+                    str(item.get("name"))
+                    for item in variant_table.get("columns", [])
+                    if isinstance(item, dict)
+                }
+                if not columns or any(column not in available_columns for column in columns):
+                    raise ValueError("La etiqueta descriptiva contiene una columna inexistente.")
+                expression = _display_variant_expression(
+                    variant_alias, columns, str(variant.get("operation", ""))
+                )
+                expressions.append(expression)
+                kind = str(variant.get("kind", "related_entity"))
+                type_label = {
+                    "person": "Persona",
+                    "organization": "Organización",
+                    "base_entity": "Entidad",
+                }.get(kind, "Entidad relacionada")
+                type_conditions.append((expression, type_label))
+            fallback_column = str(display_label.get("fallback_column", business_key_name))
+            base_columns = {
+                str(item.get("name")) for item in table.get("columns", []) if isinstance(item, dict)
+            }
+            if fallback_column not in base_columns:
+                raise ValueError("La etiqueta descriptiva no conserva un respaldo verificable.")
+            fallback = _trimmed_text("d0", fallback_column)
+            label_expression = f"COALESCE({', '.join([*expressions, fallback])})"
+            type_expression = (
+                "CASE "
+                + " ".join(
+                    f"WHEN {expression} IS NOT NULL THEN '{label}'"
+                    for expression, label in type_conditions
+                )
+                + " ELSE 'Respaldo técnico' END"
+            )
+            select_parts.extend(
+                [
+                    f"{label_expression} AS {_sqlserver_identifier(display_label_target)}",
+                    f"{type_expression} AS {_sqlserver_identifier(display_type_target)}",
+                ]
+            )
+            attributes.extend(
+                [
+                    SourceColumn(display_label_target, display_label_target, "nvarchar"),
+                    SourceColumn(display_type_target, display_type_target, "nvarchar"),
+                ]
+            )
         query = (
-            f"SELECT {select_sql} FROM {_source_table(source_ref)} "
-            f"WHERE {_sqlserver_identifier(business_key_name)} IS NOT NULL "
-            f"ORDER BY {_sqlserver_identifier(business_key_name)}"
+            f"SELECT {', '.join(select_parts)} FROM {_source_table(source_ref)} AS d0 "
+            f"{' '.join(dimension_joins)} "
+            f"WHERE d0.{_sqlserver_identifier(business_key_name)} IS NOT NULL "
+            f"ORDER BY d0.{_sqlserver_identifier(business_key_name)}"
         )
-        dimensions.append(DimensionPlan(name, source_ref, key, attributes, query))
+        dimensions.append(
+            DimensionPlan(
+                name,
+                source_ref,
+                key,
+                attributes,
+                query,
+                display_label_target,
+                display_type_target,
+                minimum_descriptive_coverage,
+            )
+        )
 
     alias_by_table = {fact_source: "t0"}
     joins: list[str] = []
@@ -493,7 +629,33 @@ def materialize_sales(
                 source_cursor = source.cursor()
                 source_cursor.execute(dimension.query)
                 rows = source_cursor.fetchall()
+                descriptive_count: int | None = None
+                unresolved_count: int | None = None
+                descriptive_coverage: float | None = None
+                if dimension.display_label_target and dimension.display_type_target:
+                    type_index = next(
+                        index
+                        for index, column in enumerate(columns)
+                        if column.target_name == dimension.display_type_target
+                    )
+                    descriptive_count = sum(
+                        1 for row in rows if str(row[type_index]).strip() != "Respaldo técnico"
+                    )
+                    unresolved_count = len(rows) - descriptive_count
+                    descriptive_coverage = descriptive_count / len(rows) if rows else 0.0
+                    if descriptive_coverage < dimension.minimum_descriptive_coverage:
+                        raise ValueError(
+                            f"{dimension.name} sólo resolvió una etiqueta descriptiva para "
+                            f"{descriptive_coverage:.1%} de sus entidades; se requiere al menos "
+                            f"{dimension.minimum_descriptive_coverage:.1%}. Revise las rutas "
+                            "relacionales antes de publicar el datamart."
+                        )
                 for attribute_index, attribute in enumerate(dimension.attributes, start=1):
+                    if attribute.target_name in {
+                        dimension.display_label_target,
+                        dimension.display_type_target,
+                    }:
+                        continue
                     if not re.search(
                         r"color|group|category|categoria|status|estado|type|tipo|class|clase|style|estilo|region",
                         attribute.source_name,
@@ -558,6 +720,17 @@ def materialize_sales(
                         "source_rows": len(rows),
                         "loaded_rows": len(payload),
                         "deduplicated_rows": len(rows) - len(payload),
+                        **(
+                            {
+                                "descriptive_label": dimension.display_label_target,
+                                "descriptive_count": descriptive_count,
+                                "unresolved_label_count": unresolved_count,
+                                "descriptive_coverage": descriptive_coverage,
+                                "descriptive_coverage_passed": True,
+                            }
+                            if dimension.display_label_target
+                            else {}
+                        ),
                     }
                 )
 
@@ -828,6 +1001,68 @@ def materialize_sales(
     finally:
         source.close()
         target.close()
+
+
+def preview_dimension_labels(
+    proposal: dict[str, Any],
+    schema_document: dict[str, Any],
+    source_configuration: DataConnection,
+    source_password: str,
+    sample_limit: int = 12,
+) -> list[dict[str, Any]]:
+    """Profile controlled label recipes without exposing SQL or sending rows to an LLM."""
+    plan = build_materialization_plan(proposal, schema_document)
+    source = pyodbc.connect(
+        build_connection_string(source_configuration, source_password), timeout=60
+    )
+    previews: list[dict[str, Any]] = []
+    try:
+        for dimension in plan.dimensions:
+            if not dimension.display_label_target or not dimension.display_type_target:
+                continue
+            columns = [dimension.business_key, *dimension.attributes]
+            label_index = next(
+                index
+                for index, column in enumerate(columns)
+                if column.target_name == dimension.display_label_target
+            )
+            type_index = next(
+                index
+                for index, column in enumerate(columns)
+                if column.target_name == dimension.display_type_target
+            )
+            cursor = source.cursor()
+            cursor.execute(dimension.query)
+            rows = cursor.fetchall()
+            descriptive_count = sum(
+                1 for row in rows if str(row[type_index]).strip() != "Respaldo técnico"
+            )
+            total = len(rows)
+            coverage = descriptive_count / total if total else 0.0
+            previews.append(
+                {
+                    "dimension": dimension.name,
+                    "source_table": dimension.source_ref,
+                    "label_column": dimension.display_label_target,
+                    "total_entities": total,
+                    "descriptive_entities": descriptive_count,
+                    "fallback_entities": total - descriptive_count,
+                    "coverage": coverage,
+                    "minimum_coverage": dimension.minimum_descriptive_coverage,
+                    "passed": coverage >= dimension.minimum_descriptive_coverage,
+                    "samples": [
+                        {
+                            "business_key": str(row[0]),
+                            "display_label": str(row[label_index] or ""),
+                            "entity_type": str(row[type_index] or "Sin clasificar"),
+                        }
+                        for row in rows[:sample_limit]
+                    ],
+                }
+            )
+    finally:
+        source.close()
+    return previews
 
 
 def apply_spanish_labels(execution_id: int, mappings: list[dict[str, Any]]) -> list[dict[str, Any]]:

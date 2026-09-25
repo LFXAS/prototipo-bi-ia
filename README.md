@@ -2,7 +2,7 @@
 
 Base técnica del proyecto de titulación **“Prueba de concepto de un prototipo funcional de BI asistido por IA para la construcción semiautomatizada y supervisada de un datamart de ventas”**. El entorno **Docker-first** ejecuta React + Vite, FastAPI, PostgreSQL y AdventureWorks en SQL Server con un usuario de solo lectura. El producto permite configurar desde la web la fuente y sus secretos, capturar su estructura, generar una propuesta dimensional asistida por IA, aprobarla y materializar un datamart trazable. FastAPI construye el ETL desde plantillas y referencias verificadas, calcula KPI variables y concilia origen y destino; nunca ejecuta SQL libre producido por el LLM.
 
-La versión seleccionada puede verificarse desde la misma plataforma: se comprueban integridad, referencias, calidad y reproducción determinística sin consumir nuevamente el LLM. Sprint 4 amplía el expediente con la conciliación de cifras entre AdventureWorks OLTP y el datamart, KPI sugeridos por IA y calculados mediante recetas controladas, interpretación española supervisada, prevención de ejecuciones duplicadas y comprobación trazable de moneda. Véanse el [plan acumulativo de validación](docs/validation-plan.md) y [SPR-04-02](docs/specs/SPR-04-02-kpis-controlados-y-calculables.md).
+La versión seleccionada puede verificarse desde la misma plataforma: se comprueban integridad, referencias, calidad y reproducción determinística sin consumir nuevamente el LLM. Sprint 4 amplió el expediente con conciliación OLTP--datamart, KPI sugeridos por IA y recetas controladas. Sprint 5 añadió resolución descriptiva de entidades, dashboard por perfil, hallazgos explicables, copiloto contextual y exportaciones PDF/Excel fieles a la selección. Véanse el [plan acumulativo de validación](docs/validation-plan.md) y las [especificaciones del Sprint 5](docs/specs/SPR-05-analitica-reporteria-y-calidad.md).
 
 La guía operativa completa para replicar, restaurar, publicar y probar el entorno está en [docs/replication-guide.md](docs/replication-guide.md).
 
@@ -12,9 +12,9 @@ La trazabilidad del trabajo se mantiene en LaTeX y PDF. La bitácora vive en `do
 
 ## Alcance confirmado
 
-El anteproyecto define una prueba de concepto académica con una sola fuente SQL Server/AdventureWorks, introspección de metadatos, propuestas de un LLM sujetas a aprobación humana y validaciones determinísticas, ETL básico hacia un datamart PostgreSQL, cinco KPIs, tres gráficos, insights explicables y un pronóstico mensual por regresión lineal evaluado con MAPE y RMSE.
+El alcance vigente define una prueba de concepto académica con una sola fuente SQL Server/AdventureWorks, introspección de metadatos, propuestas de un LLM sujetas a aprobación humana y validaciones determinísticas, ETL hacia PostgreSQL, KPI variables, visualizaciones, hallazgos explicables, copiloto contextual y reportería. El pronóstico fue retirado por decisión del tutor porque corresponde a un problema predictivo distinto del objetivo central.
 
-El Sprint 1 implementó el entorno y la observabilidad mínima. El Sprint 2 implementó autenticación, RBAC, auditoría, parámetros y credenciales LLM cifradas desde la web. El Sprint 3 incorporó la fuente SQL Server, introspección determinística y el asistente supervisado. Sprint 4 materializa el contrato aprobado: la propuesta 52 originó la ejecución 6, que leyó y cargó 121317 líneas sin diferencia, creó cinco tablas, calculó seis KPI, publicó etiquetas territoriales revisadas y comprobó USD desde la fuente sin repetir el ETL. Dashboards, hallazgos y pronóstico permanecen para los siguientes sprints. Véanse el [informe técnico del Sprint 4](docs/sprints/sprint-04-materializacion-etl.pdf), el [Capítulo III académico](docs/tesis/capitulo-03-propuesta-tecnologica.pdf) y las [especificaciones](docs/specs/README.md).
+El Sprint 1 implementó el entorno y la observabilidad mínima. El Sprint 2 implementó autenticación, RBAC, auditoría, parámetros y credenciales LLM cifradas desde la web. El Sprint 3 incorporó la fuente SQL Server, introspección determinística y el asistente supervisado. Sprint 4 materializó la propuesta 52 en la ejecución 6. Sprint 5 corrigió la identidad del cliente mediante la propuesta 54 y la ejecución 7: 121317 líneas sin diferencia, 19820 clientes con nombre y tipo, moneda USD comprobada, panel ejecutivo/analítico, conversación contextual y reportes profesionales. Véanse el [informe técnico del Sprint 5](docs/sprints/sprint-05-analitica-y-reporteria.pdf), el [Capítulo III académico](docs/tesis/capitulo-03-propuesta-tecnologica.pdf) y las [especificaciones](docs/specs/README.md).
 
 Consulta [docs/scope.md](docs/scope.md) y [docs/architecture.md](docs/architecture.md) para el detalle.
 
@@ -103,7 +103,7 @@ make logs           # seguir los registros
 make test           # pruebas de backend y frontend en imagenes Docker
 make lint           # calidad estatica en contenedores
 make compose-check  # validar desarrollo, entrega y perfil local de Ollama
-make docs           # regenerar bitacora, informe de sprint y manual
+make docs           # regenerar bitácora, informes de sprint, Capítulo III y manual
 make down           # detener la aplicacion
 ```
 
@@ -157,10 +157,12 @@ docs/                    alcance, arquitectura y decisiones
 compose*.yaml            desarrollo autocontenido, publicación y producción
 ```
 
-## Próxima iteración
+## Cierre funcional y trabajo restante
 
-1. Construir tres visualizaciones ejecutivas sobre los KPI conciliados y su periodicidad.
-2. Generar hallazgos analíticos explicables con referencias a métricas verificadas.
-3. Incorporar el contraste secundario con AdventureWorksDW cuando exista equivalencia semántica documentada.
-4. Implementar el pronóstico mensual por regresión lineal y evaluar MAPE y RMSE.
-5. Mantener inventario, otros dominios y otros motores como extensiones futuras mediante perfiles y conectores validados.
+El flujo principal de la prueba de concepto está completo: configurar, introspectar, proponer, revisar, aprobar, materializar, conciliar, analizar, conversar y exportar. Antes de la entrega académica definitiva faltan actividades de validación y presentación, no otro módulo central:
+
+1. ejecutar pruebas formales de usabilidad y juicio de expertos con instrumentos y actas;
+2. documentar el contraste secundario con AdventureWorksDW sólo donde exista equivalencia semántica demostrada;
+3. cerrar conclusiones, anexos, evidencias y referencias del documento académico completo;
+4. promover el Sprint 5 por PR a `develop` y después a `main` con CI aprobada;
+5. mantener inventario, otros dominios, otros motores y despliegue Azure como extensiones futuras, no como requisitos para demostrar el núcleo actual.

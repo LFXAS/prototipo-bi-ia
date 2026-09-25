@@ -91,11 +91,11 @@
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & MAN-TEC-01 \\
-    Versión del manual & 3.0.0 \\
+    Versión del manual & 4.0.0 \\
     Línea base & Ramas \file{develop} y \file{main} \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
     Clasificación & Documentación técnica - repositorio público \\
-    Fecha & 24 de septiembre de 2026 \\
+    Fecha & 25 de septiembre de 2026 \\
   \end{tabularx}
 
   \vfill
@@ -120,7 +120,7 @@ El documento cubre tres modalidades:
   \item \textbf{Ejecución de una entrega completa}: descarga imágenes de GitHub Container Registry (GHCR) en un proyecto Compose aislado.
 \end{enumerate}
 
-La versión actual conserva la infraestructura del Sprint 1 y el núcleo administrativo del Sprint 2: autenticación JWT, RBAC, auditoría y configuración LLM. Sprint 3 añade parámetros tipados, administración web de una fuente SQL Server, introspección determinística con instantáneas inmutables, explorador de esquema y asistente supervisado para formular, validar y decidir una propuesta. Sprint 4 incorpora selección de contratos aprobados, materialización transaccional del datamart, KPI variables, conciliación OLTP--datamart, interpretación española supervisada y expedientes recuperables. Dashboard, hallazgos y pronóstico continúan fuera de este incremento.
+La versión actual conserva la infraestructura del Sprint 1 y el núcleo administrativo del Sprint 2: autenticación JWT, RBAC, auditoría y configuración LLM. Sprint 3 añade parámetros tipados, administración web de una fuente SQL Server, introspección determinística con instantáneas inmutables, explorador de esquema y asistente supervisado para formular, validar y decidir una propuesta. Sprint 4 incorpora selección de contratos aprobados, materialización transaccional, KPI variables, conciliación OLTP--datamart, interpretación española supervisada y expedientes recuperables. Sprint 5 completa la experiencia analítica con resolución descriptiva de entidades, panel ejecutivo y analítico, hallazgos explicables, conversación contextual y reportería PDF/Excel.
 
 \section{Arquitectura operativa}
 
@@ -344,7 +344,7 @@ El comando construye la etapa \file{production} del frontend y añade \file{fron
 
 Esta modalidad valida el frontend que se empaquetará, pero no representa un ambiente productivo totalmente independiente porque comparte el backend de desarrollo.
 
-\section{Operación funcional de los Sprints 2 a 4}
+\section{Operación funcional de los Sprints 2 a 5}
 
 El Sprint 2 se opera sobre el mismo ambiente levantado con \file{make bootstrap} o \file{make up}. No se crea una instalación ni un conjunto de contenedores adicional para seguridad: React, FastAPI y PostgreSQL ya contienen el incremento. La migración se aplica mediante el servicio \file{migrate}; después, el servicio \file{seed} carga de forma idempotente el catálogo protegido antes de iniciar FastAPI.
 
@@ -446,7 +446,7 @@ La sección \textbf{Versiones generadas} consulta el servidor por dominio y esta
 
 La versión seleccionada incorpora \textbf{Validación estructural de la propuesta - Sprint 3}. La acción \textbf{Verificar evidencia} llama a \file{POST /api/v1/copilot/proposals/\{id\}/verify}; FastAPI no vuelve a consumir el LLM ni ejecuta el ETL. Comprueba la huella de los metadatos, referencias técnicas, consistencia del contrato BI y reproducción determinística desde \file{ai\_decisions}. Para propuestas creadas con la versión vigente del motor, la propuesta persistida y la reejecutada deben tener la misma huella SHA-256. En propuestas históricas, una diferencia debida exclusivamente a la evolución del motor se presenta como advertencia de compatibilidad y no como error de datos.
 
-Este control permite al analista BI verificar en Sprint 3 que la estructura utilizada procede del OLTP y que la propuesta aprobada no cambió. Sprint 4 agrega un expediente de ejecución independiente que compara filas al grano aprobado, pedidos distintos, unidades, importes y KPI entre AdventureWorks OLTP y el datamart. AdventureWorksDW permanece como contraste secundario, no como fuente primaria de verdad. El juicio de expertos y MAPE/RMSE se incorporarán cuando existan el instrumento y el pronóstico.
+Este control permite al analista BI verificar en Sprint 3 que la estructura utilizada procede del OLTP y que la propuesta aprobada no cambió. Sprint 4 agrega un expediente de ejecución independiente que compara filas al grano aprobado, pedidos distintos, unidades, importes y KPI entre AdventureWorks OLTP y el datamart. Sprint 5 agrega cobertura descriptiva, paneles sobre agregados conciliados, chat seguro y reportes fieles. AdventureWorksDW permanece como contraste secundario, no como fuente primaria de verdad. El juicio de expertos pertenece al cierre académico; pronóstico, MAPE y RMSE fueron retirados del alcance por decisión del tutor.
 
 Cada comprobación muestra \textbf{Cumple} o \textbf{Revisar}; el evento \file{copilot.proposal.verify} conserva identificador y prefijos de huella sin metadatos completos, filas ni secretos. La reproducibilidad se refiere a reejecutar decisiones persistidas con reglas determinísticas, no a exigir que dos llamadas nuevas al LLM generen exactamente la misma respuesta.
 
@@ -478,11 +478,35 @@ En el paso de conceptos, la confianza del LLM no equivale a validación. La plat
 
 Cada concepto puede abrir un diálogo contextual. La IA recibe el objetivo, las preguntas y la evidencia estructural permitida; nunca recibe filas, credenciales o SQL libre. Su respuesta separa recomendación, confianza, evidencia citada, riesgo y acción. \textbf{Aplicar recomendación} sólo cambia la casilla visible y deja la decisión final al analista. La migración \file{20260923\_15} conserva estas conversaciones con proveedor, modelo, responsable y fecha.
 
+\subsection{Resolución descriptiva y ejecución corregida del Sprint 5}
+
+La conciliación numérica no basta para publicar una dimensión. La ejecución 6 conservó correctamente la población de \file{Sales.Customer}, pero no recorrió las relaciones opcionales hacia personas y organizaciones; por ello \file{dim\_cliente} mostraba números de cuenta. No era correcto reemplazar la población por todas las filas de \file{Person.Person}, porque allí también existen empleados y otras entidades que no compraron.
+
+El resolutor del Sprint 5 separa \textbf{población} de \textbf{identidad}. Parte de la entidad vinculada al hecho y recorre claves foráneas verificadas hacia atributos descriptivos. Clasifica ramas como persona, organización o entidad relacionada; combina nombres mediante operaciones tipadas, conserva un respaldo explícito y bloquea relaciones que multipliquen el grano. La decisión no depende de que una tabla se llame \textit{Customer} o \textit{Person}: usa función semántica, relaciones, tipos, cobertura y atributos.
+
+Antes de aprobar una propuesta, la interfaz permite \textbf{Revisar identidad de dimensiones}. Presenta cobertura, número de entidades, registros sin nombre, origen, columna destino y una muestra limitada de clave, tipo y etiqueta. La muestra permanece dentro de la plataforma y no se envía al LLM. Una ruta inequívoca se aplica automáticamente; una cobertura insuficiente bloquea la publicación y conduce a una nueva versión supervisada, sin DBeaver ni SQL libre.
+
+La propuesta 54 produjo la ejecución 7. El datamart conserva 121317 líneas, 274914 unidades y 31465 pedidos sin diferencia. \file{dim\_cliente} contiene 19820 filas: 19119 personas y 701 organizaciones; todas disponen de \file{nombre\_cliente} y \file{tipo\_cliente}. Las claves \file{CustomerID}, \file{PersonID}, \file{StoreID} y \file{AccountNumber} permanecen para linaje y conciliación.
+
+\subsection{Analítica explicable y conversación contextual}
+
+La opción \textbf{Análisis > Analítica de ventas} abre únicamente una ejecución exitosa y conciliada. La vista ejecutiva prioriza KPI, evolución, productos, territorios y hallazgos; la vista analítica habilita selección de indicador, clientes principales, tablas de respaldo y calidad. Año y territorio se aplican en el servidor a KPIs, gráficos, hallazgos y exportaciones. La moneda se muestra como \file{USD} porque fue comprobada en la fuente, no inferida por un símbolo.
+
+Los hallazgos determinísticos citan su evidencia y no explican causas. En particular, una diferencia entre el primer y el último mes visible se describe como comparación de extremos; no demuestra tendencia o causalidad y puede involucrar meses con cobertura parcial.
+
+El bloque \textbf{Preguntar sobre estos resultados} está separado del panel de hallazgos. Ofrece preguntas guiadas para comprender, decidir e interpretar con cautela en modo ejecutivo, y para comparar, investigar o validar en modo analista. El servidor reconstruye la selección conciliada y envía al LLM sólo KPIs, puntos agregados, hallazgos, calidad, granularidad y filtros. No envía filas, credenciales ni SQL. La respuesta contiene explicación, evidencias, advertencia, preguntas de seguimiento, proveedor y modelo. Cambiar vista o filtros limpia el contexto anterior.
+
+\subsection{Exportación PDF y Excel}
+
+Los botones \textbf{Exportar PDF} y \textbf{Exportar Excel} vuelven a construir la selección autorizada en FastAPI. PDF usa A4 horizontal, páginas deliberadas para resumen, tendencia, rankings, hallazgos y calidad; no captura el HTML ni corta tablas entre páginas. Excel conserva valores numéricos, formato de moneda o conteo, un resumen, una hoja por gráfico visible y, en modo analista, una hoja de trazabilidad. La vista ejecutiva no recibe contenido reservado al analista.
+
+Cada descarga registra actor, formato, vista, ejecución, indicador y filtros. Los archivos no contienen macros, vínculos externos, credenciales, filas crudas, SQL ni fórmulas generadas por IA. La evidencia real de la ejecución 7 se revisó página por página y hoja por hoja antes del cierre.
+
 \subsection{Configuración LLM cloud y local}
 
 La pantalla Configuración LLM mantiene nombre, proveedor, URL validada, modelo, estado y resultado de prueba. Puede existir una sola configuración activa. Para Gemini, Groq o Qwen Cloud se guarda primero el registro y después se usa \textbf{Registrar credencial}; cuando ya existe, la acción cambia a \textbf{Reemplazar credencial}. La clave se envía una sola vez y nunca vuelve al navegador. La tabla sólo presenta \textbf{Credencial pendiente} o \textbf{Credencial configurada}.
 
-El identificador del modelo se parametriza porque el catálogo del proveedor cambia. Gemini se probó con \file{gemini-3.6-flash}. Para baja latencia, Sprint 4 incorporó Groq Cloud con URL restringida \file{https://api.groq.com/openai/v1}, modelo \file{openai/gpt-oss-120b} y razonamiento bajo. La pantalla incorpora \textbf{Nivel de razonamiento}: automático, mínimo, bajo, medio o alto; FastAPI adapta el valor a las capacidades del proveedor, reserva un presupuesto de salida suficiente y mantiene validación determinística. Cambiar URL, modelo o razonamiento invalida la prueba anterior. Si un modelo deja de estar disponible, se actualiza desde esta pantalla y se repite \textbf{Probar conexión}; no se modifica código ni \file{.env}.
+El identificador del modelo se parametriza porque el catálogo del proveedor cambia. Gemini se probó con \file{gemini-3.6-flash}. Para baja latencia, Sprint 4 incorporó Groq Cloud con URL restringida \file{https://api.groq.com/openai/v1} y modelo \file{openai/gpt-oss-120b}. La pantalla incorpora \textbf{Nivel de razonamiento}: automático, mínimo, bajo, medio o alto. Para GPT--OSS en Groq, mínimo se traduce a \file{low}; bajo, medio y alto se conservan. La prueba reserva 256 tokens de finalización y usa \file{reasoning\_format: hidden}; la generación aumenta el presupuesto según el contrato. Así se corrigió el error 400 que aparecía cuando el razonamiento consumía la salida antes de completar el JSON. Cambiar URL, modelo o razonamiento invalida la prueba anterior.
 
 FastAPI cifra la clave mediante cifrado autenticado y almacena únicamente el texto cifrado en \path{app.secrets}. La raíz criptográfica se genera automáticamente con permisos restrictivos en \path{/var/lib/bi-ia-secrets/master.key} y se conserva en el volumen \path{secret_key_data}, separado de PostgreSQL. Si se borra ese volumen, las credenciales existentes dejan de poder descifrarse y deberán reemplazarse desde la pantalla. No se copia el volumen entre equipos y no se versiona. \path{GEMINI_API_KEY} y \path{DASHSCOPE_API_KEY} ya no se utilizan.
 
@@ -584,7 +608,7 @@ make doctor
 make verify
 \end{lstlisting}
 
-El control completo valida desarrollo, el perfil de entrega, el perfil local de Ollama y la entrega GHCR; además construye y prueba frontend/backend y regenera los siete PDF oficiales: seis documentos técnicos completos y el Capítulo III académico independiente.
+El control completo valida desarrollo, el perfil de entrega, el perfil local de Ollama y la entrega GHCR; además construye y prueba frontend/backend y regenera los ocho PDF oficiales: siete documentos técnicos completos y el Capítulo III académico independiente.
 
 \subsection{Contrato OpenAPI}
 
@@ -904,7 +928,7 @@ En GitHub se abre la pestaña \textbf{Actions}. Cada fila representa una ejecuci
   \toprule
   Flujo & Cuándo se ejecuta & Resultado esperado \\
   \midrule
-  CI & Push o pull request hacia \file{develop} o \file{main}. & Valida flujo de ramas, Compose, backend, frontend, infraestructura y los siete PDF. No publica ni deja contenedores activos ni descarga modelos LLM. \\
+  CI & Push o pull request hacia \file{develop} o \file{main}. & Valida flujo de ramas, Compose, backend, frontend, infraestructura y los ocho PDF. No publica ni deja contenedores activos ni descarga modelos LLM. \\
   CD & Cambio ya fusionado en \file{main} o etiqueta \file{v*}. & Revalida backend/frontend y publica cinco imágenes de producción en GHCR con etiqueta de rama, SHA y, cuando aplique, versión. No despliega aún una VM Azure. \\
   Dependabot & Según su programación. & Abre un PR temporal de actualización; se revisa y prueba igual que un cambio humano. \\
   \bottomrule
@@ -1003,6 +1027,8 @@ docker compose --profile local-llm logs --tail=200 ollama
   \item Abrir frontend y OpenAPI en el navegador.
   \item Confirmar que AdventureWorks contiene 71 tablas y el acceso externo usa \file{bi\_reader}.
   \item Confirmar que no hay secretos ni archivos \file{.env} en los cambios de Git.
+  \item Abrir la ejecución 7 y comprobar 121317 filas conciliadas, 19820 clientes con nombre y tipo y moneda USD.
+  \item Probar las vistas ejecutiva y analítica, una pregunta guiada y las exportaciones PDF/Excel con la misma selección.
   \item Registrar SHA, etiqueta y digest de imágenes en la bitácora.
   \item Conservar los PDF generados para la evidencia de tesis.
 \end{enumerate}
@@ -1015,6 +1041,9 @@ Los documentos se compilan dentro de la imagen \file{bi-ia-docs}; no se instala 
 make logbook
 make sprint-report
 make sprint2-report
+make sprint3-report
+make sprint4-report
+make sprint5-report
 make technical-manual
 make docs
 \end{lstlisting}
@@ -1078,7 +1107,7 @@ make verify
   \toprule
   Campo & Valor \\
   \midrule
-  Estado & Manual acumulativo de los Sprints 1 a 4, incluida la materialización y validación del datamart; base obligatoria para los módulos posteriores con SDD. \\
+  Estado & Manual acumulativo de los Sprints 1 a 5: construcción supervisada, materialización, validación, analítica explicable, conversación contextual y reportería. \\
   Custodia & Repositorio público \file{LFXAS/prototipo-bi-ia}; escritura restringida a colaboradores. \\
   Audiencia & Autoras, tutor, revisores, colaboradores y lectores académicos. \\
   Actualización & Debe acompañar todo cambio de instalación, puertos, secretos, imágenes, pruebas o recuperación. \\
@@ -1122,6 +1151,7 @@ make verify
   2.3.4 & 20-09-2026 & Incorporación determinística de dimensiones solicitadas omitidas por el LLM cuando existe una fuente inequívoca en los metadatos verificados. \\
   2.3.5 & 20-09-2026 & Catálogo analítico separado por permisos y dominio, CRUD de preguntas, múltiples periodicidades y dimensiones propuestas por IA en lugar de predefinidas en la necesidad. \\
   3.0.0 & 24-09-2026 & Operación del Sprint 4: Groq Cloud, selección de propuestas, KPI variables, ETL transaccional, conciliación, semántica española, expedientes recuperables, prevención de duplicados y moneda ISO comprobada. \\
+  4.0.0 & 25-09-2026 & Cierre técnico del Sprint 5: identidad descriptiva general, propuesta 54, ejecución 7, panel por perfil, copiloto analítico seguro, PDF/Excel fieles y retiro documentado del pronóstico. \\
   \bottomrule
 \end{longtable}
 

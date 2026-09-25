@@ -9,6 +9,7 @@ from app.modules.copilot.domains import (
     default_needs_catalog_configuration,
     normalize_needs_catalog_configuration,
 )
+from app.modules.copilot.entity_resolution import enrich_dimension_labels
 from app.modules.copilot.service import (
     apply_analyst_adjustments,
     canonical_hash,
@@ -904,6 +905,7 @@ def test_requested_date_dimension_is_completed_when_model_omits_it() -> None:
             "source_tables": ["Sales.SalesOrderHeader"],
             "business_key": "OrderDate",
             "attributes": ["SalesOrderID", "TotalDue"],
+            "semantic_role": "fecha",
         }
     ]
     assert proposal["warnings"] == []
@@ -924,3 +926,54 @@ def test_invented_table_and_free_sql_block_approval() -> None:
     assert validation["valid"] is False
     assert "reference.table_unknown" in codes
     assert "executable.detected" in codes
+
+
+def test_entity_label_resolution_uses_semantic_role_and_relationship_not_table_name() -> None:
+    dimensions = [
+        {
+            "name": "dim_cliente",
+            "source_tables": ["Core.A01"],
+            "business_key": "RecordKey",
+            "attributes": ["SubjectRef", "ExternalNumber"],
+        }
+    ]
+    scope = {
+        "tables": [
+            {
+                "ref": "Core.A01",
+                "columns": [
+                    {"name": "RecordKey", "type": "int", "pk": True},
+                    {"name": "SubjectRef", "type": "int", "nullable": True},
+                    {"name": "ExternalNumber", "type": "varchar", "nullable": False},
+                ],
+                "foreign_keys": [
+                    {
+                        "columns": ["SubjectRef"],
+                        "referenced_schema": "Registry",
+                        "referenced_table": "X9",
+                        "referenced_columns": ["NodeKey"],
+                    }
+                ],
+            },
+            {
+                "ref": "Registry.X9",
+                "columns": [
+                    {"name": "NodeKey", "type": "int", "pk": True},
+                    {"name": "DisplayLabel", "type": "nvarchar", "nullable": False},
+                ],
+                "foreign_keys": [],
+            },
+        ]
+    }
+    semantic_map = {
+        "candidates": [{"business_concept": "customer", "technical_refs": ["Core.A01"]}]
+    }
+
+    enriched, diagnostics = enrich_dimension_labels(dimensions, scope, semantic_map)
+
+    label = enriched[0]["display_label"]
+    assert label["target_name"] == "nombre_cliente"
+    assert label["type_target_name"] == "tipo_cliente"
+    assert label["variants"][0]["source_table"] == "Registry.X9"
+    assert label["variants"][0]["columns"] == ["DisplayLabel"]
+    assert diagnostics[0]["status"] == "resolved"

@@ -48,11 +48,10 @@ No se recomienda una VM ARM para este conjunto porque SQL Server para Linux requ
 - `metadata`: introspección determinística mediante la interfaz del conector activo; SQL Server es el primer adaptador.
 - `copilot`: solicitud guiada de negocio y propuestas estructuradas del LLM, nunca ejecución directa.
 - `etl`: constructor determinístico, vista previa, validación, ejecución backend y trazabilidad de cargas; no depende de SQL escrito por cada usuario.
-- `analytics`: KPIs, gráficos e insights.
-- `forecasting`: regresión lineal y métricas MAPE/RMSE.
-- `reports`: evidencias y reportes académicos.
+- `analytics`: KPIs, filtros, gráficos, hallazgos determinísticos y conversación contextual sobre agregados conciliados.
+- `reports`: exportaciones PDF/Excel operativas y evidencias académicas.
 
-Al cierre local del Sprint 4, `system`, `security`, `parameters`, `metadata`, `copilot` y `etl` contienen comportamiento. `etl` incluye selección, compilación, materialización, conciliación, semántica supervisada y expedientes recuperables. `analytics`, `forecasting` y `reports` siguen siendo límites arquitectónicos reservados para sprints posteriores.
+Al cierre local del Sprint 5, `system`, `security`, `parameters`, `metadata`, `copilot`, `etl`, `analytics` y `reports` contienen comportamiento. `etl` incluye selección, compilación, materialización, conciliación, resolución descriptiva y expedientes recuperables. `analytics` consulta exclusivamente ejecuciones conciliadas; `reports` reconstruye en servidor la selección autorizada. El límite `forecasting` se retiró por decisión de alcance del tutor: el proyecto demuestra construcción supervisada de datamarts y analítica explicable, no predicción.
 
 ## Contrato de evolución (SDD)
 
@@ -60,7 +59,7 @@ Desde el Sprint 2, cada módulo sólo incorpora capacidad funcional a partir de 
 
 ## RBAC previsto
 
-Entidades implementadas hasta el cierre local del Sprint 4: `users`, `roles`, `permissions`, `user_roles`, `role_permissions`, `menus`, `menu_permissions`, `audit_events`, `parameters`, `llm_configurations`, `secrets`, `data_connections`, `metadata_snapshots`, `bi_proposals`, `semantic_advice` y `etl_executions`, todas bajo el esquema `app`. `parameters` conserva tipo, módulo, valor predeterminado y rango; `metadata_snapshots` conserva el documento canónico JSONB, su hash, totales y actor histórico; `bi_proposals` conserva solicitud, perfil, mapa semántico, alcance, propuesta, validación, proveedor/modelo y decisión humana; `semantic_advice` registra consultas contextuales; `etl_executions` fija selección, plan, huellas, validación, métricas y responsable.
+Entidades implementadas hasta el cierre local del Sprint 5: `users`, `roles`, `permissions`, `user_roles`, `role_permissions`, `menus`, `menu_permissions`, `audit_events`, `parameters`, `llm_configurations`, `secrets`, `data_connections`, `metadata_snapshots`, `bi_proposals`, `semantic_advice` y `etl_executions`, todas bajo el esquema `app`. `parameters` conserva tipo, módulo, valor predeterminado y rango; `metadata_snapshots` conserva el documento canónico JSONB, su hash, totales y actor histórico; `bi_proposals` conserva solicitud, perfil, mapa semántico, alcance, propuesta, validación, proveedor/modelo y decisión humana; `semantic_advice` registra consultas contextuales; `etl_executions` fija selección, plan, huellas, validación, métricas y responsable. El chat analítico no almacena conversaciones completas: cada consulta deja una huella y contexto mínimo en auditoría.
 
 Reglas arquitectónicas:
 
@@ -112,7 +111,7 @@ La arquitectura no está cerrada a AdventureWorks ni a SQL Server. La instantán
 
 El razonamiento también se aísla por perfiles de dominio. Cada perfil declara código, preguntas, conceptos, dimensiones, periodicidades, destinos, prompt contractual y reglas determinísticas. `GET /copilot/catalog` cruza estas definiciones con los términos presentes en la instantánea y devuelve disponibilidad, causa y evidencia. Sprint 3 habilita y valida únicamente `ventas`. Un futuro datamart de inventario deberá incorporar el perfil `inventario`, sus reglas de existencias y movimientos y un conjunto de referencia antes de ofrecerse en la web. Autenticación, secretos, auditoría, versionado, flujo de revisión y adaptadores LLM se reutilizan.
 
-La validación es un expediente acumulativo visible. En Sprint 3, `POST /copilot/proposals/{id}/verify` comprueba la huella de la instantánea, vuelve a ejecutar el validador y reconstruye la propuesta desde `ai_decisions` sin invocar al LLM. Sprint 4 agrega `app.etl_executions`: concilia conteos, unidades, pedidos e importes entre AdventureWorks OLTP y el datamart, conserva KPI y permite revisión semántica posterior sin repetir la carga. La igualdad de hashes demuestra reproducibilidad del artefacto aprobado, no determinismo del proveedor probabilístico; las métricas predictivas y el juicio de expertos se agregan en sus fases respectivas.
+La validación es un expediente acumulativo visible. En Sprint 3, `POST /copilot/proposals/{id}/verify` comprueba la huella de la instantánea, vuelve a ejecutar el validador y reconstruye la propuesta desde `ai_decisions` sin invocar al LLM. Sprint 4 agrega `app.etl_executions`: concilia conteos, unidades, pedidos e importes entre AdventureWorks OLTP y el datamart, conserva KPI y permite revisión semántica posterior sin repetir la carga. Sprint 5 añade cobertura de etiquetas descriptivas, paneles sobre agregados conciliados, chat acotado y reportes reconstruidos en servidor. La igualdad de hashes demuestra reproducibilidad del artefacto aprobado, no determinismo del proveedor probabilístico; el juicio de expertos se agrega en el cierre académico.
 
 La comparación considera la versión del motor que creó el artefacto. En la versión vigente, una diferencia de huella o validación es bloqueante. Para una propuesta histórica, una diferencia causada únicamente por evolución del motor se muestra como advertencia de compatibilidad y no retira por sí sola una aprobación sin errores. Una aprobación previamente retirada puede restaurarse sólo después de superar los controles actuales, confirmar advertencias y registrar una justificación auditada.
 

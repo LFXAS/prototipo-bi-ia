@@ -28,10 +28,12 @@ import {
   type Role,
   type SemanticAdvice,
   type SemanticCandidate,
+  type SemanticPreview,
   type Session,
   type User,
 } from './api/security'
 import { roleChoicesForUserAssignment } from './roleChoices'
+import { AnalyticsPage } from './AnalyticsPage'
 
 type PageData =
   | Page<User>
@@ -63,6 +65,7 @@ const labels: Record<string, string> = {
   '/catalogo-analitico': 'Catálogo analítico',
   '/asistente': 'Asistente de datamart',
   '/datamart-ventas': 'Datamart de ventas',
+  '/analitica-ventas': 'Analítica de ventas',
   '/auditoria': 'Auditoría',
 }
 
@@ -237,9 +240,11 @@ export default function App() {
               : page === '/esquema'
                 ? <SchemaExplorerPage snapshots={data as Page<MetadataSnapshot> | null} message={message} token={token} canRefresh={session.permissions.includes('metadata.refresh')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
                 : page === '/asistente'
-                  ? <AnalysisAssistantPage token={token} canGenerate={session.permissions.includes('copilot.proposals.generate')} canReview={session.permissions.includes('copilot.proposals.review')} navigate={setPage} />
+                  ? <AnalysisAssistantPage token={token} canGenerate={session.permissions.includes('copilot.proposals.generate')} canReview={session.permissions.includes('copilot.proposals.review')} canPreviewSemantics={session.permissions.includes('metadata.semantic_resolution.read')} navigate={setPage} />
                 : page === '/datamart-ventas'
                   ? <SalesDatamartPage token={token} canWrite={session.permissions.includes('etl.executions.write')} navigate={setPage} />
+                : page === '/analitica-ventas'
+                  ? <AnalyticsPage token={token} canExport={session.permissions.includes('reports.analytics.export')} navigate={setPage} />
                 : page === '/catalogo-analitico'
                   ? <AnalysisCatalogPage token={token} canWrite={session.permissions.includes('copilot.catalog.write')} />
               : page === '/parametros'
@@ -514,7 +519,7 @@ function SemanticCopilotPanel({
   </section>
 }
 
-function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { token: string; canGenerate: boolean; canReview: boolean; navigate: (path: string) => void }) {
+function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemantics, navigate }: { token: string; canGenerate: boolean; canReview: boolean; canPreviewSemantics: boolean; navigate: (path: string) => void }) {
   const [readiness, setReadiness] = useState<CopilotReadiness | null>(null)
   const [source, setSource] = useState<ActiveSource | null>(null)
   const [catalog, setCatalog] = useState<CopilotCatalog | null>(null)
@@ -541,6 +546,8 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
   const [restoreWarningsConfirmed, setRestoreWarningsConfirmed] = useState(false)
   const [verification, setVerification] = useState<ProposalVerification | null>(null)
   const [verifying, setVerifying] = useState(false)
+  const [semanticPreview, setSemanticPreview] = useState<SemanticPreview | null>(null)
+  const [previewingSemantics, setPreviewingSemantics] = useState(false)
 
   async function refreshHistory(domainCode = selectedDomainCode, offset = historyOffset, filter = historyFilter) {
     if (!domainCode) return
@@ -579,6 +586,7 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
     setHistoryFilter('ready_for_review')
     setHistoryOffset(0)
     setProposal(null)
+    setSemanticPreview(null)
     setRevisionDraft(null)
     setConfirmedConcepts([])
     setAdviceConceptCode(null)
@@ -605,6 +613,7 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
         source_proposal_id: proposal?.id,
       })
       setProposal(result)
+      setSemanticPreview(null)
       setVerification(null)
       setExcludedConcepts(defaultExcludedConcepts(result))
       setConfirmedConcepts([])
@@ -639,6 +648,7 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
         ? await api.approveProposal(token, proposal.id, { comment: reviewComment || undefined, warnings_confirmed: warningsConfirmed })
         : await api.rejectProposal(token, proposal.id, reviewComment)
       setProposal(updated); setVerification(null); setStep(5)
+      setSemanticPreview(null)
       await refreshHistory(selectedDomainCode, 0, historyFilter)
       setHistoryOffset(0)
       setFeedback({ kind: 'success', message: decision === 'approve' ? 'Propuesta aprobada. Quedó habilitada para la generación del datamart; todavía no se ejecutó ningún ETL.' : 'Propuesta rechazada. Puede ajustar la necesidad y crear una nueva versión.' })
@@ -653,6 +663,7 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
         ? await api.invalidateProposal(token, proposal.id, cleanupReason)
         : await api.discardProposal(token, proposal.id, cleanupReason)
       setProposal(updated); setVerification(null); setCleanupReason(''); setStep(5)
+      setSemanticPreview(null)
       await refreshHistory(selectedDomainCode, 0, historyFilter)
       setHistoryOffset(0)
       setFeedback({ kind: 'success', message: action === 'invalidate' ? `Se retiró la aprobación de la versión #${updated.id}. Ya no podrá utilizarse en nuevas ejecuciones ETL.` : `La versión #${updated.id} quedó descartada y se conserva únicamente para auditoría.` })
@@ -662,6 +673,7 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
   function selectSavedProposal(item: BiProposal) {
     setProposal(item)
     setVerification(null)
+    setSemanticPreview(null)
     setGoal(item.business_goal)
     setQuestions(item.business_questions)
     setExcludedConcepts(defaultExcludedConcepts(item))
@@ -701,6 +713,21 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
     } catch (caught) {
       setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible verificar la evidencia.' })
     } finally { setVerifying(false) }
+  }
+
+  async function previewSemanticIdentity() {
+    if (!proposal) return
+    setPreviewingSemantics(true); setFeedback(null)
+    try {
+      const result = await api.semanticPreview(token, proposal.id)
+      setSemanticPreview(result)
+      setFeedback({
+        kind: result.all_passed ? 'success' : 'error',
+        message: result.message,
+      })
+    } catch (caught) {
+      setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible comprobar los nombres descriptivos.' })
+    } finally { setPreviewingSemantics(false) }
   }
 
   async function restoreApproval() {
@@ -775,6 +802,7 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
   const automaticAdjustments = stringArrayValue(document.automatic_adjustments)
   const providerObservations = stringArrayValue(document.provider_observations)
   const decisionDiagnostics = arrayValue(document.decision_diagnostics)
+  const semanticQuality = arrayValue(document.semantic_quality)
   const validation = proposal?.validation_document
   const revisionDecisions = objectValue(proposal?.proposal_document.ai_decisions)
   const revisionDimensions = arrayValue(revisionDecisions.dimensions)
@@ -843,7 +871,24 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, navigate }: { to
       <div className="proposal-heading"><div><p className="eyebrow">Paso 3 · Propuesta de IA + comprobación automática</p><h2>{stringValue(document.summary, 'Propuesta BI de ventas')}</h2></div><span className={`proposal-status ${proposal.status}`}>{proposalStatusLabels[proposal.status]}</span></div>
       <p className="business-explanation">{stringValue(document.business_explanation, 'El proveedor no entregó una explicación de negocio utilizable.')}</p>
       {validation && <div className={`validation-summary ${validation.valid ? 'success' : 'error'}`}><strong>{validation.valid ? 'Referencias y contrato validados' : 'No puede aprobarse'}</strong><span>{validation.errors} errores · {validation.warnings} advertencias</span></div>}
-      <div className="proposal-grid"><article><h3>Granularidad</h3><p>{stringValue(grain.description, '—')}</p></article><article><h3>Hecho y medidas</h3><p><strong>{stringValue(fact.name, '—')}</strong></p>{arrayValue(fact.measures).map((item, index) => <p key={index}>{stringValue(item.name, 'Medida')} · {stringValue(item.aggregation, '')}{measureCalculationExplanation(item) && <><br /><small className="calculation-summary">{measureCalculationExplanation(item)}</small></>}</p>)}</article><article><h3>Dimensiones</h3>{dimensionsDocument.map((item, index) => <p key={index}><strong>{stringValue(item.name, 'Dimensión')}</strong><br /><small>{stringArrayValue(item.attributes).join(', ') || 'Sin atributos propuestos'}</small></p>)}</article><article><h3>KPIs propuestos</h3>{kpis.map((item, index) => <p key={index}><strong>{stringValue(item.name, 'KPI')}</strong><br /><small>{stringValue(item.code, '')}</small></p>)}</article></div>
+      <div className="proposal-grid"><article><h3>Granularidad</h3><p>{stringValue(grain.description, '—')}</p></article><article><h3>Hecho y medidas</h3><p><strong>{stringValue(fact.name, '—')}</strong></p>{arrayValue(fact.measures).map((item, index) => <p key={index}>{stringValue(item.name, 'Medida')} · {stringValue(item.aggregation, '')}{measureCalculationExplanation(item) && <><br /><small className="calculation-summary">{measureCalculationExplanation(item)}</small></>}</p>)}</article><article><h3>Dimensiones</h3>{dimensionsDocument.map((item, index) => {
+        const displayLabel = objectValue(item.display_label)
+        const generatedLabel = stringValue(displayLabel.target_name, '')
+        const defaultTypeField = `tipo_${stringValue(item.name, 'entidad').replace(/^dim_/, '')}`
+        const generatedType = stringValue(displayLabel.type_target_name, defaultTypeField)
+        const sourceAttributes = stringArrayValue(item.attributes)
+        return <div className="dimension-contract" key={index}>
+          <strong>{stringValue(item.name, 'Dimensión')}</strong>
+          <small><b>Columnas de origen:</b> {sourceAttributes.join(', ') || 'Sin atributos propuestos'}</small>
+          {generatedLabel && <div className="generated-fields"><span>Campos que creará el ETL</span><strong>{generatedLabel}</strong><strong>{generatedType}</strong><small>Nombre descriptivo y tipo derivados mediante relaciones verificadas.</small></div>}
+        </div>
+      })}</article><article><h3>KPIs propuestos</h3>{kpis.map((item, index) => <p key={index}><strong>{stringValue(item.name, 'KPI')}</strong><br /><small>{stringValue(item.code, '')}</small></p>)}</article></div>
+      {semanticQuality.length > 0 && <section className="semantic-resolution-panel" aria-label="Calidad descriptiva de las dimensiones">
+        <div className="semantic-resolution-heading"><div><p className="eyebrow">Control de identidad descriptiva</p><h3>Nombres reconocibles antes de materializar</h3><p>La plataforma recorre relaciones verificadas y comprueba que cada entidad pueda mostrarse con un nombre, no sólo con una clave técnica.</p></div>{canPreviewSemantics && <button type="button" className="secondary" disabled={previewingSemantics} onClick={() => void previewSemanticIdentity()}>{previewingSemantics ? 'Comprobando la fuente…' : 'Comprobar nombres y cobertura'}</button>}</div>
+        <div className="semantic-resolution-grid">{semanticQuality.map((item, index) => <article className={stringValue(item.status, '') === 'resolved' ? 'passed' : 'review'} key={`${stringValue(item.dimension, '')}-${index}`}><span>{stringValue(item.status, '') === 'resolved' ? 'Ruta resuelta' : 'Revisión necesaria'}</span><h4>{businessTechnicalLabel(stringValue(item.dimension, 'Dimensión'))}</h4><p>{stringValue(item.message, '')}</p>{arrayValue(item.variants).map((variant, variantIndex) => <div className="semantic-route" key={`${stringValue(variant.source_table, '')}-${variantIndex}`}><strong>{stringValue(variant.kind, 'entity') === 'person' ? 'Persona' : stringValue(variant.kind, '') === 'organization' ? 'Organización' : 'Entidad base'}</strong><small>{stringValue(variant.source_table, '')} · {stringArrayValue(variant.columns).join(' + ')}</small></div>)}</article>)}</div>
+        {!canPreviewSemantics && <p className="field-help">Su rol puede revisar el contrato, pero no consultar muestras de la fuente.</p>}
+        {semanticPreview && <div className="semantic-preview-results"><div className={`validation-summary ${semanticPreview.all_passed ? 'success' : 'error'}`}><strong>{semanticPreview.all_passed ? 'Cobertura descriptiva aprobada' : 'La publicación debe bloquearse'}</strong><span>{semanticPreview.message}</span></div>{semanticPreview.dimensions.map((item) => <article key={item.dimension}><div className="semantic-preview-metrics"><div><small>Dimensión</small><strong>{businessTechnicalLabel(item.dimension)}</strong></div><div><small>Cobertura</small><strong>{(item.coverage * 100).toLocaleString('es-EC', { maximumFractionDigits: 1 })}%</strong></div><div><small>Entidades</small><strong>{item.total_entities.toLocaleString('es-EC')}</strong></div><div><small>Sin nombre descriptivo</small><strong>{item.fallback_entities.toLocaleString('es-EC')}</strong></div></div><details><summary>Ver muestra controlada y origen</summary><p className="field-help">Origen: {item.source_table} · columna destino: {item.label_column}. La muestra permanece dentro de la plataforma y no se envía al LLM.</p><div className="table-wrap"><table><thead><tr><th>Clave de negocio</th><th>Tipo</th><th>Nombre resultante</th></tr></thead><tbody>{item.samples.map((sample) => <tr key={`${item.dimension}-${sample.business_key}`}><td>{sample.business_key}</td><td>{sample.entity_type}</td><td><strong>{sample.display_label}</strong></td></tr>)}</tbody></table></div></details></article>)}</div>}
+      </section>}
       <section className="etl-preview" aria-label="Vista previa del plan ETL"><h3>Plan ETL declarativo</h3><div>{etlPlan.map((item, index) => <article key={index}><span>{index + 1}</span><strong>{etlLabel(stringValue(item.operation, ''))}</strong><small>{stringValue(item.description, '')}</small></article>)}</div><p className="field-help">Vista de sólo lectura. La carga se ejecutará únicamente después de aprobar y confirmar la propuesta en Generación de datamart.</p></section>
       {automaticAdjustments.length > 0 && <details className="technical-details adjustments" open><summary>Ajustes automáticos aplicados</summary><p className="field-help">El sistema corrigió estas decisiones antes de validar; no requieren confirmación.</p>{automaticAdjustments.map((item) => <p className="adjustment" key={item}><strong>Ajuste:</strong> {localizedAdjustment(item)}</p>)}</details>}
       {validation && validation.issues.length > 0 && <details className="technical-details"><summary>Validaciones y advertencias</summary>{validation.issues.map((issue, index) => <p className={issue.level} key={`${issue.code}-${index}`}><strong>{issue.level === 'error' ? 'Error' : 'Advertencia'}:</strong> {issue.message}</p>)}</details>}

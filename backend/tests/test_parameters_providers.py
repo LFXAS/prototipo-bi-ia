@@ -160,6 +160,34 @@ def test_groq_connection_uses_cloud_credential(monkeypatch: MonkeyPatch) -> None
     assert result.ok
 
 
+def test_groq_connection_reserves_reasoning_budget_and_hides_trace(
+    monkeypatch: MonkeyPatch,
+) -> None:
+    captured: dict[str, object] = {}
+    configuration = groq_configuration()
+    configuration.reasoning_level = "high"
+
+    class RecordingClient(FakeAsyncClient):
+        async def post(self, _: str, **kwargs: object) -> FakeResponse:
+            captured["json"] = kwargs.get("json", {})
+            return FakeResponse({"choices": [{"message": {"content": '{"ok":true}'}}]})
+
+    monkeypatch.setattr(
+        providers.httpx,
+        "AsyncClient",
+        lambda **kwargs: RecordingClient({}, **kwargs),
+    )
+
+    result = asyncio.run(providers.test_provider(configuration, "groq-secret"))
+
+    assert result.ok
+    body = captured["json"]
+    assert isinstance(body, dict)
+    assert body["reasoning_effort"] == "high"
+    assert body["reasoning_format"] == "hidden"
+    assert body["max_completion_tokens"] == 256
+
+
 def test_groq_invalid_key_has_safe_message(monkeypatch: MonkeyPatch) -> None:
     monkeypatch.setattr(
         providers.httpx,
@@ -208,6 +236,7 @@ def test_groq_generation_requests_strict_json_schema(monkeypatch: MonkeyPatch) -
     body = captured["json"]
     assert isinstance(body, dict)
     assert body["reasoning_effort"] == "low"
+    assert body["reasoning_format"] == "hidden"
     response_format = body["response_format"]
     assert isinstance(response_format, dict)
     assert response_format["type"] == "json_schema"

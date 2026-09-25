@@ -261,6 +261,31 @@ th { color: var(--color-muted); font-size: .78rem; text-transform: uppercase; }
 .proposal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
 .proposal-grid article { min-width: 0; padding: 1rem; border: 1px solid var(--color-border); border-radius: .75rem; background: #fbfcff; }
 .proposal-grid h3 { margin-top: 0; }
+.dimension-contract { display: grid; gap: .35rem; padding: .7rem 0; }
+.dimension-contract + .dimension-contract { border-top: 1px solid #dfe7f1; }
+.dimension-contract > small { color: var(--color-muted); line-height: 1.4; overflow-wrap: anywhere; }
+.generated-fields { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; margin-top: .15rem; padding: .55rem .65rem; border: 1px solid #b8dfd2; border-radius: .6rem; background: #eef9f5; }
+.generated-fields > span { flex-basis: 100%; color: #08745f; font-size: .7rem; font-weight: 850; letter-spacing: .04em; text-transform: uppercase; }
+.generated-fields > strong { padding: .22rem .42rem; border-radius: .35rem; background: #d9f1e8; color: #075f4e; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .78rem; }
+.generated-fields > small { flex-basis: 100%; color: #49657d; line-height: 1.35; }
+.semantic-resolution-panel { margin-top: 1rem; padding: 1.1rem; border: 1px solid #b9d9d2; border-radius: 1rem; background: linear-gradient(145deg, #f7fffc, #f6f9ff); }
+.semantic-resolution-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.25rem; }
+.semantic-resolution-heading h3 { margin: .15rem 0 .35rem; color: var(--color-heading); }
+.semantic-resolution-heading p:last-child { margin: 0; max-width: 48rem; color: var(--color-muted); }
+.semantic-resolution-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: .8rem; margin-top: 1rem; }
+.semantic-resolution-grid > article { padding: .9rem; border: 1px solid #cfe0ec; border-left: .3rem solid #098c74; border-radius: .8rem; background: #fff; }
+.semantic-resolution-grid > article.review { border-left-color: #c77b00; background: #fffaf0; }
+.semantic-resolution-grid > article > span { color: #08745f; font-size: .72rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.semantic-resolution-grid h4 { margin: .35rem 0; font-size: 1rem; }
+.semantic-resolution-grid p { margin: .35rem 0 .65rem; color: var(--color-muted); font-size: .9rem; }
+.semantic-route { display: grid; gap: .15rem; padding: .55rem .65rem; margin-top: .4rem; border-radius: .55rem; background: #eff7f5; }
+.semantic-route small { color: #49657d; overflow-wrap: anywhere; }
+.semantic-preview-results { display: grid; gap: .8rem; margin-top: 1rem; }
+.semantic-preview-results > article { padding: 1rem; border: 1px solid #cfe0ec; border-radius: .8rem; background: #fff; }
+.semantic-preview-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .65rem; margin-bottom: .7rem; }
+.semantic-preview-metrics > div { display: grid; gap: .15rem; min-width: 0; padding: .65rem; border-radius: .65rem; background: #f3f7fc; }
+.semantic-preview-metrics small { color: var(--color-muted); }
+.semantic-preview-metrics strong { overflow-wrap: anywhere; color: var(--color-heading); }
 .calculation-summary { display: inline-block; margin-top: .3rem; padding: .3rem .45rem; border-radius: .35rem; background: #eaf3ff; color: #174f9c; font-weight: 750; overflow-wrap: anywhere; }
 .etl-preview { padding: 1rem; border-radius: .85rem; background: #f4f7fb; }
 .etl-preview > div { display: flex; gap: .75rem; overflow-x: auto; padding: .5rem 0; }
@@ -507,7 +532,9 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   .app-shell { padding: .75rem; }
   .app-shell header { gap: .8rem; align-items: flex-start; }
   .header-actions { flex-direction: column; align-items: stretch; }
-  .cards, .form-grid, .parameter-grid, .catalog-options, .snapshot-metrics, .relationship-grid, .choice-grid, .concept-grid, .proposal-grid, .evidence-grid { grid-template-columns: 1fr; }
+  .cards, .form-grid, .parameter-grid, .catalog-options, .snapshot-metrics, .relationship-grid, .choice-grid, .concept-grid, .proposal-grid, .evidence-grid, .semantic-preview-metrics { grid-template-columns: 1fr; }
+  .semantic-resolution-heading { flex-direction: column; }
+  .semantic-resolution-heading button { width: 100%; }
   .semantic-copilot-heading { flex-direction: column; }
   .analyst-question { max-width: 100%; }
   .copilot-answer dl { grid-template-columns: 1fr; }
