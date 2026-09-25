@@ -53,6 +53,7 @@ from app.modules.copilot.service import (
     SEMANTIC_SYSTEM_INSTRUCTION,
     apply_analyst_adjustments,
     apply_controlled_relationship,
+    apply_financial_requirements,
     build_requirement_coverage,
     canonical_hash,
     compact_metadata_blocks,
@@ -779,6 +780,7 @@ async def create_proposal(
             # The LLM proposes dimensions from verified metadata; the catalog never forces them.
             blueprint["requested_dimensions"] = []
             proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
+            proposal = apply_financial_requirements(proposal, assessment, scope)
             proposal["need_assessment"] = assessment
             proposal["requirement_coverage"] = build_requirement_coverage(proposal, assessment)
             validation = validate_proposal(proposal, scope, snapshot.schema_document)
@@ -1205,6 +1207,9 @@ async def revise_controlled_relation(
     )
     source_assessment = source.proposal_document.get("need_assessment")
     if isinstance(source_assessment, dict):
+        proposal_document = apply_financial_requirements(
+            proposal_document, source_assessment, source.scope_document
+        )
         proposal_document["need_assessment"] = deepcopy(source_assessment)
         proposal_document["requirement_coverage"] = build_requirement_coverage(
             proposal_document, source_assessment
@@ -1320,6 +1325,9 @@ async def revise_proposal(
     )
     source_assessment = source.proposal_document.get("need_assessment")
     if isinstance(source_assessment, dict):
+        proposal_document = apply_financial_requirements(
+            proposal_document, source_assessment, source.scope_document
+        )
         proposal_document["need_assessment"] = deepcopy(source_assessment)
         proposal_document["requirement_coverage"] = build_requirement_coverage(
             proposal_document, source_assessment

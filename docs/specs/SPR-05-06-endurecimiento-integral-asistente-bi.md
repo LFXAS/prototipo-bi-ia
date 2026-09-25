@@ -141,7 +141,7 @@ decisión y cuál es el efecto de cada alternativa.
 | HBI-003 | Costos solicitados y omitidos bloquean la propuesta | cobertura en `test_copilot_service.py` | en implementación |
 | HBI-004 | Medidas muestran fuentes/fórmulas y se rechaza conteo por detalle | validación de contrato y UI | en implementación |
 | HBI-005 | Sólo una FK compatible, única y sin duplicación puede crear una versión | catálogo/revisión backend y UI | en implementación |
-| HBI-006 | Costos, margen y descuento concilian contra fuentes verificadas | pruebas ETL y analítica | pendiente |
+| HBI-006 | Costos, margen y descuento concilian contra fuentes verificadas | pruebas ETL y analítica | implementado |
 | HBI-007 | Top 5 de Europa se resuelve sin filtro visual ni SQL libre | prueba del motor de agregaciones | pendiente |
 | HBI-008 | Una sesión vencida restaura el paso y borrador con contraste accesible | prueba frontend/E2E | pendiente |
 | HBI-009 | `make verify` completo y diff sin secretos | registro de cierre | pendiente |
@@ -172,3 +172,6 @@ decisión y cuál es el efecto de cada alternativa.
 - 25/09/2026: especificación formal creada antes de continuar las fases 3 a 6. Se
   incorporan los resultados ya verificados de Groq y viabilidad como requisitos
   implementados, sin declarar completas las fases aún no probadas.
+- 25/09/2026: HBI-006 implementado. Las recetas financieras usan referencias
+  físicas y rutas FK verificadas; el materializador compila fuentes relacionadas,
+  concilia medidas y publica diferencias y ratios con denominador explícito.

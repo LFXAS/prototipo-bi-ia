@@ -474,6 +474,126 @@ def test_materializer_compiles_a_controlled_calculated_measure_without_free_sql(
     assert " * CAST(t0.[OrderQty] AS decimal(38, 10))" in plan.fact.query
 
 
+def test_materializer_joins_a_verified_cost_source_and_compiles_total_cost() -> None:
+    candidate = proposal()
+    candidate["fact"]["source_tables"] = ["Sales.SalesOrderDetail"]
+    candidate["fact"]["business_keys"] = ["SalesOrderID", "SalesOrderDetailID"]
+    candidate["fact"]["measures"] = [
+        {
+            "name": "costo_total",
+            "source_columns": [
+                "Sales.SalesOrderDetail.OrderQty",
+                "Production.Product.StandardCost",
+            ],
+            "aggregation": "sum",
+            "semantic_role": "cost_amount",
+            "calculation": {
+                "operation": "multiply",
+                "inputs": [
+                    "Sales.SalesOrderDetail.OrderQty",
+                    "Production.Product.StandardCost",
+                ],
+            },
+        }
+    ]
+    candidate["dimensions"] = []
+    schema = {
+        "schemas": [
+            {
+                "name": "Sales",
+                "tables": [
+                    {
+                        "name": "SalesOrderDetail",
+                        "columns": [
+                            {"name": "SalesOrderID", "data_type": "int"},
+                            {"name": "SalesOrderDetailID", "data_type": "int"},
+                            {"name": "ProductID", "data_type": "int"},
+                            {"name": "OrderQty", "data_type": "smallint"},
+                        ],
+                        "foreign_keys": [
+                            {
+                                "columns": ["ProductID"],
+                                "referenced_schema": "Production",
+                                "referenced_table": "Product",
+                                "referenced_columns": ["ProductID"],
+                            }
+                        ],
+                    }
+                ],
+            },
+            {
+                "name": "Production",
+                "tables": [
+                    {
+                        "name": "Product",
+                        "columns": [
+                            {"name": "ProductID", "data_type": "int"},
+                            {"name": "StandardCost", "data_type": "money"},
+                        ],
+                        "foreign_keys": [],
+                    }
+                ],
+            },
+        ]
+    }
+
+    plan = build_materialization_plan(candidate, schema)
+
+    assert "LEFT JOIN [Production].[Product] AS t1" in plan.fact.query
+    assert "CAST(t0.[OrderQty] AS decimal(38, 10))" in plan.fact.query
+    assert "CAST(t1.[StandardCost] AS decimal(38, 10))" in plan.fact.query
+
+
+def test_compiles_margin_and_per_unit_recipes_with_explicit_denominators() -> None:
+    candidate = proposal()
+    candidate["fact"]["measures"].append(
+        {
+            "name": "costo_total",
+            "source_columns": ["StandardCost"],
+            "aggregation": "sum",
+            "semantic_role": "cost_amount",
+        }
+    )
+    candidate["kpis"].extend(
+        [
+            {
+                "code": "margen_bruto",
+                "name": "Margen bruto",
+                "formula_kind": "difference",
+                "inputs": ["importe_venta", "costo_total"],
+                "unit": "moneda de origen",
+            },
+            {
+                "code": "margen_porcentaje",
+                "name": "Margen bruto %",
+                "formula_kind": "share",
+                "inputs": ["margen_bruto", "importe_venta"],
+                "unit": "porcentaje",
+            },
+            {
+                "code": "costo_por_unidad",
+                "name": "Costo por unidad",
+                "formula_kind": "ratio",
+                "inputs": ["costo_total", "cantidad_vendida"],
+                "unit": "moneda de origen por unidad",
+            },
+        ]
+    )
+
+    recipes, issues = compile_kpi_recipes(candidate)
+    indexed = {item["code"]: item for item in recipes}
+
+    assert issues == []
+    assert indexed["margen_bruto"]["recipe"] == {
+        "template": "difference",
+        "minuend": "importe_venta",
+        "subtrahend": "costo_total",
+    }
+    assert indexed["margen_porcentaje"]["recipe"]["numerator"] == "margen_bruto"
+    assert indexed["margen_porcentaje"]["recipe"]["denominator"] == "importe_venta"
+    assert indexed["costo_por_unidad"]["recipe"]["denominator"] == "cantidad_vendida"
+
+
 def test_execution_readiness_blocks_a_discount_rate_used_as_money() -> None:
     candidate = proposal()
     candidate["fact"]["measures"] = [

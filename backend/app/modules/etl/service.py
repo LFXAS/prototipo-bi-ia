@@ -7,7 +7,7 @@ from app.modules.copilot.service import canonical_hash, metadata_tables
 
 BUILDER_VERSION = "sales-etl-v1"
 SUPPORTED_AGGREGATIONS = {"sum", "count", "count_distinct", "average", "min", "max"}
-SUPPORTED_RECIPE_KINDS = {"aggregate", "ratio", "share"}
+SUPPORTED_RECIPE_KINDS = {"aggregate", "difference", "ratio", "share"}
 
 
 def assess_dimensional_readiness(
@@ -123,7 +123,7 @@ def assess_dimensional_readiness(
             re.search(r"amount|importe|monto|total|value|valor", source_text, re.IGNORECASE)
         )
         if (
-            role == "sales_amount"
+            role in {"sales_amount", "discount_amount"}
             and discount_like
             and not amount_like
             and not isinstance(calculation, dict)
@@ -133,7 +133,11 @@ def assess_dimensional_readiness(
                 "Cree una versión corregida con una receta controlada de precio, tasa y "
                 "cantidad; no ejecute nuevamente esta versión."
             )
-        if role == "sales_amount" and discount_like and isinstance(calculation, dict):
+        if (
+            role in {"sales_amount", "discount_amount"}
+            and discount_like
+            and isinstance(calculation, dict)
+        ):
             operation = str(calculation.get("operation", ""))
             inputs = [str(item) for item in calculation.get("inputs", [])]
             non_discount = [
@@ -208,7 +212,11 @@ def compile_kpi_recipes(proposal: dict[str, Any]) -> tuple[list[dict[str, Any]],
                 semantic_role = "sales_amount"
             normalized_unit = declared_unit
             adjustments: list[str] = []
-            if semantic_role == "sales_amount" and declared_unit.casefold() not in {
+            if semantic_role in {
+                "sales_amount",
+                "cost_amount",
+                "discount_amount",
+            } and declared_unit.casefold() not in {
                 "moneda",
                 "moneda de origen",
                 "currency",
@@ -257,6 +265,12 @@ def compile_kpi_recipes(proposal: dict[str, Any]) -> tuple[list[dict[str, Any]],
             "denominator": normalized_inputs[1],
             "zero_denominator": "null",
         }
+        if kind == "difference":
+            recipe = {
+                "template": kind,
+                "minuend": normalized_inputs[0],
+                "subtrahend": normalized_inputs[1],
+            }
         if kind == "share":
             recipe["multiply_by"] = 100
         recipes.append(

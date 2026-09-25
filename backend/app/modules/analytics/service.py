@@ -127,6 +127,27 @@ def _recipe_parts(recipe: dict[str, Any]) -> tuple[str, str] | None:
     return operation, measure
 
 
+def _derived_recipe_value(
+    recipe: dict[str, Any], resolved_values: dict[str, float]
+) -> float | None:
+    detail = recipe.get("recipe")
+    if not isinstance(detail, dict):
+        return None
+    kind = str(recipe.get("kind", ""))
+    if kind == "difference":
+        minuend = resolved_values.get(str(detail.get("minuend")))
+        subtrahend = resolved_values.get(str(detail.get("subtrahend")))
+        return minuend - subtrahend if minuend is not None and subtrahend is not None else None
+    if kind in {"ratio", "share"}:
+        numerator = resolved_values.get(str(detail.get("numerator")))
+        denominator = resolved_values.get(str(detail.get("denominator")))
+        if numerator is None or denominator is None or denominator == 0.0:
+            return None
+        value = numerator / denominator
+        return value * float(detail.get("multiply_by", 100)) if kind == "share" else value
+    return None
+
+
 def _unit_for_recipe(execution: EtlExecution, recipe: dict[str, Any]) -> str:
     code = str(recipe.get("code", ""))
     for item in _dict_items(execution.metrics_document.get("kpis")):
@@ -364,15 +385,9 @@ async def build_dashboard(
                 text(f"SELECT {_aggregate_expression(parts[0], parts[1])} {from_sql}"), params
             )
             value = _number(result)
-        elif recipe.get("kind") in {"ratio", "share"}:
-            detail = recipe.get("recipe")
-            if isinstance(detail, dict):
-                numerator = resolved_values.get(str(detail.get("numerator")))
-                denominator = resolved_values.get(str(detail.get("denominator")))
-                if numerator is not None and denominator:
-                    value = numerator / denominator
-                    if recipe.get("kind") == "share":
-                        value *= float(detail.get("multiply_by", 100))
+            resolved_values[parts[1]] = value
+        else:
+            value = _derived_recipe_value(recipe, resolved_values)
         code = str(recipe.get("code", ""))
         if value is not None:
             resolved_values[code] = value

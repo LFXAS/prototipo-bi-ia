@@ -333,18 +333,24 @@ PROPOSAL_BLUEPRINT_SYSTEM_INSTRUCTION = (
 
 SEMANTIC_ROLES = {
     "sales_amount",
+    "cost_amount",
+    "discount_amount",
     "quantity",
     "customer_count",
     "transaction_count",
 }
 ROLE_AGGREGATIONS = {
     "sales_amount": {"sum", "average", "min", "max"},
+    "cost_amount": {"sum", "average", "min", "max"},
+    "discount_amount": {"sum", "average", "min", "max"},
     "quantity": {"sum", "average", "min", "max"},
     "customer_count": {"count_distinct"},
     "transaction_count": {"count_distinct"},
 }
 ROLE_DEFAULT_AGGREGATION = {
     "sales_amount": "sum",
+    "cost_amount": "sum",
+    "discount_amount": "sum",
     "quantity": "sum",
     "customer_count": "count_distinct",
     "transaction_count": "count_distinct",
@@ -1264,6 +1270,8 @@ def _measure_candidates_for_role(role: str, fact_columns: list[dict[str, Any]]) 
             "descuento",
         },
         "quantity": {"qty", "quantity", "cantidad", "unidades", "units"},
+        "cost_amount": {"cost", "costo", "coste"},
+        "discount_amount": {"discount", "descuento"},
         "customer_count": {"customer", "cliente", "account"},
         "transaction_count": {"order", "sale", "venta", "transaction", "pedido"},
     }
@@ -1316,6 +1324,8 @@ def _column_supports_role(role: str, column: str) -> bool:
             "descuento",
         },
         "quantity": {"qty", "quantity", "cantidad", "unidades", "units"},
+        "cost_amount": {"cost", "costo", "coste"},
+        "discount_amount": {"discount", "descuento"},
         "customer_count": {"customer", "cliente", "account", "person", "store"},
         "transaction_count": {"order", "sale", "sales", "venta", "transaction", "pedido"},
     }
@@ -2327,6 +2337,282 @@ def build_requirement_coverage(
     return coverage
 
 
+def apply_financial_requirements(
+    proposal: dict[str, Any], assessment: dict[str, Any], scope: dict[str, Any]
+) -> dict[str, Any]:
+    """Materialize proven financial requirements that the provider may have omitted.
+
+    The enrichment is deliberately structural: it only uses columns present in the
+    bounded scope and paths composed from declared foreign keys. Ambiguous candidates
+    remain uncovered so the normal validation blocks approval instead of guessing.
+    """
+    result = deepcopy(proposal)
+    requested = {
+        str(item.get("code"))
+        for item in assessment.get("requirements", [])
+        if isinstance(item, dict) and item.get("status") in {"direct", "derivable"}
+    }
+    financial_codes = {
+        "goal:discount_amount",
+        "goal:total_cost",
+        "goal:gross_margin",
+        "goal:sales_per_unit",
+        "goal:cost_per_unit",
+    }
+    if not requested & financial_codes:
+        return result
+
+    tables = {
+        str(item.get("ref")): item
+        for item in scope.get("tables", [])
+        if isinstance(item, dict) and item.get("ref")
+    }
+    fact = result.get("fact")
+    if not isinstance(fact, dict):
+        return result
+    fact_sources = [str(item) for item in fact.get("source_tables", [])]
+    if len(fact_sources) != 1 or fact_sources[0] not in tables:
+        return result
+    fact_source = fact_sources[0]
+
+    graph: dict[str, set[str]] = {reference: set() for reference in tables}
+    for source, table in tables.items():
+        for relation in table.get("foreign_keys", []):
+            if not isinstance(relation, dict):
+                continue
+            target = (
+                f"{relation.get('referenced_schema', '')}.{relation.get('referenced_table', '')}"
+            )
+            if target in graph:
+                graph[source].add(target)
+                graph[target].add(source)
+
+    def reachable(target: str) -> bool:
+        pending = [fact_source]
+        visited = {fact_source}
+        while pending:
+            current = pending.pop(0)
+            if current == target:
+                return True
+            for neighbor in sorted(graph.get(current, set())):
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    pending.append(neighbor)
+        return False
+
+    def candidates(pattern_groups: tuple[set[str], ...], *, fact_only: bool = False) -> list[str]:
+        references: list[str] = []
+        for terms in pattern_groups:
+            for table_ref, table in tables.items():
+                if fact_only and table_ref != fact_source:
+                    continue
+                if not reachable(table_ref):
+                    continue
+                for column in table.get("columns", []):
+                    if not isinstance(column, dict) or not column.get("name"):
+                        continue
+                    name = str(column["name"])
+                    if terms <= _search_tokens(name):
+                        references.append(f"{table_ref}.{name}")
+            if references:
+                return list(dict.fromkeys(references))
+        return []
+
+    measures = [item for item in fact.get("measures", []) if isinstance(item, dict)]
+    kpis = [item for item in result.get("kpis", []) if isinstance(item, dict)]
+
+    def measure_for_role(role: str) -> dict[str, Any] | None:
+        return next((item for item in measures if item.get("semantic_role") == role), None)
+
+    def append_measure(
+        *, name: str, role: str, references: list[str], operation: str, formula: str
+    ) -> dict[str, Any] | None:
+        existing = measure_for_role(role)
+        if existing is not None:
+            return existing
+        if not references or any(reference.count(".") < 2 for reference in references):
+            return None
+        measure = {
+            "name": name,
+            "source_columns": references,
+            "aggregation": "sum",
+            "semantic_role": role,
+            "provenance": {
+                "kind": "calculated",
+                "source_references": references,
+                "formula": formula,
+                "verification": (
+                    "Columnas, tipos y ruta de relación comprobados en la instantánea."
+                ),
+            },
+            "calculation": {
+                "operation": operation,
+                "inputs": references,
+                "null_policy": "preserve_null",
+            },
+        }
+        measures.append(measure)
+        return measure
+
+    quantity = measure_for_role("quantity")
+    quantity_name = str(quantity.get("name")) if quantity else ""
+    quantity_refs = (
+        [str(item) for item in quantity.get("provenance", {}).get("source_references", [])]
+        if quantity
+        else candidates(({"order", "qty"}, {"quantity"}, {"cantidad"}, {"units"}), fact_only=True)
+    )
+    if not quantity_name and len(quantity_refs) == 1:
+        reference = quantity_refs[0]
+        quantity = {
+            "name": "unidades_vendidas",
+            "source_columns": [reference],
+            "aggregation": "sum",
+            "semantic_role": "quantity",
+            "provenance": {
+                "kind": "direct",
+                "source_references": [reference],
+                "formula": f"SUM({reference})",
+                "verification": "Tabla y columna comprobadas en la instantánea.",
+            },
+        }
+        measures.append(quantity)
+        quantity_name = "unidades_vendidas"
+
+    cost_requested = bool(
+        requested & {"goal:total_cost", "goal:gross_margin", "goal:cost_per_unit"}
+    )
+    total_cost: dict[str, Any] | None = None
+    if cost_requested and len(quantity_refs) == 1:
+        cost_refs = candidates(
+            (
+                {"standard", "cost"},
+                {"unit", "cost"},
+                {"product", "cost"},
+                {"costo"},
+                {"cost"},
+            )
+        )
+        if len(cost_refs) == 1:
+            total_cost = append_measure(
+                name="costo_total",
+                role="cost_amount",
+                references=[quantity_refs[0], cost_refs[0]],
+                operation="multiply",
+                formula=f"SUM({quantity_refs[0]} × {cost_refs[0]})",
+            )
+
+    if "goal:discount_amount" in requested:
+        price_refs = [
+            reference
+            for reference in candidates(({"unit", "price"},), fact_only=True)
+            if "discount" not in _search_tokens(reference)
+            and "descuento" not in _search_tokens(reference)
+        ]
+        discount_refs = candidates(
+            ({"unit", "price", "discount"}, {"discount", "rate"}),
+            fact_only=True,
+        )
+        if len(price_refs) == len(discount_refs) == len(quantity_refs) == 1:
+            append_measure(
+                name="descuento_monetario",
+                role="discount_amount",
+                references=[price_refs[0], discount_refs[0], quantity_refs[0]],
+                operation="multiply",
+                formula=(f"SUM({price_refs[0]} × {discount_refs[0]} × {quantity_refs[0]})"),
+            )
+
+    fact["measures"] = measures
+    result["fact"] = fact
+
+    def add_aggregate(code: str, name: str, measure: dict[str, Any], unit: str) -> None:
+        if any(str(item.get("code")) == code for item in kpis):
+            return
+        kpis.append(
+            {
+                "code": code,
+                "name": name,
+                "description_es": f"{name} calculado únicamente con medidas verificadas.",
+                "formula_kind": "aggregate",
+                "formula": {"operation": "sum", "measure": str(measure.get("name"))},
+                "unit": unit,
+                "semantic_role": str(measure.get("semantic_role")),
+                "provenance": deepcopy(measure.get("provenance", {})),
+            }
+        )
+
+    def add_derived(
+        code: str, name: str, kind: str, inputs: list[str], unit: str, formula: str
+    ) -> None:
+        if not all(inputs) or any(str(item.get("code")) == code for item in kpis):
+            return
+        kpis.append(
+            {
+                "code": code,
+                "name": name,
+                "description_es": f"{name} derivado de resultados agregados conciliados.",
+                "formula_kind": kind,
+                "inputs": inputs,
+                "unit": unit,
+                "provenance": {
+                    "source_references": inputs,
+                    "formula": formula,
+                    "verification": "Entradas conciliadas y denominador controlado.",
+                },
+            }
+        )
+
+    sales = measure_for_role("sales_amount")
+    sales_name = str(sales.get("name")) if sales else ""
+    if total_cost is not None:
+        total_cost_name = str(total_cost.get("name"))
+        add_aggregate("costo_total", "Costo total", total_cost, "moneda de origen")
+        if "goal:gross_margin" in requested and sales_name:
+            add_derived(
+                "margen_bruto",
+                "Margen bruto",
+                "difference",
+                [sales_name, total_cost_name],
+                "moneda de origen",
+                f"SUM({sales_name}) − SUM({total_cost_name})",
+            )
+            add_derived(
+                "margen_porcentaje",
+                "Margen bruto %",
+                "share",
+                ["margen_bruto", sales_name],
+                "porcentaje",
+                f"margen_bruto ÷ SUM({sales_name}) × 100",
+            )
+        if "goal:cost_per_unit" in requested and quantity_name:
+            add_derived(
+                "costo_por_unidad",
+                "Costo por unidad",
+                "ratio",
+                [total_cost_name, quantity_name],
+                "moneda de origen por unidad",
+                f"SUM({total_cost_name}) ÷ SUM({quantity_name})",
+            )
+    discount = measure_for_role("discount_amount")
+    if discount is not None:
+        add_aggregate(
+            "descuento_monetario",
+            "Descuento monetario",
+            discount,
+            "moneda de origen",
+        )
+    if "goal:sales_per_unit" in requested and sales_name and quantity_name:
+        add_derived(
+            "venta_por_unidad",
+            "Venta por unidad",
+            "ratio",
+            [sales_name, quantity_name],
+            "moneda de origen por unidad",
+            f"SUM({sales_name}) ÷ SUM({quantity_name})",
+        )
+    result["kpis"] = kpis
+    return result
+
+
 def validate_proposal(
     proposal: dict[str, Any], scope: dict[str, Any], document: dict[str, Any]
 ) -> dict[str, Any]:
@@ -2459,6 +2745,53 @@ def validate_proposal(
             )
         for index, table in enumerate(fact_sources):
             check_table(table, f"fact.source_tables.{index}")
+        relation_graph: dict[str, set[str]] = {reference: set() for reference in scoped}
+        for source, table in scoped.items():
+            for relation in table.get("foreign_keys", []):
+                if not isinstance(relation, dict):
+                    continue
+                target = (
+                    f"{relation.get('referenced_schema', '')}."
+                    f"{relation.get('referenced_table', '')}"
+                )
+                if target in relation_graph:
+                    relation_graph[source].add(target)
+                    relation_graph[target].add(source)
+
+        def source_reference(value: object) -> str | None:
+            raw = str(value)
+            if raw.count(".") >= 2:
+                table_ref, column_name = raw.rsplit(".", 1)
+                table_columns = {
+                    str(column.get("name"))
+                    for column in scoped.get(table_ref, {}).get("columns", [])
+                    if isinstance(column, dict)
+                }
+                if column_name not in table_columns:
+                    return None
+                pending = list(fact_sources)
+                visited = set(fact_sources)
+                while pending:
+                    current = pending.pop(0)
+                    if current == table_ref:
+                        return raw
+                    for neighbor in sorted(relation_graph.get(current, set())):
+                        if neighbor not in visited:
+                            visited.add(neighbor)
+                            pending.append(neighbor)
+                return None
+            matches = [
+                f"{table_ref}.{raw}"
+                for table_ref in fact_sources
+                if raw
+                in {
+                    str(column.get("name"))
+                    for column in scoped.get(table_ref, {}).get("columns", [])
+                    if isinstance(column, dict)
+                }
+            ]
+            return matches[0] if len(matches) == 1 else None
+
         raw_measures = fact.get("measures", [])
         if not isinstance(raw_measures, list) or not raw_measures:
             issues.append(
@@ -2506,7 +2839,7 @@ def validate_proposal(
                 )
                 if (
                     calculation is None
-                    and role == "sales_amount"
+                    and role in {"sales_amount", "discount_amount"}
                     and _looks_like_discount_rate(source_column)
                 ):
                     issues.append(
@@ -2581,20 +2914,17 @@ def validate_proposal(
                             )
                         )
                 columns = measure.get("source_columns", [])
-                available = {
-                    str(column.get("name"))
-                    for table_ref in fact_sources
-                    for column in scoped.get(table_ref, {}).get("columns", [])
-                    if isinstance(column, dict)
-                }
                 for column in columns if isinstance(columns, list) else []:
-                    if str(column) not in available:
+                    if source_reference(column) is None:
                         issues.append(
                             _issue(
                                 "reference.column_unknown",
                                 "error",
                                 f"fact.measures.{index}.source_columns",
-                                f"La columna {column} no existe en las fuentes del hecho.",
+                                (
+                                    f"La columna {column} no existe o no tiene una ruta "
+                                    "de relación declarada desde el hecho."
+                                ),
                             )
                         )
                 if calculation is not None:
@@ -2632,7 +2962,7 @@ def validate_proposal(
                             )
                         )
                     if (
-                        role == "sales_amount"
+                        role in {"sales_amount", "discount_amount"}
                         and isinstance(inputs, list)
                         and any(_looks_like_discount_rate(value) for value in inputs)
                         and not _discount_amount_recipe_is_complete(
@@ -2664,7 +2994,9 @@ def validate_proposal(
                         )
                     else:
                         expected_references = {
-                            f"{table}.{column}" for table in fact_sources for column in columns
+                            reference
+                            for column in columns
+                            if (reference := source_reference(column)) is not None
                         }
                         references = {str(item) for item in provenance.get("source_references", [])}
                         if not references or not references.issubset(expected_references):
@@ -2862,10 +3194,54 @@ def validate_proposal(
             _issue("kpi.missing", "error", "kpis", "La propuesta debe incluir al menos un KPI.")
         )
     else:
+        known_kpi_inputs = set(measures)
         for index, kpi in enumerate(kpis):
-            formula = kpi.get("formula", {}) if isinstance(kpi, dict) else {}
+            if not isinstance(kpi, dict):
+                issues.append(
+                    _issue(
+                        "kpi.formula",
+                        "error",
+                        f"kpis.{index}.formula",
+                        "El KPI no tiene una estructura válida.",
+                    )
+                )
+                continue
+            code = str(kpi.get("code", ""))
+            kind = str(kpi.get("formula_kind", "aggregate"))
+            if kind in {"ratio", "share", "difference"}:
+                inputs = [str(item) for item in kpi.get("inputs", [])]
+                if len(inputs) != 2 or not all(item in known_kpi_inputs for item in inputs):
+                    issues.append(
+                        _issue(
+                            "kpi.derived_inputs",
+                            "error",
+                            f"kpis.{index}.inputs",
+                            (
+                                "El KPI derivado requiere exactamente dos medidas o "
+                                "indicadores previamente comprobados."
+                            ),
+                        )
+                    )
+                provenance = kpi.get("provenance")
+                if (
+                    not isinstance(provenance, dict)
+                    or not str(provenance.get("formula", "")).strip()
+                ):
+                    issues.append(
+                        _issue(
+                            "kpi.derived_formula",
+                            "error",
+                            f"kpis.{index}.provenance",
+                            "El KPI derivado debe mostrar su fórmula y denominador.",
+                        )
+                    )
+                if code:
+                    known_kpi_inputs.add(code)
+                continue
+            formula = kpi.get("formula", {}) if isinstance(kpi.get("formula"), dict) else {}
             if (
-                formula.get("operation") not in ALLOWED_AGGREGATIONS
+                kind != "aggregate"
+                or formula.get("operation") not in ALLOWED_AGGREGATIONS
                 or formula.get("measure") not in measures
             ):
                 issues.append(
@@ -2907,6 +3283,8 @@ def validate_proposal(
                         ),
                     )
                 )
+            if code:
+                known_kpi_inputs.add(code)
 
     plan = proposal.get("etl_plan", [])
     if not isinstance(plan, list) or not plan:

@@ -13,6 +13,7 @@ from app.modules.copilot.entity_resolution import enrich_dimension_labels
 from app.modules.copilot.service import (
     apply_analyst_adjustments,
     apply_controlled_relationship,
+    apply_financial_requirements,
     build_requirement_coverage,
     canonical_hash,
     compact_metadata_blocks,
@@ -212,6 +213,73 @@ def test_expanded_measures_expose_physical_provenance_and_formula() -> None:
     assert measure["provenance"]["source_references"] == ["Sales.OrderDetail.LineTotal"]
     assert measure["provenance"]["formula"] == "SUM(LineTotal)"
     assert proposal["grain"]["business_keys"] == ["OrderID", "ProductID"]
+
+
+def test_financial_requirements_add_only_traceable_cost_margin_and_unit_kpis() -> None:
+    document = deepcopy(DOCUMENT)
+    detail = document["schemas"][0]["tables"][0]
+    detail["columns"].extend(
+        [
+            {"name": "OrderQty", "data_type": "smallint", "primary_key": False},
+            {"name": "UnitPrice", "data_type": "money", "primary_key": False},
+            {"name": "UnitPriceDiscount", "data_type": "numeric", "primary_key": False},
+        ]
+    )
+    product = document["schemas"][1]["tables"][0]
+    product["columns"].append({"name": "StandardCost", "data_type": "money", "primary_key": False})
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], document)
+    scope = derived_scope(document, semantic_map)
+    base = expand_proposal_blueprint(valid_blueprint(), scope, semantic_map)
+    assessment = {
+        "requirements": [
+            {
+                "code": "goal:gross_margin",
+                "label": "Margen bruto y rentabilidad",
+                "status": "derivable",
+                "components": ["sales_amount", "unit_cost", "quantity"],
+            },
+            {
+                "code": "goal:cost_per_unit",
+                "label": "Costo por unidad",
+                "status": "derivable",
+                "components": ["unit_cost"],
+            },
+            {
+                "code": "goal:sales_per_unit",
+                "label": "Venta por unidad",
+                "status": "derivable",
+                "components": ["sales_amount", "quantity"],
+            },
+            {
+                "code": "goal:discount_amount",
+                "label": "Descuento monetario",
+                "status": "derivable",
+                "components": ["unit_price", "discount_rate", "quantity"],
+            },
+        ],
+        "accepted_limitations": [],
+    }
+
+    enriched = apply_financial_requirements(base, assessment, scope)
+    enriched["need_assessment"] = assessment
+    enriched["requirement_coverage"] = build_requirement_coverage(enriched, assessment)
+    measures = {item["semantic_role"]: item for item in enriched["fact"]["measures"]}
+    kpis = {item["code"]: item for item in enriched["kpis"]}
+
+    assert measures["cost_amount"]["source_columns"] == [
+        "Sales.OrderDetail.OrderQty",
+        "Production.Product.StandardCost",
+    ]
+    assert measures["discount_amount"]["source_columns"] == [
+        "Sales.OrderDetail.UnitPrice",
+        "Sales.OrderDetail.UnitPriceDiscount",
+        "Sales.OrderDetail.OrderQty",
+    ]
+    assert kpis["margen_bruto"]["formula_kind"] == "difference"
+    assert kpis["margen_porcentaje"]["inputs"] == ["margen_bruto", "importe_venta"]
+    assert kpis["costo_por_unidad"]["formula_kind"] == "ratio"
+    assert kpis["venta_por_unidad"]["formula_kind"] == "ratio"
+    assert validate_proposal(enriched, scope, document)["valid"] is True
 
 
 def test_requirement_coverage_reports_outputs_and_blocks_silent_omissions() -> None:

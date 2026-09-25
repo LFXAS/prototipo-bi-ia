@@ -82,12 +82,27 @@ def _postgres_identifier(value: str) -> str:
     return '"' + value.replace('"', '""') + '"'
 
 
-def _calculated_source_expression(column: SourceColumn, alias: str = "t0") -> str:
+def _source_binding(value: str, aliases: dict[str, str], default_table: str) -> tuple[str, str]:
+    if value.count(".") >= 2:
+        table_ref, column_name = value.rsplit(".", 1)
+    else:
+        table_ref, column_name = default_table, value
+    alias = aliases.get(table_ref)
+    if alias is None:
+        raise ValueError("Una medida referencia una tabla sin ruta declarada desde el hecho.")
+    return alias, column_name
+
+
+def _calculated_source_expression(
+    column: SourceColumn, aliases: dict[str, str], default_table: str
+) -> str:
     if column.calculation_operation is None:
-        return f"{alias}.{_sqlserver_identifier(column.source_name)}"
+        alias, source_name = _source_binding(column.source_name, aliases, default_table)
+        return f"{alias}.{_sqlserver_identifier(source_name)}"
     inputs = [
         f"CAST({alias}.{_sqlserver_identifier(name)} AS decimal(38, 10))"
-        for name in column.calculation_inputs
+        for value in column.calculation_inputs
+        for alias, name in [_source_binding(value, aliases, default_table)]
     ]
     operation = column.calculation_operation
     if operation == "multiply":
@@ -335,8 +350,9 @@ def build_materialization_plan(
     alias_by_table = {fact_source: "t0"}
     joins: list[str] = []
     joined_edges: set[tuple[str, str]] = set()
-    for dimension in dimensions:
-        path = _shortest_path(graph, fact_source, dimension.source_ref)
+
+    def ensure_joined(target_ref: str) -> None:
+        path = _shortest_path(graph, fact_source, target_ref)
         for left_ref, right_ref, left_columns, right_columns in path:
             edge = (left_ref, right_ref)
             reverse_edge = (right_ref, left_ref)
@@ -356,6 +372,9 @@ def build_materialization_plan(
             joins.append(f"LEFT JOIN {_source_table(right_ref)} AS {right_alias} ON {conditions}")
             joined_edges.add(edge)
 
+    for dimension in dimensions:
+        ensure_joined(dimension.source_ref)
+
     fact_table = tables[fact_source]
     keys = [
         SourceColumn(str(name), _safe_identifier(str(name)), _column_type(fact_table, str(name)))
@@ -374,7 +393,18 @@ def build_materialization_plan(
         if calculation is not None:
             operation = str(calculation.get("operation", ""))
             calculation_inputs = tuple(str(item) for item in calculation.get("inputs", []))
+            qualified_columns = {
+                f"{table_ref}.{item.get('name')}": str(item.get("name"))
+                for table_ref, table in tables.items()
+                for item in table.get("columns", [])
+                if isinstance(item, dict) and item.get("name")
+            }
             fact_column_names = {str(item.get("name")) for item in fact_table.get("columns", [])}
+            for value in calculation_inputs:
+                if value.count(".") >= 2:
+                    table_ref, _ = value.rsplit(".", 1)
+                    if value in qualified_columns:
+                        ensure_joined(table_ref)
             valid_width = 2 <= len(calculation_inputs) <= 4
             if operation in {"subtract", "divide"}:
                 valid_width = len(calculation_inputs) == 2
@@ -382,18 +412,37 @@ def build_materialization_plan(
                 operation not in {"multiply", "add", "subtract", "divide"}
                 or not valid_width
                 or list(calculation_inputs) != source_columns
-                or any(name not in fact_column_names for name in calculation_inputs)
+                or any(
+                    name not in fact_column_names and name not in qualified_columns
+                    for name in calculation_inputs
+                )
             ):
                 raise ValueError("La medida calculada no conserva una receta verificable.")
         else:
             operation = None
             calculation_inputs = ()
+            if source_columns:
+                source_value = source_columns[0]
+                if source_value.count(".") >= 2:
+                    table_ref, column_name = source_value.rsplit(".", 1)
+                    table_columns = {
+                        str(item.get("name"))
+                        for item in tables.get(table_ref, {}).get("columns", [])
+                        if isinstance(item, dict)
+                    }
+                    if column_name not in table_columns:
+                        raise ValueError("La medida directa referencia una columna inexistente.")
+                    ensure_joined(table_ref)
         source_name = source_columns[0]
+        source_type = _column_type(fact_table, source_name)
+        if calculation is None and source_name.count(".") >= 2:
+            source_table_ref, source_column_name = source_name.rsplit(".", 1)
+            source_type = _column_type(tables[source_table_ref], source_column_name)
         measures.append(
             SourceColumn(
                 source_name,
                 _safe_identifier(str(measure.get("name", source_name))),
-                "decimal" if calculation is not None else _column_type(fact_table, source_name),
+                "decimal" if calculation is not None else source_type,
                 str(measure.get("aggregation", "sum")),
                 operation,
                 calculation_inputs,
@@ -404,7 +453,8 @@ def build_materialization_plan(
         for item in keys
     ]
     select_parts.extend(
-        f"{_calculated_source_expression(item)} AS {_sqlserver_identifier(item.target_name)}"
+        f"{_calculated_source_expression(item, alias_by_table, fact_source)} AS "
+        f"{_sqlserver_identifier(item.target_name)}"
         for item in measures
     )
     dimension_aliases: dict[str, str] = {}
@@ -941,6 +991,11 @@ def materialize_sales(
                         if result is not None and result[0] is not None
                         else None
                     )
+                elif recipe.get("kind") == "difference":
+                    minuend = resolve_input(details.get("minuend"))
+                    subtrahend = resolve_input(details.get("subtrahend"))
+                    if minuend is not None and subtrahend is not None:
+                        kpi_value = minuend - subtrahend
                 elif recipe.get("kind") in {"ratio", "share"}:
                     numerator = resolve_input(details.get("numerator"))
                     denominator = resolve_input(details.get("denominator"))

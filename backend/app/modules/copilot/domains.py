@@ -166,6 +166,14 @@ SALES_PROFILE = DomainProfile(
             "quantity",
             "qty",
             "cantidad",
+            "cost",
+            "costo",
+            "discount",
+            "descuento",
+            "margin",
+            "margen",
+            "price",
+            "precio",
         }
     ),
     deprioritized_terms=frozenset(
