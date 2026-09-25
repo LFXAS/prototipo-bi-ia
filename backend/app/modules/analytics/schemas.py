@@ -99,6 +99,28 @@ class AnalyticsCopilotRequest(BaseModel):
         return " ".join(value.split())
 
 
+class AnalyticsQueryPointRead(BaseModel):
+    label: str
+    value: float
+    share: float | None = None
+
+
+class AnalyticsQueryEvidenceRead(BaseModel):
+    metric_code: str
+    metric_name: str
+    unit: str
+    dimension: Literal["product", "customer", "territory"]
+    dimension_label: str
+    top_n: int = Field(ge=1, le=20)
+    order: Literal["desc", "asc"]
+    year: int | None = None
+    territory: str | None = None
+    denominator_value: float
+    denominator_definition: str
+    provenance: list[str]
+    points: list[AnalyticsQueryPointRead]
+
+
 class AnalyticsCopilotRead(BaseModel):
     answer: str
     evidence: list[str]
@@ -106,3 +128,4 @@ class AnalyticsCopilotRead(BaseModel):
     caveat: str
     provider_kind: str
     model_id: str
+    interpreted_query: AnalyticsQueryEvidenceRead | None = None

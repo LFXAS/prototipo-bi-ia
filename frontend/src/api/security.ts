@@ -265,6 +265,21 @@ export type AnalyticsCopilotAnswer = {
   caveat: string
   provider_kind: string
   model_id: string
+  interpreted_query?: {
+    metric_code: string
+    metric_name: string
+    unit: string
+    dimension: 'product' | 'customer' | 'territory'
+    dimension_label: string
+    top_n: number
+    order: 'desc' | 'asc'
+    year?: number
+    territory?: string
+    denominator_value: number
+    denominator_definition: string
+    provenance: string[]
+    points: Array<{ label: string; value: number; share?: number }>
+  }
 }
 
 type ApiValidationIssue = { loc?: (string | number)[]; msg?: string }

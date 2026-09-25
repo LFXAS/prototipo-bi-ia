@@ -20,6 +20,8 @@ from .schemas import (
     AnalyticsOptionRead,
     AnalyticsPointRead,
     AnalyticsQualityRead,
+    AnalyticsQueryEvidenceRead,
+    AnalyticsQueryPointRead,
     AnalyticsVisualRead,
 )
 
@@ -225,6 +227,219 @@ def _insights(visuals: list[AnalyticsVisualRead], unit: str) -> list[AnalyticsIn
                 )
             )
     return insights[:4]
+
+
+_QUERY_DIMENSIONS: dict[str, dict[str, object]] = {
+    "product": {
+        "aliases": ("producto", "product"),
+        "label": "Producto",
+        "column_candidates": ("name_es", "nombre", "name", "productnumber"),
+        "table_alias": "p",
+    },
+    "customer": {
+        "aliases": ("cliente", "customer", "client"),
+        "label": "Cliente",
+        "column_candidates": ("nombre_cliente", "name_es", "nombre", "name", "accountnumber"),
+        "table_alias": "c",
+    },
+    "territory": {
+        "aliases": ("territorio", "territory", "region"),
+        "label": "Territorio",
+        "column_candidates": (
+            "group_es",
+            "name_es",
+            "nombre",
+            "name",
+            "group",
+            "countryregioncode",
+        ),
+        "table_alias": "t",
+    },
+}
+
+
+async def run_safe_aggregate_query(
+    session: AsyncSession,
+    execution: EtlExecution,
+    proposal: BiProposal,
+    *,
+    metric_code: str,
+    dimension: str,
+    top_n: int,
+    order: str,
+    year: int | None,
+    territory: str | None,
+) -> AnalyticsQueryEvidenceRead:
+    """Execute a closed-catalog aggregate. No SQL supplied by the LLM reaches this function."""
+    dimension_contract = _QUERY_DIMENSIONS.get(dimension)
+    if dimension_contract is None:
+        raise AnalyticsUnavailableError(
+            "La dimensión interpretada no pertenece al catálogo permitido."
+        )
+    if not 1 <= top_n <= 20 or order not in {"asc", "desc"}:
+        raise AnalyticsUnavailableError("El orden o la cantidad solicitada no son seguros.")
+
+    fact_document = proposal.proposal_document.get("fact")
+    if not isinstance(fact_document, dict):
+        raise AnalyticsUnavailableError("La propuesta no conserva un hecho analítico válido.")
+    fact_name = _safe_identifier(fact_document.get("name", ""))
+    fact_columns = await _table_columns(session, fact_name)
+    recipes = _dict_items(execution.plan_document.get("kpi_recipes"))
+    recipe = next((item for item in recipes if str(item.get("code")) == metric_code), None)
+    parts = _recipe_parts(recipe or {})
+    if recipe is None or parts is None or parts[1] not in fact_columns:
+        raise AnalyticsUnavailableError(
+            "El indicador solicitado no tiene una receta agrupable verificada en esta ejecución."
+        )
+    operation, measure = parts
+    expression = _aggregate_expression(operation, measure)
+
+    aliases = dimension_contract["aliases"]
+    assert isinstance(aliases, tuple)
+    dimension_document = _dimension_document(proposal, aliases)
+    if dimension_document is None:
+        raise AnalyticsUnavailableError(
+            "La dimensión solicitada no existe en la propuesta aprobada."
+        )
+    dimension_table = _safe_identifier(dimension_document.get("name", ""))
+    dimension_columns = await _table_columns(session, dimension_table)
+    candidates = dimension_contract["column_candidates"]
+    assert isinstance(candidates, tuple)
+    attributes = dimension_document.get("attributes", [])
+    attributes = attributes if isinstance(attributes, list) else []
+    label_column = _preferred_column(
+        dimension_columns,
+        [*candidates, *attributes, dimension_document.get("business_key", "")],
+    )
+    fact_key = f"{dimension_table}_sk"
+    if label_column is None or fact_key not in fact_columns:
+        raise AnalyticsUnavailableError(
+            "La dimensión no dispone de una etiqueta y una relación materializada verificables."
+        )
+
+    table_alias = str(dimension_contract["table_alias"])
+    joins: list[str] = []
+    joined_aliases: set[str] = set()
+
+    def join_dimension(table_name: str, alias: str) -> None:
+        if alias in joined_aliases:
+            return
+        key = f"{table_name}_sk"
+        if key not in fact_columns:
+            raise AnalyticsUnavailableError(
+                "El filtro solicitado no conserva una relación materializada verificable."
+            )
+        joins.append(
+            f"JOIN {_quoted(MART_SCHEMA)}.{_quoted(table_name)} {alias} "
+            f"ON f.{_quoted(key)} = {alias}.surrogate_key "
+            f"AND {alias}.etl_execution_id = :execution_id"
+        )
+        joined_aliases.add(alias)
+
+    join_dimension(dimension_table, table_alias)
+    where = ["f.etl_execution_id = :execution_id"]
+    params: dict[str, object] = {"execution_id": execution.id, "ranking_limit": top_n}
+
+    if year is not None:
+        date_dimension = _dimension_document(proposal, ("fecha", "date", "time"))
+        if date_dimension is None:
+            raise AnalyticsUnavailableError("No existe una dimensión temporal para aplicar el año.")
+        date_table = _safe_identifier(date_dimension.get("name", ""))
+        date_columns = await _table_columns(session, date_table)
+        date_column = _preferred_column(
+            date_columns,
+            [date_dimension.get("business_key", ""), "fecha", "orderdate", "date"],
+        )
+        if date_column is None:
+            raise AnalyticsUnavailableError("No existe una fecha verificada para aplicar el año.")
+        join_dimension(date_table, "d")
+        where.append(f"EXTRACT(YEAR FROM d.{_quoted(date_column)}) = :year")
+        params["year"] = year
+
+    if territory is not None:
+        territory_dimension = _dimension_document(proposal, ("territorio", "territory", "region"))
+        if territory_dimension is None:
+            raise AnalyticsUnavailableError(
+                "No existe una dimensión territorial para aplicar el filtro."
+            )
+        territory_table = _safe_identifier(territory_dimension.get("name", ""))
+        territory_columns = await _table_columns(session, territory_table)
+        territory_label = _preferred_column(
+            territory_columns,
+            [
+                "group_es",
+                "name_es",
+                "nombre",
+                "name",
+                "group",
+                "countryregioncode",
+                territory_dimension.get("business_key", ""),
+            ],
+        )
+        if territory_label is None:
+            raise AnalyticsUnavailableError("No existe una etiqueta territorial verificable.")
+        join_dimension(territory_table, "t")
+        where.append(f"t.{_quoted(territory_label)} = :territory")
+        params["territory"] = territory
+
+    from_sql = (
+        f"FROM {_quoted(MART_SCHEMA)}.{_quoted(fact_name)} f "
+        + " ".join(joins)
+        + " WHERE "
+        + " AND ".join(where)
+    )
+    order_sql = "DESC NULLS LAST" if order == "desc" else "ASC NULLS LAST"
+    rows = (
+        await session.execute(
+            text(
+                "SELECT COALESCE(NULLIF(TRIM("
+                f"{table_alias}.{_quoted(label_column)}::text), ''), 'Sin etiqueta') AS label, "
+                f"{expression} AS value {from_sql} GROUP BY 1 "
+                f"ORDER BY value {order_sql} LIMIT :ranking_limit"
+            ),
+            params,
+        )
+    ).all()
+    denominator_params = {key: value for key, value in params.items() if key != "ranking_limit"}
+    denominator_value = _number(
+        await session.scalar(text(f"SELECT {expression} {from_sql}"), denominator_params)
+    )
+    points = [
+        AnalyticsQueryPointRead(
+            label=str(row.label),
+            value=_number(row.value),
+            share=(_number(row.value) / denominator_value * 100) if denominator_value else None,
+        )
+        for row in rows
+    ]
+    metric_name = str(recipe.get("name", metric_code))
+    unit = _display_unit_for_recipe(execution, recipe)
+    scope = [f"ejecución #{execution.id}"]
+    if year is not None:
+        scope.append(f"año {year}")
+    if territory is not None:
+        scope.append(f"territorio {territory}")
+    return AnalyticsQueryEvidenceRead(
+        metric_code=metric_code,
+        metric_name=metric_name,
+        unit=unit,
+        dimension=dimension,
+        dimension_label=str(dimension_contract["label"]),
+        top_n=top_n,
+        order=order,
+        year=year,
+        territory=territory,
+        denominator_value=denominator_value,
+        denominator_definition=(
+            f"Total de {metric_name} para {'; '.join(scope)}, antes de limitar al Top {top_n}."
+        ),
+        provenance=[
+            f"{MART_SCHEMA}.{fact_name}.{measure}",
+            f"Operación controlada: {operation}",
+            f"Agrupación: {MART_SCHEMA}.{dimension_table}.{label_column}",
+        ],
+        points=points,
+    )
 
 
 async def build_dashboard(

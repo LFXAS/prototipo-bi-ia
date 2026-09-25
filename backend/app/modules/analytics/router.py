@@ -21,22 +21,34 @@ from app.modules.security.models import User
 from app.modules.security.service import add_audit_event, require_permission, user_permission_codes
 
 from .schemas import AnalyticsCopilotRead, AnalyticsCopilotRequest, AnalyticsDashboardRead
-from .service import AnalyticsUnavailableError, build_dashboard
+from .service import AnalyticsUnavailableError, build_dashboard, run_safe_aggregate_query
 
 router = APIRouter(tags=["analytics"])
 _secret_cipher = SecretCipher(settings.secrets_key_path)
 
+_ANALYTICS_INTENT_INSTRUCTION = """
+Interpreta la pregunta analítica en el contrato cerrado entregado. No respondas la
+pregunta y no generes SQL. Elige exclusivamente valores de los catálogos disponibles.
+Usa analysis_mode=aggregate cuando la pregunta solicite ranking, Top N, agrupación o un
+filtro explícito que pueda requerir consultar agregados adicionales. Usa dashboard para
+resúmenes o explicaciones ya cubiertas por el panel. "Más vendidos" significa elegir el
+indicador de unidades cuando exista; "mayores ventas" significa el indicador monetario.
+__dashboard__ conserva el filtro visible y __all__ lo elimina. Devuelve únicamente el
+objeto JSON solicitado.
+""".strip()
+
 _ANALYTICS_COPILOT_INSTRUCTION = """
 Eres un copiloto de análisis de ventas. Responde en español claro para el perfil indicado.
-Usa exclusivamente los indicadores, puntos agregados, filtros, hallazgos y controles de
-calidad incluidos en el contexto. No inventes cifras, causas, relaciones, pronósticos ni
+Usa exclusivamente los indicadores, puntos agregados, el resultado de la consulta segura,
+los filtros, hallazgos y controles de calidad incluidos en el contexto. La consulta segura
+es calculada por la aplicación desde un catálogo cerrado y puede abarcar filtros que no
+estaban seleccionados visualmente. No inventes cifras, causas, relaciones, pronósticos ni
 acciones ejecutadas. Distingue un patrón observado de una relación causal. Si la pregunta
 no puede responderse con la evidencia disponible, indícalo y explica qué dato agregado
 faltaría. Nunca enumeres causas hipotéticas ni afirmes que existe un problema estructural
 si el contexto no aporta evidencia causal. Si el usuario pregunta "por qué", separa con
-claridad lo observado de lo que aún debe investigarse; expresa los datos adicionales como
-necesidades de validación, no como explicaciones posibles. No generes SQL. Devuelve
-únicamente el objeto JSON solicitado.
+claridad lo observado de lo que aún debe investigarse. Al mencionar participaciones,
+explica el denominador recibido. No generes SQL. Devuelve únicamente el objeto JSON solicitado.
 """.strip()
 
 _ANALYTICS_COPILOT_SCHEMA: dict[str, object] = {
@@ -60,6 +72,45 @@ _ANALYTICS_COPILOT_SCHEMA: dict[str, object] = {
     },
     "required": ["answer", "evidence", "suggested_questions", "caveat"],
 }
+
+
+def _analytics_intent_schema(dashboard: AnalyticsDashboardRead) -> dict[str, object]:
+    metrics = [item.value for item in dashboard.available_metrics]
+    years = [item.value for item in dashboard.filters.years]
+    territories = [item.value for item in dashboard.filters.territories]
+    return {
+        "type": "object",
+        "additionalProperties": False,
+        "properties": {
+            "analysis_mode": {"type": "string", "enum": ["dashboard", "aggregate"]},
+            "metric_code": {"type": "string", "enum": metrics},
+            "dimension": {
+                "type": "string",
+                "enum": ["none", "product", "customer", "territory"],
+            },
+            "top_n": {"type": "integer", "minimum": 1, "maximum": 20},
+            "order": {"type": "string", "enum": ["desc", "asc"]},
+            "year": {
+                "type": "string",
+                "enum": ["__dashboard__", "__all__", *years],
+            },
+            "territory": {
+                "type": "string",
+                "enum": ["__dashboard__", "__all__", *territories],
+            },
+            "interpretation": {"type": "string", "minLength": 5, "maxLength": 240},
+        },
+        "required": [
+            "analysis_mode",
+            "metric_code",
+            "dimension",
+            "top_n",
+            "order",
+            "year",
+            "territory",
+            "interpretation",
+        ],
+    }
 
 
 async def _active_llm(session: AsyncSession) -> LlmConfiguration | None:
@@ -179,7 +230,20 @@ async def analytics_copilot(
     timeout_value = await session.scalar(
         select(Parameter.value).where(Parameter.key == "LLM_TIMEOUT_SECONDS")
     )
-    context = {
+    timeout_seconds = int(timeout_value or 30)
+    intent_context = {
+        "question": payload.question,
+        "visible_selection": {
+            "metric_code": dashboard.metric_code,
+            "year": dashboard.filters.selected_year,
+            "territory": dashboard.filters.selected_territory,
+        },
+        "available_metrics": [item.model_dump() for item in dashboard.available_metrics],
+        "available_years": [item.model_dump() for item in dashboard.filters.years],
+        "available_territories": [item.model_dump() for item in dashboard.filters.territories],
+    }
+    interpreted_query = None
+    context: dict[str, object] = {
         "audience": "dirección y gerencia" if payload.view == "executive" else "analista BI",
         "question": payload.question,
         "history": [item.model_dump() for item in payload.history[-6:]],
@@ -199,12 +263,69 @@ async def analytics_copilot(
         "grain": dashboard.grain,
     }
     try:
+        intent = await generate_json(
+            configuration,
+            _ANALYTICS_INTENT_INSTRUCTION,
+            intent_context,
+            credential=credential,
+            timeout_seconds=timeout_seconds,
+            max_output_tokens=450,
+            response_schema=_analytics_intent_schema(dashboard),
+        )
+        available_metrics = {item.value for item in dashboard.available_metrics}
+        metric_code = str(intent.get("metric_code", dashboard.metric_code))
+        if metric_code not in available_metrics:
+            metric_code = dashboard.metric_code
+        dimension = str(intent.get("dimension", "none"))
+        analysis_mode = str(intent.get("analysis_mode", "dashboard"))
+        year_value = str(intent.get("year", "__dashboard__"))
+        if year_value == "__dashboard__":
+            interpreted_year = dashboard.filters.selected_year
+        elif year_value == "__all__":
+            interpreted_year = None
+        else:
+            available_years = {item.value for item in dashboard.filters.years}
+            interpreted_year = int(year_value) if year_value in available_years else None
+        territory_value = str(intent.get("territory", "__dashboard__"))
+        if territory_value == "__dashboard__":
+            interpreted_territory = dashboard.filters.selected_territory
+        elif territory_value == "__all__":
+            interpreted_territory = None
+        else:
+            available_territories = {item.value for item in dashboard.filters.territories}
+            interpreted_territory = (
+                territory_value if territory_value in available_territories else None
+            )
+        top_n = max(1, min(int(intent.get("top_n", 5)), 20))
+        order = "asc" if str(intent.get("order")) == "asc" else "desc"
+        if analysis_mode == "aggregate" and dimension in {"product", "customer", "territory"}:
+            execution = await session.get(EtlExecution, dashboard.execution_id)
+            proposal = await session.get(BiProposal, dashboard.proposal_id)
+            if execution is None or proposal is None:
+                raise AnalyticsUnavailableError(
+                    "La ejecución perdió el contrato requerido para consultar agregados."
+                )
+            interpreted_query = await run_safe_aggregate_query(
+                session,
+                execution,
+                proposal,
+                metric_code=metric_code,
+                dimension=dimension,
+                top_n=top_n,
+                order=order,
+                year=interpreted_year,
+                territory=interpreted_territory,
+            )
+        context["interpreted_intent"] = intent
+        context["safe_aggregate_result"] = (
+            interpreted_query.model_dump() if interpreted_query is not None else None
+        )
         generated = await generate_json(
             configuration,
             _ANALYTICS_COPILOT_INSTRUCTION,
             context,
             credential=credential,
-            timeout_seconds=int(timeout_value or 30),
+            timeout_seconds=timeout_seconds,
             max_output_tokens=1400,
             response_schema=_ANALYTICS_COPILOT_SCHEMA,
         )
@@ -212,7 +333,10 @@ async def analytics_copilot(
             **generated,
             provider_kind=configuration.provider_kind,
             model_id=configuration.model_id,
+            interpreted_query=interpreted_query,
         )
+    except AnalyticsUnavailableError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     except (ProviderGenerationError, ValueError) as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     await add_audit_event(
@@ -230,6 +354,9 @@ async def analytics_copilot(
             "territory": payload.territory,
             "provider": configuration.provider_kind,
             "model": configuration.model_id,
+            "query_mode": "aggregate" if interpreted_query is not None else "dashboard",
+            "query_dimension": interpreted_query.dimension if interpreted_query else None,
+            "query_top_n": interpreted_query.top_n if interpreted_query else None,
         },
     )
     await session.commit()

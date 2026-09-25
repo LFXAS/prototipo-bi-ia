@@ -107,6 +107,21 @@ function VisualCard({ visual, unit, showData }: { visual: AnalyticsVisual; unit:
   return <article className={`analytics-visual visual-${visual.code}`}><header><div><p>{visual.dimension}</p><h2>{visual.title}</h2><span>{visual.subtitle}</span></div><button className="icon-button" aria-label={`Más información sobre ${visual.title}`} title="Los valores responden a los filtros activos">ⓘ</button></header>{visual.kind === 'line' ? <LineVisual visual={visual} unit={unit} showData={showData} /> : visual.kind === 'donut' ? <DonutVisual visual={visual} unit={unit} showData={showData} /> : <BarVisual visual={visual} unit={unit} showData={showData} />}</article>
 }
 
+function InterpretedQueryCard({ answer }: { answer: AnalyticsCopilotAnswer }) {
+  const query = answer.interpreted_query
+  if (!query) return null
+  const filters = [query.year ? `Año ${query.year}` : 'Todos los años', query.territory ?? 'Todos los territorios']
+  return <section className="chat-query-evidence" aria-label="Consulta analítica interpretada">
+    <header><div><small>Consulta interpretada</small><strong>{query.metric_name} por {query.dimension_label.toLowerCase()}</strong></div><span>Top {query.top_n}</span></header>
+    <dl><div><dt>Alcance</dt><dd>{filters.join(' · ')}</dd></div><div><dt>Orden</dt><dd>{query.order === 'desc' ? 'Mayor a menor' : 'Menor a mayor'}</dd></div></dl>
+    <div className="chat-query-results" role="table" aria-label={`Resultados de ${query.metric_name}`}>
+      {query.points.map((point, index) => <div role="row" key={`${point.label}-${index}`}><span role="cell">{index + 1}. {point.label}</span><strong role="cell">{formatValue(point.value, query.unit)}</strong><small role="cell">{point.share === undefined ? '—' : `${point.share.toFixed(1)}%`}</small></div>)}
+    </div>
+    <p><strong>Denominador:</strong> {query.denominator_definition} Total: {formatValue(query.denominator_value, query.unit)}.</p>
+    <details><summary>Ver procedencia</summary><ul>{query.provenance.map((item) => <li key={item}>{item}</li>)}</ul></details>
+  </section>
+}
+
 function metricUnit(dashboard: AnalyticsDashboard) {
   return dashboard.kpis.find((item) => item.code === dashboard.metric_code)?.unit ?? 'valor'
 }
@@ -223,11 +238,11 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
   const promptGuide = viewMode === 'executive'
     ? [
         { category: 'Comprender', prompts: [`Resume ${selectedMetricLabel} para ${selectedScope}.`, '¿Qué resultado debería revisar primero y por qué?'] },
-        { category: 'Decidir', prompts: ['¿Qué productos o territorios concentran la mayor contribución?', 'Prepara tres puntos para una reunión de gerencia.'] },
+        { category: 'Decidir', prompts: ['¿Cuáles son los 5 productos más vendidos en Europa?', 'Prepara tres puntos para una reunión de gerencia.'] },
         { category: 'Interpretar con cautela', prompts: ['¿Qué limitaciones tienen estos resultados y qué no puedo concluir?', '¿Qué pregunta adicional debería hacer antes de tomar una decisión?'] },
       ]
     : [
-        { category: 'Comparar', prompts: [`Compara ${selectedMetricLabel} entre los períodos visibles.`, '¿Qué clientes, productos o territorios explican la mayor participación?'] },
+        { category: 'Comparar', prompts: [`Compara ${selectedMetricLabel} entre los períodos visibles.`, '¿Cuáles son los 5 productos más vendidos en Europa?'] },
         { category: 'Investigar', prompts: ['¿Qué variación merece una revisión adicional?', 'Señala patrones atípicos sin atribuir causalidad.'] },
         { category: 'Validar', prompts: ['Explica la calidad y trazabilidad de esta selección.', '¿Qué dato agregado faltaría para responder preguntas que este panel no cubre?'] },
       ]
@@ -264,7 +279,7 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
 
     <section className="analytics-chat" aria-label="Conversación con el copiloto analítico">
       <header><div><p>Consulta contextual</p><h3>Preguntar sobre estos resultados</h3></div><span>IA</span></header>
-      <p className="analytics-chat-intro">El copiloto usa únicamente métricas agregadas y filtros visibles. No consulta filas, credenciales ni ejecuta SQL.</p>
+      <p className="analytics-chat-intro">El copiloto interpreta indicador, dimensión, filtros y Top N. Puede consultar agregados permitidos aunque el filtro no esté seleccionado en pantalla; nunca recibe filas, credenciales ni SQL libre.</p>
       <details className="analytics-prompt-guide" open={chatMessages.length === 0}>
         <summary>Guía de preguntas sugeridas</summary>
         <p>Elija un ejemplo o úselo como modelo: indique qué quiere comprender, comparar o decidir y conserve el período o territorio relevante.</p>
@@ -272,8 +287,8 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
       </details>
       <div className="analytics-chat-conversation">
         {chatMessages.length === 0 && <div className="analytics-chat-empty"><span aria-hidden="true">✦</span><div><strong>Inicie con una pregunta concreta</strong><p>Seleccione una sugerencia o escriba qué necesita comprender, comparar o decidir.</p></div></div>}
-        {chatMessages.length > 0 && <div className="analytics-chat-thread" aria-live="polite">{chatMessages.map((message, index) => <article className={message.role} key={`${message.role}-${index}`}><small>{message.role === 'user' ? 'Tu pregunta' : 'Copiloto analítico'}</small><p>{message.content}</p>{message.answer && <><ul>{message.answer.evidence.map((item) => <li key={item}>{item}</li>)}</ul><span>{message.answer.caveat}</span><div className="chat-followups">{message.answer.suggested_questions.map((item) => <button type="button" key={item} onClick={() => void askCopilot(item)}>{item}</button>)}</div><small>{message.answer.provider_kind} · {message.answer.model_id}</small></>}</article>)}</div>}
-        {chatLoading && <p className="analytics-chat-status" role="status">Analizando únicamente la selección visible…</p>}
+        {chatMessages.length > 0 && <div className="analytics-chat-thread" aria-live="polite">{chatMessages.map((message, index) => <article className={message.role} key={`${message.role}-${index}`}><small>{message.role === 'user' ? 'Tu pregunta' : 'Copiloto analítico'}</small><p>{message.content}</p>{message.answer && <><InterpretedQueryCard answer={message.answer} /><ul>{message.answer.evidence.map((item) => <li key={item}>{item}</li>)}</ul><span>{message.answer.caveat}</span><div className="chat-followups">{message.answer.suggested_questions.map((item) => <button type="button" key={item} onClick={() => void askCopilot(item)}>{item}</button>)}</div><small>{message.answer.provider_kind} · {message.answer.model_id}</small></>}</article>)}</div>}
+        {chatLoading && <p className="analytics-chat-status" role="status">Interpretando la pregunta y consultando agregados permitidos…</p>}
         {chatError && <p className="notice error" role="alert">{chatError}</p>}
         <form onSubmit={(event) => { event.preventDefault(); void askCopilot() }}><label htmlFor="analytics-chat-question">Escriba su pregunta</label><textarea id="analytics-chat-question" rows={3} minLength={5} maxLength={500} value={chatQuestion} onChange={(event) => setChatQuestion(event.target.value)} placeholder={viewMode === 'executive' ? 'Ejemplo: ¿qué resultado requiere atención directiva?' : 'Ejemplo: compara los productos principales y explica la evidencia.'} /><small>Una buena pregunta menciona el indicador, la comparación esperada y la decisión que desea apoyar.</small><button disabled={chatLoading || chatQuestion.trim().length < 5}>{chatLoading ? 'Consultando…' : 'Preguntar al copiloto'}</button></form>
       </div>
