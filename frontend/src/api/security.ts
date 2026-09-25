@@ -21,7 +21,7 @@ export type DomainCapability = { code: string; label: string; description: strin
 export type CopilotCatalog = { metadata_snapshot_id: number; domains: DomainCapability[] }
 export type BusinessNeedInput = { metadata_snapshot_id: number; business_goal: string; business_questions: string[]; periodicity: string; domain_code: 'ventas' }
 export type NeedFormulation = { original_goal: string; suggested_goal: string; rationale: string; improvements: string[]; provider_kind: string; model_id: string }
-export type NeedViabilityRequirement = { code: string; label: string; request_text: string; status: 'direct' | 'derivable' | 'ambiguous' | 'unavailable'; evidence: string[]; formula?: string; resolution: string }
+export type NeedViabilityRequirement = { code: string; label: string; request_text: string; components?: string[]; status: 'direct' | 'derivable' | 'ambiguous' | 'unavailable'; evidence: string[]; formula?: string; resolution: string }
 export type NeedViability = { assessment_hash: string; requirements: NeedViabilityRequirement[]; counts: Record<string, number>; requires_acknowledgement: string[]; can_continue: boolean; summary: string }
 export type AnalysisCatalogQuestion = { code: string; label: string; description: string; prompt_instruction: string; enabled: boolean }
 export type AnalysisCatalogPeriodicity = { code: 'day' | 'week' | 'month' | 'quarter' | 'year'; label: string; description: string; enabled: boolean }
@@ -88,6 +88,8 @@ export type ProposalVerification = {
   validation_warnings: number
   pending_validations: string[]
 }
+export type ControlledRelationOption = { option_id: string; left_table: string; right_table: string; left_columns: string[]; right_columns: string[]; left_types: string[]; right_types: string[]; cardinality: 'many_to_one' | 'one_to_many' | 'one_to_one' | 'unknown'; target_unique: boolean; nullable_source: boolean; duplication_risk: boolean; eligible: boolean; guidance: string }
+export type ControlledRelationCatalog = { proposal_id: number; dimension_names: string[]; options: ControlledRelationOption[] }
 export type SemanticPreview = {
   proposal_id: number
   all_passed: boolean
@@ -347,6 +349,8 @@ export const api = {
   },
   createProposal: (token: string, body: object) => request<BiProposal>('/copilot/proposals', token, { method: 'POST', body: JSON.stringify(body) }),
   reviseProposal: (token: string, id: number, body: ProposalRevision) => request<BiProposal>(`/copilot/proposals/${id}/revisions`, token, { method: 'POST', body: JSON.stringify(body) }),
+  relationOptions: (token: string, id: number) => request<ControlledRelationCatalog>(`/copilot/proposals/${id}/relation-options`, token),
+  reviseRelation: (token: string, id: number, body: { dimension_name: string; option_id: string; comment: string }) => request<BiProposal>(`/copilot/proposals/${id}/relation-revisions`, token, { method: 'POST', body: JSON.stringify(body) }),
   approveProposal: (token: string, id: number, body: { comment?: string; warnings_confirmed: boolean }) => request<BiProposal>(`/copilot/proposals/${id}/approve`, token, { method: 'POST', body: JSON.stringify(body) }),
   rejectProposal: (token: string, id: number, comment: string) => request<BiProposal>(`/copilot/proposals/${id}/reject`, token, { method: 'POST', body: JSON.stringify({ comment }) }),
   invalidateProposal: (token: string, id: number, comment: string) => request<BiProposal>(`/copilot/proposals/${id}/invalidate`, token, { method: 'POST', body: JSON.stringify({ comment }) }),

@@ -75,6 +75,7 @@ class NeedViabilityRequirement(BaseModel):
     code: str
     label: str
     request_text: str
+    components: list[str] = Field(default_factory=list)
     status: Literal["direct", "derivable", "ambiguous", "unavailable"]
     evidence: list[str]
     formula: str | None = None
@@ -175,6 +176,39 @@ class ProposalRevision(BaseModel):
     @classmethod
     def unique_selections(cls, value: list[str]) -> list[str]:
         return list(dict.fromkeys(value))
+
+
+class ControlledRelationOptionRead(BaseModel):
+    option_id: str
+    left_table: str
+    right_table: str
+    left_columns: list[str]
+    right_columns: list[str]
+    left_types: list[str]
+    right_types: list[str]
+    cardinality: Literal["many_to_one", "one_to_many", "one_to_one", "unknown"]
+    target_unique: bool
+    nullable_source: bool
+    duplication_risk: bool
+    eligible: bool
+    guidance: str
+
+
+class ControlledRelationCatalogRead(BaseModel):
+    proposal_id: int
+    dimension_names: list[str]
+    options: list[ControlledRelationOptionRead]
+
+
+class ControlledRelationRevision(BaseModel):
+    dimension_name: Literal["dim_fecha", "dim_producto", "dim_cliente", "dim_territorio"]
+    option_id: str = Field(min_length=64, max_length=64, pattern=r"^[a-f0-9]{64}$")
+    comment: str = Field(min_length=10, max_length=500)
+
+    @field_validator("comment")
+    @classmethod
+    def normalized_relation_comment(cls, value: str) -> str:
+        return " ".join(value.split())
 
 
 class ProposalRead(BaseModel):

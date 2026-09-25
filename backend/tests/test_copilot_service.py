@@ -12,8 +12,11 @@ from app.modules.copilot.domains import (
 from app.modules.copilot.entity_resolution import enrich_dimension_labels
 from app.modules.copilot.service import (
     apply_analyst_adjustments,
+    apply_controlled_relationship,
+    build_requirement_coverage,
     canonical_hash,
     compact_metadata_blocks,
+    controlled_relation_catalog,
     derived_scope,
     expand_proposal_blueprint,
     proposal_blueprint_schema,
@@ -197,6 +200,100 @@ def test_kpi_suggestions_are_variable_without_a_fixed_business_catalog() -> None
     ]
     assert schema["properties"]["kpis"]["maxItems"] == 12
     assert schema["properties"]["kpis"]["items"]["properties"]["measure_index"]["maximum"] == 5
+
+
+def test_expanded_measures_expose_physical_provenance_and_formula() -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+
+    proposal = expand_proposal_blueprint(valid_blueprint(), scope, semantic_map)
+
+    measure = proposal["fact"]["measures"][0]
+    assert measure["provenance"]["source_references"] == ["Sales.OrderDetail.LineTotal"]
+    assert measure["provenance"]["formula"] == "SUM(LineTotal)"
+    assert proposal["grain"]["business_keys"] == ["OrderID", "ProductID"]
+
+
+def test_requirement_coverage_reports_outputs_and_blocks_silent_omissions() -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+    proposal = expand_proposal_blueprint(valid_blueprint(), scope, semantic_map)
+    assessment = {
+        "accepted_limitations": [],
+        "requirements": [
+            {
+                "code": "question:top_products",
+                "label": "Productos con mayor desempeño",
+                "status": "derivable",
+                "components": ["sales_amount", "product"],
+            },
+            {
+                "code": "goal:unit_cost",
+                "label": "Costo unitario",
+                "status": "direct",
+                "components": ["unit_cost"],
+            },
+        ],
+    }
+    proposal["need_assessment"] = assessment
+    proposal["requirement_coverage"] = build_requirement_coverage(proposal, assessment)
+
+    coverage = {item["requirement_code"]: item for item in proposal["requirement_coverage"]}
+    assert coverage["question:top_products"]["coverage_status"] == "covered"
+    assert coverage["goal:unit_cost"]["coverage_status"] == "not_covered"
+    validation = validate_proposal(proposal, scope, DOCUMENT)
+    assert any(issue["code"] == "coverage.requirement_missing" for issue in validation["issues"])
+
+
+def test_transaction_count_rejects_detail_identifier() -> None:
+    proposal = valid_proposal()
+    proposal["fact"]["measures"].append(
+        {
+            "name": "transacciones",
+            "source_columns": ["ProductID"],
+            "aggregation": "count_distinct",
+            "semantic_role": "transaction_count",
+        }
+    )
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+
+    validation = validate_proposal(proposal, scope, DOCUMENT)
+
+    assert any(
+        issue["code"] == "measure.transaction_distinct_order" for issue in validation["issues"]
+    )
+
+
+def test_controlled_relation_catalog_only_enables_unique_declared_target() -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+
+    options = controlled_relation_catalog(scope)
+
+    option = next(item for item in options if item["right_table"] == "Production.Product")
+    assert option["left_columns"] == ["ProductID"]
+    assert option["right_columns"] == ["ProductID"]
+    assert option["cardinality"] in {"many_to_one", "one_to_one"}
+    assert option["duplication_risk"] is False
+    assert option["eligible"] is True
+    assert len(option["option_id"]) == 64
+
+    blueprint = apply_controlled_relationship(valid_blueprint(), "dim_producto", option)
+    dimension = next(item for item in blueprint["dimensions"] if item["name"] == "dim_producto")
+    assert dimension["source_table"] == "Production.Product"
+    assert dimension["source_locked"] is True
+
+
+def test_controlled_relation_rejects_duplication_risk() -> None:
+    option = {
+        "eligible": False,
+        "duplication_risk": True,
+        "right_table": "Production.Product",
+    }
+
+    with pytest.raises(ValueError, match="granularidad"):
+        apply_controlled_relationship(valid_blueprint(), "dim_producto", option)
 
 
 def test_semantic_advice_can_only_cite_verified_candidate_references() -> None:

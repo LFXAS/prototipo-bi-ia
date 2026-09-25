@@ -26,6 +26,8 @@ from app.modules.copilot.schemas import (
     AnalysisCatalogConfiguration,
     AnalysisCatalogDomainRead,
     BusinessNeedInput,
+    ControlledRelationCatalogRead,
+    ControlledRelationRevision,
     CopilotCatalogRead,
     CopilotReadiness,
     NeedFormulationRead,
@@ -50,8 +52,11 @@ from app.modules.copilot.service import (
     SEMANTIC_RESPONSE_SCHEMA,
     SEMANTIC_SYSTEM_INSTRUCTION,
     apply_analyst_adjustments,
+    apply_controlled_relationship,
+    build_requirement_coverage,
     canonical_hash,
     compact_metadata_blocks,
+    controlled_relation_catalog,
     derived_scope,
     expand_proposal_blueprint,
     proposal_blueprint_schema,
@@ -627,6 +632,7 @@ async def create_proposal(
             ),
         )
     request_document["viability_assessment"] = assessment
+    assessment["accepted_limitations"] = list(payload.accepted_limitations)
     source_proposal = (
         await session.get(BiProposal, payload.source_proposal_id)
         if payload.source_proposal_id is not None
@@ -774,6 +780,7 @@ async def create_proposal(
             blueprint["requested_dimensions"] = []
             proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
             proposal["need_assessment"] = assessment
+            proposal["requirement_coverage"] = build_requirement_coverage(proposal, assessment)
             validation = validate_proposal(proposal, scope, snapshot.schema_document)
             record.proposal_document = proposal
             record.validation_document = validation
@@ -1116,6 +1123,149 @@ async def create_semantic_advice(
     return record
 
 
+@router.get(
+    "/copilot/proposals/{proposal_id}/relation-options",
+    response_model=ControlledRelationCatalogRead,
+)
+async def get_controlled_relation_options(
+    proposal_id: int,
+    _: User = Depends(require_permission("copilot.proposals.read")),
+    session: AsyncSession = Depends(get_session),
+) -> dict[str, object]:
+    proposal = await _proposal_or_404(proposal_id, session)
+    blueprint = proposal.proposal_document.get("ai_decisions")
+    if not isinstance(blueprint, dict):
+        raise HTTPException(
+            status_code=409,
+            detail="La propuesta no conserva decisiones técnicas ajustables.",
+        )
+    dimension_names = [
+        str(item.get("name"))
+        for item in blueprint.get("dimensions", [])
+        if isinstance(item, dict) and item.get("name")
+    ]
+    return {
+        "proposal_id": proposal.id,
+        "dimension_names": dimension_names,
+        "options": controlled_relation_catalog(proposal.scope_document),
+    }
+
+
+@router.post(
+    "/copilot/proposals/{proposal_id}/relation-revisions",
+    response_model=ProposalRead,
+    status_code=status.HTTP_201_CREATED,
+)
+async def revise_controlled_relation(
+    proposal_id: int,
+    payload: ControlledRelationRevision,
+    actor: User = Depends(require_permission("copilot.proposals.generate")),
+    session: AsyncSession = Depends(get_session),
+) -> BiProposal:
+    source = await _proposal_or_404(proposal_id, session)
+    if source.status not in {
+        "ready_for_review",
+        "approved",
+        "invalidated",
+        "validation_failed",
+    }:
+        raise HTTPException(status_code=409, detail="Esta propuesta no admite correcciones.")
+    snapshot = await session.get(MetadataSnapshot, source.metadata_snapshot_id)
+    source_blueprint = source.proposal_document.get("ai_decisions")
+    if snapshot is None or not isinstance(source_blueprint, dict):
+        raise HTTPException(
+            status_code=409,
+            detail="No está disponible el contrato necesario para crear la corrección.",
+        )
+    options = controlled_relation_catalog(source.scope_document)
+    option = next((item for item in options if item["option_id"] == payload.option_id), None)
+    if option is None:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "La relación ya no pertenece a la instantánea vigente. Abra nuevamente "
+                "las opciones controladas."
+            ),
+        )
+    try:
+        revised_blueprint = apply_controlled_relationship(
+            source_blueprint, payload.dimension_name, option
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    semantic_map = deepcopy(source.semantic_map_document)
+    semantic_map["controlled_relation_revision"] = {
+        "source_proposal_id": source.id,
+        "dimension_name": payload.dimension_name,
+        "option_id": payload.option_id,
+        "comment": payload.comment,
+    }
+    proposal_document = expand_proposal_blueprint(
+        revised_blueprint, source.scope_document, semantic_map
+    )
+    source_assessment = source.proposal_document.get("need_assessment")
+    if isinstance(source_assessment, dict):
+        proposal_document["need_assessment"] = deepcopy(source_assessment)
+        proposal_document["requirement_coverage"] = build_requirement_coverage(
+            proposal_document, source_assessment
+        )
+    proposal_document["controlled_relation_revision"] = {
+        **option,
+        "dimension_name": payload.dimension_name,
+        "comment": payload.comment,
+        "validated": True,
+    }
+    validation = validate_proposal(
+        proposal_document, source.scope_document, snapshot.schema_document
+    )
+    revision_hash = canonical_hash(
+        {
+            "source_proposal_id": source.id,
+            "source_input_hash": source.input_hash,
+            "relation": proposal_document["controlled_relation_revision"],
+        }
+    )
+    record = BiProposal(
+        source_proposal_id=source.id,
+        metadata_snapshot_id=source.metadata_snapshot_id,
+        business_goal=source.business_goal,
+        business_questions=list(source.business_questions),
+        requested_dimensions=list(source.requested_dimensions),
+        periodicity=source.periodicity,
+        domain_code=source.domain_code,
+        scope_document=deepcopy(source.scope_document),
+        semantic_map_document=semantic_map,
+        status="ready_for_review" if validation["valid"] else "validation_failed",
+        input_hash=revision_hash,
+        prompt_version=source.prompt_version,
+        contract_version=source.contract_version,
+        provider_kind=source.provider_kind,
+        model_id=source.model_id,
+        proposal_document=proposal_document,
+        validation_document=validation,
+        created_by_user_id=actor.id,
+        created_by_label=f"{actor.full_name} <{actor.email}>",
+    )
+    session.add(record)
+    await session.flush()
+    await add_audit_event(
+        session,
+        actor.id,
+        "copilot.proposal.relation_revise",
+        "bi_proposal",
+        str(record.id),
+        {
+            "source_proposal_id": source.id,
+            "dimension_name": payload.dimension_name,
+            "option_id": payload.option_id,
+            "status": record.status,
+        },
+    )
+    await session.commit()
+    await session.refresh(record)
+    return record
+
+
 @router.post(
     "/copilot/proposals/{proposal_id}/revisions",
     response_model=ProposalRead,
@@ -1168,6 +1318,12 @@ async def revise_proposal(
         source.scope_document,
         semantic_map,
     )
+    source_assessment = source.proposal_document.get("need_assessment")
+    if isinstance(source_assessment, dict):
+        proposal_document["need_assessment"] = deepcopy(source_assessment)
+        proposal_document["requirement_coverage"] = build_requirement_coverage(
+            proposal_document, source_assessment
+        )
     validation = validate_proposal(
         proposal_document,
         source.scope_document,

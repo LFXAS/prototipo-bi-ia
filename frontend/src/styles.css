@@ -330,6 +330,30 @@ th { color: var(--color-muted); font-size: .78rem; text-transform: uppercase; }
 .kpi-revision-grid article > label:first-child { display: flex; gap: .6rem; align-items: flex-start; }
 .kpi-revision-grid article > label:first-child span { display: grid; }
 .kpi-revision-grid article p { margin: 0; color: #875100; }
+.measure-contract { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .25rem .75rem; padding: .65rem 0; border-bottom: 1px solid var(--color-border); }
+.measure-contract:last-child { border-bottom: 0; }
+.measure-contract > span { color: var(--color-brand-700); font-size: .85rem; font-weight: 800; }
+.measure-contract > small { grid-column: 1 / -1; overflow-wrap: anywhere; color: var(--color-muted); line-height: 1.45; }
+.requirement-coverage-panel { margin: 1rem 0; padding: 1.1rem; border: 1px solid #a9c6ef; border-radius: .9rem; background: #f7faff; }
+.requirement-coverage-panel h3, .requirement-coverage-panel p { margin: .2rem 0; }
+.requirement-coverage-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; margin-top: 1rem; }
+.requirement-coverage-list article { min-width: 0; padding: .85rem; border: 1px solid var(--color-border); border-left: 4px solid #c43a30; border-radius: .7rem; background: #fff; }
+.requirement-coverage-list article.covered { border-left-color: #17845b; }
+.requirement-coverage-list article.human_decision, .requirement-coverage-list article.accepted_limitation { border-left-color: #d99000; background: #fffaf0; }
+.requirement-coverage-list h4, .requirement-coverage-list p { margin: .25rem 0; }
+.requirement-coverage-list span { color: var(--color-muted); font-size: .72rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.requirement-coverage-list small { display: block; margin-top: .45rem; overflow-wrap: anywhere; color: var(--color-muted); }
+.relation-correction-panel { display: grid; gap: 1rem; margin: 1.25rem 0; padding: 1.15rem; border: 1px solid #9ebce9; border-radius: .9rem; background: linear-gradient(145deg, #f8fbff, #f2f7ff); }
+.relation-correction-heading, .relation-evidence-title { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.relation-correction-heading h3, .relation-correction-panel p { margin: .2rem 0; }
+.relation-correction-heading > span, .relation-evidence-title span { padding: .3rem .55rem; border-radius: 999px; background: #e1ebfb; color: #174f9d; font-size: .75rem; font-weight: 800; }
+.relation-selector-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .85rem; }
+.relation-evidence { padding: 1rem; border: 1px solid #8fd2b3; border-radius: .75rem; background: #f6fcf9; }
+.relation-evidence.blocked { border-color: #edaaa2; background: #fff7f5; }
+.relation-evidence-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .65rem; margin: .8rem 0; }
+.relation-evidence-grid div { display: grid; min-width: 0; gap: .2rem; padding: .65rem; border-radius: .55rem; background: #fff; }
+.relation-evidence-grid small { color: var(--color-muted); }
+.relation-evidence-grid b { overflow-wrap: anywhere; font-size: .88rem; }
 .review-panel > p { margin: 0; }
 .decision-receipt { padding: 1rem; border-radius: .75rem; background: #e8f5ef; }
 .decision-receipt.rejected { background: #fde9e5; }
@@ -556,7 +580,7 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   .app-shell { padding: .75rem; }
   .app-shell header { gap: .8rem; align-items: flex-start; }
   .header-actions { flex-direction: column; align-items: stretch; }
-  .cards, .form-grid, .parameter-grid, .catalog-options, .snapshot-metrics, .relationship-grid, .choice-grid, .concept-grid, .proposal-grid, .evidence-grid, .semantic-preview-metrics, .need-requirement-list { grid-template-columns: 1fr; }
+  .cards, .form-grid, .parameter-grid, .catalog-options, .snapshot-metrics, .relationship-grid, .choice-grid, .concept-grid, .proposal-grid, .evidence-grid, .semantic-preview-metrics, .need-requirement-list, .requirement-coverage-list, .relation-selector-grid, .relation-evidence-grid { grid-template-columns: 1fr; }
   .semantic-resolution-heading { flex-direction: column; }
   .semantic-resolution-heading button { width: 100%; }
   .semantic-copilot-heading { flex-direction: column; }

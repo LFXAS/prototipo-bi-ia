@@ -2,6 +2,10 @@
 
 Este plan traduce el diagnóstico del 25 de septiembre de 2026 en cambios pequeños, verificables y separados por commits. No autoriza SQL libre ni elimina controles de seguridad.
 
+La fuente normativa de requisitos y criterios de aceptación es
+[`SPR-05-06-endurecimiento-integral-asistente-bi.md`](SPR-05-06-endurecimiento-integral-asistente-bi.md).
+Este archivo conserva únicamente la secuencia de implementación por fase.
+
 ## Fase 1 — Proveedor Groq y observabilidad
 
 | Archivo | Cambio mínimo |
@@ -27,6 +31,8 @@ necesidad, una pregunta, la periodicidad o los metadatos invalida esa comprobaci
 
 ## Fase 3 — Cobertura, fuentes y relaciones controladas
 
+Requisitos: `HBI-003`, `HBI-004` y `HBI-005`.
+
 | Archivo | Cambio mínimo |
 |---|---|
 | `backend/app/modules/copilot/service.py` | Matriz necesidad→concepto→medida/dimensión/KPI; fuentes físicas, fórmulas, granularidad y transacciones distintas. |
@@ -37,6 +43,8 @@ necesidad, una pregunta, la periodicidad o los metadatos invalida esa comprobaci
 
 ## Fase 4 — Costos, margen y materialización
 
+Requisito: `HBI-006`.
+
 | Archivo | Cambio mínimo |
 |---|---|
 | `backend/app/modules/copilot/service.py` | Definir costo, margen, ratios por unidad y descuento monetario sólo si sus fuentes están verificadas. |
@@ -45,6 +53,8 @@ necesidad, una pregunta, la periodicidad o los metadatos invalida esa comprobaci
 | pruebas ETL/analítica | Conciliación de costo total, margen bruto, margen %, ventas/unidades y descuento. |
 
 ## Fase 5 — Copiloto analítico seguro
+
+Requisito: `HBI-007`.
 
 | Archivo | Cambio mínimo |
 |---|---|
@@ -55,6 +65,8 @@ necesidad, una pregunta, la periodicidad o los metadatos invalida esa comprobaci
 | pruebas | Top 5 productos en Europa sin filtro visual previo y porcentajes reconstruibles. |
 
 ## Fase 6 — Sesión, UX y regresión
+
+Requisitos: `HBI-008` y `HBI-009`.
 
 | Archivo | Cambio mínimo |
 |---|---|

@@ -10,6 +10,7 @@ import {
   type BiProposal,
   type CopilotCatalog,
   type CopilotReadiness,
+  type ControlledRelationCatalog,
   type DataConnection,
   type EtlExecution,
   type EtlKpiRecipe,
@@ -545,6 +546,11 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
   const [revisionDraft, setRevisionDraft] = useState<ProposalRevision | null>(null)
   const [generating, setGenerating] = useState(false)
   const [savingRevision, setSavingRevision] = useState(false)
+  const [relationCatalog, setRelationCatalog] = useState<ControlledRelationCatalog | null>(null)
+  const [relationDimension, setRelationDimension] = useState('')
+  const [relationOptionId, setRelationOptionId] = useState('')
+  const [relationComment, setRelationComment] = useState('')
+  const [savingRelation, setSavingRelation] = useState(false)
   const [feedback, setFeedback] = useState<{ kind: 'success' | 'warning' | 'error'; message: string } | null>(null)
   const [reviewComment, setReviewComment] = useState('')
   const [warningsConfirmed, setWarningsConfirmed] = useState(false)
@@ -817,8 +823,34 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
   function openPersonalization(item = proposal) {
     if (!item) return
     setRevisionDraft(revisionFromProposal(item))
+    setRelationCatalog(null)
+    setRelationDimension('')
+    setRelationOptionId('')
+    setRelationComment('')
+    void api.relationOptions(token, item.id).then((catalog) => {
+      setRelationCatalog(catalog)
+      setRelationDimension(catalog.dimension_names[0] ?? '')
+      setRelationOptionId(catalog.options.find((option) => option.eligible)?.option_id ?? '')
+    }).catch((caught: Error) => setFeedback({ kind: 'error', message: caught.message }))
     setFeedback(null)
     setStep(4)
+  }
+
+  async function saveControlledRelation() {
+    if (!proposal || !relationDimension || !relationOptionId || relationComment.trim().length < 10) return
+    setSavingRelation(true); setFeedback(null)
+    try {
+      const revised = await api.reviseRelation(token, proposal.id, { dimension_name: relationDimension, option_id: relationOptionId, comment: relationComment })
+      setProposal(revised)
+      setRevisionDraft(revisionFromProposal(revised))
+      setVerification(null)
+      setRelationCatalog(null)
+      setStep(3)
+      await refreshHistory(selectedDomainCode, 0, historyFilter)
+      setFeedback({ kind: revised.status === 'ready_for_review' ? 'success' : 'error', message: revised.status === 'ready_for_review' ? `La relación fue corregida en la versión #${revised.id} y volvió a superar todas las reglas.` : `La versión #${revised.id} conserva observaciones bloqueantes; revise la matriz de cobertura.` })
+    } catch (caught) {
+      setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible corregir la relación.' })
+    } finally { setSavingRelation(false) }
   }
 
   async function saveRevision() {
@@ -868,6 +900,7 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
   const automaticAdjustments = stringArrayValue(document.automatic_adjustments)
   const providerObservations = stringArrayValue(document.provider_observations)
   const decisionDiagnostics = arrayValue(document.decision_diagnostics)
+  const requirementCoverage = arrayValue(document.requirement_coverage)
   const semanticQuality = arrayValue(document.semantic_quality)
   const validation = proposal?.validation_document
   const revisionDecisions = objectValue(proposal?.proposal_document.ai_decisions)
@@ -879,6 +912,7 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
     .find((table) => table.ref === revisionFactSource)?.columns
     ?.filter((column) => /tinyint|smallint|int|bigint|decimal|numeric|money|float|real/i.test(column.type))
     .map((column) => column.name) ?? []
+  const selectedRelationOption = relationCatalog?.options?.find((item) => item.option_id === relationOptionId)
   return <>
     <div className="assistant-context"><div><p className="eyebrow">Dominio seleccionado</p><strong>{selectedDomain.label}</strong><span>{source.connection?.name} · instantánea #{source.latest_snapshot?.id}</span></div><button className="secondary" onClick={() => setSelectedDomainCode(null)}>Cambiar tipo de datamart</button></div>
     <p className="lead">Describa una necesidad comercial. La IA interpretará metadatos, propondrá el modelo y la aplicación comprobará cada referencia antes de su revisión.</p>
@@ -941,7 +975,7 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
       <div className="proposal-heading"><div><p className="eyebrow">Paso 3 · Propuesta de IA + comprobación automática</p><h2>{stringValue(document.summary, 'Propuesta BI de ventas')}</h2></div><span className={`proposal-status ${proposal.status}`}>{proposalStatusLabels[proposal.status]}</span></div>
       <p className="business-explanation">{stringValue(document.business_explanation, 'El proveedor no entregó una explicación de negocio utilizable.')}</p>
       {validation && <div className={`validation-summary ${validation.valid ? 'success' : 'error'}`}><strong>{validation.valid ? 'Referencias y contrato validados' : 'No puede aprobarse'}</strong><span>{validation.errors} errores · {validation.warnings} advertencias</span></div>}
-      <div className="proposal-grid"><article><h3>Granularidad</h3><p>{stringValue(grain.description, '—')}</p></article><article><h3>Hecho y medidas</h3><p><strong>{stringValue(fact.name, '—')}</strong></p>{arrayValue(fact.measures).map((item, index) => <p key={index}>{stringValue(item.name, 'Medida')} · {stringValue(item.aggregation, '')}{measureCalculationExplanation(item) && <><br /><small className="calculation-summary">{measureCalculationExplanation(item)}</small></>}</p>)}</article><article><h3>Dimensiones</h3>{dimensionsDocument.map((item, index) => {
+      <div className="proposal-grid"><article><h3>Granularidad</h3><p>{stringValue(grain.description, '—')}</p>{stringArrayValue(grain.business_keys).length > 0 && <small><b>Clave del grano:</b> {stringArrayValue(grain.business_keys).join(' + ')}</small>}</article><article><h3>Hecho y medidas</h3><p><strong>{stringValue(fact.name, '—')}</strong></p>{arrayValue(fact.measures).map((item, index) => { const provenance = objectValue(item.provenance); return <div className="measure-contract" key={index}><strong>{stringValue(item.name, 'Medida')}</strong><span>{stringValue(item.aggregation, '')}</span>{measureCalculationExplanation(item) && <small className="calculation-summary">{measureCalculationExplanation(item)}</small>}<small><b>Origen:</b> {stringArrayValue(provenance.source_references).join(', ') || 'Pendiente de comprobar'}</small><small><b>Fórmula:</b> {stringValue(provenance.formula, 'Pendiente de comprobar')}</small></div> })}</article><article><h3>Dimensiones</h3>{dimensionsDocument.map((item, index) => {
         const displayLabel = objectValue(item.display_label)
         const generatedLabel = stringValue(displayLabel.target_name, '')
         const defaultTypeField = `tipo_${stringValue(item.name, 'entidad').replace(/^dim_/, '')}`
@@ -953,6 +987,7 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
           {generatedLabel && <div className="generated-fields"><span>Campos que creará el ETL</span><strong>{generatedLabel}</strong><strong>{generatedType}</strong><small>Nombre descriptivo y tipo derivados mediante relaciones verificadas.</small></div>}
         </div>
       })}</article><article><h3>KPIs propuestos</h3>{kpis.map((item, index) => <p key={index}><strong>{stringValue(item.name, 'KPI')}</strong><br /><small>{stringValue(item.code, '')}</small></p>)}</article></div>
+      {requirementCoverage.length > 0 && <section className="requirement-coverage-panel" aria-label="Cobertura de la necesidad"><div><p className="eyebrow">Trazabilidad funcional</p><h3>De la necesidad al datamart</h3><p>Ningún requisito se descarta silenciosamente. Cada fila indica qué salida lo resuelve o qué decisión permanece pendiente.</p></div><div className="requirement-coverage-list">{requirementCoverage.map((item, index) => { const status = stringValue(item.coverage_status, 'not_covered'); return <article className={status} key={`${stringValue(item.requirement_code, '')}-${index}`}><div><span>{status === 'covered' ? 'Cubierto' : status === 'accepted_limitation' ? 'Limitación aceptada' : status === 'human_decision' ? 'Decisión humana' : 'No cubierto'}</span><h4>{stringValue(item.label, 'Requisito')}</h4></div><p>{stringValue(item.explanation, '')}</p>{stringArrayValue(item.outputs).length > 0 && <small><b>Salidas:</b> {stringArrayValue(item.outputs).join(', ')}</small>}</article> })}</div></section>}
       {semanticQuality.length > 0 && <section className="semantic-resolution-panel" aria-label="Calidad descriptiva de las dimensiones">
         <div className="semantic-resolution-heading"><div><p className="eyebrow">Control de identidad descriptiva</p><h3>Nombres reconocibles antes de materializar</h3><p>La plataforma recorre relaciones verificadas y comprueba que cada entidad pueda mostrarse con un nombre, no sólo con una clave técnica.</p></div>{canPreviewSemantics && <button type="button" className="secondary" disabled={previewingSemantics} onClick={() => void previewSemanticIdentity()}>{previewingSemantics ? 'Comprobando la fuente…' : 'Comprobar nombres y cobertura'}</button>}</div>
         <div className="semantic-resolution-grid">{semanticQuality.map((item, index) => <article className={stringValue(item.status, '') === 'resolved' ? 'passed' : 'review'} key={`${stringValue(item.dimension, '')}-${index}`}><span>{stringValue(item.status, '') === 'resolved' ? 'Ruta resuelta' : 'Revisión necesaria'}</span><h4>{businessTechnicalLabel(stringValue(item.dimension, 'Dimensión'))}</h4><p>{stringValue(item.message, '')}</p>{arrayValue(item.variants).map((variant, variantIndex) => <div className="semantic-route" key={`${stringValue(variant.source_table, '')}-${variantIndex}`}><strong>{stringValue(variant.kind, 'entity') === 'person' ? 'Persona' : stringValue(variant.kind, '') === 'organization' ? 'Organización' : 'Entidad base'}</strong><small>{stringValue(variant.source_table, '')} · {stringArrayValue(variant.columns).join(' + ')}</small></div>)}</article>)}</div>
@@ -973,6 +1008,29 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
       <fieldset><legend>Dimensiones incluidas</legend><div className="choice-grid">{revisionDimensions.map((item) => { const name = stringValue(item.name, ''); return <label key={name}><input type="checkbox" checked={revisionDraft.dimension_names.includes(name)} onChange={() => setRevisionDraft({ ...revisionDraft, dimension_names: revisionDraft.dimension_names.includes(name) ? revisionDraft.dimension_names.filter((value) => value !== name) : [...revisionDraft.dimension_names, name] })} />{name}</label> })}</div></fieldset>
       <MeasureRevisionEditor measures={revisionMeasures} draft={revisionDraft} numericColumns={revisionNumericColumns} onChange={setRevisionDraft} />
       <fieldset><legend>KPIs incluidos y medida asociada</legend><div className="kpi-revision-grid">{revisionKpis.map((item) => { const code = stringValue(item.code, ''); const role = semanticRole(item); const compatible = revisionMeasures.filter((measure) => semanticRole(measure) === role && revisionDraft.measure_names.includes(stringValue(measure.name, ''))); const selectedMeasure = revisionDraft.kpi_measure_names[code] ?? ''; const unavailable = compatible.length === 0; const selected = revisionDraft.kpi_codes.includes(code); return <article className={unavailable ? 'unavailable-choice' : ''} key={code}><label><input type="checkbox" disabled={unavailable} checked={!unavailable && selected} onChange={() => { const nextSelected = !selected; const fallback = compatible.some((measure) => stringValue(measure.name, '') === selectedMeasure) ? selectedMeasure : stringValue(compatible[0]?.name, ''); setRevisionDraft({ ...revisionDraft, kpi_codes: nextSelected ? [...revisionDraft.kpi_codes, code] : revisionDraft.kpi_codes.filter((value) => value !== code), kpi_measure_names: { ...revisionDraft.kpi_measure_names, [code]: fallback } }) }} /><span>{stringValue(item.name, code)}<small>{semanticRoleLabel(role)}</small></span></label>{unavailable ? <p><strong>No disponible:</strong> no existe una medida seleccionada con la misma función semántica. Excluya este KPI o genere una versión que incluya esa medida.</p> : <label>Medida compatible<select aria-label={`Medida para ${stringValue(item.name, code)}`} disabled={!selected} value={compatible.some((measure) => stringValue(measure.name, '') === selectedMeasure) ? selectedMeasure : stringValue(compatible[0]?.name, '')} onChange={(event) => setRevisionDraft({ ...revisionDraft, kpi_measure_names: { ...revisionDraft.kpi_measure_names, [code]: event.target.value } })}>{compatible.map((measure) => { const name = stringValue(measure.name, ''); return <option value={name} key={name}>{name}</option> })}</select></label>}</article> })}</div></fieldset>
+      <section className="relation-correction-panel" aria-labelledby="relation-correction-title">
+        <div className="relation-correction-heading">
+          <div><p className="eyebrow">Corrección guiada opcional</p><h3 id="relation-correction-title">Resolver una relación con evidencia</h3></div>
+          <span>Sin SQL libre</span>
+        </div>
+        <p>Use esta herramienta sólo si una dimensión apunta al origen equivocado. La plataforma ofrece exclusivamente relaciones declaradas en la instantánea, descarta las que podrían multiplicar filas y vuelve a validar toda la propuesta.</p>
+        {!relationCatalog && <p className="notice">Comprobando claves, tipos, cardinalidad y unicidad de las relaciones disponibles…</p>}
+        {relationCatalog && <>
+          <div className="relation-selector-grid">
+            <label>Dimensión que desea corregir<select value={relationDimension} onChange={(event) => setRelationDimension(event.target.value)}>{relationCatalog.dimension_names.map((name) => <option value={name} key={name}>{businessTechnicalLabel(name)}</option>)}</select></label>
+            <label>Ruta de relación comprobada<select value={relationOptionId} onChange={(event) => setRelationOptionId(event.target.value)}><option value="">Seleccione una relación segura</option>{relationCatalog.options.map((option) => <option disabled={!option.eligible} value={option.option_id} key={option.option_id}>{option.left_table}.{option.left_columns.join(' + ')} → {option.right_table}.{option.right_columns.join(' + ')}{option.eligible ? '' : ' — no habilitada'}</option>)}</select></label>
+          </div>
+          {selectedRelationOption && <article className={`relation-evidence ${selectedRelationOption.eligible ? 'eligible' : 'blocked'}`}>
+            <div className="relation-evidence-title"><strong>{selectedRelationOption.eligible ? 'Relación apta para revalidar' : 'Relación bloqueada'}</strong><span>{selectedRelationOption.cardinality === 'many_to_one' ? 'Muchos a uno' : selectedRelationOption.cardinality === 'one_to_one' ? 'Uno a uno' : selectedRelationOption.cardinality === 'one_to_many' ? 'Uno a muchos' : 'Cardinalidad no demostrada'}</span></div>
+            <div className="relation-evidence-grid"><div><small>Tipos de origen</small><b>{selectedRelationOption.left_types.join(', ')}</b></div><div><small>Tipos de destino</small><b>{selectedRelationOption.right_types.join(', ')}</b></div><div><small>Destino único</small><b>{selectedRelationOption.target_unique ? 'Sí' : 'No'}</b></div><div><small>Riesgo de duplicación</small><b>{selectedRelationOption.duplication_risk ? 'Bloqueante' : 'No detectado'}</b></div></div>
+            <p>{selectedRelationOption.guidance}</p>
+          </article>}
+          {relationCatalog.options.some((option) => !option.eligible) && <details className="technical-details"><summary>Por qué otras relaciones están bloqueadas</summary>{relationCatalog.options.filter((option) => !option.eligible).map((option) => <p key={option.option_id}><strong>{option.left_table} → {option.right_table}:</strong> {option.guidance}</p>)}</details>}
+          <label>Justificación de esta corrección<textarea rows={3} minLength={10} maxLength={500} value={relationComment} onChange={(event) => setRelationComment(event.target.value)} placeholder="Explique qué concepto de negocio debe representar la dimensión y por qué esta ruta es la correcta." /></label>
+          <button type="button" disabled={savingRelation || !selectedRelationOption?.eligible || !relationDimension || relationComment.trim().length < 10} onClick={() => void saveControlledRelation()}>{savingRelation ? 'Creando y revalidando la versión…' : 'Crear versión con relación corregida'}</button>
+          <p className="field-help">Esta acción es independiente de los cambios generales de la sección inferior. Si la utiliza, se creará inmediatamente una nueva versión auditable.</p>
+        </>}
+      </section>
       <label>Justificación del ajuste<textarea required minLength={10} maxLength={500} rows={3} value={revisionDraft.comment} onChange={(event) => setRevisionDraft({ ...revisionDraft, comment: event.target.value })} placeholder="Explique por qué este ajuste representa mejor la necesidad del negocio." /></label>
       <p className="notice">No puede inventar tablas, columnas, relaciones ni fórmulas. Si una selección deja de ser coherente, el backend rechazará o bloqueará la nueva versión.</p>
       <div className="form-actions"><button disabled={savingRevision || revisionDraft.comment.trim().length < 10 || revisionDraft.dimension_names.length === 0 || revisionDraft.measure_names.length === 0 || revisionDraft.kpi_codes.length === 0} onClick={() => void saveRevision()}>{savingRevision ? 'Validando nueva versión…' : 'Guardar como nueva versión'}</button><button className="secondary" onClick={() => setStep(5)}>Continuar sin cambios</button><button className="secondary" onClick={() => setStep(3)}>Cancelar</button></div>
