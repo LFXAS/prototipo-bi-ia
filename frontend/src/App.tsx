@@ -1220,6 +1220,11 @@ function SalesDatamartPage({ token, canWrite, navigate }: { token: string; canWr
 
   useEffect(() => { void loadWorkspace() }, [loadWorkspace])
 
+  useEffect(() => {
+    if (!execution || step < 4) return
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [execution, step])
+
   const selected = catalog
     ? [...catalog.items, ...catalog.blocked_items].find((item) => item.proposal_id === selectedId) ?? null
     : null

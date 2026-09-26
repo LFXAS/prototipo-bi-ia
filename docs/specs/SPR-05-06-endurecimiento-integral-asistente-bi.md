@@ -116,6 +116,12 @@ analítica.
   versión; tras autenticarse se restaura sin repetir una mutación incierta.
 - Los mensajes distinguen sesión vencida, red, proveedor, validación y permisos e
   indican una acción concreta.
+- Una excepción inesperada de renderizado no puede dejar la aplicación en blanco:
+  el marco principal muestra una recuperación legible, conserva el expediente en
+  el servidor y permite recargar la interfaz sin repetir el ETL.
+- Al abrir un expediente desde el historial, la vista regresa al inicio del
+  comprobante para evitar que una posición de desplazamiento antigua simule una
+  pantalla vacía.
 
 ### HBI-009 — Regresión automatizada y trazabilidad
 

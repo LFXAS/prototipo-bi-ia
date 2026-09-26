@@ -616,4 +616,33 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   .etl-execution-receipt > strong { justify-self: start; }
 }
 
+/* Una falla de renderizado nunca debe convertirse en una pantalla en blanco. */
+.application-recovery {
+  width: min(680px, calc(100% - 32px));
+  margin: 10vh auto;
+  padding: 40px;
+  border: 1px solid #b9ccec;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgb(24 57 105 / 14%);
+  color: #0d2853;
+  text-align: center;
+}
+
+.application-recovery > span {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 18px;
+  place-items: center;
+  border-radius: 14px;
+  background: #e8f1ff;
+  color: #155bd7;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.application-recovery h1 { margin: 6px 0 12px; }
+.application-recovery p:not(.eyebrow) { margin: 0 auto 24px; max-width: 540px; color: #526a8d; }
+
 @media (max-width: 420px) { .login-card { padding: 1.4rem; } }

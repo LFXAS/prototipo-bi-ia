@@ -1,5 +1,5 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import App from './App'
 import { api, sessionExpiredEvent } from './api/security'
@@ -7,10 +7,13 @@ import { readAssistantDraft } from './assistantRecovery'
 import { roleChoicesForUserAssignment } from './roleChoices'
 
 describe('App', () => {
+  beforeEach(() => vi.stubGlobal('scrollTo', vi.fn()))
+
   afterEach(() => {
     cleanup()
     localStorage.clear()
     vi.restoreAllMocks()
+    vi.unstubAllGlobals()
   })
 
   it('presenta el acceso con un mensaje de orientación', () => {
@@ -545,6 +548,7 @@ describe('App', () => {
     expect(screen.queryByText('Supervisada')).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Abrir expediente #5' }))
     expect(await screen.findByRole('heading', { name: 'Conciliación OLTP–datamart' })).toBeInTheDocument()
+    expect(window.scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' })
     expect(screen.getByText('100,00 moneda de origen')).toBeInTheDocument()
     expect(screen.getByText('Divisa pendiente de comprobación')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Comprobar divisa sin repetir el ETL' }))
