@@ -12,19 +12,46 @@ type Props = { token: string; canExport: boolean; navigate: (path: string) => vo
 
 function formatValue(value: number | undefined, unit: string, compact = false) {
   if (value === undefined || !Number.isFinite(value)) return 'Sin valor'
+  const currency = unit.match(/^([A-Z]{3})(?: por unidad)?$/)
   const options: Intl.NumberFormatOptions = compact
     ? { notation: 'compact', maximumFractionDigits: 1 }
-    : { maximumFractionDigits: /unidad|pedido|cliente|fila/i.test(unit) ? 0 : 2 }
-  if (/^[A-Z]{3}$/.test(unit)) {
-    return new Intl.NumberFormat('es-EC', {
+    : { maximumFractionDigits: currency ? 2 : /unidad|pedido|cliente|fila/i.test(unit) ? 0 : 2 }
+  if (currency) {
+    const formatted = new Intl.NumberFormat('es-EC', {
       ...options,
       style: 'currency',
-      currency: unit,
+      currency: currency[1],
       currencyDisplay: 'code',
     }).format(value)
+    return unit.endsWith('por unidad') ? `${formatted} por unidad` : formatted
   }
   const formatted = new Intl.NumberFormat('es-EC', options).format(value)
   return /^(valor|razón)$/i.test(unit) ? formatted : `${formatted} ${unit}`
+}
+
+function metricCardPresentation(value: number | undefined, unit: string) {
+  if (value === undefined || !Number.isFinite(value)) return { value: 'Sin valor', unit: '', exact: 'Sin valor' }
+  const compact = Math.abs(value) >= 100_000
+  const currency = unit.match(/^([A-Z]{3})(?: por unidad)?$/)
+  if (currency) {
+    const formatted = new Intl.NumberFormat('es-EC', {
+      style: 'currency',
+      currency: currency[1],
+      currencyDisplay: 'code',
+      notation: compact ? 'compact' : 'standard',
+      minimumFractionDigits: compact ? 0 : 2,
+      maximumFractionDigits: compact ? 1 : 2,
+    }).format(value)
+    return { value: formatted, unit: unit.endsWith('por unidad') ? 'promedio por unidad vendida' : '', exact: formatValue(value, unit) }
+  }
+  if (/porcentaje/i.test(unit)) {
+    return { value: `${new Intl.NumberFormat('es-EC', { maximumFractionDigits: 2 }).format(value)}%`, unit: '', exact: formatValue(value, unit) }
+  }
+  return {
+    value: new Intl.NumberFormat('es-EC', { notation: compact ? 'compact' : 'standard', maximumFractionDigits: compact ? 1 : 2 }).format(value),
+    unit,
+    exact: formatValue(value, unit),
+  }
 }
 
 function LineVisual({ visual, unit, showData }: { visual: AnalyticsVisual; unit: string; showData: boolean }) {
@@ -262,7 +289,7 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
     {error && <p className="notice error">{error}</p>}
 
     <section className="analytics-kpis" aria-label="Indicadores clave">
-      {dashboard.kpis.map((kpi, index) => <article className={kpi.status === 'reconciled' ? '' : 'unavailable'} key={kpi.code}><div><span className="kpi-accent" data-index={index % 4} /><small>{kpi.name}</small></div><strong>{formatValue(kpi.value, kpi.unit)}</strong><p><span aria-hidden="true">✓</span> Calculado con el filtro actual</p></article>)}
+      {dashboard.kpis.map((kpi, index) => { const presentation = metricCardPresentation(kpi.value, kpi.unit); return <article className={kpi.status === 'reconciled' ? '' : 'unavailable'} key={kpi.code}><div><span className="kpi-accent" data-index={index % 4} /><small>{kpi.name}</small></div><strong title={`Valor exacto: ${presentation.exact}`}>{presentation.value}</strong>{presentation.unit && <span className="analytics-kpi-unit">{presentation.unit}</span>}<p><span aria-hidden="true">✓</span> Calculado con el filtro actual</p></article> })}
     </section>
 
     <div className="analytics-layout">

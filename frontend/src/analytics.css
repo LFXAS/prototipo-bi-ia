@@ -139,7 +139,7 @@
 
 .analytics-kpis {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(14.75rem, 1fr));
   gap: .75rem;
 }
 
@@ -167,7 +167,8 @@
 
 .analytics-kpis article > div { display: flex; align-items: flex-start; gap: .5rem; min-height: 2.2rem; }
 .analytics-kpis small { color: #536b89; font-size: .7rem; font-weight: 850; line-height: 1.3; text-transform: uppercase; }
-.analytics-kpis strong { display: block; margin-top: .5rem; overflow-wrap: anywhere; font-size: clamp(1.22rem, 2vw, 1.62rem); letter-spacing: -.03em; }
+.analytics-kpis strong { display: block; max-width: 100%; margin-top: .5rem; overflow: hidden; color: #0b2f5e; font-size: clamp(1.28rem, 1.8vw, 1.62rem); font-variant-numeric: tabular-nums; letter-spacing: -.03em; text-overflow: ellipsis; white-space: nowrap; }
+.analytics-kpi-unit { display: block; min-height: 1.1rem; margin-top: .12rem; color: #536b89; font-size: .68rem; font-weight: 750; line-height: 1.35; }
 .analytics-kpis p { margin: .55rem 0 0; color: #0a8668; font-size: .7rem; font-weight: 750; }
 .analytics-kpis p span { margin-right: .2rem; }
 .analytics-kpis article.unavailable { opacity: .65; }
@@ -298,6 +299,7 @@
 .analytics-chat-thread article small, .analytics-chat-thread article p, .analytics-chat-thread article ul { margin: 0; }
 .analytics-chat-thread article > small { color: #698198; font-size: .65rem; font-weight: 800; }
 .analytics-chat-thread article.user > small { color: #dce8ff; }
+.analytics-chat-thread article.user > p { color: #fff; font-weight: 650; }
 .analytics-chat-thread article p { font-size: .82rem; line-height: 1.5; }
 .analytics-chat-thread article.assistant > span { padding: .5rem .6rem; border-left: .2rem solid #d69b24; border-radius: .35rem; background: #fff8e8; color: #735410; font-size: .73rem; line-height: 1.4; }
 .analytics-chat-thread article ul { display: grid; gap: .3rem; padding-left: 1rem; color: #4c6780; font-size: .74rem; line-height: 1.4; }

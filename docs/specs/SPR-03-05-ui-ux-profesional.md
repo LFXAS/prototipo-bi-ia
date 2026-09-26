@@ -250,6 +250,11 @@ El origen técnico muestra esquema, tabla, columnas principales y relación util
 
 La acción primaria es **Generar propuesta BI**. La secundaria **Modificar necesidad** vuelve al paso 1 sin mezclar resultados de otro intento.
 
+Al abrir una versión aprobada desde el historial, las cinco etapas funcionan como
+pestañas de consulta. Necesidad, conceptos, propuesta, personalización y revisión
+se reconstruyen desde el artefacto persistido; sus campos y decisiones quedan
+inhabilitados para evitar que la demostración o auditoría altere lo aprobado.
+
 ### 10.4 Paso 3: propuesta validada
 
 La primera sección responde en lenguaje de negocio:

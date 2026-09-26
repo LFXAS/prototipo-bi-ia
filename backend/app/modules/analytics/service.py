@@ -158,8 +158,24 @@ def _unit_for_recipe(execution: EtlExecution, recipe: dict[str, Any]) -> str:
     return str(recipe.get("unit", "valor"))
 
 
+def _display_name_for_recipe(recipe: dict[str, Any]) -> str:
+    code = str(recipe.get("code", ""))
+    labels = {
+        "costo_por_unidad": "Costo promedio por unidad vendida",
+        "venta_por_unidad": "Venta promedio por unidad vendida",
+    }
+    return labels.get(code, str(recipe.get("name", code)))
+
+
 def _display_unit_for_recipe(execution: EtlExecution, recipe: dict[str, Any]) -> str:
     unit = _unit_for_recipe(execution, recipe)
+    if str(recipe.get("code", "")) in {"costo_por_unidad", "venta_por_unidad"}:
+        currency = execution.metrics_document.get("currency_context", {})
+        currency = currency if isinstance(currency, dict) else {}
+        currency_code = str(currency.get("currency_code", ""))
+        if currency.get("status") == "verified" and len(currency_code) == 3:
+            return f"{currency_code.upper()} por unidad"
+        return "moneda de origen por unidad"
     if unit.casefold() not in {"count", "conteo"}:
         return unit
     semantic_text = f"{recipe.get('code', '')} {recipe.get('name', '')}".casefold()
@@ -609,7 +625,7 @@ async def build_dashboard(
         kpis.append(
             AnalyticsMetricRead(
                 code=code,
-                name=str(recipe.get("name", code)),
+                name=_display_name_for_recipe(recipe),
                 value=value,
                 unit=_display_unit_for_recipe(execution, recipe),
                 status="reconciled" if value is not None else "not_calculable",
@@ -649,7 +665,7 @@ async def build_dashboard(
         )
         for row in timeline_rows
     ]
-    metric_name = str(selected_recipe.get("name", selected_recipe.get("code", "Indicador")))
+    metric_name = _display_name_for_recipe(selected_recipe)
     metric_unit = _display_unit_for_recipe(execution, selected_recipe)
     visuals = [
         AnalyticsVisualRead(
@@ -778,7 +794,9 @@ async def build_dashboard(
         period_label=period_label,
         metric_code=str(selected_recipe.get("code", "")),
         available_metrics=[
-            AnalyticsOptionRead(value=str(item.get("code", "")), label=str(item.get("name", "")))
+            AnalyticsOptionRead(
+                value=str(item.get("code", "")), label=_display_name_for_recipe(item)
+            )
             for item in chartable
         ],
         filters=AnalyticsFiltersRead(

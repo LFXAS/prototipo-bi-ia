@@ -28,6 +28,12 @@ Quedan fuera el pronóstico de ventas, alertas autónomas, edición libre del da
 4. Los hallazgos indican la evidencia que los sustenta y no atribuyen causalidad.
 5. El modo ejecutivo oculta detalle operativo innecesario; el modo analista no altera los datos, sólo amplía la evidencia.
 6. La moneda se expresa mediante código ISO demostrado por la fuente; no se infiere por ubicación o símbolo.
+7. Los cocientes `CostoTotal / UnidadesVendidas` y `Ventas / UnidadesVendidas`
+   se presentan como **Costo promedio por unidad vendida** y **Venta promedio por
+   unidad vendida**. La tarjeta y su ayuda muestran el denominador y evitan que el
+   usuario los confunda con el costo o precio de una unidad específica.
+8. Las tarjetas separan cifra y unidad, usan abreviación legible sólo cuando el
+   valor completo no cabe y conservan el valor exacto como ayuda accesible.
 
 ## 4. API e interfaz
 
@@ -52,6 +58,9 @@ Requiere `analytics.dashboard.read`. La consulta de datos agregados no otorga ac
 - [x] Los estados de carga, vacío, error y falta de autorización son comprensibles.
 - [x] La interfaz funciona con teclado y adapta su composición a móvil, tableta y escritorio.
 - [x] Las pruebas cubren agregación, filtros, permisos, ausencia de ejecución y calidad semántica insuficiente.
+- [x] Los KPI por unidad se identifican como promedios, muestran moneda comprobada
+      y no desbordan sus tarjetas.
+- [x] La pregunta escrita por el usuario conserva contraste AA sobre el globo azul.
 
 ## 7. Evidencia
 

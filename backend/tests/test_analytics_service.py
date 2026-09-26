@@ -2,7 +2,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from app.modules.analytics.service import _derived_recipe_value, run_safe_aggregate_query
+from app.modules.analytics.service import (
+    _derived_recipe_value,
+    _display_name_for_recipe,
+    _display_unit_for_recipe,
+    run_safe_aggregate_query,
+)
 
 
 def test_financial_metrics_resolve_in_order_with_explicit_denominators() -> None:
@@ -66,6 +71,24 @@ def test_ratio_with_zero_denominator_is_not_calculable() -> None:
     )
 
     assert result is None
+
+
+def test_per_unit_ratios_are_presented_as_averages_with_verified_currency() -> None:
+    execution = SimpleNamespace(
+        metrics_document={
+            "currency_context": {"status": "verified", "currency_code": "USD"},
+            "kpis": [
+                {
+                    "code": "costo_por_unidad",
+                    "unit": "moneda de origen por unidad",
+                }
+            ],
+        }
+    )
+    recipe = {"code": "costo_por_unidad", "name": "Costo por unidad"}
+
+    assert _display_name_for_recipe(recipe) == "Costo promedio por unidad vendida"
+    assert _display_unit_for_recipe(execution, recipe) == "USD por unidad"
 
 
 class _FakeResult:
