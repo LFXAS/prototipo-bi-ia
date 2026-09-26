@@ -66,13 +66,13 @@ Abre <http://localhost:5173> y <http://localhost:8000/docs>.
 
 ### Registrar una credencial LLM cloud
 
-Las API keys de Gemini, Groq y Qwen no se escriben en `.env`. Inicia sesión como una persona con `parameters.llm.write`, abre **Parámetros generales > Configuración LLM**, guarda el proveedor, modelo y nivel de razonamiento, y usa **Registrar credencial**. Después de guardarla, la interfaz sólo mostrará **Credencial configurada** y permitirá reemplazarla, nunca consultarla. Para continuar con baja latencia se recomienda **Groq Cloud**, URL `https://api.groq.com/openai/v1`, modelo `openai/gpt-oss-120b` y razonamiento **bajo**. La pantalla completa esos valores al seleccionar el proveedor; compruébalos, registra la clave y pulsa **Probar conexión** antes de activarlo. Para Gemini se recomienda comenzar con razonamiento **mínimo**.
+Las API keys de Gemini, Groq, Anthropic y Qwen no se escriben en `.env`. Inicia sesión como una persona con `parameters.llm.write`, abre **Preparación del entorno > Configuración LLM**, guarda el proveedor, modelo y nivel de razonamiento, y usa **Registrar credencial**. Después de guardarla, la interfaz sólo mostrará **Credencial configurada** y permitirá reemplazarla, nunca consultarla. Para continuar con baja latencia se recomienda **Groq Cloud**, URL `https://api.groq.com/openai/v1`, modelo `openai/gpt-oss-120b` y razonamiento **bajo**. Si se usará Anthropic, seleccione **Anthropic Claude**: la pantalla propone `https://api.anthropic.com`, `claude-haiku-4-5-20251001` y razonamiento **mínimo**, adecuados para administrar un saldo reducido. Registre la clave prestada sólo en su instalación, pruebe la conexión y actívela; nunca comparta la clave en Git, capturas o documentos. El identificador puede cambiarse a `claude-sonnet-4-5-20250929` si la cuenta aún lo autoriza y la tarea justifica mayor costo. Para Gemini se recomienda comenzar con razonamiento **mínimo**.
 
-FastAPI cifra el valor en PostgreSQL y genera automáticamente la raíz criptográfica en el volumen `secret_key_data`. Ambos elementos son necesarios para recuperar la credencial después de reiniciar. No copies ese volumen entre equipos ni lo publiques; cada instalación debe registrar sus propias claves desde la web. Gemini, Groq y Qwen requieren una API key propia por instalación; Ollama local no requiere credencial.
+FastAPI cifra el valor en PostgreSQL y genera automáticamente la raíz criptográfica en el volumen `secret_key_data`. Ambos elementos son necesarios para recuperar la credencial después de reiniciar. No copies ese volumen entre equipos ni lo publiques; cada instalación debe registrar sus propias claves desde la web. Gemini, Groq, Anthropic y Qwen requieren una API key propia por instalación; Ollama local no requiere credencial.
 
 ### Registrar AdventureWorks como fuente activa
 
-Inicia sesión con una persona que disponga de `connections.read`, `connections.write` y `connections.test`. Abre **Parámetros generales > Conexiones de datos** y registra:
+Inicia sesión con una persona que disponga de `connections.read`, `connections.write` y `connections.test`. Abre **Preparación del entorno > Conexiones de datos** y registra:
 
 - nombre visible: `AdventureWorks local`;
 - servidor: `sqlserver`;

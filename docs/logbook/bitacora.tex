@@ -67,7 +67,7 @@
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPI, analítica explicable y reportería \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.5.0 \\
+    Versión de la bitácora & 0.5.4 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -782,6 +782,56 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \bottomrule
 \end{longtable}
 
+\subsection{25 de septiembre de 2026 - Endurecimiento integral previo al cierre}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Recuperación Git & \statusok & Se creó el commit de checkpoint \file{6cd05ea}, la etiqueta anotada \file{checkpoint-bi-pre-codex-2026-09-25} y la rama \file{feature/bi-assistant-hardening}; commit y etiqueta fueron publicados antes de cambiar código. \\
+  Groq & \statusok & Se diagnosticaron payload, presupuesto, razonamiento y reintento de \file{openai/gpt-oss-120b}; los errores conservan estado, cuerpo seguro e identificador de solicitud. \\
+  Necesidad y cobertura & \statusok & El objetivo dispone de redacción asistida aprobable, contador y viabilidad directa, derivable, ambigua o no disponible. La matriz impide omitir requisitos silenciosamente. \\
+  Contrato BI & \statusok & Medidas y fórmulas exponen procedencia; el grano y conteo distinto se validan. Las relaciones se corrigen con tablas, columnas y FK reales y vuelven a ejecutar todas las reglas. \\
+  Finanzas & \statusok & Costos, margen, descuento monetario, venta por unidad y costo por unidad sólo se incorporan desde columnas y rutas verificadas, con denominadores explícitos. \\
+  Consulta segura & \statusok & El copiloto interpreta métrica, dimensión, filtros, orden y Top N en un catálogo cerrado. FastAPI ejecuta agregados parametrizados y muestra universo, denominador y procedencia sin SQL libre. \\
+  Recuperación UX & \statusok & Una sesión vencida conserva borrador, paso, selección e identificador de versión, vuelve a leer el expediente después del acceso y elimina el borrador al cerrar sesión voluntariamente. \\
+  Especificación & \statusok & \file{SPR-05-06} registra HBI-001 a HBI-009 y enlaza cada criterio con módulo, pantalla y evidencia automatizada. \\
+  \bottomrule
+\end{longtable}
+
+\subsection{26 de septiembre de 2026 - Reprocesamiento limpio y publicación analítica}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Propuesta BI & \statusok & Groq generó la propuesta 73 con el motor \file{sales-bi-v6}; cuatro controles comprobaron instantánea, nueve referencias, contrato sin errores ni advertencias y reproducción con huellas idénticas. \\
+  Catálogo KPI & \statusok & Se eliminaron equivalencias duplicadas antes del ETL. Quedaron nueve indicadores distintos para unidades, ventas brutas, descuento monetario, pedidos, costo, margen y valores por unidad. \\
+  Ejecución ETL & \statusok & La ejecución 9 cargó 121317 líneas en cinco tablas, rechazó 0 filas y concilió todas las medidas con diferencia 0. \\
+  Cliente descriptivo & \statusok & \file{dim\_cliente} contiene 19820 filas, 19820 nombres no vacíos y dos tipos: 19119 personas y 701 organizaciones. \\
+  Finanzas & \statusok & Ventas brutas USD 110373889,313400; descuento USD 527507,913512; costo USD 100474477,773500; margen USD 9899411,539900 y margen 8,96898\%. \\
+  Interpretación & \statusok & Se publicaron únicamente Europa, Norteamérica y Pacífico en \file{group\_es}; los códigos de país y valores originales se conservaron intactos. \\
+  Analítica & \statusok & El tablero abrió la ejecución 9; cinco métricas gráficas, filtros 2013/Europa, PDF, Excel y Top 5 de productos en Europa respondieron mediante endpoints reales. \\
+  Recuperación UI & \statusok & El expediente vuelve al inicio al abrirse y un límite global de errores sustituye cualquier fallo de renderizado por una recuperación explícita, sin repetir el ETL. \\
+  Semántica de razones & \statusok & Costo total dividido para unidades y ventas brutas divididas para unidades se rotulan como promedios por unidad vendida; la interfaz muestra USD por unidad, abrevia cifras extensas y conserva el valor exacto. \\
+  Consulta histórica & \statusok & Las cinco etapas de una propuesta aprobada y de una ejecución terminada son navegables en modo de sólo lectura; los controles quedan bloqueados y la materialización no puede repetirse desde el expediente. \\
+  Navegación profesional & \statusok & El menú conserva únicamente las opciones autorizadas y las ordena por flujo en Preparación del entorno, Diseño y transformación BI, Análisis y decisiones, y Administración y seguridad; cada opción y categoría dispone de iconografía accesible. \\
+  Gráficos interactivos & \statusok & Puntos, barras y leyendas admiten teclado y puntero, muestran valor exacto y participación, y sólo ofrecen aplicar un territorio cuando pertenece al catálogo de filtros autorizado. \\
+  Anthropic Claude & \statusok & Se incorporó Messages API con URL restringida, credencial cifrada, versión de protocolo explícita y validación local de JSON. \file{claude-haiku-4-5-20251001} es el preset económico y Sonnet permanece editable. \\
+  Especificaciones y documentos & \statusok & Se actualizaron SPR-02-02, SPR-02-03, SPR-05-01 y SPR-05-04, además de alcance, arquitectura, ADR, réplica, manual, Sprint 5, Capítulo III y plan de validación. \\
+  \bottomrule
+\end{longtable}
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}X l X@{}}
@@ -790,8 +840,8 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \midrule
   Compose autocontenido válido & \statusok & \file{docker compose config --quiet} \\
   Compose de imágenes válido & \statusok & \file{docker compose -f compose.release.yaml config --quiet} \\
-  Backend calidad y pruebas & \statusok & Ruff, formato, Mypy y 84 pruebas Pytest dentro de Docker \\
-  Frontend calidad y pruebas & \statusok & ESLint, 11 pruebas Vitest y build de Vite dentro de Docker \\
+  Backend calidad y pruebas & \statusok & Ruff, formato, Mypy y 123 pruebas Pytest dentro de Docker \\
+  Frontend calidad y pruebas & \statusok & ESLint, 19 pruebas Vitest y build de Vite dentro de Docker \\
   PostgreSQL disponible & \statusok & Esquemas \file{app} y \file{mart}; endpoint \file{/health/ready} en \file{ok} \\
   AdventureWorks restaurada & \statusok & 71 tablas; \file{bi\_reader}: lectura 1 e inserción 0 \\
   Interfaz disponible & \statusok & Vite saludable en 5173, Nginx opcional en 8080 y API accesible mediante proxy \\
@@ -799,7 +849,7 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   PDF legible & \statusok & Todas las páginas renderizadas e inspeccionadas sin cortes ni solapamientos \\
   Git local & \statusok & \file{develop} para integración, \file{main} para entregas y ramas enfocadas por pull request \\
   GitHub/GHCR & \statusok & Repositorio público, dos colaboradoras con escritura, ramas protegidas y cinco imágenes públicas en GHCR; la réplica desde una VM Ubuntu se realizó con Docker y VS Code. \\
-  SDD y trazabilidad & \statusok & Especificaciones de Sprints 2 a 5 versionadas; SPR-05-01 a SPR-05-05 cubren dashboard, reportes, calidad semántica, proveedores y conversación. \\
+  SDD y trazabilidad & \statusok & Especificaciones de Sprints 2 a 5 versionadas; SPR-05-01 a SPR-05-06 cubren dashboard, reportes, calidad semántica, proveedores, conversación y endurecimiento integral. \\
   \bottomrule
 \end{tabularx}
 
@@ -884,6 +934,10 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   0.4.10 & 24-09-2026 & Comprobación estándar de divisa monetaria desde evidencia relacional, formato ISO trazable y enriquecimiento de la ejecución 6 como USD sin repetir el ETL. \\
   0.4.11 & 24-09-2026 & Separación entre documentación técnica completa y Capítulo III académico; normalización profesional, UML, casos de uso y compilación de siete PDF en CI. \\
   0.5.0 & 25-09-2026 & Sprint 5: resolución descriptiva de clientes, propuesta 54, ejecución 7, paneles por perfil, copiloto analítico, PDF/Excel fieles, cinco especificaciones, INF-SPR-05 y decisión controlada de retirar pronóstico. \\
+  0.5.1 & 25-09-2026 & Endurecimiento integral HBI-001 a HBI-009, agregaciones seguras fuera del lienzo y recuperación de sesión con borrador mínimo. \\
+  0.5.2 & 26-09-2026 & Propuesta 73, ejecución 9, KPI financieros conciliados, interpretación territorial publicada, analítica verificada y recuperación contra pantallas en blanco. \\
+  0.5.3 & 26-09-2026 & Semántica explícita de promedios por unidad, tarjetas legibles, contraste del chat y navegación inmutable de las cinco etapas para propuestas y ejecuciones históricas. \\
+  0.5.4 & 26-09-2026 & Menú profesional por flujo y permisos, gráficos interactivos accesibles, integración segura de Anthropic Claude y actualización de especificaciones y documentación académica. \\
   \bottomrule
 \end{longtable}
 

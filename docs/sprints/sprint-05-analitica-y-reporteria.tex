@@ -62,9 +62,9 @@ pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}}
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & INF-SPR-05 \\
-    Versión & 1.0.0 \\
-    Periodo de referencia & 24 al 25 de septiembre de 2026 \\
-    Rama de trabajo & \file{feature/sprint-05-analitica-visual} \\
+    Versión & 1.2.0 \\
+    Periodo de referencia & 24 al 26 de septiembre de 2026 \\
+    Rama de trabajo & \file{feature/bi-assistant-hardening} \\
     Estado & Incremento funcional, evidencia y documentación completados localmente \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
   \end{tabularx}
@@ -81,7 +81,7 @@ pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}}
 
 El Sprint 5 convierte el datamart conciliado en una herramienta utilizable por perfiles ejecutivos y analíticos. La plataforma ofrece indicadores, filtros, tendencia, rankings, distribución territorial, hallazgos explicables, una conversación contextual guiada y exportaciones que reconstruyen la selección autorizada en PDF y Excel.
 
-El incremento también resolvió una deficiencia semántica crítica. La dimensión cliente ya no muestra sólo identificadores de \file{Sales.Customer}: recorre relaciones verificadas hasta la entidad descriptiva disponible, distingue personas y organizaciones y conserva la población que realmente participó en ventas. La propuesta 54 y la ejecución 7 registran 19820 clientes con nombre y tipo, 121317 líneas conciliadas y diferencia cero.
+El incremento también resolvió una deficiencia semántica crítica. La dimensión cliente ya no muestra sólo identificadores de \file{Sales.Customer}: recorre relaciones verificadas hasta la entidad descriptiva disponible, distingue personas y organizaciones y conserva la población que realmente participó en ventas. La propuesta 54 y la ejecución 7 demostraron la corrección inicial; el reprocesamiento final con la propuesta 73 y la ejecución 9 confirmó 19820 clientes con nombre y tipo, 121317 líneas conciliadas y diferencia cero.
 
 \notebox{El resultado no depende de nombres literales como \textit{Customer} o \textit{Person}. La resolución combina claves foráneas, cobertura, cardinalidad, calidad descriptiva y participación en el hecho. Si no existe evidencia suficiente, el sistema bloquea o explica la decisión en lugar de inventar una etiqueta.}
 
@@ -111,6 +111,7 @@ El tutor retiró pronóstico, MAPE y RMSE del alcance vigente. La construcción 
   SPR-05-03 & Resolución general de entidades descriptivas, cobertura de nombre y tipo de cliente y diagnóstico operable dentro de la plataforma. & \ok \\
   SPR-05-04 & Matriz de capacidades por proveedor LLM y corrección del error 400 de Groq mediante presupuesto y formato de razonamiento compatibles. & \ok \\
   SPR-05-05 & Copiloto analítico contextual, guía de preguntas, evidencia, cautela, seguimientos y auditoría sin guardar texto libre completo. & \ok \\
+  SPR-05-06 & Endurecimiento integral: Groq, viabilidad, cobertura, relaciones controladas, costos y margen, agregaciones seguras y recuperación de sesión. & \ok \\
   \bottomrule
 \end{longtable}
 
@@ -139,6 +140,8 @@ La propuesta 54 se aprobó y originó la ejecución 7. La dimensión final conti
 
 La vista ejecutiva prioriza lectura rápida: indicadores principales, evolución, productos, clientes, territorios y hallazgos. La vista del analista agrega calidad, definición, procedencia, filtros y acceso a datos agregados. Ambas usan el mismo servicio de agregación y respetan permisos; cambiar la presentación no cambia la cifra.
 
+Las tarjetas financieras diferencian totales y cocientes. \textbf{Costo promedio por unidad vendida} corresponde a \file{CostoTotal / UnidadesVendidas}; \textbf{Venta promedio por unidad vendida} corresponde a \file{VentasBrutas / UnidadesVendidas}. Son promedios ponderados del universo filtrado, no valores de una unidad individual. La moneda ISO se muestra sólo después de ser comprobada y las cifras grandes se abrevian visualmente sin perder el valor exacto accesible.
+
 Los mensajes automáticos distinguen observación de explicación. Una variación entre los extremos visibles no se presenta como tendencia causal; los períodos parciales se señalan y las posibles causas sólo se plantean como asuntos por investigar cuando no existe evidencia.
 
 \subsection{Copiloto contextual}
@@ -159,26 +162,41 @@ El libro contiene hojas independientes para resumen, evolución, productos, terr
 
 \section{Compatibilidad de proveedores LLM}
 
-La configuración admite Gemini, Ollama y Groq mediante un contrato común, pero respeta sus diferencias. Para \file{openai/gpt-oss-120b} en Groq, los niveles mínimo, bajo, medio y alto se convierten a valores soportados; la prueba usa salida corta y razonamiento oculto para que los tokens internos no consuman la respuesta JSON. El error 400 observado con esfuerzo medio o alto quedó corregido sin reducir la validación estructural posterior.
+La configuración admite Gemini, Groq, Anthropic Claude, Qwen y Ollama mediante un contrato común, pero respeta sus diferencias. Para \file{openai/gpt-oss-120b} en Groq, los niveles mínimo, bajo, medio y alto se convierten a valores soportados; la prueba usa salida corta y razonamiento oculto para que los tokens internos no consuman la respuesta JSON. El error 400 observado con esfuerzo medio o alto quedó corregido sin reducir la validación estructural posterior.
+
+Anthropic se incorporó con el endpoint restringido \file{/v1/messages}, versión de protocolo explícita, credencial cifrada y validación local de JSON. La selección inicial \file{claude-haiku-4-5-20251001} usa nivel mínimo y no activa pensamiento extendido, lo que permite aprovechar un saldo pequeño sin sacrificar los controles determinísticos. Sonnet permanece como modelo editable para una cuenta que lo autorice.
 
 El proveedor puede explicar y resumir; no calcula cifras de autoridad. Los indicadores, filtros, conciliación y archivos se construyen por código determinístico.
 
-\section{Evidencia cuantitativa de la ejecución 7}
+\section{Endurecimiento del asistente y del copiloto}
+
+La necesidad se clasifica antes de generar como directa, derivable, ambigua o no disponible. La matriz de cobertura impide descartar silenciosamente costos, rentabilidad u otro requisito solicitado. Las medidas directas muestran su columna; las calculadas muestran fórmula; el grano conserva una fila por detalle. Costos, descuento monetario, margen bruto, margen porcentual, venta por unidad y costo por unidad sólo se materializan cuando existen fuentes y rutas verificadas.
+
+El copiloto analítico ya no queda limitado a los gráficos visibles. Primero interpreta la pregunta mediante un contrato cerrado de indicador, dimensión, filtro, orden y Top N. Después FastAPI ejecuta una agregación parametrizada sobre el datamart conciliado. La tarjeta de respuesta expone alcance, resultados, denominador calculado antes del Top N y procedencia. Así, ``¿Cuáles son los 5 productos más vendidos en Europa?'' se resuelve aunque Europa no esté seleccionado, sin aceptar SQL del LLM.
+
+Los gráficos del dashboard también son explorables. Punto, barra y leyenda funcionan como controles con foco y nombre accesible; al seleccionarlos muestran etiqueta, valor exacto y participación. Una categoría territorial validada puede convertirse en filtro global mediante una acción explícita, actualizando toda la vista sin aceptar texto libre ni producir cambios silenciosos.
+
+Si vence la sesión, la interfaz conserva únicamente el texto redactado por el usuario, códigos de selección, paso e identificador de versión. Tras autenticarse vuelve a leer el expediente autorizado y no repite una mutación incierta. Credenciales, respuestas del LLM y documentos completos no se guardan localmente.
+
+Para sustentación y auditoría, una propuesta aprobada y una ejecución terminada mantienen sus cinco etapas navegables como pestañas de sólo lectura. Los controles permanecen bloqueados y el paso de materialización informa que la carga ya fue realizada, por lo que consultar el expediente no puede iniciar un segundo ETL.
+
+\section{Evidencia cuantitativa del cierre}
 
 \begin{tabularx}{\textwidth}{@{}p{0.38\textwidth}X@{}}
   \toprule
   Control & Resultado \\
   \midrule
-  Propuesta y ejecución & Propuesta 54 aprobada; ejecución 7 conciliada. \\
+  Propuesta y ejecución & Propuesta 73, motor \file{sales-bi-v6}; ejecución 9 conciliada y publicada. \\
   Filas de origen y destino & 121317 y 121317; diferencia 0. \\
   Tablas materializadas & Hecho de ventas y cuatro dimensiones. \\
   Clientes & 19820 miembros vinculados a ventas. \\
   Cobertura descriptiva & 19820 nombres y tipos no vacíos. \\
   Composición & 19119 personas y 701 organizaciones. \\
   Moneda & USD comprobada desde evidencia relacional. \\
+  Indicadores financieros & Ventas brutas USD 110373889,31; descuento USD 527507,91; costo USD 100474477,77; margen USD 9899411,54 y margen 8,97\%. \\
   Reporte PDF & Seis páginas reconstruidas y revisadas visualmente. \\
   Reporte Excel & Seis hojas estructuradas, renderizadas y revisadas visualmente. \\
-  Conversación & Groq respondió en la interfaz con evidencia, cautela y seguimientos. \\
+  Conversación y exploración & Groq respondió con evidencia; barras, puntos y territorios presentan detalle interactivo y filtro controlado. \\
   \bottomrule
 \end{tabularx}
 
@@ -190,7 +208,7 @@ El proveedor puede explicar y resumir; no calcula cifras de autoridad. Los indic
   \item el servidor reconstruye PDF y Excel y vuelve a aplicar autorización;
   \item el LLM recibe contexto mínimo agregado y sus respuestas no son evidencia cuantitativa primaria;
   \item propuesta, ejecución, filtros, moneda y responsable permanecen asociados al resultado;
-  \item las versiones 52/54 y ejecuciones 6/7 se conservan para comparación y auditoría.
+  \item las versiones 52/54/73 y ejecuciones 6/7/9 se conservan para comparación y auditoría.
 \end{itemize}
 
 \section{Pruebas y verificación}
@@ -199,9 +217,9 @@ El proveedor puede explicar y resumir; no calcula cifras de autoridad. Los indic
   \toprule
   Control & Evidencia \\
   \midrule
-  Backend & Ruff, formato, Mypy y 84 pruebas Pytest satisfactorias dentro de Docker. \\
-  Frontend & ESLint, 11 pruebas Vitest y construcción Vite satisfactoria dentro de Docker. \\
-  Integración & Propuesta 54, ejecución 7, dashboard y conversación probados con los servicios reales. \\
+  Backend & Ruff, formato, Mypy y suite Pytest satisfactoria dentro de Docker, incluida la integración Anthropic. \\
+  Frontend & ESLint, pruebas Vitest de navegación e interacción gráfica y construcción Vite satisfactoria dentro de Docker. \\
+  Integración & Propuesta 73, ejecución 9, dashboard, filtros, conversación y exportaciones probados con los servicios reales. \\
   PDF & Todas las páginas renderizadas e inspeccionadas, sin recortes ni solapamientos. \\
   Excel & Todas las hojas recalculadas, renderizadas e inspeccionadas, con moneda y gráficos correctos. \\
   Documentación & Bitácora, manual, informes de sprint y Capítulo III compilados con la imagen LaTeX del proyecto. \\
@@ -231,7 +249,7 @@ El producto requiere todavía cierre académico, no otro núcleo funcional: prue
 
 \subsection*{Trazabilidad documental}
 
-Este informe se sustenta en las especificaciones \file{SPR-05-01} a \file{SPR-05-05}, la bitácora técnica, el manual técnico, el plan de validación, la arquitectura y el Capítulo III. Las fuentes y el PDF se versionan juntos; \file{make docs} y CI comprueban su reproducibilidad.
+Este informe se sustenta en las especificaciones \file{SPR-05-01} a \file{SPR-05-06}, la bitácora técnica, el manual técnico, el plan de validación, la arquitectura y el Capítulo III. Las fuentes y el PDF se versionan juntos; \file{make docs} y CI comprueban su reproducibilidad.
 
 \subsection*{Control documental}
 

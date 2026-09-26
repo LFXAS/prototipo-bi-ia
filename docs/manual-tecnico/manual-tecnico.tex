@@ -91,11 +91,11 @@
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & MAN-TEC-01 \\
-    Versión del manual & 4.0.0 \\
+    Versión del manual & 4.0.4 \\
     Línea base & Ramas \file{develop} y \file{main} \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
     Clasificación & Documentación técnica - repositorio público \\
-    Fecha & 25 de septiembre de 2026 \\
+    Fecha & 26 de septiembre de 2026 \\
   \end{tabularx}
 
   \vfill
@@ -376,15 +376,15 @@ La navegación muestra sólo menús autorizados y los organiza así:
   Grupo o acceso & Pantallas y finalidad \\
   \midrule
   Inicio & Resumen inicial de la sesión y punto de entrada directo. \\
-  IA & Catálogo analítico y Asistente de datamart. \\
-  Datos & Explorador de esquema y Datamart de ventas. \\
-  Seguridad & Usuarios, Roles, Permisos, Menús y Auditoría. \\
-  Parámetros generales & Parámetros operativos aprobados, Configuración LLM y Conexiones de datos. \\
+  Preparación del entorno & Conexiones de datos, Explorador de esquema, Configuración LLM y Parámetros. \\
+  Diseño y transformación BI & Catálogo analítico, Asistente de datamart y Datamart de ventas. \\
+  Análisis y decisiones & Analítica de ventas, copiloto y reportes autorizados. \\
+  Administración y seguridad & Usuarios, Roles, Permisos, Menús y Auditoría. \\
   \bottomrule
 \end{tabularx}
 \end{center}
 
-Los grupos Seguridad y Parámetros generales se pueden plegar o desplegar, incluso si contienen la pantalla activa. En escritorio, el panel lateral se contrae o restaura mediante el chevrón de su borde; en tableta y móvil se abre con menú hamburguesa. La visibilidad en React facilita la experiencia, pero no es una autorización: una URL o petición directa sin permiso recibe una respuesta de acceso denegado desde FastAPI.
+Los grupos se ordenan por el flujo de trabajo y se pueden plegar o desplegar, incluso si contienen la pantalla activa. Cada categoría y subopción incorpora un icono SVG junto a su texto, foco visible y estado activo por fondo y borde; la iconografía nunca sustituye el nombre accesible. En escritorio, el panel lateral se contrae o restaura mediante el chevrón de su borde; en tableta y móvil se abre con menú hamburguesa. Esta reclasificación ocurre sobre las opciones que FastAPI ya autorizó: una URL o petición directa sin permiso continúa recibiendo acceso denegado.
 
 \subsection{Usuarios, roles, permisos y menús}
 
@@ -472,6 +472,8 @@ La interpretación de categorías se ejecuta después de la conciliación numér
 
 La tabla \textbf{Expedientes recientes} permite reabrir cualquier ejecución sin repetir la carga. Si la misma propuesta y selección de KPI ya tiene un expediente preparado, en curso, conciliado o pendiente de revisión, el botón de materialización se reemplaza por \textbf{Abrir expediente}; FastAPI aplica el mismo bloqueo dentro de una transacción. Sólo una ejecución fallida permite un reintento controlado.
 
+Una propuesta aprobada conserva \textbf{Necesidad}, \textbf{Conceptos}, \textbf{Propuesta}, \textbf{Personalización} y \textbf{Revisión} como pestañas de consulta. Del mismo modo, un expediente completado permite recorrer \textbf{Elegir propuesta}, \textbf{Revisar indicadores}, \textbf{Confirmar ejecución}, \textbf{Materializar y cargar} y \textbf{Validar resultados}. Los campos quedan deshabilitados y la cuarta etapa explica la materialización realizada sin ofrecer una nueva carga. Este recorrido permite sustentar y auditar el proceso completo desde la propia plataforma.
+
 \subsection{Copiloto contextual para decisiones semánticas}
 
 En el paso de conceptos, la confianza del LLM no equivale a validación. La plataforma agrega evidencia determinística de tabla, columnas, clave y relaciones. Los conceptos de confianza baja o sin respaldo suficiente nacen desmarcados. \textbf{Ver evidencia y cómo resolver} explica causa, riesgo y consecuencias; el analista no necesita abrir DBeaver ni escribir SQL.
@@ -490,23 +492,41 @@ La propuesta 54 produjo la ejecución 7. El datamart conserva 121317 líneas, 27
 
 \subsection{Analítica explicable y conversación contextual}
 
-La opción \textbf{Análisis > Analítica de ventas} abre únicamente una ejecución exitosa y conciliada. La vista ejecutiva prioriza KPI, evolución, productos, territorios y hallazgos; la vista analítica habilita selección de indicador, clientes principales, tablas de respaldo y calidad. Año y territorio se aplican en el servidor a KPIs, gráficos, hallazgos y exportaciones. La moneda se muestra como \file{USD} porque fue comprobada en la fuente, no inferida por un símbolo.
+La opción \textbf{Análisis y decisiones > Analítica de ventas} abre únicamente una ejecución exitosa y conciliada. La vista ejecutiva prioriza KPI, evolución, productos, territorios y hallazgos; la vista analítica habilita selección de indicador, clientes principales, tablas de respaldo y calidad. Año y territorio se aplican en el servidor a KPIs, gráficos, hallazgos y exportaciones. La moneda se muestra como \file{USD} porque fue comprobada en la fuente, no inferida por un símbolo.
+
+Los gráficos admiten exploración directa con ratón, toque o teclado. Seleccionar un punto, barra o categoría abre dentro de la tarjeta un detalle con etiqueta, valor exacto y participación sobre el conjunto visible; cerrar el detalle no altera filtros. En la distribución territorial aparece \textbf{Filtrar tablero por...} únicamente cuando la etiqueta coincide con una opción real del catálogo devuelto por FastAPI. Aplicarla actualiza conjuntamente indicadores, visuales y hallazgos; no se aceptan valores escritos libremente.
+
+Las razones \file{costo\_por\_unidad} y \file{venta\_por\_unidad} no representan una fila o producto individual. Son promedios ponderados sobre el filtro vigente: \file{CostoTotal / UnidadesVendidas} y \file{VentasBrutas / UnidadesVendidas}. Por ello la interfaz utiliza \textbf{Costo promedio por unidad vendida} y \textbf{Venta promedio por unidad vendida}, muestra \file{USD por unidad} y conserva el valor exacto como ayuda aunque la tarjeta abrevie cifras extensas para evitar desbordamientos.
 
 Los hallazgos determinísticos citan su evidencia y no explican causas. En particular, una diferencia entre el primer y el último mes visible se describe como comparación de extremos; no demuestra tendencia o causalidad y puede involucrar meses con cobertura parcial.
 
 El bloque \textbf{Preguntar sobre estos resultados} está separado del panel de hallazgos. Ofrece preguntas guiadas para comprender, decidir e interpretar con cautela en modo ejecutivo, y para comparar, investigar o validar en modo analista. El servidor reconstruye la selección conciliada y envía al LLM sólo KPIs, puntos agregados, hallazgos, calidad, granularidad y filtros. No envía filas, credenciales ni SQL. La respuesta contiene explicación, evidencias, advertencia, preguntas de seguimiento, proveedor y modelo. Cambiar vista o filtros limpia el contexto anterior.
 
+Para una pregunta como ``¿Cuáles son los 5 productos más vendidos en Europa?'', la primera llamada al LLM sólo completa un esquema JSON cerrado: indicador, dimensión, Top N, orden, año y territorio deben pertenecer a los catálogos enviados por FastAPI. El servidor valida esos valores y construye por código propio una consulta agregada parametrizada; nunca acepta SQL del modelo. La respuesta muestra la interpretación, el total del universo filtrado antes del Top N, la participación de cada elemento y la procedencia de medida, operación y agrupación.
+
+\subsection{Recuperación después de vencer la sesión}
+
+Una respuesta HTTP 401 activa el estado global de sesión vencida y conserva la ruta de trabajo. El navegador guarda únicamente el objetivo redactado, códigos de preguntas, periodicidad, paso y el identificador de una versión persistida. Después de iniciar sesión, React vuelve al asistente y obtiene la propuesta mediante \file{GET /copilot/proposals/\{id\}} con los permisos renovados. No se guarda el documento completo, la respuesta del LLM, una credencial ni una operación pendiente. El cierre voluntario de sesión elimina también el borrador.
+
+Los mensajes distinguen sesión vencida (401), permiso insuficiente (403) y servicio temporalmente no disponible (503). Los globos de preguntas usan texto blanco sobre fondos \file{\#2166e8} y \file{\#1f63dc}; sus contrastes calculados son 5,08:1 y 5,42:1, superiores al mínimo AA de 4,5:1 para texto normal.
+
+Si una excepción inesperada ocurre durante el renderizado, el límite global de la interfaz muestra \textbf{El expediente sigue seguro} y ofrece recargar. La recuperación no ejecuta nuevamente el ETL. Al abrir un expediente desde el historial también se restablece el desplazamiento al inicio del comprobante, evitando que una posición antigua se perciba como una página en blanco.
+
+La ejecución final de referencia es la 9, asociada con la propuesta 73. Se considera publicada cuando la conciliación es satisfactoria y la interpretación territorial supervisada está aplicada. El dashboard debe devolver \file{execution\_id=9}; si todavía informa que no existe una ejecución publicada, se debe abrir el expediente y resolver únicamente la decisión semántica pendiente, no repetir la carga.
+
 \subsection{Exportación PDF y Excel}
 
 Los botones \textbf{Exportar PDF} y \textbf{Exportar Excel} vuelven a construir la selección autorizada en FastAPI. PDF usa A4 horizontal, páginas deliberadas para resumen, tendencia, rankings, hallazgos y calidad; no captura el HTML ni corta tablas entre páginas. Excel conserva valores numéricos, formato de moneda o conteo, un resumen, una hoja por gráfico visible y, en modo analista, una hoja de trazabilidad. La vista ejecutiva no recibe contenido reservado al analista.
 
-Cada descarga registra actor, formato, vista, ejecución, indicador y filtros. Los archivos no contienen macros, vínculos externos, credenciales, filas crudas, SQL ni fórmulas generadas por IA. La evidencia real de la ejecución 7 se revisó página por página y hoja por hoja antes del cierre.
+Cada descarga registra actor, formato, vista, ejecución, indicador y filtros. Los archivos no contienen macros, vínculos externos, credenciales, filas crudas, SQL ni fórmulas generadas por IA. La evidencia final de la ejecución 9 se revisó página por página y hoja por hoja antes del cierre.
 
 \subsection{Configuración LLM cloud y local}
 
-La pantalla Configuración LLM mantiene nombre, proveedor, URL validada, modelo, estado y resultado de prueba. Puede existir una sola configuración activa. Para Gemini, Groq o Qwen Cloud se guarda primero el registro y después se usa \textbf{Registrar credencial}; cuando ya existe, la acción cambia a \textbf{Reemplazar credencial}. La clave se envía una sola vez y nunca vuelve al navegador. La tabla sólo presenta \textbf{Credencial pendiente} o \textbf{Credencial configurada}.
+La pantalla Configuración LLM mantiene nombre, proveedor, URL validada, modelo, estado y resultado de prueba. Puede existir una sola configuración activa. Para Gemini, Groq, Anthropic o Qwen Cloud se guarda primero el registro y después se usa \textbf{Registrar credencial}; cuando ya existe, la acción cambia a \textbf{Reemplazar credencial}. La clave se envía una sola vez y nunca vuelve al navegador. La tabla sólo presenta \textbf{Credencial pendiente} o \textbf{Credencial configurada}.
 
 El identificador del modelo se parametriza porque el catálogo del proveedor cambia. Gemini se probó con \file{gemini-3.6-flash}. Para baja latencia, Sprint 4 incorporó Groq Cloud con URL restringida \file{https://api.groq.com/openai/v1} y modelo \file{openai/gpt-oss-120b}. La pantalla incorpora \textbf{Nivel de razonamiento}: automático, mínimo, bajo, medio o alto. Para GPT--OSS en Groq, mínimo se traduce a \file{low}; bajo, medio y alto se conservan. La prueba reserva 256 tokens de finalización y usa \file{reasoning\_format: hidden}; la generación aumenta el presupuesto según el contrato. Así se corrigió el error 400 que aparecía cuando el razonamiento consumía la salida antes de completar el JSON. Cambiar URL, modelo o razonamiento invalida la prueba anterior.
+
+Anthropic Claude usa exclusivamente \url{https://api.anthropic.com} y la ruta \file{/v1/messages}. El preset inicial es \file{claude-haiku-4-5-20251001} con nivel mínimo, recomendado cuando se dispone de poco saldo por su menor costo y latencia. \file{claude-sonnet-4-5-20250929} puede escribirse como modelo alternativo si la cuenta todavía lo autoriza y el análisis justifica mayor consumo. FastAPI envía \file{x-api-key} y \file{anthropic-version: 2023-06-01}, incorpora el esquema esperado a la instrucción, omite pensamiento extendido y vuelve a validar localmente el JSON antes de usarlo. La clave prestada se registra en la instalación local; no debe copiarse a \file{.env}, Git, capturas o documentos.
 
 FastAPI cifra la clave mediante cifrado autenticado y almacena únicamente el texto cifrado en \path{app.secrets}. La raíz criptográfica se genera automáticamente con permisos restrictivos en \path{/var/lib/bi-ia-secrets/master.key} y se conserva en el volumen \path{secret_key_data}, separado de PostgreSQL. Si se borra ese volumen, las credenciales existentes dejan de poder descifrarse y deberán reemplazarse desde la pantalla. No se copia el volumen entre equipos y no se versiona. \path{GEMINI_API_KEY} y \path{DASHSCOPE_API_KEY} ya no se utilizan.
 
@@ -1027,7 +1047,7 @@ docker compose --profile local-llm logs --tail=200 ollama
   \item Abrir frontend y OpenAPI en el navegador.
   \item Confirmar que AdventureWorks contiene 71 tablas y el acceso externo usa \file{bi\_reader}.
   \item Confirmar que no hay secretos ni archivos \file{.env} en los cambios de Git.
-  \item Abrir la ejecución 7 y comprobar 121317 filas conciliadas, 19820 clientes con nombre y tipo y moneda USD.
+  \item Abrir la ejecución 9 y comprobar 121317 filas conciliadas, 19820 clientes con nombre y tipo y moneda USD.
   \item Probar las vistas ejecutiva y analítica, una pregunta guiada y las exportaciones PDF/Excel con la misma selección.
   \item Registrar SHA, etiqueta y digest de imágenes en la bitácora.
   \item Conservar los PDF generados para la evidencia de tesis.
@@ -1152,6 +1172,10 @@ make verify
   2.3.5 & 20-09-2026 & Catálogo analítico separado por permisos y dominio, CRUD de preguntas, múltiples periodicidades y dimensiones propuestas por IA en lugar de predefinidas en la necesidad. \\
   3.0.0 & 24-09-2026 & Operación del Sprint 4: Groq Cloud, selección de propuestas, KPI variables, ETL transaccional, conciliación, semántica española, expedientes recuperables, prevención de duplicados y moneda ISO comprobada. \\
   4.0.0 & 25-09-2026 & Cierre técnico del Sprint 5: identidad descriptiva general, propuesta 54, ejecución 7, panel por perfil, copiloto analítico seguro, PDF/Excel fieles y retiro documentado del pronóstico. \\
+  4.0.1 & 25-09-2026 & Endurecimiento integral: diagnóstico Groq, viabilidad y cobertura, relaciones controladas, KPI financieros, agregaciones seguras y recuperación de sesión. \\
+  4.0.2 & 26-09-2026 & Propuesta 73 y ejecución 9 conciliada, analítica publicada, pruebas de exportación/copiloto y recuperación explícita ante fallos visuales. \\
+  4.0.3 & 26-09-2026 & Promedios por unidad con denominador explícito, tarjetas ejecutivas legibles, contraste del chat y consulta inmutable de las cinco etapas históricas. \\
+  4.0.4 & 26-09-2026 & Gráficos interactivos y accesibles, menú profesional por flujo de trabajo e integración segura de Anthropic Claude con Haiku 4.5. \\
   \bottomrule
 \end{longtable}
 

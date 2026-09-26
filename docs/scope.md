@@ -59,7 +59,7 @@ En esta fase sólo existe su límite modular y la documentación del contrato. L
 
 ## Aclaración sobre el LLM configurable
 
-El anteproyecto requiere un LLM que proponga artefactos BI, siempre con validación determinística y aprobación humana. Para evitar depender de un único proveedor, la plataforma permite elegir una sola conexión activa entre Gemini Cloud, Groq Cloud, Qwen Cloud y Ollama local. Groq se integra mediante su endpoint compatible con OpenAI y el modelo recomendado `openai/gpt-oss-120b`; las credenciales cloud se registran o reemplazan desde la web y se conservan cifradas, sin editar `.env` durante la operación ordinaria. Esta parametrización no permite enviar datos crudos ni ejecutar SQL del modelo.
+El anteproyecto requiere un LLM que proponga artefactos BI, siempre con validación determinística y aprobación humana. Para evitar depender de un único proveedor, la plataforma permite elegir una sola conexión activa entre Gemini Cloud, Groq Cloud, Anthropic Claude, Qwen Cloud y Ollama local. Groq se integra mediante su endpoint compatible con OpenAI y el modelo recomendado `openai/gpt-oss-120b`; Anthropic usa exclusivamente la API Messages oficial y propone `claude-haiku-4-5-20251001` como alternativa económica. Las credenciales cloud se registran o reemplazan desde la web y se conservan cifradas, sin editar `.env` durante la operación ordinaria. Esta parametrización no permite enviar datos crudos ni ejecutar SQL del modelo.
 
 ## Objetivo de esta fase
 

@@ -87,7 +87,7 @@
     Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tipo de documento & Texto base para integración en el trabajo de titulación \\
     Código documental & TES-CAP-03 \\
-    Versión & 1.1.0 \\
+    Versión & 1.2.0 \\
     Periodo cubierto & Sprints 1 al 5; agosto--septiembre de 2026 \\
     Estado & Núcleo funcional implementado y verificado; validación académica final pendiente \\
   \end{tabularx}
@@ -129,7 +129,7 @@ AdventureWorks 2022 representa el sistema transaccional de ventas. SQL Server se
 
 \subsection{Factibilidad técnica}
 
-El sistema es técnicamente factible porque se construye con componentes reproducibles y disponibles: React/Vite, FastAPI, PostgreSQL, SQL Server, Docker Compose, GitHub Actions y proveedores LLM configurables. Las dependencias quedan fijadas, las migraciones son versionadas y las verificaciones se ejecutan dentro de contenedores. La alternativa Ollama permite una prueba local; Gemini Cloud y Groq Cloud cubren escenarios de mayor capacidad o menor latencia.
+El sistema es técnicamente factible porque se construye con componentes reproducibles y disponibles: React/Vite, FastAPI, PostgreSQL, SQL Server, Docker Compose, GitHub Actions y proveedores LLM configurables. Las dependencias quedan fijadas, las migraciones son versionadas y las verificaciones se ejecutan dentro de contenedores. La alternativa Ollama permite una prueba local; Gemini Cloud, Groq Cloud y Anthropic Claude cubren escenarios de mayor capacidad, menor latencia o control de costo.
 
 \subsection{Factibilidad operativa}
 
@@ -210,7 +210,7 @@ Se aplicó Scrum de forma incremental, complementado con desarrollo guiado por e
   RF-09 & Compilar una propuesta aprobada a un plan ETL determinístico. & \ok \\
   RF-10 & Materializar dimensiones, hecho y KPI; conciliar origen y destino. & \ok \\
   RF-11 & Guiar la revisión semántica y publicar etiquetas sin reemplazar originales. & \ok \\
-  RF-12 & Presentar dashboard ejecutivo y analítico con filtros, KPI, gráficos y hallazgos explicables. & \ok \\
+  RF-12 & Presentar dashboard ejecutivo y analítico con filtros, KPI, gráficos interactivos accesibles y hallazgos explicables. & \ok \\
   RF-13 & Resolver etiquetas descriptivas de entidades mediante relaciones verificadas y cobertura controlada. & \ok \\
   RF-14 & Permitir preguntas contextuales sobre agregados visibles, con evidencia y límites explícitos. & \ok \\
   RF-15 & Exportar PDF y Excel fieles a la vista, filtros, permisos y expediente conciliado. & \ok \\
@@ -328,7 +328,7 @@ Se aplicó Scrum de forma incremental, complementado con desarrollo guiado por e
 \begin{tikzpicture}[node distance=10mm and 16mm]
   \node[component] (ui) {$\langle\!\langle$component$\rangle\!\rangle$\\React / Vite\\Interfaz guiada};
   \node[component, right=of ui] (api) {$\langle\!\langle$component$\rangle\!\rangle$\\FastAPI\\API y orquestación};
-  \node[component, right=of api] (llm) {$\langle\!\langle$external$\rangle\!\rangle$\\Gemini, Groq u Ollama};
+  \node[component, right=of api] (llm) {$\langle\!\langle$external$\rangle\!\rangle$\\Gemini, Groq, Claude u Ollama};
   \node[datastore, below=of api] (pg) {PostgreSQL\\app + mart};
   \node[datastore, left=of pg] (sql) {SQL Server\\AdventureWorks};
   \node[component, right=of pg] (ci) {$\langle\!\langle$component$\rangle\!\rangle$\\GitHub Actions\\CI/CD};
@@ -460,7 +460,7 @@ El primer incremento redujo el riesgo técnico: repositorio protegido, Docker Co
 
 \subsection{Sprint 2: seguridad, administración y LLM}
 
-El segundo incremento incorporó JWT, RBAC, usuarios, roles, permisos, menús, auditoría, parámetros y configuraciones LLM con credenciales cifradas. También añadió Ollama como respaldo local opcional. La interfaz separó funciones del administrador y del analista para evitar privilegios implícitos.
+El segundo incremento incorporó JWT, RBAC, usuarios, roles, permisos, menús, auditoría, parámetros y configuraciones LLM con credenciales cifradas. También añadió Ollama como respaldo local opcional. La navegación final ordena las rutas autorizadas en preparación del entorno, diseño y transformación BI, análisis y decisiones, y administración y seguridad; sus iconos acompañan texto accesible y no alteran RBAC.
 
 \subsection{Sprint 3: metadatos y propuesta BI supervisada}
 
@@ -474,7 +474,15 @@ El cuarto incremento convirtió el contrato aprobado en un datamart físico. El 
 
 El quinto incremento corrigió de raíz la identidad de la dimensión cliente. El sistema mantuvo como población a quienes participan en ventas y recorrió relaciones verificadas para resolver personas y organizaciones, sin depender del nombre literal de una tabla. La propuesta 54 produjo la ejecución 7 con 19820 clientes: 19119 personas y 701 organizaciones, sin nombres vacíos, y conservó las 121317 líneas conciliadas.
 
-Sobre ese expediente se implementaron dos vistas por perfil, filtros de servidor, KPI variables, tendencia, rankings, hallazgos determinísticos, conversación contextual y exportaciones PDF/Excel. El copiloto usa únicamente datos agregados visibles y entrega respuesta, evidencia, advertencia y preguntas de seguimiento. Los reportes se reconstruyen en FastAPI y no son capturas del navegador.
+Sobre ese expediente se implementaron dos vistas por perfil, filtros de servidor, KPI variables, tendencia, rankings, hallazgos determinísticos, conversación contextual y exportaciones PDF/Excel. El copiloto usa únicamente agregados permitidos: interpreta dimensión, métrica, filtro, orden y Top N dentro de un catálogo cerrado; FastAPI ejecuta la agregación parametrizada y expone denominador y procedencia. Esto permite responder sobre un territorio no seleccionado en el lienzo sin ejecutar SQL generado por IA. Los reportes se reconstruyen en FastAPI y no son capturas del navegador.
+
+Los puntos, barras y leyendas se convirtieron en controles interactivos accesibles. Una selección muestra valor exacto y participación dentro de la tarjeta, y una categoría territorial sólo puede aplicarse como filtro cuando existe en el catálogo autorizado. Para reducir dependencia de un proveedor saturado se agregó Anthropic Claude mediante Messages API; Haiku 4.5 es el preset económico y toda respuesta continúa sometida a esquema y validación determinística.
+
+El cierre del incremento fortaleció la formulación y viabilidad de la necesidad, la cobertura de requisitos, la trazabilidad de medidas y fórmulas, las relaciones corregibles con objetos reales, los indicadores financieros y la recuperación del asistente después de vencer la sesión. El borrador local excluye credenciales y documentos completos; la versión se recupera desde la API con autorización renovada.
+
+Como validación de cierre, la propuesta 73 se generó nuevamente con Groq y el motor \file{sales-bi-v6}. La ejecución 9 cargó 121317 líneas con diferencia cero, produjo nueve KPI sin equivalencias duplicadas e incorporó ventas brutas, descuento monetario, costo, margen y valores por unidad. \file{dim\_cliente} mantuvo 19820 nombres completos y tipo de cliente con cobertura del 100\%. Tras publicar sólo las etiquetas territoriales revisadas, el tablero, los filtros, las exportaciones y una consulta Top 5 fuera del lienzo se comprobaron sobre esa ejecución.
+
+Los cocientes financieros se rotularon conforme a su semántica: costo total dividido para unidades vendidas y ventas brutas divididas para unidades vendidas se presentan como promedios ponderados por unidad vendida. Además, las cinco etapas de las propuestas aprobadas y de las ejecuciones terminadas permanecen navegables en modo de consulta. Esta decisión conserva el artefacto aprobado, impide una segunda materialización accidental y convierte la propia aplicación en evidencia demostrable del proceso.
 
 Durante la revisión del alcance, el tutor retiró el pronóstico, MAPE y RMSE. Esta decisión no reduce la demostración central: separa la construcción semiautomatizada de un datamart de un problema predictivo que requeriría hipótesis y validación propias.
 
@@ -492,7 +500,7 @@ Durante la revisión del alcance, el tutor retiró el pronóstico, MAPE y RMSE. 
   2 & Gobierno y seguridad & JWT, RBAC, auditoría, parámetros y LLM cifrado. & \ok \\
   3 & Diseño asistido & Metadatos, necesidad, propuesta, validación y decisión. & \ok \\
   4 & Datamart verificable & ETL, KPI variables, 121317 filas, diferencia cero y evidencia semántica. & \ok \\
-  5 & Analítica utilizable & Identidad descriptiva, ejecución 7, dashboard, copiloto y reportes PDF/Excel. & \ok \\
+  5 & Analítica utilizable & Identidad descriptiva, ejecución 9, dashboard, copiloto, expedientes consultables y reportes PDF/Excel. & \ok \\
   \bottomrule
 \end{longtable}
 
@@ -514,9 +522,9 @@ La validación combina cuatro niveles: análisis estático y pruebas unitarias; 
   Contrato BI & Referencias, FK, grano, KPI, operaciones y reproducción. & Verificado. \\
   Conciliación & 121317 filas origen y destino; diferencia cero. & Conciliado. \\
   Calidad descriptiva & 19820 clientes con nombre y tipo; cero etiquetas vacías. & Verificado. \\
-  Analítica y chat & Vistas por perfil, filtros, evidencia, guía de preguntas y Groq probado. & Verificado. \\
+  Analítica y chat & Vistas por perfil, gráficos interactivos, filtros, evidencia, guía de preguntas y proveedores Groq/Anthropic bajo contrato. & Verificado. \\
   Reportería & PDF de seis páginas y seis hojas Excel renderizadas sin cortes. & Verificado. \\
-  Trazabilidad & Propuestas 52/54 y ejecuciones 6/7 reabribles. & Verificado. \\
+  Trazabilidad & Propuestas 52/54/73 y ejecuciones 6/7/9 reabribles. & Verificado. \\
   \bottomrule
 \end{tabularx}
 \end{table}
@@ -531,7 +539,7 @@ El alcance vigente se limita a ventas, SQL Server, carga completa y un datamart 
 
 La ingeniería de software aplicada produjo un sistema reproducible, seguro y trazable. Scrum permitió separar riesgos e incrementar valor en cinco entregas; SDD evitó que las decisiones funcionales quedaran implícitas; UML y los contratos de casos de uso muestran responsabilidades y límites; DevOps conserva una línea verificable entre código, pruebas, documentos y entregas.
 
-La principal decisión arquitectónica es separar recomendación de ejecución. El LLM propone y explica con contexto restringido; la aplicación valida, resuelve, materializa y calcula; el analista conserva autoridad sobre la decisión de negocio. La ejecución 7 confirma que esta separación puede producir un datamart conciliado y semánticamente utilizable sin exigir SQL manual ni una herramienta externa al usuario.
+La principal decisión arquitectónica es separar recomendación de ejecución. El LLM propone y explica con contexto restringido; la aplicación valida, resuelve, materializa y calcula; el analista conserva autoridad sobre la decisión de negocio. La ejecución 9 confirma que esta separación puede producir un datamart conciliado y semánticamente utilizable sin exigir SQL manual ni una herramienta externa al usuario.
 
 \section{Trazabilidad documental}
 
@@ -571,7 +579,7 @@ Universidad de Guayaquil. \emph{Trabajo de titulación con Capítulo III de prop
   Código & TES-CAP-03 \\
   Fuente editable & \path{docs/tesis/capitulo-03-propuesta-tecnologica.tex} \\
   Compilación & \path{make thesis-chapter3} o \path{make docs} \\
-  Versión & 1.0.0 -- 24-09-2026 \\
+  Versión & 1.2.0 -- 26-09-2026 \\
   Regla de uso & Integrar en la plantilla final y actualizar figuras, requisitos, resultados y referencias al cerrar nuevos sprints. \\
   \bottomrule
 \end{tabularx}
