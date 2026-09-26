@@ -184,7 +184,12 @@ th { color: var(--color-muted); font-size: .78rem; text-transform: uppercase; }
 .analysis-panel { display: grid; gap: 1.15rem; padding: 1.5rem; border: 1px solid var(--color-border); border-radius: 1rem; background: #fff; }
 .analysis-panel textarea { resize: vertical; }
 .need-goal-field { position: relative; }
-.need-goal-field textarea { min-height: 10rem; line-height: 1.55; padding-bottom: 2.2rem; }
+.need-goal-field textarea {
+  min-height: clamp(14rem, 28vh, 22rem);
+  line-height: 1.55;
+  padding-bottom: 2.2rem;
+  resize: vertical;
+}
 .character-counter { position: absolute; right: .75rem; bottom: 2.15rem; padding: .2rem .45rem; border-radius: .35rem; background: #f2f6fc; color: var(--color-muted); font-size: .75rem; font-weight: 700; }
 .need-assistance-actions { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; }
 .need-assistance-actions small { color: var(--color-muted); }

@@ -42,6 +42,9 @@ analítica.
 
 - La necesidad admite hasta 2000 caracteres, muestra contador y puede ser
   reformulada por la IA únicamente como borrador sujeto a aprobación.
+- El área de redacción presenta al menos doce líneas visibles, conserva el texto
+  completo y permite ampliarse verticalmente sin superponer el contador ni la
+  ayuda contextual.
 - Antes de generar conceptos se clasifica cada requisito como **directo**,
   **derivable**, **ambiguo** o **no disponible** usando la instantánea vigente.
 - Toda limitación debe aceptarse individualmente. Cambiar necesidad, preguntas,
@@ -81,6 +84,11 @@ analítica.
   publican cuando sus componentes físicos están verificados.
 - `DescuentoMonetario` se calcula por línea como precio unitario por tasa de
   descuento por cantidad; una tasa no se suma como si fuera moneda.
+- Si la IA entrega una receta incompleta pero las tres fuentes son inequívocas,
+  el motor la corrige antes de validar y registra el ajuste automático. Para el
+  costo unitario se prioriza la fuente de la dimensión de producto conectada al
+  hecho; coincidencias homónimas en otras tablas no deben impedir una resolución
+  demostrable ni autorizar una elección arbitraria.
 - Las medidas derivadas conservan fórmula, moneda, denominador y conciliación.
 
 ### HBI-007 — Copiloto analítico seguro y no limitado al lienzo
@@ -214,3 +222,7 @@ decisión y cuál es el efecto de cada alternativa.
   `rate_limit_exceeded`, presupuesto restante y `retry-after`. La política debe
   decidir por el código semántico del proveedor y no únicamente por el estado
   HTTP.
+- 25/09/2026: el motor `sales-bi-v5` completa de forma determinística una receta
+  de descuento incompleta cuando precio, tasa y cantidad son inequívocos, y
+  prioriza el costo unitario perteneciente a la dimensión semántica de producto.
+  También se amplía el área de necesidad a doce líneas visibles.

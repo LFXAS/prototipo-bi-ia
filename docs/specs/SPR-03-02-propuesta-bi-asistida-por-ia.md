@@ -288,6 +288,11 @@ La ruta visible **IA > Asistente de datamart** empieza por un catálogo de domin
 4. Personalización supervisada opcional.
 5. Revisión humana.
 
+El campo **Objetivo del análisis** admite hasta 2000 caracteres, muestra al menos
+doce líneas visibles y puede ampliarse verticalmente. El contador y la ayuda se
+mantienen fuera del área editable para que una necesidad completa pueda revisarse
+sin texto oculto ni superposiciones.
+
 El recorrido principal usa las etiquetas españolas generadas para la fuente activa y explica qué podrá obtenerse. Cada concepto muestra su explicación y un acceso **Ver origen técnico**. La propuesta se presenta por secciones: significado de la venta, granularidad, dimensiones, medidas, KPIs, plan ETL, reglas de calidad, supuestos y advertencias. Los nombres de tablas, relaciones y el JSON permanecen en **Detalles técnicos**, que el analista consulta sólo cuando necesita verificar la trazabilidad.
 
 Estados obligatorios: prerrequisito faltante, generando, proveedor inaccesible, validación fallida, listo para revisar, aprobado y rechazado.

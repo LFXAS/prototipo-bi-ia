@@ -332,6 +332,43 @@ def test_financial_requirements_add_only_traceable_cost_margin_and_unit_kpis() -
     assert validate_proposal(enriched, scope, document)["valid"] is True
 
 
+def test_financial_cost_prefers_the_verified_product_dimension_source() -> None:
+    document = deepcopy(DOCUMENT)
+    detail = document["schemas"][0]["tables"][0]
+    detail["columns"].extend(
+        [
+            {"name": "OrderQty", "data_type": "smallint", "primary_key": False},
+            {"name": "StandardCost", "data_type": "money", "primary_key": False},
+        ]
+    )
+    product = document["schemas"][1]["tables"][0]
+    product["columns"].append({"name": "StandardCost", "data_type": "money", "primary_key": False})
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], document)
+    scope = derived_scope(document, semantic_map)
+    base = expand_proposal_blueprint(valid_blueprint(), scope, semantic_map)
+    assessment = {
+        "requirements": [
+            {
+                "code": "goal:total_cost",
+                "label": "Costo total",
+                "status": "derivable",
+                "components": ["unit_cost", "quantity"],
+            }
+        ],
+        "accepted_limitations": [],
+    }
+
+    enriched = apply_financial_requirements(base, assessment, scope)
+
+    cost_measure = next(
+        item for item in enriched["fact"]["measures"] if item.get("semantic_role") == "cost_amount"
+    )
+    assert cost_measure["source_columns"] == [
+        "Sales.OrderDetail.OrderQty",
+        "Production.Product.StandardCost",
+    ]
+
+
 def test_requirement_coverage_reports_outputs_and_blocks_silent_omissions() -> None:
     semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
     scope = derived_scope(DOCUMENT, semantic_map)
@@ -707,7 +744,7 @@ def test_discount_rate_is_autocorrected_into_a_verified_monetary_measure() -> No
             "name": "Descuento total",
             "source_column": "UnitPriceDiscount",
             "aggregation": "sum",
-            "semantic_role": "sales_amount",
+            "semantic_role": "discount_amount",
             "calculation_operation": "multiply",
             "calculation_inputs": ["UnitPriceDiscount", "OrderQty"],
         },
@@ -1015,7 +1052,7 @@ def test_current_engine_still_blocks_a_non_reproducible_contract() -> None:
         semantic_map,
         DOCUMENT,
         canonical_hash(DOCUMENT),
-        "sales-bi-v4",
+        "sales-bi-v5",
     )
 
     assert evidence["approval_safe"] is False

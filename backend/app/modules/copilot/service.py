@@ -9,7 +9,7 @@ from typing import Any
 from app.modules.copilot.domains import SALES_PROFILE
 from app.modules.copilot.entity_resolution import enrich_dimension_labels
 
-PROMPT_VERSION = "sales-bi-v4"
+PROMPT_VERSION = "sales-bi-v5"
 CONTRACT_VERSION = 1
 ALLOWED_OPERATIONS = {"extract", "join", "filter", "derive", "aggregate", "load"}
 ALLOWED_AGGREGATIONS = {"sum", "count", "count_distinct", "average", "min", "max"}
@@ -1306,6 +1306,10 @@ def _semantic_role(value: dict[str, Any], source_column: str = "") -> str:
         return "customer_count"
     if tokens & {"quantity", "qty", "cantidad", "unidades", "units"}:
         return "quantity"
+    if tokens & {"discount", "descuento"}:
+        return "discount_amount"
+    if tokens & {"cost", "costo", "coste"}:
+        return "cost_amount"
     if tokens & {"amount", "total", "sales", "venta", "ventas", "importe", "monto"}:
         return "sales_amount"
     if aggregation in {"count", "count_distinct"}:
@@ -1531,7 +1535,11 @@ def expand_proposal_blueprint(
             (value for value in calculation_inputs if _looks_like_discount_rate(value)),
             proposed_column if _looks_like_discount_rate(proposed_column) else "",
         )
-        if calculation is not None and role == "sales_amount" and discount_input:
+        if (
+            calculation is not None
+            and role in {"sales_amount", "discount_amount"}
+            and discount_input
+        ):
             operation = str(calculation.get("operation", ""))
             if not _discount_amount_recipe_is_complete(operation, calculation_inputs):
                 suggested_calculation = _discount_amount_suggestion(
@@ -2464,11 +2472,18 @@ def apply_financial_requirements(
                     pending.append(neighbor)
         return False
 
-    def candidates(pattern_groups: tuple[set[str], ...], *, fact_only: bool = False) -> list[str]:
+    def candidates(
+        pattern_groups: tuple[set[str], ...],
+        *,
+        fact_only: bool = False,
+        allowed_tables: set[str] | None = None,
+    ) -> list[str]:
         references: list[str] = []
         for terms in pattern_groups:
             for table_ref, table in tables.items():
                 if fact_only and table_ref != fact_source:
+                    continue
+                if allowed_tables is not None and table_ref not in allowed_tables:
                     continue
                 if not reachable(table_ref):
                     continue
@@ -2547,14 +2562,33 @@ def apply_financial_requirements(
     )
     total_cost: dict[str, Any] | None = None
     if cost_requested and len(quantity_refs) == 1:
-        cost_refs = candidates(
-            (
-                {"standard", "cost"},
-                {"unit", "cost"},
-                {"product", "cost"},
-                {"costo"},
-                {"cost"},
+        product_sources = {
+            str(source)
+            for dimension in result.get("dimensions", [])
+            if isinstance(dimension, dict)
+            and bool(
+                _search_tokens(
+                    {
+                        "name": dimension.get("name", ""),
+                        "role": dimension.get("semantic_role", ""),
+                    }
+                )
+                & {"product", "producto", "productos"}
             )
+            for source in dimension.get("source_tables", [])
+            if str(source) in tables and reachable(str(source))
+        }
+        cost_patterns = (
+            {"standard", "cost"},
+            {"unit", "cost"},
+            {"product", "cost"},
+            {"costo", "unitario"},
+            {"costo"},
+            {"cost"},
+        )
+        cost_refs = candidates(
+            cost_patterns,
+            allowed_tables=product_sources or None,
         )
         if len(cost_refs) == 1:
             total_cost = append_measure(
