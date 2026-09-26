@@ -2,7 +2,7 @@
 
 - Estado: **implementada para los proveedores y modelos registrados**
 - Dependencia: configuración LLM del Sprint 2 y proveedores del Sprint 3
-- Proveedores actuales: Gemini Cloud, Groq Cloud y Ollama local
+- Proveedores actuales: Gemini Cloud, Groq Cloud, Anthropic Claude, Qwen Cloud y Ollama local
 
 ## 1. Problema y objetivo
 
@@ -19,6 +19,10 @@ La plataforma mantendrá una matriz de capacidades validada por adaptador y mode
 5. La interfaz deshabilita opciones no admitidas conocidas y explica por qué.
 6. Si la capacidad no está catalogada, se usa el valor seguro por defecto y se informa que debe comprobarse; nunca se escala silenciosamente el esfuerzo.
 7. Cambiar el nivel no reemplaza ni expone el API key.
+8. Para Anthropic Claude, la modalidad inicial omite pensamiento extendido y usa
+   el nivel interno `minimal`; esto maximiza el presupuesto disponible para la
+   respuesta JSON y evita enviar parámetros incompatibles. El modelo sigue siendo
+   editable y la prueba usa el mismo endpoint `/v1/messages` que la generación.
 
 ## 3. Datos, API e interfaz
 
@@ -37,6 +41,9 @@ Sólo `parameters.llm.manage` modifica la configuración. La prueba usa el míni
 - [x] La prueba de conexión y la generación usan la misma traducción de capacidades.
 - [x] Los errores no exponen credenciales ni respuesta interna completa.
 - [x] Las pruebas cubren traducción de niveles, omisión automática, presupuesto, esquema JSON estricto y errores seguros.
+- [x] Anthropic valida endpoint, cabeceras, modelo, presupuesto, extracción de
+      bloques de texto, JSON y clasificación segura de autenticación, autorización,
+      modelo inexistente y saturación.
 
 ## 6. Resultado de implementación
 

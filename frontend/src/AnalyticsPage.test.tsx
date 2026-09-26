@@ -17,13 +17,23 @@ const dashboard: AnalyticsDashboard = {
   period_label: 'Todos los períodos',
   metric_code: 'total_units',
   available_metrics: [{ value: 'total_units', label: 'Total unidades vendidas' }],
-  filters: { years: [], territories: [] },
+  filters: { years: [], territories: [{ value: 'Europe', label: 'Europa' }] },
   kpis: [
+    { code: 'total_units', name: 'Total unidades vendidas', value: 274_914, unit: 'unidades', status: 'reconciled' },
     { code: 'gross_sales', name: 'Ventas brutas totales', value: 110_373_889.31, unit: 'USD', status: 'reconciled' },
     { code: 'cost_per_unit', name: 'Costo promedio por unidad vendida', value: 365.48, unit: 'USD por unidad', status: 'reconciled' },
     { code: 'sale_per_unit', name: 'Venta promedio por unidad vendida', value: 401.48, unit: 'USD por unidad', status: 'reconciled' },
   ],
-  visuals: [],
+  visuals: [
+    {
+      code: 'products', title: 'Productos líderes', subtitle: 'Total unidades vendidas; principales 1 categoría',
+      kind: 'bar', dimension: 'Producto', points: [{ key: '1', label: 'Mountain-200', value: 8_250, share: 100 }],
+    },
+    {
+      code: 'territories', title: 'Distribución territorial', subtitle: 'Total unidades vendidas; principales 1 categoría',
+      kind: 'donut', dimension: 'Territorio', points: [{ key: '1', label: 'Europa', value: 53_148, share: 100 }],
+    },
+  ],
   insights: [],
   quality: { source_rows: 121_317, datamart_rows: 121_317, difference_rows: 0, reconciliation_passed: true, tables_loaded: 5 },
   guidance: ['Los resultados provienen del expediente conciliado.'],
@@ -60,5 +70,25 @@ describe('AnalyticsPage', () => {
     const question = await screen.findByText('Resume las unidades vendidas.')
     expect(question.closest('article')).toHaveClass('user')
     await waitFor(() => expect(api.askAnalyticsCopilot).toHaveBeenCalledOnce())
+  })
+
+  it('permite explorar una barra y convertir una categoría territorial en filtro', async () => {
+    vi.spyOn(api, 'analyticsDashboard').mockResolvedValue(dashboard)
+
+    render(<AnalyticsPage token="test-token" canExport={false} navigate={vi.fn()} />)
+
+    fireEvent.click(await screen.findByRole('button', { name: /Mountain-200/i }))
+    expect(screen.getByText('Detalle seleccionado')).toBeInTheDocument()
+    expect(screen.getByText('8.250 unidades')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Cerrar detalle' }))
+    expect(screen.queryByText('Detalle seleccionado')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /^Europa/i }))
+    fireEvent.click(screen.getByRole('button', { name: 'Filtrar tablero por Europa' }))
+
+    await waitFor(() => expect(api.analyticsDashboard).toHaveBeenLastCalledWith(
+      'test-token',
+      expect.objectContaining({ territory: 'Europe' }),
+    ))
   })
 })

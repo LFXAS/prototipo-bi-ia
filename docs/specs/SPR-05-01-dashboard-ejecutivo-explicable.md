@@ -17,6 +17,10 @@ Los resultados del datamart deben poder comprenderse y utilizarse sin consultar 
 - vista ejecutiva resumida y vista de analista con tablas accesibles, calidad y trazabilidad;
 - estados de carga, vacío, error, falta de permiso y datamart no disponible;
 - diseño responsive desde 320 px y presentación profesional en pantallas amplias.
+- interacción por ratón y teclado con puntos, barras y categorías para consultar
+  valor exacto, participación y contexto sin abandonar el dashboard;
+- aplicación directa de una categoría territorial como filtro global cuando la
+  categoría existe en el catálogo autorizado de la ejecución.
 
 Quedan fuera el pronóstico de ventas, alertas autónomas, edición libre del dashboard, creación manual de fórmulas y ejecución de consultas SQL.
 
@@ -34,6 +38,12 @@ Quedan fuera el pronóstico de ventas, alertas autónomas, edición libre del da
    usuario los confunda con el costo o precio de una unidad específica.
 8. Las tarjetas separan cifra y unidad, usan abreviación legible sólo cuando el
    valor completo no cabe y conservan el valor exacto como ayuda accesible.
+9. Seleccionar un punto, barra o leyenda abre un detalle contextual dentro de la
+   misma tarjeta. El detalle se puede cerrar, no cambia filtros por sorpresa y
+   anuncia valor, participación y acción disponible.
+10. Una categoría territorial ofrece **Filtrar tablero** sólo si su clave coincide
+    con una opción real devuelta por el backend. Al aplicarla se actualizan KPIs,
+    gráficos, hallazgos y contexto mediante la API existente.
 
 ## 4. API e interfaz
 
@@ -61,6 +71,10 @@ Requiere `analytics.dashboard.read`. La consulta de datos agregados no otorga ac
 - [x] Los KPI por unidad se identifican como promedios, muestran moneda comprobada
       y no desbordan sus tarjetas.
 - [x] La pregunta escrita por el usuario conserva contraste AA sobre el globo azul.
+- [x] Los puntos, barras y leyendas son controles enfocables con nombre accesible
+      y presentan un detalle contextual verificable.
+- [x] Una categoría territorial puede convertirse explícitamente en filtro global
+      sin aceptar valores ajenos al catálogo autorizado.
 
 ## 7. Evidencia
 

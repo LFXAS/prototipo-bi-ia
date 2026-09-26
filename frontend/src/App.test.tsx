@@ -90,7 +90,7 @@ describe('App', () => {
     fireEvent.click(sidebarControl)
     expect(screen.getByRole('button', { name: 'Mostrar navegación lateral' })).toHaveAttribute('aria-expanded', 'false')
     fireEvent.click(screen.getByRole('button', { name: 'Mostrar navegación lateral' }))
-    const security = await screen.findByRole('button', { name: 'Seguridad' })
+    const security = await screen.findByRole('button', { name: 'Administración y seguridad' })
     const submenu = screen.getByText('Usuarios').closest('.submenu')
     expect(submenu).toHaveAttribute('hidden')
 
@@ -105,6 +105,40 @@ describe('App', () => {
     expect(screen.getByRole('heading', { name: 'Usuarios' })).toBeInTheDocument()
     fireEvent.click(security)
     expect(submenu).toHaveAttribute('hidden')
+  })
+
+  it('ordena la navegación por flujo profesional sin ampliar las opciones autorizadas', async () => {
+    localStorage.setItem('bi_ia_access_token', 'test-token')
+    vi.stubGlobal('fetch', vi.fn(async () => ({
+      ok: true,
+      json: async () => ({
+        user: { id: 1, email: 'admin@example.test', full_name: 'Administradora', is_active: true, roles: [] },
+        permissions: [],
+        menus: [
+          { id: 1, code: 'home', label: 'Inicio', path: '/', position: 0, module_code: 'home', module_label: 'Inicio', is_active: true, permissions: [] },
+          { id: 2, code: 'users', label: 'Usuarios', path: '/usuarios', position: 10, module_code: 'security', module_label: 'Seguridad', is_active: true, permissions: [] },
+          { id: 3, code: 'analytics', label: 'Analítica de ventas', path: '/analitica-ventas', position: 30, module_code: 'analytics', module_label: 'Análisis', is_active: true, permissions: [] },
+          { id: 4, code: 'assistant', label: 'Asistente de datamart', path: '/asistente', position: 10, module_code: 'ai', module_label: 'IA', is_active: true, permissions: [] },
+          { id: 5, code: 'connections', label: 'Conexiones de datos', path: '/conexiones', position: 65, module_code: 'parameters', module_label: 'Parámetros generales', is_active: true, permissions: [] },
+        ],
+      }),
+    })))
+
+    render(<App />)
+
+    const categoryNames = [
+      'Preparación del entorno',
+      'Diseño y transformación BI',
+      'Análisis y decisiones',
+      'Administración y seguridad',
+    ]
+    const categories = await Promise.all(categoryNames.map((name) => screen.findByRole('button', { name })))
+    expect(categories.map((item) => item.textContent?.replace('›', '').trim())).toEqual(categoryNames)
+    for (let index = 1; index < categories.length; index += 1) {
+      expect(categories[index - 1].compareDocumentPosition(categories[index]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    }
+    expect(document.querySelectorAll('#main-navigation .navigation-icon').length).toBeGreaterThanOrEqual(5)
+    expect(screen.queryByRole('button', { name: 'Roles' })).not.toBeInTheDocument()
   })
 
   it('registra una credencial LLM desde la plataforma sin volver a mostrarla', async () => {
@@ -141,7 +175,7 @@ describe('App', () => {
 
     render(<App />)
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Parámetros generales' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Preparación del entorno' }))
     fireEvent.click(screen.getByRole('button', { name: 'Configuración LLM' }))
     fireEvent.click(await screen.findByRole('button', { name: 'Editar' }))
     expect(screen.getByLabelText('Nivel de razonamiento')).toHaveValue('minimal')
@@ -176,7 +210,7 @@ describe('App', () => {
     vi.stubGlobal('fetch', fetchMock)
 
     render(<App />)
-    fireEvent.click(await screen.findByRole('button', { name: 'Parámetros generales' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Preparación del entorno' }))
     fireEvent.click(screen.getByRole('button', { name: 'Configuración LLM' }))
     fireEvent.change(await screen.findByLabelText('Nombre de configuración'), { target: { value: 'Groq para análisis BI' } })
     fireEvent.change(screen.getByLabelText('Proveedor'), { target: { value: 'groq-cloud' } })
@@ -193,6 +227,43 @@ describe('App', () => {
       base_url: 'https://api.groq.com/openai/v1',
       model_id: 'openai/gpt-oss-120b',
       reasoning_level: 'low',
+      is_active: false,
+    })
+  })
+
+  it('preconfigura Anthropic Claude con Haiku 4.5 y nivel mínimo', async () => {
+    localStorage.setItem('bi_ia_access_token', 'test-token')
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input)
+      if (url.includes('/auth/me')) return { ok: true, status: 200, json: async () => ({
+        user: { id: 1, email: 'admin@example.test', full_name: 'Administradora', is_active: true, roles: [] },
+        permissions: ['parameters.llm.write'],
+        menus: [{ id: 1, code: 'llm', label: 'Configuración LLM', path: '/llm', position: 60, module_code: 'parameters', module_label: 'Parámetros generales', is_active: true, permissions: [] }],
+      }) }
+      if (url.includes('/llm-configurations') && init?.method === 'POST') return { ok: true, status: 201, json: async () => ({ id: 9 }) }
+      if (url.includes('/llm-configurations')) return { ok: true, status: 200, json: async () => ({ items: [], total: 0, limit: 10, offset: 0 }) }
+      throw new Error(`Solicitud inesperada: ${url}`)
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    render(<App />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Preparación del entorno' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Configuración LLM' }))
+    fireEvent.change(await screen.findByLabelText('Nombre de configuración'), { target: { value: 'Claude Haiku económico' } })
+    fireEvent.change(screen.getByLabelText('Proveedor'), { target: { value: 'anthropic-cloud' } })
+
+    expect(screen.getByLabelText('URL del servicio')).toHaveValue('https://api.anthropic.com')
+    expect(screen.getByLabelText('Modelo')).toHaveValue('claude-haiku-4-5-20251001')
+    expect(screen.getByLabelText('Nivel de razonamiento')).toHaveValue('minimal')
+    fireEvent.click(screen.getByRole('button', { name: 'Crear registro' }))
+
+    await waitFor(() => expect(fetchMock.mock.calls.some(([input, init]) => String(input).includes('/llm-configurations') && init?.method === 'POST')).toBe(true))
+    const request = fetchMock.mock.calls.find(([input, init]) => String(input).includes('/llm-configurations') && init?.method === 'POST')
+    expect(JSON.parse(String(request?.[1]?.body))).toMatchObject({
+      provider_kind: 'anthropic-cloud',
+      base_url: 'https://api.anthropic.com',
+      model_id: 'claude-haiku-4-5-20251001',
+      reasoning_level: 'minimal',
       is_active: false,
     })
   })
@@ -222,7 +293,7 @@ describe('App', () => {
     vi.stubGlobal('fetch', fetchMock)
 
     render(<App />)
-    fireEvent.click(await screen.findByRole('button', { name: 'Parámetros generales' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Preparación del entorno' }))
     fireEvent.click(screen.getByRole('button', { name: 'Parámetros' }))
     const field = await screen.findByRole('spinbutton', { name: 'Valor' })
     expect(field).toHaveAttribute('min', '10')
@@ -260,7 +331,7 @@ describe('App', () => {
     vi.stubGlobal('fetch', fetchMock)
 
     render(<App />)
-    fireEvent.click(await screen.findByRole('button', { name: 'IA' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Diseño y transformación BI' }))
     fireEvent.click(screen.getByRole('button', { name: 'Catálogo analítico' }))
     expect(await screen.findByText('Identificador interno: sales_over_time')).toBeInTheDocument()
     expect(screen.queryByText(/Dimensiones de interés/i)).not.toBeInTheDocument()
@@ -295,7 +366,7 @@ describe('App', () => {
     }))
 
     render(<App />)
-    fireEvent.click(await screen.findByRole('button', { name: 'Parámetros generales' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Preparación del entorno' }))
     fireEvent.click(screen.getByRole('button', { name: 'Conexiones de datos' }))
 
     expect(await screen.findByText('Sólo lectura validada')).toBeInTheDocument()
@@ -335,7 +406,7 @@ describe('App', () => {
     vi.stubGlobal('fetch', fetchMock)
 
     render(<App />)
-    fireEvent.click(await screen.findByRole('button', { name: 'Datos' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Preparación del entorno' }))
     fireEvent.click(screen.getByRole('button', { name: 'Explorador de esquema' }))
 
     expect(await screen.findByText('SalesOrderHeader')).toBeInTheDocument()
@@ -400,7 +471,7 @@ describe('App', () => {
     vi.stubGlobal('fetch', fetchMock)
 
     render(<App />)
-    fireEvent.click(await screen.findByRole('button', { name: 'IA' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Diseño y transformación BI' }))
     fireEvent.click(screen.getByRole('button', { name: 'Asistente de datamart' }))
     expect(await screen.findByText('Dominio habilitado')).toBeInTheDocument()
     fireEvent.click(await screen.findByRole('button', { name: 'Crear propuesta' }))
@@ -535,7 +606,7 @@ describe('App', () => {
     }))
 
     render(<App />)
-    fireEvent.click(await screen.findByRole('button', { name: 'Datos' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Diseño y transformación BI' }))
     fireEvent.click(screen.getByRole('button', { name: 'Datamart de ventas' }))
 
     expect(await screen.findByText('Sugerencia automática, decisión humana')).toBeInTheDocument()
@@ -615,7 +686,7 @@ describe('App', () => {
     }))
 
     render(<App />)
-    fireEvent.click(await screen.findByRole('button', { name: 'Datos' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Diseño y transformación BI' }))
     fireEvent.click(screen.getByRole('button', { name: 'Datamart de ventas' }))
     fireEvent.click(await screen.findByRole('button', { name: 'Abrir expediente #9' }))
 
@@ -670,7 +741,7 @@ describe('App', () => {
     }))
 
     render(<App />)
-    fireEvent.click(await screen.findByRole('button', { name: 'Datos' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Diseño y transformación BI' }))
     fireEvent.click(screen.getByRole('button', { name: 'Datamart de ventas' }))
 
     expect(await screen.findByRole('heading', { name: 'No hay propuestas habilitadas para una ejecución nueva' })).toBeInTheDocument()

@@ -6,7 +6,13 @@ from urllib.parse import urlsplit
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-ProviderKind = Literal["gemini", "groq-cloud", "qwen-cloud", "ollama-local"]
+ProviderKind = Literal[
+    "gemini",
+    "groq-cloud",
+    "anthropic-cloud",
+    "qwen-cloud",
+    "ollama-local",
+]
 ReasoningLevel = Literal["automatic", "minimal", "low", "medium", "high"]
 
 
@@ -59,6 +65,7 @@ class LlmConfigurationCreate(BaseModel):
         expected: dict[ProviderKind, set[tuple[str, str, int | None, str]]] = {
             "gemini": {("https", "generativelanguage.googleapis.com", None, "")},
             "groq-cloud": {("https", "api.groq.com", None, "/openai/v1")},
+            "anthropic-cloud": {("https", "api.anthropic.com", None, "")},
             "qwen-cloud": {
                 ("https", "dashscope.aliyuncs.com", None, ""),
                 ("https", "dashscope-intl.aliyuncs.com", None, ""),

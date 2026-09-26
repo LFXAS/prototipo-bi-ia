@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 
 import {
   api,
@@ -119,6 +119,43 @@ const auditActionLabels: Record<string, string> = {
   'copilot.catalog.reset': 'Restauración del catálogo analítico',
   'security.menu.protected_change_rejected': 'Cambio rechazado en menú protegido',
   'security.menu.create_rejected': 'Creación manual de menú rechazada',
+}
+
+type NavigationGroup = { code: string; label: string; icon: string; order: number; items: Menu[] }
+
+const navigationSections: Array<{ code: string; label: string; icon: string; order: number; paths: string[] }> = [
+  { code: 'environment', label: 'Preparación del entorno', icon: 'settings', order: 10, paths: ['/conexiones', '/esquema', '/llm', '/parametros'] },
+  { code: 'bi-design', label: 'Diseño y transformación BI', icon: 'spark', order: 20, paths: ['/catalogo-analitico', '/asistente', '/datamart-ventas'] },
+  { code: 'decisions', label: 'Análisis y decisiones', icon: 'chart', order: 30, paths: ['/analitica-ventas'] },
+  { code: 'administration', label: 'Administración y seguridad', icon: 'shield', order: 40, paths: ['/usuarios', '/roles', '/permisos', '/menus', '/auditoria'] },
+]
+
+const routeIcons: Record<string, string> = {
+  '/': 'home', '/conexiones': 'link', '/esquema': 'database', '/llm': 'bot', '/parametros': 'sliders',
+  '/catalogo-analitico': 'book', '/asistente': 'spark', '/datamart-ventas': 'layers', '/analitica-ventas': 'chart',
+  '/usuarios': 'users', '/roles': 'badge', '/permisos': 'key', '/menus': 'menu', '/auditoria': 'history',
+}
+
+function NavigationIcon({ name, className = '' }: { name: string; className?: string }) {
+  const paths: Record<string, ReactNode> = {
+    home: <><path d="M3 11.5 12 4l9 7.5" /><path d="M5.5 10.5V20h13v-9.5M9 20v-6h6v6" /></>,
+    settings: <><circle cx="12" cy="12" r="3" /><path d="M19 13.5v-3l-2.1-.7-.7-1.7 1-2-2.1-2.1-2 1-1.7-.7L10.5 2h-3l-.7 2.3-1.7.7-2-1L1 6.1l1 2-.7 1.7-2.1.7v3l2.1.7.7 1.7-1 2L3.1 20l2-1 1.7.7.7 2.3h3l.7-2.3 1.7-.7 2 1 2.1-2.1-1-2 .7-1.7z" transform="translate(2) scale(.83)" /></>,
+    spark: <><path d="m12 3 1.4 4.1L17.5 8.5l-4.1 1.4L12 14l-1.4-4.1-4.1-1.4 4.1-1.4z" /><path d="m18 14 .8 2.2L21 17l-2.2.8L18 20l-.8-2.2L15 17l2.2-.8z" /></>,
+    chart: <><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /><path d="m4 8 6-5 6 7 5-5" /></>,
+    shield: <><path d="M12 3 4.5 6v5.5c0 4.6 3.1 7.8 7.5 9.5 4.4-1.7 7.5-4.9 7.5-9.5V6z" /><path d="m8.5 12 2.2 2.2 4.8-5" /></>,
+    link: <><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.1 1.1" /><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.1-1.1" /></>,
+    database: <><ellipse cx="12" cy="5" rx="8" ry="3" /><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" /></>,
+    bot: <><rect x="4" y="7" width="16" height="12" rx="3" /><path d="M12 3v4M8 12h.01M16 12h.01M8 16h8" /></>,
+    sliders: <><path d="M4 6h16M4 12h16M4 18h16" /><circle cx="8" cy="6" r="2" /><circle cx="15" cy="12" r="2" /><circle cx="10" cy="18" r="2" /></>,
+    book: <><path d="M4 4h6a3 3 0 0 1 3 3v13a3 3 0 0 0-3-3H4zM20 4h-6a3 3 0 0 0-3 3v13a3 3 0 0 1 3-3h6z" /></>,
+    layers: <><path d="m12 3 9 5-9 5-9-5z" /><path d="m3 12 9 5 9-5M3 16l9 5 9-5" /></>,
+    users: <><circle cx="9" cy="8" r="3" /><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 4.6V20" /></>,
+    badge: <><circle cx="12" cy="9" r="5" /><path d="m8.5 13-1 8 4.5-2 4.5 2-1-8" /></>,
+    key: <><circle cx="8" cy="12" r="4" /><path d="m12 12 9-9M16 8l2 2M19 5l2 2" /></>,
+    menu: <><path d="M4 6h16M4 12h16M4 18h16" /></>,
+    history: <><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5M12 7v5l3 2" /></>,
+  }
+  return <svg className={`navigation-icon ${className}`.trim()} aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{paths[name] ?? paths.menu}</svg>
 }
 
 function readLabel(item: Row) {
@@ -253,14 +290,15 @@ export default function App() {
 
   return (
     <main className="app-shell">
-      <header>
-        <div><p className="eyebrow">BI asistido por IA</p><strong>{session.user.full_name}</strong></div>
+      <header className="application-header">
+        <div className="product-identity"><span className="product-mark" aria-hidden="true"><NavigationIcon name="chart" /></span><div><p className="eyebrow">Plataforma BI asistida por IA</p><strong>Centro de inteligencia de negocio</strong></div></div>
+        <div className="signed-user"><span aria-hidden="true">{session.user.full_name.trim().charAt(0).toUpperCase()}</span><div><small>Sesión activa</small><strong>{session.user.full_name}</strong></div></div>
         <div className="header-actions"><button className="menu-toggle secondary" aria-expanded={menuOpen} aria-controls="main-navigation" onClick={() => setMenuOpen((open) => !open)}>☰ Menú</button><button className="secondary" onClick={logout}>Cerrar sesión</button></div>
       </header>
       <div className={`workspace ${sidebarHidden ? 'sidebar-hidden' : ''}`}>
-        <aside className={`navigation-panel ${menuOpen ? 'open' : ''}`}><nav id="main-navigation" aria-label="Navegación principal">
-          {session.menus.filter((menu) => menu.path === '/').map((menu) => <button className={page === menu.path ? 'active direct-menu' : 'direct-menu'} onClick={() => { setPage(menu.path); setOffset(0); setMenuOpen(false) }} key={menu.id}>{menu.label}</button>)}
-          {Object.values(groupMenus(session.menus.filter((menu) => menu.path !== '/'))).map((group) => <div className="navigation-group" key={group.code}><button className="module-toggle" aria-expanded={isGroupExpanded(group)} aria-controls={`menu-group-${group.code}`} onClick={() => toggleGroup(group)}><span>{group.label}</span><span aria-hidden="true">{isGroupExpanded(group) ? '⌄' : '›'}</span></button><div className="submenu" id={`menu-group-${group.code}`} hidden={!isGroupExpanded(group)}>{group.items.map((menu) => <button className={page === menu.path ? 'active' : ''} onClick={() => { setPage(menu.path); setOffset(0); setMenuOpen(false) }} key={menu.id}>{menu.label}</button>)}</div></div>)}
+        <aside className={`navigation-panel ${menuOpen ? 'open' : ''}`}><div className="navigation-intro"><span>Espacio de trabajo</span><strong>Operación BI</strong></div><nav id="main-navigation" aria-label="Navegación principal">
+          {session.menus.filter((menu) => menu.path === '/').map((menu) => <button className={page === menu.path ? 'active direct-menu' : 'direct-menu'} onClick={() => { setPage(menu.path); setOffset(0); setMenuOpen(false) }} key={menu.id}><NavigationIcon name={routeIcons[menu.path] ?? 'home'} /><span>{menu.label}</span></button>)}
+          {groupMenus(session.menus.filter((menu) => menu.path !== '/')).map((group) => <div className="navigation-group" key={group.code}><button className="module-toggle" aria-expanded={isGroupExpanded(group)} aria-controls={`menu-group-${group.code}`} onClick={() => toggleGroup(group)}><span><NavigationIcon name={group.icon} />{group.label}</span><span className="navigation-chevron" aria-hidden="true">{isGroupExpanded(group) ? '⌄' : '›'}</span></button><div className="submenu" id={`menu-group-${group.code}`} hidden={!isGroupExpanded(group)}>{group.items.map((menu) => <button className={page === menu.path ? 'active' : ''} onClick={() => { setPage(menu.path); setOffset(0); setMenuOpen(false) }} key={menu.id}><NavigationIcon name={routeIcons[menu.path] ?? 'menu'} /><span>{menu.label}</span></button>)}</div></div>)}
         </nav></aside>
         <button className="sidebar-rail-toggle" aria-expanded={!sidebarHidden} aria-label={sidebarHidden ? 'Mostrar navegación lateral' : 'Ocultar navegación lateral'} title={sidebarHidden ? 'Mostrar navegación lateral' : 'Ocultar navegación lateral'} onClick={() => setSidebarHidden((hidden) => !hidden)}><span aria-hidden="true">{sidebarHidden ? '›' : '‹'}</span></button>
         <section className="content">
@@ -288,13 +326,22 @@ export default function App() {
   )
 }
 
-function groupMenus(menus: Menu[]) {
-  return menus.reduce<Record<string, { code: string; label: string; items: Menu[] }>>((groups, menu) => {
-    const key = menu.module_code
-    groups[key] ??= { code: key, label: menu.module_label, items: [] }
-    groups[key].items.push(menu)
-    return groups
-  }, {})
+function groupMenus(menus: Menu[]): NavigationGroup[] {
+  const groups = new Map<string, NavigationGroup>()
+  for (const menu of [...menus].sort((left, right) => left.position - right.position)) {
+    const section = navigationSections.find((candidate) => candidate.paths.includes(menu.path))
+    const code = section?.code ?? `module-${menu.module_code}`
+    const group = groups.get(code) ?? {
+      code,
+      label: section?.label ?? menu.module_label,
+      icon: section?.icon ?? 'menu',
+      order: section?.order ?? 90,
+      items: [],
+    }
+    group.items.push(menu)
+    groups.set(code, group)
+  }
+  return [...groups.values()].sort((left, right) => left.order - right.order)
 }
 
 function Home({ session, token, navigate }: { session: Session; token: string; navigate: (path: string) => void }) {
@@ -344,6 +391,7 @@ const proposalStatusLabels: Record<BiProposal['status'], string> = {
 const providerLabels: Record<string, string> = {
   gemini: 'Gemini Cloud',
   'groq-cloud': 'Groq Cloud',
+  'anthropic-cloud': 'Anthropic Claude',
   'qwen-cloud': 'Qwen Cloud',
   'ollama-local': 'Ollama local',
 }
@@ -2062,6 +2110,7 @@ type FormConfig = { singular: string; createTitle: string; help: string; fields:
 const llmProviderPresets: Record<string, Partial<Values>> = {
   gemini: { base_url: 'https://generativelanguage.googleapis.com', model_id: 'gemini-3.6-flash', reasoning_level: 'minimal' },
   'groq-cloud': { base_url: 'https://api.groq.com/openai/v1', model_id: 'openai/gpt-oss-120b', reasoning_level: 'low' },
+  'anthropic-cloud': { base_url: 'https://api.anthropic.com', model_id: 'claude-haiku-4-5-20251001', reasoning_level: 'minimal' },
   'qwen-cloud': { base_url: 'https://dashscope-intl.aliyuncs.com', model_id: 'qwen-plus', reasoning_level: 'minimal' },
   'ollama-local': { base_url: 'http://ollama:11434', model_id: 'qwen2.5:3b', reasoning_level: 'minimal' },
 }
@@ -2098,7 +2147,7 @@ function formConfig(page: string, token: string, roles: Role[], permissions: Per
   }
   return {
     singular: 'configuración LLM', createTitle: 'Crear configuración LLM', help: 'Seleccione un proveedor para completar su URL y modelo recomendados. Después de guardar, registre aquí la credencial cloud cifrada. Puede revisar los valores antes de crear la configuración.',
-    fields: [{ key: 'name', label: 'Nombre de configuración' }, { key: 'provider_kind', label: 'Proveedor', kind: 'select', options: [{ value: '', label: 'Seleccione un proveedor' }, { value: 'groq-cloud', label: 'Groq Cloud — rápido, recomendado para continuar' }, { value: 'gemini', label: 'Gemini Cloud' }, { value: 'qwen-cloud', label: 'Qwen Cloud' }, { value: 'ollama-local', label: 'Ollama local — no requiere API key' }] }, { key: 'base_url', label: 'URL del servicio', placeholder: 'Se completa al seleccionar el proveedor' }, { key: 'model_id', label: 'Modelo', placeholder: 'Se completa al seleccionar el proveedor' }, { key: 'reasoning_level', label: 'Nivel de razonamiento', kind: 'select', options: [{ value: 'automatic', label: 'Automático del proveedor' }, { value: 'minimal', label: 'Mínimo — demostración rápida' }, { value: 'low', label: 'Bajo — rápido y económico' }, { value: 'medium', label: 'Medio — análisis equilibrado' }, { value: 'high', label: 'Alto — mayor tiempo y consumo' }] }],
+    fields: [{ key: 'name', label: 'Nombre de configuración' }, { key: 'provider_kind', label: 'Proveedor', kind: 'select', options: [{ value: '', label: 'Seleccione un proveedor' }, { value: 'anthropic-cloud', label: 'Anthropic Claude — Haiku, rápido y económico' }, { value: 'groq-cloud', label: 'Groq Cloud — rápido para análisis BI' }, { value: 'gemini', label: 'Gemini Cloud' }, { value: 'qwen-cloud', label: 'Qwen Cloud' }, { value: 'ollama-local', label: 'Ollama local — no requiere API key' }] }, { key: 'base_url', label: 'URL del servicio', placeholder: 'Se completa al seleccionar el proveedor' }, { key: 'model_id', label: 'Modelo', placeholder: 'Se completa al seleccionar el proveedor' }, { key: 'reasoning_level', label: 'Nivel de razonamiento', kind: 'select', options: [{ value: 'automatic', label: 'Automático del proveedor' }, { value: 'minimal', label: 'Mínimo — demostración rápida' }, { value: 'low', label: 'Bajo — rápido y económico' }, { value: 'medium', label: 'Medio — análisis equilibrado' }, { value: 'high', label: 'Alto — mayor tiempo y consumo' }] }],
     empty: { name: '', provider_kind: '', base_url: '', model_id: '', reasoning_level: 'minimal' }, read: (row) => ({ name: String(row.name), provider_kind: String(row.provider_kind), base_url: String(row.base_url), model_id: String(row.model_id), reasoning_level: String(row.reasoning_level ?? 'minimal') }),
     create: (v) => api.create('/llm-configurations', token, { ...v, is_active: false }),
     update: (row, v) => api.upsert(`/llm-configurations/${row.id}`, token, { ...v, is_active: active(row) === 'true' }),

@@ -88,6 +88,32 @@ def _groq_test_budget(reasoning_level: str) -> int:
     return {"medium": 384, "high": 512}.get(effort or "low", 256)
 
 
+def _anthropic_system_instruction(
+    system_instruction: str,
+    response_schema: dict[str, Any] | None,
+) -> str:
+    """Ask Claude for bounded JSON while keeping schema enforcement local and auditable."""
+    contract = "Responde exclusivamente con un objeto JSON válido, sin Markdown ni texto adicional."
+    if response_schema is not None:
+        contract += (
+            " El objeto debe cumplir exactamente este esquema JSON: "
+            f"{json.dumps(response_schema, ensure_ascii=False, separators=(',', ':'))}"
+        )
+    return f"{system_instruction.strip()}\n\n{contract}"
+
+
+def _anthropic_text(payload: object) -> str | None:
+    if not isinstance(payload, dict) or not isinstance(payload.get("content"), list):
+        return None
+    blocks = payload["content"]
+    text_blocks = [
+        str(block.get("text", ""))
+        for block in blocks
+        if isinstance(block, dict) and block.get("type") == "text" and block.get("text")
+    ]
+    return "".join(text_blocks) or None
+
+
 def _provider_error_details(response: Any) -> ProviderErrorDetails:
     headers = getattr(response, "headers", {})
     request_id = str(headers.get("x-request-id", "") or headers.get("request-id", ""))[:160]
@@ -237,6 +263,21 @@ def _generation_error(
     if provider_kind == "groq-cloud" and status_code == 404:
         return error(
             "El modelo configurado no está disponible en Groq.",
+            "model_unavailable",
+        )
+    if provider_kind == "anthropic-cloud" and status_code == 401:
+        return error(
+            "La API key de Anthropic no es válida o fue revocada.",
+            "authentication",
+        )
+    if provider_kind == "anthropic-cloud" and status_code == 403:
+        return error(
+            "La cuenta de Anthropic no tiene acceso al modelo o a esta operación.",
+            "authorization",
+        )
+    if provider_kind == "anthropic-cloud" and status_code == 404:
+        return error(
+            "El modelo Claude configurado no está disponible para esta cuenta.",
             "model_unavailable",
         )
     if status_code == 429 or (
@@ -429,6 +470,31 @@ async def generate_json(
                     raise _response_error(configuration.provider_kind, response)
                 choices = response.json().get("choices", [])
                 content = choices[0].get("message", {}).get("content") if choices else None
+            elif configuration.provider_kind == "anthropic-cloud":
+                response = await _post_with_retry(
+                    client,
+                    f"{base_url}/v1/messages",
+                    provider_kind=configuration.provider_kind,
+                    model_id=configuration.model_id,
+                    headers={
+                        "x-api-key": credential,
+                        "anthropic-version": "2023-06-01",
+                        "content-type": "application/json",
+                    },
+                    json={
+                        "model": configuration.model_id,
+                        "max_tokens": max_output_tokens,
+                        "temperature": 0,
+                        "system": _anthropic_system_instruction(
+                            system_instruction,
+                            response_schema,
+                        ),
+                        "messages": [{"role": "user", "content": user_content}],
+                    },
+                )
+                if not 200 <= response.status_code < 300:
+                    raise _response_error(configuration.provider_kind, response)
+                content = _anthropic_text(response.json())
             else:
                 response = await _post_with_retry(
                     client,
@@ -566,6 +632,25 @@ async def test_provider(
                         ),
                     },
                 )
+            elif configuration.provider_kind == "anthropic-cloud":
+                response = await _post_with_retry(
+                    client,
+                    f"{base_url}/v1/messages",
+                    provider_kind=configuration.provider_kind,
+                    model_id=configuration.model_id,
+                    headers={
+                        "x-api-key": credential,
+                        "anthropic-version": "2023-06-01",
+                        "content-type": "application/json",
+                    },
+                    json={
+                        "model": configuration.model_id,
+                        "max_tokens": 32,
+                        "temperature": 0,
+                        "system": "Responde únicamente con un objeto JSON válido.",
+                        "messages": [{"role": "user", "content": 'Devuelve {"ok":true}.'}],
+                    },
+                )
             else:
                 response = await _post_with_retry(
                     client,
@@ -587,20 +672,31 @@ async def test_provider(
     except httpx.HTTPError:
         return ProviderTestResult(False, "No fue posible conectar con el proveedor configurado.")
     if 200 <= response.status_code < 300:
-        if configuration.provider_kind == "groq-cloud":
-            choices = response.json().get("choices", [])
-            content = choices[0].get("message", {}).get("content") if choices else None
+        if configuration.provider_kind in {"groq-cloud", "anthropic-cloud"}:
+            if configuration.provider_kind == "groq-cloud":
+                choices = response.json().get("choices", [])
+                content = choices[0].get("message", {}).get("content") if choices else None
+                provider_name = "Groq"
+            else:
+                content = _anthropic_text(response.json())
+                provider_name = "Anthropic"
             try:
                 connection_document = _json_object(content)
             except ProviderGenerationError:
                 return ProviderTestResult(
                     False,
-                    "Groq respondió, pero no produjo el JSON estructurado de comprobación.",
+                    (
+                        f"{provider_name} respondió, pero no produjo el JSON estructurado "
+                        "de comprobación."
+                    ),
                 )
             if connection_document.get("ok") is not True:
                 return ProviderTestResult(
                     False,
-                    "Groq respondió con un JSON que no confirma la comprobación solicitada.",
+                    (
+                        f"{provider_name} respondió con un JSON que no confirma la "
+                        "comprobación solicitada."
+                    ),
                 )
         return ProviderTestResult(
             True, "Conexión con el proveedor validada sin enviar datos del negocio."

@@ -23,8 +23,8 @@ Consulta [`../sdd-workflow.md`](../sdd-workflow.md) para el proceso completo.
 |---|---|---|
 | [SPR-02-rbac-y-parametros.md](SPR-02-rbac-y-parametros.md) | revisión correctiva | Índice y alcance integrado del módulo administrativo del Sprint 2. |
 | [SPR-02-01-seguridad-rbac.md](SPR-02-01-seguridad-rbac.md) | revisión correctiva | Usuarios, roles, permisos, menús, auditoría y protecciones de recuperación. |
-| [SPR-02-02-navegacion-y-experiencia.md](SPR-02-02-navegacion-y-experiencia.md) | revisión correctiva | Sidebar, plegado de grupos, responsive, paginación y aislamiento de estado. |
-| [SPR-02-03-parametros-y-llm.md](SPR-02-03-parametros-y-llm.md) | corrección previa a Sprint 3 | Configuración LLM desde la web y credencial cifrada, sin edición cotidiana de `.env`. |
+| [SPR-02-02-navegacion-y-experiencia.md](SPR-02-02-navegacion-y-experiencia.md) | implementada y verificada | Navegación profesional por flujo, iconografía accesible, permisos, responsive, paginación y aislamiento de estado. |
+| [SPR-02-03-parametros-y-llm.md](SPR-02-03-parametros-y-llm.md) | implementada y verificada | Configuración web de Gemini, Groq, Anthropic, Qwen y Ollama con credenciales cifradas, sin edición cotidiana de `.env`. |
 | [SPR-02-04-identidad-visual-y-shell-bi.md](SPR-02-04-identidad-visual-y-shell-bi.md) | borrador para aprobación | Dirección visual y cascarón común del prototipo BI asistido por IA. |
 | [SPR-02-matriz-correcciones.md](SPR-02-matriz-correcciones.md) | pendiente de evidencia | Trazabilidad entre observaciones funcionales, requisito y prueba. |
 | [SPR-03-metadatos-y-propuesta-bi.md](SPR-03-metadatos-y-propuesta-bi.md) | implementada; pendiente aceptación usuaria | Alcance mínimo de configuración web, introspección e interpretación BI supervisada para usuario final. |
@@ -38,9 +38,9 @@ Consulta [`../sdd-workflow.md`](../sdd-workflow.md) para el proceso completo.
 | [SPR-04-03-ui-ux-materializacion-y-validacion.md](SPR-04-03-ui-ux-materializacion-y-validacion.md) | implementada y verificada | Recorrido profesional del analista para seleccionar, ejecutar, validar y recuperar un datamart. |
 | [SPR-04-04-limpieza-y-transformaciones-controladas.md](SPR-04-04-limpieza-y-transformaciones-controladas.md) | implementada y verificada | Perfilado, limpieza, tipos, nulos, deduplicación y columnas calculadas mediante recetas auditables. |
 | [SPR-05-analitica-reporteria-y-calidad.md](SPR-05-analitica-reporteria-y-calidad.md) | implementada y verificada localmente | Índice del dashboard, reportería, calidad semántica, compatibilidad LLM y copiloto del Sprint 5. |
-| [SPR-05-01-dashboard-ejecutivo-explicable.md](SPR-05-01-dashboard-ejecutivo-explicable.md) | implementada y verificada | Vista ejecutiva y analítica con filtros, KPIs y hallazgos reproducibles. |
+| [SPR-05-01-dashboard-ejecutivo-explicable.md](SPR-05-01-dashboard-ejecutivo-explicable.md) | implementada y verificada | Vista ejecutiva y analítica con filtros, KPI, gráficos interactivos accesibles y hallazgos reproducibles. |
 | [SPR-05-02-reporteria-fiel-pdf-excel.md](SPR-05-02-reporteria-fiel-pdf-excel.md) | implementada y verificada | Exportaciones PDF y Excel fieles a vista, filtros, permisos y trazabilidad. |
 | [SPR-05-03-calidad-semantica-y-resolucion-de-entidades.md](SPR-05-03-calidad-semantica-y-resolucion-de-entidades.md) | implementada y verificada | Detección relacional de atributos descriptivos y resolución visual sin SQL externo. |
-| [SPR-05-04-capacidades-y-compatibilidad-llm.md](SPR-05-04-capacidades-y-compatibilidad-llm.md) | implementada para proveedores registrados | Traducción de razonamiento y tratamiento accionable de incompatibilidades de proveedor. |
+| [SPR-05-04-capacidades-y-compatibilidad-llm.md](SPR-05-04-capacidades-y-compatibilidad-llm.md) | implementada y verificada | Capacidades por proveedor, Anthropic Messages API, traducción de razonamiento y tratamiento accionable de incompatibilidades. |
 | [SPR-05-05-copiloto-analitico-contextual.md](SPR-05-05-copiloto-analitico-contextual.md) | implementada y verificada | Conversación guiada sobre datos agregados visibles con evidencia, límites y auditoría. |
-| [SPR-05-06-endurecimiento-integral-asistente-bi.md](SPR-05-06-endurecimiento-integral-asistente-bi.md) | en implementación controlada | Contrato transversal para viabilidad, cobertura, relaciones, métricas, copiloto seguro, sesión y regresión. |
+| [SPR-05-06-endurecimiento-integral-asistente-bi.md](SPR-05-06-endurecimiento-integral-asistente-bi.md) | implementada y verificada | Contrato transversal para viabilidad, cobertura, relaciones, métricas, copiloto seguro, sesión y regresión. |

@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type KeyboardEvent } from 'react'
 
 import {
   api,
   type AnalyticsCopilotAnswer,
   type AnalyticsDashboard,
+  type AnalyticsPoint,
   type AnalyticsVisual,
 } from './api/security'
 import './analytics.css'
@@ -54,7 +55,22 @@ function metricCardPresentation(value: number | undefined, unit: string) {
   }
 }
 
-function LineVisual({ visual, unit, showData }: { visual: AnalyticsVisual; unit: string; showData: boolean }) {
+type InteractiveVisualProps = {
+  visual: AnalyticsVisual
+  unit: string
+  showData: boolean
+  selectedKey: string | null
+  onSelect: (point: AnalyticsPoint) => void
+}
+
+function activatePoint(event: KeyboardEvent, point: AnalyticsPoint, onSelect: (point: AnalyticsPoint) => void) {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault()
+    onSelect(point)
+  }
+}
+
+function LineVisual({ visual, unit, showData, selectedKey, onSelect }: InteractiveVisualProps) {
   const width = 840
   const height = 270
   const padding = { left: 24, right: 24, top: 22, bottom: 38 }
@@ -69,9 +85,9 @@ function LineVisual({ visual, unit, showData }: { visual: AnalyticsVisual; unit:
   const labelIndexes = [...new Set([0, Math.floor((visual.points.length - 1) / 2), visual.points.length - 1])].filter((item) => item >= 0)
   return (
     <>
-      <div className="analytics-line-chart" role="img" aria-label={`${visual.title}. ${visual.points.length} períodos representados.`}>
+      <div className="analytics-line-chart" role="group" aria-label={`${visual.title}. Seleccione uno de ${visual.points.length} períodos para consultar el detalle.`}>
         {visual.points.length
-          ? <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" aria-hidden="true">
+          ? <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
               <defs>
                 <linearGradient id="analytics-area" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#2870e8" stopOpacity=".3" />
@@ -81,7 +97,7 @@ function LineVisual({ visual, unit, showData }: { visual: AnalyticsVisual; unit:
               {[0, 1, 2, 3].map((row) => <line className="chart-grid" key={row} x1={padding.left} x2={width - padding.right} y1={padding.top + row * 62} y2={padding.top + row * 62} />)}
               <path className="chart-area" d={area} />
               <path className="chart-line" d={path} />
-              {visual.points.map((point, index) => <circle key={point.key} className="chart-point" cx={x(index)} cy={y(point.value)} r="4"><title>{`${point.label}: ${formatValue(point.value, unit)}`}</title></circle>)}
+              {visual.points.map((point, index) => <g key={point.key} className={selectedKey === point.key ? 'interactive-chart-point selected' : 'interactive-chart-point'} role="button" tabIndex={0} aria-label={`${point.label}: ${formatValue(point.value, unit)}`} onClick={() => onSelect(point)} onKeyDown={(event) => activatePoint(event, point, onSelect)}><circle className="chart-hit" cx={x(index)} cy={y(point.value)} r="12" /><circle className="chart-point" cx={x(index)} cy={y(point.value)} r="4"><title>{`${point.label}: ${formatValue(point.value, unit)}`}</title></circle></g>)}
               {labelIndexes.map((index) => <text key={visual.points[index].key} x={x(index)} y={height - 10} textAnchor={index === 0 ? 'start' : index === visual.points.length - 1 ? 'end' : 'middle'}>{visual.points[index].label}</text>)}
             </svg>
           : <p className="analytics-empty">No hay períodos para la selección actual.</p>}
@@ -91,22 +107,22 @@ function LineVisual({ visual, unit, showData }: { visual: AnalyticsVisual; unit:
   )
 }
 
-function BarVisual({ visual, unit, showData }: { visual: AnalyticsVisual; unit: string; showData: boolean }) {
+function BarVisual({ visual, unit, showData, selectedKey, onSelect }: InteractiveVisualProps) {
   const maximum = Math.max(...visual.points.map((point) => point.value), 1)
   return (
     <>
-      <div className="analytics-bars" role="img" aria-label={`${visual.title}. Ranking de ${visual.points.length} elementos.`}>
-        {visual.points.map((point, index) => <div className="analytics-bar-row" key={point.key}>
+      <div className="analytics-bars" role="group" aria-label={`${visual.title}. Seleccione una de ${visual.points.length} barras para consultar el detalle.`}>
+        {visual.points.map((point, index) => <button type="button" className={selectedKey === point.key ? 'analytics-bar-row selected' : 'analytics-bar-row'} key={point.key} aria-pressed={selectedKey === point.key} onClick={() => onSelect(point)}>
           <span className="bar-rank">{String(index + 1).padStart(2, '0')}</span>
           <div><div className="bar-label"><strong title={point.label}>{point.label}</strong><span>{formatValue(point.value, unit, true)}</span></div><div className="bar-track"><span style={{ width: `${Math.max((point.value / maximum) * 100, 2)}%` }} /></div></div>
-        </div>)}
+        </button>)}
       </div>
       {showData && <AccessibleData visual={visual} unit={unit} />}
     </>
   )
 }
 
-function DonutVisual({ visual, unit, showData }: { visual: AnalyticsVisual; unit: string; showData: boolean }) {
+function DonutVisual({ visual, unit, showData, selectedKey, onSelect }: InteractiveVisualProps) {
   const colors = ['#2166e8', '#14a37f', '#f5a524', '#7b61d1', '#e55353', '#38a3db', '#718096', '#bd5ca8']
   const total = visual.points.reduce((sum, point) => sum + point.value, 0)
   let cursor = 0
@@ -119,7 +135,7 @@ function DonutVisual({ visual, unit, showData }: { visual: AnalyticsVisual; unit
     <>
       <div className="analytics-donut-layout">
         <div className="analytics-donut" style={{ background: `conic-gradient(${stops || '#dfe6ef 0 100%'})` }} role="img" aria-label={`${visual.title}. Distribución de ${formatValue(total, unit)}.`}><div><strong>{formatValue(total, unit, true)}</strong><span>Total filtrado</span></div></div>
-        <ul className="analytics-legend">{visual.points.map((point, index) => <li key={point.key}><span style={{ background: colors[index % colors.length] }} /><div><strong>{point.label}</strong><small>{(point.share ?? 0).toFixed(1)}% · {formatValue(point.value, unit, true)}</small></div></li>)}</ul>
+        <ul className="analytics-legend">{visual.points.map((point, index) => <li key={point.key}><button type="button" className={selectedKey === point.key ? 'selected' : ''} aria-pressed={selectedKey === point.key} onClick={() => onSelect(point)}><span style={{ background: colors[index % colors.length] }} /><div><strong>{point.label}</strong><small>{(point.share ?? 0).toFixed(1)}% · {formatValue(point.value, unit, true)}</small></div></button></li>)}</ul>
       </div>
       {showData && <AccessibleData visual={visual} unit={unit} />}
     </>
@@ -130,8 +146,13 @@ function AccessibleData({ visual, unit }: { visual: AnalyticsVisual; unit: strin
   return <details className="analytics-data-table"><summary>Consultar los datos de este gráfico</summary><div className="table-wrap"><table><thead><tr><th>{visual.dimension}</th><th>Valor</th></tr></thead><tbody>{visual.points.map((point) => <tr key={point.key}><td>{point.label}</td><td>{formatValue(point.value, unit)}</td></tr>)}</tbody></table></div></details>
 }
 
-function VisualCard({ visual, unit, showData }: { visual: AnalyticsVisual; unit: string; showData: boolean }) {
-  return <article className={`analytics-visual visual-${visual.code}`}><header><div><p>{visual.dimension}</p><h2>{visual.title}</h2><span>{visual.subtitle}</span></div><button className="icon-button" aria-label={`Más información sobre ${visual.title}`} title="Los valores responden a los filtros activos">ⓘ</button></header>{visual.kind === 'line' ? <LineVisual visual={visual} unit={unit} showData={showData} /> : visual.kind === 'donut' ? <DonutVisual visual={visual} unit={unit} showData={showData} /> : <BarVisual visual={visual} unit={unit} showData={showData} />}</article>
+function VisualCard({ visual, unit, showData, territoryOptions, onTerritoryFilter }: { visual: AnalyticsVisual; unit: string; showData: boolean; territoryOptions?: Array<{ value: string; label: string }>; onTerritoryFilter?: (value: string) => void }) {
+  const [selectedKey, setSelectedKey] = useState<string | null>(null)
+  const selected = visual.points.find((point) => point.key === selectedKey)
+  const total = visual.points.reduce((sum, point) => sum + point.value, 0)
+  const props: InteractiveVisualProps = { visual, unit, showData, selectedKey, onSelect: (point) => setSelectedKey(point.key) }
+  const territoryFilter = selected ? territoryOptions?.find((option) => option.label === selected.label)?.value : undefined
+  return <article className={`analytics-visual visual-${visual.code}`}><header><div><p>{visual.dimension}</p><h2>{visual.title}</h2><span>{visual.subtitle}</span></div><button className="icon-button" aria-label={`Más información sobre ${visual.title}`} title="Seleccione un dato para ver su valor exacto y contexto">ⓘ</button></header><p className="analytics-interaction-hint">Seleccione un punto, barra o categoría para consultar su detalle.</p>{visual.kind === 'line' ? <LineVisual {...props} /> : visual.kind === 'donut' ? <DonutVisual {...props} /> : <BarVisual {...props} />}{selected && <section className="analytics-point-detail" aria-live="polite"><div><small>Detalle seleccionado</small><strong>{selected.label}</strong></div><dl><div><dt>Valor</dt><dd>{formatValue(selected.value, unit)}</dd></div><div><dt>Participación visible</dt><dd>{(selected.share ?? (total ? selected.value / total * 100 : 0)).toFixed(1)}%</dd></div></dl><div>{visual.code === 'territories' && territoryFilter && onTerritoryFilter && <button type="button" onClick={() => onTerritoryFilter(territoryFilter)}>Filtrar tablero por {selected.label}</button>}<button type="button" className="secondary" onClick={() => setSelectedKey(null)}>Cerrar detalle</button></div></section>}</article>
 }
 
 function InterpretedQueryCard({ answer }: { answer: AnalyticsCopilotAnswer }) {
@@ -294,7 +315,7 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
 
     <div className="analytics-layout">
       <section className="analytics-canvas" aria-label="Visualizaciones">
-        {visibleVisuals.map((visual) => <VisualCard key={visual.code} visual={visual} unit={unit} showData={viewMode === 'analyst'} />)}
+        {visibleVisuals.map((visual) => <VisualCard key={visual.code} visual={visual} unit={unit} showData={viewMode === 'analyst'} territoryOptions={visual.code === 'territories' ? dashboard.filters.territories : undefined} onTerritoryFilter={setTerritory} />)}
       </section>
       <aside className="analytics-insights" aria-label="Hallazgos explicables">
         <header><div className="spark-icon" aria-hidden="true">✦</div><div><p>Copiloto analítico</p><h2>Hallazgos explicables</h2></div></header>

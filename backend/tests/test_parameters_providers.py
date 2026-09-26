@@ -69,6 +69,15 @@ def groq_configuration() -> SimpleNamespace:
     )
 
 
+def anthropic_configuration() -> SimpleNamespace:
+    return SimpleNamespace(
+        provider_kind="anthropic-cloud",
+        base_url="https://api.anthropic.com",
+        model_id="claude-haiku-4-5-20251001",
+        reasoning_level="minimal",
+    )
+
+
 async def no_sleep(_: float) -> None:
     return None
 
@@ -170,6 +179,96 @@ def test_groq_connection_uses_cloud_credential(monkeypatch: MonkeyPatch) -> None
     result = asyncio.run(providers.test_provider(groq_configuration(), "groq-secret"))
 
     assert result.ok
+
+
+def test_anthropic_connection_uses_messages_api_without_business_data(
+    monkeypatch: MonkeyPatch,
+) -> None:
+    captured: dict[str, object] = {}
+
+    class RecordingClient(FakeAsyncClient):
+        async def post(self, url: str, **kwargs: object) -> FakeResponse:
+            captured["url"] = url
+            captured["headers"] = kwargs.get("headers", {})
+            captured["json"] = kwargs.get("json", {})
+            return FakeResponse({"content": [{"type": "text", "text": '{"ok":true}'}]})
+
+    monkeypatch.setattr(
+        providers.httpx,
+        "AsyncClient",
+        lambda **kwargs: RecordingClient({}, **kwargs),
+    )
+
+    result = asyncio.run(providers.test_provider(anthropic_configuration(), "anthropic-secret"))
+
+    assert result.ok
+    assert captured["url"] == "https://api.anthropic.com/v1/messages"
+    headers = captured["headers"]
+    assert isinstance(headers, dict)
+    assert headers["x-api-key"] == "anthropic-secret"
+    assert headers["anthropic-version"] == "2023-06-01"
+    body = captured["json"]
+    assert isinstance(body, dict)
+    assert body["model"] == "claude-haiku-4-5-20251001"
+    assert body["max_tokens"] == 32
+    assert "thinking" not in body
+
+
+def test_anthropic_generation_includes_schema_contract_and_parses_text_blocks(
+    monkeypatch: MonkeyPatch,
+) -> None:
+    captured: dict[str, object] = {}
+
+    class RecordingClient(FakeAsyncClient):
+        async def post(self, url: str, **kwargs: object) -> FakeResponse:
+            captured["url"] = url
+            captured["json"] = kwargs.get("json", {})
+            return FakeResponse({"content": [{"type": "text", "text": '{"answer":"ok"}'}]})
+
+    monkeypatch.setattr(
+        providers.httpx,
+        "AsyncClient",
+        lambda **kwargs: RecordingClient({}, **kwargs),
+    )
+
+    result = asyncio.run(
+        providers.generate_json(
+            anthropic_configuration(),
+            "Devuelve el contrato solicitado.",
+            {"request": "test"},
+            credential="anthropic-secret",
+            max_output_tokens=640,
+            response_schema={
+                "type": "object",
+                "required": ["answer"],
+                "properties": {"answer": {"type": "string"}},
+                "additionalProperties": False,
+            },
+        )
+    )
+
+    assert result == {"answer": "ok"}
+    assert captured["url"] == "https://api.anthropic.com/v1/messages"
+    body = captured["json"]
+    assert isinstance(body, dict)
+    assert body["max_tokens"] == 640
+    assert "properties" in str(body["system"])
+    assert body["messages"] == [{"role": "user", "content": '{"request":"test"}'}]
+
+
+def test_anthropic_invalid_key_has_safe_message_and_request_id() -> None:
+    error = providers._response_error(
+        "anthropic-cloud",
+        FakeResponse(
+            {"error": {"message": "invalid x-api-key", "type": "authentication_error"}},
+            status_code=401,
+            headers={"request-id": "req-anthropic-401"},
+        ),
+    )
+
+    assert error.category == "authentication"
+    assert error.request_id == "req-anthropic-401"
+    assert "API key de Anthropic" in str(error)
 
 
 def test_groq_connection_reserves_reasoning_budget_and_hides_trace(

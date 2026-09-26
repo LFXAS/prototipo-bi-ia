@@ -699,7 +699,7 @@ async def create_proposal(
                         700
                         if configuration.provider_kind == "gemini"
                         else 1200
-                        if configuration.provider_kind == "groq-cloud"
+                        if configuration.provider_kind in {"groq-cloud", "anthropic-cloud"}
                         else 600
                     ),
                     response_schema=SEMANTIC_RESPONSE_SCHEMA,
@@ -772,7 +772,7 @@ async def create_proposal(
                     800
                     if configuration.provider_kind == "gemini"
                     else 2400
-                    if configuration.provider_kind == "groq-cloud"
+                    if configuration.provider_kind in {"groq-cloud", "anthropic-cloud"}
                     else 700
                 ),
                 response_schema=proposal_blueprint_schema(scope, semantic_map),
@@ -1050,7 +1050,7 @@ async def create_semantic_advice(
                 900
                 if configuration.provider_kind == "gemini"
                 else 1800
-                if configuration.provider_kind == "groq-cloud"
+                if configuration.provider_kind in {"groq-cloud", "anthropic-cloud"}
                 else 900
             ),
             response_schema=semantic_advice_response_schema(technical_refs),

@@ -149,7 +149,9 @@ async def _localize_categories(
         # Gemini 3 can reject this small schema before generation. JSON mode plus the
         # whitelist below remains bounded; Groq GPT-OSS supports strict schema decoding.
         response_schema=(
-            _LOCALIZATION_SCHEMA if configuration.provider_kind == "groq-cloud" else None
+            _LOCALIZATION_SCHEMA
+            if configuration.provider_kind in {"groq-cloud", "anthropic-cloud"}
+            else None
         ),
     )
     allowed: dict[tuple[str, str], set[str]] = {}
