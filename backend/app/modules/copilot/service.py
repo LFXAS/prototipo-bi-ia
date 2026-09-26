@@ -694,7 +694,6 @@ def verify_proposal_evidence(
                 "materializar el datamart."
             ),
             "Evaluación formal de utilidad mediante juicio de expertos.",
-            "MAPE y RMSE cuando se implemente el pronóstico de ventas.",
         ],
     }
 

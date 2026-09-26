@@ -915,6 +915,9 @@ def test_approved_decisions_reproduce_the_same_validated_proposal() -> None:
     assert evidence["proposal_hash"] == evidence["replay_hash"]
     assert evidence["validated_reference_count"] == 1
     assert all(check["passed"] for check in evidence["checks"])
+    assert not any(
+        "pronóstico" in item or "MAPE" in item for item in evidence["pending_validations"]
+    )
 
 
 def test_financial_enrichment_is_included_in_deterministic_replay() -> None:
