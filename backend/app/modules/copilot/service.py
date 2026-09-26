@@ -9,7 +9,7 @@ from typing import Any
 from app.modules.copilot.domains import SALES_PROFILE
 from app.modules.copilot.entity_resolution import enrich_dimension_labels
 
-PROMPT_VERSION = "sales-bi-v5"
+PROMPT_VERSION = "sales-bi-v6"
 CONTRACT_VERSION = 1
 ALLOWED_OPERATIONS = {"extract", "join", "filter", "derive", "aggregate", "load"}
 ALLOWED_AGGREGATIONS = {"sum", "count", "count_distinct", "average", "min", "max"}
@@ -2631,7 +2631,18 @@ def apply_financial_requirements(
     result["fact"] = fact
 
     def add_aggregate(code: str, name: str, measure: dict[str, Any], unit: str) -> None:
-        if any(str(item.get("code")) == code for item in kpis):
+        measure_name = str(measure.get("name"))
+        semantic_role = str(measure.get("semantic_role"))
+        if any(
+            str(item.get("code")) == code
+            or (
+                str(item.get("formula_kind", "aggregate")) == "aggregate"
+                and str(item.get("semantic_role", "")) == semantic_role
+                and isinstance(item.get("formula"), dict)
+                and str(item["formula"].get("measure", "")) == measure_name
+            )
+            for item in kpis
+        ):
             return
         kpis.append(
             {
@@ -2639,7 +2650,7 @@ def apply_financial_requirements(
                 "name": name,
                 "description_es": f"{name} calculado únicamente con medidas verificadas.",
                 "formula_kind": "aggregate",
-                "formula": {"operation": "sum", "measure": str(measure.get("name"))},
+                "formula": {"operation": "sum", "measure": measure_name},
                 "unit": unit,
                 "semantic_role": str(measure.get("semantic_role")),
                 "provenance": deepcopy(measure.get("provenance", {})),

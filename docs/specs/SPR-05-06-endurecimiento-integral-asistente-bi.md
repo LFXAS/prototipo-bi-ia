@@ -94,6 +94,9 @@ analítica.
   explica como minuendo menos sustraendo y no como razón. Si una etiqueta promete
   ventas netas pero la receta demostrada sólo calcula precio por cantidad, el
   compilador la presenta como venta bruta y registra el ajuste semántico.
+- El enriquecimiento determinístico no agrega un KPI si ya existe otro agregado
+  sobre la misma medida y función semántica, aunque sus códigos visibles sean
+  distintos. La deduplicación ocurre antes de preparar el ETL.
 
 ### HBI-007 — Copiloto analítico seguro y no limitado al lienzo
 
@@ -233,3 +236,7 @@ decisión y cuál es el efecto de cada alternativa.
   de descuento incompleta cuando precio, tasa y cantidad son inequívocos, y
   prioriza el costo unitario perteneciente a la dimensión semántica de producto.
   También se amplía el área de necesidad a doce líneas visibles.
+- 25/09/2026: el motor `sales-bi-v6` evita publicar dos KPIs agregados con la
+  misma medida y función semántica. Si la IA ya propuso el descuento monetario,
+  el enriquecimiento determinístico conserva ese KPI y no crea un duplicado;
+  esto mantiene el catálogo dentro del máximo ejecutable de doce indicadores.

@@ -369,6 +369,63 @@ def test_financial_cost_prefers_the_verified_product_dimension_source() -> None:
     ]
 
 
+def test_financial_enrichment_does_not_duplicate_an_existing_discount_aggregate() -> None:
+    document = deepcopy(DOCUMENT)
+    detail = document["schemas"][0]["tables"][0]
+    detail["columns"].extend(
+        [
+            {"name": "OrderQty", "data_type": "smallint", "primary_key": False},
+            {"name": "UnitPrice", "data_type": "money", "primary_key": False},
+            {"name": "UnitPriceDiscount", "data_type": "numeric", "primary_key": False},
+        ]
+    )
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], document)
+    scope = derived_scope(document, semantic_map)
+    blueprint = valid_blueprint()
+    blueprint["measures"].append(
+        {
+            "name": "descuento_monetario",
+            "source_column": "UnitPriceDiscount",
+            "aggregation": "sum",
+            "semantic_role": "discount_amount",
+            "calculation_operation": "multiply",
+            "calculation_inputs": ["UnitPrice", "UnitPriceDiscount", "OrderQty"],
+        }
+    )
+    blueprint["kpis"].append(
+        {
+            "code": "descuentos_totales",
+            "name": "Descuentos totales",
+            "measure_index": 1,
+            "operation": "sum",
+            "unit": "moneda",
+            "semantic_role": "discount_amount",
+        }
+    )
+    proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
+    assessment = {
+        "requirements": [
+            {
+                "code": "goal:discount_amount",
+                "label": "Descuento monetario",
+                "status": "derivable",
+                "components": ["unit_price", "discount_rate", "quantity"],
+            }
+        ],
+        "accepted_limitations": [],
+    }
+
+    enriched = apply_financial_requirements(proposal, assessment, scope)
+
+    discount_kpis = [
+        item
+        for item in enriched["kpis"]
+        if item.get("semantic_role") == "discount_amount"
+        and item.get("formula_kind", "aggregate") == "aggregate"
+    ]
+    assert [item["code"] for item in discount_kpis] == ["descuentos_totales"]
+
+
 def test_requirement_coverage_reports_outputs_and_blocks_silent_omissions() -> None:
     semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
     scope = derived_scope(DOCUMENT, semantic_map)
@@ -894,7 +951,7 @@ def test_financial_enrichment_is_included_in_deterministic_replay() -> None:
         semantic_map,
         document,
         canonical_hash(document),
-        "sales-bi-v5",
+        "sales-bi-v6",
     )
 
     assert evidence["verified"] is True
@@ -1093,7 +1150,7 @@ def test_current_engine_still_blocks_a_non_reproducible_contract() -> None:
         semantic_map,
         DOCUMENT,
         canonical_hash(DOCUMENT),
-        "sales-bi-v5",
+        "sales-bi-v6",
     )
 
     assert evidence["approval_safe"] is False
