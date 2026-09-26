@@ -75,3 +75,23 @@ def test_groq_endpoint_and_recommended_model_are_allowed() -> None:
             base_url="https://api.groq.com.example.test/openai/v1",
             model_id="openai/gpt-oss-120b",
         )
+
+
+def test_anthropic_provider_accepts_only_official_base_url() -> None:
+    configuration = LlmConfigurationCreate(
+        name="Claude económico",
+        provider_kind="anthropic-cloud",
+        base_url="https://api.anthropic.com",
+        model_id="claude-haiku-4-5-20251001",
+        reasoning_level="minimal",
+    )
+    assert configuration.base_url == "https://api.anthropic.com"
+
+    with pytest.raises(ValidationError):
+        LlmConfigurationCreate(
+            name="Claude no permitido",
+            provider_kind="anthropic-cloud",
+            base_url="https://api.anthropic.com.example.test",
+            model_id="claude-haiku-4-5-20251001",
+            reasoning_level="minimal",
+        )

@@ -7,8 +7,9 @@ from copy import deepcopy
 from typing import Any
 
 from app.modules.copilot.domains import SALES_PROFILE
+from app.modules.copilot.entity_resolution import enrich_dimension_labels
 
-PROMPT_VERSION = "sales-bi-v3"
+PROMPT_VERSION = "sales-bi-v6"
 CONTRACT_VERSION = 1
 ALLOWED_OPERATIONS = {"extract", "join", "filter", "derive", "aggregate", "load"}
 ALLOWED_AGGREGATIONS = {"sum", "count", "count_distinct", "average", "min", "max"}
@@ -332,18 +333,24 @@ PROPOSAL_BLUEPRINT_SYSTEM_INSTRUCTION = (
 
 SEMANTIC_ROLES = {
     "sales_amount",
+    "cost_amount",
+    "discount_amount",
     "quantity",
     "customer_count",
     "transaction_count",
 }
 ROLE_AGGREGATIONS = {
     "sales_amount": {"sum", "average", "min", "max"},
+    "cost_amount": {"sum", "average", "min", "max"},
+    "discount_amount": {"sum", "average", "min", "max"},
     "quantity": {"sum", "average", "min", "max"},
     "customer_count": {"count_distinct"},
     "transaction_count": {"count_distinct"},
 }
 ROLE_DEFAULT_AGGREGATION = {
     "sales_amount": "sum",
+    "cost_amount": "sum",
+    "discount_amount": "sum",
     "quantity": "sum",
     "customer_count": "count_distinct",
     "transaction_count": "count_distinct",
@@ -588,6 +595,14 @@ def verify_proposal_evidence(
     deterministic_replay = False
     if isinstance(blueprint, dict):
         replay = expand_proposal_blueprint(blueprint, scope, semantic_map)
+        stored_assessment = proposal_document.get("need_assessment")
+        if isinstance(stored_assessment, dict):
+            replay = apply_financial_requirements(replay, stored_assessment, scope)
+            replay["need_assessment"] = deepcopy(stored_assessment)
+            replay["requirement_coverage"] = build_requirement_coverage(replay, stored_assessment)
+        for revision_key in ("controlled_relation_revision", "analyst_revision"):
+            if revision_key in proposal_document:
+                replay[revision_key] = deepcopy(proposal_document[revision_key])
         replay_hash = canonical_hash(replay)
         deterministic_replay = replay_hash == canonical_hash(proposal_document)
 
@@ -679,7 +694,6 @@ def verify_proposal_evidence(
                 "materializar el datamart."
             ),
             "Evaluación formal de utilidad mediante juicio de expertos.",
-            "MAPE y RMSE cuando se implemente el pronóstico de ventas.",
         ],
     }
 
@@ -1132,6 +1146,53 @@ def derived_scope(document: dict[str, Any], semantic_map: dict[str, Any]) -> dic
         ),
     )
     expanded.update(ranked_neighbors[: max(0, PROPOSAL_SCOPE_MAX_TABLES - len(expanded))])
+    # Entity labels may live behind nullable identity branches (person, organization, etc.).
+    # Preserve those declared targets even when the dimensional connector path filled the
+    # compact scope; the deterministic resolver still decides whether they are compatible.
+    identity_terms = {
+        "customer",
+        "client",
+        "cliente",
+        "buyer",
+        "comprador",
+        "person",
+        "persona",
+        "store",
+        "tienda",
+        "company",
+        "empresa",
+        "organization",
+        "business",
+        "entity",
+        "entidad",
+    }
+    identity_neighbors: list[str] = []
+    for candidate in selected_semantic_candidates(semantic_map):
+        if not isinstance(candidate, dict):
+            continue
+        concept_tokens = _search_tokens(candidate.get("business_concept", ""))
+        if not concept_tokens & {"customer", "client", "cliente", "buyer", "comprador"}:
+            continue
+        for reference in candidate.get("technical_refs", []):
+            reference = str(reference)
+            if reference not in tables:
+                continue
+            for relation in tables[reference].get("foreign_keys", []):
+                if not isinstance(relation, dict):
+                    continue
+                target = (
+                    f"{relation.get('referenced_schema', '')}."
+                    f"{relation.get('referenced_table', '')}"
+                )
+                relation_tokens = _search_tokens(
+                    {
+                        "target": target,
+                        "columns": relation.get("columns", []),
+                    }
+                )
+                if target in tables and relation_tokens & identity_terms:
+                    identity_neighbors.append(target)
+    expanded.update(dict.fromkeys(identity_neighbors))
     # Never discard an LLM candidate merely because a connector path consumed the limit.
     expanded.update(selected_set)
     scope_tables = []
@@ -1154,14 +1215,78 @@ def proposal_payload(
     scope: dict[str, Any],
     semantic_map: dict[str, Any],
 ) -> dict[str, Any]:
+    assessment = business_request.get("viability_assessment", {})
+    assessment = assessment if isinstance(assessment, dict) else {}
+    compact_request = {
+        "domain": business_request.get("domain"),
+        "goal": business_request.get("goal"),
+        "questions": [
+            {
+                "code": item.get("code"),
+                "label": item.get("label"),
+                "instruction": item.get("instruction"),
+            }
+            for item in business_request.get("questions", [])
+            if isinstance(item, dict)
+        ],
+        "periodicity": {
+            key: business_request.get("periodicity", {}).get(key) for key in ("code", "label")
+        },
+        "requirements": [
+            {
+                "code": item.get("code"),
+                "label": item.get("label"),
+                "status": item.get("status"),
+                "components": item.get("components", []),
+                "formula": item.get("formula"),
+            }
+            for item in assessment.get("requirements", [])
+            if isinstance(item, dict)
+        ],
+        "accepted_limitations": assessment.get("accepted_limitations", []),
+    }
+    compact_semantic_map = [
+        {
+            "business_concept": item.get("business_concept"),
+            "business_name_es": item.get("business_name_es"),
+            "technical_refs": item.get("technical_refs", []),
+            "confidence": item.get("confidence"),
+        }
+        for item in selected_semantic_candidates(semantic_map)
+    ]
+    scoped_refs = {
+        str(item.get("ref"))
+        for item in scope.get("tables", [])
+        if isinstance(item, dict) and item.get("ref")
+    }
+    compact_scope = {
+        "tables": [
+            {
+                "ref": table.get("ref"),
+                "columns": list(table.get("columns", []))[:8],
+                "foreign_keys": [
+                    relation
+                    for relation in table.get("foreign_keys", [])
+                    if isinstance(relation, dict)
+                    and (
+                        f"{relation.get('referenced_schema', '')}."
+                        f"{relation.get('referenced_table', '')}"
+                    )
+                    in scoped_refs
+                ],
+            }
+            for table in scope.get("tables", [])
+            if isinstance(table, dict)
+        ]
+    }
     return {
         "request_version": CONTRACT_VERSION,
         "language": "es",
         "task": "propose_sales_dimensional_model",
         "source": {"connector": connector, "snapshot_hash": snapshot_hash},
-        "business_request": business_request,
-        "semantic_map": selected_semantic_candidates(semantic_map),
-        "scope": scope,
+        "business_request": compact_request,
+        "semantic_map": compact_semantic_map,
+        "scope": compact_scope,
         "constraints": {
             "no_sql": True,
             "human_approval_required": True,
@@ -1188,6 +1313,10 @@ def _semantic_role(value: dict[str, Any], source_column: str = "") -> str:
         return "customer_count"
     if tokens & {"quantity", "qty", "cantidad", "unidades", "units"}:
         return "quantity"
+    if tokens & {"discount", "descuento"}:
+        return "discount_amount"
+    if tokens & {"cost", "costo", "coste"}:
+        return "cost_amount"
     if tokens & {"amount", "total", "sales", "venta", "ventas", "importe", "monto"}:
         return "sales_amount"
     if aggregation in {"count", "count_distinct"}:
@@ -1216,6 +1345,8 @@ def _measure_candidates_for_role(role: str, fact_columns: list[dict[str, Any]]) 
             "descuento",
         },
         "quantity": {"qty", "quantity", "cantidad", "unidades", "units"},
+        "cost_amount": {"cost", "costo", "coste"},
+        "discount_amount": {"discount", "descuento"},
         "customer_count": {"customer", "cliente", "account"},
         "transaction_count": {"order", "sale", "venta", "transaction", "pedido"},
     }
@@ -1268,6 +1399,8 @@ def _column_supports_role(role: str, column: str) -> bool:
             "descuento",
         },
         "quantity": {"qty", "quantity", "cantidad", "unidades", "units"},
+        "cost_amount": {"cost", "costo", "coste"},
+        "discount_amount": {"discount", "descuento"},
         "customer_count": {"customer", "cliente", "account", "person", "store"},
         "transaction_count": {"order", "sale", "sales", "venta", "transaction", "pedido"},
     }
@@ -1409,7 +1542,11 @@ def expand_proposal_blueprint(
             (value for value in calculation_inputs if _looks_like_discount_rate(value)),
             proposed_column if _looks_like_discount_rate(proposed_column) else "",
         )
-        if calculation is not None and role == "sales_amount" and discount_input:
+        if (
+            calculation is not None
+            and role in {"sales_amount", "discount_amount"}
+            and discount_input
+        ):
             operation = str(calculation.get("operation", ""))
             if not _discount_amount_recipe_is_complete(operation, calculation_inputs):
                 suggested_calculation = _discount_amount_suggestion(
@@ -1526,6 +1663,12 @@ def expand_proposal_blueprint(
             aggregation = str(item.get("aggregation", "sum"))
             if aggregation not in ROLE_AGGREGATIONS[role]:
                 aggregation = ROLE_DEFAULT_AGGREGATION[role]
+            formula_operator = {
+                "multiply": "×",
+                "add": "+",
+                "subtract": "−",
+                "divide": "÷",
+            }[operation]
             measure_index_map[source_index] = len(measures)
             measures.append(
                 {
@@ -1533,6 +1676,14 @@ def expand_proposal_blueprint(
                     "source_columns": calculation_inputs,
                     "aggregation": aggregation,
                     "semantic_role": role,
+                    "provenance": {
+                        "kind": "calculated",
+                        "source_references": [
+                            f"{fact_source}.{column}" for column in calculation_inputs
+                        ],
+                        "formula": f" {formula_operator} ".join(calculation_inputs),
+                        "verification": "Columnas y tipos comprobados en la instantánea.",
+                    },
                     "calculation": {
                         "operation": operation,
                         "inputs": calculation_inputs,
@@ -1592,6 +1743,12 @@ def expand_proposal_blueprint(
                 "source_columns": [source_column],
                 "aggregation": aggregation,
                 "semantic_role": role,
+                "provenance": {
+                    "kind": "direct",
+                    "source_references": [f"{fact_source}.{source_column}"],
+                    "formula": f"{aggregation.upper()}({source_column})",
+                    "verification": "Tabla y columna comprobadas en la instantánea.",
+                },
             }
         )
     dimension_terms = {
@@ -1670,7 +1827,11 @@ def expand_proposal_blueprint(
     for _, item in chosen_dimensions.values():
         name = str(item.get("name", ""))
         proposed_source = str(item.get("source_table", ""))
-        source = max(scoped, key=lambda ref: dimension_source_score(name, ref))
+        source = (
+            proposed_source
+            if bool(item.get("source_locked")) and proposed_source in scoped
+            else max(scoped, key=lambda ref: dimension_source_score(name, ref))
+        )
         if source != proposed_source:
             automatic_adjustments.append(
                 f"La fuente de {name} se ajustó de {proposed_source} a {source} "
@@ -1777,6 +1938,14 @@ def expand_proposal_blueprint(
                 },
                 "unit": str(item.get("unit", "valor")),
                 "semantic_role": kpi_role,
+                "provenance": {
+                    "measure": measure_name,
+                    "operation": operation,
+                    "source_references": list(
+                        measure.get("provenance", {}).get("source_references", [])
+                    ),
+                    "formula": f"{operation.upper()}({measure_name})",
+                },
             }
         )
         decision_diagnostics.append(
@@ -1839,6 +2008,7 @@ def expand_proposal_blueprint(
             },
         ]
     )
+    dimensions, semantic_quality = enrich_dimension_labels(dimensions, scope, semantic_map)
     summary = str(blueprint.get("summary", "Propuesta dimensional de ventas."))
     return {
         "contract_version": CONTRACT_VERSION,
@@ -1853,6 +2023,7 @@ def expand_proposal_blueprint(
                 blueprint.get("grain_description", "Una fila por transacción de venta.")
             ),
             "source_tables": [fact_source],
+            "business_keys": business_keys[:4],
         },
         "fact": {
             "name": "fact_ventas",
@@ -1868,12 +2039,17 @@ def expand_proposal_blueprint(
             "Las claves de negocio no deben estar vacías.",
             "Las relaciones deben coincidir con claves foráneas de la instantánea.",
             "Los importes y cantidades deben conservar su tipo y signo de origen.",
+            (
+                "Cada dimensión visible debe resolver una etiqueta descriptiva con "
+                "cobertura comprobada."
+            ),
         ],
         "assumptions": list(blueprint.get("assumptions", [])),
         "warnings": proposal_warnings,
         "automatic_adjustments": automatic_adjustments,
         "provider_observations": list(blueprint.get("warnings", [])),
         "decision_diagnostics": decision_diagnostics,
+        "semantic_quality": semantic_quality,
         "ai_decisions": blueprint,
     }
 
@@ -1980,8 +2156,577 @@ def apply_analyst_adjustments(
     return blueprint
 
 
+def controlled_relation_catalog(scope: dict[str, Any]) -> list[dict[str, Any]]:
+    """Expose only declared relationships with deterministic cardinality and risk checks."""
+    tables = {
+        str(item.get("ref")): item
+        for item in scope.get("tables", [])
+        if isinstance(item, dict) and item.get("ref")
+    }
+
+    def column_map(reference: str) -> dict[str, dict[str, Any]]:
+        return {
+            str(item.get("name")): item
+            for item in tables.get(reference, {}).get("columns", [])
+            if isinstance(item, dict) and item.get("name")
+        }
+
+    def compatible(left_type: str, right_type: str) -> bool:
+        def normalized(value: str) -> str:
+            return re.sub(r"\([^)]*\)", "", value.casefold()).strip()
+
+        left = normalized(left_type)
+        right = normalized(right_type)
+        integer = {"tinyint", "smallint", "int", "bigint"}
+        text = {"char", "nchar", "varchar", "nvarchar", "text"}
+        return left == right or ({left, right} <= integer) or ({left, right} <= text)
+
+    options: list[dict[str, Any]] = []
+    for source, table in tables.items():
+        for relation in table.get("foreign_keys", []):
+            if not isinstance(relation, dict):
+                continue
+            target = (
+                f"{relation.get('referenced_schema', '')}.{relation.get('referenced_table', '')}"
+            )
+            if target not in tables:
+                continue
+            left_columns = [str(item) for item in relation.get("columns", [])]
+            right_columns = [str(item) for item in relation.get("referenced_columns", [])]
+            source_columns = column_map(source)
+            target_columns = column_map(target)
+            left_types = [
+                str(source_columns.get(item, {}).get("type", "")) for item in left_columns
+            ]
+            right_types = [
+                str(target_columns.get(item, {}).get("type", "")) for item in right_columns
+            ]
+            types_match = (
+                bool(left_columns)
+                and len(left_columns) == len(right_columns)
+                and all(
+                    compatible(left_type, right_type)
+                    for left_type, right_type in zip(left_types, right_types, strict=True)
+                )
+            )
+            target_unique = bool(right_columns) and all(
+                bool(target_columns.get(item, {}).get("pk", False)) for item in right_columns
+            )
+            source_unique = bool(left_columns) and all(
+                bool(source_columns.get(item, {}).get("pk", False)) for item in left_columns
+            )
+            cardinality = (
+                "one_to_one"
+                if source_unique and target_unique
+                else "many_to_one"
+                if target_unique
+                else "unknown"
+            )
+            nullable_source = any(
+                bool(source_columns.get(item, {}).get("nullable", False)) for item in left_columns
+            )
+            duplication_risk = not target_unique
+            signature = {
+                "left_table": source,
+                "right_table": target,
+                "left_columns": left_columns,
+                "right_columns": right_columns,
+            }
+            eligible = types_match and target_unique
+            options.append(
+                {
+                    "option_id": canonical_hash(signature),
+                    **signature,
+                    "left_types": left_types,
+                    "right_types": right_types,
+                    "cardinality": cardinality,
+                    "target_unique": target_unique,
+                    "nullable_source": nullable_source,
+                    "duplication_risk": duplication_risk,
+                    "eligible": eligible,
+                    "guidance": (
+                        "Relación declarada hacia una clave única; conserva la granularidad."
+                        if eligible
+                        else (
+                            "No se puede seleccionar: la clave destino no es única."
+                            if duplication_risk
+                            else "No se puede seleccionar: los tipos de las columnas no coinciden."
+                        )
+                    ),
+                }
+            )
+    return options
+
+
+def apply_controlled_relationship(
+    source_blueprint: dict[str, Any],
+    dimension_name: str,
+    option: dict[str, Any],
+) -> dict[str, Any]:
+    """Lock one dimensional source to the parent of a prevalidated declared relationship."""
+    if not bool(option.get("eligible")) or bool(option.get("duplication_risk")):
+        raise ValueError("La relación no conserva la granularidad aprobada.")
+    blueprint = deepcopy(source_blueprint)
+    dimensions = [item for item in blueprint.get("dimensions", []) if isinstance(item, dict)]
+    dimension = next((item for item in dimensions if str(item.get("name")) == dimension_name), None)
+    if dimension is None:
+        raise ValueError("La dimensión no pertenece a la propuesta seleccionada.")
+    dimension["source_table"] = str(option["right_table"])
+    dimension["source_locked"] = True
+    blueprint["controlled_relation"] = {
+        "dimension_name": dimension_name,
+        "option_id": option["option_id"],
+        "left_table": option["left_table"],
+        "right_table": option["right_table"],
+        "left_columns": option["left_columns"],
+        "right_columns": option["right_columns"],
+        "cardinality": option["cardinality"],
+        "duplication_risk": False,
+    }
+    return blueprint
+
+
 def _issue(code: str, level: str, path: str, message: str) -> dict[str, str]:
     return {"code": code, "level": level, "path": path, "message": message}
+
+
+def build_requirement_coverage(
+    proposal: dict[str, Any], assessment: dict[str, Any]
+) -> list[dict[str, Any]]:
+    """Link every assessed requirement to concrete proposal outputs or an explicit gap."""
+    fact = proposal.get("fact", {}) if isinstance(proposal.get("fact"), dict) else {}
+    measures = [item for item in fact.get("measures", []) if isinstance(item, dict)]
+    dimensions = [item for item in proposal.get("dimensions", []) if isinstance(item, dict)]
+    kpis = [item for item in proposal.get("kpis", []) if isinstance(item, dict)]
+    dimension_outputs = {
+        "date": ["dim_fecha"]
+        if any(item.get("name") == "dim_fecha" for item in dimensions)
+        else [],
+        "product": ["dim_producto"]
+        if any(item.get("name") == "dim_producto" for item in dimensions)
+        else [],
+        "customer": ["dim_cliente"]
+        if any(item.get("name") == "dim_cliente" for item in dimensions)
+        else [],
+        "territory": ["dim_territorio"]
+        if any(item.get("name") == "dim_territorio" for item in dimensions)
+        else [],
+    }
+
+    def measure_outputs(component: str) -> list[str]:
+        roles = {
+            "sales_amount": "sales_amount",
+            "quantity": "quantity",
+            "transactions": "transaction_count",
+        }
+        expected_role = roles.get(component)
+        terms = {
+            "unit_cost": {"cost", "costo", "coste", "standard"},
+            "unit_price": {"price", "precio"},
+            "discount_rate": {"discount", "descuento", "rate", "tasa"},
+        }.get(component, set())
+        outputs: list[str] = []
+        for measure in measures:
+            tokens = _search_tokens(
+                {
+                    "name": measure.get("name", ""),
+                    "columns": measure.get("source_columns", []),
+                }
+            )
+            if (expected_role and measure.get("semantic_role") == expected_role) or (
+                terms and tokens & terms
+            ):
+                outputs.append(f"medida:{measure.get('name')}")
+        return list(dict.fromkeys(outputs))
+
+    derived_term_groups = {
+        "goal:discount_amount": [{"discount", "descuento"}],
+        "goal:total_cost": [{"cost", "costo", "coste"}, {"total"}],
+        "goal:gross_margin": [{"margin", "margen", "profit", "rentabilidad"}],
+        "goal:sales_per_unit": [{"venta", "sales"}, {"unit", "unidad"}],
+        "goal:cost_per_unit": [
+            {"cost", "costo", "coste"},
+            {"unit", "unidad"},
+        ],
+    }
+
+    def derived_outputs(code: str) -> list[str]:
+        required_groups = derived_term_groups.get(code)
+        if not required_groups:
+            return []
+        results: list[str] = []
+        for kind, values in (("medida", measures), ("kpi", kpis)):
+            for value in values:
+                tokens = _search_tokens(
+                    {
+                        "name": value.get("name", ""),
+                        "code": value.get("code", ""),
+                    }
+                )
+                if all(tokens & group for group in required_groups):
+                    results.append(f"{kind}:{value.get('name')}")
+        return results
+
+    accepted = set(assessment.get("accepted_limitations", []))
+    coverage: list[dict[str, Any]] = []
+    for requirement in assessment.get("requirements", []):
+        if not isinstance(requirement, dict):
+            continue
+        code = str(requirement.get("code", ""))
+        request_status = str(requirement.get("status", "ambiguous"))
+        components = [str(item) for item in requirement.get("components", [])]
+        outputs: list[str] = []
+        component_gaps: list[str] = []
+        for component in components:
+            matches = dimension_outputs.get(component, []) or measure_outputs(component)
+            if matches:
+                outputs.extend(matches)
+            else:
+                component_gaps.append(component)
+        explicit_derived = derived_outputs(code)
+        if explicit_derived:
+            outputs.extend(explicit_derived)
+            component_gaps = []
+        if request_status == "unavailable" and code in accepted:
+            coverage_status = "accepted_limitation"
+            explanation = "La ausencia fue confirmada; no se inventará una fuente o cálculo."
+        elif request_status == "ambiguous" and code in accepted:
+            coverage_status = "human_decision"
+            explanation = "La ambigüedad y su alcance fueron aceptados por el analista."
+        elif not component_gaps and outputs:
+            coverage_status = "covered"
+            explanation = "El requisito aparece en salidas verificables de la propuesta."
+        else:
+            coverage_status = "not_covered"
+            explanation = (
+                "La propuesta no materializa todavía: "
+                + ", ".join(component_gaps or components or ["el resultado solicitado"])
+                + "."
+            )
+        coverage.append(
+            {
+                "requirement_code": code,
+                "label": str(requirement.get("label", code)),
+                "request_status": request_status,
+                "coverage_status": coverage_status,
+                "outputs": list(dict.fromkeys(outputs)),
+                "explanation": explanation,
+            }
+        )
+    return coverage
+
+
+def apply_financial_requirements(
+    proposal: dict[str, Any], assessment: dict[str, Any], scope: dict[str, Any]
+) -> dict[str, Any]:
+    """Materialize proven financial requirements that the provider may have omitted.
+
+    The enrichment is deliberately structural: it only uses columns present in the
+    bounded scope and paths composed from declared foreign keys. Ambiguous candidates
+    remain uncovered so the normal validation blocks approval instead of guessing.
+    """
+    result = deepcopy(proposal)
+    requested = {
+        str(item.get("code"))
+        for item in assessment.get("requirements", [])
+        if isinstance(item, dict) and item.get("status") in {"direct", "derivable"}
+    }
+    financial_codes = {
+        "goal:discount_amount",
+        "goal:total_cost",
+        "goal:gross_margin",
+        "goal:sales_per_unit",
+        "goal:cost_per_unit",
+    }
+    if not requested & financial_codes:
+        return result
+
+    tables = {
+        str(item.get("ref")): item
+        for item in scope.get("tables", [])
+        if isinstance(item, dict) and item.get("ref")
+    }
+    fact = result.get("fact")
+    if not isinstance(fact, dict):
+        return result
+    fact_sources = [str(item) for item in fact.get("source_tables", [])]
+    if len(fact_sources) != 1 or fact_sources[0] not in tables:
+        return result
+    fact_source = fact_sources[0]
+
+    graph: dict[str, set[str]] = {reference: set() for reference in tables}
+    for source, table in tables.items():
+        for relation in table.get("foreign_keys", []):
+            if not isinstance(relation, dict):
+                continue
+            target = (
+                f"{relation.get('referenced_schema', '')}.{relation.get('referenced_table', '')}"
+            )
+            if target in graph:
+                graph[source].add(target)
+                graph[target].add(source)
+
+    def reachable(target: str) -> bool:
+        pending = [fact_source]
+        visited = {fact_source}
+        while pending:
+            current = pending.pop(0)
+            if current == target:
+                return True
+            for neighbor in sorted(graph.get(current, set())):
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    pending.append(neighbor)
+        return False
+
+    def candidates(
+        pattern_groups: tuple[set[str], ...],
+        *,
+        fact_only: bool = False,
+        allowed_tables: set[str] | None = None,
+    ) -> list[str]:
+        references: list[str] = []
+        for terms in pattern_groups:
+            for table_ref, table in tables.items():
+                if fact_only and table_ref != fact_source:
+                    continue
+                if allowed_tables is not None and table_ref not in allowed_tables:
+                    continue
+                if not reachable(table_ref):
+                    continue
+                for column in table.get("columns", []):
+                    if not isinstance(column, dict) or not column.get("name"):
+                        continue
+                    name = str(column["name"])
+                    if terms <= _search_tokens(name):
+                        references.append(f"{table_ref}.{name}")
+            if references:
+                return list(dict.fromkeys(references))
+        return []
+
+    measures = [item for item in fact.get("measures", []) if isinstance(item, dict)]
+    kpis = [item for item in result.get("kpis", []) if isinstance(item, dict)]
+
+    def measure_for_role(role: str) -> dict[str, Any] | None:
+        return next((item for item in measures if item.get("semantic_role") == role), None)
+
+    def append_measure(
+        *, name: str, role: str, references: list[str], operation: str, formula: str
+    ) -> dict[str, Any] | None:
+        existing = measure_for_role(role)
+        if existing is not None:
+            return existing
+        if not references or any(reference.count(".") < 2 for reference in references):
+            return None
+        measure = {
+            "name": name,
+            "source_columns": references,
+            "aggregation": "sum",
+            "semantic_role": role,
+            "provenance": {
+                "kind": "calculated",
+                "source_references": references,
+                "formula": formula,
+                "verification": (
+                    "Columnas, tipos y ruta de relación comprobados en la instantánea."
+                ),
+            },
+            "calculation": {
+                "operation": operation,
+                "inputs": references,
+                "null_policy": "preserve_null",
+            },
+        }
+        measures.append(measure)
+        return measure
+
+    quantity = measure_for_role("quantity")
+    quantity_name = str(quantity.get("name")) if quantity else ""
+    quantity_refs = (
+        [str(item) for item in quantity.get("provenance", {}).get("source_references", [])]
+        if quantity
+        else candidates(({"order", "qty"}, {"quantity"}, {"cantidad"}, {"units"}), fact_only=True)
+    )
+    if not quantity_name and len(quantity_refs) == 1:
+        reference = quantity_refs[0]
+        quantity = {
+            "name": "unidades_vendidas",
+            "source_columns": [reference],
+            "aggregation": "sum",
+            "semantic_role": "quantity",
+            "provenance": {
+                "kind": "direct",
+                "source_references": [reference],
+                "formula": f"SUM({reference})",
+                "verification": "Tabla y columna comprobadas en la instantánea.",
+            },
+        }
+        measures.append(quantity)
+        quantity_name = "unidades_vendidas"
+
+    cost_requested = bool(
+        requested & {"goal:total_cost", "goal:gross_margin", "goal:cost_per_unit"}
+    )
+    total_cost: dict[str, Any] | None = None
+    if cost_requested and len(quantity_refs) == 1:
+        product_sources = {
+            str(source)
+            for dimension in result.get("dimensions", [])
+            if isinstance(dimension, dict)
+            and bool(
+                _search_tokens(
+                    {
+                        "name": dimension.get("name", ""),
+                        "role": dimension.get("semantic_role", ""),
+                    }
+                )
+                & {"product", "producto", "productos"}
+            )
+            for source in dimension.get("source_tables", [])
+            if str(source) in tables and reachable(str(source))
+        }
+        cost_patterns = (
+            {"standard", "cost"},
+            {"unit", "cost"},
+            {"product", "cost"},
+            {"costo", "unitario"},
+            {"costo"},
+            {"cost"},
+        )
+        cost_refs = candidates(
+            cost_patterns,
+            allowed_tables=product_sources or None,
+        )
+        if len(cost_refs) == 1:
+            total_cost = append_measure(
+                name="costo_total",
+                role="cost_amount",
+                references=[quantity_refs[0], cost_refs[0]],
+                operation="multiply",
+                formula=f"SUM({quantity_refs[0]} × {cost_refs[0]})",
+            )
+
+    if "goal:discount_amount" in requested:
+        price_refs = [
+            reference
+            for reference in candidates(({"unit", "price"},), fact_only=True)
+            if "discount" not in _search_tokens(reference)
+            and "descuento" not in _search_tokens(reference)
+        ]
+        discount_refs = candidates(
+            ({"unit", "price", "discount"}, {"discount", "rate"}),
+            fact_only=True,
+        )
+        if len(price_refs) == len(discount_refs) == len(quantity_refs) == 1:
+            append_measure(
+                name="descuento_monetario",
+                role="discount_amount",
+                references=[price_refs[0], discount_refs[0], quantity_refs[0]],
+                operation="multiply",
+                formula=(f"SUM({price_refs[0]} × {discount_refs[0]} × {quantity_refs[0]})"),
+            )
+
+    fact["measures"] = measures
+    result["fact"] = fact
+
+    def add_aggregate(code: str, name: str, measure: dict[str, Any], unit: str) -> None:
+        measure_name = str(measure.get("name"))
+        semantic_role = str(measure.get("semantic_role"))
+        if any(
+            str(item.get("code")) == code
+            or (
+                str(item.get("formula_kind", "aggregate")) == "aggregate"
+                and str(item.get("semantic_role", "")) == semantic_role
+                and isinstance(item.get("formula"), dict)
+                and str(item["formula"].get("measure", "")) == measure_name
+            )
+            for item in kpis
+        ):
+            return
+        kpis.append(
+            {
+                "code": code,
+                "name": name,
+                "description_es": f"{name} calculado únicamente con medidas verificadas.",
+                "formula_kind": "aggregate",
+                "formula": {"operation": "sum", "measure": measure_name},
+                "unit": unit,
+                "semantic_role": str(measure.get("semantic_role")),
+                "provenance": deepcopy(measure.get("provenance", {})),
+            }
+        )
+
+    def add_derived(
+        code: str, name: str, kind: str, inputs: list[str], unit: str, formula: str
+    ) -> None:
+        if not all(inputs) or any(str(item.get("code")) == code for item in kpis):
+            return
+        kpis.append(
+            {
+                "code": code,
+                "name": name,
+                "description_es": f"{name} derivado de resultados agregados conciliados.",
+                "formula_kind": kind,
+                "inputs": inputs,
+                "unit": unit,
+                "provenance": {
+                    "source_references": inputs,
+                    "formula": formula,
+                    "verification": "Entradas conciliadas y denominador controlado.",
+                },
+            }
+        )
+
+    sales = measure_for_role("sales_amount")
+    sales_name = str(sales.get("name")) if sales else ""
+    if total_cost is not None:
+        total_cost_name = str(total_cost.get("name"))
+        add_aggregate("costo_total", "Costo total", total_cost, "moneda de origen")
+        if "goal:gross_margin" in requested and sales_name:
+            add_derived(
+                "margen_bruto",
+                "Margen bruto",
+                "difference",
+                [sales_name, total_cost_name],
+                "moneda de origen",
+                f"SUM({sales_name}) − SUM({total_cost_name})",
+            )
+            add_derived(
+                "margen_porcentaje",
+                "Margen bruto %",
+                "share",
+                ["margen_bruto", sales_name],
+                "porcentaje",
+                f"margen_bruto ÷ SUM({sales_name}) × 100",
+            )
+        if "goal:cost_per_unit" in requested and quantity_name:
+            add_derived(
+                "costo_por_unidad",
+                "Costo por unidad",
+                "ratio",
+                [total_cost_name, quantity_name],
+                "moneda de origen por unidad",
+                f"SUM({total_cost_name}) ÷ SUM({quantity_name})",
+            )
+    discount = measure_for_role("discount_amount")
+    if discount is not None:
+        add_aggregate(
+            "descuento_monetario",
+            "Descuento monetario",
+            discount,
+            "moneda de origen",
+        )
+    if "goal:sales_per_unit" in requested and sales_name and quantity_name:
+        add_derived(
+            "venta_por_unidad",
+            "Venta por unidad",
+            "ratio",
+            [sales_name, quantity_name],
+            "moneda de origen por unidad",
+            f"SUM({sales_name}) ÷ SUM({quantity_name})",
+        )
+    result["kpis"] = kpis
+    return result
 
 
 def validate_proposal(
@@ -2064,6 +2809,31 @@ def validate_proposal(
     elif isinstance(grain.get("source_tables"), list):
         for index, table in enumerate(grain["source_tables"]):
             check_table(table, f"grain.source_tables.{index}")
+        grain_keys = {str(item) for item in grain.get("business_keys", [])}
+        for table in grain["source_tables"]:
+            table_columns = {
+                str(column.get("name"))
+                for column in scoped.get(str(table), {}).get("columns", [])
+                if isinstance(column, dict)
+            }
+            detail_identifiers = {
+                column
+                for column in table_columns
+                if _search_tokens(column) & {"detail", "line", "detalle", "linea"}
+                and _search_tokens(column) & {"id", "key", "clave"}
+            }
+            if detail_identifiers and not detail_identifiers.issubset(grain_keys):
+                issues.append(
+                    _issue(
+                        "grain.detail_key_missing",
+                        "error",
+                        "grain.business_keys",
+                        (
+                            "La granularidad debe conservar el identificador del detalle: "
+                            f"{', '.join(sorted(detail_identifiers))}."
+                        ),
+                    )
+                )
 
     fact = proposal.get("fact")
     measures: set[str] = set()
@@ -2091,6 +2861,53 @@ def validate_proposal(
             )
         for index, table in enumerate(fact_sources):
             check_table(table, f"fact.source_tables.{index}")
+        relation_graph: dict[str, set[str]] = {reference: set() for reference in scoped}
+        for source, table in scoped.items():
+            for relation in table.get("foreign_keys", []):
+                if not isinstance(relation, dict):
+                    continue
+                target = (
+                    f"{relation.get('referenced_schema', '')}."
+                    f"{relation.get('referenced_table', '')}"
+                )
+                if target in relation_graph:
+                    relation_graph[source].add(target)
+                    relation_graph[target].add(source)
+
+        def source_reference(value: object) -> str | None:
+            raw = str(value)
+            if raw.count(".") >= 2:
+                table_ref, column_name = raw.rsplit(".", 1)
+                table_columns = {
+                    str(column.get("name"))
+                    for column in scoped.get(table_ref, {}).get("columns", [])
+                    if isinstance(column, dict)
+                }
+                if column_name not in table_columns:
+                    return None
+                pending = list(fact_sources)
+                visited = set(fact_sources)
+                while pending:
+                    current = pending.pop(0)
+                    if current == table_ref:
+                        return raw
+                    for neighbor in sorted(relation_graph.get(current, set())):
+                        if neighbor not in visited:
+                            visited.add(neighbor)
+                            pending.append(neighbor)
+                return None
+            matches = [
+                f"{table_ref}.{raw}"
+                for table_ref in fact_sources
+                if raw
+                in {
+                    str(column.get("name"))
+                    for column in scoped.get(table_ref, {}).get("columns", [])
+                    if isinstance(column, dict)
+                }
+            ]
+            return matches[0] if len(matches) == 1 else None
+
         raw_measures = fact.get("measures", [])
         if not isinstance(raw_measures, list) or not raw_measures:
             issues.append(
@@ -2138,7 +2955,7 @@ def validate_proposal(
                 )
                 if (
                     calculation is None
-                    and role == "sales_amount"
+                    and role in {"sales_amount", "discount_amount"}
                     and _looks_like_discount_rate(source_column)
                 ):
                     issues.append(
@@ -2181,21 +2998,49 @@ def validate_proposal(
                             ),
                         )
                     )
+                if role == "transaction_count":
+                    source_tokens = _search_tokens(source_column)
+                    if (
+                        aggregation != "count_distinct"
+                        or source_tokens
+                        & {
+                            "detail",
+                            "line",
+                            "detalle",
+                            "linea",
+                        }
+                        or not source_tokens
+                        & {
+                            "order",
+                            "sale",
+                            "sales",
+                            "transaction",
+                            "pedido",
+                        }
+                    ):
+                        issues.append(
+                            _issue(
+                                "measure.transaction_distinct_order",
+                                "error",
+                                f"fact.measures.{index}",
+                                (
+                                    "Transacciones debe usar COUNT(DISTINCT) sobre el "
+                                    "identificador del pedido, nunca sobre el detalle."
+                                ),
+                            )
+                        )
                 columns = measure.get("source_columns", [])
-                available = {
-                    str(column.get("name"))
-                    for table_ref in fact_sources
-                    for column in scoped.get(table_ref, {}).get("columns", [])
-                    if isinstance(column, dict)
-                }
                 for column in columns if isinstance(columns, list) else []:
-                    if str(column) not in available:
+                    if source_reference(column) is None:
                         issues.append(
                             _issue(
                                 "reference.column_unknown",
                                 "error",
                                 f"fact.measures.{index}.source_columns",
-                                f"La columna {column} no existe en las fuentes del hecho.",
+                                (
+                                    f"La columna {column} no existe o no tiene una ruta "
+                                    "de relación declarada desde el hecho."
+                                ),
                             )
                         )
                 if calculation is not None:
@@ -2233,7 +3078,7 @@ def validate_proposal(
                             )
                         )
                     if (
-                        role == "sales_amount"
+                        role in {"sales_amount", "discount_amount"}
                         and isinstance(inputs, list)
                         and any(_looks_like_discount_rate(value) for value in inputs)
                         and not _discount_amount_recipe_is_complete(
@@ -2252,6 +3097,42 @@ def validate_proposal(
                                 ),
                             )
                         )
+                if "need_assessment" in proposal:
+                    provenance = measure.get("provenance")
+                    if not isinstance(provenance, dict):
+                        issues.append(
+                            _issue(
+                                "measure.provenance_missing",
+                                "error",
+                                f"fact.measures.{index}.provenance",
+                                "La medida no muestra su tabla, columnas y fórmula verificable.",
+                            )
+                        )
+                    else:
+                        expected_references = {
+                            reference
+                            for column in columns
+                            if (reference := source_reference(column)) is not None
+                        }
+                        references = {str(item) for item in provenance.get("source_references", [])}
+                        if not references or not references.issubset(expected_references):
+                            issues.append(
+                                _issue(
+                                    "measure.provenance_invalid",
+                                    "error",
+                                    f"fact.measures.{index}.provenance",
+                                    "La procedencia no coincide con tabla.columna verificadas.",
+                                )
+                            )
+                        if not str(provenance.get("formula", "")).strip():
+                            issues.append(
+                                _issue(
+                                    "measure.formula_missing",
+                                    "error",
+                                    f"fact.measures.{index}.provenance.formula",
+                                    "La medida debe mostrar su agregación o fórmula controlada.",
+                                )
+                            )
 
     dimensions = proposal.get("dimensions", [])
     if not isinstance(dimensions, list):
@@ -2295,6 +3176,90 @@ def validate_proposal(
                             f"La columna {column} no existe en la dimensión propuesta.",
                         )
                     )
+            if dimension.get("name") == "dim_fecha":
+                continue
+            display_label = dimension.get("display_label")
+            if not isinstance(display_label, dict):
+                if "semantic_quality" not in proposal:
+                    continue
+                issues.append(
+                    _issue(
+                        "dimension.display_label_missing",
+                        "error",
+                        f"dimensions.{index}.display_label",
+                        (
+                            "La dimensión no resuelve una etiqueta descriptiva. Revise sus "
+                            "relaciones antes de publicarla para análisis."
+                        ),
+                    )
+                )
+                continue
+            variants = display_label.get("variants", [])
+            if not isinstance(variants, list) or not variants:
+                issues.append(
+                    _issue(
+                        "dimension.display_variants_missing",
+                        "error",
+                        f"dimensions.{index}.display_label.variants",
+                        "La etiqueta descriptiva no conserva una ruta verificable.",
+                    )
+                )
+                continue
+            base_source = source_tables[0] if len(source_tables) == 1 else ""
+            base_table = all_tables.get(base_source, {})
+            base_foreign_keys = [
+                item for item in base_table.get("foreign_keys", []) if isinstance(item, dict)
+            ]
+            for variant_index, variant in enumerate(variants):
+                if not isinstance(variant, dict):
+                    continue
+                target = str(variant.get("source_table", ""))
+                columns = [str(item) for item in variant.get("columns", [])]
+                if target not in all_tables:
+                    issues.append(
+                        _issue(
+                            "dimension.display_table_unknown",
+                            "error",
+                            f"dimensions.{index}.display_label.variants.{variant_index}",
+                            f"La ruta descriptiva {target} no existe en la instantánea.",
+                        )
+                    )
+                    continue
+                target_columns = {
+                    str(item.get("name"))
+                    for item in all_tables[target].get("columns", [])
+                    if isinstance(item, dict)
+                }
+                if not columns or any(column not in target_columns for column in columns):
+                    issues.append(
+                        _issue(
+                            "dimension.display_column_unknown",
+                            "error",
+                            f"dimensions.{index}.display_label.variants.{variant_index}",
+                            "La ruta descriptiva contiene columnas inexistentes.",
+                        )
+                    )
+                if target != base_source:
+                    left_columns = [str(item) for item in variant.get("left_columns", [])]
+                    right_columns = [str(item) for item in variant.get("right_columns", [])]
+                    relation_exists = any(
+                        f"{relation.get('referenced_schema', '')}."
+                        f"{relation.get('referenced_table', '')}"
+                        == target
+                        and [str(item) for item in relation.get("columns", [])] == left_columns
+                        and [str(item) for item in relation.get("referenced_columns", [])]
+                        == right_columns
+                        for relation in base_foreign_keys
+                    )
+                    if not relation_exists:
+                        issues.append(
+                            _issue(
+                                "dimension.display_relation_unknown",
+                                "error",
+                                f"dimensions.{index}.display_label.variants.{variant_index}",
+                                "La ruta descriptiva no coincide con una relación declarada.",
+                            )
+                        )
 
     declared_relations = set()
     for source, table in all_tables.items():
@@ -2345,10 +3310,54 @@ def validate_proposal(
             _issue("kpi.missing", "error", "kpis", "La propuesta debe incluir al menos un KPI.")
         )
     else:
+        known_kpi_inputs = set(measures)
         for index, kpi in enumerate(kpis):
-            formula = kpi.get("formula", {}) if isinstance(kpi, dict) else {}
+            if not isinstance(kpi, dict):
+                issues.append(
+                    _issue(
+                        "kpi.formula",
+                        "error",
+                        f"kpis.{index}.formula",
+                        "El KPI no tiene una estructura válida.",
+                    )
+                )
+                continue
+            code = str(kpi.get("code", ""))
+            kind = str(kpi.get("formula_kind", "aggregate"))
+            if kind in {"ratio", "share", "difference"}:
+                inputs = [str(item) for item in kpi.get("inputs", [])]
+                if len(inputs) != 2 or not all(item in known_kpi_inputs for item in inputs):
+                    issues.append(
+                        _issue(
+                            "kpi.derived_inputs",
+                            "error",
+                            f"kpis.{index}.inputs",
+                            (
+                                "El KPI derivado requiere exactamente dos medidas o "
+                                "indicadores previamente comprobados."
+                            ),
+                        )
+                    )
+                provenance = kpi.get("provenance")
+                if (
+                    not isinstance(provenance, dict)
+                    or not str(provenance.get("formula", "")).strip()
+                ):
+                    issues.append(
+                        _issue(
+                            "kpi.derived_formula",
+                            "error",
+                            f"kpis.{index}.provenance",
+                            "El KPI derivado debe mostrar su fórmula y denominador.",
+                        )
+                    )
+                if code:
+                    known_kpi_inputs.add(code)
+                continue
+            formula = kpi.get("formula", {}) if isinstance(kpi.get("formula"), dict) else {}
             if (
-                formula.get("operation") not in ALLOWED_AGGREGATIONS
+                kind != "aggregate"
+                or formula.get("operation") not in ALLOWED_AGGREGATIONS
                 or formula.get("measure") not in measures
             ):
                 issues.append(
@@ -2390,6 +3399,8 @@ def validate_proposal(
                         ),
                     )
                 )
+            if code:
+                known_kpi_inputs.add(code)
 
     plan = proposal.get("etl_plan", [])
     if not isinstance(plan, list) or not plan:
@@ -2406,6 +3417,71 @@ def validate_proposal(
                     )
                 )
 
+    assessment = proposal.get("need_assessment")
+    coverage = proposal.get("requirement_coverage")
+    if isinstance(assessment, dict):
+        coverage_items = coverage if isinstance(coverage, list) else []
+        expected_requirements = {
+            str(item.get("code"))
+            for item in assessment.get("requirements", [])
+            if isinstance(item, dict)
+        }
+        covered_requirements = {
+            str(item.get("requirement_code")) for item in coverage_items if isinstance(item, dict)
+        }
+        if expected_requirements != covered_requirements:
+            issues.append(
+                _issue(
+                    "coverage.incomplete_matrix",
+                    "error",
+                    "requirement_coverage",
+                    "La matriz no representa todos los requisitos de la necesidad.",
+                )
+            )
+        for index, item in enumerate(coverage_items):
+            if not isinstance(item, dict):
+                continue
+            coverage_status = str(item.get("coverage_status", "not_covered"))
+            request_status = str(item.get("request_status", "ambiguous"))
+            if coverage_status == "not_covered" and request_status in {"direct", "derivable"}:
+                issues.append(
+                    _issue(
+                        "coverage.requirement_missing",
+                        "error",
+                        f"requirement_coverage.{index}",
+                        (
+                            f"El requisito {item.get('label', 'sin etiqueta')} era viable, "
+                            "pero no aparece en la propuesta. Genere una versión corregida."
+                        ),
+                    )
+                )
+            elif coverage_status in {"accepted_limitation", "human_decision"}:
+                issues.append(
+                    _issue(
+                        "coverage.human_decision",
+                        "warning",
+                        f"requirement_coverage.{index}",
+                        str(item.get("explanation", "Decisión humana registrada.")),
+                    )
+                )
+
+    controlled_revision = proposal.get("controlled_relation_revision")
+    if isinstance(controlled_revision, dict) and (
+        not bool(controlled_revision.get("validated"))
+        or bool(controlled_revision.get("duplication_risk"))
+        or controlled_revision.get("cardinality") not in {"many_to_one", "one_to_one"}
+    ):
+        issues.append(
+            _issue(
+                "relationship.controlled_revision_invalid",
+                "error",
+                "controlled_relation_revision",
+                (
+                    "La corrección de relación no demuestra cardinalidad segura ni "
+                    "conservación de la granularidad."
+                ),
+            )
+        )
     for warning in proposal.get("warnings", []):
         issues.append(_issue("proposal.warning", "warning", "warnings", str(warning)[:500]))
     errors = sum(issue["level"] == "error" for issue in issues)

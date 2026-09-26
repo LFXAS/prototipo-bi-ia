@@ -24,6 +24,11 @@ Las transformaciones marcadas **Revisar en el paso 5** no requieren aprobación 
 
 El analista puede salir y volver sin perder la ejecución persistida. La interfaz distingue siempre entre borrador, propuesta aprobada, ejecución en curso, ejecución completada, resultado validado, resultado con advertencias y resultado fallido.
 
+Cuando una ejecución ya fue completada, las cinco etapas se convierten en pestañas
+de consulta. El analista puede recorrer propuesta, indicadores, transformaciones,
+materialización y resultado sin habilitar casillas, confirmaciones ni una segunda
+ejecución. El contenido leído corresponde al contrato persistido del expediente.
+
 ## 3. Principios de diseño
 
 - Lenguaje de negocio en español como nivel principal: ``Ventas netas'', ``Clientes con compras en el período'' y ``Venta promedio por pedido''. Los nombres técnicos se muestran sólo en un panel ``Ver trazabilidad técnica''.
@@ -106,6 +111,8 @@ La respuesta nunca modifica la propuesta silenciosamente. **Aplicar recomendaci�
 - [x] Los importes usan código ISO sólo cuando la fuente lo demuestra; la pantalla muestra la referencia y permite enriquecer un expediente existente sin repetir el ETL.
 - [x] La conciliación se entiende sin abrir el detalle técnico, aunque éste permanezca disponible para auditoría.
 - [x] El flujo dispone de maquetación responsive, controles etiquetados y mensajes que no dependen sólo del color.
+- [x] Un expediente completado permite abrir cualquiera de sus cinco etapas en
+      modo de sólo lectura y nunca ofrece repetir la materialización.
 
 ## 8. Límites
 

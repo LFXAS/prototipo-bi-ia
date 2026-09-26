@@ -7,7 +7,7 @@ from app.modules.copilot.service import canonical_hash, metadata_tables
 
 BUILDER_VERSION = "sales-etl-v1"
 SUPPORTED_AGGREGATIONS = {"sum", "count", "count_distinct", "average", "min", "max"}
-SUPPORTED_RECIPE_KINDS = {"aggregate", "ratio", "share"}
+SUPPORTED_RECIPE_KINDS = {"aggregate", "difference", "ratio", "share"}
 
 
 def assess_dimensional_readiness(
@@ -88,6 +88,11 @@ def assess_dimensional_readiness(
                 f"{name} no contiene un atributo descriptivo legible. Incorpore nombre, "
                 "descripción, categoría o código de negocio antes de cargarla."
             )
+        if name != "dim_fecha" and not isinstance(dimension.get("display_label"), dict):
+            blockers.append(
+                f"{name} no declara cómo resolver un nombre descriptivo mediante relaciones "
+                "verificadas. Genere una propuesta nueva antes de ejecutar el ETL."
+            )
 
     grain = str(proposal.get("grain", {}).get("description", "")).casefold()
     business_keys = {
@@ -118,7 +123,7 @@ def assess_dimensional_readiness(
             re.search(r"amount|importe|monto|total|value|valor", source_text, re.IGNORECASE)
         )
         if (
-            role == "sales_amount"
+            role in {"sales_amount", "discount_amount"}
             and discount_like
             and not amount_like
             and not isinstance(calculation, dict)
@@ -128,7 +133,11 @@ def assess_dimensional_readiness(
                 "Cree una versión corregida con una receta controlada de precio, tasa y "
                 "cantidad; no ejecute nuevamente esta versión."
             )
-        if role == "sales_amount" and discount_like and isinstance(calculation, dict):
+        if (
+            role in {"sales_amount", "discount_amount"}
+            and discount_like
+            and isinstance(calculation, dict)
+        ):
             operation = str(calculation.get("operation", ""))
             inputs = [str(item) for item in calculation.get("inputs", [])]
             non_discount = [
@@ -203,7 +212,38 @@ def compile_kpi_recipes(proposal: dict[str, Any]) -> tuple[list[dict[str, Any]],
                 semantic_role = "sales_amount"
             normalized_unit = declared_unit
             adjustments: list[str] = []
-            if semantic_role == "sales_amount" and declared_unit.casefold() not in {
+            effective_name = name
+            calculation = measures[measure_name].get("calculation")
+            calculation_inputs = (
+                [str(item) for item in calculation.get("inputs", [])]
+                if isinstance(calculation, dict) and isinstance(calculation.get("inputs"), list)
+                else []
+            )
+            name_tokens = set(re.findall(r"[a-záéíóúñ]+", name.casefold()))
+            calculation_tokens = set(
+                re.findall(r"[a-záéíóúñ]+", " ".join(calculation_inputs).casefold())
+            )
+            if (
+                semantic_role == "sales_amount"
+                and name_tokens & {"net", "neto", "neta", "netas", "netos"}
+                and isinstance(calculation, dict)
+                and calculation.get("operation") == "multiply"
+                and not calculation_tokens & {"discount", "descuento"}
+            ):
+                effective_name = re.sub(r"\bnetas\b", "brutas", name, flags=re.IGNORECASE)
+                effective_name = re.sub(r"\bneta\b", "bruta", effective_name, flags=re.IGNORECASE)
+                effective_name = re.sub(r"\bnetos\b", "brutos", effective_name, flags=re.IGNORECASE)
+                effective_name = re.sub(r"\bneto\b", "bruto", effective_name, flags=re.IGNORECASE)
+                effective_name = re.sub(r"\bnet\b", "gross", effective_name, flags=re.IGNORECASE)
+                adjustments.append(
+                    "La receta comprobada calcula precio por cantidad sin descontar una "
+                    "tasa; por ello se presenta como venta bruta y no como venta neta."
+                )
+            if semantic_role in {
+                "sales_amount",
+                "cost_amount",
+                "discount_amount",
+            } and declared_unit.casefold() not in {
                 "moneda",
                 "moneda de origen",
                 "currency",
@@ -218,7 +258,7 @@ def compile_kpi_recipes(proposal: dict[str, Any]) -> tuple[list[dict[str, Any]],
             recipes.append(
                 {
                     "code": code,
-                    "name": name,
+                    "name": effective_name,
                     "description": str(raw.get("description_es", raw.get("description", ""))),
                     "kind": "aggregate",
                     "unit": normalized_unit,
@@ -252,6 +292,12 @@ def compile_kpi_recipes(proposal: dict[str, Any]) -> tuple[list[dict[str, Any]],
             "denominator": normalized_inputs[1],
             "zero_denominator": "null",
         }
+        if kind == "difference":
+            recipe = {
+                "template": kind,
+                "minuend": normalized_inputs[0],
+                "subtrahend": normalized_inputs[1],
+            }
         if kind == "share":
             recipe["multiply_by"] = 100
         recipes.append(

@@ -9,18 +9,73 @@ from app.modules.copilot.domains import (
     default_needs_catalog_configuration,
     normalize_needs_catalog_configuration,
 )
+from app.modules.copilot.entity_resolution import enrich_dimension_labels
 from app.modules.copilot.service import (
     apply_analyst_adjustments,
+    apply_controlled_relationship,
+    apply_financial_requirements,
+    build_requirement_coverage,
     canonical_hash,
     compact_metadata_blocks,
+    controlled_relation_catalog,
     derived_scope,
     expand_proposal_blueprint,
     proposal_blueprint_schema,
+    proposal_payload,
     semantic_advice_response_schema,
     validate_proposal,
     validated_semantic_candidates,
     verify_proposal_evidence,
 )
+
+
+def test_proposal_payload_compacts_duplicate_evidence_without_losing_requirements() -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+    request = {
+        "domain": "ventas",
+        "goal": "Analizar ventas, costos y margen por producto.",
+        "questions": [
+            {
+                "code": "top_products",
+                "label": "Productos principales",
+                "description": "Descripción extensa que ya fue analizada.",
+                "instruction": "Comparar productos por ventas.",
+            }
+        ],
+        "periodicity": {"code": "month", "label": "Mensual", "description": "Texto"},
+        "viability_assessment": {
+            "requirements": [
+                {
+                    "code": "goal:gross_margin",
+                    "label": "Margen bruto",
+                    "status": "derivable",
+                    "components": ["sales_amount", "unit_cost", "quantity"],
+                    "formula": "ventas - costo",
+                    "evidence": ["duplicada"] * 100,
+                    "resolution": "explicación duplicada",
+                }
+            ],
+            "accepted_limitations": [],
+            "diagnostics": ["duplicado"] * 100,
+        },
+    }
+
+    payload = proposal_payload("a" * 64, "sqlserver", request, scope, semantic_map)
+
+    assert payload["business_request"]["requirements"] == [
+        {
+            "code": "goal:gross_margin",
+            "label": "Margen bruto",
+            "status": "derivable",
+            "components": ["sales_amount", "unit_cost", "quantity"],
+            "formula": "ventas - costo",
+        }
+    ]
+    assert "viability_assessment" not in payload["business_request"]
+    assert "evidence" not in payload["semantic_map"][0]
+    assert len(str(payload)) < len(str(request))
+
 
 DOCUMENT = {
     "contract_version": 1,
@@ -196,6 +251,261 @@ def test_kpi_suggestions_are_variable_without_a_fixed_business_catalog() -> None
     ]
     assert schema["properties"]["kpis"]["maxItems"] == 12
     assert schema["properties"]["kpis"]["items"]["properties"]["measure_index"]["maximum"] == 5
+
+
+def test_expanded_measures_expose_physical_provenance_and_formula() -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+
+    proposal = expand_proposal_blueprint(valid_blueprint(), scope, semantic_map)
+
+    measure = proposal["fact"]["measures"][0]
+    assert measure["provenance"]["source_references"] == ["Sales.OrderDetail.LineTotal"]
+    assert measure["provenance"]["formula"] == "SUM(LineTotal)"
+    assert proposal["grain"]["business_keys"] == ["OrderID", "ProductID"]
+
+
+def test_financial_requirements_add_only_traceable_cost_margin_and_unit_kpis() -> None:
+    document = deepcopy(DOCUMENT)
+    detail = document["schemas"][0]["tables"][0]
+    detail["columns"].extend(
+        [
+            {"name": "OrderQty", "data_type": "smallint", "primary_key": False},
+            {"name": "UnitPrice", "data_type": "money", "primary_key": False},
+            {"name": "UnitPriceDiscount", "data_type": "numeric", "primary_key": False},
+        ]
+    )
+    product = document["schemas"][1]["tables"][0]
+    product["columns"].append({"name": "StandardCost", "data_type": "money", "primary_key": False})
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], document)
+    scope = derived_scope(document, semantic_map)
+    base = expand_proposal_blueprint(valid_blueprint(), scope, semantic_map)
+    assessment = {
+        "requirements": [
+            {
+                "code": "goal:gross_margin",
+                "label": "Margen bruto y rentabilidad",
+                "status": "derivable",
+                "components": ["sales_amount", "unit_cost", "quantity"],
+            },
+            {
+                "code": "goal:cost_per_unit",
+                "label": "Costo por unidad",
+                "status": "derivable",
+                "components": ["unit_cost"],
+            },
+            {
+                "code": "goal:sales_per_unit",
+                "label": "Venta por unidad",
+                "status": "derivable",
+                "components": ["sales_amount", "quantity"],
+            },
+            {
+                "code": "goal:discount_amount",
+                "label": "Descuento monetario",
+                "status": "derivable",
+                "components": ["unit_price", "discount_rate", "quantity"],
+            },
+        ],
+        "accepted_limitations": [],
+    }
+
+    enriched = apply_financial_requirements(base, assessment, scope)
+    enriched["need_assessment"] = assessment
+    enriched["requirement_coverage"] = build_requirement_coverage(enriched, assessment)
+    measures = {item["semantic_role"]: item for item in enriched["fact"]["measures"]}
+    kpis = {item["code"]: item for item in enriched["kpis"]}
+
+    assert measures["cost_amount"]["source_columns"] == [
+        "Sales.OrderDetail.OrderQty",
+        "Production.Product.StandardCost",
+    ]
+    assert measures["discount_amount"]["source_columns"] == [
+        "Sales.OrderDetail.UnitPrice",
+        "Sales.OrderDetail.UnitPriceDiscount",
+        "Sales.OrderDetail.OrderQty",
+    ]
+    assert kpis["margen_bruto"]["formula_kind"] == "difference"
+    assert kpis["margen_porcentaje"]["inputs"] == ["margen_bruto", "importe_venta"]
+    assert kpis["costo_por_unidad"]["formula_kind"] == "ratio"
+    assert kpis["venta_por_unidad"]["formula_kind"] == "ratio"
+    assert validate_proposal(enriched, scope, document)["valid"] is True
+
+
+def test_financial_cost_prefers_the_verified_product_dimension_source() -> None:
+    document = deepcopy(DOCUMENT)
+    detail = document["schemas"][0]["tables"][0]
+    detail["columns"].extend(
+        [
+            {"name": "OrderQty", "data_type": "smallint", "primary_key": False},
+            {"name": "StandardCost", "data_type": "money", "primary_key": False},
+        ]
+    )
+    product = document["schemas"][1]["tables"][0]
+    product["columns"].append({"name": "StandardCost", "data_type": "money", "primary_key": False})
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], document)
+    scope = derived_scope(document, semantic_map)
+    base = expand_proposal_blueprint(valid_blueprint(), scope, semantic_map)
+    assessment = {
+        "requirements": [
+            {
+                "code": "goal:total_cost",
+                "label": "Costo total",
+                "status": "derivable",
+                "components": ["unit_cost", "quantity"],
+            }
+        ],
+        "accepted_limitations": [],
+    }
+
+    enriched = apply_financial_requirements(base, assessment, scope)
+
+    cost_measure = next(
+        item for item in enriched["fact"]["measures"] if item.get("semantic_role") == "cost_amount"
+    )
+    assert cost_measure["source_columns"] == [
+        "Sales.OrderDetail.OrderQty",
+        "Production.Product.StandardCost",
+    ]
+
+
+def test_financial_enrichment_does_not_duplicate_an_existing_discount_aggregate() -> None:
+    document = deepcopy(DOCUMENT)
+    detail = document["schemas"][0]["tables"][0]
+    detail["columns"].extend(
+        [
+            {"name": "OrderQty", "data_type": "smallint", "primary_key": False},
+            {"name": "UnitPrice", "data_type": "money", "primary_key": False},
+            {"name": "UnitPriceDiscount", "data_type": "numeric", "primary_key": False},
+        ]
+    )
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], document)
+    scope = derived_scope(document, semantic_map)
+    blueprint = valid_blueprint()
+    blueprint["measures"].append(
+        {
+            "name": "descuento_monetario",
+            "source_column": "UnitPriceDiscount",
+            "aggregation": "sum",
+            "semantic_role": "discount_amount",
+            "calculation_operation": "multiply",
+            "calculation_inputs": ["UnitPrice", "UnitPriceDiscount", "OrderQty"],
+        }
+    )
+    blueprint["kpis"].append(
+        {
+            "code": "descuentos_totales",
+            "name": "Descuentos totales",
+            "measure_index": 1,
+            "operation": "sum",
+            "unit": "moneda",
+            "semantic_role": "discount_amount",
+        }
+    )
+    proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
+    assessment = {
+        "requirements": [
+            {
+                "code": "goal:discount_amount",
+                "label": "Descuento monetario",
+                "status": "derivable",
+                "components": ["unit_price", "discount_rate", "quantity"],
+            }
+        ],
+        "accepted_limitations": [],
+    }
+
+    enriched = apply_financial_requirements(proposal, assessment, scope)
+
+    discount_kpis = [
+        item
+        for item in enriched["kpis"]
+        if item.get("semantic_role") == "discount_amount"
+        and item.get("formula_kind", "aggregate") == "aggregate"
+    ]
+    assert [item["code"] for item in discount_kpis] == ["descuentos_totales"]
+
+
+def test_requirement_coverage_reports_outputs_and_blocks_silent_omissions() -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+    proposal = expand_proposal_blueprint(valid_blueprint(), scope, semantic_map)
+    assessment = {
+        "accepted_limitations": [],
+        "requirements": [
+            {
+                "code": "question:top_products",
+                "label": "Productos con mayor desempeño",
+                "status": "derivable",
+                "components": ["sales_amount", "product"],
+            },
+            {
+                "code": "goal:unit_cost",
+                "label": "Costo unitario",
+                "status": "direct",
+                "components": ["unit_cost"],
+            },
+        ],
+    }
+    proposal["need_assessment"] = assessment
+    proposal["requirement_coverage"] = build_requirement_coverage(proposal, assessment)
+
+    coverage = {item["requirement_code"]: item for item in proposal["requirement_coverage"]}
+    assert coverage["question:top_products"]["coverage_status"] == "covered"
+    assert coverage["goal:unit_cost"]["coverage_status"] == "not_covered"
+    validation = validate_proposal(proposal, scope, DOCUMENT)
+    assert any(issue["code"] == "coverage.requirement_missing" for issue in validation["issues"])
+
+
+def test_transaction_count_rejects_detail_identifier() -> None:
+    proposal = valid_proposal()
+    proposal["fact"]["measures"].append(
+        {
+            "name": "transacciones",
+            "source_columns": ["ProductID"],
+            "aggregation": "count_distinct",
+            "semantic_role": "transaction_count",
+        }
+    )
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+
+    validation = validate_proposal(proposal, scope, DOCUMENT)
+
+    assert any(
+        issue["code"] == "measure.transaction_distinct_order" for issue in validation["issues"]
+    )
+
+
+def test_controlled_relation_catalog_only_enables_unique_declared_target() -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+
+    options = controlled_relation_catalog(scope)
+
+    option = next(item for item in options if item["right_table"] == "Production.Product")
+    assert option["left_columns"] == ["ProductID"]
+    assert option["right_columns"] == ["ProductID"]
+    assert option["cardinality"] in {"many_to_one", "one_to_one"}
+    assert option["duplication_risk"] is False
+    assert option["eligible"] is True
+    assert len(option["option_id"]) == 64
+
+    blueprint = apply_controlled_relationship(valid_blueprint(), "dim_producto", option)
+    dimension = next(item for item in blueprint["dimensions"] if item["name"] == "dim_producto")
+    assert dimension["source_table"] == "Production.Product"
+    assert dimension["source_locked"] is True
+
+
+def test_controlled_relation_rejects_duplication_risk() -> None:
+    option = {
+        "eligible": False,
+        "duplication_risk": True,
+        "right_table": "Production.Product",
+    }
+
+    with pytest.raises(ValueError, match="granularidad"):
+        apply_controlled_relationship(valid_blueprint(), "dim_producto", option)
 
 
 def test_semantic_advice_can_only_cite_verified_candidate_references() -> None:
@@ -491,7 +801,7 @@ def test_discount_rate_is_autocorrected_into_a_verified_monetary_measure() -> No
             "name": "Descuento total",
             "source_column": "UnitPriceDiscount",
             "aggregation": "sum",
-            "semantic_role": "sales_amount",
+            "semantic_role": "discount_amount",
             "calculation_operation": "multiply",
             "calculation_inputs": ["UnitPriceDiscount", "OrderQty"],
         },
@@ -605,6 +915,50 @@ def test_approved_decisions_reproduce_the_same_validated_proposal() -> None:
     assert evidence["proposal_hash"] == evidence["replay_hash"]
     assert evidence["validated_reference_count"] == 1
     assert all(check["passed"] for check in evidence["checks"])
+    assert not any(
+        "pronóstico" in item or "MAPE" in item for item in evidence["pending_validations"]
+    )
+
+
+def test_financial_enrichment_is_included_in_deterministic_replay() -> None:
+    document = deepcopy(DOCUMENT)
+    document["schemas"][0]["tables"][0]["columns"].append(
+        {"name": "OrderQty", "data_type": "smallint", "primary_key": False}
+    )
+    document["schemas"][1]["tables"][0]["columns"].append(
+        {"name": "StandardCost", "data_type": "money", "primary_key": False}
+    )
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], document)
+    scope = derived_scope(document, semantic_map)
+    assessment = {
+        "requirements": [
+            {
+                "code": "goal:total_cost",
+                "label": "Costo total",
+                "status": "derivable",
+                "components": ["unit_cost", "quantity"],
+            }
+        ],
+        "accepted_limitations": [],
+    }
+    proposal = expand_proposal_blueprint(valid_blueprint(), scope, semantic_map)
+    proposal = apply_financial_requirements(proposal, assessment, scope)
+    proposal["need_assessment"] = assessment
+    proposal["requirement_coverage"] = build_requirement_coverage(proposal, assessment)
+    validation = validate_proposal(proposal, scope, document)
+
+    evidence = verify_proposal_evidence(
+        proposal,
+        validation,
+        scope,
+        semantic_map,
+        document,
+        canonical_hash(document),
+        "sales-bi-v6",
+    )
+
+    assert evidence["verified"] is True
+    assert evidence["proposal_hash"] == evidence["replay_hash"]
 
 
 def test_analyst_adjustment_creates_a_bounded_reproducible_blueprint() -> None:
@@ -774,7 +1128,7 @@ def test_previous_engine_version_is_a_non_blocking_compatibility_warning() -> No
         semantic_map,
         DOCUMENT,
         canonical_hash(DOCUMENT),
-        "sales-bi-v2",
+        "sales-bi-v3",
     )
 
     assert evidence["verified"] is True
@@ -783,6 +1137,28 @@ def test_previous_engine_version_is_a_non_blocking_compatibility_warning() -> No
     replay_check = next(check for check in evidence["checks"] if check["code"] == "proposal.replay")
     assert replay_check["passed"] is False
     assert "no es comparable" in replay_check["detail"]
+
+
+def test_current_engine_still_blocks_a_non_reproducible_contract() -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+    proposal = expand_proposal_blueprint(valid_blueprint(), scope, semantic_map)
+    validation = validate_proposal(proposal, scope, DOCUMENT)
+    proposal["summary"] = "Cambio no registrado en las decisiones de IA."
+
+    evidence = verify_proposal_evidence(
+        proposal,
+        validation,
+        scope,
+        semantic_map,
+        DOCUMENT,
+        canonical_hash(DOCUMENT),
+        "sales-bi-v6",
+    )
+
+    assert evidence["approval_safe"] is False
+    replay_check = next(check for check in evidence["checks"] if check["code"] == "proposal.replay")
+    assert replay_check["passed"] is False
 
 
 def test_semantic_error_does_not_mark_valid_technical_references_as_failed() -> None:
@@ -904,6 +1280,7 @@ def test_requested_date_dimension_is_completed_when_model_omits_it() -> None:
             "source_tables": ["Sales.SalesOrderHeader"],
             "business_key": "OrderDate",
             "attributes": ["SalesOrderID", "TotalDue"],
+            "semantic_role": "fecha",
         }
     ]
     assert proposal["warnings"] == []
@@ -924,3 +1301,54 @@ def test_invented_table_and_free_sql_block_approval() -> None:
     assert validation["valid"] is False
     assert "reference.table_unknown" in codes
     assert "executable.detected" in codes
+
+
+def test_entity_label_resolution_uses_semantic_role_and_relationship_not_table_name() -> None:
+    dimensions = [
+        {
+            "name": "dim_cliente",
+            "source_tables": ["Core.A01"],
+            "business_key": "RecordKey",
+            "attributes": ["SubjectRef", "ExternalNumber"],
+        }
+    ]
+    scope = {
+        "tables": [
+            {
+                "ref": "Core.A01",
+                "columns": [
+                    {"name": "RecordKey", "type": "int", "pk": True},
+                    {"name": "SubjectRef", "type": "int", "nullable": True},
+                    {"name": "ExternalNumber", "type": "varchar", "nullable": False},
+                ],
+                "foreign_keys": [
+                    {
+                        "columns": ["SubjectRef"],
+                        "referenced_schema": "Registry",
+                        "referenced_table": "X9",
+                        "referenced_columns": ["NodeKey"],
+                    }
+                ],
+            },
+            {
+                "ref": "Registry.X9",
+                "columns": [
+                    {"name": "NodeKey", "type": "int", "pk": True},
+                    {"name": "DisplayLabel", "type": "nvarchar", "nullable": False},
+                ],
+                "foreign_keys": [],
+            },
+        ]
+    }
+    semantic_map = {
+        "candidates": [{"business_concept": "customer", "technical_refs": ["Core.A01"]}]
+    }
+
+    enriched, diagnostics = enrich_dimension_labels(dimensions, scope, semantic_map)
+
+    label = enriched[0]["display_label"]
+    assert label["target_name"] == "nombre_cliente"
+    assert label["type_target_name"] == "tipo_cliente"
+    assert label["variants"][0]["source_table"] == "Registry.X9"
+    assert label["variants"][0]["columns"] == ["DisplayLabel"]
+    assert diagnostics[0]["status"] == "resolved"
