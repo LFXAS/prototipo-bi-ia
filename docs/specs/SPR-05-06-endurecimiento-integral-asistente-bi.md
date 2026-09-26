@@ -31,6 +31,9 @@ analítica.
 - Groq puede expresar un límite temporal de tokens con HTTP 413 y código
   `rate_limit_exceeded`; ese caso se clasifica y reintenta como límite temporal,
   sin confundirlo con un contrato demasiado grande.
+- El contexto enviado para proponer el modelo usa una proyección compacta: conserva
+  objetivo, preguntas, requisitos, referencias, columnas y relaciones necesarias,
+  pero excluye explicaciones y evidencias duplicadas que el motor ya validó.
 - Sólo se reintentan fallos transitorios. Credenciales, parámetros inválidos y
   respuestas estructuradas no reparables requieren acción explícita.
 - Un fallo del LLM no convierte una necesidad viable en una necesidad inviable.

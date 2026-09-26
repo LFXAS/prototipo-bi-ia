@@ -1208,14 +1208,78 @@ def proposal_payload(
     scope: dict[str, Any],
     semantic_map: dict[str, Any],
 ) -> dict[str, Any]:
+    assessment = business_request.get("viability_assessment", {})
+    assessment = assessment if isinstance(assessment, dict) else {}
+    compact_request = {
+        "domain": business_request.get("domain"),
+        "goal": business_request.get("goal"),
+        "questions": [
+            {
+                "code": item.get("code"),
+                "label": item.get("label"),
+                "instruction": item.get("instruction"),
+            }
+            for item in business_request.get("questions", [])
+            if isinstance(item, dict)
+        ],
+        "periodicity": {
+            key: business_request.get("periodicity", {}).get(key) for key in ("code", "label")
+        },
+        "requirements": [
+            {
+                "code": item.get("code"),
+                "label": item.get("label"),
+                "status": item.get("status"),
+                "components": item.get("components", []),
+                "formula": item.get("formula"),
+            }
+            for item in assessment.get("requirements", [])
+            if isinstance(item, dict)
+        ],
+        "accepted_limitations": assessment.get("accepted_limitations", []),
+    }
+    compact_semantic_map = [
+        {
+            "business_concept": item.get("business_concept"),
+            "business_name_es": item.get("business_name_es"),
+            "technical_refs": item.get("technical_refs", []),
+            "confidence": item.get("confidence"),
+        }
+        for item in selected_semantic_candidates(semantic_map)
+    ]
+    scoped_refs = {
+        str(item.get("ref"))
+        for item in scope.get("tables", [])
+        if isinstance(item, dict) and item.get("ref")
+    }
+    compact_scope = {
+        "tables": [
+            {
+                "ref": table.get("ref"),
+                "columns": list(table.get("columns", []))[:8],
+                "foreign_keys": [
+                    relation
+                    for relation in table.get("foreign_keys", [])
+                    if isinstance(relation, dict)
+                    and (
+                        f"{relation.get('referenced_schema', '')}."
+                        f"{relation.get('referenced_table', '')}"
+                    )
+                    in scoped_refs
+                ],
+            }
+            for table in scope.get("tables", [])
+            if isinstance(table, dict)
+        ]
+    }
     return {
         "request_version": CONTRACT_VERSION,
         "language": "es",
         "task": "propose_sales_dimensional_model",
         "source": {"connector": connector, "snapshot_hash": snapshot_hash},
-        "business_request": business_request,
-        "semantic_map": selected_semantic_candidates(semantic_map),
-        "scope": scope,
+        "business_request": compact_request,
+        "semantic_map": compact_semantic_map,
+        "scope": compact_scope,
         "constraints": {
             "no_sql": True,
             "human_approval_required": True,

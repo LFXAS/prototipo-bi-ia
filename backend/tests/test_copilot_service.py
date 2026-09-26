@@ -21,11 +21,61 @@ from app.modules.copilot.service import (
     derived_scope,
     expand_proposal_blueprint,
     proposal_blueprint_schema,
+    proposal_payload,
     semantic_advice_response_schema,
     validate_proposal,
     validated_semantic_candidates,
     verify_proposal_evidence,
 )
+
+
+def test_proposal_payload_compacts_duplicate_evidence_without_losing_requirements() -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+    request = {
+        "domain": "ventas",
+        "goal": "Analizar ventas, costos y margen por producto.",
+        "questions": [
+            {
+                "code": "top_products",
+                "label": "Productos principales",
+                "description": "Descripción extensa que ya fue analizada.",
+                "instruction": "Comparar productos por ventas.",
+            }
+        ],
+        "periodicity": {"code": "month", "label": "Mensual", "description": "Texto"},
+        "viability_assessment": {
+            "requirements": [
+                {
+                    "code": "goal:gross_margin",
+                    "label": "Margen bruto",
+                    "status": "derivable",
+                    "components": ["sales_amount", "unit_cost", "quantity"],
+                    "formula": "ventas - costo",
+                    "evidence": ["duplicada"] * 100,
+                    "resolution": "explicación duplicada",
+                }
+            ],
+            "accepted_limitations": [],
+            "diagnostics": ["duplicado"] * 100,
+        },
+    }
+
+    payload = proposal_payload("a" * 64, "sqlserver", request, scope, semantic_map)
+
+    assert payload["business_request"]["requirements"] == [
+        {
+            "code": "goal:gross_margin",
+            "label": "Margen bruto",
+            "status": "derivable",
+            "components": ["sales_amount", "unit_cost", "quantity"],
+            "formula": "ventas - costo",
+        }
+    ]
+    assert "viability_assessment" not in payload["business_request"]
+    assert "evidence" not in payload["semantic_map"][0]
+    assert len(str(payload)) < len(str(request))
+
 
 DOCUMENT = {
     "contract_version": 1,
