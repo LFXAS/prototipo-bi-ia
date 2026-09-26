@@ -230,7 +230,11 @@ def compile_kpi_recipes(proposal: dict[str, Any]) -> tuple[list[dict[str, Any]],
                 and calculation.get("operation") == "multiply"
                 and not calculation_tokens & {"discount", "descuento"}
             ):
-                effective_name = "Ventas brutas totales"
+                effective_name = re.sub(r"\bnetas\b", "brutas", name, flags=re.IGNORECASE)
+                effective_name = re.sub(r"\bneta\b", "bruta", effective_name, flags=re.IGNORECASE)
+                effective_name = re.sub(r"\bnetos\b", "brutos", effective_name, flags=re.IGNORECASE)
+                effective_name = re.sub(r"\bneto\b", "bruto", effective_name, flags=re.IGNORECASE)
+                effective_name = re.sub(r"\bnet\b", "gross", effective_name, flags=re.IGNORECASE)
                 adjustments.append(
                     "La receta comprobada calcula precio por cantidad sin descontar una "
                     "tasa; por ello se presenta como venta bruta y no como venta neta."

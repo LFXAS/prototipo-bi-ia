@@ -238,7 +238,7 @@ def test_gross_sales_recipe_is_not_presented_as_net_sales() -> None:
     recipes, issues = compile_kpi_recipes(candidate)
 
     assert issues == []
-    assert recipes[0]["name"] == "Ventas brutas totales"
+    assert recipes[0]["name"] == "Ventas brutas"
     assert "venta bruta" in recipes[0]["adjustments"][0]
 
 
