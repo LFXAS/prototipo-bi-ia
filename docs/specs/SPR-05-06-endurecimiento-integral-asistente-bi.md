@@ -143,7 +143,7 @@ decisión y cuál es el efecto de cada alternativa.
 | HBI-005 | Sólo una FK compatible, única y sin duplicación puede crear una versión | catálogo/revisión backend y UI | en implementación |
 | HBI-006 | Costos, margen y descuento concilian contra fuentes verificadas | pruebas ETL y analítica | implementado |
 | HBI-007 | Top 5 de Europa se resuelve sin filtro visual ni SQL libre | `test_analytics_copilot.py` y `test_analytics_service.py` | implementado |
-| HBI-008 | Una sesión vencida restaura el paso y borrador con contraste accesible | prueba frontend/E2E | pendiente |
+| HBI-008 | Una sesión vencida restaura el paso y borrador con contraste accesible | `App.test.tsx` (sesión y borrador) y comprobación WCAG | implementado |
 | HBI-009 | `make verify` completo y diff sin secretos | registro de cierre | pendiente |
 
 ## 6. Matriz de trazabilidad técnica
@@ -179,3 +179,7 @@ decisión y cuál es el efecto de cada alternativa.
 - 25/09/2026: HBI-007 implementado. La IA traduce preguntas a un contrato
   cerrado; la aplicación ejecuta agregaciones parametrizadas, calcula el
   denominador antes del Top N y expone procedencia auditable.
+- 25/09/2026: HBI-008 implementado. Una respuesta 401 activa recuperación
+  global, conserva sólo el borrador no secreto y el identificador de versión,
+  restaura el módulo mediante lectura autorizada y distingue 401, 403 y 503.
+  Los textos del usuario alcanzan relaciones de contraste 5,08:1 y 5,42:1.

@@ -399,7 +399,7 @@ El objetivo mínimo es WCAG 2.1 AA en los recorridos implementados:
 ## 16. Seguridad y privacidad visibles
 
 - Las credenciales nunca vuelven al navegador después de guardarse.
-- No se almacenan credenciales, propuesta ni respuesta del LLM en `localStorage` o `sessionStorage`.
+- No se almacenan credenciales, documentos completos de propuesta ni respuestas del LLM en `localStorage` o `sessionStorage`. Para recuperación ante vencimiento se permite únicamente el borrador escrito por el usuario, códigos de selección, paso actual e identificador opaco de una versión ya persistida; el expediente se vuelve a leer desde la API autorizada.
 - Los detalles técnicos no incluyen cadena de conexión, prompt interno ni razonamiento privado.
 - Antes de llamar al LLM se informa que se enviarán metadatos y la necesidad normalizada, no filas de negocio.
 - Cerrar sesión limpia el estado sensible en memoria.

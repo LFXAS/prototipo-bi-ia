@@ -284,6 +284,14 @@ export type AnalyticsCopilotAnswer = {
 
 type ApiValidationIssue = { loc?: (string | number)[]; msg?: string }
 type ErrorBody = { detail?: string | ApiValidationIssue[] }
+export const sessionExpiredEvent = 'bi-ia:session-expired'
+
+export class ApiError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message)
+    this.name = 'ApiError'
+  }
+}
 
 function readableError(detail: ErrorBody['detail']) {
   if (typeof detail === 'string') return detail
@@ -314,7 +322,16 @@ async function request<T>(path: string, token?: string, init?: RequestInit): Pro
   })
   if (!response.ok) {
     const body = (await response.json().catch(() => ({}))) as ErrorBody
-    throw new Error(readableError(body.detail))
+    if (response.status === 401 && token) window.dispatchEvent(new Event(sessionExpiredEvent))
+    const detail = readableError(body.detail)
+    const message = response.status === 401
+      ? 'Su sesión venció. Inicie sesión nuevamente; el avance local se conservará.'
+      : response.status === 403
+        ? 'Su perfil no tiene permiso para realizar esta acción.'
+        : response.status === 503
+          ? `El servicio de IA o datos no está disponible temporalmente. ${detail}`
+          : detail
+    throw new ApiError(message, response.status)
   }
   if (response.status === 204) return undefined as T
   return (await response.json()) as T
@@ -326,7 +343,13 @@ async function requestFile(path: string, token: string) {
   })
   if (!response.ok) {
     const body = (await response.json().catch(() => ({}))) as ErrorBody
-    throw new Error(readableError(body.detail))
+    if (response.status === 401) window.dispatchEvent(new Event(sessionExpiredEvent))
+    throw new ApiError(
+      response.status === 401
+        ? 'Su sesión venció. Inicie sesión nuevamente para retomar la exportación.'
+        : readableError(body.detail),
+      response.status,
+    )
   }
   const disposition = response.headers.get('Content-Disposition') ?? ''
   const filename = disposition.match(/filename="([^"]+)"/)?.[1] ?? 'reporte-analitico'
@@ -362,6 +385,7 @@ export const api = {
     if (domainCode) query.set('domain_code', domainCode)
     return request<Page<BiProposal>>(`/copilot/proposals?${query.toString()}`, token)
   },
+  proposal: (token: string, id: number) => request<BiProposal>(`/copilot/proposals/${id}`, token),
   createProposal: (token: string, body: object) => request<BiProposal>('/copilot/proposals', token, { method: 'POST', body: JSON.stringify(body) }),
   reviseProposal: (token: string, id: number, body: ProposalRevision) => request<BiProposal>(`/copilot/proposals/${id}/revisions`, token, { method: 'POST', body: JSON.stringify(body) }),
   relationOptions: (token: string, id: number) => request<ControlledRelationCatalog>(`/copilot/proposals/${id}/relation-options`, token),

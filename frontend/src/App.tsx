@@ -34,9 +34,11 @@ import {
   type SemanticPreview,
   type Session,
   type User,
+  sessionExpiredEvent,
 } from './api/security'
 import { roleChoicesForUserAssignment } from './roleChoices'
 import { AnalyticsPage } from './AnalyticsPage'
+import { assistantDraftKey, readAssistantDraft, type AssistantDraft } from './assistantRecovery'
 
 type PageData =
   | Page<User>
@@ -54,6 +56,7 @@ type Row = Record<string, unknown>
 type Values = Record<string, string>
 
 const tokenKey = 'bi_ia_access_token'
+const resumePageKey = 'bi_ia_resume_page'
 const pageSize = 10
 const labels: Record<string, string> = {
   '/': 'Inicio',
@@ -144,13 +147,37 @@ export default function App() {
   const loadedPage = useRef(page)
 
   useEffect(() => {
+    function handleSessionExpired() {
+      const resumePage = page !== '/'
+        ? page
+        : localStorage.getItem(assistantDraftKey) ? '/asistente' : '/'
+      localStorage.setItem(resumePageKey, resumePage)
+      localStorage.removeItem(tokenKey)
+      setToken('')
+      setSession(null)
+      setData(null)
+      setMessage('La sesión venció. Inicie sesión nuevamente para retomar el punto guardado.')
+    }
+    window.addEventListener(sessionExpiredEvent, handleSessionExpired)
+    return () => window.removeEventListener(sessionExpiredEvent, handleSessionExpired)
+  }, [page])
+
+  useEffect(() => {
     if (!token) return
     api.session(token)
-      .then(setSession)
+      .then((activeSession) => {
+        setSession(activeSession)
+        const resumePage = localStorage.getItem(resumePageKey)
+        if (resumePage && activeSession.menus.some((menu) => menu.path === resumePage)) {
+          setPage(resumePage)
+          setMessage('Sesión recuperada. Restauramos el módulo y el avance guardado.')
+        }
+        localStorage.removeItem(resumePageKey)
+      })
       .catch(() => {
         localStorage.removeItem(tokenKey)
         setToken('')
-        setMessage('La sesión terminó. Inicie sesión nuevamente.')
+        setMessage('La sesión venció. Inicie sesión nuevamente para retomar el punto guardado.')
       })
   }, [token, revision])
 
@@ -189,6 +216,8 @@ export default function App() {
 
   function logout() {
     localStorage.removeItem(tokenKey)
+    localStorage.removeItem(resumePageKey)
+    localStorage.removeItem(assistantDraftKey)
     setToken('')
     setSession(null)
     setData(null)
@@ -523,23 +552,25 @@ function SemanticCopilotPanel({
 }
 
 function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemantics, navigate }: { token: string; canGenerate: boolean; canReview: boolean; canPreviewSemantics: boolean; navigate: (path: string) => void }) {
+  const recoveryDraft = useMemo(readAssistantDraft, [])
   const [readiness, setReadiness] = useState<CopilotReadiness | null>(null)
   const [source, setSource] = useState<ActiveSource | null>(null)
   const [catalog, setCatalog] = useState<CopilotCatalog | null>(null)
-  const [selectedDomainCode, setSelectedDomainCode] = useState<string | null>(null)
+  const [selectedDomainCode, setSelectedDomainCode] = useState<string | null>(recoveryDraft?.domainCode ?? null)
   const [historyPage, setHistoryPage] = useState<Page<BiProposal>>({ items: [], total: 0, limit: historyPageSize, offset: 0 })
   const [historyFilter, setHistoryFilter] = useState('ready_for_review')
   const [historyOffset, setHistoryOffset] = useState(0)
-  const [step, setStep] = useState(1)
-  const [goal, setGoal] = useState('')
-  const [questions, setQuestions] = useState<string[]>([])
-  const [periodicity, setPeriodicity] = useState('month')
+  const [step, setStep] = useState(recoveryDraft?.step ?? 1)
+  const [goal, setGoal] = useState(recoveryDraft?.goal ?? '')
+  const [questions, setQuestions] = useState<string[]>(recoveryDraft?.questions ?? [])
+  const [periodicity, setPeriodicity] = useState(recoveryDraft?.periodicity ?? 'month')
   const [needFormulation, setNeedFormulation] = useState<NeedFormulation | null>(null)
   const [viability, setViability] = useState<NeedViability | null>(null)
   const [acceptedLimitations, setAcceptedLimitations] = useState<string[]>([])
   const [formulatingNeed, setFormulatingNeed] = useState(false)
   const [validatingNeed, setValidatingNeed] = useState(false)
   const [proposal, setProposal] = useState<BiProposal | null>(null)
+  const [draftProposalId, setDraftProposalId] = useState<number | undefined>(recoveryDraft?.proposalId)
   const [excludedConcepts, setExcludedConcepts] = useState<string[]>([])
   const [confirmedConcepts, setConfirmedConcepts] = useState<string[]>([])
   const [adviceConceptCode, setAdviceConceptCode] = useState<string | null>(null)
@@ -561,6 +592,40 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
   const [verifying, setVerifying] = useState(false)
   const [semanticPreview, setSemanticPreview] = useState<SemanticPreview | null>(null)
   const [previewingSemantics, setPreviewingSemantics] = useState(false)
+  const [recoveryNotice, setRecoveryNotice] = useState(recoveryDraft ? 'Recuperamos el borrador local. Compruebe la necesidad y continúe desde el paso guardado.' : '')
+  const restoredProposal = useRef(false)
+
+  useEffect(() => {
+    if (!selectedDomainCode) return
+    const draft: AssistantDraft = {
+      version: 1,
+      domainCode: selectedDomainCode,
+      step,
+      goal,
+      questions,
+      periodicity,
+      proposalId: proposal?.id ?? draftProposalId,
+    }
+    localStorage.setItem(assistantDraftKey, JSON.stringify(draft))
+  }, [draftProposalId, goal, periodicity, proposal?.id, questions, selectedDomainCode, step])
+
+  useEffect(() => {
+    if (!catalog || !recoveryDraft?.proposalId || restoredProposal.current) return
+    restoredProposal.current = true
+    void api.proposal(token, recoveryDraft.proposalId).then((savedProposal) => {
+      setProposal(savedProposal)
+      setDraftProposalId(savedProposal.id)
+      setExcludedConcepts(defaultExcludedConcepts(savedProposal))
+      setReviewComment(savedProposal.review_comment ?? '')
+      setWarningsConfirmed(savedProposal.warnings_confirmed)
+      setRevisionDraft(revisionFromProposal(savedProposal))
+      setStep(recoveryDraft.step)
+    }).catch(() => {
+      setDraftProposalId(undefined)
+      setStep(1)
+      setRecoveryNotice('La versión guardada ya no está disponible. Conservamos la necesidad para que pueda validarla nuevamente.')
+    })
+  }, [catalog, recoveryDraft, token])
 
   async function refreshHistory(domainCode = selectedDomainCode, offset = historyOffset, filter = historyFilter) {
     if (!domainCode) return
@@ -602,12 +667,19 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
     setHistoryFilter('ready_for_review')
     setHistoryOffset(0)
     setProposal(null)
+    setDraftProposalId(undefined)
     setSemanticPreview(null)
     setRevisionDraft(null)
     setConfirmedConcepts([])
     setAdviceConceptCode(null)
     setStep(1)
     setFeedback(null)
+  }
+
+  function changeDomain() {
+    localStorage.removeItem(assistantDraftKey)
+    setRecoveryNotice('')
+    setSelectedDomainCode(null)
   }
 
   function toggleValue(value: string, values: string[], update: (items: string[]) => void) {
@@ -914,9 +986,10 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
     .map((column) => column.name) ?? []
   const selectedRelationOption = relationCatalog?.options?.find((item) => item.option_id === relationOptionId)
   return <>
-    <div className="assistant-context"><div><p className="eyebrow">Dominio seleccionado</p><strong>{selectedDomain.label}</strong><span>{source.connection?.name} · instantánea #{source.latest_snapshot?.id}</span></div><button className="secondary" onClick={() => setSelectedDomainCode(null)}>Cambiar tipo de datamart</button></div>
+    <div className="assistant-context"><div><p className="eyebrow">Dominio seleccionado</p><strong>{selectedDomain.label}</strong><span>{source.connection?.name} · instantánea #{source.latest_snapshot?.id}</span></div><button className="secondary" onClick={changeDomain}>Cambiar tipo de datamart</button></div>
     <p className="lead">Describa una necesidad comercial. La IA interpretará metadatos, propondrá el modelo y la aplicación comprobará cada referencia antes de su revisión.</p>
     <ol className="assistant-stepper" aria-label={`Paso ${step} de 5`}>{['Necesidad', 'Conceptos', 'Propuesta', 'Personalización', 'Revisión'].map((label, index) => <li className={step === index + 1 ? 'current' : step > index + 1 ? 'complete' : ''} key={label}><span>{index + 1}</span>{label}</li>)}</ol>
+    {recoveryNotice && <p className="notice success" role="status"><strong>Avance restaurado.</strong> {recoveryNotice}</p>}
     {feedback && <p className={`notice ${feedback.kind}`} role={feedback.kind === 'error' ? 'alert' : 'status'}>{feedback.message}</p>}
     {step === 1 && <form className="analysis-panel" onSubmit={(event) => { event.preventDefault(); if (viability) void generate([]); else void validateNeed() }}>
       <div className="form-title"><div><p className="eyebrow">Paso 1</p><h2>Necesidad de negocio</h2></div><span>Se enviarán la necesidad y metadatos estructurales; nunca filas ni credenciales.</span></div>

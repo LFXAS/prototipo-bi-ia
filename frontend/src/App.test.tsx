@@ -2,6 +2,8 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import App from './App'
+import { api, sessionExpiredEvent } from './api/security'
+import { readAssistantDraft } from './assistantRecovery'
 import { roleChoicesForUserAssignment } from './roleChoices'
 
 describe('App', () => {
@@ -27,6 +29,40 @@ describe('App', () => {
 
     expect(roleChoicesForUserAssignment(roles).map((role) => role.label)).toEqual(['Administrador'])
     expect(roleChoicesForUserAssignment(roles, [roles[1].id]).map((role) => role.label)).toEqual(['Administrador', 'Operador (inactivo)'])
+  })
+
+  it('clasifica una sesión vencida y conserva sólo un borrador recuperable', async () => {
+    const expired = vi.fn()
+    window.addEventListener(sessionExpiredEvent, expired)
+    vi.stubGlobal('fetch', vi.fn(async () => ({
+      ok: false,
+      status: 401,
+      json: async () => ({ detail: 'Token vencido' }),
+    })))
+
+    await expect(api.copilotReadiness('expired-token')).rejects.toThrow(/sesión venció/i)
+    expect(expired).toHaveBeenCalledOnce()
+
+    localStorage.setItem('bi_ia_assistant_draft_v1', JSON.stringify({
+      version: 1,
+      domainCode: 'ventas',
+      step: 3,
+      goal: 'Analizar ventas y margen por producto.',
+      questions: ['top_products'],
+      periodicity: 'month',
+      proposalId: 54,
+      credential: 'no-debe-restaurarse',
+    }))
+    expect(readAssistantDraft()).toEqual({
+      version: 1,
+      domainCode: 'ventas',
+      step: 3,
+      goal: 'Analizar ventas y margen por producto.',
+      questions: ['top_products'],
+      periodicity: 'month',
+      proposalId: 54,
+    })
+    window.removeEventListener(sessionExpiredEvent, expired)
   })
 
   it('mantiene Inicio directo y permite plegar el módulo activo', async () => {
@@ -367,6 +403,7 @@ describe('App', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Crear propuesta' }))
     expect(await screen.findByText('Mostrando 1-5 de 6 registros')).toBeInTheDocument()
     fireEvent.change(screen.getByLabelText(/^Objetivo del análisis/), { target: { value: 'Analizar las ventas mensuales por producto y cliente.' } })
+    await waitFor(() => expect(readAssistantDraft()?.goal).toBe('Analizar las ventas mensuales por producto y cliente.'))
     fireEvent.click(screen.getByLabelText(/Evolución de ventas en el tiempo/))
     fireEvent.click(screen.getByRole('button', { name: 'Ayúdame a formular la necesidad' }))
     expect(await screen.findByRole('heading', { name: 'Redacción propuesta' })).toBeInTheDocument()
@@ -428,6 +465,9 @@ describe('App', () => {
     expect(fetchMock.mock.calls.some(([input]) => String(input).includes('status=ready_for_review'))).toBe(true)
     const creationRequest = fetchMock.mock.calls.find(([input, init]) => String(input).endsWith('/copilot/proposals') && init?.method === 'POST')
     expect(JSON.parse(String(creationRequest?.[1]?.body))).toMatchObject({ viability_hash: 'd'.repeat(64), accepted_limitations: ['goal:definition'] })
+    window.dispatchEvent(new Event(sessionExpiredEvent))
+    expect(await screen.findByText(/retomar el punto guardado/i)).toBeInTheDocument()
+    expect(readAssistantDraft()?.proposalId).toBe(11)
   })
 
   it('guía la preparación ETL con KPI variables e interpretación segura en español', async () => {
