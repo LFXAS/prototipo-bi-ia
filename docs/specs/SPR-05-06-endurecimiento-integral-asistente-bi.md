@@ -122,6 +122,10 @@ analítica.
 - Al abrir un expediente desde el historial, la vista regresa al inicio del
   comprobante para evitar que una posición de desplazamiento antigua simule una
   pantalla vacía.
+- Un expediente ya validado debe poder reconstruirse aunque combine indicadores
+  monetarios, porcentajes y razones por unidad con una interpretación española
+  previamente publicada. La vista debe mostrar el comprobante, la conciliación y
+  la decisión semántica sin volver a ejecutar el ETL.
 
 ### HBI-009 — Regresión automatizada y trazabilidad
 

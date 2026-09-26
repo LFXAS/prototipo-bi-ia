@@ -1183,7 +1183,7 @@ function formatKpiValue(value: unknown, unit: string) {
   const isMoney = /moneda/i.test(unit)
   return new Intl.NumberFormat('es-EC', {
     minimumFractionDigits: isMoney ? 2 : 0,
-    maximumFractionDigits: isCount ? 0 : 2,
+    maximumFractionDigits: isMoney ? 2 : isCount ? 0 : 2,
   }).format(number)
 }
 

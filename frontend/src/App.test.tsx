@@ -559,6 +559,68 @@ describe('App', () => {
     expect(screen.getByDisplayValue('Europa')).toBeInTheDocument()
   })
 
+  it('abre un expediente validado con interpretación publicada sin dejar la pantalla en blanco', async () => {
+    localStorage.setItem('bi_ia_access_token', 'test-token')
+    const candidate = {
+      proposal_id: 73, metadata_snapshot_id: 2, business_goal: 'Analizar ventas, costos y rentabilidad.', periodicity: 'month',
+      provider_kind: 'groq-cloud', model_id: 'openai/gpt-oss-120b', created_at: '2026-09-26T12:00:00Z', reviewed_at: '2026-09-26T12:30:00Z',
+      reviewed_by_label: 'Analista BI', proposal_hash: 'a'.repeat(64), snapshot_hash: 'b'.repeat(64), summary: 'Modelo dimensional de ventas, costos y margen',
+      grain: 'Una fila por detalle vendido.', fact_name: 'fact_ventas', dimensions: ['dim_fecha', 'dim_producto', 'dim_cliente', 'dim_territorio'],
+      measures: ['cantidad', 'ventas_brutas', 'descuento_monetario', 'costo_total'], kpi_count: 9,
+      kpi_recipes: [{ code: 'kpi_total_ventas', name: 'Ventas brutas totales', description: 'Importe bruto vendido.', kind: 'aggregate', unit: 'USD', periodicity: 'inherit', definition_version: 'sales-kpi-v1', inputs: ['ventas_brutas'], recipe: { template: 'aggregate', measure: 'ventas_brutas', operation: 'sum' } }],
+      transformation_plan: [], warnings: [], eligible: true, blocking_reasons: [], recommended: false,
+      latest_execution_id: 9, latest_execution_status: 'succeeded', latest_execution_at: '2026-09-26T13:30:59Z', latest_execution_kpi_codes: ['kpi_total_ventas'],
+    }
+    const execution = {
+      id: 9, proposal_id: 73, metadata_snapshot_id: 2, status: 'succeeded', domain_code: 'ventas', builder_version: 'sales-etl-builder-v1',
+      proposal_hash: 'a'.repeat(64), snapshot_hash: 'b'.repeat(64), selection_document: {}, plan_document: {},
+      validation_document: { message: 'El datamart quedó materializado, conciliado e interpretado.' },
+      metrics_document: {
+        reconciliation: { passed: true, source_rows: 121317, datamart_rows: 121317, difference_rows: 0 },
+        currency_context: { status: 'verified', currency_code: 'USD', source_reference: 'Sales.CurrencyRate.FromCurrencyCode', message: 'La divisa USD fue comprobada en la fuente.' },
+        tables: [
+          { table: 'dim_fecha', source_rows: 31465, loaded_rows: 1124, deduplicated_rows: 30341 },
+          { table: 'dim_producto', source_rows: 504, loaded_rows: 504, deduplicated_rows: 0 },
+          { table: 'dim_cliente', source_rows: 19820, loaded_rows: 19820, deduplicated_rows: 0 },
+          { table: 'dim_territorio', source_rows: 10, loaded_rows: 10, deduplicated_rows: 0 },
+          { table: 'fact_ventas', source_rows: 121317, loaded_rows: 121317, deduplicated_rows: 0 },
+        ],
+        kpis: [
+          { code: 'kpi_total_ventas', name: 'Ventas brutas totales', unit: 'USD', value: '110373889.313400', status: 'reconciled' },
+          { code: 'margen_porcentaje', name: 'Margen bruto %', unit: 'porcentaje', value: '8.968979530830175', status: 'reconciled' },
+          { code: 'costo_por_unidad', name: 'Costo por unidad', unit: 'moneda de origen por unidad', value: '365.4760316808', status: 'reconciled' },
+        ],
+        semantic_interpretation: {
+          status: 'applied', message: 'Las etiquetas españolas revisadas fueron publicadas sin reemplazar los valores originales.',
+          reviewed_at: '2026-09-26T13:30:59Z', reviewed_by: 'Analista BI',
+          analyst_comment: 'Se aprueban únicamente las etiquetas españolas de agrupación territorial; los códigos de país se conservan sin cambios.',
+          mappings: [{ dimension: 'dim_territorio', source_column: 'group', label_column: 'group_es', mappings: [{ original: 'Europe', label_es: 'Europa' }, { original: 'North America', label_es: 'Norteamérica' }] }],
+        },
+      },
+      created_by_label: 'Analista BI', created_at: '2026-09-26T13:00:00Z', finished_at: '2026-09-26T13:30:59Z',
+    }
+    vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input)
+      if (url.includes('/auth/me')) return { ok: true, status: 200, json: async () => ({ user: { id: 1, email: 'analista@example.test', full_name: 'Analista BI', is_active: true, roles: [] }, permissions: ['etl.executions.read'], menus: [{ id: 20, code: 'sales-datamart', label: 'Datamart de ventas', path: '/datamart-ventas', position: 20, module_code: 'data', module_label: 'Datos', is_active: true, permissions: [] }] }) }
+      if (url.endsWith('/etl/proposals')) return { ok: true, status: 200, json: async () => ({ items: [candidate], blocked_items: [], recommended_proposal_id: null, guidance: [] }) }
+      if (url.includes('/etl/executions')) return { ok: true, status: 200, json: async () => ({ items: [execution], total: 1, limit: 5, offset: 0 }) }
+      throw new Error(`Solicitud inesperada: ${url}`)
+    }))
+
+    render(<App />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Datos' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Datamart de ventas' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Abrir expediente #9' }))
+
+    expect(await screen.findByRole('heading', { name: 'Datamart materializado y conciliado' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Conciliación OLTP–datamart' })).toBeInTheDocument()
+    expect(screen.getByText('Revisión publicada')).toBeInTheDocument()
+    expect(screen.getByText('Norteamérica')).toBeInTheDocument()
+    expect(screen.getByText(/USD.*110\.373\.889,31/)).toBeInTheDocument()
+    expect(screen.getByText('8,97 porcentaje')).toBeInTheDocument()
+    expect(screen.queryByText('No fue posible mostrar esta pantalla')).not.toBeInTheDocument()
+  })
+
   it('mantiene accesibles los expedientes cuando no hay propuestas habilitadas', async () => {
     localStorage.setItem('bi_ia_access_token', 'test-token')
     const blockedCandidate = {
