@@ -90,6 +90,10 @@ analítica.
   hecho; coincidencias homónimas en otras tablas no deben impedir una resolución
   demostrable ni autorizar una elección arbitraria.
 - Las medidas derivadas conservan fórmula, moneda, denominador y conciliación.
+- La revisión previa al ETL representa cada receta fielmente: una diferencia se
+  explica como minuendo menos sustraendo y no como razón. Si una etiqueta promete
+  ventas netas pero la receta demostrada sólo calcula precio por cantidad, el
+  compilador la presenta como venta bruta y registra el ajuste semántico.
 
 ### HBI-007 — Copiloto analítico seguro y no limitado al lienzo
 

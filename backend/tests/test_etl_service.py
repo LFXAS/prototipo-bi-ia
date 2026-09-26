@@ -227,6 +227,21 @@ def test_unverified_currency_is_not_presented_as_a_fact() -> None:
     assert "no está comprobada" in recipes[0]["adjustments"][0]
 
 
+def test_gross_sales_recipe_is_not_presented_as_net_sales() -> None:
+    candidate = proposal()
+    candidate["fact"]["measures"][0]["source_columns"] = ["UnitPrice", "OrderQty"]
+    candidate["fact"]["measures"][0]["calculation"] = {
+        "operation": "multiply",
+        "inputs": ["UnitPrice", "OrderQty"],
+    }
+
+    recipes, issues = compile_kpi_recipes(candidate)
+
+    assert issues == []
+    assert recipes[0]["name"] == "Ventas brutas totales"
+    assert "venta bruta" in recipes[0]["adjustments"][0]
+
+
 def test_blocks_kpi_without_a_verified_measure() -> None:
     invalid = deepcopy(proposal())
     invalid["kpis"] = [

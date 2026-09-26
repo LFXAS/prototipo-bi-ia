@@ -480,7 +480,7 @@ describe('App', () => {
       provider_kind: 'gemini', model_id: 'gemini-3.6-flash', created_at: '2026-09-22T10:00:00Z', reviewed_at: '2026-09-22T10:10:00Z',
       reviewed_by_label: 'Analista BI', proposal_hash: 'a'.repeat(64), snapshot_hash: 'b'.repeat(64), summary: 'Modelo de ventas mensual',
       grain: 'Una fila por detalle vendido.', fact_name: 'fact_ventas', dimensions: ['dim_producto', 'dim_fecha'], measures: ['sales_amount'],
-      kpi_count: 1, kpi_recipes: [{ code: 'ventas_netas', name: 'Ventas netas', description: 'Importe vendido.', kind: 'aggregate', unit: 'moneda de origen', declared_unit: 'EUR', adjustments: ['La unidad EUR no está comprobada en los metadatos.'], periodicity: 'inherit', definition_version: 'sales-kpi-v1', inputs: ['sales_amount'], recipe: { template: 'aggregate', measure: 'sales_amount', operation: 'sum' } }],
+      kpi_count: 2, kpi_recipes: [{ code: 'ventas_netas', name: 'Ventas netas', description: 'Importe vendido.', kind: 'aggregate', unit: 'moneda de origen', declared_unit: 'EUR', adjustments: ['La unidad EUR no está comprobada en los metadatos.'], periodicity: 'inherit', definition_version: 'sales-kpi-v1', inputs: ['sales_amount'], recipe: { template: 'aggregate', measure: 'sales_amount', operation: 'sum' } }, { code: 'margen_bruto', name: 'Margen bruto', description: 'Ventas menos costo.', kind: 'difference', unit: 'moneda de origen', periodicity: 'inherit', definition_version: 'sales-kpi-v1', inputs: ['sales_amount', 'cost_amount'], recipe: { template: 'difference', minuend: 'sales_amount', subtrahend: 'cost_amount' } }],
       transformation_plan: [{ order: 1, code: 'extract.approved_columns', stage: 'extract', label: 'Extraer sólo columnas aprobadas', detail: 'Mantiene SQL Server en modo de sólo lectura.', severity: 'required', definition_version: 'sales-transform-v1' }, { order: 2, code: 'localize.dim_producto.labels', stage: 'transform', label: 'Preparar etiquetas españolas', detail: 'Conserva el valor original.', severity: 'optional', definition_version: 'sales-transform-v1' }],
       warnings: [], eligible: true, blocking_reasons: [], recommended: true,
     }
@@ -534,7 +534,9 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Revisar indicadores' }))
     expect(await screen.findByText('Ajuste de seguridad')).toBeInTheDocument()
     expect(screen.getByText(/unidad EUR no está comprobada/i)).toBeInTheDocument()
-    expect(screen.getByText('Mensual')).toBeInTheDocument()
+    expect(screen.getAllByText('Mensual')).toHaveLength(2)
+    expect(screen.getByText('Diferencia')).toBeInTheDocument()
+    expect(screen.getByText('sales_amount menos cost_amount.')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Revisar transformaciones' }))
     expect(await screen.findByRole('heading', { name: 'Interpretación dinámica en español' })).toBeInTheDocument()
     expect(screen.getByText(/no se traducen identificadores, nombres de personas/i)).toBeInTheDocument()

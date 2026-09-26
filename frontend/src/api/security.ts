@@ -135,7 +135,7 @@ export type EtlKpiRecipe = {
   code: string
   name: string
   description: string
-  kind: 'aggregate' | 'ratio' | 'share'
+  kind: 'aggregate' | 'difference' | 'ratio' | 'share'
   unit: string
   declared_unit?: string
   adjustments?: string[]

@@ -212,6 +212,29 @@ def compile_kpi_recipes(proposal: dict[str, Any]) -> tuple[list[dict[str, Any]],
                 semantic_role = "sales_amount"
             normalized_unit = declared_unit
             adjustments: list[str] = []
+            effective_name = name
+            calculation = measures[measure_name].get("calculation")
+            calculation_inputs = (
+                [str(item) for item in calculation.get("inputs", [])]
+                if isinstance(calculation, dict) and isinstance(calculation.get("inputs"), list)
+                else []
+            )
+            name_tokens = set(re.findall(r"[a-záéíóúñ]+", name.casefold()))
+            calculation_tokens = set(
+                re.findall(r"[a-záéíóúñ]+", " ".join(calculation_inputs).casefold())
+            )
+            if (
+                semantic_role == "sales_amount"
+                and name_tokens & {"net", "neto", "neta", "netas", "netos"}
+                and isinstance(calculation, dict)
+                and calculation.get("operation") == "multiply"
+                and not calculation_tokens & {"discount", "descuento"}
+            ):
+                effective_name = "Ventas brutas totales"
+                adjustments.append(
+                    "La receta comprobada calcula precio por cantidad sin descontar una "
+                    "tasa; por ello se presenta como venta bruta y no como venta neta."
+                )
             if semantic_role in {
                 "sales_amount",
                 "cost_amount",
@@ -231,7 +254,7 @@ def compile_kpi_recipes(proposal: dict[str, Any]) -> tuple[list[dict[str, Any]],
             recipes.append(
                 {
                     "code": code,
-                    "name": name,
+                    "name": effective_name,
                     "description": str(raw.get("description_es", raw.get("description", ""))),
                     "kind": "aggregate",
                     "unit": normalized_unit,
