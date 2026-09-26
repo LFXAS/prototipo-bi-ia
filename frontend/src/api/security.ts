@@ -19,6 +19,10 @@ export type CopilotReadiness = { ready: boolean; source: ReadinessComponent; met
 export type CapabilityOption = { code: string; label: string; description: string; available: boolean; reason: string; evidence: string[] }
 export type DomainCapability = { code: string; label: string; description: string; available: boolean; reason: string; questions: CapabilityOption[]; periodicities: CapabilityOption[] }
 export type CopilotCatalog = { metadata_snapshot_id: number; domains: DomainCapability[] }
+export type BusinessNeedInput = { metadata_snapshot_id: number; business_goal: string; business_questions: string[]; periodicity: string; domain_code: 'ventas' }
+export type NeedFormulation = { original_goal: string; suggested_goal: string; rationale: string; improvements: string[]; provider_kind: string; model_id: string }
+export type NeedViabilityRequirement = { code: string; label: string; request_text: string; components?: string[]; status: 'direct' | 'derivable' | 'ambiguous' | 'unavailable'; evidence: string[]; formula?: string; resolution: string }
+export type NeedViability = { assessment_hash: string; requirements: NeedViabilityRequirement[]; counts: Record<string, number>; requires_acknowledgement: string[]; can_continue: boolean; summary: string }
 export type AnalysisCatalogQuestion = { code: string; label: string; description: string; prompt_instruction: string; enabled: boolean }
 export type AnalysisCatalogPeriodicity = { code: 'day' | 'week' | 'month' | 'quarter' | 'year'; label: string; description: string; enabled: boolean }
 export type AnalysisCatalogConfiguration = { version: 2; domain_code: string; questions: AnalysisCatalogQuestion[]; periodicities: AnalysisCatalogPeriodicity[] }
@@ -84,6 +88,25 @@ export type ProposalVerification = {
   validation_warnings: number
   pending_validations: string[]
 }
+export type ControlledRelationOption = { option_id: string; left_table: string; right_table: string; left_columns: string[]; right_columns: string[]; left_types: string[]; right_types: string[]; cardinality: 'many_to_one' | 'one_to_many' | 'one_to_one' | 'unknown'; target_unique: boolean; nullable_source: boolean; duplication_risk: boolean; eligible: boolean; guidance: string }
+export type ControlledRelationCatalog = { proposal_id: number; dimension_names: string[]; options: ControlledRelationOption[] }
+export type SemanticPreview = {
+  proposal_id: number
+  all_passed: boolean
+  message: string
+  dimensions: Array<{
+    dimension: string
+    source_table: string
+    label_column: string
+    total_entities: number
+    descriptive_entities: number
+    fallback_entities: number
+    coverage: number
+    minimum_coverage: number
+    passed: boolean
+    samples: Array<{ business_key: string; display_label: string; entity_type: string }>
+  }>
+}
 export type SemanticAdvice = {
   id: number
   proposal_id: number
@@ -112,7 +135,7 @@ export type EtlKpiRecipe = {
   code: string
   name: string
   description: string
-  kind: 'aggregate' | 'ratio' | 'share'
+  kind: 'aggregate' | 'difference' | 'ratio' | 'share'
   unit: string
   declared_unit?: string
   adjustments?: string[]
@@ -179,9 +202,96 @@ export type EtlExecution = {
   started_at?: string
   finished_at?: string
 }
+export type AnalyticsOption = { value: string; label: string }
+export type AnalyticsMetric = {
+  code: string
+  name: string
+  value?: number
+  unit: string
+  status: 'reconciled' | 'not_calculable'
+}
+export type AnalyticsPoint = { key: string; label: string; value: number; share?: number }
+export type AnalyticsVisual = {
+  code: string
+  title: string
+  subtitle: string
+  kind: 'line' | 'bar' | 'donut'
+  dimension: string
+  points: AnalyticsPoint[]
+}
+export type AnalyticsInsight = {
+  code: string
+  title: string
+  statement: string
+  evidence: string
+  tone: 'positive' | 'neutral' | 'attention'
+}
+export type AnalyticsDashboard = {
+  execution_id: number
+  proposal_id: number
+  title: string
+  description: string
+  grain: string
+  refreshed_at: string
+  currency_code: string
+  currency_status: string
+  reconciliation_passed: boolean
+  period_label: string
+  metric_code: string
+  available_metrics: AnalyticsOption[]
+  filters: {
+    years: AnalyticsOption[]
+    territories: AnalyticsOption[]
+    selected_year?: number
+    selected_territory?: string
+  }
+  kpis: AnalyticsMetric[]
+  visuals: AnalyticsVisual[]
+  insights: AnalyticsInsight[]
+  quality: {
+    source_rows: number
+    datamart_rows: number
+    difference_rows: number
+    reconciliation_passed: boolean
+    tables_loaded: number
+  }
+  guidance: string[]
+}
+export type AnalyticsChatTurn = { role: 'user' | 'assistant'; content: string }
+export type AnalyticsCopilotAnswer = {
+  answer: string
+  evidence: string[]
+  suggested_questions: string[]
+  caveat: string
+  provider_kind: string
+  model_id: string
+  interpreted_query?: {
+    metric_code: string
+    metric_name: string
+    unit: string
+    dimension: 'product' | 'customer' | 'territory'
+    dimension_label: string
+    top_n: number
+    order: 'desc' | 'asc'
+    year?: number
+    territory?: string
+    denominator_value: number
+    denominator_definition: string
+    provenance: string[]
+    points: Array<{ label: string; value: number; share?: number }>
+  }
+}
 
 type ApiValidationIssue = { loc?: (string | number)[]; msg?: string }
 type ErrorBody = { detail?: string | ApiValidationIssue[] }
+export const sessionExpiredEvent = 'bi-ia:session-expired'
+
+export class ApiError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message)
+    this.name = 'ApiError'
+  }
+}
 
 function readableError(detail: ErrorBody['detail']) {
   if (typeof detail === 'string') return detail
@@ -212,10 +322,38 @@ async function request<T>(path: string, token?: string, init?: RequestInit): Pro
   })
   if (!response.ok) {
     const body = (await response.json().catch(() => ({}))) as ErrorBody
-    throw new Error(readableError(body.detail))
+    if (response.status === 401 && token) window.dispatchEvent(new Event(sessionExpiredEvent))
+    const detail = readableError(body.detail)
+    const message = response.status === 401
+      ? 'Su sesión venció. Inicie sesión nuevamente; el avance local se conservará.'
+      : response.status === 403
+        ? 'Su perfil no tiene permiso para realizar esta acción.'
+        : response.status === 503
+          ? `El servicio de IA o datos no está disponible temporalmente. ${detail}`
+          : detail
+    throw new ApiError(message, response.status)
   }
   if (response.status === 204) return undefined as T
   return (await response.json()) as T
+}
+
+async function requestFile(path: string, token: string) {
+  const response = await fetch(`${apiBaseUrl}/api/v1${path}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  if (!response.ok) {
+    const body = (await response.json().catch(() => ({}))) as ErrorBody
+    if (response.status === 401) window.dispatchEvent(new Event(sessionExpiredEvent))
+    throw new ApiError(
+      response.status === 401
+        ? 'Su sesión venció. Inicie sesión nuevamente para retomar la exportación.'
+        : readableError(body.detail),
+      response.status,
+    )
+  }
+  const disposition = response.headers.get('Content-Disposition') ?? ''
+  const filename = disposition.match(/filename="([^"]+)"/)?.[1] ?? 'reporte-analitico'
+  return { blob: await response.blob(), filename }
 }
 
 export const api = {
@@ -235,6 +373,8 @@ export const api = {
   metadataTable: (token: string, snapshotId: number, schemaName: string, tableName: string) => request<MetadataTableDetail>(`/metadata/snapshots/${snapshotId}/tables/${encodeURIComponent(schemaName)}/${encodeURIComponent(tableName)}`, token),
   copilotReadiness: (token: string) => request<CopilotReadiness>('/copilot/readiness', token),
   copilotCatalog: (token: string, snapshotId: number) => request<CopilotCatalog>(`/copilot/catalog?metadata_snapshot_id=${snapshotId}`, token),
+  formulateNeed: (token: string, body: BusinessNeedInput) => request<NeedFormulation>('/copilot/needs/formulate', token, { method: 'POST', body: JSON.stringify(body) }),
+  validateNeed: (token: string, body: BusinessNeedInput) => request<NeedViability>('/copilot/needs/viability', token, { method: 'POST', body: JSON.stringify(body) }),
   analysisCatalogDomains: (token: string) => request<AnalysisCatalogDomain[]>('/analysis-catalog/domains', token),
   analysisCatalog: (token: string, domainCode: string) => request<AnalysisCatalogConfiguration>(`/analysis-catalog/domains/${encodeURIComponent(domainCode)}`, token),
   saveAnalysisCatalog: (token: string, domainCode: string, body: AnalysisCatalogConfiguration) => request<AnalysisCatalogConfiguration>(`/analysis-catalog/domains/${encodeURIComponent(domainCode)}`, token, { method: 'PUT', body: JSON.stringify(body) }),
@@ -245,14 +385,18 @@ export const api = {
     if (domainCode) query.set('domain_code', domainCode)
     return request<Page<BiProposal>>(`/copilot/proposals?${query.toString()}`, token)
   },
+  proposal: (token: string, id: number) => request<BiProposal>(`/copilot/proposals/${id}`, token),
   createProposal: (token: string, body: object) => request<BiProposal>('/copilot/proposals', token, { method: 'POST', body: JSON.stringify(body) }),
   reviseProposal: (token: string, id: number, body: ProposalRevision) => request<BiProposal>(`/copilot/proposals/${id}/revisions`, token, { method: 'POST', body: JSON.stringify(body) }),
+  relationOptions: (token: string, id: number) => request<ControlledRelationCatalog>(`/copilot/proposals/${id}/relation-options`, token),
+  reviseRelation: (token: string, id: number, body: { dimension_name: string; option_id: string; comment: string }) => request<BiProposal>(`/copilot/proposals/${id}/relation-revisions`, token, { method: 'POST', body: JSON.stringify(body) }),
   approveProposal: (token: string, id: number, body: { comment?: string; warnings_confirmed: boolean }) => request<BiProposal>(`/copilot/proposals/${id}/approve`, token, { method: 'POST', body: JSON.stringify(body) }),
   rejectProposal: (token: string, id: number, comment: string) => request<BiProposal>(`/copilot/proposals/${id}/reject`, token, { method: 'POST', body: JSON.stringify({ comment }) }),
   invalidateProposal: (token: string, id: number, comment: string) => request<BiProposal>(`/copilot/proposals/${id}/invalidate`, token, { method: 'POST', body: JSON.stringify({ comment }) }),
   restoreProposalApproval: (token: string, id: number, body: { comment?: string; warnings_confirmed: boolean }) => request<BiProposal>(`/copilot/proposals/${id}/restore-approval`, token, { method: 'POST', body: JSON.stringify(body) }),
   discardProposal: (token: string, id: number, comment: string) => request<BiProposal>(`/copilot/proposals/${id}/discard`, token, { method: 'POST', body: JSON.stringify({ comment }) }),
   verifyProposal: (token: string, id: number) => request<ProposalVerification>(`/copilot/proposals/${id}/verify`, token, { method: 'POST' }),
+  semanticPreview: (token: string, id: number) => request<SemanticPreview>(`/copilot/proposals/${id}/semantic-preview`, token),
   semanticAdvice: (token: string, id: number, conceptCode: string) => request<SemanticAdvice[]>(`/copilot/proposals/${id}/semantic-advice?concept_code=${encodeURIComponent(conceptCode)}`, token),
   askSemanticAdvice: (token: string, id: number, body: { concept_code: string; question: string }) => request<SemanticAdvice>(`/copilot/proposals/${id}/semantic-advice`, token, { method: 'POST', body: JSON.stringify(body) }),
   etlProposals: (token: string) => request<EtlProposalCatalog>('/etl/proposals', token),
@@ -263,6 +407,22 @@ export const api = {
   retryEtlSpanishInterpretation: (token: string, id: number) => request<EtlExecution>(`/etl/executions/${id}/interpret-spanish`, token, { method: 'POST' }),
   applyEtlSpanishInterpretation: (token: string, id: number, body: { confirmation: boolean; analyst_comment: string; groups: Array<{ dimension: string; target_column: string; mappings: Array<{ original: string; label_es: string }> }> }) => request<EtlExecution>(`/etl/executions/${id}/interpret-spanish/apply`, token, { method: 'POST', body: JSON.stringify(body) }),
   etlExecutions: (token: string, limit = 10, offset = 0) => request<Page<EtlExecution>>(`/etl/executions?limit=${limit}&offset=${offset}`, token),
+  analyticsDashboard: (token: string, filters: { metricCode?: string; year?: string; territory?: string } = {}) => {
+    const query = new URLSearchParams()
+    if (filters.metricCode) query.set('metric_code', filters.metricCode)
+    if (filters.year) query.set('year', filters.year)
+    if (filters.territory) query.set('territory', filters.territory)
+    const suffix = query.size ? `?${query.toString()}` : ''
+    return request<AnalyticsDashboard>(`/analytics/dashboard${suffix}`, token)
+  },
+  analyticsReport: (token: string, format: 'pdf' | 'xlsx', filters: { metricCode?: string; year?: string; territory?: string; view: 'executive' | 'analyst' }) => {
+    const query = new URLSearchParams({ view: filters.view })
+    if (filters.metricCode) query.set('metric_code', filters.metricCode)
+    if (filters.year) query.set('year', filters.year)
+    if (filters.territory) query.set('territory', filters.territory)
+    return requestFile(`/analytics/reports/${format}?${query.toString()}`, token)
+  },
+  askAnalyticsCopilot: (token: string, body: { question: string; history: AnalyticsChatTurn[]; view: 'executive' | 'analyst'; execution_id: number; metric_code: string; year?: number; territory?: string }) => request<AnalyticsCopilotAnswer>('/analytics/copilot', token, { method: 'POST', body: JSON.stringify(body) }),
   audit: (token: string, limit: number, offset: number) => request<Page<AuditEvent>>(`/audit-events?limit=${limit}&offset=${offset}`, token),
   testLlm: (token: string, id: number) => request<{ ok: boolean; message: string }>(`/llm-configurations/${id}/test`, token, { method: 'POST' }),
   saveLlmCredential: (token: string, id: number, apiKey: string) => request<{ credential_configured: boolean; message: string }>(`/llm-configurations/${id}/secret`, token, { method: 'PUT', body: JSON.stringify({ api_key: apiKey }) }),

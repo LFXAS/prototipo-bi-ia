@@ -45,6 +45,16 @@ DEFAULT_PERMISSIONS: tuple[tuple[str, str, str], ...] = (
         "Permite leer la estructura de la fuente activa.",
     ),
     (
+        "metadata.semantic_resolution.read",
+        "Revisar identidad de dimensiones",
+        "Permite comprobar relaciones, cobertura y muestras descriptivas controladas.",
+    ),
+    (
+        "metadata.semantic_resolution.manage",
+        "Resolver identidad de dimensiones",
+        "Permite crear una versión corregida desde rutas semánticas verificadas.",
+    ),
+    (
         "copilot.proposals.read",
         "Consultar propuestas BI",
         "Permite consultar solicitudes, propuestas y decisiones del asistente.",
@@ -78,6 +88,16 @@ DEFAULT_PERMISSIONS: tuple[tuple[str, str, str], ...] = (
         "etl.executions.write",
         "Preparar materializaciones",
         "Permite seleccionar una propuesta y preparar una ejecución ETL controlada.",
+    ),
+    (
+        "analytics.dashboard.read",
+        "Consultar análisis visual",
+        "Permite explorar KPI, visualizaciones e insights sobre un datamart conciliado.",
+    ),
+    (
+        "reports.analytics.export",
+        "Exportar reportes analíticos",
+        "Permite descargar en PDF o Excel la selección analítica visible y autorizada.",
     ),
     ("audit.read", "Consultar auditoría", "Permite consultar eventos de auditoría."),
 )
@@ -158,6 +178,15 @@ DEFAULT_MENUS: tuple[tuple[str, str, str, int, str, str, tuple[str, ...]], ...] 
         "data",
         "Datos",
         ("etl.executions.read",),
+    ),
+    (
+        "sales-analytics",
+        "Analítica de ventas",
+        "/analitica-ventas",
+        30,
+        "analytics",
+        "Análisis",
+        ("analytics.dashboard.read",),
     ),
     ("audit", "Auditoría", "/auditoria", 70, "security", "Seguridad", ("audit.read",)),
 )

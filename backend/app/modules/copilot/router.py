@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import re
 from copy import deepcopy
@@ -20,11 +21,17 @@ from app.modules.copilot.domains import (
     normalize_needs_catalog_configuration,
 )
 from app.modules.copilot.models import BiProposal, SemanticAdvice
+from app.modules.copilot.needs import assess_business_need
 from app.modules.copilot.schemas import (
     AnalysisCatalogConfiguration,
     AnalysisCatalogDomainRead,
+    BusinessNeedInput,
+    ControlledRelationCatalogRead,
+    ControlledRelationRevision,
     CopilotCatalogRead,
     CopilotReadiness,
+    NeedFormulationRead,
+    NeedViabilityRead,
     ProposalCreate,
     ProposalDecision,
     ProposalRead,
@@ -35,6 +42,7 @@ from app.modules.copilot.schemas import (
     ReadinessComponent,
     SemanticAdviceCreate,
     SemanticAdviceRead,
+    SemanticPreviewRead,
 )
 from app.modules.copilot.service import (
     CONTRACT_VERSION,
@@ -44,8 +52,12 @@ from app.modules.copilot.service import (
     SEMANTIC_RESPONSE_SCHEMA,
     SEMANTIC_SYSTEM_INSTRUCTION,
     apply_analyst_adjustments,
+    apply_controlled_relationship,
+    apply_financial_requirements,
+    build_requirement_coverage,
     canonical_hash,
     compact_metadata_blocks,
+    controlled_relation_catalog,
     derived_scope,
     expand_proposal_blueprint,
     proposal_blueprint_schema,
@@ -56,6 +68,7 @@ from app.modules.copilot.service import (
     validated_semantic_candidates,
     verify_proposal_evidence,
 )
+from app.modules.etl.materializer import preview_dimension_labels
 from app.modules.metadata.models import MetadataSnapshot
 from app.modules.parameters.models import DataConnection, LlmConfiguration, Parameter, Secret
 from app.modules.parameters.providers import ProviderGenerationError, generate_json
@@ -66,6 +79,29 @@ from app.modules.security.service import add_audit_event, require_permission
 
 router = APIRouter(tags=["copilot"])
 _secret_cipher = SecretCipher(settings.secrets_key_path)
+
+NEED_FORMULATION_SYSTEM_INSTRUCTION = (
+    "Actúas como especialista en análisis de negocio. Mejora la redacción de una necesidad "
+    "analítica sin añadir indicadores, dimensiones, fuentes ni supuestos que el usuario no "
+    "haya solicitado. Conserva la intención y el alcance. No generes SQL. La propuesta debe "
+    "expresar propósito, indicadores esperados, comparación o segmentación y período cuando "
+    "estén presentes. Si falta información, indícalo en improvements; no la inventes. Responde "
+    "únicamente con el JSON solicitado y en español."
+)
+NEED_FORMULATION_SCHEMA: dict[str, object] = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["suggested_goal", "rationale", "improvements"],
+    "properties": {
+        "suggested_goal": {"type": "string", "minLength": 20, "maxLength": 2000},
+        "rationale": {"type": "string", "minLength": 10, "maxLength": 500},
+        "improvements": {
+            "type": "array",
+            "maxItems": 6,
+            "items": {"type": "string", "minLength": 5, "maxLength": 240},
+        },
+    },
+}
 
 
 async def _active_configuration(session: AsyncSession) -> LlmConfiguration | None:
@@ -319,7 +355,7 @@ async def reset_analysis_catalog_domain(
 
 
 def _safe_business_request(
-    payload: ProposalCreate, configuration: dict[str, object]
+    payload: BusinessNeedInput, configuration: dict[str, object]
 ) -> dict[str, object]:
     profile = domain_profile(payload.domain_code)
     lowered = payload.business_goal.casefold()
@@ -366,8 +402,134 @@ def _safe_business_request(
             "label": selected_periodicity["label"],
             "description": selected_periodicity["description"],
         },
-        "excluded_concepts": payload.excluded_concepts,
+        "excluded_concepts": getattr(payload, "excluded_concepts", []),
     }
+
+
+async def _validated_need_request(
+    payload: BusinessNeedInput, session: AsyncSession
+) -> tuple[MetadataSnapshot, dict[str, object], dict[str, object]]:
+    connection = (
+        await session.execute(select(DataConnection).where(DataConnection.is_active.is_(True)))
+    ).scalar_one_or_none()
+    snapshot = await session.get(MetadataSnapshot, payload.metadata_snapshot_id)
+    latest = await _latest_snapshot(session, connection.id if connection else None)
+    if (
+        connection is None
+        or snapshot is None
+        or latest is None
+        or snapshot.id != latest.id
+        or snapshot.data_connection_id != connection.id
+    ):
+        raise HTTPException(
+            status_code=422, detail="Seleccione la instantánea vigente de la fuente activa."
+        )
+    catalog_configuration = await _needs_catalog(session, payload.domain_code)
+    available_catalog = catalog_for_snapshot(snapshot.schema_document, catalog_configuration)
+    selected_domain = next(
+        (item for item in available_catalog if item["code"] == payload.domain_code), None
+    )
+    domain_questions = cast(list[dict[str, object]], (selected_domain or {}).get("questions", []))
+    domain_periodicities = cast(
+        list[dict[str, object]], (selected_domain or {}).get("periodicities", [])
+    )
+    available_questions = {
+        str(item["code"]) for item in domain_questions if bool(item["available"])
+    }
+    available_periodicities = {
+        str(item["code"]) for item in domain_periodicities if bool(item["available"])
+    }
+    unavailable = sorted(
+        (set(map(str, payload.business_questions)) - available_questions)
+        | ({payload.periodicity} - available_periodicities)
+    )
+    if unavailable:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "La necesidad contiene opciones deshabilitadas o no respaldadas por los "
+                f"metadatos actuales: {', '.join(unavailable)}. Actualice la selección."
+            ),
+        )
+    return snapshot, _safe_business_request(payload, catalog_configuration), catalog_configuration
+
+
+@router.post("/copilot/needs/formulate", response_model=NeedFormulationRead)
+async def formulate_business_need(
+    payload: BusinessNeedInput,
+    actor: User = Depends(require_permission("copilot.proposals.generate")),
+    session: AsyncSession = Depends(get_session),
+) -> dict[str, object]:
+    snapshot, request_document, _ = await _validated_need_request(payload, session)
+    configuration = await _active_configuration(session)
+    if configuration is None:
+        raise HTTPException(status_code=422, detail="No existe una configuración LLM activa.")
+    credential = await _credential(configuration, session)
+    timeout = await _parameter(session, "LLM_TIMEOUT_SECONDS")
+    try:
+        result = await generate_json(
+            configuration,
+            NEED_FORMULATION_SYSTEM_INSTRUCTION,
+            {
+                "goal": payload.business_goal,
+                "questions": request_document["questions"],
+                "periodicity": request_document["periodicity"],
+                "constraints": {
+                    "preserve_intent": True,
+                    "do_not_invent": True,
+                    "metadata_snapshot_hash": snapshot.content_hash,
+                },
+            },
+            credential=credential,
+            timeout_seconds=timeout,
+            max_output_tokens=900,
+            response_schema=NEED_FORMULATION_SCHEMA,
+        )
+    except ProviderGenerationError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    await add_audit_event(
+        session,
+        actor.id,
+        "copilot.need.formulated",
+        "metadata_snapshot",
+        str(snapshot.id),
+        {"provider_kind": configuration.provider_kind, "model_id": configuration.model_id},
+    )
+    await session.commit()
+    return {
+        "original_goal": payload.business_goal,
+        "suggested_goal": str(result["suggested_goal"]),
+        "rationale": str(result["rationale"]),
+        "improvements": list(result["improvements"]),
+        "provider_kind": configuration.provider_kind,
+        "model_id": configuration.model_id,
+    }
+
+
+@router.post("/copilot/needs/viability", response_model=NeedViabilityRead)
+async def validate_business_need_viability(
+    payload: BusinessNeedInput,
+    actor: User = Depends(require_permission("copilot.proposals.generate")),
+    session: AsyncSession = Depends(get_session),
+) -> dict[str, object]:
+    snapshot, request_document, _ = await _validated_need_request(payload, session)
+    assessment = assess_business_need(
+        snapshot.schema_document,
+        {**request_document, "snapshot_hash": snapshot.content_hash},
+    )
+    await add_audit_event(
+        session,
+        actor.id,
+        "copilot.need.viability_checked",
+        "metadata_snapshot",
+        str(snapshot.id),
+        {
+            "assessment_hash": assessment["assessment_hash"],
+            "counts": assessment["counts"],
+        },
+    )
+    await session.commit()
+    return assessment
 
 
 async def _credential(configuration: LlmConfiguration, session: AsyncSession) -> str | None:
@@ -440,6 +602,38 @@ async def create_proposal(
             ),
         )
     request_document = _safe_business_request(payload, catalog_configuration)
+    assessment = assess_business_need(
+        snapshot.schema_document,
+        {**request_document, "snapshot_hash": snapshot.content_hash},
+    )
+    if payload.viability_hash != assessment["assessment_hash"]:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "La necesidad o los metadatos cambiaron desde la última validación de "
+                "viabilidad. Valide nuevamente antes de generar la propuesta."
+            ),
+        )
+    required_acknowledgements = set(cast(list[str], assessment["requires_acknowledgement"]))
+    missing_acknowledgements = required_acknowledgements - set(payload.accepted_limitations)
+    if missing_acknowledgements:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "Revise y confirme las decisiones pendientes de la necesidad: "
+                f"{', '.join(sorted(missing_acknowledgements))}."
+            ),
+        )
+    if not bool(assessment["can_continue"]):
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "La necesidad no contiene todavía ningún requisito directo o derivable. "
+                "Ajústela con la guía mostrada antes de invocar al proveedor LLM."
+            ),
+        )
+    request_document["viability_assessment"] = assessment
+    assessment["accepted_limitations"] = list(payload.accepted_limitations)
     source_proposal = (
         await session.get(BiProposal, payload.source_proposal_id)
         if payload.source_proposal_id is not None
@@ -505,7 +699,7 @@ async def create_proposal(
                         700
                         if configuration.provider_kind == "gemini"
                         else 1200
-                        if configuration.provider_kind == "groq-cloud"
+                        if configuration.provider_kind in {"groq-cloud", "anthropic-cloud"}
                         else 600
                     ),
                     response_schema=SEMANTIC_RESPONSE_SCHEMA,
@@ -578,7 +772,7 @@ async def create_proposal(
                     800
                     if configuration.provider_kind == "gemini"
                     else 2400
-                    if configuration.provider_kind == "groq-cloud"
+                    if configuration.provider_kind in {"groq-cloud", "anthropic-cloud"}
                     else 700
                 ),
                 response_schema=proposal_blueprint_schema(scope, semantic_map),
@@ -586,6 +780,9 @@ async def create_proposal(
             # The LLM proposes dimensions from verified metadata; the catalog never forces them.
             blueprint["requested_dimensions"] = []
             proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
+            proposal = apply_financial_requirements(proposal, assessment, scope)
+            proposal["need_assessment"] = assessment
+            proposal["requirement_coverage"] = build_requirement_coverage(proposal, assessment)
             validation = validate_proposal(proposal, scope, snapshot.schema_document)
             record.proposal_document = proposal
             record.validation_document = validation
@@ -665,6 +862,63 @@ async def get_proposal(
     session: AsyncSession = Depends(get_session),
 ) -> BiProposal:
     return await _proposal_or_404(proposal_id, session)
+
+
+@router.get(
+    "/copilot/proposals/{proposal_id}/semantic-preview",
+    response_model=SemanticPreviewRead,
+)
+async def preview_proposal_semantics(
+    proposal_id: int,
+    actor: User = Depends(require_permission("metadata.semantic_resolution.read")),
+    session: AsyncSession = Depends(get_session),
+) -> dict[str, object]:
+    proposal = await _proposal_or_404(proposal_id, session)
+    snapshot = await session.get(MetadataSnapshot, proposal.metadata_snapshot_id)
+    if snapshot is None:
+        raise HTTPException(status_code=409, detail="La instantánea ya no está disponible.")
+    connection = await session.get(DataConnection, snapshot.data_connection_id)
+    secret = await session.get(Secret, connection.secret_id) if connection is not None else None
+    if connection is None or secret is None:
+        raise HTTPException(status_code=409, detail="La conexión de origen no está disponible.")
+    try:
+        password = _secret_cipher.decrypt(secret.ciphertext)
+        dimensions = await asyncio.to_thread(
+            preview_dimension_labels,
+            proposal.proposal_document,
+            snapshot.schema_document,
+            connection,
+            password,
+        )
+    except (SecretDecryptionError, OSError) as exc:
+        raise HTTPException(
+            status_code=422, detail="La credencial de la fuente no pudo descifrarse."
+        ) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    all_passed = bool(dimensions) and all(bool(item.get("passed")) for item in dimensions)
+    await add_audit_event(
+        session,
+        actor.id,
+        "metadata.semantic_resolution.preview",
+        "bi_proposal",
+        str(proposal.id),
+        {
+            "dimensions": len(dimensions),
+            "all_passed": all_passed,
+        },
+    )
+    await session.commit()
+    return {
+        "proposal_id": proposal.id,
+        "dimensions": dimensions,
+        "all_passed": all_passed,
+        "message": (
+            "Las identidades descriptivas alcanzan la cobertura exigida."
+            if all_passed
+            else "Una dimensión requiere corrección antes de publicarse."
+        ),
+    }
 
 
 def _semantic_candidate_or_404(proposal: BiProposal, concept_code: str) -> dict[str, object]:
@@ -796,7 +1050,7 @@ async def create_semantic_advice(
                 900
                 if configuration.provider_kind == "gemini"
                 else 1800
-                if configuration.provider_kind == "groq-cloud"
+                if configuration.provider_kind in {"groq-cloud", "anthropic-cloud"}
                 else 900
             ),
             response_schema=semantic_advice_response_schema(technical_refs),
@@ -871,6 +1125,152 @@ async def create_semantic_advice(
     return record
 
 
+@router.get(
+    "/copilot/proposals/{proposal_id}/relation-options",
+    response_model=ControlledRelationCatalogRead,
+)
+async def get_controlled_relation_options(
+    proposal_id: int,
+    _: User = Depends(require_permission("copilot.proposals.read")),
+    session: AsyncSession = Depends(get_session),
+) -> dict[str, object]:
+    proposal = await _proposal_or_404(proposal_id, session)
+    blueprint = proposal.proposal_document.get("ai_decisions")
+    if not isinstance(blueprint, dict):
+        raise HTTPException(
+            status_code=409,
+            detail="La propuesta no conserva decisiones técnicas ajustables.",
+        )
+    dimension_names = [
+        str(item.get("name"))
+        for item in blueprint.get("dimensions", [])
+        if isinstance(item, dict) and item.get("name")
+    ]
+    return {
+        "proposal_id": proposal.id,
+        "dimension_names": dimension_names,
+        "options": controlled_relation_catalog(proposal.scope_document),
+    }
+
+
+@router.post(
+    "/copilot/proposals/{proposal_id}/relation-revisions",
+    response_model=ProposalRead,
+    status_code=status.HTTP_201_CREATED,
+)
+async def revise_controlled_relation(
+    proposal_id: int,
+    payload: ControlledRelationRevision,
+    actor: User = Depends(require_permission("copilot.proposals.generate")),
+    session: AsyncSession = Depends(get_session),
+) -> BiProposal:
+    source = await _proposal_or_404(proposal_id, session)
+    if source.status not in {
+        "ready_for_review",
+        "approved",
+        "invalidated",
+        "validation_failed",
+    }:
+        raise HTTPException(status_code=409, detail="Esta propuesta no admite correcciones.")
+    snapshot = await session.get(MetadataSnapshot, source.metadata_snapshot_id)
+    source_blueprint = source.proposal_document.get("ai_decisions")
+    if snapshot is None or not isinstance(source_blueprint, dict):
+        raise HTTPException(
+            status_code=409,
+            detail="No está disponible el contrato necesario para crear la corrección.",
+        )
+    options = controlled_relation_catalog(source.scope_document)
+    option = next((item for item in options if item["option_id"] == payload.option_id), None)
+    if option is None:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "La relación ya no pertenece a la instantánea vigente. Abra nuevamente "
+                "las opciones controladas."
+            ),
+        )
+    try:
+        revised_blueprint = apply_controlled_relationship(
+            source_blueprint, payload.dimension_name, option
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    semantic_map = deepcopy(source.semantic_map_document)
+    semantic_map["controlled_relation_revision"] = {
+        "source_proposal_id": source.id,
+        "dimension_name": payload.dimension_name,
+        "option_id": payload.option_id,
+        "comment": payload.comment,
+    }
+    proposal_document = expand_proposal_blueprint(
+        revised_blueprint, source.scope_document, semantic_map
+    )
+    source_assessment = source.proposal_document.get("need_assessment")
+    if isinstance(source_assessment, dict):
+        proposal_document = apply_financial_requirements(
+            proposal_document, source_assessment, source.scope_document
+        )
+        proposal_document["need_assessment"] = deepcopy(source_assessment)
+        proposal_document["requirement_coverage"] = build_requirement_coverage(
+            proposal_document, source_assessment
+        )
+    proposal_document["controlled_relation_revision"] = {
+        **option,
+        "dimension_name": payload.dimension_name,
+        "comment": payload.comment,
+        "validated": True,
+    }
+    validation = validate_proposal(
+        proposal_document, source.scope_document, snapshot.schema_document
+    )
+    revision_hash = canonical_hash(
+        {
+            "source_proposal_id": source.id,
+            "source_input_hash": source.input_hash,
+            "relation": proposal_document["controlled_relation_revision"],
+        }
+    )
+    record = BiProposal(
+        source_proposal_id=source.id,
+        metadata_snapshot_id=source.metadata_snapshot_id,
+        business_goal=source.business_goal,
+        business_questions=list(source.business_questions),
+        requested_dimensions=list(source.requested_dimensions),
+        periodicity=source.periodicity,
+        domain_code=source.domain_code,
+        scope_document=deepcopy(source.scope_document),
+        semantic_map_document=semantic_map,
+        status="ready_for_review" if validation["valid"] else "validation_failed",
+        input_hash=revision_hash,
+        prompt_version=source.prompt_version,
+        contract_version=source.contract_version,
+        provider_kind=source.provider_kind,
+        model_id=source.model_id,
+        proposal_document=proposal_document,
+        validation_document=validation,
+        created_by_user_id=actor.id,
+        created_by_label=f"{actor.full_name} <{actor.email}>",
+    )
+    session.add(record)
+    await session.flush()
+    await add_audit_event(
+        session,
+        actor.id,
+        "copilot.proposal.relation_revise",
+        "bi_proposal",
+        str(record.id),
+        {
+            "source_proposal_id": source.id,
+            "dimension_name": payload.dimension_name,
+            "option_id": payload.option_id,
+            "status": record.status,
+        },
+    )
+    await session.commit()
+    await session.refresh(record)
+    return record
+
+
 @router.post(
     "/copilot/proposals/{proposal_id}/revisions",
     response_model=ProposalRead,
@@ -923,6 +1323,15 @@ async def revise_proposal(
         source.scope_document,
         semantic_map,
     )
+    source_assessment = source.proposal_document.get("need_assessment")
+    if isinstance(source_assessment, dict):
+        proposal_document = apply_financial_requirements(
+            proposal_document, source_assessment, source.scope_document
+        )
+        proposal_document["need_assessment"] = deepcopy(source_assessment)
+        proposal_document["requirement_coverage"] = build_requirement_coverage(
+            proposal_document, source_assessment
+        )
     validation = validate_proposal(
         proposal_document,
         source.scope_document,

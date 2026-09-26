@@ -1,4 +1,4 @@
-.PHONY: help env bootstrap build up seed delivery-preview-up ollama-up ollama-pull ollama-status ollama-down release-up release-down down logs ps test lint format-check compose-check workflow-test doctor docs-image logbook sprint-report sprint2-report sprint3-report sprint4-report thesis-chapter3 technical-manual docs verify
+.PHONY: help env bootstrap build up seed delivery-preview-up ollama-up ollama-pull ollama-status ollama-down release-up release-down down logs ps test lint format-check compose-check workflow-test doctor docs-image logbook sprint-report sprint2-report sprint3-report sprint4-report sprint5-report thesis-chapter3 technical-manual docs verify
 
 COMPOSE := docker compose
 
@@ -27,6 +27,7 @@ help:
 	@echo "  make sprint2-report Regenera el informe PDF del Sprint 2"
 	@echo "  make sprint3-report Regenera el informe PDF del Sprint 3"
 	@echo "  make sprint4-report Regenera el informe PDF del Sprint 4"
+	@echo "  make sprint5-report Regenera el informe PDF del Sprint 5"
 	@echo "  make thesis-chapter3 Regenera el Capitulo III academico"
 	@echo "  make technical-manual Regenera el manual tecnico PDF"
 	@echo "  make docs           Regenera todos los documentos PDF"
@@ -144,6 +145,12 @@ sprint4-report: docs-image
 		-v "$$(pwd)/docs:/workspace" -w /workspace/sprints \
 		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error sprint-04-materializacion-etl.tex
 
+sprint5-report: docs-image
+	docker run --rm --user "$$(id -u):$$(id -g)" \
+		-e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts \
+		-v "$$(pwd)/docs:/workspace" -w /workspace/sprints \
+		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error sprint-05-analitica-y-reporteria.tex
+
 thesis-chapter3: docs-image
 	docker run --rm --user "$$(id -u):$$(id -g)" \
 		-e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts \
@@ -156,6 +163,6 @@ technical-manual: docs-image
 		-v "$$(pwd)/docs:/workspace" -w /workspace/manual-tecnico \
 		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error manual-tecnico.tex
 
-docs: logbook sprint-report sprint2-report sprint3-report sprint4-report thesis-chapter3 technical-manual
+docs: logbook sprint-report sprint2-report sprint3-report sprint4-report sprint5-report thesis-chapter3 technical-manual
 
 verify: compose-check workflow-test test docs

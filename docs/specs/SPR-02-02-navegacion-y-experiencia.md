@@ -2,7 +2,7 @@
 
 - Estado: **implementado y verificado localmente; pendiente de revisión colaborativa y cierre mediante PR hacia `develop`**.
 - Pertenece a: [SPR-02-rbac-y-parametros.md](SPR-02-rbac-y-parametros.md).
-- Última revisión funcional: 2026-09-10.
+- Última revisión funcional: 2026-09-26.
 
 ## 1. Objetivo
 
@@ -13,9 +13,15 @@ Ofrecer una estructura visual coherente para el Sprint 2 y los módulos BI poste
 | Elemento | Decisión de UX |
 |---|---|
 | Inicio | Es un acceso directo al panel inicial autorizado. **No** pertenece a un grupo llamado "Principal", porque un único elemento no justifica un acordeón ni aporta significado funcional. |
-| Seguridad | Grupo padre plegable con Usuarios, Roles, Permisos, Menús y Auditoría. |
-| Parámetros generales | Grupo padre plegable con Parámetros y Configuración LLM. |
-| Futuros módulos | Cada módulo posterior (Metadatos, ETL, Analítica, Reportes, Copiloto) aparecerá como grupo padre sólo cuando tenga al menos una ruta autorizada. |
+| Preparación del entorno | Conexiones de datos, exploración de esquema, proveedor LLM y parámetros operativos. |
+| Diseño y transformación BI | Catálogo analítico, asistente de datamart y materialización controlada. |
+| Análisis y decisiones | Dashboard, copiloto y salidas ejecutivas autorizadas. |
+| Administración y seguridad | Usuarios, roles, permisos, menús y auditoría. |
+
+El orden visual responde al flujo de trabajo y no a la fecha en que se implementó
+cada módulo. La reclasificación es exclusivamente de presentación: no amplía
+permisos, no inventa accesos y cada opción continúa llegando desde la sesión
+autorizada por el backend.
 
 ### 2.1 Comportamiento obligatorio del sidebar
 
@@ -25,6 +31,11 @@ Ofrecer una estructura visual coherente para el Sprint 2 y los módulos BI poste
 4. En tableta y móvil (menos de 1024 px) el sidebar inicia oculto y se abre con un botón de hamburguesa accesible. Se cierra al elegir una subopción, al pulsar Escape, al tocar fuera cuando exista superposición y mediante un botón explícito de cerrar.
 5. La preferencia de grupos abiertos y sidebar contraído puede conservarse localmente por sesión/dispositivo, pero no cambia la autorización ni se comparte entre cuentas.
 6. Cada grupo informa `aria-expanded`, controla un contenedor con ID único y presenta un texto o icono que no sea la única señal de estado. El botón de hamburguesa y el de ocultar sidebar tienen etiquetas accesibles.
+7. Cada categoría y subopción usa iconografía SVG coherente, acompañada siempre
+   por texto visible. Los iconos son decorativos para lectores de pantalla y el
+   estado activo se comunica también con fondo, borde y tipografía.
+8. El encabezado del sidebar identifica el espacio de trabajo y el encabezado
+   superior identifica producto y usuario sin competir con el título de la pantalla.
 
 ## 3. Aislamiento de pantallas y formularios
 
@@ -60,7 +71,13 @@ Las asociaciones configurables de **Roles asignados**, **Permisos otorgados** y 
 ## 6. Criterios de aceptación
 
 - [ ] Inicio se presenta como opción directa; no aparece un grupo "Principal" con un único submenú.
-- [ ] Seguridad y Parámetros generales se pliegan y despliegan siempre, incluso si contienen la ruta activa, con clic, teclado y táctil.
+- [ ] Las cuatro categorías profesionales se ordenan por flujo de trabajo y se
+      pliegan/despliegan siempre, incluso si contienen la ruta activa, con clic,
+      teclado y táctil.
+- [ ] Las rutas permanecen limitadas por la sesión autorizada después de su
+      reclasificación visual.
+- [ ] Categorías y opciones muestran icono y texto; ningún significado depende
+      exclusivamente de la iconografía.
 - [ ] La persona puede ocultar/contraer el sidebar en escritorio y abrir/cerrar el menú de hamburguesa en tableta y móvil.
 - [ ] El control de chevrón se superpone al borde del sidebar sin desplazar Inicio, los grupos de menú ni el contenido principal.
 - [ ] Navegar entre pantallas nunca transporta el recurso en edición ni textos de ayuda de una ruta a otra.
