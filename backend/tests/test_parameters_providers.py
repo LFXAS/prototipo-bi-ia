@@ -391,6 +391,54 @@ def test_groq_rate_limit_stops_after_bounded_attempts(monkeypatch: MonkeyPatch) 
     assert "límite temporal" in result.message
 
 
+def test_groq_413_rate_limit_is_retried_and_classified(monkeypatch: MonkeyPatch) -> None:
+    calls = 0
+    monkeypatch.setattr(providers.asyncio, "sleep", no_sleep)
+
+    class RateLimitedClient(FakeAsyncClient):
+        async def post(self, _: str, **__: object) -> FakeResponse:
+            nonlocal calls
+            calls += 1
+            return FakeResponse(
+                {
+                    "error": {
+                        "message": "Rate limit exceeded for tokens",
+                        "code": "rate_limit_exceeded",
+                    }
+                },
+                status_code=413,
+                headers={"retry-after": "0", "x-request-id": "req-rate-413"},
+            )
+
+    monkeypatch.setattr(
+        providers.httpx,
+        "AsyncClient",
+        lambda **kwargs: RateLimitedClient({}, **kwargs),
+    )
+
+    result = asyncio.run(providers.test_provider(groq_configuration(), "groq-secret"))
+    error = providers._response_error(
+        "groq-cloud",
+        FakeResponse(
+            {
+                "error": {
+                    "message": "Rate limit exceeded for tokens",
+                    "code": "rate_limit_exceeded",
+                }
+            },
+            status_code=413,
+            headers={"x-request-id": "req-rate-413"},
+        ),
+    )
+
+    assert not result.ok
+    assert calls == 3
+    assert "límite temporal" in result.message
+    assert error.category == "rate_limit"
+    assert error.status_code == 413
+    assert error.request_id == "req-rate-413"
+
+
 def test_groq_error_categories_preserve_safe_request_id() -> None:
     cases = [
         (401, "invalid_api_key", "authentication"),

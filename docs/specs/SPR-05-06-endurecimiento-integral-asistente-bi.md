@@ -28,6 +28,9 @@ analítica.
   proveedor y modelo sin afectar proveedores existentes.
 - Cada fallo conserva categoría sanitizada, código HTTP e identificador de
   solicitud cuando el proveedor lo entrega.
+- Groq puede expresar un límite temporal de tokens con HTTP 413 y código
+  `rate_limit_exceeded`; ese caso se clasifica y reintenta como límite temporal,
+  sin confundirlo con un contrato demasiado grande.
 - Sólo se reintentan fallos transitorios. Credenciales, parámetros inválidos y
   respuestas estructuradas no reparables requieren acción explícita.
 - Un fallo del LLM no convierte una necesidad viable en una necesidad inviable.
@@ -204,3 +207,7 @@ decisión y cuál es el efecto de cada alternativa.
   estructuralmente válidas quedaban bloqueadas al aplicarles reglas de expansión
   posteriores sin incrementar la versión del motor. Se exige compatibilidad
   explícita y acceso permanente a los expedientes históricos.
+- 25/09/2026: se amplía HBI-001 con evidencia real de Groq: HTTP 413,
+  `rate_limit_exceeded`, presupuesto restante y `retry-after`. La política debe
+  decidir por el código semántico del proveedor y no únicamente por el estado
+  HTTP.

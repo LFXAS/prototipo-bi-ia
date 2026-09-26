@@ -120,6 +120,17 @@ def _retry_delay_seconds(response: Any, attempt: int) -> float:
     return float(min(0.25 * (2 ** (attempt - 1)), 2.0))
 
 
+def _is_transient_response(response: Any) -> bool:
+    status_code = int(getattr(response, "status_code", 0))
+    if status_code in _TRANSIENT_STATUS_CODES:
+        return True
+    details = _provider_error_details(response)
+    normalized = f"{details.code} {details.message}".casefold()
+    return status_code == 413 and any(
+        marker in normalized for marker in ("rate_limit", "rate limit", "too many requests")
+    )
+
+
 def _log_provider_response(
     provider_kind: str,
     model_id: str,
@@ -175,7 +186,7 @@ async def _post_with_retry(
             await asyncio.sleep(min(0.25 * (2 ** (attempt - 1)), 2.0))
             continue
         _log_provider_response(provider_kind, model_id, attempt, response)
-        if response.status_code not in _TRANSIENT_STATUS_CODES or attempt >= max_attempts:
+        if not _is_transient_response(response) or attempt >= max_attempts:
             return response
         await asyncio.sleep(_retry_delay_seconds(response, attempt))
     raise RuntimeError("unreachable provider retry state")
@@ -228,7 +239,13 @@ def _generation_error(
             "El modelo configurado no está disponible en Groq.",
             "model_unavailable",
         )
-    if status_code == 429:
+    if status_code == 429 or (
+        status_code == 413
+        and any(
+            marker in f"{provider_code} {normalized}"
+            for marker in ("rate_limit", "rate limit", "too many requests")
+        )
+    ):
         return error(
             "El proveedor alcanzó un límite temporal de solicitudes o tokens. Los reintentos "
             "automáticos no fueron suficientes; espere el tiempo indicado y vuelva a intentar.",
