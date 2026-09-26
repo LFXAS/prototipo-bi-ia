@@ -418,7 +418,7 @@ button.danger:hover { background: #8f1c14; }
 .etl-stepper li.complete { border-color: #b9dfcd; background: #eef9f3; color: #087348; }
 .etl-stepper li.complete > span { background: #d0efdf; }
 .etl-stage-panel, .etl-history, .etl-empty-state { min-width: 0; padding: clamp(1rem, 2.4vw, 1.5rem); border: 1px solid var(--color-border); border-radius: 1rem; background: #fff; box-shadow: 0 12px 34px #153b6910; }
-.etl-empty-state { display: grid; justify-items: start; max-width: 52rem; gap: .4rem; padding: 2rem; }
+.etl-empty-state { display: grid; justify-items: stretch; width: 100%; gap: .65rem; padding: 2rem; }
 .etl-empty-state h2, .etl-empty-state p { margin: 0; }
 .blocked-proposal { width: 100%; margin-top: .65rem; padding: .9rem; border: 1px solid #e1b0a8; border-radius: .7rem; background: #fff8f7; }
 .blocked-proposal h3 { margin: 0; }

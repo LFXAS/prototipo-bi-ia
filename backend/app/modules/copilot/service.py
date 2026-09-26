@@ -9,7 +9,7 @@ from typing import Any
 from app.modules.copilot.domains import SALES_PROFILE
 from app.modules.copilot.entity_resolution import enrich_dimension_labels
 
-PROMPT_VERSION = "sales-bi-v3"
+PROMPT_VERSION = "sales-bi-v4"
 CONTRACT_VERSION = 1
 ALLOWED_OPERATIONS = {"extract", "join", "filter", "derive", "aggregate", "load"}
 ALLOWED_AGGREGATIONS = {"sum", "count", "count_distinct", "average", "min", "max"}

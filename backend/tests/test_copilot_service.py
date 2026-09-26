@@ -940,7 +940,7 @@ def test_previous_engine_version_is_a_non_blocking_compatibility_warning() -> No
         semantic_map,
         DOCUMENT,
         canonical_hash(DOCUMENT),
-        "sales-bi-v2",
+        "sales-bi-v3",
     )
 
     assert evidence["verified"] is True
@@ -949,6 +949,28 @@ def test_previous_engine_version_is_a_non_blocking_compatibility_warning() -> No
     replay_check = next(check for check in evidence["checks"] if check["code"] == "proposal.replay")
     assert replay_check["passed"] is False
     assert "no es comparable" in replay_check["detail"]
+
+
+def test_current_engine_still_blocks_a_non_reproducible_contract() -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+    proposal = expand_proposal_blueprint(valid_blueprint(), scope, semantic_map)
+    validation = validate_proposal(proposal, scope, DOCUMENT)
+    proposal["summary"] = "Cambio no registrado en las decisiones de IA."
+
+    evidence = verify_proposal_evidence(
+        proposal,
+        validation,
+        scope,
+        semantic_map,
+        DOCUMENT,
+        canonical_hash(DOCUMENT),
+        "sales-bi-v4",
+    )
+
+    assert evidence["approval_safe"] is False
+    replay_check = next(check for check in evidence["checks"] if check["code"] == "proposal.replay")
+    assert replay_check["passed"] is False
 
 
 def test_semantic_error_does_not_mark_valid_technical_references_as_failed() -> None:

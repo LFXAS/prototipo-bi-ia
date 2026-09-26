@@ -104,6 +104,21 @@ analítica.
   de la interfaz; antes del PR se ejecuta la verificación integral.
 - No se versionan secretos, credenciales, `.env` ni reportes locales.
 
+### HBI-010 — Compatibilidad del catálogo y acceso a expedientes
+
+- Todo cambio que altere la expansión determinística del contrato incrementa la
+  versión del motor; una propuesta creada por una versión anterior conserva su
+  aprobación si la instantánea, las referencias y la validación vigente siguen
+  siendo seguras.
+- Una diferencia de reproducción entre versiones se informa como advertencia de
+  compatibilidad, no como error estructural genérico ni como retiro automático de
+  una aprobación válida.
+- La pantalla del datamart siempre conserva visibles los expedientes ETL ya
+  preparados o ejecutados, incluso cuando ninguna propuesta esté habilitada para
+  una materialización nueva.
+- Abrir un expediente histórico es una operación de consulta: no habilita repetir
+  el ETL ni modificar el contrato que lo originó.
+
 ## 3. Experiencia guiada para el analista
 
 1. **Describir**: redacta o aprueba una necesidad reformulada.
@@ -145,6 +160,7 @@ decisión y cuál es el efecto de cada alternativa.
 | HBI-007 | Top 5 de Europa se resuelve sin filtro visual ni SQL libre | `test_analytics_copilot.py` y `test_analytics_service.py` | implementado |
 | HBI-008 | Una sesión vencida restaura el paso y borrador con contraste accesible | `App.test.tsx` (sesión y borrador) y comprobación WCAG | implementado |
 | HBI-009 | `make verify` completo y diff sin secretos | registro de cierre | pendiente |
+| HBI-010 | Las propuestas v3 válidas siguen disponibles bajo motor v4 y los expedientes no desaparecen si el catálogo queda bloqueado | pruebas de evidencia, catálogo y flujo frontend | en implementación |
 
 ## 6. Matriz de trazabilidad técnica
 
@@ -158,6 +174,7 @@ decisión y cuál es el efecto de cada alternativa.
 | HBI-007 | motor analítico permitido | Copiloto analítico |
 | HBI-008 | cliente de sesión y persistencia de wizard | Asistente completo |
 | HBI-009 | suites backend, frontend y E2E | Evidencia de entrega |
+| HBI-010 | versionado de contrato, catálogo ETL e historial | Datamart de ventas |
 
 ## 7. Fuera de alcance
 
@@ -183,3 +200,7 @@ decisión y cuál es el efecto de cada alternativa.
   global, conserva sólo el borrador no secreto y el identificador de versión,
   restaura el módulo mediante lectura autorizada y distingue 401, 403 y 503.
   Los textos del usuario alcanzan relaciones de contraste 5,08:1 y 5,42:1.
+- 25/09/2026: HBI-010 especificado después de reproducir que propuestas v3
+  estructuralmente válidas quedaban bloqueadas al aplicarles reglas de expansión
+  posteriores sin incrementar la versión del motor. Se exige compatibilidad
+  explícita y acceso permanente a los expedientes históricos.

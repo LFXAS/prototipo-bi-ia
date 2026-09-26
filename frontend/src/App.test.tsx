@@ -549,4 +549,47 @@ describe('App', () => {
     expect(screen.getByRole('heading', { name: 'Interpretación semántica' })).toBeInTheDocument()
     expect(screen.getByDisplayValue('Europa')).toBeInTheDocument()
   })
+
+  it('mantiene accesibles los expedientes cuando no hay propuestas habilitadas', async () => {
+    localStorage.setItem('bi_ia_access_token', 'test-token')
+    const blockedCandidate = {
+      proposal_id: 61, metadata_snapshot_id: 2, business_goal: 'Analizar ventas.', periodicity: 'month',
+      provider_kind: 'groq-cloud', model_id: 'openai/gpt-oss-120b', created_at: '2026-09-25T14:50:00Z', reviewed_at: '2026-09-25T15:00:00Z',
+      reviewed_by_label: 'Analista BI', proposal_hash: 'a'.repeat(64), snapshot_hash: 'b'.repeat(64), summary: 'Modelo dimensional de ventas',
+      grain: 'Una fila por detalle vendido.', fact_name: 'fact_ventas', dimensions: ['dim_producto'], measures: ['importe_venta'],
+      kpi_count: 1, kpi_recipes: [{ code: 'ventas_netas', name: 'Ventas netas', description: 'Importe vendido.', kind: 'aggregate', unit: 'USD', periodicity: 'inherit', definition_version: 'sales-kpi-v1', inputs: ['importe_venta'], recipe: { template: 'aggregate', measure: 'importe_venta', operation: 'sum' } }],
+      transformation_plan: [], warnings: [], eligible: false, blocking_reasons: ['El contrato requiere una versión nueva.'], recommended: false,
+    }
+    const execution = {
+      id: 6, proposal_id: 61, metadata_snapshot_id: 2, status: 'succeeded', domain_code: 'ventas',
+      builder_version: 'sales-etl-builder-v1', proposal_hash: 'a'.repeat(64), snapshot_hash: 'b'.repeat(64), selection_document: {}, plan_document: {},
+      validation_document: { message: 'El datamart quedó conciliado.' },
+      metrics_document: {
+        reconciliation: { passed: true, source_rows: 10, datamart_rows: 10, difference_rows: 0 },
+        tables: [{ table: 'fact_ventas', source_rows: 10, loaded_rows: 10, deduplicated_rows: 0 }],
+        kpis: [{ code: 'ventas_netas', name: 'Ventas netas', value: '100', unit: 'USD', status: 'reconciled' }],
+        semantic_interpretation: { status: 'not_required', message: 'No hubo categorías por revisar.', mappings: [] },
+      },
+      created_by_label: 'Analista BI', created_at: '2026-09-25T15:10:00Z', finished_at: '2026-09-25T15:11:00Z',
+    }
+    vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input)
+      if (url.includes('/auth/me')) return { ok: true, status: 200, json: async () => ({ user: { id: 1, email: 'analista@example.test', full_name: 'Analista BI', is_active: true, roles: [] }, permissions: ['etl.executions.read', 'etl.executions.write'], menus: [{ id: 20, code: 'sales-datamart', label: 'Datamart de ventas', path: '/datamart-ventas', position: 20, module_code: 'data', module_label: 'Datos', is_active: true, permissions: [] }] }) }
+      if (url.endsWith('/etl/proposals')) return { ok: true, status: 200, json: async () => ({ items: [], blocked_items: [blockedCandidate], recommended_proposal_id: null, guidance: [] }) }
+      if (url.includes('/etl/executions')) return { ok: true, status: 200, json: async () => ({ items: [execution], total: 1, limit: 5, offset: 0 }) }
+      throw new Error(`Solicitud inesperada: ${url}`)
+    }))
+
+    render(<App />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Datos' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Datamart de ventas' }))
+
+    expect(await screen.findByRole('heading', { name: 'No hay propuestas habilitadas para una ejecución nueva' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Expedientes recientes' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir expediente #6' }))
+    expect(await screen.findByRole('heading', { name: 'Expediente histórico conservado' })).toBeInTheDocument()
+    expect(screen.getByText('Sólo lectura')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Materializar y cargar datamart' })).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Conciliación OLTP–datamart' })).toBeInTheDocument()
+  })
 })
