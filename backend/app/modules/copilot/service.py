@@ -595,6 +595,14 @@ def verify_proposal_evidence(
     deterministic_replay = False
     if isinstance(blueprint, dict):
         replay = expand_proposal_blueprint(blueprint, scope, semantic_map)
+        stored_assessment = proposal_document.get("need_assessment")
+        if isinstance(stored_assessment, dict):
+            replay = apply_financial_requirements(replay, stored_assessment, scope)
+            replay["need_assessment"] = deepcopy(stored_assessment)
+            replay["requirement_coverage"] = build_requirement_coverage(replay, stored_assessment)
+        for revision_key in ("controlled_relation_revision", "analyst_revision"):
+            if revision_key in proposal_document:
+                replay[revision_key] = deepcopy(proposal_document[revision_key])
         replay_hash = canonical_hash(replay)
         deterministic_replay = replay_hash == canonical_hash(proposal_document)
 

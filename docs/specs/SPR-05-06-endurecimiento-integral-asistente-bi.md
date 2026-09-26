@@ -124,6 +124,9 @@ analítica.
   versión del motor; una propuesta creada por una versión anterior conserva su
   aprobación si la instantánea, las referencias y la validación vigente siguen
   siendo seguras.
+- La reproducción de una propuesta vigente repite la cadena determinística
+  completa —expansión, enriquecimiento financiero, evaluación de necesidad y
+  cobertura—, no sólo el primer paso de expansión.
 - Una diferencia de reproducción entre versiones se informa como advertencia de
   compatibilidad, no como error estructural genérico ni como retiro automático de
   una aprobación válida.

@@ -860,6 +860,47 @@ def test_approved_decisions_reproduce_the_same_validated_proposal() -> None:
     assert all(check["passed"] for check in evidence["checks"])
 
 
+def test_financial_enrichment_is_included_in_deterministic_replay() -> None:
+    document = deepcopy(DOCUMENT)
+    document["schemas"][0]["tables"][0]["columns"].append(
+        {"name": "OrderQty", "data_type": "smallint", "primary_key": False}
+    )
+    document["schemas"][1]["tables"][0]["columns"].append(
+        {"name": "StandardCost", "data_type": "money", "primary_key": False}
+    )
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], document)
+    scope = derived_scope(document, semantic_map)
+    assessment = {
+        "requirements": [
+            {
+                "code": "goal:total_cost",
+                "label": "Costo total",
+                "status": "derivable",
+                "components": ["unit_cost", "quantity"],
+            }
+        ],
+        "accepted_limitations": [],
+    }
+    proposal = expand_proposal_blueprint(valid_blueprint(), scope, semantic_map)
+    proposal = apply_financial_requirements(proposal, assessment, scope)
+    proposal["need_assessment"] = assessment
+    proposal["requirement_coverage"] = build_requirement_coverage(proposal, assessment)
+    validation = validate_proposal(proposal, scope, document)
+
+    evidence = verify_proposal_evidence(
+        proposal,
+        validation,
+        scope,
+        semantic_map,
+        document,
+        canonical_hash(document),
+        "sales-bi-v5",
+    )
+
+    assert evidence["verified"] is True
+    assert evidence["proposal_hash"] == evidence["replay_hash"]
+
+
 def test_analyst_adjustment_creates_a_bounded_reproducible_blueprint() -> None:
     source = {
         **valid_blueprint(),
