@@ -62,9 +62,9 @@ pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}}
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & INF-SPR-05 \\
-    Versión & 1.2.0 \\
-    Periodo de referencia & 24 al 26 de septiembre de 2026 \\
-    Rama de trabajo & \file{feature/bi-assistant-hardening} \\
+    Versión & 1.2.1 \\
+    Periodo de referencia & 24 al 27 de septiembre de 2026 \\
+    Rama de trabajo & \file{fix/provider-neutral-kpi-versioning} \\
     Estado & Incremento funcional, evidencia y documentación completados localmente \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
   \end{tabularx}
@@ -166,6 +166,29 @@ La configuración admite Gemini, Groq, Anthropic Claude, Qwen y Ollama mediante 
 
 Anthropic se incorporó con el endpoint restringido \file{/v1/messages}, versión de protocolo explícita, credencial cifrada y validación local de JSON. La selección inicial \file{claude-haiku-4-5-20251001} usa nivel mínimo y no activa pensamiento extendido, lo que permite aprovechar un saldo pequeño sin sacrificar los controles determinísticos. Sonnet permanece como modelo editable para una cuenta que lo autorice.
 
+\subsection{Comparativa integral Groq--Claude}
+
+El 27 de septiembre se repitió la misma necesidad compleja, instantánea y conjunto de seis preguntas con Groq GPT--OSS 120B y Claude Haiku 4.5 en niveles configurados medio y alto. Las cuatro pruebas validaron la conexión mínima en un segundo, pero ninguna quedó lista para aprobación automática. Este resultado demuestra que la conectividad no sustituye la validación del contrato completo.
+
+\begin{table}[ht]
+\centering
+\caption{Comparativa integral de proveedores y niveles de razonamiento.}
+\begin{tabularx}{\textwidth}{@{}p{0.17\textwidth}p{0.11\textwidth}p{0.13\textwidth}p{0.12\textwidth}X@{}}
+  \toprule
+  Proveedor & Nivel & Propuesta & Tiempo & Resultado \\
+  \midrule
+  Groq GPT--OSS & Medio & 78 & 3 s & Salida estructurada incompleta; fallo controlado del proveedor. \\
+  Groq GPT--OSS & Alto & 79 & 21 s & Límite temporal de solicitudes o tokens después de reintentos. \\
+  Claude Haiku & Medio & 80 & 21 s & Contrato completo; 2 errores de procedencia y 3 advertencias. \\
+  Claude Haiku & Alto & 81 & 21 s & Contrato completo; 2 errores de procedencia y 3 advertencias. \\
+  \bottomrule
+\end{tabularx}
+\end{table}
+
+Claude generó diez tablas, cuatro dimensiones y seis medidas en ambos intentos, pero utilizó \file{CustomerID} sin una ruta válida desde el hecho y declaró una procedencia incompatible; las reglas impidieron aprobar y materializar el resultado. El adaptador Anthropic omite actualmente pensamiento extendido, por lo que medio y alto no representan esfuerzos efectivos distintos. En contraste, la propuesta Groq 73 con nivel bajo conserva cero errores y advertencias y produjo la ejecución 9 conciliada; la propuesta Claude 77 con nivel bajo es válida, pero conserva siete advertencias y cobertura financiera parcial.
+
+La decisión operativa es usar \textbf{Groq en nivel bajo} como proveedor principal para generar la propuesta y \textbf{Claude Haiku en nivel bajo o mínimo} como contingencia cuando Groq esté saturado. Medio y alto no se recomiendan como valores predeterminados para este contrato extenso. Las propuestas 78--81 quedaron sin aprobación ni ETL y la configuración Claude de nivel bajo fue restaurada y probada al concluir.
+
 El proveedor puede explicar y resumir; no calcula cifras de autoridad. Los indicadores, filtros, conciliación y archivos se construyen por código determinístico.
 
 \section{Endurecimiento del asistente y del copiloto}
@@ -186,7 +209,9 @@ La repetición de la necesidad con Anthropic produjo la propuesta 77 y evidenci�
 
 La ejecución 10 permitió comprobar compatibilidad histórica. Sin repetir el ETL, el dashboard volvió a resolver \file{Venta promedio por unidad vendida} como \file{SUM(ventas) / SUM(unidades)} = USD 401,49, cambió la etiqueta incorrecta a \textbf{Importe promedio por línea de venta} y ocultó tarjetas que sólo repetían el mismo total con otro nombre. Su selección se identifica como cobertura parcial porque no incorporó todos los indicadores financieros solicitados.
 
-Para evitar que una prueba futura reemplace el resultado anterior, cada carga nueva publica un esquema \file{mart\_ventas\_e\{id\}}. El selector analítico lista únicamente ejecuciones conciliadas con filas físicas disponibles y pasa la misma ejecución al dashboard, al copiloto y a PDF/Excel. El esquema \file{mart\_ventas} permanece como compatibilidad para la última materialización previa a esta regla.
+Para evitar que una prueba futura reemplace el resultado anterior, cada carga nueva publica un esquema \file{mart\_ventas\_e\{id\}}. La analítica lista únicamente ejecuciones conciliadas con filas físicas disponibles y pasa la misma ejecución al dashboard, al copiloto y a PDF/Excel. Si sólo existe una alternativa real, la interfaz la identifica como \textbf{Datamart activo} en modo de lectura y omite un combo sin capacidad de elección; el selector aparece automáticamente desde dos alternativas físicas. Los demás expedientes continúan accesibles para auditoría. El esquema \file{mart\_ventas} permanece como compatibilidad para la última materialización previa a esta regla.
+
+La interacción de barras y territorios también se ajustó para espacios reducidos: nombre, valor exacto, participación y acciones se redistribuyen dentro de la tarjeta mediante columnas adaptativas, sin cortar texto ni invadir visualizaciones vecinas. Esta validación forma parte de la prueba de regresión responsive del dashboard.
 
 \section{Evidencia cuantitativa del cierre}
 

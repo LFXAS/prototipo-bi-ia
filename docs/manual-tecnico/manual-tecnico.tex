@@ -91,11 +91,11 @@
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & MAN-TEC-01 \\
-    Versión del manual & 4.0.4 \\
+    Versión del manual & 4.0.6 \\
     Línea base & Ramas \file{develop} y \file{main} \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
     Clasificación & Documentación técnica - repositorio público \\
-    Fecha & 26 de septiembre de 2026 \\
+    Fecha & 27 de septiembre de 2026 \\
   \end{tabularx}
 
   \vfill
@@ -512,7 +512,9 @@ Los mensajes distinguen sesión vencida (401), permiso insuficiente (403) y serv
 
 Si una excepción inesperada ocurre durante el renderizado, el límite global de la interfaz muestra \textbf{El expediente sigue seguro} y ofrece recargar. La recuperación no ejecuta nuevamente el ETL. Al abrir un expediente desde el historial también se restablece el desplazamiento al inicio del comprobante, evitando que una posición antigua se perciba como una página en blanco.
 
-La ejecución 9, asociada con la propuesta 73, conserva el expediente completo de referencia. Una carga posterior, la ejecución 10 generada desde Anthropic, sustituyó físicamente el esquema legado antes de introducir el versionado y por ello es la única versión antigua que todavía puede consultarse. El selector \textbf{Datamart analizado} no confunde expedientes históricos con datos disponibles: muestra la ejecución 10 como cobertura parcial y omite la 9 de la lista analítica, aunque ambas continúan disponibles para auditoría. Las cargas creadas con la versión vigente quedan en \file{mart\_ventas\_e\{id\}} y pueden compararse sin repetir ni destruir el ETL anterior.
+La ejecución 9, asociada con la propuesta 73, conserva el expediente completo de referencia. Una carga posterior, la ejecución 10 generada desde Anthropic, sustituyó físicamente el esquema legado antes de introducir el versionado y por ello es la única versión antigua que todavía puede consultarse. La analítica no confunde expedientes históricos con datos disponibles: muestra la ejecución 10 como cobertura parcial y omite la 9 del catálogo analítico, aunque ambas continúan disponibles para auditoría. Cuando existe un solo datamart físico se presenta como \textbf{Datamart activo} sin un selector redundante y se ofrece acceso a los expedientes; el combo \textbf{Datamart analizado} aparece sólo desde dos alternativas realmente consultables. Las cargas creadas con la versión vigente quedan en \file{mart\_ventas\_e\{id\}} y pueden compararse sin repetir ni destruir el ETL anterior.
+
+Al seleccionar un punto, barra o territorio, el detalle mantiene nombre, valor, participación y acciones dentro de la tarjeta. La rejilla adapta sus columnas al ancho disponible y permite partir cadenas extensas; por tanto, un valor monetario largo o una etiqueta descriptiva no debe superponerse con la tarjeta contigua. Esta regla debe comprobarse en vista ejecutiva, analítica y resolución móvil.
 
 La corrección es neutral al proveedor. Gemini, Groq, Anthropic, Qwen y Ollama pueden redactar nombres distintos, pero FastAPI compila medidas y dependencias a identificadores técnicos. Los KPI con la misma medida, operación y función se consolidan; \file{AVG(LineTotal)} se muestra como \textbf{Importe promedio por línea de venta}, mientras que \textbf{Venta promedio por unidad vendida} se calcula como suma de ventas dividida para suma de unidades. Una receta derivada que no resuelve sus entradas se presenta como \textbf{No calculable} y nunca recibe confirmación verde.
 
@@ -526,13 +528,27 @@ Cada descarga registra actor, formato, vista, ejecución, indicador y filtros. L
 
 La pantalla Configuración LLM mantiene nombre, proveedor, URL validada, modelo, estado y resultado de prueba. Puede existir una sola configuración activa. Para Gemini, Groq, Anthropic o Qwen Cloud se guarda primero el registro y después se usa \textbf{Registrar credencial}; cuando ya existe, la acción cambia a \textbf{Reemplazar credencial}. La clave se envía una sola vez y nunca vuelve al navegador. La tabla sólo presenta \textbf{Credencial pendiente} o \textbf{Credencial configurada}.
 
-El identificador del modelo se parametriza porque el catálogo del proveedor cambia. Gemini se probó con \file{gemini-3.6-flash}. Para baja latencia, Sprint 4 incorporó Groq Cloud con URL restringida \file{https://api.groq.com/openai/v1} y modelo \file{openai/gpt-oss-120b}. La pantalla incorpora \textbf{Nivel de razonamiento}: automático, mínimo, bajo, medio o alto. Para GPT--OSS en Groq, mínimo se traduce a \file{low}; bajo, medio y alto se conservan. La prueba reserva 256 tokens de finalización y usa \file{reasoning\_format: hidden}; la generación aumenta el presupuesto según el contrato. Así se corrigió el error 400 que aparecía cuando el razonamiento consumía la salida antes de completar el JSON. Cambiar URL, modelo o razonamiento invalida la prueba anterior.
+El identificador del modelo se parametriza porque el catálogo del proveedor cambia. Gemini se probó con \file{gemini-3.6-flash}. Para baja latencia, Sprint 4 incorporó Groq Cloud con URL restringida \file{https://api.groq.com/openai/v1} y modelo \file{openai/gpt-oss-120b}. La pantalla incorpora \textbf{Nivel de razonamiento}: automático, mínimo, bajo, medio o alto. Para GPT--OSS en Groq, mínimo se traduce a \file{low}; bajo, medio y alto se conservan. La prueba reserva salida según el nivel y usa \file{include\_reasoning: false}; la generación aumenta el presupuesto según el contrato. Así se corrigió la clasificación del error 400 que aparecía cuando el razonamiento consumía la salida antes de completar el JSON. Cambiar URL, modelo o razonamiento invalida la prueba anterior.
 
 Anthropic Claude usa exclusivamente \url{https://api.anthropic.com} y la ruta \file{/v1/messages}. El preset inicial es \file{claude-haiku-4-5-20251001} con nivel mínimo, recomendado cuando se dispone de poco saldo por su menor costo y latencia. \file{claude-sonnet-4-5-20250929} puede escribirse como modelo alternativo si la cuenta todavía lo autoriza y el análisis justifica mayor consumo. FastAPI envía \file{x-api-key} y \file{anthropic-version: 2023-06-01}, incorpora el esquema esperado a la instrucción, omite pensamiento extendido y vuelve a validar localmente el JSON antes de usarlo. La clave prestada se registra en la instalación local; no debe copiarse a \file{.env}, Git, capturas o documentos.
 
 FastAPI cifra la clave mediante cifrado autenticado y almacena únicamente el texto cifrado en \path{app.secrets}. La raíz criptográfica se genera automáticamente con permisos restrictivos en \path{/var/lib/bi-ia-secrets/master.key} y se conserva en el volumen \path{secret_key_data}, separado de PostgreSQL. Si se borra ese volumen, las credenciales existentes dejan de poder descifrarse y deberán reemplazarse desde la pantalla. No se copia el volumen entre equipos y no se versiona. \path{GEMINI_API_KEY} y \path{DASHSCOPE_API_KEY} ya no se utilizan.
 
 Para probar una configuración cloud se registra la credencial, se usa \textbf{Probar conexión} y se revisa el aviso verde de éxito o rojo con causa segura. La prueba sale desde FastAPI, descifra sólo en memoria, tiene tiempo limitado y no envía datos del negocio. La auditoría conserva la acción y el proveedor, nunca la clave ni el contenido de la respuesta.
+
+\subsection{Selección operativa de Groq o Claude}
+
+La prueba de conexión es necesaria, pero no suficiente para seleccionar proveedor. El procedimiento de aceptación debe repetir una necesidad de referencia, generar una propuesta sin aprobarla y comprobar estado, errores, advertencias, cobertura, medidas y KPI. La comparativa del 27 de septiembre produjo los siguientes resultados:
+
+\begin{itemize}
+  \item Groq medio, propuesta 78: conexión correcta y salida estructurada incompleta;
+  \item Groq alto, propuesta 79: conexión correcta y límite temporal después de los reintentos;
+  \item Claude medio y alto, propuestas 80 y 81: contratos completos, pero dos errores bloqueantes de referencia/procedencia y tres advertencias cada uno;
+  \item Groq bajo, propuesta 73: cero errores y advertencias, ejecución 9 totalmente conciliada;
+  \item Claude bajo, propuesta 77: cero errores, siete advertencias y resultado apto sólo para revisión.
+\end{itemize}
+
+Para este proyecto se configura \textbf{Groq bajo} como primera opción y \textbf{Claude Haiku bajo o mínimo} como respaldo. No se recomienda medio/alto para generar el contrato integral: Groq consume más presupuesto de salida o cuota, mientras que el adaptador Claude omite pensamiento extendido y esos niveles no cambian el esfuerzo efectivo. Si Groq falla por saturación, el analista activa Claude, prueba conexión y genera una versión nueva; nunca se reutiliza silenciosamente una salida fallida ni se aprueba una propuesta con errores. La metodología completa se conserva en el documento comparativo \url{docs/experiments/2026-09-27-groq-vs-claude.md}.
 
 \subsection{Alternativa LLM local con Ollama}
 
@@ -1178,6 +1194,8 @@ make verify
   4.0.2 & 26-09-2026 & Propuesta 73 y ejecución 9 conciliada, analítica publicada, pruebas de exportación/copiloto y recuperación explícita ante fallos visuales. \\
   4.0.3 & 26-09-2026 & Promedios por unidad con denominador explícito, tarjetas ejecutivas legibles, contraste del chat y consulta inmutable de las cinco etapas históricas. \\
   4.0.4 & 26-09-2026 & Gráficos interactivos y accesibles, menú profesional por flujo de trabajo e integración segura de Anthropic Claude con Haiku 4.5. \\
+  4.0.5 & 27-09-2026 & Datamart único identificado sin combo redundante, enlace a expedientes auditables y detalle interactivo adaptativo sin desbordamientos. \\
+  4.0.6 & 27-09-2026 & Comparativa integral Groq--Claude, selección operativa de proveedor y restricción consistente de niveles Claude sin pensamiento extendido. \\
   \bottomrule
 \end{longtable}
 

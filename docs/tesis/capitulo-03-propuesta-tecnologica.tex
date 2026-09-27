@@ -87,7 +87,7 @@
     Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tipo de documento & Texto base para integración en el trabajo de titulación \\
     Código documental & TES-CAP-03 \\
-    Versión & 1.2.0 \\
+    Versión & 1.2.1 \\
     Periodo cubierto & Sprints 1 al 5; agosto--septiembre de 2026 \\
     Estado & Núcleo funcional implementado y verificado; validación académica final pendiente \\
   \end{tabularx}
@@ -480,9 +480,15 @@ Los puntos, barras y leyendas se convirtieron en controles interactivos accesibl
 
 Una repetición controlada con Anthropic reveló que la neutralidad no se logra sólo aceptando el mismo JSON: nombres diferentes podían describir la misma receta o atribuir semántica por unidad a un promedio de línea. La solución separó la etiqueta del identificador de cálculo, consolidó recetas equivalentes y volvió a comprobar la cobertura después de seleccionar KPI. Además, las nuevas materializaciones se almacenan por ejecución y el dashboard permite elegir únicamente versiones conciliadas cuyos datos físicos se conservan. De esta forma una prueba con otro proveedor no reemplaza silenciosamente el datamart anterior ni presenta un indicador no calculable como exitoso.
 
+La interfaz evita presentar una elección ficticia: con una sola ejecución físicamente consultable muestra un identificador de \textbf{Datamart activo} y mantiene los demás expedientes como evidencia auditable; el selector se habilita únicamente cuando existen dos o más alternativas reales. Los detalles de cada gráfico emplean una disposición adaptativa para contener etiquetas, valores y participaciones sin desbordar la tarjeta, preservando legibilidad y continuidad visual en escritorio y móvil.
+
+Como experimento comparativo de cierre, la misma necesidad, instantánea y seis preguntas se ejecutaron con Groq GPT--OSS 120B y Claude Haiku 4.5 en niveles configurados medio y alto. Las cuatro conexiones mínimas fueron satisfactorias; sin embargo, Groq medio no completó el JSON estructurado, Groq alto alcanzó un límite temporal y Claude medio/alto produjo contratos completos que fueron bloqueados por dos errores de referencia y procedencia. Ninguna de las propuestas 78--81 fue aprobada ni materializada. El adaptador Anthropic vigente omite pensamiento extendido, por lo que sus niveles medio y alto no constituyen esfuerzos efectivos diferentes.
+
+El contraste histórico completó la decisión: Groq bajo produjo la propuesta 73 con cero errores y cero advertencias y permitió conciliar la ejecución 9; Claude bajo produjo la propuesta 77 sin errores pero con siete advertencias y cobertura financiera parcial. Se recomienda Groq bajo como proveedor principal y Claude Haiku bajo o mínimo como respaldo. Este resultado también valida el diseño supervisado: una respuesta completa del modelo no se convierte en datos si sus columnas, rutas o fórmulas no pueden demostrarse.
+
 El cierre del incremento fortaleció la formulación y viabilidad de la necesidad, la cobertura de requisitos, la trazabilidad de medidas y fórmulas, las relaciones corregibles con objetos reales, los indicadores financieros y la recuperación del asistente después de vencer la sesión. El borrador local excluye credenciales y documentos completos; la versión se recupera desde la API con autorización renovada.
 
-Como validación de cierre, la propuesta 73 se generó nuevamente con Groq y el motor \file{sales-bi-v6}. La ejecución 9 cargó 121317 líneas con diferencia cero, produjo nueve KPI sin equivalencias duplicadas e incorporó ventas brutas, descuento monetario, costo, margen y valores por unidad. \file{dim\_cliente} mantuvo 19820 nombres completos y tipo de cliente con cobertura del 100\%. Tras publicar sólo las etiquetas territoriales revisadas, el tablero, los filtros, las exportaciones y una consulta Top 5 fuera del lienzo se comprobaron sobre esa ejecución.
+Como validación de cierre se utilizó el motor \file{sales-bi-v6}. La propuesta 73 se generó nuevamente con Groq y la ejecución 9 cargó 121317 líneas con diferencia cero, produjo nueve KPI sin equivalencias duplicadas e incorporó ventas brutas, descuento monetario, costo, margen y valores por unidad. \file{dim\_cliente} mantuvo 19820 nombres completos y tipo de cliente con cobertura del 100\%. Tras publicar sólo las etiquetas territoriales revisadas, el tablero, los filtros, las exportaciones y una consulta Top 5 fuera del lienzo se comprobaron sobre esa ejecución.
 
 Los cocientes financieros se rotularon conforme a su semántica: costo total dividido para unidades vendidas y ventas brutas divididas para unidades vendidas se presentan como promedios ponderados por unidad vendida. Además, las cinco etapas de las propuestas aprobadas y de las ejecuciones terminadas permanecen navegables en modo de consulta. Esta decisión conserva el artefacto aprobado, impide una segunda materialización accidental y convierte la propia aplicación en evidencia demostrable del proceso.
 
@@ -524,7 +530,7 @@ La validación combina cuatro niveles: análisis estático y pruebas unitarias; 
   Contrato BI & Referencias, FK, grano, KPI, operaciones y reproducción. & Verificado. \\
   Conciliación & 121317 filas origen y destino; diferencia cero. & Conciliado. \\
   Calidad descriptiva & 19820 clientes con nombre y tipo; cero etiquetas vacías. & Verificado. \\
-  Analítica y chat & Vistas por perfil, gráficos interactivos, filtros, evidencia, guía de preguntas y proveedores Groq/Anthropic bajo contrato. & Verificado. \\
+  Analítica y chat & Vistas por perfil, gráficos interactivos, filtros, evidencia, guía de preguntas y comparativa Groq/Claude con propuestas 78--81 bloqueadas de forma segura. & Verificado. \\
   Reportería & PDF de seis páginas y seis hojas Excel renderizadas sin cortes. & Verificado. \\
   Trazabilidad & Propuestas 52/54/73 y ejecuciones 6/7/9 reabribles. & Verificado. \\
   \bottomrule
@@ -581,7 +587,7 @@ Universidad de Guayaquil. \emph{Trabajo de titulación con Capítulo III de prop
   Código & TES-CAP-03 \\
   Fuente editable & \path{docs/tesis/capitulo-03-propuesta-tecnologica.tex} \\
   Compilación & \path{make thesis-chapter3} o \path{make docs} \\
-  Versión & 1.2.0 -- 26-09-2026 \\
+  Versión & 1.2.1 -- 27-09-2026 \\
   Regla de uso & Integrar en la plantilla final y actualizar figuras, requisitos, resultados y referencias al cerrar nuevos sprints. \\
   \bottomrule
 \end{tabularx}
