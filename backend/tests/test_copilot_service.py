@@ -677,6 +677,38 @@ def test_compact_ai_blueprint_is_expanded_and_validated_deterministically() -> N
     assert validation["valid"] is True
 
 
+def test_provider_duplicate_unit_averages_are_normalized_before_review() -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+    blueprint = valid_blueprint()
+    blueprint["measures"][0]["semantic_role"] = "sales_amount"
+    blueprint["kpis"] = [
+        {
+            "code": "precio_promedio_unidad",
+            "name": "Precio promedio por unidad",
+            "measure_index": 0,
+            "operation": "average",
+            "unit": "moneda",
+        },
+        {
+            "code": "ventas_por_unidad",
+            "name": "Ventas por unidad",
+            "measure_index": 0,
+            "operation": "average",
+            "unit": "moneda",
+        },
+    ]
+
+    proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
+
+    assert len(proposal["kpis"]) == 1
+    assert proposal["kpis"][0]["name"] == "Importe promedio por línea de venta"
+    assert any("receta equivalente" in item for item in proposal["automatic_adjustments"])
+    assert any(
+        item.get("status") == "auto_deduplicated" for item in proposal["decision_diagnostics"]
+    )
+
+
 def test_sales_amount_never_uses_an_identifier_as_automatic_replacement() -> None:
     semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
     scope = derived_scope(DOCUMENT, semantic_map)

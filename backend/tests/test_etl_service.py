@@ -2,15 +2,19 @@ from __future__ import annotations
 
 from copy import deepcopy
 
+import pytest
+
 from app.modules.etl.materializer import (
     _detect_currency_context,
     _resolve_kpi_currency_units,
+    _validated_destination_schema,
     build_materialization_plan,
 )
 from app.modules.etl.models import EtlExecution
 from app.modules.etl.router import _applied_semantic_document, _same_execution_contract
 from app.modules.etl.service import (
     assess_dimensional_readiness,
+    assess_selection_coverage,
     compile_kpi_recipes,
     compile_transformation_plan,
 )
@@ -101,6 +105,13 @@ def test_same_execution_contract_ignores_kpi_order_but_not_selection() -> None:
 
     assert _same_execution_contract(execution, ["unidades_vendidas", "ventas_netas"])
     assert not _same_execution_contract(execution, ["ventas_netas"])
+
+
+def test_only_legacy_or_execution_owned_mart_schemas_are_allowed() -> None:
+    assert _validated_destination_schema("mart_ventas") == "mart_ventas"
+    assert _validated_destination_schema("mart_ventas_e11") == "mart_ventas_e11"
+    with pytest.raises(ValueError, match="catálogo controlado"):
+        _validated_destination_schema("public")
 
 
 class _CurrencyCursor:
@@ -213,6 +224,96 @@ def test_compiles_variable_ai_kpis_into_versioned_recipes() -> None:
         "measure": "importe_venta",
         "operation": "sum",
     }
+
+
+def test_provider_labels_compile_to_physical_ids_and_derived_inputs() -> None:
+    candidate = proposal()
+    candidate["fact"]["measures"] = [
+        {
+            "name": "Importe de venta neta",
+            "source_columns": ["LineTotal"],
+            "aggregation": "sum",
+            "semantic_role": "sales_amount",
+        },
+        {
+            "name": "Cantidad vendida",
+            "source_columns": ["OrderQty"],
+            "aggregation": "sum",
+            "semantic_role": "quantity",
+        },
+    ]
+    candidate["kpis"] = [
+        {
+            "code": "ventas",
+            "name": "Ventas",
+            "formula": {"operation": "sum", "measure": "Importe de venta neta"},
+            "unit": "moneda",
+        },
+        {
+            "code": "venta_por_unidad",
+            "name": "Venta por unidad",
+            "formula_kind": "ratio",
+            "inputs": ["Importe de venta neta", "Cantidad vendida"],
+            "unit": "moneda de origen por unidad",
+        },
+    ]
+
+    recipes, issues = compile_kpi_recipes(candidate)
+
+    assert issues == []
+    assert recipes[0]["recipe"]["measure"] == "importe_de_venta_neta"
+    assert recipes[1]["recipe"]["numerator"] == "importe_de_venta_neta"
+    assert recipes[1]["recipe"]["denominator"] == "cantidad_vendida"
+
+
+def test_duplicate_average_of_line_total_is_deduplicated_and_named_honestly() -> None:
+    candidate = proposal()
+    candidate["fact"]["measures"][0]["name"] = "Importe de venta neta"
+    candidate["fact"]["measures"][0]["source_columns"] = ["LineTotal"]
+    candidate["kpis"] = [
+        {
+            "code": "precio_promedio_unidad",
+            "name": "Precio promedio por unidad",
+            "formula": {"operation": "average", "measure": "Importe de venta neta"},
+            "unit": "moneda",
+        },
+        {
+            "code": "ventas_por_unidad",
+            "name": "Ventas por unidad",
+            "formula": {"operation": "average", "measure": "Importe de venta neta"},
+            "unit": "moneda",
+        },
+    ]
+
+    recipes, issues = compile_kpi_recipes(candidate)
+
+    assert issues == []
+    assert len(recipes) == 1
+    assert recipes[0]["name"] == "Importe promedio por línea de venta"
+    assert recipes[0]["adjustments"]
+
+
+def test_selection_coverage_marks_omitted_requested_financial_kpis_as_partial() -> None:
+    candidate = proposal()
+    candidate["need_assessment"] = {
+        "requirements": [
+            {"code": "goal:total_cost", "status": "derivable"},
+            {"code": "goal:sales_per_unit", "status": "derivable"},
+        ]
+    }
+    candidate["kpis"].extend(
+        [
+            {"code": "costo_total"},
+            {"code": "venta_por_unidad"},
+        ]
+    )
+
+    partial = assess_selection_coverage(candidate, ["venta_por_unidad"])
+    complete = assess_selection_coverage(candidate, ["venta_por_unidad", "costo_total"])
+
+    assert partial["status"] == "partial"
+    assert partial["missing_kpi_codes"] == ["costo_total"]
+    assert complete["status"] == "complete"
 
 
 def test_unverified_currency_is_not_presented_as_a_fact() -> None:
