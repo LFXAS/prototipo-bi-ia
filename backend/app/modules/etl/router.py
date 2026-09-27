@@ -29,6 +29,7 @@ from app.modules.etl.schemas import (
 from app.modules.etl.service import (
     BUILDER_VERSION,
     assess_dimensional_readiness,
+    assess_selection_coverage,
     compile_kpi_recipes,
     compile_transformation_plan,
     proposal_overview,
@@ -356,6 +357,9 @@ async def prepare_execution(
             detail="Los KPI seleccionados ya no están disponibles: " + ", ".join(unknown),
         )
     selected = [available[code] for code in payload.selected_kpi_codes]
+    selection_coverage = assess_selection_coverage(
+        proposal.proposal_document, payload.selected_kpi_codes
+    )
     prior_executions = list(
         (
             await session.execute(
@@ -399,6 +403,7 @@ async def prepare_execution(
             "confirmed_at": datetime.now(UTC).isoformat(),
             "analyst_comment": payload.analyst_comment,
             "selected_kpi_codes": payload.selected_kpi_codes,
+            "coverage": selection_coverage,
         },
         plan_document={
             "overview": {
@@ -415,7 +420,11 @@ async def prepare_execution(
             "preflight_passed": True,
             "blocking_reasons": [],
             "warnings": candidate.warnings,
-            "message": "Contrato, fuente, transformaciones y KPI preparados para materialización.",
+            "message": (
+                "Contrato, fuente, transformaciones y KPI preparados para materialización."
+                if selection_coverage["status"] == "complete"
+                else "Contrato preparado como selección parcial; revise los KPI omitidos."
+            ),
         },
         metrics_document={},
         created_by_user_id=actor.id,
@@ -720,7 +729,12 @@ async def retry_spanish_interpretation(
                 "Resuelva primero los errores de materialización."
             ),
         )
-    candidates = await asyncio.to_thread(discover_spanish_label_candidates, execution.id)
+    destination_schema = str(execution.metrics_document.get("destination_schema", "mart_ventas"))
+    candidates = await asyncio.to_thread(
+        discover_spanish_label_candidates,
+        execution.id,
+        destination_schema,
+    )
     metrics = dict(execution.metrics_document)
     if not candidates:
         metrics["semantic_interpretation"] = {
@@ -849,7 +863,13 @@ async def apply_spanish_interpretation(
                 "mappings": normalized_mappings,
             }
         )
-    applied = await asyncio.to_thread(apply_spanish_labels, execution.id, reviewed)
+    destination_schema = str(metrics.get("destination_schema", "mart_ventas"))
+    applied = await asyncio.to_thread(
+        apply_spanish_labels,
+        execution.id,
+        reviewed,
+        destination_schema,
+    )
     semantic = _applied_semantic_document(
         stored_semantic,
         applied,

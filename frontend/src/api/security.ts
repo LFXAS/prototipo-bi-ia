@@ -203,6 +203,17 @@ export type EtlExecution = {
   finished_at?: string
 }
 export type AnalyticsOption = { value: string; label: string }
+export type AnalyticsExecutionOption = {
+  execution_id: number
+  proposal_id: number
+  label: string
+  provider_kind: string
+  model_id: string
+  finished_at: string
+  coverage_status: 'complete' | 'partial'
+  calculable_kpis: number
+  total_kpis: number
+}
 export type AnalyticsMetric = {
   code: string
   name: string
@@ -407,16 +418,19 @@ export const api = {
   retryEtlSpanishInterpretation: (token: string, id: number) => request<EtlExecution>(`/etl/executions/${id}/interpret-spanish`, token, { method: 'POST' }),
   applyEtlSpanishInterpretation: (token: string, id: number, body: { confirmation: boolean; analyst_comment: string; groups: Array<{ dimension: string; target_column: string; mappings: Array<{ original: string; label_es: string }> }> }) => request<EtlExecution>(`/etl/executions/${id}/interpret-spanish/apply`, token, { method: 'POST', body: JSON.stringify(body) }),
   etlExecutions: (token: string, limit = 10, offset = 0) => request<Page<EtlExecution>>(`/etl/executions?limit=${limit}&offset=${offset}`, token),
-  analyticsDashboard: (token: string, filters: { metricCode?: string; year?: string; territory?: string } = {}) => {
+  analyticsExecutions: (token: string) => request<AnalyticsExecutionOption[]>('/analytics/executions', token),
+  analyticsDashboard: (token: string, filters: { executionId?: number; metricCode?: string; year?: string; territory?: string } = {}) => {
     const query = new URLSearchParams()
+    if (filters.executionId) query.set('execution_id', String(filters.executionId))
     if (filters.metricCode) query.set('metric_code', filters.metricCode)
     if (filters.year) query.set('year', filters.year)
     if (filters.territory) query.set('territory', filters.territory)
     const suffix = query.size ? `?${query.toString()}` : ''
     return request<AnalyticsDashboard>(`/analytics/dashboard${suffix}`, token)
   },
-  analyticsReport: (token: string, format: 'pdf' | 'xlsx', filters: { metricCode?: string; year?: string; territory?: string; view: 'executive' | 'analyst' }) => {
+  analyticsReport: (token: string, format: 'pdf' | 'xlsx', filters: { executionId?: number; metricCode?: string; year?: string; territory?: string; view: 'executive' | 'analyst' }) => {
     const query = new URLSearchParams({ view: filters.view })
+    if (filters.executionId) query.set('execution_id', String(filters.executionId))
     if (filters.metricCode) query.set('metric_code', filters.metricCode)
     if (filters.year) query.set('year', filters.year)
     if (filters.territory) query.set('territory', filters.territory)

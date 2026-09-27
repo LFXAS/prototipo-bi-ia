@@ -44,7 +44,22 @@ Sólo `parameters.llm.manage` modifica la configuración. La prueba usa el míni
 - [x] Anthropic valida endpoint, cabeceras, modelo, presupuesto, extracción de
       bloques de texto, JSON y clasificación segura de autenticación, autorización,
       modelo inexistente y saturación.
+- [x] La misma necesidad compleja se ejecuta con Groq y Claude en medio y alto;
+      conexión, tiempo, estado, errores, advertencias y cobertura quedan registrados
+      sin aprobar propuestas ni materializar otro datamart.
+- [x] Después del experimento, Claude deja de ofrecer medio/alto porque el adaptador
+      vigente omite pensamiento extendido; la API aplica la misma restricción y evita
+      configuraciones engañosas fuera de la interfaz.
 
 ## 6. Resultado de implementación
 
-El rechazo HTTP 400 no se debía a que Groq prohibiera el esfuerzo medio o alto para `openai/gpt-oss-120b`, sino a que la prueba consumía su presupuesto reducido antes de completar el JSON. La prueba pasó a reservar 256 tokens de finalización, usa `reasoning_format: hidden` y la generación asigna un presupuesto acorde al contrato. La conexión real se comprobó con esfuerzo alto y el copiloto analítico respondió con Groq sin exponer la traza de razonamiento.
+El rechazo HTTP 400 no se debía a que Groq prohibiera el esfuerzo medio o alto para `openai/gpt-oss-120b`, sino a que la prueba consumía su presupuesto reducido antes de completar el JSON. La prueba corta reserva salida según el nivel, usa `include_reasoning: false` y la generación asigna un presupuesto acorde al contrato. La conexión real se comprobó con esfuerzo alto y el copiloto analítico respondió con Groq sin exponer la traza de razonamiento.
+
+La comparación integral del 27 de septiembre añadió una distinción necesaria: la
+compatibilidad de parámetros no garantiza que un contrato BI complejo finalice. Groq
+medio no completó la salida estructurada y Groq alto alcanzó un límite temporal; Claude
+medio/alto devolvió contratos completos, pero las reglas bloquearon dos errores de
+procedencia. El adaptador Claude omite pensamiento extendido, por lo que esos dos niveles
+no representan todavía esfuerzos diferentes. La decisión operativa es Groq bajo como
+principal y Claude bajo/mínimo como respaldo. La evidencia completa está en
+`docs/experiments/2026-09-27-groq-vs-claude.md`.

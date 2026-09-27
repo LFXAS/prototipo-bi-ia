@@ -89,6 +89,14 @@ class LlmConfigurationCreate(BaseModel):
             raise ValueError(
                 "La URL no corresponde al proveedor seleccionado o no es una URL interna permitida."
             )
+        if self.provider_kind == "anthropic-cloud" and self.reasoning_level in {
+            "medium",
+            "high",
+        }:
+            raise ValueError(
+                "Claude no tiene pensamiento extendido habilitado en esta modalidad; "
+                "use automático, mínimo o bajo."
+            )
         return self
 
 

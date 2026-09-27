@@ -10,6 +10,56 @@ SUPPORTED_AGGREGATIONS = {"sum", "count", "count_distinct", "average", "min", "m
 SUPPORTED_RECIPE_KINDS = {"aggregate", "difference", "ratio", "share"}
 
 
+def _recipe_identifier(value: object) -> str:
+    """Compile provider-facing labels into the physical identifier used by the mart."""
+    normalized = re.sub(r"[^a-z0-9]+", "_", str(value).casefold()).strip("_")
+    if not normalized or normalized[0].isdigit():
+        normalized = f"campo_{normalized}"
+    return normalized[:55]
+
+
+def assess_selection_coverage(
+    proposal: dict[str, Any], selected_kpi_codes: list[str]
+) -> dict[str, Any]:
+    """Describe whether an ETL selection still exposes requested financial outcomes."""
+    requirements = proposal.get("need_assessment", {}).get("requirements", [])
+    requested = {
+        str(item.get("code"))
+        for item in requirements
+        if isinstance(item, dict) and str(item.get("status")) in {"direct", "derivable"}
+    }
+    required_by_requirement = {
+        "goal:total_cost": {"costo_total"},
+        "goal:gross_margin": {"margen_bruto", "margen_porcentaje"},
+        "goal:cost_per_unit": {"costo_por_unidad"},
+        "goal:sales_per_unit": {"venta_por_unidad"},
+    }
+    proposal_codes = {
+        str(item.get("code"))
+        for item in proposal.get("kpis", [])
+        if isinstance(item, dict) and item.get("code")
+    }
+    required_codes = sorted(
+        code
+        for requirement, codes in required_by_requirement.items()
+        if requirement in requested
+        for code in codes
+        if code in proposal_codes
+    )
+    selected = set(selected_kpi_codes)
+    missing = [code for code in required_codes if code not in selected]
+    return {
+        "status": "complete" if not missing else "partial",
+        "required_kpi_codes": required_codes,
+        "missing_kpi_codes": missing,
+        "message": (
+            "La selección conserva los resultados financieros solicitados."
+            if not missing
+            else "La selección omite indicadores solicitados y se publicará como parcial."
+        ),
+    }
+
+
 def assess_dimensional_readiness(
     proposal: dict[str, Any], schema_document: dict[str, Any]
 ) -> tuple[list[str], list[str]]:
@@ -175,6 +225,7 @@ def compile_kpi_recipes(proposal: dict[str, Any]) -> tuple[list[dict[str, Any]],
     }
     recipes: list[dict[str, Any]] = []
     issues: list[str] = []
+    recipe_signatures: set[tuple[str, ...]] = set()
     for raw in proposal.get("kpis", []):
         if not isinstance(raw, dict):
             issues.append("Existe un KPI sin estructura reconocible.")
@@ -239,6 +290,29 @@ def compile_kpi_recipes(proposal: dict[str, Any]) -> tuple[list[dict[str, Any]],
                     "La receta comprobada calcula precio por cantidad sin descontar una "
                     "tasa; por ello se presenta como venta bruta y no como venta neta."
                 )
+            if (
+                operation == "average"
+                and semantic_role == "sales_amount"
+                and re.search(r"\b(unit|unidad|unidades)\b", name, re.IGNORECASE)
+                and (
+                    any(
+                        re.search(r"line.?total|importe.*l[ií]nea", item, re.IGNORECASE)
+                        for item in [
+                            measure_name,
+                            *measures[measure_name].get("source_columns", []),
+                        ]
+                    )
+                    or any(
+                        re.search(r"qty|quantity|cantidad|units|unidades", item, re.IGNORECASE)
+                        for item in calculation_inputs
+                    )
+                )
+            ):
+                effective_name = "Importe promedio por línea de venta"
+                adjustments.append(
+                    "El promedio se aplica a un importe de línea; no representa un precio "
+                    "ni una venta por unidad. La etiqueta fue corregida sin cambiar la receta."
+                )
             if semantic_role in {
                 "sales_amount",
                 "cost_amount",
@@ -255,6 +329,14 @@ def compile_kpi_recipes(proposal: dict[str, Any]) -> tuple[list[dict[str, Any]],
                     f"La unidad {declared_unit} no está comprobada en los metadatos; "
                     "se mostrará como moneda de origen hasta conciliar la divisa."
                 )
+            measure_id = _recipe_identifier(measure_name)
+            signature = ("aggregate", measure_id, operation, semantic_role)
+            if signature in recipe_signatures:
+                # A provider may describe the same controlled calculation with two
+                # different labels.  Keeping one recipe is deterministic and must not
+                # make an otherwise valid proposal impossible to execute.
+                continue
+            recipe_signatures.add(signature)
             recipes.append(
                 {
                     "code": code,
@@ -266,10 +348,10 @@ def compile_kpi_recipes(proposal: dict[str, Any]) -> tuple[list[dict[str, Any]],
                     "adjustments": adjustments,
                     "periodicity": str(raw.get("periodicity", "inherit")),
                     "definition_version": "sales-kpi-v1",
-                    "inputs": [measure_name],
+                    "inputs": [measure_id],
                     "recipe": {
                         "template": "aggregate",
-                        "measure": measure_name,
+                        "measure": measure_id,
                         "operation": operation,
                     },
                 }
@@ -286,17 +368,20 @@ def compile_kpi_recipes(proposal: dict[str, Any]) -> tuple[list[dict[str, Any]],
         ):
             issues.append(f"El KPI {name} depende de medidas o indicadores no disponibles.")
             continue
+        compiled_inputs = [
+            _recipe_identifier(item) if item in measures else item for item in normalized_inputs
+        ]
         recipe: dict[str, Any] = {
             "template": kind,
-            "numerator": normalized_inputs[0],
-            "denominator": normalized_inputs[1],
+            "numerator": compiled_inputs[0],
+            "denominator": compiled_inputs[1],
             "zero_denominator": "null",
         }
         if kind == "difference":
             recipe = {
                 "template": kind,
-                "minuend": normalized_inputs[0],
-                "subtrahend": normalized_inputs[1],
+                "minuend": compiled_inputs[0],
+                "subtrahend": compiled_inputs[1],
             }
         if kind == "share":
             recipe["multiply_by"] = 100
@@ -309,7 +394,7 @@ def compile_kpi_recipes(proposal: dict[str, Any]) -> tuple[list[dict[str, Any]],
                 "unit": str(raw.get("unit", "porcentaje" if kind == "share" else "razón")),
                 "periodicity": str(raw.get("periodicity", "inherit")),
                 "definition_version": "sales-kpi-v1",
-                "inputs": normalized_inputs,
+                "inputs": compiled_inputs,
                 "recipe": recipe,
             }
         )

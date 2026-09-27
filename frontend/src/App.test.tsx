@@ -218,6 +218,8 @@ describe('App', () => {
     expect(screen.getByLabelText('URL del servicio')).toHaveValue('https://api.groq.com/openai/v1')
     expect(screen.getByLabelText('Modelo')).toHaveValue('openai/gpt-oss-120b')
     expect(screen.getByLabelText('Nivel de razonamiento')).toHaveValue('low')
+    expect(screen.getByRole('option', { name: 'Medio — análisis equilibrado' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'Alto — mayor tiempo y consumo' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Crear registro' }))
 
     await waitFor(() => expect(fetchMock.mock.calls.some(([input, init]) => String(input).includes('/llm-configurations') && init?.method === 'POST')).toBe(true))
@@ -255,6 +257,8 @@ describe('App', () => {
     expect(screen.getByLabelText('URL del servicio')).toHaveValue('https://api.anthropic.com')
     expect(screen.getByLabelText('Modelo')).toHaveValue('claude-haiku-4-5-20251001')
     expect(screen.getByLabelText('Nivel de razonamiento')).toHaveValue('minimal')
+    expect(screen.queryByRole('option', { name: 'Medio — análisis equilibrado' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('option', { name: 'Alto — mayor tiempo y consumo' })).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Crear registro' }))
 
     await waitFor(() => expect(fetchMock.mock.calls.some(([input, init]) => String(input).includes('/llm-configurations') && init?.method === 'POST')).toBe(true))

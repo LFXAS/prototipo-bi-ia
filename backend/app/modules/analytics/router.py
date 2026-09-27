@@ -12,6 +12,7 @@ from app.core.config import settings
 from app.db.session import get_session
 from app.modules.copilot.models import BiProposal
 from app.modules.etl.models import EtlExecution
+from app.modules.etl.service import assess_selection_coverage
 from app.modules.metadata.models import MetadataSnapshot
 from app.modules.parameters.models import LlmConfiguration, Parameter, Secret
 from app.modules.parameters.providers import ProviderGenerationError, generate_json
@@ -20,8 +21,18 @@ from app.modules.reports.analytics_export import build_analytics_pdf, build_anal
 from app.modules.security.models import User
 from app.modules.security.service import add_audit_event, require_permission, user_permission_codes
 
-from .schemas import AnalyticsCopilotRead, AnalyticsCopilotRequest, AnalyticsDashboardRead
-from .service import AnalyticsUnavailableError, build_dashboard, run_safe_aggregate_query
+from .schemas import (
+    AnalyticsCopilotRead,
+    AnalyticsCopilotRequest,
+    AnalyticsDashboardRead,
+    AnalyticsExecutionOptionRead,
+)
+from .service import (
+    AnalyticsUnavailableError,
+    build_dashboard,
+    execution_has_materialized_data,
+    run_safe_aggregate_query,
+)
 
 router = APIRouter(tags=["analytics"])
 _secret_cipher = SecretCipher(settings.secrets_key_path)
@@ -182,6 +193,65 @@ async def _load_dashboard(
         )
     except AnalyticsUnavailableError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@router.get("/analytics/executions", response_model=list[AnalyticsExecutionOptionRead])
+async def analytics_executions(
+    _: User = Depends(require_permission("analytics.dashboard.read")),
+    session: AsyncSession = Depends(get_session),
+) -> list[AnalyticsExecutionOptionRead]:
+    """List only reconciled executions whose physical dataset is still available."""
+    executions = (
+        await session.execute(
+            select(EtlExecution)
+            .where(EtlExecution.status == "succeeded")
+            .order_by(EtlExecution.finished_at.desc(), EtlExecution.id.desc())
+            .limit(50)
+        )
+    ).scalars()
+    options: list[AnalyticsExecutionOptionRead] = []
+    for execution in executions:
+        reconciliation = execution.metrics_document.get("reconciliation", {})
+        proposal = await session.get(BiProposal, execution.proposal_id)
+        if (
+            proposal is None
+            or execution.finished_at is None
+            or not isinstance(reconciliation, dict)
+            or not bool(reconciliation.get("passed"))
+            or not await execution_has_materialized_data(session, execution, proposal)
+        ):
+            continue
+        selected = execution.selection_document.get("selected_kpi_codes", [])
+        selected_codes = [str(item) for item in selected] if isinstance(selected, list) else []
+        coverage = assess_selection_coverage(proposal.proposal_document, selected_codes)
+        raw_metric_rows = execution.metrics_document.get("kpis", [])
+        metric_rows = (
+            [item for item in raw_metric_rows if isinstance(item, dict)]
+            if isinstance(raw_metric_rows, list)
+            else []
+        )
+        calculable = sum(item.get("status") == "reconciled" for item in metric_rows)
+        coverage_status = "partial" if coverage.get("status") == "partial" else "complete"
+        coverage_label = (
+            "cobertura parcial" if coverage_status == "partial" else "cobertura completa"
+        )
+        options.append(
+            AnalyticsExecutionOptionRead(
+                execution_id=execution.id,
+                proposal_id=execution.proposal_id,
+                label=(
+                    f"Ejecución #{execution.id} · propuesta #{execution.proposal_id} · "
+                    f"{coverage_label}"
+                ),
+                provider_kind=proposal.provider_kind,
+                model_id=proposal.model_id,
+                finished_at=execution.finished_at,
+                coverage_status=coverage_status,
+                calculable_kpis=calculable,
+                total_kpis=len(metric_rows),
+            )
+        )
+    return options
 
 
 @router.get("/analytics/dashboard", response_model=AnalyticsDashboardRead)

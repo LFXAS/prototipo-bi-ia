@@ -6,6 +6,9 @@ from app.modules.analytics.service import (
     _derived_recipe_value,
     _display_name_for_recipe,
     _display_unit_for_recipe,
+    _remember_resolved_measure,
+    _unique_recipes,
+    execution_has_materialized_data,
     run_safe_aggregate_query,
 )
 
@@ -73,6 +76,22 @@ def test_ratio_with_zero_denominator_is_not_calculable() -> None:
     assert result is None
 
 
+def test_legacy_provider_labels_resolve_against_physical_measure_ids() -> None:
+    result = _derived_recipe_value(
+        {
+            "kind": "ratio",
+            "recipe": {
+                "template": "ratio",
+                "numerator": "Importe de ventas neto",
+                "denominator": "Cantidad vendida",
+            },
+        },
+        {"importe_de_ventas_neto": 1100.0, "cantidad_vendida": 10.0},
+    )
+
+    assert result == 110.0
+
+
 def test_per_unit_ratios_are_presented_as_averages_with_verified_currency() -> None:
     execution = SimpleNamespace(
         metrics_document={
@@ -89,6 +108,62 @@ def test_per_unit_ratios_are_presented_as_averages_with_verified_currency() -> N
 
     assert _display_name_for_recipe(recipe) == "Costo promedio por unidad vendida"
     assert _display_unit_for_recipe(execution, recipe) == "USD por unidad"
+
+
+def test_legacy_average_of_line_amount_is_not_labeled_as_unit_price() -> None:
+    recipe = {
+        "code": "KPI_AVG_PRICE_UNIT",
+        "name": "Precio promedio por unidad",
+        "kind": "aggregate",
+        "recipe": {
+            "operation": "average",
+            "measure": "Importe de ventas neto",
+        },
+    }
+
+    assert _display_name_for_recipe(recipe) == "Importe promedio por línea de venta"
+
+
+def test_runtime_dashboard_hides_equivalent_provider_aggregate_aliases() -> None:
+    recipes = [
+        {
+            "code": "ventas_totales",
+            "kind": "aggregate",
+            "recipe": {"operation": "sum", "measure": "importe_venta"},
+        },
+        {
+            "code": "ventas_por_producto",
+            "kind": "aggregate",
+            "recipe": {"operation": "sum", "measure": "importe_venta"},
+        },
+        {
+            "code": "venta_por_unidad",
+            "kind": "ratio",
+            "recipe": {"numerator": "importe_venta", "denominator": "cantidad"},
+        },
+    ]
+
+    assert [item["code"] for item in _unique_recipes(recipes)] == [
+        "ventas_totales",
+        "venta_por_unidad",
+    ]
+
+
+def test_average_alias_cannot_overwrite_sum_used_by_derived_ratio() -> None:
+    values: dict[str, float] = {}
+    _remember_resolved_measure(values, "sum", "importe_venta", 1100.0)
+    _remember_resolved_measure(values, "average", "importe_venta", 90.0)
+    _remember_resolved_measure(values, "sum", "cantidad", 10.0)
+
+    result = _derived_recipe_value(
+        {
+            "kind": "ratio",
+            "recipe": {"numerator": "importe_venta", "denominator": "cantidad"},
+        },
+        values,
+    )
+
+    assert result == 110.0
 
 
 class _FakeResult:
@@ -134,6 +209,24 @@ class _FakeSession:
 
 
 @pytest.mark.asyncio
+async def test_execution_catalog_requires_owned_physical_rows() -> None:
+    session = _FakeSession()
+    execution = SimpleNamespace(
+        id=7,
+        metrics_document={"destination_schema": "mart_ventas_e7"},
+    )
+    proposal = SimpleNamespace(proposal_document={"fact": {"name": "fact_ventas"}})
+
+    assert await execution_has_materialized_data(
+        session,
+        execution,
+        proposal,  # type: ignore[arg-type]
+    )
+    column_call = next(call for call in session.calls if "information_schema.columns" in call[0])
+    assert column_call[1]["schema"] == "mart_ventas_e7"
+
+
+@pytest.mark.asyncio
 async def test_safe_aggregate_applies_non_visual_territory_and_full_denominator() -> None:
     session = _FakeSession()
     execution = SimpleNamespace(
@@ -148,7 +241,10 @@ async def test_safe_aggregate_applies_non_visual_territory_and_full_denominator(
                 }
             ]
         },
-        metrics_document={"kpis": [{"code": "total_units", "unit": "unidades"}]},
+        metrics_document={
+            "destination_schema": "mart_ventas_e7",
+            "kpis": [{"code": "total_units", "unit": "unidades"}],
+        },
     )
     proposal = SimpleNamespace(
         proposal_document={
@@ -185,3 +281,4 @@ async def test_safe_aggregate_applies_non_visual_territory_and_full_denominator(
     assert grouped_call[1]["territory"] == "Europe"
     assert grouped_call[1]["ranking_limit"] == 5
     assert "antes de limitar al Top 5" in result.denominator_definition
+    assert '"mart_ventas_e7"."fact_ventas"' in grouped_call[0]
