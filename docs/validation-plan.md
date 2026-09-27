@@ -74,6 +74,15 @@ Una selección idéntica ya ejecutada abre el expediente existente en lugar de m
 
 La repetición con Anthropic conservó la propuesta 77 como evidencia sin aprobarla ni ejecutar el ETL. El endurecimiento posterior comprobó que nombres con espacios o idiomas distintos producen las mismas dependencias técnicas, que `AVG(LineTotal)` se rotula como importe promedio por línea y que la razón `SUM(ventas) / SUM(unidades)` permanece calculable en la ejecución histórica 10. El catálogo analítico omite la ejecución 9 porque el materializador legado ya había sustituido sus filas físicas; los nuevos esquemas `mart_ventas_e{id}` evitan esa pérdida en cargas futuras.
 
+El 27 de septiembre se repitió la necesidad completa con Groq y Claude en niveles medio
+y alto. Las cuatro pruebas superaron la conexión mínima, pero ninguna quedó aprobable:
+Groq produjo dos fallos controlados de proveedor y Claude generó dos contratos que fueron
+bloqueados por referencias y procedencia inválidas. Las propuestas 78--81 quedaron como
+evidencia sin aprobación ni ETL. Frente a la propuesta Groq 73 (0 errores, 0 advertencias)
+y la propuesta Claude 77 (0 errores, 7 advertencias), se recomienda Groq bajo como
+principal y Claude bajo/mínimo como contingencia. La metodología y sus límites están en
+`docs/experiments/2026-09-27-groq-vs-claude.md`.
+
 ## Regla de interpretación
 
 Una propuesta puede ser técnicamente válida y aun requerir ajustes de negocio. Del mismo modo, una aprobación humana no demuestra por sí sola exactitud cuantitativa. El prototipo sólo declarará el objetivo completamente validado cuando reúna evidencia técnica, reproducibilidad, conciliación de cifras y evaluación formal de utilidad por usuarios y expertos.

@@ -90,6 +90,11 @@ Requiere `analytics.dashboard.read`. La consulta de datos agregados no otorga ac
 - [ ] Dos ejecuciones nuevas pueden consultarse de forma independiente después de
       materializar la segunda.
 - [x] Los expedientes sin tablas físicas no aparecen como datamarts consultables.
+- [x] Si sólo existe un datamart con filas físicas, se identifica en modo lectura,
+      no se presenta un selector vacío y se enlaza la consulta de expedientes
+      conservados; el selector aparece desde dos alternativas reales.
+- [x] El detalle interactivo adapta nombre, valor y participación al ancho de cada
+      visualización sin desbordar ni superponerse con tarjetas contiguas.
 
 ## 7. Evidencia
 
