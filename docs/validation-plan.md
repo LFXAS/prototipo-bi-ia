@@ -21,6 +21,7 @@ La persona usuaria principal de la evidencia técnica es el analista BI. La pant
 | Analítica y reportería | Panel, hallazgos, chat, PDF y Excel se reconstruyen desde la ejecución conciliada y respetan vista y filtros. | Sprint 5 | Implementado y revisado visualmente. |
 | Interacción visual segura | Puntos, barras y leyendas permiten explorar valores exactos; sólo una categoría presente en el catálogo autorizado puede convertirse en filtro global. | Sprint 5 | Implementado con teclado, puntero y pruebas automatizadas. |
 | Proveedores LLM intercambiables | Gemini, Groq, Anthropic, Qwen y Ollama conservan un contrato JSON validado; secretos y particularidades de protocolo no llegan al dominio BI. | Sprint 2--5 | Implementado; Anthropic usa Messages API, URL restringida y credencial cifrada. |
+| Neutralidad de recetas y versiones | Los nombres del proveedor compilan a identificadores canónicos, los KPI equivalentes se consolidan y cada ejecución nueva conserva sus tablas sin sustituir otra. | Sprint 4--5 | Implementado en código y regresión; materialización física dual pendiente de evidencia integrada. |
 | Contraste secundario | Resultados equivalentes se contrastan posteriormente con AdventureWorksDW cuando exista correspondencia semántica documentada. | Sprint posterior a ETL | Pendiente. |
 | Utilidad formal | Juicio de expertos mediante instrumento y escala definidos, sin sustituir la validación técnica. | Evaluación final | Pendiente. |
 | Decisión de alcance predictivo | Se documenta que pronóstico, MAPE y RMSE no pertenecen al problema de investigación vigente. | Sprint 5 | Retirado del alcance por decisión del tutor. |
@@ -70,6 +71,8 @@ El dashboard sólo abre ejecuciones exitosas y conciliadas. PDF y Excel vuelven 
 Los nueve KPI de la ejecución final quedaron asociados a recetas versionadas. Los importes usan la moneda base USD comprobada mediante `Sales.CurrencyRate.FromCurrencyCode`. `CostoTotal / UnidadesVendidas` y `VentasBrutas / UnidadesVendidas` se muestran como **Costo promedio por unidad vendida** y **Venta promedio por unidad vendida**, respectivamente; la denominación, el código ISO y el valor exacto permanecen trazables. La interpretación española publicó únicamente las etiquetas territoriales revisadas, conservó los valores originales y registró responsable, comentario y fecha.
 
 Una selección idéntica ya ejecutada abre el expediente existente en lugar de materializar nuevamente. Tanto la propuesta aprobada como la ejecución completada permiten recorrer sus cinco etapas en modo de sólo lectura. Las pruebas de interfaz comprueban que los campos permanecen deshabilitados, la materialización no vuelve a ofrecerse y el paso final conserva la conciliación publicada.
+
+La repetición con Anthropic conservó la propuesta 77 como evidencia sin aprobarla ni ejecutar el ETL. El endurecimiento posterior comprobó que nombres con espacios o idiomas distintos producen las mismas dependencias técnicas, que `AVG(LineTotal)` se rotula como importe promedio por línea y que la razón `SUM(ventas) / SUM(unidades)` permanece calculable en la ejecución histórica 10. El catálogo analítico omite la ejecución 9 porque el materializador legado ya había sustituido sus filas físicas; los nuevos esquemas `mart_ventas_e{id}` evitan esa pérdida en cargas futuras.
 
 ## Regla de interpretación
 
