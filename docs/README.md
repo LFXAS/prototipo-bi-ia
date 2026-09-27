@@ -25,6 +25,7 @@ Las fuentes editables se encuentran junto a cada PDF. `referencia-devops-sprint1
 - [`git-workflow.md`](git-workflow.md): ramas, PR, protecciones, revisión y promoción.
 - [`replication-guide.md`](replication-guide.md): comandos de instalación y réplica.
 - [`validation-plan.md`](validation-plan.md): plan acumulativo de validación técnica, conciliación, calidad semántica, analítica y reportería.
+- [`experiments/2026-09-27-groq-vs-claude.md`](experiments/2026-09-27-groq-vs-claude.md): comparativa integral y decisión de proveedor para la generación de propuestas BI.
 - [`sdd-workflow.md`](sdd-workflow.md) y [`specs/`](specs/README.md): proceso y contratos SDD desde el Sprint 2.
 
 ## Regeneración y verificación

@@ -19,6 +19,18 @@ class AnalyticsOptionRead(BaseModel):
     label: str
 
 
+class AnalyticsExecutionOptionRead(BaseModel):
+    execution_id: int
+    proposal_id: int
+    label: str
+    provider_kind: str
+    model_id: str
+    finished_at: datetime
+    coverage_status: Literal["complete", "partial"]
+    calculable_kpis: int
+    total_kpis: int
+
+
 class AnalyticsPointRead(BaseModel):
     key: str
     label: str

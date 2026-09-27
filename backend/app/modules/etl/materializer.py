@@ -16,6 +16,7 @@ from app.modules.parameters.connections import build_connection_string
 from app.modules.parameters.models import DataConnection
 
 DESTINATION_SCHEMA = "mart_ventas"
+_DESTINATION_SCHEMA_PATTERN = re.compile(r"^mart_ventas(?:_e[1-9][0-9]*)?$")
 _GENERIC_MONEY_UNITS = {"currency", "importe", "moneda", "moneda de origen", "valor"}
 _CURRENCY_SOURCE_COLUMNS = (
     "basecurrencycode",
@@ -67,6 +68,12 @@ def _safe_identifier(value: str) -> str:
     if not normalized or normalized[0].isdigit():
         normalized = f"campo_{normalized}"
     return normalized[:55]
+
+
+def _validated_destination_schema(value: str) -> str:
+    if not _DESTINATION_SCHEMA_PATTERN.fullmatch(value):
+        raise ValueError("El esquema de destino no pertenece al catálogo controlado.")
+    return value
 
 
 def _sqlserver_identifier(value: str) -> str:
@@ -636,6 +643,7 @@ def materialize_sales(
     selected_recipes: list[dict[str, Any]],
 ) -> dict[str, Any]:
     plan = build_materialization_plan(proposal, schema_document)
+    destination_schema = _validated_destination_schema(f"{DESTINATION_SCHEMA}_e{execution_id}")
     source = pyodbc.connect(
         build_connection_string(source_configuration, source_password), timeout=60
     )
@@ -647,7 +655,7 @@ def materialize_sales(
     try:
         with target.transaction(), target.cursor() as target_cursor:
             target_cursor.execute(
-                f"CREATE SCHEMA IF NOT EXISTS {_postgres_identifier(DESTINATION_SCHEMA)}"
+                f"CREATE SCHEMA IF NOT EXISTS {_postgres_identifier(destination_schema)}"
             )
             for dimension in plan.dimensions:
                 temp_name = f"__next_{execution_id}_{dimension.name}"
@@ -669,11 +677,11 @@ def materialize_sales(
                         "dia BIGINT NOT NULL",
                     ]
                 target_cursor.execute(
-                    f"DROP TABLE IF EXISTS {_postgres_identifier(DESTINATION_SCHEMA)}."
+                    f"DROP TABLE IF EXISTS {_postgres_identifier(destination_schema)}."
                     f"{_postgres_identifier(temp_name)}"
                 )
                 target_cursor.execute(
-                    f"CREATE TABLE {_postgres_identifier(DESTINATION_SCHEMA)}."
+                    f"CREATE TABLE {_postgres_identifier(destination_schema)}."
                     f"{_postgres_identifier(temp_name)} ({', '.join(definitions)})"
                 )
                 source_cursor = source.cursor()
@@ -759,7 +767,7 @@ def materialize_sales(
                     ["%s"] * (len(columns) + 2 + (4 if date_attributes else 0))
                 )
                 target_cursor.executemany(
-                    f"INSERT INTO {_postgres_identifier(DESTINATION_SCHEMA)}."
+                    f"INSERT INTO {_postgres_identifier(destination_schema)}."
                     f"{_postgres_identifier(temp_name)} VALUES ({placeholders})",
                     payload,
                 )
@@ -796,11 +804,11 @@ def materialize_sales(
             )
             fact_definitions.append("etl_execution_id BIGINT NOT NULL")
             target_cursor.execute(
-                f"DROP TABLE IF EXISTS {_postgres_identifier(DESTINATION_SCHEMA)}."
+                f"DROP TABLE IF EXISTS {_postgres_identifier(destination_schema)}."
                 f"{_postgres_identifier(fact_temp)}"
             )
             target_cursor.execute(
-                f"CREATE TABLE {_postgres_identifier(DESTINATION_SCHEMA)}."
+                f"CREATE TABLE {_postgres_identifier(destination_schema)}."
                 f"{_postgres_identifier(fact_temp)} ({', '.join(fact_definitions)})"
             )
             source_cursor = source.cursor()
@@ -821,7 +829,7 @@ def materialize_sales(
             }
             insert_width = len(fact_columns) + len(plan.fact.dimension_aliases) + 1
             insert_sql = (
-                f"INSERT INTO {_postgres_identifier(DESTINATION_SCHEMA)}."
+                f"INSERT INTO {_postgres_identifier(destination_schema)}."
                 f"{_postgres_identifier(fact_temp)} VALUES ({', '.join(['%s'] * insert_width)})"
             )
             while True:
@@ -899,7 +907,7 @@ def materialize_sales(
             )
             target_cursor.execute(
                 f"SELECT COUNT(*){', ' if totals_sql else ''}{totals_sql} FROM "
-                f"{_postgres_identifier(DESTINATION_SCHEMA)}."
+                f"{_postgres_identifier(destination_schema)}."
                 f"{_postgres_identifier(fact_temp)}"
             )
             target_result = target_cursor.fetchone()
@@ -929,18 +937,18 @@ def materialize_sales(
             stable_names = [plan.fact.name, *(item.name for item in plan.dimensions)]
             for stable_name in stable_names:
                 target_cursor.execute(
-                    f"DROP TABLE IF EXISTS {_postgres_identifier(DESTINATION_SCHEMA)}."
+                    f"DROP TABLE IF EXISTS {_postgres_identifier(destination_schema)}."
                     f"{_postgres_identifier(stable_name)}"
                 )
             for dimension in plan.dimensions:
                 temp_name = f"__next_{execution_id}_{dimension.name}"
                 target_cursor.execute(
-                    f"ALTER TABLE {_postgres_identifier(DESTINATION_SCHEMA)}."
+                    f"ALTER TABLE {_postgres_identifier(destination_schema)}."
                     f"{_postgres_identifier(temp_name)} RENAME TO "
                     f"{_postgres_identifier(dimension.name)}"
                 )
             target_cursor.execute(
-                f"ALTER TABLE {_postgres_identifier(DESTINATION_SCHEMA)}."
+                f"ALTER TABLE {_postgres_identifier(destination_schema)}."
                 f"{_postgres_identifier(fact_temp)} RENAME TO "
                 f"{_postgres_identifier(plan.fact.name)}"
             )
@@ -982,7 +990,7 @@ def materialize_sales(
                     )
                     target_cursor.execute(
                         f"SELECT {expression} FROM "
-                        f"{_postgres_identifier(DESTINATION_SCHEMA)}."
+                        f"{_postgres_identifier(destination_schema)}."
                         f"{_postgres_identifier(plan.fact.name)}"
                     )
                     result = target_cursor.fetchone()
@@ -1024,7 +1032,7 @@ def materialize_sales(
                 and all(value == 0 for value in total_differences.values())
             )
             return {
-                "destination_schema": DESTINATION_SCHEMA,
+                "destination_schema": destination_schema,
                 "tables": table_metrics,
                 "reconciliation": {
                     "source_rows": rows_read,
@@ -1120,8 +1128,13 @@ def preview_dimension_labels(
     return previews
 
 
-def apply_spanish_labels(execution_id: int, mappings: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def apply_spanish_labels(
+    execution_id: int,
+    mappings: list[dict[str, Any]],
+    destination_schema: str = DESTINATION_SCHEMA,
+) -> list[dict[str, Any]]:
     """Add reviewed Spanish labels without replacing source values."""
+    destination_schema = _validated_destination_schema(destination_schema)
     applied: list[dict[str, Any]] = []
     with (
         psycopg.connect(_target_connection_string()) as connection,
@@ -1136,7 +1149,7 @@ def apply_spanish_labels(execution_id: int, mappings: list[dict[str, Any]]) -> l
             if not dimension or not source_column or not isinstance(values, list):
                 continue
             cursor.execute(
-                f"ALTER TABLE {_postgres_identifier(DESTINATION_SCHEMA)}."
+                f"ALTER TABLE {_postgres_identifier(destination_schema)}."
                 f"{_postgres_identifier(dimension)} ADD COLUMN IF NOT EXISTS "
                 f"{_postgres_identifier(label_column)} TEXT"
             )
@@ -1149,7 +1162,7 @@ def apply_spanish_labels(execution_id: int, mappings: list[dict[str, Any]]) -> l
                 if not original or not label_es:
                     continue
                 cursor.execute(
-                    f"UPDATE {_postgres_identifier(DESTINATION_SCHEMA)}."
+                    f"UPDATE {_postgres_identifier(destination_schema)}."
                     f"{_postgres_identifier(dimension)} SET "
                     f"{_postgres_identifier(label_column)} = %s WHERE "
                     f"{_postgres_identifier(source_column)} = %s AND "
@@ -1169,8 +1182,12 @@ def apply_spanish_labels(execution_id: int, mappings: list[dict[str, Any]]) -> l
     return applied
 
 
-def discover_spanish_label_candidates(execution_id: int) -> list[dict[str, Any]]:
+def discover_spanish_label_candidates(
+    execution_id: int,
+    destination_schema: str = DESTINATION_SCHEMA,
+) -> list[dict[str, Any]]:
     """Rediscover safe low-cardinality categories from an already loaded datamart."""
+    destination_schema = _validated_destination_schema(destination_schema)
     candidates: list[dict[str, Any]] = []
     eligible_name = re.compile(
         r"color|group|category|categoria|status|estado|type|tipo|class|clase|style|estilo|region",
@@ -1186,7 +1203,7 @@ def discover_spanish_label_candidates(execution_id: int) -> list[dict[str, Any]]
               AND data_type IN ('text', 'character varying', 'character')
             ORDER BY table_name, ordinal_position
             """,
-            (DESTINATION_SCHEMA,),
+            (destination_schema,),
         )
         for table_name, column_name in cursor.fetchall():
             table = str(table_name)
@@ -1195,7 +1212,7 @@ def discover_spanish_label_candidates(execution_id: int) -> list[dict[str, Any]]
                 continue
             cursor.execute(
                 f"SELECT DISTINCT {_postgres_identifier(column)} FROM "
-                f"{_postgres_identifier(DESTINATION_SCHEMA)}.{_postgres_identifier(table)} "
+                f"{_postgres_identifier(destination_schema)}.{_postgres_identifier(table)} "
                 f"WHERE etl_execution_id = %s AND {_postgres_identifier(column)} IS NOT NULL "
                 f"LIMIT 51",
                 (execution_id,),

@@ -27,6 +27,7 @@ from .schemas import (
 
 MART_SCHEMA = "mart_ventas"
 _IDENTIFIER = re.compile(r"^[a-z_][a-z0-9_]{0,62}$")
+_MART_SCHEMA = re.compile(r"^mart_ventas(?:_e[1-9][0-9]*)?$")
 
 
 class AnalyticsUnavailableError(RuntimeError):
@@ -44,6 +45,41 @@ def _quoted(value: str) -> str:
     if not _IDENTIFIER.fullmatch(value):
         raise AnalyticsUnavailableError("El contrato contiene un identificador no permitido.")
     return f'"{value}"'
+
+
+def mart_schema_for_execution(execution: EtlExecution) -> str:
+    """Resolve only the legacy schema or a controlled execution-owned schema."""
+    candidate = str(execution.metrics_document.get("destination_schema", MART_SCHEMA))
+    if not _MART_SCHEMA.fullmatch(candidate):
+        raise AnalyticsUnavailableError(
+            "La ejecución referencia un destino analítico no permitido."
+        )
+    return candidate
+
+
+async def execution_has_materialized_data(
+    session: AsyncSession, execution: EtlExecution, proposal: BiProposal
+) -> bool:
+    """Prove that the execution still owns queryable physical rows."""
+    fact_document = proposal.proposal_document.get("fact")
+    if not isinstance(fact_document, dict):
+        return False
+    try:
+        schema_name = mart_schema_for_execution(execution)
+        fact_name = _safe_identifier(fact_document.get("name", ""))
+    except AnalyticsUnavailableError:
+        return False
+    columns = await _table_columns(session, schema_name, fact_name)
+    if "etl_execution_id" not in columns:
+        return False
+    count = await session.scalar(
+        text(
+            f"SELECT COUNT(*) FROM {_quoted(schema_name)}.{_quoted(fact_name)} "
+            "WHERE etl_execution_id = :execution_id"
+        ),
+        {"execution_id": execution.id},
+    )
+    return bool(count)
 
 
 def _number(value: object) -> float:
@@ -69,14 +105,14 @@ def _dimension_document(proposal: BiProposal, aliases: Iterable[str]) -> dict[st
     return None
 
 
-async def _table_columns(session: AsyncSession, table_name: str) -> set[str]:
+async def _table_columns(session: AsyncSession, schema_name: str, table_name: str) -> set[str]:
     rows = (
         await session.execute(
             text(
                 "SELECT column_name FROM information_schema.columns "
                 "WHERE table_schema = :schema AND table_name = :table"
             ),
-            {"schema": MART_SCHEMA, "table": table_name},
+            {"schema": schema_name, "table": table_name},
         )
     ).scalars()
     return {str(item) for item in rows}
@@ -136,18 +172,51 @@ def _derived_recipe_value(
     if not isinstance(detail, dict):
         return None
     kind = str(recipe.get("kind", ""))
+
+    def resolved(raw: object) -> float | None:
+        name = str(raw)
+        if name in resolved_values:
+            return resolved_values[name]
+        try:
+            return resolved_values.get(_safe_identifier(name))
+        except AnalyticsUnavailableError:
+            return None
+
     if kind == "difference":
-        minuend = resolved_values.get(str(detail.get("minuend")))
-        subtrahend = resolved_values.get(str(detail.get("subtrahend")))
+        minuend = resolved(detail.get("minuend"))
+        subtrahend = resolved(detail.get("subtrahend"))
         return minuend - subtrahend if minuend is not None and subtrahend is not None else None
     if kind in {"ratio", "share"}:
-        numerator = resolved_values.get(str(detail.get("numerator")))
-        denominator = resolved_values.get(str(detail.get("denominator")))
+        numerator = resolved(detail.get("numerator"))
+        denominator = resolved(detail.get("denominator"))
         if numerator is None or denominator is None or denominator == 0.0:
             return None
         value = numerator / denominator
         return value * float(detail.get("multiply_by", 100)) if kind == "share" else value
     return None
+
+
+def _unique_recipes(recipes: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Hide provider aliases that calculate the exact same aggregate."""
+    unique: list[dict[str, Any]] = []
+    aggregate_signatures: set[tuple[str, str]] = set()
+    for recipe in recipes:
+        parts = _recipe_parts(recipe)
+        if parts is not None:
+            signature = (parts[0], parts[1])
+            if signature in aggregate_signatures:
+                continue
+            aggregate_signatures.add(signature)
+        unique.append(recipe)
+    return unique
+
+
+def _remember_resolved_measure(
+    resolved_values: dict[str, float], operation: str, measure: str, value: float
+) -> None:
+    """Keep SUM as the base value consumed by controlled derived formulas."""
+    if operation == "sum" or measure not in resolved_values:
+        resolved_values[measure] = value
 
 
 def _unit_for_recipe(execution: EtlExecution, recipe: dict[str, Any]) -> str:
@@ -164,7 +233,18 @@ def _display_name_for_recipe(recipe: dict[str, Any]) -> str:
         "costo_por_unidad": "Costo promedio por unidad vendida",
         "venta_por_unidad": "Venta promedio por unidad vendida",
     }
-    return labels.get(code, str(recipe.get("name", code)))
+    if code in labels:
+        return labels[code]
+    name = str(recipe.get("name", code))
+    parts = _recipe_parts(recipe)
+    if (
+        parts is not None
+        and parts[0] == "average"
+        and re.search(r"\b(unit|unidad|unidades)\b", name, re.IGNORECASE)
+        and re.search(r"importe|amount|total|ventas|sales", parts[1], re.IGNORECASE)
+    ):
+        return "Importe promedio por línea de venta"
+    return name
 
 
 def _display_unit_for_recipe(execution: EtlExecution, recipe: dict[str, Any]) -> str:
@@ -287,6 +367,7 @@ async def run_safe_aggregate_query(
     territory: str | None,
 ) -> AnalyticsQueryEvidenceRead:
     """Execute a closed-catalog aggregate. No SQL supplied by the LLM reaches this function."""
+    mart_schema = mart_schema_for_execution(execution)
     dimension_contract = _QUERY_DIMENSIONS.get(dimension)
     if dimension_contract is None:
         raise AnalyticsUnavailableError(
@@ -299,8 +380,8 @@ async def run_safe_aggregate_query(
     if not isinstance(fact_document, dict):
         raise AnalyticsUnavailableError("La propuesta no conserva un hecho analítico válido.")
     fact_name = _safe_identifier(fact_document.get("name", ""))
-    fact_columns = await _table_columns(session, fact_name)
-    recipes = _dict_items(execution.plan_document.get("kpi_recipes"))
+    fact_columns = await _table_columns(session, mart_schema, fact_name)
+    recipes = _unique_recipes(_dict_items(execution.plan_document.get("kpi_recipes")))
     recipe = next((item for item in recipes if str(item.get("code")) == metric_code), None)
     parts = _recipe_parts(recipe or {})
     if recipe is None or parts is None or parts[1] not in fact_columns:
@@ -318,7 +399,7 @@ async def run_safe_aggregate_query(
             "La dimensión solicitada no existe en la propuesta aprobada."
         )
     dimension_table = _safe_identifier(dimension_document.get("name", ""))
-    dimension_columns = await _table_columns(session, dimension_table)
+    dimension_columns = await _table_columns(session, mart_schema, dimension_table)
     candidates = dimension_contract["column_candidates"]
     assert isinstance(candidates, tuple)
     attributes = dimension_document.get("attributes", [])
@@ -346,7 +427,7 @@ async def run_safe_aggregate_query(
                 "El filtro solicitado no conserva una relación materializada verificable."
             )
         joins.append(
-            f"JOIN {_quoted(MART_SCHEMA)}.{_quoted(table_name)} {alias} "
+            f"JOIN {_quoted(mart_schema)}.{_quoted(table_name)} {alias} "
             f"ON f.{_quoted(key)} = {alias}.surrogate_key "
             f"AND {alias}.etl_execution_id = :execution_id"
         )
@@ -361,7 +442,7 @@ async def run_safe_aggregate_query(
         if date_dimension is None:
             raise AnalyticsUnavailableError("No existe una dimensión temporal para aplicar el año.")
         date_table = _safe_identifier(date_dimension.get("name", ""))
-        date_columns = await _table_columns(session, date_table)
+        date_columns = await _table_columns(session, mart_schema, date_table)
         date_column = _preferred_column(
             date_columns,
             [date_dimension.get("business_key", ""), "fecha", "orderdate", "date"],
@@ -379,7 +460,7 @@ async def run_safe_aggregate_query(
                 "No existe una dimensión territorial para aplicar el filtro."
             )
         territory_table = _safe_identifier(territory_dimension.get("name", ""))
-        territory_columns = await _table_columns(session, territory_table)
+        territory_columns = await _table_columns(session, mart_schema, territory_table)
         territory_label = _preferred_column(
             territory_columns,
             [
@@ -399,7 +480,7 @@ async def run_safe_aggregate_query(
         params["territory"] = territory
 
     from_sql = (
-        f"FROM {_quoted(MART_SCHEMA)}.{_quoted(fact_name)} f "
+        f"FROM {_quoted(mart_schema)}.{_quoted(fact_name)} f "
         + " ".join(joins)
         + " WHERE "
         + " AND ".join(where)
@@ -450,9 +531,9 @@ async def run_safe_aggregate_query(
             f"Total de {metric_name} para {'; '.join(scope)}, antes de limitar al Top {top_n}."
         ),
         provenance=[
-            f"{MART_SCHEMA}.{fact_name}.{measure}",
+            f"{mart_schema}.{fact_name}.{measure}",
             f"Operación controlada: {operation}",
-            f"Agrupación: {MART_SCHEMA}.{dimension_table}.{label_column}",
+            f"Agrupación: {mart_schema}.{dimension_table}.{label_column}",
         ],
         points=points,
     )
@@ -469,11 +550,12 @@ async def build_dashboard(
     territory: str | None,
 ) -> AnalyticsDashboardRead:
     del snapshot  # Reserved for connector-neutral semantic expansion.
+    mart_schema = mart_schema_for_execution(execution)
     fact_document = proposal.proposal_document.get("fact")
     if not isinstance(fact_document, dict):
         raise AnalyticsUnavailableError("La propuesta no conserva un hecho analítico válido.")
     fact_name = _safe_identifier(fact_document.get("name", ""))
-    fact_columns = await _table_columns(session, fact_name)
+    fact_columns = await _table_columns(session, mart_schema, fact_name)
     if not fact_columns:
         raise AnalyticsUnavailableError(
             "El datamart materializado no está disponible. Abra el expediente ETL y "
@@ -481,7 +563,7 @@ async def build_dashboard(
         )
     row_count = await session.scalar(
         text(
-            f"SELECT COUNT(*) FROM {_quoted(MART_SCHEMA)}.{_quoted(fact_name)} "
+            f"SELECT COUNT(*) FROM {_quoted(mart_schema)}.{_quoted(fact_name)} "
             "WHERE etl_execution_id = :execution_id"
         ),
         {"execution_id": execution.id},
@@ -491,7 +573,7 @@ async def build_dashboard(
             "Esta ejecución ya no corresponde a las tablas publicadas. Use la ejecución vigente."
         )
 
-    recipes = _dict_items(execution.plan_document.get("kpi_recipes"))
+    recipes = _unique_recipes(_dict_items(execution.plan_document.get("kpi_recipes")))
     chartable = [item for item in recipes if _recipe_parts(item) is not None]
     if not chartable:
         raise AnalyticsUnavailableError("La ejecución no contiene indicadores agrupables.")
@@ -516,7 +598,7 @@ async def build_dashboard(
         )
 
     date_table = _safe_identifier(date_dimension.get("name", ""))
-    date_columns = await _table_columns(session, date_table)
+    date_columns = await _table_columns(session, mart_schema, date_table)
     date_column = _preferred_column(
         date_columns,
         [date_dimension.get("business_key", ""), "fecha", "orderdate", "date"],
@@ -525,7 +607,7 @@ async def build_dashboard(
         raise AnalyticsUnavailableError("No se encontró una fecha validada para el análisis.")
 
     joins = [
-        f"JOIN {_quoted(MART_SCHEMA)}.{_quoted(date_table)} d "
+        f"JOIN {_quoted(mart_schema)}.{_quoted(date_table)} d "
         f"ON f.{_quoted(date_table + '_sk')} = d.surrogate_key "
         "AND d.etl_execution_id = :execution_id"
     ]
@@ -540,7 +622,7 @@ async def build_dashboard(
     territory_columns: set[str] = set()
     if territory_dimension is not None:
         territory_table = _safe_identifier(territory_dimension.get("name", ""))
-        territory_columns = await _table_columns(session, territory_table)
+        territory_columns = await _table_columns(session, mart_schema, territory_table)
         territory_label = _preferred_column(
             territory_columns,
             [
@@ -555,7 +637,7 @@ async def build_dashboard(
         )
         if territory_label:
             joins.append(
-                f"JOIN {_quoted(MART_SCHEMA)}.{_quoted(territory_table)} t "
+                f"JOIN {_quoted(mart_schema)}.{_quoted(territory_table)} t "
                 f"ON f.{_quoted(territory_table + '_sk')} = t.surrogate_key "
                 "AND t.etl_execution_id = :execution_id"
             )
@@ -564,7 +646,7 @@ async def build_dashboard(
                 params["territory"] = territory
 
     from_sql = (
-        f"FROM {_quoted(MART_SCHEMA)}.{_quoted(fact_name)} f "
+        f"FROM {_quoted(mart_schema)}.{_quoted(fact_name)} f "
         + " ".join(joins)
         + " WHERE "
         + " AND ".join(where)
@@ -576,8 +658,8 @@ async def build_dashboard(
             await session.execute(
                 text(
                     f"SELECT DISTINCT EXTRACT(YEAR FROM d.{_quoted(date_column)})::int AS value "
-                    f"FROM {_quoted(MART_SCHEMA)}.{_quoted(fact_name)} f "
-                    f"JOIN {_quoted(MART_SCHEMA)}.{_quoted(date_table)} d "
+                    f"FROM {_quoted(mart_schema)}.{_quoted(fact_name)} f "
+                    f"JOIN {_quoted(mart_schema)}.{_quoted(date_table)} d "
                     f"ON f.{_quoted(date_table + '_sk')} = d.surrogate_key "
                     "WHERE f.etl_execution_id = :execution_id "
                     "AND d.etl_execution_id = :execution_id ORDER BY value"
@@ -592,8 +674,8 @@ async def build_dashboard(
             await session.execute(
                 text(
                     f"SELECT DISTINCT t.{_quoted(territory_label)} "
-                    f"FROM {_quoted(MART_SCHEMA)}.{_quoted(fact_name)} f "
-                    f"JOIN {_quoted(MART_SCHEMA)}.{_quoted(territory_table)} t "
+                    f"FROM {_quoted(mart_schema)}.{_quoted(fact_name)} f "
+                    f"JOIN {_quoted(mart_schema)}.{_quoted(territory_table)} t "
                     f"ON f.{_quoted(territory_table + '_sk')} = t.surrogate_key "
                     "WHERE f.etl_execution_id = :execution_id "
                     "AND t.etl_execution_id = :execution_id "
@@ -616,7 +698,9 @@ async def build_dashboard(
                 text(f"SELECT {_aggregate_expression(parts[0], parts[1])} {from_sql}"), params
             )
             value = _number(result)
-            resolved_values[parts[1]] = value
+            # Derived controlled ratios refer to a measure, whose additive business
+            # value is SUM.  AVG/MIN/MAX aliases must never overwrite that base.
+            _remember_resolved_measure(resolved_values, parts[0], parts[1], value)
         else:
             value = _derived_recipe_value(recipe, resolved_values)
         code = str(recipe.get("code", ""))
@@ -690,7 +774,7 @@ async def build_dashboard(
         if dimension is None:
             return
         table_name = _safe_identifier(dimension.get("name", ""))
-        columns = await _table_columns(session, table_name)
+        columns = await _table_columns(session, mart_schema, table_name)
         raw_attributes = dimension.get("attributes", [])
         attributes = raw_attributes if isinstance(raw_attributes, list) else []
         label_column = _preferred_column(
@@ -702,12 +786,12 @@ async def build_dashboard(
         local_joins = [*joins]
         if not any(f" {table_alias} " in item for item in local_joins):
             local_joins.append(
-                f"JOIN {_quoted(MART_SCHEMA)}.{_quoted(table_name)} {table_alias} "
+                f"JOIN {_quoted(mart_schema)}.{_quoted(table_name)} {table_alias} "
                 f"ON f.{_quoted(table_name + '_sk')} = {table_alias}.surrogate_key "
                 f"AND {table_alias}.etl_execution_id = :execution_id"
             )
         local_from = (
-            f"FROM {_quoted(MART_SCHEMA)}.{_quoted(fact_name)} f "
+            f"FROM {_quoted(mart_schema)}.{_quoted(fact_name)} f "
             + " ".join(local_joins)
             + " WHERE "
             + " AND ".join(where)

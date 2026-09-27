@@ -117,6 +117,10 @@ Ante un JWT vencido, React conserva sólo el borrador redactado, códigos de sel
 
 Los asistentes separan el estado mutable del artefacto persistido. Una propuesta aprobada puede recorrerse por sus cinco etapas en modo de consulta, y una ejecución terminada permite revisar selección, indicadores, transformaciones, materialización y conciliación sin habilitar controles ni repetir el ETL. Los indicadores monetarios derivados conservan su fórmula: `CostoTotal / UnidadesVendidas` y `VentasBrutas / UnidadesVendidas` se exponen como promedios ponderados, con moneda ISO únicamente cuando la evidencia de fuente la confirma.
 
+La identidad de cálculo es independiente del proveedor: los nombres redactados por el LLM se conservan para presentación, mientras que el compilador traduce medidas y dependencias a identificadores canónicos. Recetas equivalentes se consolidan antes del ETL y un promedio de importe de línea no puede publicarse como precio o venta por unidad. La cobertura se vuelve a calcular después de la selección de KPI y distingue una publicación completa de una parcial.
+
+Las materializaciones nuevas usan un esquema PostgreSQL controlado por ejecución (`mart_ventas_e{id}`). El expediente conserva ese destino y los módulos de analítica, conversación y reportería lo resuelven antes de consultar. El esquema legado `mart_ventas` permanece compatible para ejecuciones anteriores, pero una ejecución cuyo conjunto físico ya no exista no se ofrece como datamart consultable. La interfaz muestra un selector sólo cuando el catálogo contiene al menos dos destinos físicos; con uno muestra su identidad en lectura y enlaza los expedientes auditables. Este versionado evita que una nueva carga destruya la versión que todavía utiliza un usuario de negocio.
+
 La comparación considera la versión del motor que creó el artefacto. En la versión vigente, una diferencia de huella o validación es bloqueante. Para una propuesta histórica, una diferencia causada únicamente por evolución del motor se muestra como advertencia de compatibilidad y no retira por sí sola una aprobación sin errores. Una aprobación previamente retirada puede restaurarse sólo después de superar los controles actuales, confirmar advertencias y registrar una justificación auditada.
 
 Parametrizar significa seleccionar entre capacidades implementadas y validadas; no convertir un nombre libre en soporte automático. Esta restricción evita declarar portabilidad ficticia y permite ampliar el prototipo con evidencia técnica.
@@ -126,7 +130,7 @@ Parametrizar significa seleccionar entre capacidades implementadas y validadas; 
 PostgreSQL alojará dos responsabilidades lógicamente separadas:
 
 - esquema `app`: seguridad, parámetros, auditoría y ejecuciones;
-- esquema `mart`: hechos y dimensiones analíticas.
+- esquemas analíticos versionados `mart_ventas_e{id}`: hechos y dimensiones de cada ejecución; `mart_ventas` se conserva como compatibilidad histórica.
 
 La separación física en bases distintas no es necesaria para la prueba de concepto y puede revisarse si las mediciones lo justifican.
 

@@ -67,7 +67,7 @@
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPI, analítica explicable y reportería \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.5.4 \\
+    Versión de la bitácora & 0.5.6 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -832,6 +832,51 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \bottomrule
 \end{longtable}
 
+\clearpage
+\subsection{26 de septiembre de 2026 - Neutralidad de proveedor y conservación por ejecución}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Reproducción Anthropic & \statusok & La misma necesidad produjo la propuesta 77. Se conservaron siete advertencias, KPI duplicados y etiquetas incorrectas como evidencia; no se aprobó la propuesta ni se ejecutó un nuevo ETL. \\
+  Compilación canónica & \statusok & Los nombres humanos de medidas se transforman a identificadores técnicos para agregaciones y razones. Las recetas equivalentes se consolidan sin convertir el ajuste seguro en un bloqueo. \\
+  Semántica de promedios & \statusok & \file{AVG(LineTotal)} se presenta como importe promedio por línea. La venta promedio por unidad conserva \file{SUM(ventas) / SUM(unidades)} y no puede ser sustituida por un alias del proveedor. \\
+  Compatibilidad histórica & \statusok & La ejecución 10 volvió a mostrar USD 401,49 por unidad sin repetir la carga. Las tarjetas duplicadas se ocultaron y su selección se identificó como cobertura parcial. \\
+  Versionado físico & \statusok & Las materializaciones futuras escriben en \file{mart\_ventas\_e\{id\}}. Interpretación española, dashboard, copiloto y reportes resuelven el destino registrado y el esquema legado continúa disponible. \\
+  Selector analítico & \statusok & \file{GET /analytics/executions} enumera únicamente cargas conciliadas con filas físicas comprobables. React propaga la ejecución elegida a filtros, chat, PDF y Excel; expedientes sin datos físicos permanecen auditables pero no se ofrecen como datamart. \\
+  UX de incidencias & \statusok & Un KPI sin valor muestra \textbf{No calculable con esta ejecución}, icono de atención y estilo ámbar; ya no utiliza una confirmación verde falsa. \\
+  Regresión & \statusok & Pruebas de backend cubren nombres de proveedor, deduplicación, razones, esquema controlado y resolución histórica. Vitest cubre estado no calculable y cambio de ejecución sin materialización. \\
+  \bottomrule
+\end{longtable}
+
+\subsection{27 de septiembre de 2026 - Cierre de disponibilidad y detalle analítico}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Selección de datamart & \statusok & Con una sola ejecución físicamente consultable se eliminó el combo redundante y se muestra \textbf{Datamart activo}; el selector queda condicionado a dos o más alternativas reales. \\
+  Trazabilidad histórica & \statusok & La ejecución disponible permanece separada de expedientes conservados sólo para auditoría y se añadió acceso directo a \textbf{Ver expedientes}, sin presentar datos sustituidos como analizables. \\
+  Detalle interactivo & \statusok & Nombre, valor, participación y acciones utilizan una rejilla adaptativa de una columna con subcolumnas automáticas; la comprobación visual no registró desplazamiento horizontal ni superposición. \\
+  Matriz Groq--Claude & \statusok & La misma necesidad se ejecutó con ambos proveedores en medio y alto. Las conexiones mínimas pasaron; las propuestas 78--79 fallaron de forma controlada en Groq y las 80--81 fueron bloqueadas por dos errores determinísticos en Claude. \\
+  Decisión de proveedor & \statusok & La evidencia acumulada recomienda Groq bajo como principal (propuesta 73 sin incidencias y ejecución 9 conciliada) y Claude Haiku bajo/mínimo como respaldo (propuesta 77 válida con siete advertencias). \\
+  Restauración & \statusok & Ninguna propuesta experimental fue aprobada ni materializada; Claude Haiku en bajo quedó activo y su conexión se volvió a validar al terminar. \\
+  Pruebas frontend & \statusok & Vitest cubre tanto el estado de un único datamart sin selector como el cambio entre dos ejecuciones; lint, TypeScript y Vite completaron correctamente. \\
+  Especificación y documentos & \statusok & Se actualizaron SPR-05-01 y SPR-05-04, arquitectura, plan de validación, manual, Sprint 5, Capítulo III, bitácora e informe comparativo antes del PR de cierre. \\
+  \bottomrule
+\end{longtable}
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}X l X@{}}
@@ -840,8 +885,8 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \midrule
   Compose autocontenido válido & \statusok & \file{docker compose config --quiet} \\
   Compose de imágenes válido & \statusok & \file{docker compose -f compose.release.yaml config --quiet} \\
-  Backend calidad y pruebas & \statusok & Ruff, formato, Mypy y 123 pruebas Pytest dentro de Docker \\
-  Frontend calidad y pruebas & \statusok & ESLint, 19 pruebas Vitest y build de Vite dentro de Docker \\
+  Backend calidad y pruebas & \statusok & Ruff, formato, Mypy y 133 pruebas Pytest dentro de Docker \\
+  Frontend calidad y pruebas & \statusok & ESLint, 21 pruebas Vitest y build de Vite dentro de Docker \\
   PostgreSQL disponible & \statusok & Esquemas \file{app} y \file{mart}; endpoint \file{/health/ready} en \file{ok} \\
   AdventureWorks restaurada & \statusok & 71 tablas; \file{bi\_reader}: lectura 1 e inserción 0 \\
   Interfaz disponible & \statusok & Vite saludable en 5173, Nginx opcional en 8080 y API accesible mediante proxy \\
@@ -938,6 +983,8 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   0.5.2 & 26-09-2026 & Propuesta 73, ejecución 9, KPI financieros conciliados, interpretación territorial publicada, analítica verificada y recuperación contra pantallas en blanco. \\
   0.5.3 & 26-09-2026 & Semántica explícita de promedios por unidad, tarjetas legibles, contraste del chat y navegación inmutable de las cinco etapas para propuestas y ejecuciones históricas. \\
   0.5.4 & 26-09-2026 & Menú profesional por flujo y permisos, gráficos interactivos accesibles, integración segura de Anthropic Claude y actualización de especificaciones y documentación académica. \\
+  0.5.5 & 26-09-2026 & Neutralidad semántica entre proveedores, recetas canónicas, corrección de KPI derivados históricos, cobertura completa/parcial, selector analítico y esquemas físicos versionados por ejecución. \\
+  0.5.6 & 27-09-2026 & Cierre UX y LLM: datamart único sin combo redundante, detalles adaptativos, comparativa Groq--Claude y niveles Claude restringidos a capacidades efectivas. \\
   \bottomrule
 \end{longtable}
 

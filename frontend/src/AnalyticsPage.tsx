@@ -4,6 +4,7 @@ import {
   api,
   type AnalyticsCopilotAnswer,
   type AnalyticsDashboard,
+  type AnalyticsExecutionOption,
   type AnalyticsPoint,
   type AnalyticsVisual,
 } from './api/security'
@@ -180,6 +181,8 @@ function Skeleton() {
 
 export function AnalyticsPage({ token, canExport, navigate }: Props) {
   const [dashboard, setDashboard] = useState<AnalyticsDashboard | null>(null)
+  const [executions, setExecutions] = useState<AnalyticsExecutionOption[]>([])
+  const [executionId, setExecutionId] = useState(0)
   const [metricCode, setMetricCode] = useState('')
   const [year, setYear] = useState('')
   const [territory, setTerritory] = useState('')
@@ -195,8 +198,31 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
   useEffect(() => {
     let cancelled = false
     setLoading(true)
+    api.analyticsExecutions(token)
+      .then((items) => {
+        if (cancelled) return
+        setExecutions(items)
+        setExecutionId((current) => current || items[0]?.execution_id || 0)
+        if (!items.length) {
+          setError('No existe una ejecución conciliada con datos físicos disponibles para analizar.')
+          setLoading(false)
+        }
+      })
+      .catch((caught: Error) => {
+        if (!cancelled) {
+          setError(caught.message)
+          setLoading(false)
+        }
+      })
+    return () => { cancelled = true }
+  }, [token])
+
+  useEffect(() => {
+    if (!executionId) return
+    let cancelled = false
+    setLoading(true)
     setError('')
-    api.analyticsDashboard(token, { metricCode, year, territory })
+    api.analyticsDashboard(token, { executionId, metricCode, year, territory })
       .then((result) => {
         if (cancelled) return
         setDashboard(result)
@@ -205,7 +231,7 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
       .catch((caught: Error) => { if (!cancelled) setError(caught.message) })
       .finally(() => { if (!cancelled) setLoading(false) })
     return () => { cancelled = true }
-  }, [metricCode, territory, token, year])
+  }, [executionId, metricCode, territory, token, year])
 
   const unit = useMemo(() => dashboard ? metricUnit(dashboard) : 'valor', [dashboard])
 
@@ -213,7 +239,7 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
     setChatMessages([])
     setChatQuestion('')
     setChatError('')
-  }, [metricCode, territory, viewMode, year])
+  }, [executionId, metricCode, territory, viewMode, year])
   if (loading && !dashboard) return <Skeleton />
   if (error && !dashboard) return <section className="analytics-blocked"><span aria-hidden="true">!</span><p className="eyebrow">Análisis no disponible</p><h2>Primero complete el expediente del datamart</h2><p>{error}</p><button onClick={() => navigate('/datamart-ventas')}>Abrir Generación de datamart</button></section>
   if (!dashboard) return null
@@ -229,6 +255,7 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
     setError('')
     try {
       const file = await api.analyticsReport(token, format, {
+        executionId: activeDashboard.execution_id,
         metricCode: metricCode || activeDashboard.metric_code,
         year,
         territory,
@@ -247,6 +274,14 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
     } finally {
       setExporting(null)
     }
+  }
+
+  function changeExecution(value: string) {
+    setExecutionId(Number(value))
+    setDashboard(null)
+    setMetricCode('')
+    setYear('')
+    setTerritory('')
   }
 
   async function askCopilot(question = chatQuestion) {
@@ -294,6 +329,7 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
         { category: 'Investigar', prompts: ['¿Qué variación merece una revisión adicional?', 'Señala patrones atípicos sin atribuir causalidad.'] },
         { category: 'Validar', prompts: ['Explica la calidad y trazabilidad de esta selección.', '¿Qué dato agregado faltaría para responder preguntas que este panel no cubre?'] },
       ]
+  const hasMultipleExecutions = executions.length > 1
 
   return <div className={`analytics-workspace mode-${viewMode}`}>
     <section className="analytics-hero">
@@ -302,7 +338,7 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
     </section>
 
     <section className="analytics-toolbar" aria-label="Filtros del análisis">
-      <div>{viewMode === 'analyst' && <label>Indicador de los gráficos<select value={metricCode || dashboard.metric_code} onChange={(event) => setMetricCode(event.target.value)}>{dashboard.available_metrics.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>}<label>Año<select value={year} onChange={(event) => setYear(event.target.value)}><option value="">Todos</option>{dashboard.filters.years.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label><label>Territorio<select value={territory} onChange={(event) => setTerritory(event.target.value)}><option value="">Todos</option>{dashboard.filters.territories.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label></div>
+      <div><div className="analytics-execution-control">{hasMultipleExecutions ? <label>Datamart analizado<select aria-label="Datamart analizado" value={executionId} onChange={(event) => changeExecution(event.target.value)}>{executions.map((item) => <option key={item.execution_id} value={item.execution_id}>{item.label}</option>)}</select></label> : <div className="analytics-active-execution"><small>Datamart activo</small><strong>{executions[0]?.label ?? `Ejecución #${dashboard.execution_id}`}</strong></div>}{!hasMultipleExecutions && <p role="note">Sólo esta ejecución conserva datos físicos consultables. Los demás expedientes permanecen disponibles para auditoría. <button type="button" onClick={() => navigate('/datamart-ventas')}>Ver expedientes</button></p>}</div>{viewMode === 'analyst' && <label>Indicador de los gráficos<select value={metricCode || dashboard.metric_code} onChange={(event) => setMetricCode(event.target.value)}>{dashboard.available_metrics.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>}<label>Año<select value={year} onChange={(event) => setYear(event.target.value)}><option value="">Todos</option>{dashboard.filters.years.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label><label>Territorio<select value={territory} onChange={(event) => setTerritory(event.target.value)}><option value="">Todos</option>{dashboard.filters.territories.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label></div>
       <div className="analytics-toolbar-actions"><button className="secondary" disabled={!year && !territory} onClick={clearFilters}>Restablecer filtros</button>{canExport && <div className="analytics-export" aria-label="Exportar selección visible"><button className="secondary" disabled={exporting !== null} onClick={() => void exportReport('pdf')}>{exporting === 'pdf' ? 'Generando…' : 'Exportar PDF'}</button><button className="secondary" disabled={exporting !== null} onClick={() => void exportReport('xlsx')}>{exporting === 'xlsx' ? 'Generando…' : 'Exportar Excel'}</button></div>}</div>
     </section>
     {canExport && <p className="analytics-export-note">La exportación conserva la vista, el indicador y los filtros actuales. Excel incluye únicamente los datos que respaldan los gráficos visibles.</p>}
@@ -310,7 +346,7 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
     {error && <p className="notice error">{error}</p>}
 
     <section className="analytics-kpis" aria-label="Indicadores clave">
-      {dashboard.kpis.map((kpi, index) => { const presentation = metricCardPresentation(kpi.value, kpi.unit); return <article className={kpi.status === 'reconciled' ? '' : 'unavailable'} key={kpi.code}><div><span className="kpi-accent" data-index={index % 4} /><small>{kpi.name}</small></div><strong title={`Valor exacto: ${presentation.exact}`}>{presentation.value}</strong>{presentation.unit && <span className="analytics-kpi-unit">{presentation.unit}</span>}<p><span aria-hidden="true">✓</span> Calculado con el filtro actual</p></article> })}
+      {dashboard.kpis.map((kpi, index) => { const presentation = metricCardPresentation(kpi.value, kpi.unit); const reconciled = kpi.status === 'reconciled'; return <article className={reconciled ? '' : 'unavailable'} key={kpi.code}><div><span className="kpi-accent" data-index={index % 4} /><small>{kpi.name}</small></div><strong title={`Valor exacto: ${presentation.exact}`}>{presentation.value}</strong>{presentation.unit && <span className="analytics-kpi-unit">{presentation.unit}</span>}<p><span aria-hidden="true">{reconciled ? '✓' : '!'}</span> {reconciled ? 'Calculado con el filtro actual' : 'No calculable con esta ejecución'}</p></article> })}
     </section>
 
     <div className="analytics-layout">

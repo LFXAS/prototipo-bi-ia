@@ -1958,6 +1958,65 @@ def expand_proposal_blueprint(
             }
         )
 
+    measure_by_name = {str(item.get("name")): item for item in measures}
+    normalized_kpis: list[dict[str, Any]] = []
+    seen_kpi_recipes: set[tuple[str, str, str]] = set()
+    for kpi in kpis:
+        formula = kpi.get("formula", {})
+        formula = formula if isinstance(formula, dict) else {}
+        measure_name = str(formula.get("measure", ""))
+        operation = str(formula.get("operation", ""))
+        role = str(kpi.get("semantic_role", ""))
+        signature = (measure_name, operation, role)
+        if signature in seen_kpi_recipes:
+            automatic_adjustments.append(
+                f"El KPI {kpi.get('name', kpi.get('code', 'sin nombre'))} se omitió "
+                "porque repetía una receta equivalente ya conservada."
+            )
+            decision_diagnostics.append(
+                {
+                    "kind": "kpi",
+                    "code": str(kpi.get("code", "")),
+                    "status": "auto_deduplicated",
+                    "reason": "La misma medida, operación y función semántica ya existen.",
+                    "compatible_measures": [measure_name],
+                }
+            )
+            continue
+        seen_kpi_recipes.add(signature)
+        measure = measure_by_name.get(measure_name, {})
+        calculation = measure.get("calculation", {})
+        calculation = calculation if isinstance(calculation, dict) else {}
+        source_text = " ".join(
+            [
+                measure_name,
+                *(str(item) for item in measure.get("source_columns", [])),
+                *(str(item) for item in calculation.get("inputs", [])),
+            ]
+        )
+        name = str(kpi.get("name", ""))
+        if (
+            operation == "average"
+            and role == "sales_amount"
+            and _search_tokens(name) & {"unit", "unidad", "unidades"}
+            and (
+                bool(re.search(r"line.?total|importe.*l[ií]nea", source_text, re.IGNORECASE))
+                or bool(
+                    _search_tokens(source_text)
+                    & {"qty", "quantity", "cantidad", "units", "unidades"}
+                )
+            )
+        ):
+            previous_name = name
+            kpi = deepcopy(kpi)
+            kpi["name"] = "Importe promedio por línea de venta"
+            automatic_adjustments.append(
+                f"El KPI {previous_name} se renombró como Importe promedio por línea de "
+                "venta porque AVG del importe de línea no representa un valor por unidad."
+            )
+        normalized_kpis.append(kpi)
+    kpis = normalized_kpis
+
     included_destinations = {str(item.get("name", "")) for item in dimensions}
     for missing in sorted(requested_destinations - included_destinations):
         proposal_warnings.append(

@@ -2087,7 +2087,7 @@ function CrudForm({ page, token, selected, onSaved }: { page: string; token: str
       const value = event.target.value
       if (page === '/llm' && field.key === 'provider_kind') setValues({ ...values, provider_kind: value, ...(llmProviderPresets[value] ?? {}) })
       else setValues({ ...values, [field.key]: value })
-    }}>{field.options?.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select> : <input required={(field.required ?? true) && !(selected && field.secret)} type={field.secret ? 'password' : field.inputType ?? 'text'} placeholder={selected && field.secret ? 'Déjela vacía para conservar la contraseña actual' : field.placeholder} value={values[field.key] ?? ''} onChange={(event) => setValues({ ...values, [field.key]: event.target.value })} />}</label>)}</div>
+    }}>{(page === '/llm' && field.key === 'reasoning_level' ? llmReasoningChoices(values.provider_kind) : field.options)?.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select> : <input required={(field.required ?? true) && !(selected && field.secret)} type={field.secret ? 'password' : field.inputType ?? 'text'} placeholder={selected && field.secret ? 'Déjela vacía para conservar la contraseña actual' : field.placeholder} value={values[field.key] ?? ''} onChange={(event) => setValues({ ...values, [field.key]: event.target.value })} />}</label>)}</div>
     <div className="form-actions"><button>{selected ? 'Guardar cambios' : 'Crear registro'}</button>{selected && <button type="button" className="secondary" onClick={onSaved}>Cancelar</button>}</div>
     {error && <p className="notice error">{error}</p>}
   </form>
@@ -2113,6 +2113,21 @@ const llmProviderPresets: Record<string, Partial<Values>> = {
   'anthropic-cloud': { base_url: 'https://api.anthropic.com', model_id: 'claude-haiku-4-5-20251001', reasoning_level: 'minimal' },
   'qwen-cloud': { base_url: 'https://dashscope-intl.aliyuncs.com', model_id: 'qwen-plus', reasoning_level: 'minimal' },
   'ollama-local': { base_url: 'http://ollama:11434', model_id: 'qwen2.5:3b', reasoning_level: 'minimal' },
+}
+
+const llmReasoningOptions: Choice[] = [
+  { value: 'automatic', label: 'Automático del proveedor' },
+  { value: 'minimal', label: 'Mínimo — demostración rápida' },
+  { value: 'low', label: 'Bajo — rápido y económico' },
+  { value: 'medium', label: 'Medio — análisis equilibrado' },
+  { value: 'high', label: 'Alto — mayor tiempo y consumo' },
+]
+
+function llmReasoningChoices(providerKind: string): Choice[] {
+  if (providerKind === 'anthropic-cloud') {
+    return llmReasoningOptions.filter((option) => ['automatic', 'minimal', 'low'].includes(option.value))
+  }
+  return llmReasoningOptions
 }
 
 function formConfig(page: string, token: string, roles: Role[], permissions: Permission[], selected: Row | null): FormConfig {
@@ -2147,7 +2162,7 @@ function formConfig(page: string, token: string, roles: Role[], permissions: Per
   }
   return {
     singular: 'configuración LLM', createTitle: 'Crear configuración LLM', help: 'Seleccione un proveedor para completar su URL y modelo recomendados. Después de guardar, registre aquí la credencial cloud cifrada. Puede revisar los valores antes de crear la configuración.',
-    fields: [{ key: 'name', label: 'Nombre de configuración' }, { key: 'provider_kind', label: 'Proveedor', kind: 'select', options: [{ value: '', label: 'Seleccione un proveedor' }, { value: 'anthropic-cloud', label: 'Anthropic Claude — Haiku, rápido y económico' }, { value: 'groq-cloud', label: 'Groq Cloud — rápido para análisis BI' }, { value: 'gemini', label: 'Gemini Cloud' }, { value: 'qwen-cloud', label: 'Qwen Cloud' }, { value: 'ollama-local', label: 'Ollama local — no requiere API key' }] }, { key: 'base_url', label: 'URL del servicio', placeholder: 'Se completa al seleccionar el proveedor' }, { key: 'model_id', label: 'Modelo', placeholder: 'Se completa al seleccionar el proveedor' }, { key: 'reasoning_level', label: 'Nivel de razonamiento', kind: 'select', options: [{ value: 'automatic', label: 'Automático del proveedor' }, { value: 'minimal', label: 'Mínimo — demostración rápida' }, { value: 'low', label: 'Bajo — rápido y económico' }, { value: 'medium', label: 'Medio — análisis equilibrado' }, { value: 'high', label: 'Alto — mayor tiempo y consumo' }] }],
+    fields: [{ key: 'name', label: 'Nombre de configuración' }, { key: 'provider_kind', label: 'Proveedor', kind: 'select', options: [{ value: '', label: 'Seleccione un proveedor' }, { value: 'anthropic-cloud', label: 'Anthropic Claude — Haiku, rápido y económico' }, { value: 'groq-cloud', label: 'Groq Cloud — rápido para análisis BI' }, { value: 'gemini', label: 'Gemini Cloud' }, { value: 'qwen-cloud', label: 'Qwen Cloud' }, { value: 'ollama-local', label: 'Ollama local — no requiere API key' }] }, { key: 'base_url', label: 'URL del servicio', placeholder: 'Se completa al seleccionar el proveedor' }, { key: 'model_id', label: 'Modelo', placeholder: 'Se completa al seleccionar el proveedor' }, { key: 'reasoning_level', label: 'Nivel de razonamiento', kind: 'select', options: llmReasoningOptions }],
     empty: { name: '', provider_kind: '', base_url: '', model_id: '', reasoning_level: 'minimal' }, read: (row) => ({ name: String(row.name), provider_kind: String(row.provider_kind), base_url: String(row.base_url), model_id: String(row.model_id), reasoning_level: String(row.reasoning_level ?? 'minimal') }),
     create: (v) => api.create('/llm-configurations', token, { ...v, is_active: false }),
     update: (row, v) => api.upsert(`/llm-configurations/${row.id}`, token, { ...v, is_active: active(row) === 'true' }),

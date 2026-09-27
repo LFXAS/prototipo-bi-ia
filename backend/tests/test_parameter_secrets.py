@@ -95,3 +95,17 @@ def test_anthropic_provider_accepts_only_official_base_url() -> None:
             model_id="claude-haiku-4-5-20251001",
             reasoning_level="minimal",
         )
+
+
+@pytest.mark.parametrize("reasoning_level", ["medium", "high"])
+def test_anthropic_rejects_levels_without_extended_thinking(
+    reasoning_level: str,
+) -> None:
+    with pytest.raises(ValidationError, match="pensamiento extendido"):
+        LlmConfigurationCreate(
+            name="Claude con nivel no efectivo",
+            provider_kind="anthropic-cloud",
+            base_url="https://api.anthropic.com",
+            model_id="claude-haiku-4-5-20251001",
+            reasoning_level=reasoning_level,  # type: ignore[arg-type]
+        )
