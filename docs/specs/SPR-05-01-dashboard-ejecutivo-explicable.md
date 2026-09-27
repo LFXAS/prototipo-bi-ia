@@ -44,6 +44,16 @@ Quedan fuera el pronóstico de ventas, alertas autónomas, edición libre del da
 10. Una categoría territorial ofrece **Filtrar tablero** sólo si su clave coincide
     con una opción real devuelta por el backend. Al aplicarla se actualizan KPIs,
     gráficos, hallazgos y contexto mediante la API existente.
+11. El usuario puede elegir entre ejecuciones conciliadas cuyos datos físicos se
+    conserven. La interfaz muestra ejecución, propuesta, fecha, proveedor, cobertura
+    y estado analítico; no confunde la ejecución más reciente con la versión activa
+    o más completa.
+12. Una nueva materialización se guarda en un espacio versionado por ejecución y no
+    elimina las tablas de ejecuciones anteriores. Los expedientes previos que sólo
+    conserven metadatos se identifican como históricos no disponibles y no se
+    ofrecen como si todavía pudieran consultarse.
+13. Una tarjeta `not_calculable` muestra **No calculable**, la causa disponible y
+    una acción de revisión. No usa confirmación verde ni afirma que fue calculada.
 
 ## 4. API e interfaz
 
@@ -75,6 +85,11 @@ Requiere `analytics.dashboard.read`. La consulta de datos agregados no otorga ac
       y presentan un detalle contextual verificable.
 - [x] Una categoría territorial puede convertirse explícitamente en filtro global
       sin aceptar valores ajenos al catálogo autorizado.
+- [x] El selector de datamart cambia de ejecución sin repetir el ETL y conserva la
+      selección en filtros, chat y exportaciones.
+- [ ] Dos ejecuciones nuevas pueden consultarse de forma independiente después de
+      materializar la segunda.
+- [x] Los expedientes sin tablas físicas no aparecen como datamarts consultables.
 
 ## 7. Evidencia
 

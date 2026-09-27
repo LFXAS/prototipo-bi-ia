@@ -100,6 +100,28 @@ El contrato persistido conserva la sugerencia de IA y, al preparar el ETL, FastA
 
 Cada definición queda ligada a la propuesta, instantánea, ejecución, período y filtros. Cambiar de propuesta, reglas o selección crea una ejecución nueva y no altera resultados anteriores.
 
+### 5.1. Identidad canónica independiente del proveedor
+
+Los nombres redactados por Gemini, Groq, Anthropic, Qwen u Ollama son etiquetas de
+presentación y nunca identificadores de cálculo. Al compilar el contrato, FastAPI
+asigna a cada medida y dependencia un identificador técnico normalizado y conserva
+por separado el nombre original. Todas las recetas agregadas y derivadas deben
+referenciar esos identificadores; diferencias de idioma, espacios, tildes,
+mayúsculas o estilo del proveedor no pueden cambiar el resultado.
+
+El compilador además:
+
+- elimina KPI equivalentes por tipo de receta, medida, operación y función
+  semántica, aunque sus códigos visibles sean distintos;
+- resuelve el cierre de dependencias antes de materializar y explica cualquier
+  dependencia ausente;
+- no denomina **precio o venta por unidad** a un promedio de importes por línea;
+  `AVG(LineTotal)` se presenta como importe promedio por línea, mientras que la
+  venta promedio por unidad usa `SUM(ventas) / SUM(unidades)`;
+- vuelve a evaluar la cobertura con la selección preparada para el ETL y la marca
+  como completa o parcial sin reutilizar silenciosamente la cobertura anterior a
+  la selección.
+
 ## 6. Validación y evidencia
 
 Después de materializar el datamart, **Validación del datamart** muestra por cada KPI seleccionado:
@@ -131,6 +153,11 @@ Los KPI monetarios se presentan con ese código ISO —por ejemplo, `USD 109.846
 - [x] La ejecución 5 reunió cinco KPI sugeridos por IA; la ejecución 6 materializó los seis KPI de la propuesta 52, excluyó preventivamente un concepto débil y aplicó el descuento monetario autocorregido.
 - [x] Una unidad monetaria se reemplaza por un código ISO sólo después de comprobar una moneda única y trazable en la fuente; la ambigüedad conserva una etiqueta genérica y una acción guiada.
 - [x] Cada resultado conserva trazabilidad de propuesta, ejecución, período y regla aplicada.
+- [x] Una misma necesidad produce recetas ejecutables equivalentes con nombres de
+      medidas en español o inglés y con cualquiera de los proveedores habilitados.
+- [x] Un KPI derivado conserva valor en ETL, filtros, dashboard y exportaciones;
+      nunca aparece como calculado cuando su estado es `not_calculable`.
+- [x] Un promedio de importe por línea no se publica como precio o venta por unidad.
 
 ## 8. Exclusiones
 

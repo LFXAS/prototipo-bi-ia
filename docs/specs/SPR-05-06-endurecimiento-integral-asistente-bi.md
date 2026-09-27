@@ -153,6 +153,21 @@ analítica.
 - Abrir un expediente histórico es una operación de consulta: no habilita repetir
   el ETL ni modificar el contrato que lo originó.
 
+### HBI-011 — Neutralidad semántica, cobertura ejecutable y versiones analíticas
+
+- Las etiquetas propuestas por el LLM se desacoplan de los identificadores
+  canónicos usados por ETL, analítica, reportes y copiloto.
+- Una razón, diferencia o participación resuelve dependencias por identificadores
+  compilados, no por coincidencia literal del texto del proveedor.
+- La selección ETL registra cobertura ejecutable posterior a la selección. Si el
+  analista retira salidas solicitadas, la ejecución queda identificada como parcial
+  y nunca se recomienda como equivalente completo.
+- La materialización conserva los datos por ejecución en un esquema versionado; no
+  destruye una versión conciliada al publicar otra.
+- Analítica enumera sólo ejecuciones conciliadas con tablas comprobables, permite
+  elegir la activa y propaga `execution_id` a dashboard, chat y reportes.
+- Los KPI no calculables se presentan como incidencia, no como resultado correcto.
+
 ## 3. Experiencia guiada para el analista
 
 1. **Describir**: redacta o aprueba una necesidad reformulada.
@@ -193,8 +208,9 @@ decisión y cuál es el efecto de cada alternativa.
 | HBI-006 | Costos, margen y descuento concilian contra fuentes verificadas | pruebas ETL y analítica | implementado |
 | HBI-007 | Top 5 de Europa se resuelve sin filtro visual ni SQL libre | `test_analytics_copilot.py` y `test_analytics_service.py` | implementado |
 | HBI-008 | Una sesión vencida restaura el paso y borrador con contraste accesible | `App.test.tsx` (sesión y borrador) y comprobación WCAG | implementado |
-| HBI-009 | `make verify` completo y diff sin secretos | registro de cierre | pendiente |
+| HBI-009 | `make verify` completo y diff sin secretos | registro de cierre | validado |
 | HBI-010 | Las propuestas v3 válidas siguen disponibles bajo motor v4 y los expedientes no desaparecen si el catálogo queda bloqueado | pruebas de evidencia, catálogo y flujo frontend | en implementación |
+| HBI-011 | Anthropic y Groq compilan dependencias equivalentes; dos ejecuciones se conservan y el dashboard no presenta falsos positivos | pruebas ETL, analítica y `AnalyticsPage.test.tsx` | implementado; validación física dual pendiente |
 
 ## 6. Matriz de trazabilidad técnica
 
@@ -209,6 +225,7 @@ decisión y cuál es el efecto de cada alternativa.
 | HBI-008 | cliente de sesión y persistencia de wizard | Asistente completo |
 | HBI-009 | suites backend, frontend y E2E | Evidencia de entrega |
 | HBI-010 | versionado de contrato, catálogo ETL e historial | Datamart de ventas |
+| HBI-011 | compilador KPI, materializador versionado y catálogo analítico | Preparación ETL y Analítica de ventas |
 
 ## 7. Fuera de alcance
 
@@ -250,3 +267,18 @@ decisión y cuál es el efecto de cada alternativa.
   misma medida y función semántica. Si la IA ya propuso el descuento monetario,
   el enriquecimiento determinístico conserva ese KPI y no crea un duplicado;
   esto mantiene el catálogo dentro del máximo ejecutable de doce indicadores.
+- 26/09/2026: HBI-011 se especifica después de reproducir con Anthropic la
+  propuesta 77. Se observaron siete advertencias contradictorias con cobertura
+  declarada, dos promedios de línea rotulados como valores por unidad, una razón
+  calculada por ETL pero perdida en el dashboard por normalización desigual y la
+  sustitución física de la ejecución 9 al materializar la 10.
+- 26/09/2026: HBI-011 se implementa mediante identificadores canónicos, cierre de
+  dependencias, consolidación de recetas equivalentes, cobertura posterior a la
+  selección, esquemas por ejecución, catálogo de versiones físicamente disponibles
+  y estados honestos para KPI no calculables. La ejecución 10 recuperó USD 401,49
+  por unidad sin repetir el ETL; queda pendiente materializar dos ejecuciones nuevas
+  para registrar evidencia física dual de integración.
+- 27/09/2026: HBI-009 se valida con `make verify`: 133 pruebas Pytest, 21 pruebas
+  Vitest, Ruff, formato, Mypy, ESLint, compilación Vite, contratos Compose, flujo de
+  ramas y documentación LaTeX finalizaron correctamente. El control final del diff
+  no detectó credenciales ni archivos `.env` incorporados.
