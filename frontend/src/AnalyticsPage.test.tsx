@@ -80,6 +80,7 @@ describe('AnalyticsPage', () => {
     expect(screen.getAllByText('promedio por unidad vendida')).toHaveLength(2)
     expect(screen.getByTitle(/Valor exacto: USD.*110\.373\.889,31/)).toBeInTheDocument()
     expect(screen.getByTitle(/Valor exacto: USD.*365,48 por unidad/)).toBeInTheDocument()
+    await waitFor(() => expect(api.analyticsDashboard).toHaveBeenCalledTimes(2))
 
     fireEvent.change(screen.getByLabelText('Escriba su pregunta'), { target: { value: 'Resume las unidades vendidas.' } })
     fireEvent.click(screen.getByRole('button', { name: 'Preguntar al copiloto' }))
@@ -120,11 +121,17 @@ describe('AnalyticsPage', () => {
       ],
     })
 
-    render(<AnalyticsPage token="test-token" canExport={false} navigate={vi.fn()} />)
+    const navigate = vi.fn()
+    render(<AnalyticsPage token="test-token" canExport={false} navigate={navigate} />)
 
     expect(await screen.findByText('Venta promedio')).toBeInTheDocument()
     expect(screen.getByText('No calculable con esta ejecución')).toBeInTheDocument()
-    expect(screen.getByLabelText('Datamart analizado')).toHaveValue('9')
+    expect(screen.queryByLabelText('Datamart analizado')).not.toBeInTheDocument()
+    expect(screen.getByText('Datamart activo')).toBeInTheDocument()
+    expect(screen.getByText('Ejecución #9 · propuesta #73 · cobertura completa')).toBeInTheDocument()
+    expect(screen.getByText(/Sólo esta ejecución conserva datos físicos consultables/)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Ver expedientes' }))
+    expect(navigate).toHaveBeenCalledWith('/datamart-ventas')
     expect(api.analyticsDashboard).toHaveBeenCalledWith(
       'test-token',
       expect.objectContaining({ executionId: 9 }),
