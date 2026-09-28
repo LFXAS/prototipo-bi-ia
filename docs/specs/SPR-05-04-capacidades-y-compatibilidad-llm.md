@@ -23,6 +23,23 @@ La plataforma mantendrá una matriz de capacidades validada por adaptador y mode
    el nivel interno `minimal`; esto maximiza el presupuesto disponible para la
    respuesta JSON y evita enviar parámetros incompatibles. El modelo sigue siendo
    editable y la prueba usa el mismo endpoint `/v1/messages` que la generación.
+9. Todos los proveedores reciben un contrato funcional canónico. El adaptador puede
+   traducir parámetros, presupuesto, formato estructurado y política de reintentos
+   según las capacidades del modelo, pero no puede cambiar la semántica BI ni omitir
+   las validaciones determinísticas.
+10. El esquema de descubrimiento semántico se deriva automáticamente del bloque de
+    metadatos vigente. Las referencias permitidas son únicamente objetos reales de
+    ese bloque y su cardinalidad no puede limitarse con un máximo artificial inferior
+    a la evidencia disponible.
+11. Una respuesta estructurada rechazada por el proveedor se clasifica según su causa:
+    incompatibilidad de contrato, presupuesto, límite temporal o parámetro no
+    admitido. Un error de contrato no se presentará como falta de alcance de negocio.
+12. Si el proveedor falla antes de entregar conceptos, la necesidad y su análisis de
+    viabilidad permanecen disponibles. La interfaz permite reintentar la misma
+    solicitud o cambiar de proveedor sin obligar a reescribirla.
+13. Los resultados se aceptan sólo después de la validación local de referencias,
+    relaciones y reglas BI. Adaptar el transporte a un modelo nunca autoriza tablas,
+    columnas, relaciones, métricas ni cálculos inventados.
 
 ## 3. Datos, API e interfaz
 
@@ -50,6 +67,17 @@ Sólo `parameters.llm.manage` modifica la configuración. La prueba usa el míni
 - [x] Después del experimento, Claude deja de ofrecer medio/alto porque el adaptador
       vigente omite pensamiento extendido; la API aplica la misma restricción y evita
       configuraciones engañosas fuera de la interfaz.
+- [ ] Una respuesta con cuatro o más referencias técnicas reales no falla por un
+      límite interno arbitrario; todas las referencias se deduplican y se vuelven a
+      comprobar contra la instantánea.
+- [ ] Groq, Claude, Gemini y Ollama comparten el mismo contrato funcional, mientras
+      cada adaptador aplica automáticamente sólo las capacidades técnicas admitidas.
+- [ ] `json_validate_failed` distingue un incumplimiento del esquema de una salida
+      truncada por presupuesto y conserva código, estado y `request-id` seguros en la
+      auditoría.
+- [ ] Un `provider_failed` no muestra «No se encontró un alcance verificable» si la
+      viabilidad ya fue aprobada; ofrece reintento de la misma necesidad sin perder el
+      avance.
 
 ## 6. Resultado de implementación
 
@@ -63,3 +91,18 @@ procedencia. El adaptador Claude omite pensamiento extendido, por lo que esos do
 no representan todavía esfuerzos diferentes. La decisión operativa es Groq bajo como
 principal y Claude bajo/mínimo como respaldo. La evidencia completa está en
 `docs/experiments/2026-09-27-groq-vs-claude.md`.
+
+## 7. Incidente de cardinalidad del contrato estructurado
+
+Una repetición posterior con Groq en nivel bajo devolvió cuatro referencias técnicas
+reales para un candidato, pero el esquema de transporte aceptaba como máximo tres. El
+proveedor rechazó correctamente la respuesta con `json_validate_failed`; la aplicación
+lo interpretó de forma incorrecta como falta de presupuesto y la interfaz mostró que no
+existía alcance verificable. La necesidad no era la causa: su viabilidad contenía nueve
+requisitos directos, diez derivables y ninguno ambiguo o no disponible.
+
+La corrección exigida es transversal: construir el esquema semántico a partir de los
+objetos reales enviados en cada bloque, adaptar su transmisión a las capacidades del
+proveedor y volver a validar localmente la respuesta. No se introducirán excepciones de
+negocio para Groq ni instrucciones distintas para Claude; la variación permitida reside
+únicamente en el adaptador técnico.
