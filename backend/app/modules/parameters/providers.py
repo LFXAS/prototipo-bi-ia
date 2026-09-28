@@ -140,7 +140,9 @@ def _retry_delay_seconds(response: Any, attempt: int) -> float:
     if raw_retry_after is not None:
         try:
             retry_after = float(str(raw_retry_after))
-            return min(max(retry_after, 0.0), 10.0)
+            # Respect the provider's refill window. The previous ten-second cap made
+            # Groq retry too early even when it explicitly requested 24 seconds.
+            return min(max(retry_after, 0.0), 45.0)
         except (TypeError, ValueError):
             pass
     return float(min(0.25 * (2 ** (attempt - 1)), 2.0))
@@ -152,6 +154,11 @@ def _is_transient_response(response: Any) -> bool:
         return True
     details = _provider_error_details(response)
     normalized = f"{details.code} {details.message}".casefold()
+    if status_code == 400 and details.code == "json_validate_failed":
+        # A model can miss a valid structured contract nondeterministically. Retrying
+        # is safe because the request is read-only and all results are validated again
+        # by the application before they can become a BI proposal.
+        return True
     return status_code == 413 and any(
         marker in normalized for marker in ("rate_limit", "rate limit", "too many requests")
     )
@@ -299,6 +306,22 @@ def _generation_error(
         )
     if provider_kind == "groq-cloud" and status_code == 400:
         if provider_code == "json_validate_failed" or "validate json" in normalized:
+            if any(
+                marker in normalized
+                for marker in (
+                    "does not match the expected schema",
+                    "does not validate",
+                    "jsonschema",
+                    "maxitems",
+                    "minitems",
+                )
+            ):
+                return error(
+                    "Groq generó una respuesta que no cumplió el contrato estructurado. "
+                    "La plataforma la descartó automáticamente sin usarla; puede reintentar "
+                    "la misma necesidad o cambiar de proveedor.",
+                    "structured_contract",
+                )
             return error(
                 "Groq no completó la salida JSON estructurada dentro del presupuesto disponible. "
                 "El nivel de razonamiento es compatible; reduzca la complejidad o aumente el "

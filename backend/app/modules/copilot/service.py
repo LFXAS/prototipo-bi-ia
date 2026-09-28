@@ -99,7 +99,6 @@ SEMANTIC_RESPONSE_SCHEMA: dict[str, Any] = {
                     "technical_refs": {
                         "type": "array",
                         "minItems": 1,
-                        "maxItems": 3,
                         "items": TEXT_SCHEMA,
                     },
                     "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
@@ -110,6 +109,26 @@ SEMANTIC_RESPONSE_SCHEMA: dict[str, Any] = {
         "ambiguities": STRING_ARRAY_SCHEMA,
     },
 }
+
+
+def semantic_response_schema(technical_refs: list[str]) -> dict[str, Any]:
+    """Bind the shared semantic contract to references in the current metadata block.
+
+    Provider adapters may enforce or describe this schema differently, but they all
+    receive the same business contract.  The deterministic validator still verifies
+    every returned reference against the complete snapshot.
+    """
+    allowed_references = list(
+        dict.fromkeys(reference for reference in technical_refs if reference.strip())
+    )
+    schema = deepcopy(SEMANTIC_RESPONSE_SCHEMA)
+    candidates = schema["properties"]["candidates"]
+    reference_schema = candidates["items"]["properties"]["technical_refs"]
+    reference_schema["items"] = {
+        "type": "string",
+        "enum": allowed_references or ["sin_referencia"],
+    }
+    return schema
 
 
 def semantic_advice_response_schema(technical_refs: list[str]) -> dict[str, Any]:
@@ -999,7 +1018,7 @@ def validated_semantic_candidates(
                     )
                 )
                 continue
-            normalized = [str(item) for item in references]
+            normalized = list(dict.fromkeys(str(item) for item in references))
             unknown = [item for item in normalized if item not in existing]
             if unknown:
                 rejected.append(
@@ -1165,6 +1184,11 @@ def derived_scope(document: dict[str, Any], semantic_map: dict[str, Any]) -> dic
         "business",
         "entity",
         "entidad",
+        "party",
+        "subject",
+        "sujeto",
+        "holder",
+        "titular",
     }
     identity_neighbors: list[str] = []
     for candidate in selected_semantic_candidates(semantic_map):
@@ -1173,10 +1197,17 @@ def derived_scope(document: dict[str, Any], semantic_map: dict[str, Any]) -> dic
         concept_tokens = _search_tokens(candidate.get("business_concept", ""))
         if not concept_tokens & {"customer", "client", "cliente", "buyer", "comprador"}:
             continue
-        for reference in candidate.get("technical_refs", []):
-            reference = str(reference)
-            if reference not in tables:
+        identity_queue = [
+            (str(reference), 0)
+            for reference in candidate.get("technical_refs", [])
+            if str(reference) in tables
+        ]
+        visited_identity_paths: set[str] = set()
+        while identity_queue:
+            reference, depth = identity_queue.pop(0)
+            if reference in visited_identity_paths or depth >= 2:
                 continue
+            visited_identity_paths.add(reference)
             for relation in tables[reference].get("foreign_keys", []):
                 if not isinstance(relation, dict):
                     continue
@@ -1192,6 +1223,7 @@ def derived_scope(document: dict[str, Any], semantic_map: dict[str, Any]) -> dic
                 )
                 if target in tables and relation_tokens & identity_terms:
                     identity_neighbors.append(target)
+                    identity_queue.append((target, depth + 1))
     expanded.update(dict.fromkeys(identity_neighbors))
     # Never discard an LLM candidate merely because a connector path consumed the limit.
     expanded.update(selected_set)

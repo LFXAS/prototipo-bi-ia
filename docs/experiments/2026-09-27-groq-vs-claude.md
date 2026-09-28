@@ -91,3 +91,31 @@ materializaron y los fallos Groq no alteraron el datamart publicado.
   proveedor y exponer paneles externos o credenciales estaría fuera del alcance.
 - Una repetición puede variar por límites de cuenta y naturaleza generativa; los registros
   auditables y las reglas determinísticas permiten repetir y contrastar el resultado.
+
+## 8. Repetición posterior y endurecimiento del contrato
+
+Una nueva ejecución con la misma necesidad y Groq bajo expuso un problema de la
+plataforma, no del modelo de negocio. En las propuestas `#82` y `#83`, Groq generó cuatro
+referencias técnicas reales para un candidato, mientras el esquema de transporte aceptaba
+como máximo tres. El proveedor devolvió `json_validate_failed` y la interfaz lo presentó
+incorrectamente como falta de presupuesto y luego como ausencia de alcance verificable.
+
+Se sustituyó ese máximo artificial por un esquema construido automáticamente con las
+referencias reales de cada bloque. Los adaptadores conservan diferencias de transporte
+- JSON Schema estricto, esquema del proveedor o instrucción más validación local -, pero
+comparten el mismo contrato BI y las mismas reglas determinísticas. También se corrigió la
+política de reintentos para respetar `retry-after` hasta 45 segundos y se añadió una ruta de
+recuperación que conserva la necesidad cuando falla el proveedor.
+
+La primera repetición corregida (`#84`) produjo seis conceptos y diez tablas, pero se
+detuvo por límite temporal antes del plano final. La siguiente (`#85`) completó el JSON y
+permitió detectar que la identidad del cliente necesitaba recorrer dos relaciones
+declaradas. La expansión se generalizó sin depender de nombres de tablas y la propuesta
+`#86` quedó `ready_for_review` con 0 errores, 0 advertencias, 6 conceptos y 14 tablas. La
+dimensión cliente resolvió variantes comprobadas desde `Person.Person` y `Sales.Store`, y
+las medidas cubrieron ventas, unidades, descuento monetario y costo. No se aprobó la
+propuesta ni se ejecutó ETL.
+
+Este resultado refuerza la decisión: la estandarización no consiste en escribir prompts
+distintos por modelo, sino en adaptar el protocolo automáticamente, comprobar toda salida
+contra la instantánea y resolver de forma determinística aquello que la evidencia permite.

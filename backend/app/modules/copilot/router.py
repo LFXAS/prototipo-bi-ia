@@ -49,7 +49,6 @@ from app.modules.copilot.service import (
     PROMPT_VERSION,
     PROPOSAL_BLUEPRINT_SYSTEM_INSTRUCTION,
     SEMANTIC_ADVICE_SYSTEM_INSTRUCTION,
-    SEMANTIC_RESPONSE_SCHEMA,
     SEMANTIC_SYSTEM_INSTRUCTION,
     apply_analyst_adjustments,
     apply_controlled_relationship,
@@ -64,6 +63,7 @@ from app.modules.copilot.service import (
     proposal_payload,
     selected_semantic_candidates,
     semantic_advice_response_schema,
+    semantic_response_schema,
     validate_proposal,
     validated_semantic_candidates,
     verify_proposal_evidence,
@@ -688,6 +688,9 @@ async def create_proposal(
             )
             semantic_map["reused_from_proposal_id"] = source_proposal.id
         else:
+            metadata_blocks = compact_metadata_blocks(
+                snapshot.schema_document, request_document, block_size
+            )
             semantic_responses = [
                 await generate_json(
                     configuration,
@@ -702,11 +705,15 @@ async def create_proposal(
                         if configuration.provider_kind in {"groq-cloud", "anthropic-cloud"}
                         else 600
                     ),
-                    response_schema=SEMANTIC_RESPONSE_SCHEMA,
+                    response_schema=semantic_response_schema(
+                        [
+                            str(item.get("ref", ""))
+                            for item in block.get("metadata", [])
+                            if isinstance(item, dict)
+                        ]
+                    ),
                 )
-                for block in compact_metadata_blocks(
-                    snapshot.schema_document, request_document, block_size
-                )
+                for block in metadata_blocks
             ]
             semantic_map, rejected = validated_semantic_candidates(
                 semantic_responses, snapshot.schema_document
@@ -794,9 +801,21 @@ async def create_proposal(
             "errors": 1,
             "warnings": 0,
             "issues": [
-                {"code": "provider.failed", "level": "error", "path": "$", "message": str(exc)}
+                {
+                    "code": f"provider.{exc.category}",
+                    "level": "error",
+                    "path": "$",
+                    "message": str(exc),
+                }
             ],
         }
+        provider_failure = {
+            "category": exc.category,
+            "status_code": exc.status_code,
+            "request_id": exc.request_id,
+        }
+    else:
+        provider_failure = {}
     action = f"copilot.proposal.{record.status}"
     await add_audit_event(
         session,
@@ -809,6 +828,7 @@ async def create_proposal(
             "provider": configuration.provider_kind,
             "model": configuration.model_id,
             "source_proposal_id": payload.source_proposal_id,
+            **provider_failure,
         },
     )
     await session.commit()

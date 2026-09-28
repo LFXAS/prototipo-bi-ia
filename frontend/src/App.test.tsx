@@ -454,6 +454,16 @@ describe('App', () => {
       source_proposal_id: 12,
       created_at: '2026-09-19T10:05:00Z',
     }
+    const providerFailedProposal = {
+      ...proposal,
+      id: 14,
+      scope_document: {},
+      semantic_map_document: { candidates: [] },
+      status: 'provider_failed',
+      proposal_document: {},
+      validation_document: { valid: false, errors: 1, warnings: 0, issues: [{ code: 'provider.structured_contract', level: 'error', path: '$', message: 'Groq generó una respuesta que no cumplió el contrato estructurado. La plataforma la descartó automáticamente sin usarla.' }] },
+    }
+    let creationAttempts = 0
     const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input)
       if (url.includes('/auth/me')) return { ok: true, status: 200, json: async () => ({ user: { id: 1, email: 'admin@example.test', full_name: 'Administradora', is_active: true, roles: [] }, permissions: ['copilot.proposals.read', 'copilot.proposals.generate', 'copilot.proposals.review'], menus: [{ id: 11, code: 'analysis-assistant', label: 'Asistente de datamart', path: '/asistente', position: 10, module_code: 'ai', module_label: 'IA', is_active: true, permissions: [] }] }) }
@@ -468,7 +478,10 @@ describe('App', () => {
       if (url.endsWith('/copilot/proposals/11/invalidate') && init?.method === 'POST') return { ok: true, status: 200, json: async () => ({ ...previousProposal, status: 'invalidated', review_comment: 'La versión contiene una asociación semántica que debe corregirse.' }) }
       if (url.includes('/copilot/proposals/12/semantic-advice?')) return { ok: true, status: 200, json: async () => [] }
       if (url.endsWith('/copilot/proposals/12/semantic-advice') && init?.method === 'POST') return { ok: true, status: 201, json: async () => ({ id: 1, proposal_id: 12, concept_code: 'sales_reason', question: '¿Qué riesgo tendría incluir este concepto en el datamart?', response_document: { conclusion: 'exclude', answer_es: 'Puede existir más de un motivo por pedido.', evidence: [{ technical_ref: 'Sales.SalesReason', detail_es: 'La referencia existe y requiere una relación intermedia.' }], risk_es: 'Podría multiplicar las ventas.', include_consequence_es: 'Requiere una tabla puente.', exclude_consequence_es: 'No se analizarán motivos.', recommended_action_es: 'Mantener excluido salvo necesidad expresa.', confidence: 'medium', selection_changed: false }, provider_kind: 'groq-cloud', model_id: 'openai/gpt-oss-120b', created_by_label: 'Administradora', created_at: '2026-09-23T10:00:00Z' }) }
-      if (url.includes('/copilot/proposals') && init?.method === 'POST') return { ok: true, status: 201, json: async () => proposal }
+      if (url.includes('/copilot/proposals') && init?.method === 'POST') {
+        creationAttempts += 1
+        return { ok: true, status: 201, json: async () => creationAttempts === 1 ? providerFailedProposal : proposal }
+      }
       if (url.includes('/copilot/proposals')) return { ok: true, status: 200, json: async () => ({ items: [previousProposal], total: 6, limit: 5, offset: 0 }) }
       throw new Error(`Solicitud inesperada: ${url}`)
     })
@@ -496,6 +509,10 @@ describe('App', () => {
     fireEvent.click(screen.getByLabelText(/Comprendo esta limitación/))
     fireEvent.click(screen.getByRole('button', { name: 'Generar conceptos y propuesta' }))
 
+    expect(await screen.findByRole('heading', { name: 'Generación interrumpida de forma segura' })).toBeInTheDocument()
+    expect(screen.getByText('El problema fue del proveedor, no de su necesidad')).toBeInTheDocument()
+    expect(screen.queryByText(/No se encontró un alcance verificable/)).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Reintentar la misma solicitud' }))
     expect(await screen.findByRole('heading', { name: 'Conceptos encontrados' })).toBeInTheDocument()
     expect(screen.getByText('Detalle de venta')).toBeInTheDocument()
     expect(screen.getByText('Motivo de venta')).toBeInTheDocument()
@@ -553,6 +570,7 @@ describe('App', () => {
     expect(fetchMock.mock.calls.some(([input]) => String(input).includes('status=ready_for_review'))).toBe(true)
     const creationRequest = fetchMock.mock.calls.find(([input, init]) => String(input).endsWith('/copilot/proposals') && init?.method === 'POST')
     expect(JSON.parse(String(creationRequest?.[1]?.body))).toMatchObject({ viability_hash: 'd'.repeat(64), accepted_limitations: ['goal:definition'] })
+    expect(creationAttempts).toBe(2)
     window.dispatchEvent(new Event(sessionExpiredEvent))
     expect(await screen.findByText(/retomar el punto guardado/i)).toBeInTheDocument()
     expect(readAssistantDraft()?.proposalId).toBe(11)

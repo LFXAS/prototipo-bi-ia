@@ -306,6 +306,11 @@ th { color: var(--color-muted); font-size: .78rem; text-transform: uppercase; }
 .proposal-status { padding: .5rem .7rem; border-radius: 999px; background: #fff0d6; color: #875100; font-size: .8rem; font-weight: 800; white-space: nowrap; }
 .proposal-status.ready_for_review, .proposal-status.approved { background: #dff4ea; color: #087348; }
 .proposal-status.validation_failed, .proposal-status.provider_failed, .proposal-status.rejected { background: #fde5e1; color: #a32a1c; }
+.provider-recovery { display: grid; gap: 1rem; padding: 1.15rem; border: 1px solid #efb7ad; border-left: 4px solid #c53b2c; border-radius: .8rem; background: #fff8f6; color: #5f2119; }
+.provider-recovery h3 { margin: .2rem 0 .5rem; color: #7d251a; }
+.provider-recovery p { margin: .35rem 0; }
+.provider-recovery ul { margin: .75rem 0 0; padding-left: 1.25rem; color: #6c3b34; }
+.provider-recovery li + li { margin-top: .35rem; }
 .proposal-status.invalidated, .proposal-status.discarded { background: #eceff4; color: #4b5565; }
 .business-explanation { padding: 1.1rem; border-left: 4px solid #1765e8; background: #f3f7ff; font-size: 1.05rem; }
 .validation-summary { display: flex; justify-content: space-between; gap: 1rem; padding: .9rem 1rem; border-radius: .75rem; }
