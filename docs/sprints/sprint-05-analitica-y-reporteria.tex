@@ -62,9 +62,9 @@ pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}}
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & INF-SPR-05 \\
-    Versión & 1.2.1 \\
-    Periodo de referencia & 24 al 27 de septiembre de 2026 \\
-    Rama de trabajo & \file{fix/provider-neutral-kpi-versioning} \\
+    Versión & 1.2.2 \\
+    Periodo de referencia & 24 al 28 de septiembre de 2026 \\
+    Rama de trabajo & \file{fix/provider-neutral-output-contract} \\
     Estado & Incremento funcional, evidencia y documentación completados localmente \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
   \end{tabularx}
@@ -209,6 +209,10 @@ La repetición de la necesidad con Anthropic produjo la propuesta 77 y evidenci�
 
 La ejecución 10 permitió comprobar compatibilidad histórica. Sin repetir el ETL, el dashboard volvió a resolver \file{Venta promedio por unidad vendida} como \file{SUM(ventas) / SUM(unidades)} = USD 401,49, cambió la etiqueta incorrecta a \textbf{Importe promedio por línea de venta} y ocultó tarjetas que sólo repetían el mismo total con otro nombre. Su selección se identifica como cobertura parcial porque no incorporó todos los indicadores financieros solicitados.
 
+La propuesta 86 y la ejecución 11 permitieron verificar el contrato completo con una materialización nueva y conciliada. El ETL había almacenado correctamente ventas, unidades, costos y las recetas de margen; sin embargo, la primera lectura analítica mostraba \textbf{Sin valor} en algunos cocientes porque sus dependencias estaban expresadas mediante medidas físicas y no mediante KPI agregados redundantes. La corrección HBI-012 no volvió a cargar datos: el servicio analítico resuelve primero las medidas agregables autorizadas y luego evalúa las fórmulas derivadas hasta alcanzar un punto fijo. El orden de las recetas y el nombre elegido por Groq, Claude u otro proveedor dejan así de afectar el resultado.
+
+La comprobación real de la ejecución 11 obtuvo, sin filtros, margen bruto de USD 9899411,54, margen de 8,97\%, costo promedio por unidad de USD 365,48 y venta promedio por unidad de USD 401,49. Con los filtros año 2013 y Europa se recalcularon respectivamente USD 1274769,06, 12,63\%, USD 293,86 y USD 336,34. Los valores proceden del mismo datamart y cambian de forma coherente con el universo seleccionado.
+
 Para evitar que una prueba futura reemplace el resultado anterior, cada carga nueva publica un esquema \file{mart\_ventas\_e\{id\}}. La analítica lista únicamente ejecuciones conciliadas con filas físicas disponibles y pasa la misma ejecución al dashboard, al copiloto y a PDF/Excel. Si sólo existe una alternativa real, la interfaz la identifica como \textbf{Datamart activo} en modo de lectura y omite un combo sin capacidad de elección; el selector aparece automáticamente desde dos alternativas físicas. Los demás expedientes continúan accesibles para auditoría. El esquema \file{mart\_ventas} permanece como compatibilidad para la última materialización previa a esta regla.
 
 La interacción de barras y territorios también se ajustó para espacios reducidos: nombre, valor exacto, participación y acciones se redistribuyen dentro de la tarjeta mediante columnas adaptativas, sin cortar texto ni invadir visualizaciones vecinas. Esta validación forma parte de la prueba de regresión responsive del dashboard.
@@ -219,7 +223,7 @@ La interacción de barras y territorios también se ajustó para espacios reduci
   \toprule
   Control & Resultado \\
   \midrule
-  Propuesta y ejecución & Propuesta 73, motor \file{sales-bi-v6}; ejecución 9 conciliada y publicada. \\
+  Propuesta y ejecución & Propuestas 73 y 86; ejecuciones 9 y 11 conciliadas y publicadas. \\
   Filas de origen y destino & 121317 y 121317; diferencia 0. \\
   Tablas materializadas & Hecho de ventas y cuatro dimensiones. \\
   Clientes & 19820 miembros vinculados a ventas. \\
@@ -250,9 +254,9 @@ La interacción de barras y territorios también se ajustó para espacios reduci
   \toprule
   Control & Evidencia \\
   \midrule
-  Backend & Ruff, formato, Mypy y suite Pytest satisfactoria dentro de Docker, incluida la integración Anthropic. \\
-  Frontend & ESLint, pruebas Vitest de navegación e interacción gráfica y construcción Vite satisfactoria dentro de Docker. \\
-  Integración & Propuesta 73, ejecución 9, dashboard, filtros, conversación y exportaciones probados con los servicios reales. \\
+  Backend & Ruff, formato, Mypy y 142 pruebas Pytest satisfactorias dentro de Docker, incluida la resolución de KPI derivados. \\
+  Frontend & ESLint, 21 pruebas Vitest de navegación e interacción gráfica y construcción Vite satisfactoria dentro de Docker. \\
+  Integración & Propuestas 73/86, ejecuciones 9/11, dashboard, filtros, conversación y exportaciones probados con los servicios reales. \\
   PDF & Todas las páginas renderizadas e inspeccionadas, sin recortes ni solapamientos. \\
   Excel & Todas las hojas recalculadas, renderizadas e inspeccionadas, con moneda y gráficos correctos. \\
   Documentación & Bitácora, manual, informes de sprint y Capítulo III compilados con la imagen LaTeX del proyecto. \\
@@ -265,6 +269,8 @@ La interacción de barras y territorios también se ajustó para espacios reduci
 \subsection{Resultados de la revisión}
 
 El flujo funcional central queda completo: configuración, introspección, propuesta asistida, validación, decisión, materialización, conciliación, consumo, conversación y reportería. La corrección de clientes demuestra que una conciliación numérica no basta; una dimensión debe ser también descriptiva y utilizable.
+
+La revisión final de la ejecución 11 añade una segunda conclusión: que el ETL contenga la medida no garantiza por sí solo que el tablero pueda evaluar cualquier fórmula derivada. HBI-012 incorporó resolución por dependencias y punto fijo, conservó la trazabilidad de cada operando y recuperó los KPI sin repetir una carga conciliada.
 
 \subsection{Aprendizajes}
 
