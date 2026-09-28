@@ -530,12 +530,18 @@ def test_groq_rate_limit_retries_and_respects_retry_after(monkeypatch: MonkeyPat
 
 
 def test_provider_retry_window_honors_long_refill_without_unbounded_wait() -> None:
-    assert providers._retry_delay_seconds(
-        FakeResponse({}, status_code=429, headers={"retry-after": "24"}), 1
-    ) == 24.0
-    assert providers._retry_delay_seconds(
-        FakeResponse({}, status_code=429, headers={"retry-after": "120"}), 1
-    ) == 45.0
+    assert (
+        providers._retry_delay_seconds(
+            FakeResponse({}, status_code=429, headers={"retry-after": "24"}), 1
+        )
+        == 24.0
+    )
+    assert (
+        providers._retry_delay_seconds(
+            FakeResponse({}, status_code=429, headers={"retry-after": "120"}), 1
+        )
+        == 45.0
+    )
 
 
 def test_groq_rate_limit_stops_after_bounded_attempts(monkeypatch: MonkeyPatch) -> None:

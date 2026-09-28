@@ -600,9 +600,7 @@ def test_semantic_contract_accepts_every_real_reference_in_current_block() -> No
     ]
 
     schema = semantic_response_schema(references)
-    reference_schema = schema["properties"]["candidates"]["items"]["properties"][
-        "technical_refs"
-    ]
+    reference_schema = schema["properties"]["candidates"]["items"]["properties"]["technical_refs"]
 
     assert reference_schema["items"]["enum"] == references
     assert "maxItems" not in reference_schema
