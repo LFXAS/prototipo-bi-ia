@@ -219,6 +219,106 @@ def _remember_resolved_measure(
         resolved_values[measure] = value
 
 
+def _fact_measure_operations(fact_document: dict[str, Any]) -> dict[str, str]:
+    """Index only approved physical measures and their safe aggregation."""
+    operations: dict[str, str] = {}
+    for measure in _dict_items(fact_document.get("measures")):
+        try:
+            name = _safe_identifier(measure.get("name", ""))
+        except AnalyticsUnavailableError:
+            continue
+        operation = str(measure.get("aggregation", ""))
+        if operation in {"sum", "average", "count", "count_distinct", "min", "max"}:
+            operations[name] = operation
+    return operations
+
+
+def _derived_dependency_names(recipe: dict[str, Any]) -> tuple[str, ...]:
+    detail = recipe.get("recipe")
+    if not isinstance(detail, dict):
+        return ()
+    kind = str(recipe.get("kind", ""))
+    keys = {
+        "difference": ("minuend", "subtrahend"),
+        "ratio": ("numerator", "denominator"),
+        "share": ("numerator", "denominator"),
+    }.get(kind, ())
+    dependencies: list[str] = []
+    for key in keys:
+        try:
+            dependency = _safe_identifier(detail.get(key, ""))
+        except AnalyticsUnavailableError:
+            continue
+        if dependency not in dependencies:
+            dependencies.append(dependency)
+    return tuple(dependencies)
+
+
+async def _resolve_kpi_values(
+    session: AsyncSession,
+    recipes: list[dict[str, Any]],
+    fact_document: dict[str, Any],
+    fact_columns: set[str],
+    from_sql: str,
+    params: dict[str, object],
+) -> dict[str, float]:
+    """Resolve base measures first, then provider-neutral derived dependencies."""
+    values_by_code: dict[str, float] = {}
+    resolved_values: dict[str, float] = {}
+
+    async def aggregate(operation: str, measure: str) -> float:
+        result = await session.scalar(
+            text(f"SELECT {_aggregate_expression(operation, measure)} {from_sql}"), params
+        )
+        return _number(result)
+
+    # Aggregate recipes may arrive in any provider-defined order. Resolve all of
+    # them before attempting differences or ratios.
+    for recipe in recipes:
+        parts = _recipe_parts(recipe)
+        if parts is None or parts[1] not in fact_columns:
+            continue
+        value = await aggregate(parts[0], parts[1])
+        _remember_resolved_measure(resolved_values, parts[0], parts[1], value)
+        values_by_code[str(recipe.get("code", ""))] = value
+
+    # A derived KPI may reference an approved fact measure without requiring a
+    # redundant aggregate KPI card. This is the case for importe_bruto in
+    # Venta/unidad and Margen. Query only declared, materialized measures.
+    measure_operations = _fact_measure_operations(fact_document)
+    dependencies = {
+        dependency
+        for recipe in recipes
+        for dependency in _derived_dependency_names(recipe)
+        if dependency not in resolved_values and dependency not in values_by_code
+    }
+    for dependency in sorted(dependencies):
+        operation = measure_operations.get(dependency)
+        if operation is None or dependency not in fact_columns:
+            continue
+        value = await aggregate(operation, dependency)
+        _remember_resolved_measure(resolved_values, operation, dependency, value)
+
+    # Resolve derived-on-derived formulas independently of the order emitted by
+    # the model. The bounded fixed point cannot loop indefinitely.
+    pending = [recipe for recipe in recipes if _recipe_parts(recipe) is None]
+    for _ in range(len(pending)):
+        progressed = False
+        remaining: list[dict[str, Any]] = []
+        for recipe in pending:
+            derived_value = _derived_recipe_value(recipe, {**resolved_values, **values_by_code})
+            if derived_value is None:
+                remaining.append(recipe)
+                continue
+            code = str(recipe.get("code", ""))
+            values_by_code[code] = derived_value
+            progressed = True
+        pending = remaining
+        if not progressed:
+            break
+    return values_by_code
+
+
 def _unit_for_recipe(execution: EtlExecution, recipe: dict[str, Any]) -> str:
     code = str(recipe.get("code", ""))
     for item in _dict_items(execution.metrics_document.get("kpis")):
@@ -688,24 +788,18 @@ async def build_dashboard(
             AnalyticsOptionRead(value=str(item), label=str(item)) for item in territory_values
         ]
 
+    resolved_kpis = await _resolve_kpi_values(
+        session,
+        recipes,
+        fact_document,
+        fact_columns,
+        from_sql,
+        params,
+    )
     kpis: list[AnalyticsMetricRead] = []
-    resolved_values: dict[str, float] = {}
     for recipe in recipes:
-        parts = _recipe_parts(recipe)
-        value: float | None = None
-        if parts is not None and parts[1] in fact_columns:
-            result = await session.scalar(
-                text(f"SELECT {_aggregate_expression(parts[0], parts[1])} {from_sql}"), params
-            )
-            value = _number(result)
-            # Derived controlled ratios refer to a measure, whose additive business
-            # value is SUM.  AVG/MIN/MAX aliases must never overwrite that base.
-            _remember_resolved_measure(resolved_values, parts[0], parts[1], value)
-        else:
-            value = _derived_recipe_value(recipe, resolved_values)
         code = str(recipe.get("code", ""))
-        if value is not None:
-            resolved_values[code] = value
+        value = resolved_kpis.get(code)
         kpis.append(
             AnalyticsMetricRead(
                 code=code,
