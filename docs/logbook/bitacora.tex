@@ -67,7 +67,7 @@
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPI, analítica explicable y reportería \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.5.6 \\
+    Versión de la bitácora & 0.5.7 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -877,6 +877,28 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \bottomrule
 \end{longtable}
 
+\subsection{27 de septiembre de 2026 - Contrato LLM adaptativo y recuperación segura}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Diagnóstico Groq & \statusok & Los registros 82--83 demostraron que cuatro referencias técnicas reales chocaban con un máximo interno de tres; la necesidad conservaba 9 requisitos directos, 10 derivables y ninguna ambigüedad. \\
+  Contrato común & \statusok & El esquema semántico se construye con los objetos reales de cada bloque. Groq, Claude, Gemini y Ollama mantienen el mismo contrato BI; sólo el transporte, presupuesto y formato se adaptan por proveedor. \\
+  Reintento adaptativo & \statusok & Los rechazos estructurados disponen de reintento acotado y los límites temporales respetan \file{retry-after} hasta 45 segundos, evitando consumir intentos antes de recuperar tokens. \\
+  Identidad genérica & \statusok & La expansión de alcance sigue hasta dos relaciones declaradas para resolver persona u organización, incluso con tablas y columnas de nombres opacos; no depende literalmente de \file{Customer} o \file{Person}. \\
+  Recuperación UI & \statusok & Un fallo del proveedor ya no se presenta como necesidad inviable. La interfaz conserva el objetivo, explica que no utilizó una salida inválida y permite reintentar la misma solicitud. \\
+  Validación real & \statusok & La propuesta 86 con Groq bajo quedó lista para revisión con 6 conceptos, 14 tablas, 0 errores y 0 advertencias; \file{dim\_cliente} resolvió \file{Person.Person} y \file{Sales.Store}. \\
+  Cobertura financiera & \statusok & La salida verificada conserva ventas, unidades, descuento monetario, costo, margen y razones por unidad. La propuesta no fue aprobada ni materializada automáticamente. \\
+  Regresión & \statusok & Pytest cubre cardinalidad dinámica, deduplicación, reintentos, ventana temporal e identidad de dos saltos; Vitest cubre recuperación sin el mensaje falso de alcance vacío. \\
+  \bottomrule
+\end{longtable}
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}X l X@{}}
@@ -910,7 +932,7 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
 
 \section{Historial del documento}
 
-\begin{longtable}{@{}p{0.62in} p{0.86in} p{4.82in}@{}}
+\begin{longtable}{@{}p{0.72in} p{0.90in} p{4.68in}@{}}
   \toprule
   \textbf{Versión} & \textbf{Fecha} & \textbf{Cambio} \\
   \midrule
@@ -985,6 +1007,7 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   0.5.4 & 26-09-2026 & Menú profesional por flujo y permisos, gráficos interactivos accesibles, integración segura de Anthropic Claude y actualización de especificaciones y documentación académica. \\
   0.5.5 & 26-09-2026 & Neutralidad semántica entre proveedores, recetas canónicas, corrección de KPI derivados históricos, cobertura completa/parcial, selector analítico y esquemas físicos versionados por ejecución. \\
   0.5.6 & 27-09-2026 & Cierre UX y LLM: datamart único sin combo redundante, detalles adaptativos, comparativa Groq--Claude y niveles Claude restringidos a capacidades efectivas. \\
+  0.5.7 & 27-09-2026 & Contrato estructurado adaptativo, reintentos según ventana del proveedor, recuperación UI y propuesta Groq 86 validada con identidad de cliente en dos relaciones. \\
   \bottomrule
 \end{longtable}
 

@@ -40,6 +40,9 @@ La plataforma mantendrá una matriz de capacidades validada por adaptador y mode
 13. Los resultados se aceptan sólo después de la validación local de referencias,
     relaciones y reglas BI. Adaptar el transporte a un modelo nunca autoriza tablas,
     columnas, relaciones, métricas ni cálculos inventados.
+14. Los límites temporales se reintentan respetando la ventana `retry-after` informada
+    por el proveedor, acotada a 45 segundos por espera. No se reintentan de forma
+    indefinida ni se pide al usuario que adivine el momento adecuado.
 
 ## 3. Datos, API e interfaz
 
@@ -67,17 +70,19 @@ Sólo `parameters.llm.manage` modifica la configuración. La prueba usa el míni
 - [x] Después del experimento, Claude deja de ofrecer medio/alto porque el adaptador
       vigente omite pensamiento extendido; la API aplica la misma restricción y evita
       configuraciones engañosas fuera de la interfaz.
-- [ ] Una respuesta con cuatro o más referencias técnicas reales no falla por un
+- [x] Una respuesta con cuatro o más referencias técnicas reales no falla por un
       límite interno arbitrario; todas las referencias se deduplican y se vuelven a
       comprobar contra la instantánea.
-- [ ] Groq, Claude, Gemini y Ollama comparten el mismo contrato funcional, mientras
+- [x] Groq, Claude, Gemini y Ollama comparten el mismo contrato funcional, mientras
       cada adaptador aplica automáticamente sólo las capacidades técnicas admitidas.
-- [ ] `json_validate_failed` distingue un incumplimiento del esquema de una salida
+- [x] `json_validate_failed` distingue un incumplimiento del esquema de una salida
       truncada por presupuesto y conserva código, estado y `request-id` seguros en la
       auditoría.
-- [ ] Un `provider_failed` no muestra «No se encontró un alcance verificable» si la
+- [x] Un `provider_failed` no muestra «No se encontró un alcance verificable» si la
       viabilidad ya fue aprobada; ofrece reintento de la misma necesidad sin perder el
       avance.
+- [x] Un límite temporal con `retry-after` superior a diez segundos espera la ventana
+      indicada, hasta el máximo seguro, antes de consumir el siguiente intento.
 
 ## 6. Resultado de implementación
 
@@ -106,3 +111,10 @@ objetos reales enviados en cada bloque, adaptar su transmisión a las capacidade
 proveedor y volver a validar localmente la respuesta. No se introducirán excepciones de
 negocio para Groq ni instrucciones distintas para Claude; la variación permitida reside
 únicamente en el adaptador técnico.
+
+La repetición controlada produjo finalmente la propuesta `#86` con Groq en nivel bajo:
+9 requisitos directos, 10 derivables, 6 conceptos, 14 tablas de alcance, 0 errores y 0
+advertencias. La expansión determinística siguió dos relaciones de identidad verificadas
+y resolvió el cliente mediante `Person.Person` y `Sales.Store`; también conservó medidas
+de ventas, unidades, descuento monetario y costo. La propuesta quedó lista para revisión,
+sin aprobación ni ejecución ETL automática.
