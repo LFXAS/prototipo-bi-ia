@@ -67,7 +67,7 @@
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPI, analítica explicable y reportería \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.5.7 \\
+    Versión de la bitácora & 0.5.8 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -899,6 +899,25 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \bottomrule
 \end{longtable}
 
+\subsection{27 de septiembre de 2026 - Recuperación de KPI derivados en analítica}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Diagnóstico & \statusok & La ejecución 11 conservaba margen bruto, margen porcentual, costo por unidad y venta por unidad como KPI conciliados; el dashboard perdía tres valores al recalcular filtros porque \file{importe\_bruto} no tenía un KPI agregado redundante. \\
+  Regla canónica & \statusok & El motor resuelve primero agregados y medidas físicas declaradas; luego procesa diferencias, razones y participaciones hasta un punto fijo. El cálculo deja de depender del orden o las etiquetas entregadas por el proveedor LLM. \\
+  Validación completa & \statusok & Sin filtros se recuperaron margen bruto USD 9899411,54, margen 8,97\,\%, costo promedio USD 365,48 y venta promedio USD 401,49 por unidad. Con 2013 y Europa los cuatro KPI volvieron a calcularse dinámicamente. \\
+  Persistencia & \statusok & No se repitió ni modificó el ETL: la corrección actúa en la lectura analítica sobre medidas y recetas ya aprobadas, preservando la ejecución 11 y su trazabilidad. \\
+  Regresión & \statusok & La prueba automatizada cubre una medida física requerida por KPI derivados sin tarjeta agregada propia y verifica dependencias derivadas fuera de orden. \\
+  \bottomrule
+\end{longtable}
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}X l X@{}}
@@ -907,7 +926,7 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \midrule
   Compose autocontenido válido & \statusok & \file{docker compose config --quiet} \\
   Compose de imágenes válido & \statusok & \file{docker compose -f compose.release.yaml config --quiet} \\
-  Backend calidad y pruebas & \statusok & Ruff, formato, Mypy y 133 pruebas Pytest dentro de Docker \\
+  Backend calidad y pruebas & \statusok & Ruff, formato, Mypy y 142 pruebas Pytest dentro de Docker \\
   Frontend calidad y pruebas & \statusok & ESLint, 21 pruebas Vitest y build de Vite dentro de Docker \\
   PostgreSQL disponible & \statusok & Esquemas \file{app} y \file{mart}; endpoint \file{/health/ready} en \file{ok} \\
   AdventureWorks restaurada & \statusok & 71 tablas; \file{bi\_reader}: lectura 1 e inserción 0 \\
@@ -932,7 +951,7 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
 
 \section{Historial del documento}
 
-\begin{longtable}{@{}p{0.72in} p{0.90in} p{4.68in}@{}}
+\begin{longtable}{@{}p{0.68in}@{\hspace{0.18in}}p{0.88in}@{\hspace{0.18in}}p{4.56in}@{}}
   \toprule
   \textbf{Versión} & \textbf{Fecha} & \textbf{Cambio} \\
   \midrule
@@ -1008,6 +1027,7 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   0.5.5 & 26-09-2026 & Neutralidad semántica entre proveedores, recetas canónicas, corrección de KPI derivados históricos, cobertura completa/parcial, selector analítico y esquemas físicos versionados por ejecución. \\
   0.5.6 & 27-09-2026 & Cierre UX y LLM: datamart único sin combo redundante, detalles adaptativos, comparativa Groq--Claude y niveles Claude restringidos a capacidades efectivas. \\
   0.5.7 & 27-09-2026 & Contrato estructurado adaptativo, reintentos según ventana del proveedor, recuperación UI y propuesta Groq 86 validada con identidad de cliente en dos relaciones. \\
+  0.5.8 & 27-09-2026 & Recuperación canónica de KPI derivados en la ejecución 11, independiente del orden del proveedor y sin repetir el ETL. \\
   \bottomrule
 \end{longtable}
 
