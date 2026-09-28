@@ -384,6 +384,7 @@ def test_groq_generation_requests_strict_json_schema(monkeypatch: MonkeyPatch) -
 def test_groq_structured_output_failure_is_not_reported_as_invalid_parameter(
     monkeypatch: MonkeyPatch,
 ) -> None:
+    monkeypatch.setattr(providers.asyncio, "sleep", no_sleep)
     monkeypatch.setattr(
         providers.httpx,
         "AsyncClient",
@@ -406,6 +407,71 @@ def test_groq_structured_output_failure_is_not_reported_as_invalid_parameter(
     assert "salida JSON estructurada" in result.message
     assert "nivel de razonamiento es compatible" in result.message
     assert "parámetro" not in result.message
+
+
+def test_groq_schema_mismatch_is_classified_as_contract_failure() -> None:
+    error = providers._generation_error(
+        "groq-cloud",
+        400,
+        (
+            "Generated JSON does not match the expected schema. Error: jsonschema: "
+            "'/candidates/5/technical_refs' does not validate: maxItems got 4, want 3"
+        ),
+        "json_validate_failed",
+        "req-contract",
+    )
+
+    assert error.category == "structured_contract"
+    assert error.request_id == "req-contract"
+    assert "descartó automáticamente" in str(error)
+    assert "presupuesto" not in str(error)
+
+
+def test_groq_retries_one_rejected_structured_generation_automatically(
+    monkeypatch: MonkeyPatch,
+) -> None:
+    calls = 0
+    monkeypatch.setattr(providers.asyncio, "sleep", no_sleep)
+
+    class SequenceClient(FakeAsyncClient):
+        async def post(self, _: str, **__: object) -> FakeResponse:
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                return FakeResponse(
+                    {
+                        "error": {
+                            "message": "Failed to validate JSON. Please adjust your prompt.",
+                            "code": "json_validate_failed",
+                        }
+                    },
+                    status_code=400,
+                )
+            return FakeResponse({"choices": [{"message": {"content": '{"answer":"ok"}'}}]})
+
+    monkeypatch.setattr(
+        providers.httpx,
+        "AsyncClient",
+        lambda **kwargs: SequenceClient({}, **kwargs),
+    )
+
+    result = asyncio.run(
+        providers.generate_json(
+            groq_configuration(),
+            "Devuelve el contrato solicitado.",
+            {"request": "test"},
+            credential="groq-secret",
+            response_schema={
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["answer"],
+                "properties": {"answer": {"type": "string"}},
+            },
+        )
+    )
+
+    assert result == {"answer": "ok"}
+    assert calls == 2
 
 
 def test_groq_invalid_parameter_has_specific_message(monkeypatch: MonkeyPatch) -> None:
@@ -461,6 +527,15 @@ def test_groq_rate_limit_retries_and_respects_retry_after(monkeypatch: MonkeyPat
     assert result.ok
     assert calls == 2
     assert delays == [2.0]
+
+
+def test_provider_retry_window_honors_long_refill_without_unbounded_wait() -> None:
+    assert providers._retry_delay_seconds(
+        FakeResponse({}, status_code=429, headers={"retry-after": "24"}), 1
+    ) == 24.0
+    assert providers._retry_delay_seconds(
+        FakeResponse({}, status_code=429, headers={"retry-after": "120"}), 1
+    ) == 45.0
 
 
 def test_groq_rate_limit_stops_after_bounded_attempts(monkeypatch: MonkeyPatch) -> None:
