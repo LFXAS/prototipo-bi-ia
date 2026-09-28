@@ -7,6 +7,7 @@ from app.modules.analytics.service import (
     _display_name_for_recipe,
     _display_unit_for_recipe,
     _remember_resolved_measure,
+    _resolve_kpi_values,
     _unique_recipes,
     execution_has_materialized_data,
     run_safe_aggregate_query,
@@ -164,6 +165,83 @@ def test_average_alias_cannot_overwrite_sum_used_by_derived_ratio() -> None:
     )
 
     assert result == 110.0
+
+
+class _KpiResolutionSession:
+    async def scalar(self, statement: object, params: dict[str, object]) -> float:
+        del params
+        sql = str(statement)
+        values = {
+            'f."importe_neto"': 1100.0,
+            'f."cantidad_vendida"': 10.0,
+            'f."costo_total"': 650.0,
+            'f."importe_bruto"': 1100.0,
+        }
+        return next(value for column, value in values.items() if column in sql)
+
+
+@pytest.mark.asyncio
+async def test_derived_kpis_resolve_declared_fact_measure_without_redundant_card() -> None:
+    recipes = [
+        {
+            "code": "ventas_totales",
+            "kind": "aggregate",
+            "recipe": {"operation": "sum", "measure": "importe_neto"},
+        },
+        {
+            "code": "unidades_totales",
+            "kind": "aggregate",
+            "recipe": {"operation": "sum", "measure": "cantidad_vendida"},
+        },
+        {
+            "code": "costo_total",
+            "kind": "aggregate",
+            "recipe": {"operation": "sum", "measure": "costo_total"},
+        },
+        {
+            "code": "margen_porcentaje",
+            "kind": "share",
+            "recipe": {
+                "numerator": "margen_bruto",
+                "denominator": "importe_bruto",
+                "multiply_by": 100,
+            },
+        },
+        {
+            "code": "venta_por_unidad",
+            "kind": "ratio",
+            "recipe": {
+                "numerator": "importe_bruto",
+                "denominator": "cantidad_vendida",
+            },
+        },
+        {
+            "code": "margen_bruto",
+            "kind": "difference",
+            "recipe": {"minuend": "importe_bruto", "subtrahend": "costo_total"},
+        },
+    ]
+    fact_document = {
+        "measures": [
+            {"name": "importe_neto", "aggregation": "sum"},
+            {"name": "importe_bruto", "aggregation": "sum"},
+            {"name": "cantidad_vendida", "aggregation": "sum"},
+            {"name": "costo_total", "aggregation": "sum"},
+        ]
+    }
+
+    values = await _resolve_kpi_values(
+        _KpiResolutionSession(),  # type: ignore[arg-type]
+        recipes,
+        fact_document,
+        {"importe_neto", "importe_bruto", "cantidad_vendida", "costo_total"},
+        'FROM "mart_ventas_e11"."fact_ventas" f WHERE true',
+        {},
+    )
+
+    assert values["margen_bruto"] == 450.0
+    assert values["margen_porcentaje"] == pytest.approx(40.9090909)
+    assert values["venta_por_unidad"] == 110.0
 
 
 class _FakeResult:

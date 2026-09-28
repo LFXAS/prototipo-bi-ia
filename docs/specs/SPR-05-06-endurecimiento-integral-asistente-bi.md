@@ -167,6 +167,9 @@ analítica.
 - Analítica enumera sólo ejecuciones conciliadas con tablas comprobables, permite
   elegir la activa y propaga `execution_id` a dashboard, chat y reportes.
 - Los KPI no calculables se presentan como incidencia, no como resultado correcto.
+- El motor analítico resuelve primero todas las medidas físicas requeridas y después
+  las dependencias derivadas hasta un punto fijo. No depende del orden de salida del
+  LLM ni exige que cada operando tenga un KPI agregado redundante.
 
 ## 3. Experiencia guiada para el analista
 
@@ -211,6 +214,7 @@ decisión y cuál es el efecto de cada alternativa.
 | HBI-009 | `make verify` completo y diff sin secretos | registro de cierre | validado |
 | HBI-010 | Las propuestas v3 válidas siguen disponibles bajo motor v4 y los expedientes no desaparecen si el catálogo queda bloqueado | pruebas de evidencia, catálogo y flujo frontend | en implementación |
 | HBI-011 | Anthropic y Groq compilan dependencias equivalentes; dos ejecuciones se conservan y el dashboard no presenta falsos positivos | pruebas ETL, analítica y `AnalyticsPage.test.tsx` | implementado; validación física dual pendiente |
+| HBI-012 | Los KPI derivados de una ejecución conciliada se recalculan con filtros aunque una medida base no tenga tarjeta agregada propia | `test_analytics_service.py` y validación de la ejecución 11 | implementado |
 
 ## 6. Matriz de trazabilidad técnica
 
@@ -282,3 +286,12 @@ decisión y cuál es el efecto de cada alternativa.
   Vitest, Ruff, formato, Mypy, ESLint, compilación Vite, contratos Compose, flujo de
   ramas y documentación LaTeX finalizaron correctamente. El control final del diff
   no detectó credenciales ni archivos `.env` incorporados.
+- 27/09/2026: HBI-012 se especifica al comprobar que la ejecución 11 guardó margen
+  bruto, margen porcentual y venta por unidad conciliados, pero el dashboard no los
+  recalculó porque `importe_bruto` no tenía un KPI agregado redundante. La solución
+  debe ser canónica, independiente del proveedor y reutilizable con filtros.
+- 27/09/2026: HBI-012 se implementa resolviendo primero agregados declarados y
+  medidas físicas aprobadas, y después diferencias, razones y participaciones hasta
+  un punto fijo. La ejecución 11 recuperó margen bruto USD 9899411,54, margen 8,97 %,
+  costo promedio USD 365,48 y venta promedio USD 401,49 por unidad; el filtro 2013 +
+  Europa recalculó también los cuatro valores sin repetir el ETL.

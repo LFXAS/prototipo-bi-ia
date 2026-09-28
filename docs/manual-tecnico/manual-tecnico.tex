@@ -91,11 +91,11 @@
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & MAN-TEC-01 \\
-    Versión del manual & 4.0.6 \\
+    Versión del manual & 4.0.7 \\
     Línea base & Ramas \file{develop} y \file{main} \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
     Clasificación & Documentación técnica - repositorio público \\
-    Fecha & 27 de septiembre de 2026 \\
+    Fecha & 28 de septiembre de 2026 \\
   \end{tabularx}
 
   \vfill
@@ -517,6 +517,10 @@ La ejecución 9, asociada con la propuesta 73, conserva el expediente completo d
 Al seleccionar un punto, barra o territorio, el detalle mantiene nombre, valor, participación y acciones dentro de la tarjeta. La rejilla adapta sus columnas al ancho disponible y permite partir cadenas extensas; por tanto, un valor monetario largo o una etiqueta descriptiva no debe superponerse con la tarjeta contigua. Esta regla debe comprobarse en vista ejecutiva, analítica y resolución móvil.
 
 La corrección es neutral al proveedor. Gemini, Groq, Anthropic, Qwen y Ollama pueden redactar nombres distintos, pero FastAPI compila medidas y dependencias a identificadores técnicos. Los KPI con la misma medida, operación y función se consolidan; \file{AVG(LineTotal)} se muestra como \textbf{Importe promedio por línea de venta}, mientras que \textbf{Venta promedio por unidad vendida} se calcula como suma de ventas dividida para suma de unidades. Una receta derivada que no resuelve sus entradas se presenta como \textbf{No calculable} y nunca recibe confirmación verde.
+
+La ejecución 11 expuso un caso adicional cubierto por HBI-012. El ETL y su conciliación eran correctos, pero una fórmula podía depender directamente de medidas físicas autorizadas sin que existiera un KPI agregado redundante con el mismo nombre. El servicio de analítica construye ahora el conjunto de dependencias, agrega primero las columnas físicas necesarias y resuelve después las recetas derivadas en iteraciones hasta alcanzar un punto fijo. Si no hay avance, el indicador permanece como \textbf{No calculable} y cita la dependencia ausente; no se inventa un cero ni se inicia otro ETL.
+
+La validación de la ejecución 11 recuperó margen bruto, margen porcentual, costo promedio por unidad y venta promedio por unidad tanto para el universo completo como para 2013--Europa. Este comportamiento no depende del orden del JSON ni del proveedor que redactó la propuesta, y conserva el filtro, la fórmula y los operandos utilizados en la respuesta.
 
 \subsection{Exportación PDF y Excel}
 
@@ -1041,6 +1045,7 @@ El Sprint 1 no se rehace con SDD porque ya se cerró como una base técnica. Des
   Frontend no muestra API disponible & Backend no saludable o proxy mal configurado. & Probar \file{/health/live}, revisar puertos y registros del frontend. \\
   GHCR devuelve \file{denied} & Falta autenticación, acceso al paquete o permiso \file{read:packages}. & Repetir \file{docker login ghcr.io} con una cuenta autorizada. \\
   PDF no se actualiza & No se regeneró después de editar LaTeX. & Ejecutar \file{make docs} y revisar los archivos modificados. \\
+  Un expediente conciliado muestra KPI como ``Sin valor'' & Una receta derivada no resolvió todavía sus medidas físicas o agregadas. & Actualizar a la versión con HBI-012 y volver a consultar el expediente; no repetir el ETL. Si persiste, revisar en la trazabilidad la dependencia marcada como ausente. \\
   CI rechaza el cambio & Pruebas, formato, Compose o PDF desactualizado. & Abrir el trabajo fallido, reproducir con \file{make verify} y corregir antes de fusionar. \\
   \bottomrule
 \end{longtable}
@@ -1065,7 +1070,7 @@ docker compose --profile local-llm logs --tail=200 ollama
   \item Abrir frontend y OpenAPI en el navegador.
   \item Confirmar que AdventureWorks contiene 71 tablas y el acceso externo usa \file{bi\_reader}.
   \item Confirmar que no hay secretos ni archivos \file{.env} en los cambios de Git.
-  \item Abrir la ejecución 9 y comprobar 121317 filas conciliadas, 19820 clientes con nombre y tipo y moneda USD.
+  \item Abrir las ejecuciones 9 y 11 y comprobar 121317 filas conciliadas, 19820 clientes con nombre y tipo, moneda USD y KPI derivados calculables.
   \item Probar las vistas ejecutiva y analítica, una pregunta guiada y las exportaciones PDF/Excel con la misma selección.
   \item Registrar SHA, etiqueta y digest de imágenes en la bitácora.
   \item Conservar los PDF generados para la evidencia de tesis.
@@ -1196,6 +1201,7 @@ make verify
   4.0.4 & 26-09-2026 & Gráficos interactivos y accesibles, menú profesional por flujo de trabajo e integración segura de Anthropic Claude con Haiku 4.5. \\
   4.0.5 & 27-09-2026 & Datamart único identificado sin combo redundante, enlace a expedientes auditables y detalle interactivo adaptativo sin desbordamientos. \\
   4.0.6 & 27-09-2026 & Comparativa integral Groq--Claude, selección operativa de proveedor y restricción consistente de niveles Claude sin pensamiento extendido. \\
+  4.0.7 & 28-09-2026 & HBI-012: resolución neutral de dependencias y KPI derivados de la ejecución 11, con recuperación analítica sin repetir el ETL. \\
   \bottomrule
 \end{longtable}
 

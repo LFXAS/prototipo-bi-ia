@@ -829,6 +829,18 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
     else setStep(3)
   }
 
+  async function retryProviderFailure() {
+    if (!viability) {
+      setStep(1)
+      setFeedback({
+        kind: 'warning',
+        message: 'Conservamos la necesidad. Valide nuevamente su viabilidad y reintente con el proveedor activo.',
+      })
+      return
+    }
+    await generate([])
+  }
+
   async function decide(decision: 'approve' | 'reject') {
     if (!proposal) return
     setFeedback(null)
@@ -877,7 +889,7 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
     setRestoreReason('')
     setRestoreWarningsConfirmed(false)
     setRevisionDraft(revisionFromProposal(item))
-    setStep(['approved', 'rejected', 'invalidated', 'discarded'].includes(item.status) ? 5 : 3)
+    setStep(['approved', 'rejected', 'invalidated', 'discarded'].includes(item.status) ? 5 : item.status === 'provider_failed' ? 2 : 3)
     setFeedback({
       kind: 'success',
       message: `Versión #${item.id} seleccionada: ${providerLabel(item.provider_kind)} / ${item.model_id}.`,
@@ -1005,6 +1017,8 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
   </>
 
   const concepts = proposal?.semantic_map_document.candidates ?? []
+  const providerFailed = proposal?.status === 'provider_failed'
+  const providerFailureMessage = proposal?.validation_document.issues[0]?.message ?? 'El proveedor no entregó una respuesta estructurada utilizable.'
   const adviceConcept = concepts.find((concept) => concept.business_concept === adviceConceptCode)
   const pendingConceptDecisions = concepts.filter((concept) => {
     const included = !excludedConcepts.includes(concept.business_concept)
@@ -1058,7 +1072,8 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
     </form>}
     {step === 2 && proposal && <section className="analysis-panel">
       <fieldset className="read-only-scope" disabled={proposalReadOnly}>
-      <div className="form-title"><div><p className="eyebrow">Paso 2 · Propuesto por IA</p><h2>Conceptos encontrados</h2></div><span>Las referencias ya fueron comprobadas contra la instantánea.</span></div>
+      <div className="form-title"><div><p className="eyebrow">Paso 2 · Propuesto por IA</p><h2>{providerFailed ? 'Generación interrumpida de forma segura' : 'Conceptos encontrados'}</h2></div><span>{providerFailed ? 'La necesidad y su viabilidad permanecen guardadas.' : 'Las referencias ya fueron comprobadas contra la instantánea.'}</span></div>
+      {providerFailed ? <section className="provider-recovery" role="alert"><div><p className="eyebrow">Recuperación automática y supervisable</p><h3>El problema fue del proveedor, no de su necesidad</h3><p>{providerFailureMessage}</p><ul><li>No se utilizó una respuesta incompleta o inválida.</li><li>No se modificaron metadatos, propuestas aprobadas ni datamarts existentes.</li><li>Puede repetir exactamente la misma solicitud; la plataforma volverá a comprobar el resultado.</li></ul></div><div className="form-actions"><button type="button" disabled={!canGenerate || generating} onClick={() => void retryProviderFailure()}>{generating ? 'Reintentando de forma segura…' : viability ? 'Reintentar la misma solicitud' : 'Volver a validar y reintentar'}</button><button type="button" className="secondary" onClick={() => setStep(1)}>Revisar necesidad</button></div></section> : <>
       <p className="notice">La plataforma valida primero la estructura. Los conceptos con evidencia débil quedan excluidos preventivamente; puede incluirlos mediante una decisión guiada, sin abrir DBeaver ni escribir SQL.</p>
       {concepts.length === 0 ? <p className="notice error">No se encontró un alcance verificable. Modifique la necesidad y cree otro intento.</p> : <div className="concept-grid">{concepts.map((concept) => {
         const excluded = excludedConcepts.includes(concept.business_concept)
@@ -1095,7 +1110,7 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
         }
       }} />}
       {pendingConceptDecisions.length > 0 && <p className="notice warning">Antes de continuar, confirme la inclusión de: {pendingConceptDecisions.map((item) => item.business_name_es).join(', ')}. También puede volver a desmarcarlos.</p>}
-      <div className="form-actions"><button disabled={!concepts.length || excludedConcepts.length === concepts.length || generating || pendingConceptDecisions.length > 0} onClick={() => void continueWithConcepts()}>{generating ? 'Generando nueva versión…' : 'Generar propuesta BI'}</button>{Boolean(proposal.proposal_document.summary) && <button className="secondary" onClick={() => { setAdviceConceptCode(null); setStep(3) }}>Volver a la propuesta actual</button>}<button className="secondary" onClick={() => setStep(1)}>Modificar necesidad</button></div>
+      <div className="form-actions"><button disabled={!concepts.length || excludedConcepts.length === concepts.length || generating || pendingConceptDecisions.length > 0} onClick={() => void continueWithConcepts()}>{generating ? 'Generando nueva versión…' : 'Generar propuesta BI'}</button>{Boolean(proposal.proposal_document.summary) && <button className="secondary" onClick={() => { setAdviceConceptCode(null); setStep(3) }}>Volver a la propuesta actual</button>}<button className="secondary" onClick={() => setStep(1)}>Modificar necesidad</button></div></>}
       </fieldset>
     </section>}
     {step === 3 && proposal && <section className="analysis-panel">

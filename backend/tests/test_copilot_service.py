@@ -23,6 +23,7 @@ from app.modules.copilot.service import (
     proposal_blueprint_schema,
     proposal_payload,
     semantic_advice_response_schema,
+    semantic_response_schema,
     validate_proposal,
     validated_semantic_candidates,
     verify_proposal_evidence,
@@ -588,6 +589,54 @@ def test_semantic_reference_must_exist_before_scope_is_derived() -> None:
     )
     assert semantic_map["candidates"] == []
     assert rejected[0]["code"] == "semantic.unknown_reference"
+
+
+def test_semantic_contract_accepts_every_real_reference_in_current_block() -> None:
+    references = [
+        "Sales.OrderDetail",
+        "Production.Product",
+        "Sales.OrderHeader",
+        "Sales.Customer",
+    ]
+
+    schema = semantic_response_schema(references)
+    reference_schema = schema["properties"]["candidates"]["items"]["properties"]["technical_refs"]
+
+    assert reference_schema["items"]["enum"] == references
+    assert "maxItems" not in reference_schema
+
+
+def test_semantic_validation_keeps_four_real_references_and_deduplicates_them() -> None:
+    document = deepcopy(DOCUMENT)
+    schemas = document["schemas"]
+    assert isinstance(schemas, list)
+    sales_schema = next(item for item in schemas if item["name"] == "Sales")
+    sales_schema["tables"].extend(
+        [
+            {"name": "OrderHeader", "columns": [], "foreign_keys": []},
+            {"name": "Customer", "columns": [], "foreign_keys": []},
+        ]
+    )
+    response = semantic_response()
+    candidates = response["candidates"]
+    assert isinstance(candidates, list) and isinstance(candidates[0], dict)
+    candidates[0]["technical_refs"] = [
+        "Sales.OrderDetail",
+        "Production.Product",
+        "Sales.OrderHeader",
+        "Sales.Customer",
+        "Sales.Customer",
+    ]
+
+    semantic_map, rejected = validated_semantic_candidates([response], document)
+
+    assert rejected == []
+    assert semantic_map["candidates"][0]["technical_refs"] == [
+        "Sales.OrderDetail",
+        "Production.Product",
+        "Sales.OrderHeader",
+        "Sales.Customer",
+    ]
 
 
 def test_low_confidence_concept_is_kept_for_audit_but_excluded_from_scope() -> None:
@@ -1384,3 +1433,77 @@ def test_entity_label_resolution_uses_semantic_role_and_relationship_not_table_n
     assert label["variants"][0]["source_table"] == "Registry.X9"
     assert label["variants"][0]["columns"] == ["DisplayLabel"]
     assert diagnostics[0]["status"] == "resolved"
+
+
+def test_customer_scope_follows_two_verified_identity_links_without_names() -> None:
+    document = {
+        "schemas": [
+            {
+                "name": "Orders",
+                "tables": [
+                    {
+                        "name": "OpaqueOrder",
+                        "columns": [
+                            {"name": "OrderKey", "data_type": "int", "primary_key": True},
+                            {"name": "PartyRef", "data_type": "int", "primary_key": False},
+                        ],
+                        "foreign_keys": [
+                            {
+                                "columns": ["PartyRef"],
+                                "referenced_schema": "Registry",
+                                "referenced_table": "A01",
+                                "referenced_columns": ["RecordKey"],
+                            }
+                        ],
+                    }
+                ],
+            },
+            {
+                "name": "Registry",
+                "tables": [
+                    {
+                        "name": "A01",
+                        "columns": [
+                            {"name": "RecordKey", "data_type": "int", "primary_key": True},
+                            {"name": "SubjectRef", "data_type": "int", "primary_key": False},
+                        ],
+                        "foreign_keys": [
+                            {
+                                "columns": ["SubjectRef"],
+                                "referenced_schema": "Registry",
+                                "referenced_table": "X9",
+                                "referenced_columns": ["NodeKey"],
+                            }
+                        ],
+                    },
+                    {
+                        "name": "X9",
+                        "columns": [
+                            {"name": "NodeKey", "data_type": "int", "primary_key": True},
+                            {
+                                "name": "DisplayLabel",
+                                "data_type": "nvarchar",
+                                "primary_key": False,
+                            },
+                        ],
+                        "foreign_keys": [],
+                    },
+                ],
+            },
+        ]
+    }
+    semantic_map = {
+        "candidates": [
+            {
+                "business_concept": "customer",
+                "business_name_es": "Cliente",
+                "technical_refs": ["Orders.OpaqueOrder"],
+                "selected": True,
+            }
+        ]
+    }
+
+    scope = derived_scope(document, semantic_map)
+
+    references = {item["ref"] for item in scope["tables"]}
+    assert references == {"Orders.OpaqueOrder", "Registry.A01", "Registry.X9"}

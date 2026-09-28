@@ -54,6 +54,11 @@ Quedan fuera el pronóstico de ventas, alertas autónomas, edición libre del da
     ofrecen como si todavía pudieran consultarse.
 13. Una tarjeta `not_calculable` muestra **No calculable**, la causa disponible y
     una acción de revisión. No usa confirmación verde ni afirma que fue calculada.
+14. El recálculo por filtros resuelve diferencias, razones y participaciones por
+    identificador canónico y rol semántico. Si una dependencia es una medida física
+    aprobada, la agrega directamente con su operación declarada aunque el proveedor
+    no haya creado además un KPI agregado con el mismo nombre. El orden de las
+    recetas del proveedor no puede cambiar el resultado.
 
 ## 4. API e interfaz
 
@@ -95,7 +100,11 @@ Requiere `analytics.dashboard.read`. La consulta de datos agregados no otorga ac
       conservados; el selector aparece desde dos alternativas reales.
 - [x] El detalle interactivo adapta nombre, valor y participación al ancho de cada
       visualización sin desbordar ni superponerse con tarjetas contiguas.
+- [x] Una ejecución conciliada que conserva ventas, costos y unidades recalcula con
+      y sin filtros margen bruto, margen porcentual, costo promedio por unidad y
+      venta promedio por unidad, aunque sus recetas usen nombres diferentes para una
+      misma función semántica.
 
 ## 7. Evidencia
 
-La ejecución conciliada 7, derivada de la propuesta 54, publica 121317 líneas sin diferencia. El panel presenta nombres descriptivos de clientes, código de moneda USD comprobado, siete indicadores disponibles, cuatro visualizaciones en modo analista y evidencia asociada a cada hallazgo. La validación se completa con pruebas backend, pruebas de componentes, compilación de producción y revisión visual de ambos modos.
+La ejecución conciliada 7, derivada de la propuesta 54, publica 121317 líneas sin diferencia. El panel presenta nombres descriptivos de clientes, código de moneda USD comprobado, siete indicadores disponibles, cuatro visualizaciones en modo analista y evidencia asociada a cada hallazgo. La ejecución 11 añadió una regresión real de dependencias derivadas: el expediente conservaba los cuatro KPI financieros conciliados y el dashboard recuperó sus valores dinámicos sin repetir el ETL, tanto para el universo completo como para 2013 y Europa. La validación se completa con pruebas backend, pruebas de componentes, compilación de producción y revisión visual de ambos modos.
