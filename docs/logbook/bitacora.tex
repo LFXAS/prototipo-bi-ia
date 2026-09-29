@@ -937,6 +937,26 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \bottomrule
 \end{longtable}
 
+\subsection{29 de septiembre de 2026 - Derivación automática y metadatos coherentes}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Semántica de viabilidad & \statusok & Directo identifica una fuente comprobada; derivable identifica una relación o fórmula que la plataforma resuelve automáticamente. Sólo ambigüedad o ausencia exige decisión humana. \\
+  Coherencia del dominio & \statusok & El selector dejó de mezclar columnas homónimas de compras y ventas. La evidencia se elige dentro de un subgrafo conectado que explica la necesidad completa. \\
+  Contraste de metadatos & \statusok & La instantánea 2 coincidió con SQL Server en 23 columnas críticas y siete FK de ventas, cliente, persona o tienda, territorio, producto y categorías. \\
+  Neutralidad LLM & \statusok & Claude y Groq reciben el mismo contrato. Groq conserva esquema estricto y añade una única recuperación JSON localmente validada después de agotar rechazos no determinísticos. \\
+  Experiencia & \statusok & El paso Necesidad explica qué será automático, qué valida la plataforma y que una derivación ausente bloquea la aprobación; la matriz final distingue cobertura directa de resolución automática. \\
+  Regresión & \statusok & Pytest cubre evidencia coherente y recuperación o descarte del JSON; Vitest comprueba guía, etiquetas y bloqueo visible. \\
+  \bottomrule
+\end{longtable}
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}p{0.29\textwidth}@{\hspace{0.18in}}p{0.17\textwidth}@{\hspace{0.18in}}X@{}}
@@ -945,7 +965,7 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \midrule
   Compose autocontenido válido & \statusok & \file{docker compose config --quiet} \\
   Compose de imágenes válido & \statusok & \file{docker compose -f compose.release.yaml config --quiet} \\
-  Backend calidad y pruebas & \statusok & Ruff, formato, Mypy y 142 pruebas Pytest dentro de Docker \\
+  Backend calidad y pruebas & \statusok & Ruff, formato, Mypy y 145 pruebas Pytest dentro de Docker \\
   Frontend calidad y pruebas & \statusok & ESLint, 21 pruebas Vitest y build de Vite dentro de Docker \\
   PostgreSQL disponible & \statusok & Esquemas \file{app} y \file{mart}; endpoint \file{/health/ready} en \file{ok} \\
   AdventureWorks restaurada & \statusok & 71 tablas; \file{bi\_reader}: lectura 1 e inserción 0 \\
@@ -1049,6 +1069,7 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   0.5.7 & 27-09-2026 & Contrato estructurado adaptativo, reintentos según ventana del proveedor, recuperación UI y propuesta Groq 86 validada con identidad de cliente en dos relaciones. \\
   0.5.8 & 27-09-2026 & Recuperación canónica de KPI derivados en la ejecución 11, independiente del orden del proveedor y sin repetir el ETL. \\
   0.5.9 & 29-09-2026 & Continuidad del asistente desde versiones históricas, periodicidad fiel y personalización legible con fuentes y fórmulas ejecutables. \\
+  0.5.10 & 29-09-2026 & Derivación automática explicada, evidencia de ventas coherente, contraste real de metadatos y recuperación universal del contrato LLM. \\
   \bottomrule
 \end{longtable}
 
