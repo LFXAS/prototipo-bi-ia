@@ -176,16 +176,65 @@ def _json_contract_error(value: object, schema: dict[str, Any], path: str = "$")
     return None
 
 
-def _validated_json_object(content: object, schema: dict[str, Any] | None) -> dict[str, Any]:
+def _project_json_to_schema(value: object, schema: dict[str, Any]) -> object:
+    """Discard only surplus structure that the canonical contract forbids.
+
+    Projection is intentionally conservative: it never invents a required value,
+    coerces a scalar, repairs an enum, or pads an undersized array.  It only removes
+    undeclared object properties and applies explicit maximum lengths/cardinalities.
+    """
+    if isinstance(value, dict) and schema.get("type") == "object":
+        properties = schema.get("properties", {})
+        if not isinstance(properties, dict):
+            properties = {}
+        allowed_keys = (
+            set(properties) if schema.get("additionalProperties") is False else set(value)
+        )
+        return {
+            key: _project_json_to_schema(child, child_schema)
+            if isinstance((child_schema := properties.get(key)), dict)
+            else child
+            for key, child in value.items()
+            if key in allowed_keys
+        }
+    if isinstance(value, list) and schema.get("type") == "array":
+        bounded = value[: int(schema["maxItems"])] if "maxItems" in schema else value
+        item_schema = schema.get("items")
+        if isinstance(item_schema, dict):
+            return [_project_json_to_schema(item, item_schema) for item in bounded]
+        return bounded
+    if isinstance(value, str) and schema.get("type") == "string" and "maxLength" in schema:
+        return value[: int(schema["maxLength"])]
+    return value
+
+
+def _contract_document(
+    content: object,
+    schema: dict[str, Any] | None,
+) -> tuple[dict[str, Any], str | None, bool]:
     document = _json_object(content)
-    if schema is not None:
-        error = _json_contract_error(document, schema)
-        if error:
-            raise ProviderGenerationError(
-                "El proveedor devolvió JSON, pero no cumplió el contrato estructurado "
-                "validado por la plataforma. La respuesta fue descartada sin usarse.",
-                category="structured_contract",
-            )
+    if schema is None:
+        return document, None, False
+    error = _json_contract_error(document, schema)
+    if error is None:
+        return document, None, False
+    projected = _project_json_to_schema(document, schema)
+    if not isinstance(projected, dict):
+        return document, error, False
+    projected_error = _json_contract_error(projected, schema)
+    if projected_error is None:
+        return projected, None, True
+    return projected, projected_error, projected != document
+
+
+def _validated_json_object(content: object, schema: dict[str, Any] | None) -> dict[str, Any]:
+    document, error, _ = _contract_document(content, schema)
+    if error:
+        raise ProviderGenerationError(
+            "El proveedor devolvió JSON, pero no cumplió el contrato estructurado "
+            "validado por la plataforma. La respuesta fue descartada sin usarse.",
+            category="structured_contract",
+        )
     return document
 
 
@@ -467,6 +516,7 @@ async def generate_json(
     timeout_seconds: int = 30,
     max_output_tokens: int = 2048,
     response_schema: dict[str, Any] | None = None,
+    _allow_contract_retry: bool = True,
 ) -> dict[str, Any]:
     """Request a bounded JSON document from an approved provider endpoint."""
     if configuration.provider_kind != "ollama-local" and not credential:
@@ -661,7 +711,45 @@ async def generate_json(
             "No fue posible conectar con el proveedor activo.",
             category="connection",
         ) from exc
-    return _validated_json_object(content, response_schema)
+    document, contract_error, projected = _contract_document(content, response_schema)
+    if contract_error is None:
+        if projected:
+            logger.warning(
+                "llm_contract_projected provider=%s model=%s",
+                configuration.provider_kind,
+                configuration.model_id,
+            )
+        return document
+    if _allow_contract_retry and response_schema is not None:
+        logger.warning(
+            "llm_contract_retry provider=%s model=%s error=%s",
+            configuration.provider_kind,
+            configuration.model_id,
+            contract_error,
+        )
+        retry_instruction = (
+            f"{system_instruction.strip()}\n\n"
+            "REINTENTO ÚNICO DE CONTRATO: la respuesta anterior fue descartada. "
+            f"La validación local indicó: {contract_error} "
+            "Conserva exactamente la misma necesidad y referencias; corrige sólo la "
+            "estructura JSON y comprueba todas las propiedades obligatorias."
+        )
+        return await generate_json(
+            configuration,
+            retry_instruction,
+            payload,
+            credential=credential,
+            timeout_seconds=timeout_seconds,
+            max_output_tokens=max_output_tokens,
+            response_schema=response_schema,
+            _allow_contract_retry=False,
+        )
+    raise ProviderGenerationError(
+        "El proveedor devolvió JSON, pero no cumplió el contrato estructurado "
+        "validado por la plataforma después de la recuperación automática. "
+        "La respuesta fue descartada sin usarse.",
+        category="structured_contract",
+    )
 
 
 async def test_provider(

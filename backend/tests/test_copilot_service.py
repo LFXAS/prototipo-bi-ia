@@ -857,6 +857,41 @@ def test_customer_measure_using_order_identifier_is_excluded_before_review() -> 
     assert validation["valid"] is True
 
 
+def test_direct_measure_cannot_claim_a_related_dimension_column_as_fact_provenance() -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+    blueprint = valid_blueprint()
+    blueprint["measures"].append(
+        {
+            "name": "Clientes únicos",
+            "source_column": "CustomerID",
+            "aggregation": "count_distinct",
+            "semantic_role": "customer_count",
+        }
+    )
+    blueprint["kpis"].append(
+        {
+            "code": "clientes_unicos",
+            "name": "Clientes únicos",
+            "measure_index": 1,
+            "operation": "count_distinct",
+            "unit": "clientes",
+            "semantic_role": "customer_count",
+        }
+    )
+
+    proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
+    validation = validate_proposal(proposal, scope, DOCUMENT)
+
+    assert [item["name"] for item in proposal["fact"]["measures"]] == ["importe_venta"]
+    assert [item["code"] for item in proposal["kpis"]] == ["ventas_totales"]
+    assert any(
+        "CustomerID no es una columna física compatible" in item
+        for item in proposal["warnings"]
+    )
+    assert validation["valid"] is True
+
+
 def test_discount_rate_is_autocorrected_into_a_verified_monetary_measure() -> None:
     document = deepcopy(DOCUMENT)
     fact_columns = document["schemas"][0]["tables"][0]["columns"]
@@ -1507,3 +1542,111 @@ def test_customer_scope_follows_two_verified_identity_links_without_names() -> N
 
     references = {item["ref"] for item in scope["tables"]}
     assert references == {"Orders.OpaqueOrder", "Registry.A01", "Registry.X9"}
+
+
+def test_customer_scope_is_recovered_from_need_when_provider_omits_customer_concept() -> None:
+    document = {
+        "schemas": [
+            {
+                "name": "Orders",
+                "tables": [
+                    {
+                        "name": "Line",
+                        "columns": [
+                            {"name": "LineKey", "data_type": "int", "primary_key": True},
+                            {"name": "OrderRef", "data_type": "int", "primary_key": False},
+                        ],
+                        "foreign_keys": [
+                            {
+                                "columns": ["OrderRef"],
+                                "referenced_schema": "Orders",
+                                "referenced_table": "Header",
+                                "referenced_columns": ["OrderKey"],
+                            }
+                        ],
+                    },
+                    {
+                        "name": "Header",
+                        "columns": [
+                            {"name": "OrderKey", "data_type": "int", "primary_key": True},
+                            {"name": "BuyerRef", "data_type": "int", "primary_key": False},
+                            {"name": "SalesPersonRef", "data_type": "int", "primary_key": False},
+                        ],
+                        "foreign_keys": [
+                            {
+                                "columns": ["BuyerRef"],
+                                "referenced_schema": "Registry",
+                                "referenced_table": "A01",
+                                "referenced_columns": ["RecordKey"],
+                            },
+                            {
+                                "columns": ["SalesPersonRef"],
+                                "referenced_schema": "Staff",
+                                "referenced_table": "SalesPerson",
+                                "referenced_columns": ["AgentKey"],
+                            },
+                        ],
+                    },
+                ],
+            },
+            {
+                "name": "Registry",
+                "tables": [
+                    {
+                        "name": "A01",
+                        "columns": [
+                            {"name": "RecordKey", "data_type": "int", "primary_key": True},
+                            {"name": "SubjectRef", "data_type": "int", "primary_key": False},
+                        ],
+                        "foreign_keys": [
+                            {
+                                "columns": ["SubjectRef"],
+                                "referenced_schema": "Registry",
+                                "referenced_table": "X9",
+                                "referenced_columns": ["NodeKey"],
+                            }
+                        ],
+                    },
+                    {
+                        "name": "X9",
+                        "columns": [
+                            {"name": "NodeKey", "data_type": "int", "primary_key": True},
+                            {"name": "DisplayLabel", "data_type": "nvarchar", "primary_key": False},
+                        ],
+                        "foreign_keys": [],
+                    },
+                ],
+            },
+            {
+                "name": "Staff",
+                "tables": [
+                    {
+                        "name": "SalesPerson",
+                        "columns": [
+                            {"name": "AgentKey", "data_type": "int", "primary_key": True},
+                            {"name": "Name", "data_type": "nvarchar", "primary_key": False},
+                        ],
+                        "foreign_keys": [],
+                    }
+                ],
+            },
+        ]
+    }
+    semantic_map = {
+        "candidates": [
+            {
+                "business_concept": "sale_line",
+                "technical_refs": ["Orders.Line", "Orders.Header"],
+                "selected": True,
+            }
+        ]
+    }
+    request = {
+        "goal": "Analizar ventas por cliente y mostrar su nombre.",
+        "viability_assessment": {"requirements": [{"components": ["customer", "sales_amount"]}]},
+    }
+
+    scope = derived_scope(document, semantic_map, request)
+
+    references = {item["ref"] for item in scope["tables"]}
+    assert {"Registry.A01", "Registry.X9"}.issubset(references)

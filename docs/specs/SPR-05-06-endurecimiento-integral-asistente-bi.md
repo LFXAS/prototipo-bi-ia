@@ -210,8 +210,22 @@ analítica.
   único intento degradado a objeto JSON con el mismo esquema en la instrucción. La
   respuesta sólo continúa si supera el mismo validador local; en otro caso se
   descarta sin crear una propuesta utilizable.
+- Antes de repetir una generación, el validador común puede proyectar de forma
+  determinística la respuesta sobre el esquema: elimina únicamente propiedades
+  no admitidas y limita textos o listas al máximo declarado. Nunca crea campos
+  faltantes, convierte tipos, completa referencias ni corrige fórmulas. Si la proyección sigue
+  siendo inválida, se permite un solo reintento del mismo proveedor, modelo,
+  necesidad, metadatos y presupuesto con el error estructural como guía. La nueva
+  respuesta vuelve a pasar por el contrato completo.
 - La recuperación es acotada y auditable. No cambia la necesidad, no reduce el
   alcance, no inventa referencias y no alterna de proveedor automáticamente.
+- Si el proveedor propone una dimensión de partes/personas incompatible con el rol
+  solicitado, el alcance no confía en el nombre elegido por el modelo. La plataforma
+  puntúa rutas reales desde el hecho mediante claves foráneas, columnas de enlace,
+  atributos descriptivos y roles excluyentes (por ejemplo empleado, vendedor o
+  proveedor). La tabla puede llamarse cliente, persona, entidad, organización o de
+  cualquier otra forma; sólo se acepta la ruta que conserva el significado y permite
+  resolver una etiqueta descriptiva verificable.
 
 ## 3. Experiencia guiada para el analista
 
@@ -358,3 +372,17 @@ decisión y cuál es el efecto de cada alternativa.
   selecciona un subgrafo coherente, explica la resolución automática y bloquea toda
   omisión. El contrato local común permite una recuperación JSON acotada de Groq sin
   cambiar reglas, alcance ni proveedor.
+- 29/09/2026: la propuesta 87 de Claude confirmó un segundo caso: JSON sintácticamente
+  válido que no satisfacía el esquema canónico. HBI-014 incorpora proyección segura y
+  un único reintento común a todos los proveedores; si aún falta información
+  obligatoria, el resultado se descarta como antes.
+- 29/09/2026: la propuesta 89 superó la recuperación JSON, pero propuso una entidad de
+  vendedores como dimensión cliente. La resolución del alcance se amplía para escoger
+  de forma determinística la ruta de parte compradora y sus entidades descriptivas,
+  sin depender del proveedor, del nombre físico de la tabla ni de AdventureWorks.
+- 29/09/2026: la propuesta 90 resolvió correctamente la identidad del cliente, pero
+  atribuyó una clave de una tabla relacionada a la tabla de hechos. HBI-014 exige que
+  toda medida directa use una columna física comprobada de su hecho; una medida
+  opcional inválida se excluye con diagnóstico y sus KPI dependientes no se publican.
+  Si la medida cubre un requisito obligatorio, la cobertura posterior debe bloquear
+  la propuesta en vez de inventar procedencia.

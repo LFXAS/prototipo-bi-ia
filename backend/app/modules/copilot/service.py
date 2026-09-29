@@ -1063,7 +1063,11 @@ def validated_semantic_candidates(
     }, rejected
 
 
-def derived_scope(document: dict[str, Any], semantic_map: dict[str, Any]) -> dict[str, Any]:
+def derived_scope(
+    document: dict[str, Any],
+    semantic_map: dict[str, Any],
+    business_request: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     tables = metadata_tables(document)
     selected = list(
         dict.fromkeys(
@@ -1225,6 +1229,184 @@ def derived_scope(document: dict[str, Any], semantic_map: dict[str, Any]) -> dic
                     identity_neighbors.append(target)
                     identity_queue.append((target, depth + 1))
     expanded.update(dict.fromkeys(identity_neighbors))
+
+    request_tokens = _search_tokens(business_request or {})
+    assessment = (business_request or {}).get("viability_assessment", {})
+    if isinstance(assessment, dict):
+        request_tokens |= _search_tokens(
+            [
+                item.get("components", [])
+                for item in assessment.get("requirements", [])
+                if isinstance(item, dict)
+            ]
+        )
+    customer_role_terms = {
+        "customer",
+        "client",
+        "cliente",
+        "buyer",
+        "comprador",
+        "party",
+        "parte",
+        "subject",
+        "sujeto",
+        "holder",
+        "titular",
+    }
+    if request_tokens & customer_role_terms and selected:
+        identity_entity_terms = {
+            *customer_role_terms,
+            "person",
+            "persona",
+            "store",
+            "tienda",
+            "company",
+            "empresa",
+            "organization",
+            "organizacion",
+            "business",
+            "entity",
+            "entidad",
+        }
+        excluded_role_terms = {
+            "employee",
+            "empleado",
+            "worker",
+            "staff",
+            "seller",
+            "vendedor",
+            "salesperson",
+            "vendor",
+            "supplier",
+            "proveedor",
+        }
+        descriptive_terms = {
+            "name",
+            "nombre",
+            "title",
+            "titulo",
+            "first",
+            "given",
+            "middle",
+            "last",
+            "family",
+            "surname",
+            "apellido",
+            "description",
+            "descripcion",
+            "denomination",
+            "denominacion",
+        }
+
+        distances = {reference: 0 for reference in selected}
+        queue = list(selected)
+        while queue:
+            current = queue.pop(0)
+            if distances[current] >= 2:
+                continue
+            for neighbor in graph[current]:
+                if neighbor not in distances:
+                    distances[neighbor] = distances[current] + 1
+                    queue.append(neighbor)
+
+        incoming_relation_tokens: dict[str, set[str]] = {reference: set() for reference in tables}
+        for source, table in tables.items():
+            for relation in table.get("foreign_keys", []):
+                if not isinstance(relation, dict):
+                    continue
+                target = (
+                    f"{relation.get('referenced_schema', '')}."
+                    f"{relation.get('referenced_table', '')}"
+                )
+                if target in tables:
+                    incoming_relation_tokens[target] |= _search_tokens(
+                        {
+                            "source": source,
+                            "columns": relation.get("columns", []),
+                            "target_columns": relation.get("referenced_columns", []),
+                        }
+                    )
+
+        def identity_source_score(reference: str) -> tuple[int, int, str]:
+            table = tables[reference]
+            table_tokens = _search_tokens(reference)
+            column_tokens = _search_tokens(
+                [
+                    column.get("name", "")
+                    for column in table.get("columns", [])
+                    if isinstance(column, dict)
+                ]
+            )
+            relation_tokens = incoming_relation_tokens.get(reference, set())
+            negative = bool((table_tokens | relation_tokens) & excluded_role_terms) or (
+                {"sales", "person"}.issubset(table_tokens)
+                or {"sales", "person"}.issubset(relation_tokens)
+            )
+            descriptive = sum(
+                bool(_search_tokens(column.get("name", "")) & descriptive_terms)
+                for column in table.get("columns", [])
+                if isinstance(column, dict)
+                and any(
+                    kind in str(column.get("type", column.get("data_type", ""))).casefold()
+                    for kind in ("char", "text")
+                )
+            )
+            outbound_identity = sum(
+                bool(
+                    _search_tokens(
+                        {
+                            "target": (
+                                f"{relation.get('referenced_schema', '')}."
+                                f"{relation.get('referenced_table', '')}"
+                            ),
+                            "columns": relation.get("columns", []),
+                        }
+                    )
+                    & identity_entity_terms
+                )
+                for relation in table.get("foreign_keys", [])
+                if isinstance(relation, dict)
+            )
+            score = (
+                80 * len(table_tokens & customer_role_terms)
+                + 18 * len(table_tokens & identity_entity_terms)
+                + 70 * len(relation_tokens & customer_role_terms)
+                + 12 * len(column_tokens & customer_role_terms)
+                + 25 * descriptive
+                + 35 * outbound_identity
+                - 12 * distances.get(reference, 3)
+                - (180 if negative else 0)
+            )
+            return score, -distances.get(reference, 3), reference
+
+        identity_candidates = [
+            reference
+            for reference in distances
+            if reference not in selected_set and identity_source_score(reference)[0] > 0
+        ]
+        if identity_candidates:
+            identity_source = max(identity_candidates, key=identity_source_score)
+            expanded.add(identity_source)
+            identity_queue = [(identity_source, 0)]
+            visited_identity: set[str] = set()
+            while identity_queue:
+                reference, depth = identity_queue.pop(0)
+                if reference in visited_identity or depth >= 2:
+                    continue
+                visited_identity.add(reference)
+                for relation in tables[reference].get("foreign_keys", []):
+                    if not isinstance(relation, dict):
+                        continue
+                    target = (
+                        f"{relation.get('referenced_schema', '')}."
+                        f"{relation.get('referenced_table', '')}"
+                    )
+                    relation_tokens = _search_tokens(
+                        {"target": target, "columns": relation.get("columns", [])}
+                    )
+                    if target in tables and relation_tokens & identity_entity_terms:
+                        expanded.add(target)
+                        identity_queue.append((target, depth + 1))
     # Never discard an LLM candidate merely because a connector path consumed the limit.
     expanded.update(selected_set)
     scope_tables = []
@@ -1730,11 +1912,23 @@ def expand_proposal_blueprint(
                 )
             continue
         candidates = _measure_candidates_for_role(role, fact_columns)
-        if not candidates and not _column_supports_role(role, proposed_column):
-            reason = (
-                f"La medida {name} fue excluida porque {proposed_column or 'la columna elegida'} "
-                f"no representa {role} en la tabla de hechos verificada."
-            )
+        proposed_column_is_physical = proposed_column in fact_columns_by_name
+        if not candidates and (
+            not proposed_column_is_physical
+            or not _column_supports_role(role, proposed_column)
+        ):
+            if proposed_column_is_physical:
+                reason = (
+                    f"La medida {name} fue excluida porque {proposed_column} no representa "
+                    f"{role} en la tabla de hechos verificada."
+                )
+            else:
+                invalid_column = proposed_column or "la columna elegida"
+                reason = (
+                    f"La medida {name} fue excluida porque {invalid_column} "
+                    f"no es una columna física compatible con {role} en la tabla de hechos "
+                    "verificada."
+                )
             proposal_warnings.append(reason)
             decision_diagnostics.append(
                 {
@@ -1785,7 +1979,20 @@ def expand_proposal_blueprint(
         )
     dimension_terms = {
         "dim_producto": {"product", "producto"},
-        "dim_cliente": {"customer", "person", "store", "cliente"},
+        "dim_cliente": {
+            "customer",
+            "person",
+            "store",
+            "cliente",
+            "client",
+            "buyer",
+            "comprador",
+            "party",
+            "entity",
+            "entidad",
+            "organization",
+            "organizacion",
+        },
         "dim_territorio": {"territory", "region", "territorio"},
         "dim_fecha": {"date", "calendar", "fecha"},
     }

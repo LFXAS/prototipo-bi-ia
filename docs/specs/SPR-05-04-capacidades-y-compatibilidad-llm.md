@@ -51,6 +51,11 @@ La plataforma mantendrá una matriz de capacidades validada por adaptador y mode
 16. La evaluación de viabilidad y las derivaciones son independientes del proveedor.
     Cambiar de Claude a Groq o viceversa no cambia las relaciones, fórmulas ni
     requisitos aceptados; sólo cambia quién propone el documento estructurado.
+17. Una respuesta JSON válida pero fuera de contrato recibe el mismo tratamiento con
+    cualquier proveedor: proyección determinística de campos permitidos y límites de
+    longitud o cardinalidad, seguida —si todavía falla— de un único reintento guiado. La
+    recuperación no completa propiedades obligatorias ni modifica valores por código;
+    toda salida recuperada vuelve a validarse localmente.
 
 ## 3. Datos, API e interfaz
 
@@ -93,6 +98,9 @@ Sólo `parameters.llm.manage` modifica la configuración. La prueba usa el míni
       indicada, hasta el máximo seguro, antes de consumir el siguiente intento.
 - [x] Tras agotar el esquema estricto, Groq dispone de una recuperación JSON única y
       localmente validada, sin reducir requisitos ni cambiar de proveedor.
+- [x] Una medida directa propuesta por cualquier modelo se conserva únicamente si su
+      columna pertenece físicamente a la tabla de hechos verificada; las medidas
+      opcionales incompatibles y sus KPI se descartan con diagnóstico auditable.
 
 ## 6. Resultado de implementación
 
