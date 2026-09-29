@@ -91,11 +91,11 @@
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & MAN-TEC-01 \\
-    Versión del manual & 4.0.7 \\
+    Versión del manual & 4.0.8 \\
     Línea base & Ramas \file{develop} y \file{main} \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
     Clasificación & Documentación técnica - repositorio público \\
-    Fecha & 28 de septiembre de 2026 \\
+    Fecha & 29 de septiembre de 2026 \\
   \end{tabularx}
 
   \vfill
@@ -441,6 +441,10 @@ Al elegir el dominio, el backend devuelve preguntas orientadoras y periodicidade
 Cada intento se almacena en \path{app.bi_proposals} y queda ligado a la huella de la instantánea, proveedor, modelo, versión de prompt, entrada, mapa semántico, alcance, validación y decisión histórica del actor. Excluir conceptos, cambiar la necesidad o personalizar decisiones crea otra versión; \file{source\_proposal\_id} conserva su origen y nunca sobrescribe el registro anterior. La personalización no llama al LLM y no admite tablas, columnas, relaciones ni fórmulas libres: \file{POST /api/v1/copilot/proposals/\{id\}/revisions} aplica únicamente selecciones válidas y repite la validación determinística.
 
 La sección \textbf{Versiones generadas} consulta el servidor por dominio y estado, muestra inicialmente \textbf{Lista para revisar} y pagina los resultados. Permite abrir cualquier artefacto persistido y escoger cuál revisar o aprobar sin volver a consumir el proveedor. Esto facilita preparar una ejecución local lenta antes de una demostración y conservar, al mismo tiempo, resultados cloud comparables. Los permisos \path{copilot.proposals.read}, \path{copilot.proposals.generate} y \path{copilot.proposals.review} separan consulta, generación y decisión.
+
+Cuando se abre una versión histórica, el asistente restaura el objetivo, las preguntas y la periodicidad persistida; no reutiliza el valor predeterminado del dominio. Las cinco etapas quedan disponibles como consulta inmutable y la acción \textbf{Crear nueva propuesta} inicia un borrador vacío en el mismo dominio sin cerrar sesión ni modificar el expediente consultado. Esta salida elimina la dependencia operativa de reiniciar la sesión para continuar el trabajo.
+
+En \textbf{Personalización}, cada medida separa su etiqueta de negocio del identificador técnico y muestra su origen calificado y su regla ejecutable. Por ejemplo, el conteo de transacciones expone \path{Sales.SalesOrderDetail.SalesOrderID} y \file{COUNT(DISTINCT SalesOrderID)}; una medida calculada muestra primero la expresión por fila y después la agregación. KPI, selectores y botones conservan el texto completo mediante una disposición adaptativa, evitando concatenaciones como \file{importe\_brutoImporte de ventas}.
 
 \subsection{Validación acumulativa visible}
 
@@ -1202,6 +1206,7 @@ make verify
   4.0.5 & 27-09-2026 & Datamart único identificado sin combo redundante, enlace a expedientes auditables y detalle interactivo adaptativo sin desbordamientos. \\
   4.0.6 & 27-09-2026 & Comparativa integral Groq--Claude, selección operativa de proveedor y restricción consistente de niveles Claude sin pensamiento extendido. \\
   4.0.7 & 28-09-2026 & HBI-012: resolución neutral de dependencias y KPI derivados de la ejecución 11, con recuperación analítica sin repetir el ETL. \\
+  4.0.8 & 29-09-2026 & HBI-013: continuidad desde propuestas históricas, periodicidad fiel y personalización legible con origen y fórmula ejecutable por medida. \\
   \bottomrule
 \end{longtable}
 

@@ -59,7 +59,7 @@ pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}}
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & INF-SPR-03 \\
-    Versión & 1.0.0 \\
+    Versión & 1.0.1 \\
     Periodo de referencia & 14 al 20 de septiembre de 2026 \\
     Rama de trabajo & \file{feature/sprint-03-metadata-introspection} \\
     Estado & Aprobado e integrado mediante PR \#35; promoción mediante PR \#36 \\
@@ -191,6 +191,8 @@ El acceso \textbf{Asistente de datamart} presenta primero un catálogo genérico
 
 La sección \textbf{Versiones generadas} filtra inicialmente \textbf{Lista para revisar}, permite cambiar de estado, pagina los resultados e identifica proveedor, modelo, fecha, estado y versión de origen. No se implementa drag and drop libre ni un editor SQL. La personalización controlada permite ajustar resumen, granularidad, dimensiones, medidas, agregaciones y KPIs existentes con justificación; el backend crea una versión derivada y vuelve a validarla. Esto cubre desviaciones razonables del modelo sin convertir el prototipo en una herramienta de programación.
 
+La revisión de continuidad HBI-013 completa esta experiencia sin alterar el alcance del incremento. Una versión histórica restaura también su periodicidad y ofrece \textbf{Crear nueva propuesta} para abandonar el modo consulta sin cerrar sesión. En personalización, la etiqueta de negocio, el identificador técnico, la fuente y la fórmula se presentan por separado; un conteo distinto identifica de forma explícita la clave contada. Estas reglas convierten el historial en una herramienta de revisión y sustentación, no en un estado que bloquee el trabajo posterior.
+
 La prueba de aceptación detectó que una propuesta podía asociar un KPI de clientes con una medida monetaria, mezclar observaciones libres del proveedor con advertencias comprobadas o no reconocer una fecha existente. La corrección incorpora funciones semánticas tipadas para medidas y KPI, compatibilidad de columna y agregación, exclusión explicada de decisiones incoherentes y reasignación supervisada. La revisión posterior eliminó las dimensiones predefinidas del paso inicial: ahora el LLM las propone y el backend acepta sólo referencias verificadas. Los ajustes automáticos, advertencias, decisiones excluidas y observaciones originales se presentan por separado con acciones concretas.
 
 Para depurar versiones ya aprobadas, el analista puede retirar la aprobación con motivo obligatorio; los demás intentos pueden descartarse. Ambos estados quedan fuera del flujo operativo sin borrar linaje ni auditoría. Verificar una aprobación vuelve a ejecutar las reglas actuales y sólo la invalida ante errores bloqueantes. Las diferencias de una versión anterior del motor se explican como compatibilidad; si una aprobación fue retirada por ese falso positivo, puede restaurarse con revisión y auditoría. Sprint 4 deberá repetir el control antes de materializarla.
@@ -255,6 +257,7 @@ Sprint 3 demuestra el núcleo del título: la IA interviene en la construcción 
   Versión & Fecha & Cambio \\
   \midrule
   1.0.0 & 24-09-2026 & Normalización profesional y actualización de aceptación, integración y promoción del Sprint 3. \\
+  1.0.1 & 29-09-2026 & Adenda HBI-013: continuidad del modo histórico, periodicidad persistida y trazabilidad visual de medidas y KPI. \\
   \bottomrule
 \end{tabularx}
 

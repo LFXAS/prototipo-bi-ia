@@ -468,6 +468,33 @@ function measureCalculationExplanation(item: Record<string, unknown>) {
   return `Cálculo por fila: ${inputs.join(` ${symbols[operation] ?? operation} `)}`
 }
 
+function measureSourceColumn(item: Record<string, unknown>) {
+  return stringValue(item.source_column, stringArrayValue(item.source_columns)[0] ?? '')
+}
+
+function measureExecutionRule(
+  item: Record<string, unknown>,
+  aggregation: ProposalRevision['measure_aggregations'][string],
+  calculation?: ProposalRevision['measure_calculations'][string],
+) {
+  const symbols: Record<string, string> = { multiply: ' × ', add: ' + ', subtract: ' − ', divide: ' ÷ ' }
+  const expression = calculation?.inputs.length
+    ? calculation.inputs.join(symbols[calculation.operation] ?? ` ${calculation.operation} `)
+    : measureSourceColumn(item)
+  if (!expression) return 'Regla pendiente de comprobar'
+  const functions: Record<ProposalRevision['measure_aggregations'][string], string> = {
+    sum: 'SUM', count: 'COUNT', count_distinct: 'COUNT', average: 'AVG', min: 'MIN', max: 'MAX',
+  }
+  const argument = aggregation === 'count_distinct' ? `DISTINCT ${expression}` : expression
+  return `${functions[aggregation]}(${argument})`
+}
+
+function qualifiedMeasureSource(item: Record<string, unknown>, factSource: string) {
+  const source = measureSourceColumn(item)
+  if (!source) return factSource || 'Origen pendiente de comprobar'
+  return source.includes('.') || !factSource ? source : `${factSource}.${source}`
+}
+
 function localizedAdjustment(value: string) {
   return value
     .replace('mediante multiply', 'mediante multiplicación')
@@ -480,11 +507,13 @@ function MeasureRevisionEditor({
   measures,
   draft,
   numericColumns,
+  factSource,
   onChange,
 }: {
   measures: Record<string, unknown>[]
   draft: ProposalRevision
   numericColumns: string[]
+  factSource: string
   onChange: (value: ProposalRevision) => void
 }) {
   const operationLabels = {
@@ -499,6 +528,7 @@ function MeasureRevisionEditor({
       const name = stringValue(item.name, '')
       const selected = draft.measure_names.includes(name)
       const calculation = draft.measure_calculations[name]
+      const aggregation = draft.measure_aggregations[name] ?? 'sum'
       const orderedOperation = calculation?.operation === 'subtract' || calculation?.operation === 'divide'
       const recommended = calculation && /(discount|descuento)/i.test(`${name} ${stringValue(item.source_column, '')}`)
       const updateCalculation = (next?: ProposalRevision['measure_calculations'][string]) => {
@@ -508,11 +538,12 @@ function MeasureRevisionEditor({
         onChange({ ...draft, measure_calculations: calculations })
       }
       return <article className={calculation ? 'calculated-measure-card' : ''} key={name}>
-        <label><input type="checkbox" checked={selected} onChange={() => {
+        <label className="measure-choice"><input type="checkbox" checked={selected} onChange={() => {
           const dependentKpis = Object.entries(draft.kpi_measure_names).filter(([, measure]) => measure === name).map(([code]) => code)
           onChange({ ...draft, measure_names: selected ? draft.measure_names.filter((value) => value !== name) : [...draft.measure_names, name], kpi_codes: selected ? draft.kpi_codes.filter((code) => !dependentKpis.includes(code)) : draft.kpi_codes })
-        }} /><span>{name}<small>{semanticRoleLabel(semanticRole(item))}</small></span></label>
-        <label>Agregación<select aria-label={`Agregación de ${name}`} disabled={!selected} value={draft.measure_aggregations[name] ?? 'sum'} onChange={(event) => onChange({ ...draft, measure_aggregations: { ...draft.measure_aggregations, [name]: event.target.value as ProposalRevision['measure_aggregations'][string] } })}><option value="sum">Suma</option><option value="count">Conteo</option><option value="count_distinct">Conteo distinto</option><option value="average">Promedio</option><option value="min">Mínimo</option><option value="max">Máximo</option></select></label>
+        }} /><span className="measure-identity"><strong>{semanticRoleLabel(semanticRole(item))}</strong><small>Identificador técnico</small><code>{name}</code></span></label>
+        <label className="measure-aggregation"><span>Agregación</span><select aria-label={`Agregación de ${name}`} disabled={!selected} value={aggregation} onChange={(event) => onChange({ ...draft, measure_aggregations: { ...draft.measure_aggregations, [name]: event.target.value as ProposalRevision['measure_aggregations'][string] } })}><option value="sum">Suma</option><option value="count">Conteo</option><option value="count_distinct">Conteo distinto</option><option value="average">Promedio</option><option value="min">Mínimo</option><option value="max">Máximo</option></select></label>
+        <div className="measure-provenance"><span><b>Origen:</b> <code>{qualifiedMeasureSource(item, factSource)}</code></span><span><b>Regla ejecutable:</b> <code>{measureExecutionRule(item, aggregation, calculation)}</code></span></div>
         {calculation ? <div className="controlled-calculation">
           <div><strong>{recommended ? 'Corrección automática recomendada' : 'Columna calculada controlada'}</strong><button className="secondary compact" type="button" onClick={() => updateCalculation()}>Usar columna directa</button></div>
           {recommended && <p>Se detectó una tasa usada como importe. La receta precio × tasa × cantidad produce el descuento monetario por fila.</p>}
@@ -663,6 +694,9 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
     void api.proposal(token, recoveryDraft.proposalId).then((savedProposal) => {
       setProposal(savedProposal)
       setDraftProposalId(savedProposal.id)
+      setGoal(savedProposal.business_goal)
+      setQuestions(savedProposal.business_questions)
+      setPeriodicity(savedProposal.periodicity)
       setExcludedConcepts(defaultExcludedConcepts(savedProposal))
       setReviewComment(savedProposal.review_comment ?? '')
       setWarningsConfirmed(savedProposal.warnings_confirmed)
@@ -728,6 +762,36 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
     localStorage.removeItem(assistantDraftKey)
     setRecoveryNotice('')
     setSelectedDomainCode(null)
+  }
+
+  function startNewProposal() {
+    localStorage.removeItem(assistantDraftKey)
+    setRecoveryNotice('')
+    setProposal(null)
+    setDraftProposalId(undefined)
+    setGoal('')
+    setQuestions([])
+    setPeriodicity(selectedDomain?.periodicities.find((item) => item.available)?.code ?? 'month')
+    setNeedFormulation(null)
+    setViability(null)
+    setAcceptedLimitations([])
+    setExcludedConcepts([])
+    setConfirmedConcepts([])
+    setAdviceConceptCode(null)
+    setRevisionDraft(null)
+    setRelationCatalog(null)
+    setRelationDimension('')
+    setRelationOptionId('')
+    setRelationComment('')
+    setReviewComment('')
+    setWarningsConfirmed(false)
+    setCleanupReason('')
+    setRestoreReason('')
+    setRestoreWarningsConfirmed(false)
+    setVerification(null)
+    setSemanticPreview(null)
+    setStep(1)
+    setFeedback({ kind: 'success', message: 'Nuevo borrador preparado. La versión consultada permanece disponible en el historial.' })
   }
 
   function toggleValue(value: string, values: string[], update: (items: string[]) => void) {
@@ -873,6 +937,7 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
 
   function selectSavedProposal(item: BiProposal) {
     setProposal(item)
+    setDraftProposalId(item.id)
     setViability(null)
     setAcceptedLimitations([])
     setNeedFormulation(null)
@@ -880,6 +945,8 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
     setSemanticPreview(null)
     setGoal(item.business_goal)
     setQuestions(item.business_questions)
+    setPeriodicity(item.periodicity)
+    setRecoveryNotice('')
     setExcludedConcepts(defaultExcludedConcepts(item))
     setConfirmedConcepts([])
     setAdviceConceptCode(null)
@@ -1052,7 +1119,7 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
     <div className="assistant-context"><div><p className="eyebrow">Dominio seleccionado</p><strong>{selectedDomain.label}</strong><span>{source.connection?.name} · instantánea #{source.latest_snapshot?.id}</span></div><button className="secondary" onClick={changeDomain}>Cambiar tipo de datamart</button></div>
     <p className="lead">Describa una necesidad comercial. La IA interpretará metadatos, propondrá el modelo y la aplicación comprobará cada referencia antes de su revisión.</p>
     <ol className={`assistant-stepper ${proposalReadOnly ? 'read-only' : ''}`} aria-label={`Paso ${step} de 5`}>{['Necesidad', 'Conceptos', 'Propuesta', 'Personalización', 'Revisión'].map((label, index) => <li className={step === index + 1 ? 'current' : step > index + 1 ? 'complete' : ''} key={label}>{proposalReadOnly ? <button type="button" aria-current={step === index + 1 ? 'step' : undefined} onClick={() => { setAdviceConceptCode(null); setStep(index + 1) }}><span>{index + 1}</span>{label}</button> : <><span>{index + 1}</span>{label}</>}</li>)}</ol>
-    {proposalReadOnly && <p className="notice read-only-notice"><strong>Consulta de la versión #{proposal?.id}.</strong> Puede recorrer las cinco etapas para revisar lo aprobado. Los campos y decisiones permanecen bloqueados.</p>}
+    {proposalReadOnly && <section className="notice read-only-notice"><div><strong>Consulta de la versión #{proposal?.id}.</strong><span>Puede recorrer las cinco etapas para revisar lo aprobado. Los campos y decisiones permanecen bloqueados.</span></div><button type="button" onClick={startNewProposal}>Crear nueva propuesta</button></section>}
     {recoveryNotice && <p className="notice success" role="status"><strong>Avance restaurado.</strong> {recoveryNotice}</p>}
     {feedback && <p className={`notice ${feedback.kind}`} role={feedback.kind === 'error' ? 'alert' : 'status'}>{feedback.message}</p>}
     {step === 1 && <form className="analysis-panel" onSubmit={(event) => { event.preventDefault(); if (proposalReadOnly) return; if (viability) void generate([]); else void validateNeed() }}>
@@ -1151,8 +1218,8 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
       <label>Resumen de negocio<input maxLength={160} value={revisionDraft.summary} onChange={(event) => setRevisionDraft({ ...revisionDraft, summary: event.target.value })} /></label>
       <label>Granularidad propuesta<textarea rows={2} maxLength={240} value={revisionDraft.grain_description} onChange={(event) => setRevisionDraft({ ...revisionDraft, grain_description: event.target.value })} /></label>
       <fieldset><legend>Dimensiones incluidas</legend><div className="choice-grid">{revisionDimensions.map((item) => { const name = stringValue(item.name, ''); return <label key={name}><input type="checkbox" checked={revisionDraft.dimension_names.includes(name)} onChange={() => setRevisionDraft({ ...revisionDraft, dimension_names: revisionDraft.dimension_names.includes(name) ? revisionDraft.dimension_names.filter((value) => value !== name) : [...revisionDraft.dimension_names, name] })} />{name}</label> })}</div></fieldset>
-      <MeasureRevisionEditor measures={revisionMeasures} draft={revisionDraft} numericColumns={revisionNumericColumns} onChange={setRevisionDraft} />
-      <fieldset><legend>KPIs incluidos y medida asociada</legend><div className="kpi-revision-grid">{revisionKpis.map((item) => { const code = stringValue(item.code, ''); const role = semanticRole(item); const compatible = revisionMeasures.filter((measure) => semanticRole(measure) === role && revisionDraft.measure_names.includes(stringValue(measure.name, ''))); const selectedMeasure = revisionDraft.kpi_measure_names[code] ?? ''; const unavailable = compatible.length === 0; const selected = revisionDraft.kpi_codes.includes(code); return <article className={unavailable ? 'unavailable-choice' : ''} key={code}><label><input type="checkbox" disabled={unavailable} checked={!unavailable && selected} onChange={() => { const nextSelected = !selected; const fallback = compatible.some((measure) => stringValue(measure.name, '') === selectedMeasure) ? selectedMeasure : stringValue(compatible[0]?.name, ''); setRevisionDraft({ ...revisionDraft, kpi_codes: nextSelected ? [...revisionDraft.kpi_codes, code] : revisionDraft.kpi_codes.filter((value) => value !== code), kpi_measure_names: { ...revisionDraft.kpi_measure_names, [code]: fallback } }) }} /><span>{stringValue(item.name, code)}<small>{semanticRoleLabel(role)}</small></span></label>{unavailable ? <p><strong>No disponible:</strong> no existe una medida seleccionada con la misma función semántica. Excluya este KPI o genere una versión que incluya esa medida.</p> : <label>Medida compatible<select aria-label={`Medida para ${stringValue(item.name, code)}`} disabled={!selected} value={compatible.some((measure) => stringValue(measure.name, '') === selectedMeasure) ? selectedMeasure : stringValue(compatible[0]?.name, '')} onChange={(event) => setRevisionDraft({ ...revisionDraft, kpi_measure_names: { ...revisionDraft.kpi_measure_names, [code]: event.target.value } })}>{compatible.map((measure) => { const name = stringValue(measure.name, ''); return <option value={name} key={name}>{name}</option> })}</select></label>}</article> })}</div></fieldset>
+      <MeasureRevisionEditor measures={revisionMeasures} draft={revisionDraft} numericColumns={revisionNumericColumns} factSource={revisionFactSource} onChange={setRevisionDraft} />
+      <fieldset><legend>KPIs incluidos y medida asociada</legend><div className="kpi-revision-grid">{revisionKpis.map((item) => { const code = stringValue(item.code, ''); const role = semanticRole(item); const compatible = revisionMeasures.filter((measure) => semanticRole(measure) === role && revisionDraft.measure_names.includes(stringValue(measure.name, ''))); const selectedMeasure = revisionDraft.kpi_measure_names[code] ?? ''; const unavailable = compatible.length === 0; const selected = revisionDraft.kpi_codes.includes(code); return <article className={unavailable ? 'unavailable-choice' : ''} key={code}><label><input type="checkbox" disabled={unavailable} checked={!unavailable && selected} onChange={() => { const nextSelected = !selected; const fallback = compatible.some((measure) => stringValue(measure.name, '') === selectedMeasure) ? selectedMeasure : stringValue(compatible[0]?.name, ''); setRevisionDraft({ ...revisionDraft, kpi_codes: nextSelected ? [...revisionDraft.kpi_codes, code] : revisionDraft.kpi_codes.filter((value) => value !== code), kpi_measure_names: { ...revisionDraft.kpi_measure_names, [code]: fallback } }) }} /><span className="measure-identity"><strong>{stringValue(item.name, code)}</strong><small>Función de negocio</small><span>{semanticRoleLabel(role)}</span><small>Identificador técnico</small><code>{code}</code></span></label>{unavailable ? <p><strong>No disponible:</strong> no existe una medida seleccionada con la misma función semántica. Excluya este KPI o genere una versión que incluya esa medida.</p> : <label className="compatible-measure-field"><span>Medida compatible</span><select aria-label={`Medida para ${stringValue(item.name, code)}`} disabled={!selected} value={compatible.some((measure) => stringValue(measure.name, '') === selectedMeasure) ? selectedMeasure : stringValue(compatible[0]?.name, '')} onChange={(event) => setRevisionDraft({ ...revisionDraft, kpi_measure_names: { ...revisionDraft.kpi_measure_names, [code]: event.target.value } })}>{compatible.map((measure) => { const name = stringValue(measure.name, ''); return <option value={name} key={name}>{semanticRoleLabel(semanticRole(measure))} — {name}</option> })}</select></label>}</article> })}</div></fieldset>
       {!proposalReadOnly && <section className="relation-correction-panel" aria-labelledby="relation-correction-title">
         <div className="relation-correction-heading">
           <div><p className="eyebrow">Corrección guiada opcional</p><h3 id="relation-correction-title">Resolver una relación con evidencia</h3></div>

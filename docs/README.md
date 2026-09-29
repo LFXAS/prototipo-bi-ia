@@ -6,10 +6,10 @@ La documentación forma parte del producto versionado. Las fuentes Markdown y La
 
 Los siete documentos técnicos conservan el detalle íntegro del producto y no utilizan identidad institucional. El Capítulo III es una versión académica independiente preparada para integrarse en la plantilla general del trabajo de titulación.
 
-- [`manual-tecnico/manual-tecnico.pdf`](manual-tecnico/manual-tecnico.pdf): instalación, operación, reconstrucción y explicación detallada del ciclo Docker, Git y CI/CD.
+- [`manual-tecnico/manual-tecnico.pdf`](manual-tecnico/manual-tecnico.pdf): instalación, operación, reconstrucción, uso del asistente y explicación detallada del ciclo Docker, Git y CI/CD.
 - [`sprints/sprint-03-metadatos-y-propuesta-bi.pdf`](sprints/sprint-03-metadatos-y-propuesta-bi.pdf): alcance, arquitectura, validación y evidencias del asistente supervisado del Sprint 3.
 - [`sprints/sprint-04-materializacion-etl.pdf`](sprints/sprint-04-materializacion-etl.pdf): materialización controlada, KPI variables, conciliación, interpretación española y evidencia real de la ejecución 6.
-- [`sprints/sprint-05-analitica-y-reporteria.pdf`](sprints/sprint-05-analitica-y-reporteria.pdf): calidad descriptiva, resolución de entidades, ejecución 7, paneles por perfil, copiloto contextual y reportería fiel.
+- [`sprints/sprint-05-analitica-y-reporteria.pdf`](sprints/sprint-05-analitica-y-reporteria.pdf): calidad descriptiva, ejecuciones 9/11, KPI derivados, continuidad histórica, paneles por perfil, copiloto contextual y reportería fiel.
 - [`sprints/sprint-01-entorno.pdf`](sprints/sprint-01-entorno.pdf): objetivo, backlog, ejecución, trazabilidad, evidencias, incidentes, revisión y retrospectiva del Sprint 1.
 - [`sprints/sprint-02-seguridad-y-parametros.pdf`](sprints/sprint-02-seguridad-y-parametros.pdf): objetivo, especificaciones SDD, incremento administrativo, controles RBAC/LLM, evidencias y límites del Sprint 2.
 - [`logbook/bitacora.pdf`](logbook/bitacora.pdf): registro cronológico de decisiones, cambios, verificaciones, incidentes y pendientes.
