@@ -4,6 +4,7 @@ import asyncio
 from types import SimpleNamespace
 
 import httpx
+import pytest
 from pytest import MonkeyPatch
 
 from app.modules.parameters import providers
@@ -423,7 +424,7 @@ def test_groq_schema_mismatch_is_classified_as_contract_failure() -> None:
 
     assert error.category == "structured_contract"
     assert error.request_id == "req-contract"
-    assert "descartó automáticamente" in str(error)
+    assert "descartó la respuesta" in str(error)
     assert "presupuesto" not in str(error)
 
 
@@ -472,6 +473,103 @@ def test_groq_retries_one_rejected_structured_generation_automatically(
 
     assert result == {"answer": "ok"}
     assert calls == 2
+
+
+def test_groq_falls_back_once_to_locally_validated_json_after_strict_rejections(
+    monkeypatch: MonkeyPatch,
+) -> None:
+    calls: list[dict[str, object]] = []
+    monkeypatch.setattr(providers.asyncio, "sleep", no_sleep)
+
+    class SequenceClient(FakeAsyncClient):
+        async def post(self, _: str, **kwargs: object) -> FakeResponse:
+            payload = kwargs["json"]
+            assert isinstance(payload, dict)
+            calls.append(payload)
+            if len(calls) <= 3:
+                return FakeResponse(
+                    {
+                        "error": {
+                            "message": "Generated JSON does not match the expected schema.",
+                            "code": "json_validate_failed",
+                        }
+                    },
+                    status_code=400,
+                )
+            return FakeResponse({"choices": [{"message": {"content": '{"answer":"ok"}'}}]})
+
+    monkeypatch.setattr(
+        providers.httpx,
+        "AsyncClient",
+        lambda **kwargs: SequenceClient({}, **kwargs),
+    )
+
+    result = asyncio.run(
+        providers.generate_json(
+            groq_configuration(),
+            "Devuelve el contrato solicitado.",
+            {"request": "test"},
+            credential="groq-secret",
+            response_schema={
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["answer"],
+                "properties": {"answer": {"type": "string"}},
+            },
+        )
+    )
+
+    assert result == {"answer": "ok"}
+    assert len(calls) == 4
+    assert calls[-1]["response_format"] == {"type": "json_object"}
+
+
+def test_local_contract_rejects_invalid_json_from_provider_fallback(
+    monkeypatch: MonkeyPatch,
+) -> None:
+    calls = 0
+    monkeypatch.setattr(providers.asyncio, "sleep", no_sleep)
+
+    class SequenceClient(FakeAsyncClient):
+        async def post(self, _: str, **__: object) -> FakeResponse:
+            nonlocal calls
+            calls += 1
+            if calls <= 3:
+                return FakeResponse(
+                    {
+                        "error": {
+                            "message": "Generated JSON does not match the expected schema.",
+                            "code": "json_validate_failed",
+                        }
+                    },
+                    status_code=400,
+                )
+            return FakeResponse({"choices": [{"message": {"content": '{"unexpected":true}'}}]})
+
+    monkeypatch.setattr(
+        providers.httpx,
+        "AsyncClient",
+        lambda **kwargs: SequenceClient({}, **kwargs),
+    )
+
+    with pytest.raises(providers.ProviderGenerationError) as caught:
+        asyncio.run(
+            providers.generate_json(
+                groq_configuration(),
+                "Devuelve el contrato solicitado.",
+                {"request": "test"},
+                credential="groq-secret",
+                response_schema={
+                    "type": "object",
+                    "additionalProperties": False,
+                    "required": ["answer"],
+                    "properties": {"answer": {"type": "string"}},
+                },
+            )
+        )
+
+    assert caught.value.category == "structured_contract"
+    assert "descartada" in str(caught.value)
 
 
 def test_groq_invalid_parameter_has_specific_message(monkeypatch: MonkeyPatch) -> None:

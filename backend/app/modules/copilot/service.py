@@ -2486,7 +2486,11 @@ def build_requirement_coverage(
             explanation = "La ambigüedad y su alcance fueron aceptados por el analista."
         elif not component_gaps and outputs:
             coverage_status = "covered"
-            explanation = "El requisito aparece en salidas verificables de la propuesta."
+            if request_status == "derivable":
+                mechanism = str(requirement.get("formula") or "relaciones declaradas")
+                explanation = f"Resuelto automáticamente y vuelto a validar mediante {mechanism}."
+            else:
+                explanation = "Vinculado directamente con salidas verificables de la propuesta."
         else:
             coverage_status = "not_covered"
             explanation = (

@@ -188,6 +188,31 @@ analítica.
 - Selectores, botones y etiquetas admiten salto de línea y conservan el texto
   completo en resoluciones de escritorio y móviles.
 
+### HBI-014 — Derivación automática y recuperación neutral del contrato LLM
+
+- La viabilidad se calcula con la instantánea y reglas determinísticas, antes de
+  invocar al proveedor. Claude, Groq, Gemini, Qwen u Ollama reciben el mismo
+  significado de negocio; ninguno decide si una fuente existe.
+- **Directo** significa que la salida se obtiene de una referencia física ya
+  comprobada. **Derivable automáticamente** significa que la plataforma dispone de
+  una ruta de relaciones declaradas o de una fórmula tipada y no requiere que el
+  analista escriba SQL, seleccione tablas ni complete el cálculo a mano.
+- Al generar, la evaluación completa acompaña a la propuesta. El motor aplica las
+  derivaciones determinísticas inequívocas y construye la matriz
+  necesidad--salida. Si un requisito directo o derivable no termina materializado,
+  la propuesta queda bloqueada y no puede aprobarse como válida.
+- Sólo los estados ambiguo o no disponible requieren una decisión humana. La
+  interfaz explica antes de invocar a la IA qué resolverá automáticamente, qué se
+  volverá a comprobar y qué ocurriría si una derivación falla.
+- El contrato JSON se valida localmente para todos los proveedores. Un adaptador
+  puede cambiar exclusivamente el mecanismo de transporte: si Groq agota los
+  reintentos de esquema estricto por una generación no determinística, realiza un
+  único intento degradado a objeto JSON con el mismo esquema en la instrucción. La
+  respuesta sólo continúa si supera el mismo validador local; en otro caso se
+  descarta sin crear una propuesta utilizable.
+- La recuperación es acotada y auditable. No cambia la necesidad, no reduce el
+  alcance, no inventa referencias y no alterna de proveedor automáticamente.
+
 ## 3. Experiencia guiada para el analista
 
 1. **Describir**: redacta o aprueba una necesidad reformulada.
@@ -233,6 +258,7 @@ decisión y cuál es el efecto de cada alternativa.
 | HBI-011 | Anthropic y Groq compilan dependencias equivalentes; dos ejecuciones se conservan y el dashboard no presenta falsos positivos | pruebas ETL, analítica y `AnalyticsPage.test.tsx` | implementado; validación física dual pendiente |
 | HBI-012 | Los KPI derivados de una ejecución conciliada se recalculan con filtros aunque una medida base no tenga tarjeta agregada propia | `test_analytics_service.py` y validación de la ejecución 11 | implementado |
 | HBI-013 | Una versión mensual abre como mensual, permite iniciar otra propuesta y muestra identificadores, etiquetas, fuentes y fórmulas sin concatenación ni recortes | `App.test.tsx` y compilación frontend | implementado |
+| HBI-014 | Directos y derivables explican su tratamiento; un derivable omitido bloquea; Groq puede recuperar una salida válida sin alterar el contrato | `App.test.tsx`, `test_parameters_providers.py` y validación de propuesta | implementado |
 
 ## 6. Matriz de trazabilidad técnica
 
@@ -249,6 +275,7 @@ decisión y cuál es el efecto de cada alternativa.
 | HBI-010 | versionado de contrato, catálogo ETL e historial | Datamart de ventas |
 | HBI-011 | compilador KPI, materializador versionado y catálogo analítico | Preparación ETL y Analítica de ventas |
 | HBI-013 | estado del asistente, historial y tarjetas de personalización | Asistente de datamart |
+| HBI-014 | evaluación de necesidad, adaptadores LLM y validador local del contrato | Necesidad, Propuesta y recuperación del proveedor |
 
 ## 7. Fuera de alcance
 
@@ -325,3 +352,9 @@ decisión y cuál es el efecto de cada alternativa.
   y presentando las medidas con etiqueta, identificador, origen y regla ejecutable.
   Vitest cubre la periodicidad mensual, el nuevo borrador y
   `COUNT(DISTINCT SalesOrderID)`; ESLint, TypeScript y Vite completan sin errores.
+- 29/09/2026: HBI-014 se especifica e implementa después de observar con Claude que
+  la palabra «derivable» no explicaba la acción esperada y de comprobar que la
+  evidencia mezclaba columnas homónimas de compras y ventas. La viabilidad ahora
+  selecciona un subgrafo coherente, explica la resolución automática y bloquea toda
+  omisión. El contrato local común permite una recuperación JSON acotada de Groq sin
+  cambiar reglas, alcance ni proveedor.
