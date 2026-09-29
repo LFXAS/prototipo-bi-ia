@@ -886,8 +886,7 @@ def test_direct_measure_cannot_claim_a_related_dimension_column_as_fact_provenan
     assert [item["name"] for item in proposal["fact"]["measures"]] == ["importe_venta"]
     assert [item["code"] for item in proposal["kpis"]] == ["ventas_totales"]
     assert any(
-        "CustomerID no es una columna física compatible" in item
-        for item in proposal["warnings"]
+        "CustomerID no es una columna física compatible" in item for item in proposal["warnings"]
     )
     assert validation["valid"] is True
 

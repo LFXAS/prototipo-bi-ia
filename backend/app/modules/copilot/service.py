@@ -1914,8 +1914,7 @@ def expand_proposal_blueprint(
         candidates = _measure_candidates_for_role(role, fact_columns)
         proposed_column_is_physical = proposed_column in fact_columns_by_name
         if not candidates and (
-            not proposed_column_is_physical
-            or not _column_supports_role(role, proposed_column)
+            not proposed_column_is_physical or not _column_supports_role(role, proposed_column)
         ):
             if proposed_column_is_physical:
                 reason = (
