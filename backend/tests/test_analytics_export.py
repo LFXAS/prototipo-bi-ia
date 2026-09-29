@@ -115,6 +115,7 @@ def test_excel_number_format_preserves_currency_and_integer_semantics() -> None:
     assert _excel_number_format("Ventas netas USD") == '#,##0.00 "USD"'
     assert _excel_number_format("Número de pedidos pedidos") == "#,##0"
     assert _excel_number_format("Clientes con compras clientes") == "#,##0"
+    assert _excel_number_format("Margen bruto porcentaje") == '0.0"%"'
 
 
 def test_excel_sheets_fit_their_printed_width() -> None:
