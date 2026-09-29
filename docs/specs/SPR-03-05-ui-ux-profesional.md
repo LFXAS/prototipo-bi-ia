@@ -286,6 +286,14 @@ La interfaz elimina un KPI dependiente cuando se retira su medida y no permite i
 
 Cada KPI muestra su función semántica y un selector con únicamente las medidas compatibles ya verificadas. Cuando no existe una medida compatible, el control queda deshabilitado y explica dos acciones concretas: excluir el KPI o generar una nueva versión que solicite la medida faltante. La pantalla separa **Ajustes automáticos aplicados**, **Advertencias pendientes**, **Decisiones excluidas** y **Observaciones originales del proveedor**; estas últimas son trazabilidad, no evidencia validada.
 
+La identidad de cada medida se presenta en tres niveles separados: etiqueta de
+negocio, identificador técnico y procedencia ejecutable. Para una medida directa se
+muestra `tabla.columna` y la agregación; para una calculada se muestra la expresión
+por fila seguida de la agregación. Un conteo de transacciones debe permitir leer, sin
+abrir herramientas externas, una regla equivalente a
+`COUNT(DISTINCT SalesOrderID)`. Los selectores conservan el texto completo y las
+etiquetas nunca se concatenan con los identificadores.
+
 ### 10.6 Paso 5: revisión humana
 
 La vista resume:
@@ -298,6 +306,12 @@ La vista resume:
 - efecto de la decisión.
 
 **Aprobar propuesta** exige confirmación y aclara que no ejecutará ETL todavía. **Rechazar propuesta** exige comentario. Una decisión final reemplaza los controles por un comprobante con estado, persona, fecha y comentario; el registro queda inmutable.
+
+Al abrir una versión histórica, las cinco etapas quedan navegables en modo consulta
+y reflejan sus valores persistidos, incluida la periodicidad. Una acción visible
+**Crear nueva propuesta** abandona únicamente el modo consulta, conserva el registro
+histórico e inicia un formulario limpio dentro del dominio actual; nunca exige cerrar
+la sesión para continuar trabajando.
 
 ### 10.7 Versiones generadas
 

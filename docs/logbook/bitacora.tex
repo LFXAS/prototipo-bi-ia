@@ -4,7 +4,7 @@
 \usepackage[T1]{fontenc}
 \usepackage[spanish,es-nodecimaldot]{babel}
 \usepackage[protrusion=true,expansion=false]{microtype}
-\usepackage[letterpaper,margin=2.3cm,headheight=15pt]{geometry}
+\usepackage[letterpaper,top=2.3cm,left=2.3cm,right=2.3cm,bottom=2.8cm,headheight=15pt,footskip=1.05cm]{geometry}
 \usepackage{xcolor}
 \usepackage{booktabs}
 \usepackage{tabularx}
@@ -67,7 +67,7 @@
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPI, analítica explicable y reportería \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.5.8 \\
+    Versión de la bitácora & 0.5.9 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -918,9 +918,28 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \bottomrule
 \end{longtable}
 
+\subsection{29 de septiembre de 2026 - Continuidad y trazabilidad visual del asistente}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Diagnóstico de historial & \statusok & Al abrir una propuesta aprobada se restauraban objetivo y preguntas, pero no su periodicidad; además, el modo de consulta no ofrecía una salida directa hacia un nuevo análisis. \\
+  Continuidad de trabajo & \statusok & La versión histórica conserva objetivo, preguntas y periodicidad. El botón \textbf{Crear nueva propuesta} inicia un borrador limpio en el mismo dominio, sin cerrar sesión ni modificar el registro consultado. \\
+  Legibilidad de medidas & \statusok & Personalización separa etiqueta de negocio e identificador técnico, amplía los controles y presenta origen y regla ejecutable para cada medida. El conteo de transacciones muestra explícitamente \file{COUNT(DISTINCT SalesOrderID)}. \\
+  Comportamiento responsive & \statusok & Las tarjetas usan una columna legible, controles con ancho suficiente y adaptación móvil; botones, etiquetas, fórmulas y selectores admiten saltos sin concatenaciones ni desbordamientos. \\
+  Especificación y regresión & \statusok & HBI-013 y SPR-03-05 registran el contrato. Vitest comprueba periodicidad mensual, salida del modo consulta y trazabilidad de cálculo; la suite Docker, lint y compilación de producción finalizaron correctamente. \\
+  \bottomrule
+\end{longtable}
+
 \section{Matriz de verificación de la fase}
 
-\begin{tabularx}{\textwidth}{@{}X l X@{}}
+\begin{tabularx}{\textwidth}{@{}p{0.29\textwidth}@{\hspace{0.18in}}p{0.17\textwidth}@{\hspace{0.18in}}X@{}}
   \toprule
   \textbf{Control} & \textbf{Estado} & \textbf{Evidencia esperada} \\
   \midrule
@@ -939,6 +958,7 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \bottomrule
 \end{tabularx}
 
+\clearpage
 \section{Próximos pasos}
 
 \begin{enumerate}
@@ -951,7 +971,7 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
 
 \section{Historial del documento}
 
-\begin{longtable}{@{}p{0.68in}@{\hspace{0.18in}}p{0.88in}@{\hspace{0.18in}}p{4.56in}@{}}
+\begin{longtable}{@{}p{0.82in}@{\hspace{0.16in}}p{0.98in}@{\hspace{0.16in}}p{4.36in}@{}}
   \toprule
   \textbf{Versión} & \textbf{Fecha} & \textbf{Cambio} \\
   \midrule
@@ -1028,6 +1048,7 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   0.5.6 & 27-09-2026 & Cierre UX y LLM: datamart único sin combo redundante, detalles adaptativos, comparativa Groq--Claude y niveles Claude restringidos a capacidades efectivas. \\
   0.5.7 & 27-09-2026 & Contrato estructurado adaptativo, reintentos según ventana del proveedor, recuperación UI y propuesta Groq 86 validada con identidad de cliente en dos relaciones. \\
   0.5.8 & 27-09-2026 & Recuperación canónica de KPI derivados en la ejecución 11, independiente del orden del proveedor y sin repetir el ETL. \\
+  0.5.9 & 29-09-2026 & Continuidad del asistente desde versiones históricas, periodicidad fiel y personalización legible con fuentes y fórmulas ejecutables. \\
   \bottomrule
 \end{longtable}
 
