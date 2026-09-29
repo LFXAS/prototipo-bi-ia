@@ -62,9 +62,9 @@ pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}}
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & INF-SPR-05 \\
-    Versión & 1.2.2 \\
-    Periodo de referencia & 24 al 28 de septiembre de 2026 \\
-    Rama de trabajo & \file{fix/provider-neutral-output-contract} \\
+    Versión & 1.2.3 \\
+    Periodo de referencia & 24 al 29 de septiembre de 2026 \\
+    Rama de trabajo & \file{feature/wizard-history-readability} \\
     Estado & Incremento funcional, evidencia y documentación completados localmente \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
   \end{tabularx}
@@ -203,6 +203,8 @@ Si vence la sesión, la interfaz conserva únicamente el texto redactado por el 
 
 Para sustentación y auditoría, una propuesta aprobada y una ejecución terminada mantienen sus cinco etapas navegables como pestañas de sólo lectura. Los controles permanecen bloqueados y el paso de materialización informa que la carga ya fue realizada, por lo que consultar el expediente no puede iniciar un segundo ETL.
 
+HBI-013 completa el ciclo del asistente: la consulta de una propuesta histórica conserva necesidad, preguntas y periodicidad, pero ya no obliga a cerrar sesión para continuar. \textbf{Crear nueva propuesta} sale del modo consulta, limpia únicamente el borrador actual y mantiene intacto el historial. Las tarjetas de personalización separan etiqueta, identificador, procedencia y regla ejecutable; así el analista puede comprobar qué columna alimenta una medida y si, por ejemplo, las transacciones corresponden a \file{COUNT(DISTINCT SalesOrderID)}. La presentación usa una columna legible y controles adaptativos para impedir textos concatenados o recortados.
+
 \subsection{Neutralidad semántica y versionado de datamarts}
 
 La repetición de la necesidad con Anthropic produjo la propuesta 77 y evidenció dos riesgos que no dependían de una tabla específica: el proveedor podía proponer dos nombres para la misma receta y podía llamar precio o venta por unidad a un promedio del importe de una línea. El compilador se endureció para convertir nombres humanos a identificadores canónicos, consolidar recetas equivalentes y reservar los promedios por unidad para una razón de sumas con denominador explícito. La propuesta 77 se conservó sin aprobar ni ejecutar; no se alteraron los expedientes 9 y 10 durante la corrección.
@@ -271,6 +273,8 @@ La interacción de barras y territorios también se ajustó para espacios reduci
 El flujo funcional central queda completo: configuración, introspección, propuesta asistida, validación, decisión, materialización, conciliación, consumo, conversación y reportería. La corrección de clientes demuestra que una conciliación numérica no basta; una dimensión debe ser también descriptiva y utilizable.
 
 La revisión final de la ejecución 11 añade una segunda conclusión: que el ETL contenga la medida no garantiza por sí solo que el tablero pueda evaluar cualquier fórmula derivada. HBI-012 incorporó resolución por dependencias y punto fijo, conservó la trazabilidad de cada operando y recuperó los KPI sin repetir una carga conciliada.
+
+La revisión HBI-013 añade una tercera conclusión operativa: un expediente inmutable debe poder consultarse sin encerrar al usuario. Restaurar la periodicidad persistida, ofrecer una salida explícita hacia un nuevo borrador y mostrar la fórmula efectiva de cada medida permiten continuar el análisis y explicar el contrato aprobado desde la misma plataforma.
 
 \subsection{Aprendizajes}
 

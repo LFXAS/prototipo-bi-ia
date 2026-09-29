@@ -87,7 +87,7 @@
     Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tipo de documento & Texto base para integración en el trabajo de titulación \\
     Código documental & TES-CAP-03 \\
-    Versión & 1.2.2 \\
+    Versión & 1.2.3 \\
     Periodo cubierto & Sprints 1 al 5; agosto--septiembre de 2026 \\
     Estado & Núcleo funcional implementado y verificado; validación académica final pendiente \\
   \end{tabularx}
@@ -488,6 +488,8 @@ El contraste histórico completó la decisión: Groq bajo produjo la propuesta 7
 
 El cierre del incremento fortaleció la formulación y viabilidad de la necesidad, la cobertura de requisitos, la trazabilidad de medidas y fórmulas, las relaciones corregibles con objetos reales, los indicadores financieros y la recuperación del asistente después de vencer la sesión. El borrador local excluye credenciales y documentos completos; la versión se recupera desde la API con autorización renovada.
 
+La revisión HBI-013 extendió esta recuperación al trabajo cotidiano. Al abrir una propuesta histórica, el asistente conserva necesidad, preguntas y periodicidad, permite recorrer sus cinco etapas en modo de consulta y ofrece una acción no destructiva para iniciar otra propuesta sin cerrar sesión. La personalización separa etiqueta de negocio, identificador técnico, fuente y regla ejecutable; por ello el analista puede sustentar dentro del sistema que el número de transacciones procede de un conteo distinto de \file{SalesOrderID}, sin recurrir a una herramienta SQL externa.
+
 Como validación de cierre se utilizó el motor \file{sales-bi-v6}. La propuesta 73 se generó nuevamente con Groq y la ejecución 9 cargó 121317 líneas con diferencia cero, produjo nueve KPI sin equivalencias duplicadas e incorporó ventas brutas, descuento monetario, costo, margen y valores por unidad. \file{dim\_cliente} mantuvo 19820 nombres completos y tipo de cliente con cobertura del 100\%. Tras publicar sólo las etiquetas territoriales revisadas, el tablero, los filtros, las exportaciones y una consulta Top 5 fuera del lienzo se comprobaron sobre esa ejecución.
 
 Una segunda validación, asociada con la propuesta 86 y la ejecución 11, detectó una limitación en la capa de lectura y no en el ETL. Las medidas estaban cargadas y conciliadas, pero ciertas recetas derivadas dependían directamente de columnas físicas para las cuales no se había creado un KPI agregado redundante; por ello el tablero mostraba \textbf{Sin valor}. La historia HBI-012 introdujo un algoritmo neutral al proveedor que agrega primero las dependencias físicas autorizadas y evalúa después las fórmulas derivadas hasta alcanzar un punto fijo. La corrección recuperó los indicadores sobre el expediente existente, sin volver a materializar ni alterar los datos.
@@ -591,7 +593,7 @@ Universidad de Guayaquil. \emph{Trabajo de titulación con Capítulo III de prop
   Código & TES-CAP-03 \\
   Fuente editable & \path{docs/tesis/capitulo-03-propuesta-tecnologica.tex} \\
   Compilación & \path{make thesis-chapter3} o \path{make docs} \\
-  Versión & 1.2.2 -- 28-09-2026 \\
+  Versión & 1.2.3 -- 29-09-2026 \\
   Regla de uso & Integrar en la plantilla final y actualizar figuras, requisitos, resultados y referencias al cerrar nuevos sprints. \\
   \bottomrule
 \end{tabularx}

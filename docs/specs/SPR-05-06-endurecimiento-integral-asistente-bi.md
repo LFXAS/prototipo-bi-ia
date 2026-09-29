@@ -171,6 +171,23 @@ analítica.
   las dependencias derivadas hasta un punto fijo. No depende del orden de salida del
   LLM ni exige que cada operando tenga un KPI agregado redundante.
 
+### HBI-013 — Consulta histórica legible y continuidad del asistente
+
+- Abrir una propuesta aprobada conserva exactamente su necesidad, preguntas y
+  periodicidad; la vista de sólo lectura nunca reemplaza esos datos por valores del
+  borrador vigente ni por valores predeterminados.
+- El modo consulta ofrece una acción visible **Crear nueva propuesta**. La acción
+  inicia un borrador limpio en el mismo dominio, conserva la versión histórica y no
+  exige cerrar la sesión ni cambiar de usuario.
+- En Personalización, cada medida y KPI separa visualmente el nombre de negocio del
+  identificador técnico. Ningún texto se forma por concatenación sin separadores.
+- Cada medida muestra su tabla/columna de origen y su regla ejecutable. Los conteos
+  distintos identifican explícitamente la clave contada, por ejemplo
+  `COUNT(DISTINCT SalesOrderID)`; los cálculos muestran la expresión por fila y su
+  agregación.
+- Selectores, botones y etiquetas admiten salto de línea y conservan el texto
+  completo en resoluciones de escritorio y móviles.
+
 ## 3. Experiencia guiada para el analista
 
 1. **Describir**: redacta o aprueba una necesidad reformulada.
@@ -215,6 +232,7 @@ decisión y cuál es el efecto de cada alternativa.
 | HBI-010 | Las propuestas v3 válidas siguen disponibles bajo motor v4 y los expedientes no desaparecen si el catálogo queda bloqueado | pruebas de evidencia, catálogo y flujo frontend | en implementación |
 | HBI-011 | Anthropic y Groq compilan dependencias equivalentes; dos ejecuciones se conservan y el dashboard no presenta falsos positivos | pruebas ETL, analítica y `AnalyticsPage.test.tsx` | implementado; validación física dual pendiente |
 | HBI-012 | Los KPI derivados de una ejecución conciliada se recalculan con filtros aunque una medida base no tenga tarjeta agregada propia | `test_analytics_service.py` y validación de la ejecución 11 | implementado |
+| HBI-013 | Una versión mensual abre como mensual, permite iniciar otra propuesta y muestra identificadores, etiquetas, fuentes y fórmulas sin concatenación ni recortes | `App.test.tsx` y compilación frontend | implementado |
 
 ## 6. Matriz de trazabilidad técnica
 
@@ -230,6 +248,7 @@ decisión y cuál es el efecto de cada alternativa.
 | HBI-009 | suites backend, frontend y E2E | Evidencia de entrega |
 | HBI-010 | versionado de contrato, catálogo ETL e historial | Datamart de ventas |
 | HBI-011 | compilador KPI, materializador versionado y catálogo analítico | Preparación ETL y Analítica de ventas |
+| HBI-013 | estado del asistente, historial y tarjetas de personalización | Asistente de datamart |
 
 ## 7. Fuera de alcance
 
@@ -295,3 +314,14 @@ decisión y cuál es el efecto de cada alternativa.
   un punto fijo. La ejecución 11 recuperó margen bruto USD 9899411,54, margen 8,97 %,
   costo promedio USD 365,48 y venta promedio USD 401,49 por unidad; el filtro 2013 +
   Europa recalculó también los cuatro valores sin repetir el ETL.
+- 29/09/2026: HBI-013 se especifica al reproducir cuatro fallos de consulta: una
+  versión mensual se mostraba como diaria, el modo histórico no tenía salida hacia
+  un borrador nuevo, los identificadores se unían a las etiquetas de negocio y el
+  origen de `numero_transacciones` no era visible. La corrección debe preservar el
+  historial, ser independiente del proveedor LLM y exponer la fórmula realmente
+  ejecutable.
+- 29/09/2026: HBI-013 se implementa restaurando el estado persistido completo de
+  cada versión, incorporando una salida explícita y no destructiva del modo consulta
+  y presentando las medidas con etiqueta, identificador, origen y regla ejecutable.
+  Vitest cubre la periodicidad mensual, el nuevo borrador y
+  `COUNT(DISTINCT SalesOrderID)`; ESLint, TypeScript y Vite completan sin errores.

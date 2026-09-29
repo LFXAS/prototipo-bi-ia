@@ -437,6 +437,9 @@ describe('App', () => {
       validation_document: { valid: true, errors: 0, warnings: 0, issues: [] }, warnings_confirmed: false,
       created_by_label: 'Administradora', created_at: '2026-09-19T10:00:00Z',
     }
+    ;(proposal.proposal_document.ai_decisions.measures as Array<Record<string, unknown>>).push({
+      name: 'numero_transacciones', source_column: 'SalesOrderID', aggregation: 'count_distinct', semantic_role: 'transaction_count',
+    })
     const previousProposal = {
       ...proposal,
       id: 11,
@@ -543,17 +546,28 @@ describe('App', () => {
     expect(screen.getByText('Relación apta para revalidar')).toBeInTheDocument()
     expect(screen.getByText('No detectado')).toBeInTheDocument()
     expect(screen.getByText('Columna calculada controlada')).toBeInTheDocument()
+    expect(screen.getByText('Sales.SalesOrderDetail.SalesOrderID')).toBeInTheDocument()
+    expect(screen.getByText('COUNT(DISTINCT SalesOrderID)')).toBeInTheDocument()
+    expect(screen.getByText('SUM(UnitPrice × UnitPriceDiscount × OrderQty)')).toBeInTheDocument()
     expect(screen.getByText(/no existe una medida seleccionada con la misma función semántica/i)).toBeInTheDocument()
     fireEvent.change(screen.getByLabelText('Justificación del ajuste'), { target: { value: 'Ajuste validado por el analista BI.' } })
     fireEvent.click(screen.getByRole('button', { name: 'Guardar como nueva versión' }))
     expect(await screen.findByText(/personalización creó la versión #13/i)).toBeInTheDocument()
     const revisionRequest = fetchMock.mock.calls.find(([input]) => String(input).endsWith('/copilot/proposals/12/revisions'))
-    expect(JSON.parse(String(revisionRequest?.[1]?.body))).toMatchObject({ comment: 'Ajuste validado por el analista BI.', dimension_names: ['dim_producto'], measure_names: ['importe_venta'], kpi_codes: ['ventas_totales'], kpi_measure_names: { ventas_totales: 'importe_venta' } })
+    expect(JSON.parse(String(revisionRequest?.[1]?.body))).toMatchObject({ comment: 'Ajuste validado por el analista BI.', dimension_names: ['dim_producto'], measure_names: ['importe_venta', 'numero_transacciones'], kpi_codes: ['ventas_totales'], kpi_measure_names: { ventas_totales: 'importe_venta' } })
     fireEvent.click(screen.getByRole('button', { name: 'Abrir resultado' }))
     expect(await screen.findByRole('heading', { name: 'Revisión supervisada' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Crear nueva propuesta' })).toBeInTheDocument()
     fireEvent.click(screen.getAllByRole('button', { name: /Necesidad/ })[0])
     expect(await screen.findByRole('heading', { name: 'Necesidad de negocio' })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /Objetivo del análisis/ })).toBeDisabled()
+    expect(screen.getByLabelText('Periodicidad')).toHaveValue('month')
+    fireEvent.click(screen.getByRole('button', { name: 'Crear nueva propuesta' }))
+    expect(screen.getByRole('textbox', { name: /Objetivo del análisis/ })).toBeEnabled()
+    expect(screen.getByRole('textbox', { name: /Objetivo del análisis/ })).toHaveValue('')
+    expect(screen.getByText(/Nuevo borrador preparado/)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir resultado' }))
+    expect(await screen.findByRole('heading', { name: 'Revisión supervisada' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: /Propuesta/ }))
     expect(await screen.findByText('Referencias y contrato validados')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: /Revisión/ }))
