@@ -937,6 +937,48 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \bottomrule
 \end{longtable}
 
+\subsection{29 de septiembre de 2026 - Derivación automática y metadatos coherentes}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Semántica de viabilidad & \statusok & Directo identifica una fuente comprobada; derivable identifica una relación o fórmula que la plataforma resuelve automáticamente. Sólo ambigüedad o ausencia exige decisión humana. \\
+  Coherencia del dominio & \statusok & El selector dejó de mezclar columnas homónimas de compras y ventas. La evidencia se elige dentro de un subgrafo conectado que explica la necesidad completa. \\
+  Contraste de metadatos & \statusok & La instantánea 2 coincidió con SQL Server en 23 columnas críticas y siete FK de ventas, cliente, persona o tienda, territorio, producto y categorías. \\
+  Neutralidad LLM & \statusok & Claude y Groq reciben el mismo contrato. Groq conserva esquema estricto y añade una única recuperación JSON localmente validada después de agotar rechazos no determinísticos. \\
+  Experiencia & \statusok & El paso Necesidad explica qué será automático, qué valida la plataforma y que una derivación ausente bloquea la aprobación; la matriz final distingue cobertura directa de resolución automática. \\
+  Regresión & \statusok & Pytest cubre evidencia coherente y recuperación o descarte del JSON; Vitest comprueba guía, etiquetas y bloqueo visible. \\
+  \bottomrule
+\end{longtable}
+
+\subsection{29 de septiembre de 2026 - Validación universal de extremo a extremo}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Contrato universal & \statusok & Las propuestas Claude 87--90 reprodujeron esquema inválido, longitud excedida, identidad vendedora y procedencia no física. La proyección segura y un reintento común mantienen una sola política para Groq, Claude, Gemini y Ollama. \\
+  Identidad de cliente & \statusok & La selección usa función de negocio, relaciones FK y atributos descriptivos; penaliza empleado, vendedor y proveedor. La propuesta 91 resolvió persona y organización sin nombres de tabla codificados. \\
+  Procedencia de medidas & \statusok & Una medida directa sólo usa una columna física del hecho. La medida opcional de clientes propuesta sobre una columna relacionada se excluyó junto con su KPI y la cobertura obligatoria permaneció completa. \\
+  Propuesta y ETL & \statusok & Propuesta 91: cero errores, cinco advertencias revisadas y 19 requisitos cubiertos. Ejecución 12: 121317 filas de origen y destino, diferencia cero, cinco tablas, USD verificado y 12 KPI calculables. \\
+  Calidad de clientes & \statusok & \file{dim\_cliente} contiene 19820 registros, todos con \file{nombre\_cliente}; 19119 corresponden a Persona y 701 a Organización. \\
+  Analítica contextual & \statusok & El Top 5 de productos por unidades en Europa devolvió cinco resultados, denominador de 53148 unidades, participación y procedencia usando Claude Haiku. \\
+  Reportería & \statusok & PDF ejecutivo de cinco páginas renderizado sin cortes. Excel analítico de seis hojas, cuatro gráficos, trazabilidad y margen 8,5\% sin doble escalamiento. \\
+  Interfaz & \statusok & Ejecución 12 visible, tarjetas completas, gráficos interactivos, detalle adaptativo y pregunta blanca sobre azul comprobados en navegador. \\
+  \bottomrule
+\end{longtable}
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}p{0.29\textwidth}@{\hspace{0.18in}}p{0.17\textwidth}@{\hspace{0.18in}}X@{}}
@@ -945,7 +987,7 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \midrule
   Compose autocontenido válido & \statusok & \file{docker compose config --quiet} \\
   Compose de imágenes válido & \statusok & \file{docker compose -f compose.release.yaml config --quiet} \\
-  Backend calidad y pruebas & \statusok & Ruff, formato, Mypy y 142 pruebas Pytest dentro de Docker \\
+  Backend calidad y pruebas & \statusok & Ruff, formato, Mypy y 150 pruebas Pytest dentro de Docker \\
   Frontend calidad y pruebas & \statusok & ESLint, 21 pruebas Vitest y build de Vite dentro de Docker \\
   PostgreSQL disponible & \statusok & Esquemas \file{app} y \file{mart}; endpoint \file{/health/ready} en \file{ok} \\
   AdventureWorks restaurada & \statusok & 71 tablas; \file{bi\_reader}: lectura 1 e inserción 0 \\
@@ -1049,6 +1091,8 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   0.5.7 & 27-09-2026 & Contrato estructurado adaptativo, reintentos según ventana del proveedor, recuperación UI y propuesta Groq 86 validada con identidad de cliente en dos relaciones. \\
   0.5.8 & 27-09-2026 & Recuperación canónica de KPI derivados en la ejecución 11, independiente del orden del proveedor y sin repetir el ETL. \\
   0.5.9 & 29-09-2026 & Continuidad del asistente desde versiones históricas, periodicidad fiel y personalización legible con fuentes y fórmulas ejecutables. \\
+  0.5.10 & 29-09-2026 & Derivación automática explicada, evidencia de ventas coherente, contraste real de metadatos y recuperación universal del contrato LLM. \\
+  0.5.11 & 29-09-2026 & Propuesta Claude 91 y ejecución 12: identidad universal, procedencia física, conciliación completa, analítica contextual y reportería PDF/Excel corregida. \\
   \bottomrule
 \end{longtable}
 

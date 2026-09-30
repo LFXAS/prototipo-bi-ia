@@ -91,7 +91,7 @@
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & MAN-TEC-01 \\
-    Versión del manual & 4.0.8 \\
+    Versión del manual & 4.0.10 \\
     Línea base & Ramas \file{develop} y \file{main} \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
     Clasificación & Documentación técnica - repositorio público \\
@@ -440,6 +440,10 @@ Al elegir el dominio, el backend devuelve preguntas orientadoras y periodicidade
 
 Cada intento se almacena en \path{app.bi_proposals} y queda ligado a la huella de la instantánea, proveedor, modelo, versión de prompt, entrada, mapa semántico, alcance, validación y decisión histórica del actor. Excluir conceptos, cambiar la necesidad o personalizar decisiones crea otra versión; \file{source\_proposal\_id} conserva su origen y nunca sobrescribe el registro anterior. La personalización no llama al LLM y no admite tablas, columnas, relaciones ni fórmulas libres: \file{POST /api/v1/copilot/proposals/\{id\}/revisions} aplica únicamente selecciones válidas y repite la validación determinística.
 
+Antes de invocar al proveedor, la pantalla separa los requisitos en cuatro estados. \textbf{Directo} identifica una referencia física comprobada; \textbf{Derivable automáticamente} identifica una fórmula tipada o una ruta compuesta exclusivamente por FK declaradas. Ninguno exige SQL ni selección manual de tablas. Al generar, FastAPI adjunta la evaluación a la propuesta, aplica las derivaciones inequívocas y construye la matriz necesidad--salida. Si una salida directa o derivable no queda materializada, la validación bloquea la aprobación. Sólo \textbf{Ambiguo} y \textbf{No disponible} requieren una decisión del analista.
+
+La búsqueda de evidencia conserva un subgrafo coherente con toda la necesidad. No combina, por coincidencia nominal, medidas de compras con dimensiones de ventas. En la instantánea 2 se contrastaron 23 columnas críticas y siete FK contra SQL Server: fecha, cliente, persona o tienda, territorio, producto, categoría, cantidad, precio, descuento, importe y costo coincidieron en nombre, tipo y nulabilidad. La viabilidad de ventas parte de \file{Sales.SalesOrderDetail}; el costo llega a \file{Production.Product.StandardCost} mediante la relación compuesta declarada, sin depender de nombres de tabla fijos.
+
 La sección \textbf{Versiones generadas} consulta el servidor por dominio y estado, muestra inicialmente \textbf{Lista para revisar} y pagina los resultados. Permite abrir cualquier artefacto persistido y escoger cuál revisar o aprobar sin volver a consumir el proveedor. Esto facilita preparar una ejecución local lenta antes de una demostración y conservar, al mismo tiempo, resultados cloud comparables. Los permisos \path{copilot.proposals.read}, \path{copilot.proposals.generate} y \path{copilot.proposals.review} separan consulta, generación y decisión.
 
 Cuando se abre una versión histórica, el asistente restaura el objetivo, las preguntas y la periodicidad persistida; no reutiliza el valor predeterminado del dominio. Las cinco etapas quedan disponibles como consulta inmutable y la acción \textbf{Crear nueva propuesta} inicia un borrador vacío en el mismo dominio sin cerrar sesión ni modificar el expediente consultado. Esta salida elimina la dependencia operativa de reiniciar la sesión para continuar el trabajo.
@@ -526,11 +530,15 @@ La ejecución 11 expuso un caso adicional cubierto por HBI-012. El ETL y su conc
 
 La validación de la ejecución 11 recuperó margen bruto, margen porcentual, costo promedio por unidad y venta promedio por unidad tanto para el universo completo como para 2013--Europa. Este comportamiento no depende del orden del JSON ni del proveedor que redactó la propuesta, y conserva el filtro, la fórmula y los operandos utilizados en la respuesta.
 
+La prueba integral del 29 de septiembre extendió esta neutralidad a la generación completa. Las propuestas 87--90 de Claude permitieron aislar, en orden, un incumplimiento de esquema, un texto mayor al límite declarado, una entidad vendedora confundida con cliente y una columna relacionada atribuida falsamente al hecho. La plataforma proyecta ahora cada respuesta al esquema común, elimina propiedades excedentes, respeta longitudes y cardinalidades, y realiza como máximo un reintento guiado. Después vuelve a validar el resultado localmente. La selección de identidad puntúa rutas FK, evidencia descriptiva y función compradora, penaliza empleado, vendedor y proveedor, y no depende de nombres específicos de AdventureWorks. Una medida directa sólo se conserva si su columna existe físicamente en el hecho; una medida opcional incompatible y sus KPI se excluyen con diagnóstico, mientras que la cobertura bloquea cualquier requisito obligatorio ausente.
+
+La propuesta 91, generada con Claude Haiku a partir de la misma necesidad, superó los cuatro controles de evidencia con cero errores y cobertura de 19 de 19 requisitos. La dimensión \file{dim\_cliente} se construyó desde la entidad compradora y resolvió dos variantes descriptivas: persona mediante nombre, segundo nombre y apellido, y organización mediante nombre de tienda. La ejecución 12 materializó cinco tablas en \file{mart\_ventas\_e12}, cargó 121317 líneas, obtuvo diferencia cero y publicó 12 KPI calculables. \file{dim\_cliente} contiene 19820 clientes, 19820 nombres no vacíos y dos tipos: 19119 personas y 701 organizaciones.
+
 \subsection{Exportación PDF y Excel}
 
 Los botones \textbf{Exportar PDF} y \textbf{Exportar Excel} vuelven a construir la selección autorizada en FastAPI. PDF usa A4 horizontal, páginas deliberadas para resumen, tendencia, rankings, hallazgos y calidad; no captura el HTML ni corta tablas entre páginas. Excel conserva valores numéricos, formato de moneda o conteo, un resumen, una hoja por gráfico visible y, en modo analista, una hoja de trazabilidad. La vista ejecutiva no recibe contenido reservado al analista.
 
-Cada descarga registra actor, formato, vista, ejecución, indicador y filtros. Los archivos no contienen macros, vínculos externos, credenciales, filas crudas, SQL ni fórmulas generadas por IA. La evidencia final de la ejecución 9 se revisó página por página y hoja por hoja antes del cierre.
+Cada descarga registra actor, formato, vista, ejecución, indicador y filtros. Los archivos no contienen macros, vínculos externos, credenciales, filas crudas, SQL ni fórmulas generadas por IA. La evidencia final de la ejecución 12 se revisó página por página y hoja por hoja. El PDF reserva espacio después de cada salto para impedir que un título quede fuera del margen superior; Excel conserva los porcentajes del dashboard en escala 0--100 y aplica el signo sin multiplicarlos nuevamente. El libro analítico contiene resumen, cuatro hojas con gráfico y datos visibles, y trazabilidad con origen, destino y diferencia.
 
 \subsection{Configuración LLM cloud y local}
 
@@ -539,6 +547,8 @@ La pantalla Configuración LLM mantiene nombre, proveedor, URL validada, modelo,
 El identificador del modelo se parametriza porque el catálogo del proveedor cambia. Gemini se probó con \file{gemini-3.6-flash}. Para baja latencia, Sprint 4 incorporó Groq Cloud con URL restringida \file{https://api.groq.com/openai/v1} y modelo \file{openai/gpt-oss-120b}. La pantalla incorpora \textbf{Nivel de razonamiento}: automático, mínimo, bajo, medio o alto. Para GPT--OSS en Groq, mínimo se traduce a \file{low}; bajo, medio y alto se conservan. La prueba reserva salida según el nivel y usa \file{include\_reasoning: false}; la generación aumenta el presupuesto según el contrato. Así se corrigió la clasificación del error 400 que aparecía cuando el razonamiento consumía la salida antes de completar el JSON. Cambiar URL, modelo o razonamiento invalida la prueba anterior.
 
 Anthropic Claude usa exclusivamente \url{https://api.anthropic.com} y la ruta \file{/v1/messages}. El preset inicial es \file{claude-haiku-4-5-20251001} con nivel mínimo, recomendado cuando se dispone de poco saldo por su menor costo y latencia. \file{claude-sonnet-4-5-20250929} puede escribirse como modelo alternativo si la cuenta todavía lo autoriza y el análisis justifica mayor consumo. FastAPI envía \file{x-api-key} y \file{anthropic-version: 2023-06-01}, incorpora el esquema esperado a la instrucción, omite pensamiento extendido y vuelve a validar localmente el JSON antes de usarlo. La clave prestada se registra en la instalación local; no debe copiarse a \file{.env}, Git, capturas o documentos.
+
+El validador local del contrato es común a todos los proveedores. Groq conserva JSON Schema estricto como primera opción y tres intentos acotados. Si las generaciones son rechazadas con \file{json\_validate\_failed}, el adaptador puede solicitar JSON simple con el mismo esquema incluido en la instrucción. Claude, Gemini y Ollama pasan por la misma proyección segura y disponen de un único reintento guiado cuando faltan propiedades obligatorias o los tipos son incompatibles. La respuesta se acepta únicamente si supera nuevamente el validador local; de lo contrario se descarta. Esta adaptación no completa datos de negocio, no cambia relaciones, fórmulas, necesidad, alcance ni proveedor.
 
 FastAPI cifra la clave mediante cifrado autenticado y almacena únicamente el texto cifrado en \path{app.secrets}. La raíz criptográfica se genera automáticamente con permisos restrictivos en \path{/var/lib/bi-ia-secrets/master.key} y se conserva en el volumen \path{secret_key_data}, separado de PostgreSQL. Si se borra ese volumen, las credenciales existentes dejan de poder descifrarse y deberán reemplazarse desde la pantalla. No se copia el volumen entre equipos y no se versiona. \path{GEMINI_API_KEY} y \path{DASHSCOPE_API_KEY} ya no se utilizan.
 
@@ -1207,6 +1217,8 @@ make verify
   4.0.6 & 27-09-2026 & Comparativa integral Groq--Claude, selección operativa de proveedor y restricción consistente de niveles Claude sin pensamiento extendido. \\
   4.0.7 & 28-09-2026 & HBI-012: resolución neutral de dependencias y KPI derivados de la ejecución 11, con recuperación analítica sin repetir el ETL. \\
   4.0.8 & 29-09-2026 & HBI-013: continuidad desde propuestas históricas, periodicidad fiel y personalización legible con origen y fórmula ejecutable por medida. \\
+  4.0.9 & 29-09-2026 & Derivaciones automáticas explicadas, evidencia coherente contra metadatos reales y recuperación JSON de Groq con contrato local común. \\
+  4.0.10 & 29-09-2026 & Recuperación universal del contrato, identidad de cliente por función y rutas FK, propuesta Claude 91, ejecución 12 conciliada y corrección visual de PDF/Excel. \\
   \bottomrule
 \end{longtable}
 
