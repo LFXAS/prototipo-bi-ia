@@ -188,6 +188,45 @@ analítica.
 - Selectores, botones y etiquetas admiten salto de línea y conservan el texto
   completo en resoluciones de escritorio y móviles.
 
+### HBI-014 — Derivación automática y recuperación neutral del contrato LLM
+
+- La viabilidad se calcula con la instantánea y reglas determinísticas, antes de
+  invocar al proveedor. Claude, Groq, Gemini, Qwen u Ollama reciben el mismo
+  significado de negocio; ninguno decide si una fuente existe.
+- **Directo** significa que la salida se obtiene de una referencia física ya
+  comprobada. **Derivable automáticamente** significa que la plataforma dispone de
+  una ruta de relaciones declaradas o de una fórmula tipada y no requiere que el
+  analista escriba SQL, seleccione tablas ni complete el cálculo a mano.
+- Al generar, la evaluación completa acompaña a la propuesta. El motor aplica las
+  derivaciones determinísticas inequívocas y construye la matriz
+  necesidad--salida. Si un requisito directo o derivable no termina materializado,
+  la propuesta queda bloqueada y no puede aprobarse como válida.
+- Sólo los estados ambiguo o no disponible requieren una decisión humana. La
+  interfaz explica antes de invocar a la IA qué resolverá automáticamente, qué se
+  volverá a comprobar y qué ocurriría si una derivación falla.
+- El contrato JSON se valida localmente para todos los proveedores. Un adaptador
+  puede cambiar exclusivamente el mecanismo de transporte: si Groq agota los
+  reintentos de esquema estricto por una generación no determinística, realiza un
+  único intento degradado a objeto JSON con el mismo esquema en la instrucción. La
+  respuesta sólo continúa si supera el mismo validador local; en otro caso se
+  descarta sin crear una propuesta utilizable.
+- Antes de repetir una generación, el validador común puede proyectar de forma
+  determinística la respuesta sobre el esquema: elimina únicamente propiedades
+  no admitidas y limita textos o listas al máximo declarado. Nunca crea campos
+  faltantes, convierte tipos, completa referencias ni corrige fórmulas. Si la proyección sigue
+  siendo inválida, se permite un solo reintento del mismo proveedor, modelo,
+  necesidad, metadatos y presupuesto con el error estructural como guía. La nueva
+  respuesta vuelve a pasar por el contrato completo.
+- La recuperación es acotada y auditable. No cambia la necesidad, no reduce el
+  alcance, no inventa referencias y no alterna de proveedor automáticamente.
+- Si el proveedor propone una dimensión de partes/personas incompatible con el rol
+  solicitado, el alcance no confía en el nombre elegido por el modelo. La plataforma
+  puntúa rutas reales desde el hecho mediante claves foráneas, columnas de enlace,
+  atributos descriptivos y roles excluyentes (por ejemplo empleado, vendedor o
+  proveedor). La tabla puede llamarse cliente, persona, entidad, organización o de
+  cualquier otra forma; sólo se acepta la ruta que conserva el significado y permite
+  resolver una etiqueta descriptiva verificable.
+
 ## 3. Experiencia guiada para el analista
 
 1. **Describir**: redacta o aprueba una necesidad reformulada.
@@ -233,6 +272,7 @@ decisión y cuál es el efecto de cada alternativa.
 | HBI-011 | Anthropic y Groq compilan dependencias equivalentes; dos ejecuciones se conservan y el dashboard no presenta falsos positivos | pruebas ETL, analítica y `AnalyticsPage.test.tsx` | implementado; validación física dual pendiente |
 | HBI-012 | Los KPI derivados de una ejecución conciliada se recalculan con filtros aunque una medida base no tenga tarjeta agregada propia | `test_analytics_service.py` y validación de la ejecución 11 | implementado |
 | HBI-013 | Una versión mensual abre como mensual, permite iniciar otra propuesta y muestra identificadores, etiquetas, fuentes y fórmulas sin concatenación ni recortes | `App.test.tsx` y compilación frontend | implementado |
+| HBI-014 | Directos y derivables explican su tratamiento; un derivable omitido bloquea; Groq puede recuperar una salida válida sin alterar el contrato | `App.test.tsx`, `test_parameters_providers.py` y validación de propuesta | implementado |
 
 ## 6. Matriz de trazabilidad técnica
 
@@ -249,6 +289,7 @@ decisión y cuál es el efecto de cada alternativa.
 | HBI-010 | versionado de contrato, catálogo ETL e historial | Datamart de ventas |
 | HBI-011 | compilador KPI, materializador versionado y catálogo analítico | Preparación ETL y Analítica de ventas |
 | HBI-013 | estado del asistente, historial y tarjetas de personalización | Asistente de datamart |
+| HBI-014 | evaluación de necesidad, adaptadores LLM y validador local del contrato | Necesidad, Propuesta y recuperación del proveedor |
 
 ## 7. Fuera de alcance
 
@@ -325,3 +366,23 @@ decisión y cuál es el efecto de cada alternativa.
   y presentando las medidas con etiqueta, identificador, origen y regla ejecutable.
   Vitest cubre la periodicidad mensual, el nuevo borrador y
   `COUNT(DISTINCT SalesOrderID)`; ESLint, TypeScript y Vite completan sin errores.
+- 29/09/2026: HBI-014 se especifica e implementa después de observar con Claude que
+  la palabra «derivable» no explicaba la acción esperada y de comprobar que la
+  evidencia mezclaba columnas homónimas de compras y ventas. La viabilidad ahora
+  selecciona un subgrafo coherente, explica la resolución automática y bloquea toda
+  omisión. El contrato local común permite una recuperación JSON acotada de Groq sin
+  cambiar reglas, alcance ni proveedor.
+- 29/09/2026: la propuesta 87 de Claude confirmó un segundo caso: JSON sintácticamente
+  válido que no satisfacía el esquema canónico. HBI-014 incorpora proyección segura y
+  un único reintento común a todos los proveedores; si aún falta información
+  obligatoria, el resultado se descarta como antes.
+- 29/09/2026: la propuesta 89 superó la recuperación JSON, pero propuso una entidad de
+  vendedores como dimensión cliente. La resolución del alcance se amplía para escoger
+  de forma determinística la ruta de parte compradora y sus entidades descriptivas,
+  sin depender del proveedor, del nombre físico de la tabla ni de AdventureWorks.
+- 29/09/2026: la propuesta 90 resolvió correctamente la identidad del cliente, pero
+  atribuyó una clave de una tabla relacionada a la tabla de hechos. HBI-014 exige que
+  toda medida directa use una columna física comprobada de su hecho; una medida
+  opcional inválida se excluye con diagnóstico y sus KPI dependientes no se publican.
+  Si la medida cubre un requisito obligatorio, la cobertura posterior debe bloquear
+  la propuesta en vez de inventar procedencia.

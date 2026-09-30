@@ -119,3 +119,34 @@ propuesta ni se ejecutó ETL.
 Este resultado refuerza la decisión: la estandarización no consiste en escribir prompts
 distintos por modelo, sino en adaptar el protocolo automáticamente, comprobar toda salida
 contra la instantánea y resolver de forma determinística aquello que la evidencia permite.
+
+## 9. Seguimiento universal del 29 de septiembre
+
+La recomendación anterior se conserva como resultado histórico de aquella corrida, pero
+ya no debe interpretarse como una dependencia funcional de Groq. Las propuestas Claude
+`#87` a `#90` permitieron aislar cuatro fallos distintos: salida fuera del esquema, texto
+mayor al límite, identidad vendedora confundida con cliente y una columna relacionada
+declarada como si perteneciera al hecho. La plataforma se corrigió en una sola capa común:
+proyección segura al contrato, validación local, un reintento guiado y reglas determinísticas
+de procedencia e identidad. No se añadieron excepciones de negocio para Claude ni nombres
+de tablas propios de AdventureWorks.
+
+Con la misma necesidad, Claude Haiku produjo después la propuesta `#91`: 19 de 19
+requisitos cubiertos, cero errores y cinco advertencias explicadas. Tras revisión humana,
+la ejecución `#12` materializó cinco tablas y concilió 121.317 filas sin diferencia. Los
+19.820 clientes obtuvieron nombre descriptivo y tipo (19.119 personas y 701 organizaciones),
+y los doce KPI financieros quedaron calculables. La consulta contextual Top 5 de productos
+por unidades en Europa devolvió un denominador de 53.148 unidades y procedencia explícita.
+
+La conclusión actual es separar dos decisiones:
+
+1. El proveedor operativo puede elegirse por disponibilidad, costo y latencia; Groq bajo y
+   Claude Haiku bajo/mínimo son opciones válidas cuando la cuenta tiene cuota.
+2. La corrección no depende del proveedor: ninguna respuesta llega a propuesta, ETL o
+   analítica si no supera el contrato común, los metadatos verificados y las reglas de
+   cobertura, procedencia y granularidad.
+
+Medio y alto continúan sin recomendarse como valores predeterminados para esta necesidad
+extensa: en Groq aumentan la presión sobre el presupuesto y la cuota, y en el adaptador
+Claude probado no corresponden a pensamiento extendido efectivo. Esta limitación de nivel
+no afecta la universalidad funcional del flujo.

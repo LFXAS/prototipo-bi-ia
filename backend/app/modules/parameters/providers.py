@@ -114,6 +114,130 @@ def _anthropic_text(payload: object) -> str | None:
     return "".join(text_blocks) or None
 
 
+def _json_contract_error(value: object, schema: dict[str, Any], path: str = "$") -> str | None:
+    """Validate the JSON Schema subset used by every provider adapter.
+
+    Provider-side structured output is useful transport assistance, but the
+    application remains the authority.  Keeping this validator provider-neutral
+    lets an adapter fall back to plain JSON without weakening the BI contract.
+    """
+    expected = schema.get("type")
+    valid_type = {
+        "object": isinstance(value, dict),
+        "array": isinstance(value, list),
+        "string": isinstance(value, str),
+        "integer": isinstance(value, int) and not isinstance(value, bool),
+        "number": isinstance(value, int | float) and not isinstance(value, bool),
+        "boolean": isinstance(value, bool),
+        "null": value is None,
+    }.get(str(expected), True)
+    if expected is not None and not valid_type:
+        return f"{path}: tipo incompatible; se esperaba {expected}."
+    if "enum" in schema and value not in schema["enum"]:
+        return f"{path}: valor fuera del catálogo permitido."
+    if isinstance(value, str):
+        if len(value) < int(schema.get("minLength", 0)):
+            return f"{path}: texto más corto que el mínimo permitido."
+        if "maxLength" in schema and len(value) > int(schema["maxLength"]):
+            return f"{path}: texto más largo que el máximo permitido."
+    if isinstance(value, int | float) and not isinstance(value, bool):
+        if "minimum" in schema and value < schema["minimum"]:
+            return f"{path}: número menor que el mínimo permitido."
+        if "maximum" in schema and value > schema["maximum"]:
+            return f"{path}: número mayor que el máximo permitido."
+    if isinstance(value, list):
+        if len(value) < int(schema.get("minItems", 0)):
+            return f"{path}: lista más corta que el mínimo permitido."
+        if "maxItems" in schema and len(value) > int(schema["maxItems"]):
+            return f"{path}: lista más larga que el máximo permitido."
+        item_schema = schema.get("items")
+        if isinstance(item_schema, dict):
+            for index, item in enumerate(value):
+                error = _json_contract_error(item, item_schema, f"{path}[{index}]")
+                if error:
+                    return error
+    if isinstance(value, dict):
+        properties = schema.get("properties", {})
+        if not isinstance(properties, dict):
+            properties = {}
+        for required in schema.get("required", []):
+            if required not in value:
+                return f"{path}: falta una propiedad obligatoria."
+        if schema.get("additionalProperties") is False:
+            extras = set(value) - set(properties)
+            if extras:
+                return f"{path}: contiene propiedades no permitidas."
+        for key, child in value.items():
+            child_schema = properties.get(key)
+            if isinstance(child_schema, dict):
+                error = _json_contract_error(child, child_schema, f"{path}.{key}")
+                if error:
+                    return error
+    return None
+
+
+def _project_json_to_schema(value: object, schema: dict[str, Any]) -> object:
+    """Discard only surplus structure that the canonical contract forbids.
+
+    Projection is intentionally conservative: it never invents a required value,
+    coerces a scalar, repairs an enum, or pads an undersized array.  It only removes
+    undeclared object properties and applies explicit maximum lengths/cardinalities.
+    """
+    if isinstance(value, dict) and schema.get("type") == "object":
+        properties = schema.get("properties", {})
+        if not isinstance(properties, dict):
+            properties = {}
+        allowed_keys = (
+            set(properties) if schema.get("additionalProperties") is False else set(value)
+        )
+        return {
+            key: _project_json_to_schema(child, child_schema)
+            if isinstance((child_schema := properties.get(key)), dict)
+            else child
+            for key, child in value.items()
+            if key in allowed_keys
+        }
+    if isinstance(value, list) and schema.get("type") == "array":
+        bounded = value[: int(schema["maxItems"])] if "maxItems" in schema else value
+        item_schema = schema.get("items")
+        if isinstance(item_schema, dict):
+            return [_project_json_to_schema(item, item_schema) for item in bounded]
+        return bounded
+    if isinstance(value, str) and schema.get("type") == "string" and "maxLength" in schema:
+        return value[: int(schema["maxLength"])]
+    return value
+
+
+def _contract_document(
+    content: object,
+    schema: dict[str, Any] | None,
+) -> tuple[dict[str, Any], str | None, bool]:
+    document = _json_object(content)
+    if schema is None:
+        return document, None, False
+    error = _json_contract_error(document, schema)
+    if error is None:
+        return document, None, False
+    projected = _project_json_to_schema(document, schema)
+    if not isinstance(projected, dict):
+        return document, error, False
+    projected_error = _json_contract_error(projected, schema)
+    if projected_error is None:
+        return projected, None, True
+    return projected, projected_error, projected != document
+
+
+def _validated_json_object(content: object, schema: dict[str, Any] | None) -> dict[str, Any]:
+    document, error, _ = _contract_document(content, schema)
+    if error:
+        raise ProviderGenerationError(
+            "El proveedor devolvió JSON, pero no cumplió el contrato estructurado "
+            "validado por la plataforma. La respuesta fue descartada sin usarse.",
+            category="structured_contract",
+        )
+    return document
+
+
 def _provider_error_details(response: Any) -> ProviderErrorDetails:
     headers = getattr(response, "headers", {})
     request_id = str(headers.get("x-request-id", "") or headers.get("request-id", ""))[:160]
@@ -317,9 +441,9 @@ def _generation_error(
                 )
             ):
                 return error(
-                    "Groq generó una respuesta que no cumplió el contrato estructurado. "
-                    "La plataforma la descartó automáticamente sin usarla; puede reintentar "
-                    "la misma necesidad o cambiar de proveedor.",
+                    "Groq no cumplió el contrato estructurado después de los reintentos y "
+                    "la recuperación JSON seguros. La plataforma descartó la respuesta sin "
+                    "usarla; la necesidad y su viabilidad continúan válidas para reintentar.",
                     "structured_contract",
                 )
             return error(
@@ -392,6 +516,7 @@ async def generate_json(
     timeout_seconds: int = 30,
     max_output_tokens: int = 2048,
     response_schema: dict[str, Any] | None = None,
+    _allow_contract_retry: bool = True,
 ) -> dict[str, Any]:
     """Request a bounded JSON document from an approved provider endpoint."""
     if configuration.provider_kind != "ollama-local" and not credential:
@@ -468,27 +593,59 @@ async def generate_json(
                             "schema": response_schema,
                         },
                     }
+                request_json = {
+                    "model": configuration.model_id,
+                    "messages": [
+                        {"role": "system", "content": system_instruction},
+                        {"role": "user", "content": user_content},
+                    ],
+                    "temperature": 0,
+                    "max_completion_tokens": max_output_tokens,
+                    "response_format": response_format,
+                    **_groq_reasoning_options(
+                        configuration.model_id,
+                        configuration.reasoning_level,
+                    ),
+                }
                 response = await _post_with_retry(
                     client,
                     f"{base_url}/chat/completions",
                     provider_kind=configuration.provider_kind,
                     model_id=configuration.model_id,
                     headers={"Authorization": f"Bearer {credential}"},
-                    json={
-                        "model": configuration.model_id,
+                    json=request_json,
+                )
+                details = _provider_error_details(response)
+                if (
+                    response_schema is not None
+                    and response.status_code == 400
+                    and details.code == "json_validate_failed"
+                ):
+                    # Groq can reject an otherwise valid request when one sampled
+                    # generation misses strict schema enforcement.  After the bounded
+                    # strict retries, request JSON once and enforce the identical
+                    # contract locally.  No business rule or scope is relaxed.
+                    fallback_instruction = _anthropic_system_instruction(
+                        system_instruction,
+                        response_schema,
+                    )
+                    fallback_json = {
+                        **request_json,
                         "messages": [
-                            {"role": "system", "content": system_instruction},
+                            {"role": "system", "content": fallback_instruction},
                             {"role": "user", "content": user_content},
                         ],
-                        "temperature": 0,
-                        "max_completion_tokens": max_output_tokens,
-                        "response_format": response_format,
-                        **_groq_reasoning_options(
-                            configuration.model_id,
-                            configuration.reasoning_level,
-                        ),
-                    },
-                )
+                        "response_format": {"type": "json_object"},
+                    }
+                    response = await _post_with_retry(
+                        client,
+                        f"{base_url}/chat/completions",
+                        provider_kind=configuration.provider_kind,
+                        model_id=configuration.model_id,
+                        max_attempts=1,
+                        headers={"Authorization": f"Bearer {credential}"},
+                        json=fallback_json,
+                    )
                 if not 200 <= response.status_code < 300:
                     raise _response_error(configuration.provider_kind, response)
                 choices = response.json().get("choices", [])
@@ -554,7 +711,45 @@ async def generate_json(
             "No fue posible conectar con el proveedor activo.",
             category="connection",
         ) from exc
-    return _json_object(content)
+    document, contract_error, projected = _contract_document(content, response_schema)
+    if contract_error is None:
+        if projected:
+            logger.warning(
+                "llm_contract_projected provider=%s model=%s",
+                configuration.provider_kind,
+                configuration.model_id,
+            )
+        return document
+    if _allow_contract_retry and response_schema is not None:
+        logger.warning(
+            "llm_contract_retry provider=%s model=%s error=%s",
+            configuration.provider_kind,
+            configuration.model_id,
+            contract_error,
+        )
+        retry_instruction = (
+            f"{system_instruction.strip()}\n\n"
+            "REINTENTO ÚNICO DE CONTRATO: la respuesta anterior fue descartada. "
+            f"La validación local indicó: {contract_error} "
+            "Conserva exactamente la misma necesidad y referencias; corrige sólo la "
+            "estructura JSON y comprueba todas las propiedades obligatorias."
+        )
+        return await generate_json(
+            configuration,
+            retry_instruction,
+            payload,
+            credential=credential,
+            timeout_seconds=timeout_seconds,
+            max_output_tokens=max_output_tokens,
+            response_schema=response_schema,
+            _allow_contract_retry=False,
+        )
+    raise ProviderGenerationError(
+        "El proveedor devolvió JSON, pero no cumplió el contrato estructurado "
+        "validado por la plataforma después de la recuperación automática. "
+        "La respuesta fue descartada sin usarse.",
+        category="structured_contract",
+    )
 
 
 async def test_provider(

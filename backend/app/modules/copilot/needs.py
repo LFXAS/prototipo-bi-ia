@@ -69,6 +69,66 @@ def _path(graph: dict[str, set[str]], starts: set[str], destinations: set[str]) 
     return []
 
 
+def _sales_context_score(reference: str) -> int:
+    """Prefer a sales subgraph without depending on one product's table names."""
+    normalized = _compact(reference)
+    positive = ("sales", "venta", "revenue", "invoice", "customer", "cliente")
+    negative = ("purchase", "purchasing", "procurement", "vendor", "proveedor", "compra")
+    return sum(token in normalized for token in positive) - sum(
+        token in normalized for token in negative
+    )
+
+
+def _coherent_anchor(
+    index: list[tuple[str, str, str]],
+    graph: dict[str, set[str]],
+    components: list[str],
+) -> set[str]:
+    """Choose one evidence subgraph that can explain the complete business need."""
+    anchor_capability = next(
+        (
+            capability
+            for capability in ("sales_amount", "quantity", "transactions")
+            if capability in components and _find_columns(index, capability)
+        ),
+        None,
+    )
+    if anchor_capability is None:
+        return set()
+    anchors = sorted({table for table, _ in _find_columns(index, anchor_capability)})
+    ranked: list[tuple[int, int, int, str]] = []
+    for anchor in anchors:
+        missing = 0
+        distance = 0
+        for component in dict.fromkeys(components):
+            destinations = {table for table, _ in _find_columns(index, component)}
+            route = _path(graph, {anchor}, destinations) if destinations else []
+            if not route:
+                missing += 1
+            else:
+                distance += len(route) - 1
+        ranked.append((missing, distance, -_sales_context_score(anchor), anchor))
+    return {min(ranked)[3]} if ranked else set()
+
+
+def _nearest_match(
+    matches: list[tuple[str, str]],
+    anchors: set[str],
+    graph: dict[str, set[str]],
+) -> tuple[tuple[str, str] | None, list[str]]:
+    if not matches:
+        return None, []
+    ranked: list[tuple[int, int, str, str, list[str]]] = []
+    for table, column in matches:
+        route = _path(graph, anchors, {table}) if anchors else [table]
+        if route:
+            ranked.append((len(route) - 1, -_sales_context_score(table), table, column, route))
+    if not ranked:
+        return None, []
+    _, _, table, column, route = min(ranked)
+    return (table, column), route
+
+
 CAPABILITIES: dict[str, dict[str, object]] = {
     "sales_amount": {
         "label": "Ventas o ingresos",
@@ -175,6 +235,7 @@ def _combined_requirement(
     index: list[tuple[str, str, str]],
     graph: dict[str, set[str]],
     formula: str | None = None,
+    preferred_anchors: set[str] | None = None,
 ) -> dict[str, object]:
     component_results = [_component(component, index) for component in components]
     missing = [
@@ -183,13 +244,12 @@ def _combined_requirement(
     ambiguous = [
         components[i] for i, item in enumerate(component_results) if item[0] == "ambiguous"
     ]
-    evidence = list(dict.fromkeys(item for result in component_results for item in result[1]))
-    source_sets = [
-        {table for table, _ in _find_columns(index, component)} for component in components
+    anchors = preferred_anchors or _coherent_anchor(index, graph, components)
+    selected = [
+        _nearest_match(_find_columns(index, component), anchors, graph) for component in components
     ]
-    routes: list[list[str]] = []
-    if len(source_sets) > 1 and all(source_sets):
-        routes = [_path(graph, source_sets[0], destinations) for destinations in source_sets[1:]]
+    evidence = [f"{match[0]}.{match[1]}" for match, _ in selected if match is not None]
+    routes = [route for _, route in selected if route]
     if missing:
         status = "unavailable"
         resolution = (
@@ -208,7 +268,7 @@ def _combined_requirement(
     elif len(components) == 1:
         status = "direct"
         resolution = "Puede resolverse directamente con la referencia técnica indicada."
-    elif len(components) > 1 and routes and all(routes):
+    elif len(components) > 1 and len(routes) == len(components):
         status = "derivable"
         resolution = (
             f"Puede calcularse de forma controlada como {formula}."
@@ -255,6 +315,15 @@ def assess_business_need(
         "customer_performance": ["sales_amount", "customer"],
         "territory_performance": ["sales_amount", "territory"],
     }
+    requested_components = [
+        capability
+        for capability, definition in CAPABILITIES.items()
+        if _matches(goal, definition["triggers"])  # type: ignore[arg-type]
+    ]
+    for question in business_request.get("questions", []):
+        if isinstance(question, dict):
+            requested_components.extend(question_components.get(str(question.get("code")), []))
+    preferred_anchors = _coherent_anchor(index, graph, requested_components)
     for question in business_request.get("questions", []):
         if not isinstance(question, dict):
             continue
@@ -295,6 +364,7 @@ def assess_business_need(
                 components,
                 index,
                 graph,
+                preferred_anchors=preferred_anchors,
             )
         )
 
@@ -361,6 +431,7 @@ def assess_business_need(
                 [capability],
                 index,
                 graph,
+                preferred_anchors=preferred_anchors,
             )
         )
     for code, label, components, formula in derived:
@@ -373,6 +444,7 @@ def assess_business_need(
                 index,
                 graph,
                 formula,
+                preferred_anchors,
             )
         )
 

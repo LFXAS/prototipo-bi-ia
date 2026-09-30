@@ -123,3 +123,89 @@ def test_assessment_hash_changes_when_the_need_changes() -> None:
     second = assess_business_need(DOCUMENT, request("Analizar ventas y costos por producto."))
 
     assert first["assessment_hash"] != second["assessment_hash"]
+
+
+def test_assessment_keeps_sales_evidence_in_one_coherent_subgraph() -> None:
+    document = {
+        "schemas": [
+            {
+                "name": "Purchasing",
+                "tables": [
+                    {
+                        "name": "PurchaseOrderDetail",
+                        "columns": [
+                            {"name": "PurchaseOrderID"},
+                            {"name": "OrderQty"},
+                            {"name": "LineTotal"},
+                        ],
+                        "foreign_keys": [
+                            {
+                                "columns": ["PurchaseOrderID"],
+                                "referenced_schema": "Purchasing",
+                                "referenced_table": "PurchaseOrderHeader",
+                                "referenced_columns": ["PurchaseOrderID"],
+                            }
+                        ],
+                    },
+                    {
+                        "name": "PurchaseOrderHeader",
+                        "columns": [{"name": "PurchaseOrderID"}, {"name": "OrderDate"}],
+                        "foreign_keys": [],
+                    },
+                ],
+            },
+            {
+                "name": "CommercialSales",
+                "tables": [
+                    {
+                        "name": "InvoiceLine",
+                        "columns": [
+                            {"name": "SalesOrderID"},
+                            {"name": "OrderQty"},
+                            {"name": "LineTotal"},
+                        ],
+                        "foreign_keys": [
+                            {
+                                "columns": ["SalesOrderID"],
+                                "referenced_schema": "CommercialSales",
+                                "referenced_table": "InvoiceHeader",
+                                "referenced_columns": ["SalesOrderID"],
+                            }
+                        ],
+                    },
+                    {
+                        "name": "InvoiceHeader",
+                        "columns": [
+                            {"name": "SalesOrderID"},
+                            {"name": "OrderDate"},
+                            {"name": "CustomerID"},
+                        ],
+                        "foreign_keys": [],
+                    },
+                ],
+            },
+        ]
+    }
+    business_request = {
+        "snapshot_hash": "b" * 64,
+        "goal": "Analizar ventas mensuales por cliente.",
+        "questions": [
+            {
+                "code": "sales_over_time",
+                "label": "Evolución de ventas en el tiempo",
+                "description": "Comparar ventas por período.",
+                "instruction": "Conservar el detalle.",
+            }
+        ],
+        "periodicity": {"code": "month", "label": "Mensual"},
+    }
+
+    result = assess_business_need(document, business_request)
+
+    requirement = next(
+        item for item in result["requirements"] if item["code"] == "question:sales_over_time"
+    )
+    assert requirement["status"] == "derivable"
+    assert "CommercialSales.InvoiceLine.LineTotal" in requirement["evidence"]
+    assert "CommercialSales.InvoiceHeader.OrderDate" in requirement["evidence"]
+    assert not any("Purchasing" in evidence for evidence in requirement["evidence"])

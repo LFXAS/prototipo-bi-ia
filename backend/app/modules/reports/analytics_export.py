@@ -288,6 +288,7 @@ def build_analytics_pdf(dashboard: AnalyticsDashboardRead, view: ReportView) -> 
         story.extend(
             [
                 PageBreak(),
+                Spacer(1, 2 * mm),
                 Paragraph("Tendencia del indicador", title),
                 Paragraph(escape(trend.title), section),
                 Paragraph(escape(trend.subtitle), small),
@@ -306,6 +307,7 @@ def build_analytics_pdf(dashboard: AnalyticsDashboardRead, view: ReportView) -> 
         story.extend(
             [
                 PageBreak(),
+                Spacer(1, 2 * mm),
                 Paragraph("Composición de los resultados", title),
                 Paragraph(escape(visual.title), section),
                 Paragraph(escape(visual.subtitle), small),
@@ -315,6 +317,7 @@ def build_analytics_pdf(dashboard: AnalyticsDashboardRead, view: ReportView) -> 
         )
     if dashboard.insights:
         story.append(PageBreak())
+        story.append(Spacer(1, 2 * mm))
         story.append(Paragraph("Hallazgos explicables", title))
         insight_data = [["Hallazgo", "Lectura", "Evidencia"]]
         for item in dashboard.insights:
@@ -373,7 +376,8 @@ def _excel_number_format(unit: str) -> str:
     if any(item in unit.casefold() for item in ("unidad", "pedido", "cliente", "fila")):
         return "#,##0"
     if "porcentaje" in unit.casefold() or unit == "%":
-        return "0.0%"
+        # Dashboard percentage KPIs are already expressed on the 0-100 scale.
+        return '0.0"%"'
     return "#,##0.00"
 
 

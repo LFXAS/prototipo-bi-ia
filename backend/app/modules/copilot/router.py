@@ -740,7 +740,7 @@ async def create_proposal(
             and candidate.get("selection_source") == "automatic"
         ]
         record.semantic_map_document = semantic_map
-        scope = derived_scope(snapshot.schema_document, semantic_map)
+        scope = derived_scope(snapshot.schema_document, semantic_map, request_document)
         record.scope_document = scope
         if not selected_semantic_candidates(semantic_map) or not scope["tables"]:
             issues = [

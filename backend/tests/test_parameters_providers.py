@@ -4,6 +4,7 @@ import asyncio
 from types import SimpleNamespace
 
 import httpx
+import pytest
 from pytest import MonkeyPatch
 
 from app.modules.parameters import providers
@@ -256,6 +257,104 @@ def test_anthropic_generation_includes_schema_contract_and_parses_text_blocks(
     assert body["messages"] == [{"role": "user", "content": '{"request":"test"}'}]
 
 
+def test_contract_projection_removes_only_surplus_fields_and_items() -> None:
+    result = providers._validated_json_object(
+        '{"answer":"respuesta extensa","items":[1,2,3],"surplus":true}',
+        {
+            "type": "object",
+            "required": ["answer", "items"],
+            "additionalProperties": False,
+            "properties": {
+                "answer": {"type": "string", "maxLength": 9},
+                "items": {
+                    "type": "array",
+                    "maxItems": 2,
+                    "items": {"type": "integer"},
+                },
+            },
+        },
+    )
+
+    assert result == {"answer": "respuesta", "items": [1, 2]}
+
+
+def test_anthropic_retries_once_when_required_contract_field_is_missing(
+    monkeypatch: MonkeyPatch,
+) -> None:
+    calls: list[dict[str, object]] = []
+
+    class SequenceClient(FakeAsyncClient):
+        async def post(self, _: str, **kwargs: object) -> FakeResponse:
+            body = kwargs["json"]
+            assert isinstance(body, dict)
+            calls.append(body)
+            content = '{"unexpected":true}' if len(calls) == 1 else '{"answer":"ok"}'
+            return FakeResponse({"content": [{"type": "text", "text": content}]})
+
+    monkeypatch.setattr(
+        providers.httpx,
+        "AsyncClient",
+        lambda **kwargs: SequenceClient({}, **kwargs),
+    )
+
+    result = asyncio.run(
+        providers.generate_json(
+            anthropic_configuration(),
+            "Devuelve el contrato solicitado.",
+            {"request": "test"},
+            credential="anthropic-secret",
+            response_schema={
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["answer"],
+                "properties": {"answer": {"type": "string"}},
+            },
+        )
+    )
+
+    assert result == {"answer": "ok"}
+    assert len(calls) == 2
+    assert "REINTENTO ÚNICO DE CONTRATO" in str(calls[1]["system"])
+
+
+def test_anthropic_discards_second_invalid_contract_response(
+    monkeypatch: MonkeyPatch,
+) -> None:
+    calls = 0
+
+    class InvalidClient(FakeAsyncClient):
+        async def post(self, _: str, **__: object) -> FakeResponse:
+            nonlocal calls
+            calls += 1
+            return FakeResponse({"content": [{"type": "text", "text": '{"unexpected":true}'}]})
+
+    monkeypatch.setattr(
+        providers.httpx,
+        "AsyncClient",
+        lambda **kwargs: InvalidClient({}, **kwargs),
+    )
+
+    with pytest.raises(providers.ProviderGenerationError) as caught:
+        asyncio.run(
+            providers.generate_json(
+                anthropic_configuration(),
+                "Devuelve el contrato solicitado.",
+                {"request": "test"},
+                credential="anthropic-secret",
+                response_schema={
+                    "type": "object",
+                    "additionalProperties": False,
+                    "required": ["answer"],
+                    "properties": {"answer": {"type": "string"}},
+                },
+            )
+        )
+
+    assert calls == 2
+    assert caught.value.category == "structured_contract"
+    assert "recuperación automática" in str(caught.value)
+
+
 def test_anthropic_invalid_key_has_safe_message_and_request_id() -> None:
     error = providers._response_error(
         "anthropic-cloud",
@@ -423,7 +522,7 @@ def test_groq_schema_mismatch_is_classified_as_contract_failure() -> None:
 
     assert error.category == "structured_contract"
     assert error.request_id == "req-contract"
-    assert "descartó automáticamente" in str(error)
+    assert "descartó la respuesta" in str(error)
     assert "presupuesto" not in str(error)
 
 
@@ -472,6 +571,103 @@ def test_groq_retries_one_rejected_structured_generation_automatically(
 
     assert result == {"answer": "ok"}
     assert calls == 2
+
+
+def test_groq_falls_back_once_to_locally_validated_json_after_strict_rejections(
+    monkeypatch: MonkeyPatch,
+) -> None:
+    calls: list[dict[str, object]] = []
+    monkeypatch.setattr(providers.asyncio, "sleep", no_sleep)
+
+    class SequenceClient(FakeAsyncClient):
+        async def post(self, _: str, **kwargs: object) -> FakeResponse:
+            payload = kwargs["json"]
+            assert isinstance(payload, dict)
+            calls.append(payload)
+            if len(calls) <= 3:
+                return FakeResponse(
+                    {
+                        "error": {
+                            "message": "Generated JSON does not match the expected schema.",
+                            "code": "json_validate_failed",
+                        }
+                    },
+                    status_code=400,
+                )
+            return FakeResponse({"choices": [{"message": {"content": '{"answer":"ok"}'}}]})
+
+    monkeypatch.setattr(
+        providers.httpx,
+        "AsyncClient",
+        lambda **kwargs: SequenceClient({}, **kwargs),
+    )
+
+    result = asyncio.run(
+        providers.generate_json(
+            groq_configuration(),
+            "Devuelve el contrato solicitado.",
+            {"request": "test"},
+            credential="groq-secret",
+            response_schema={
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["answer"],
+                "properties": {"answer": {"type": "string"}},
+            },
+        )
+    )
+
+    assert result == {"answer": "ok"}
+    assert len(calls) == 4
+    assert calls[-1]["response_format"] == {"type": "json_object"}
+
+
+def test_local_contract_rejects_invalid_json_from_provider_fallback(
+    monkeypatch: MonkeyPatch,
+) -> None:
+    calls = 0
+    monkeypatch.setattr(providers.asyncio, "sleep", no_sleep)
+
+    class SequenceClient(FakeAsyncClient):
+        async def post(self, _: str, **__: object) -> FakeResponse:
+            nonlocal calls
+            calls += 1
+            if calls <= 3:
+                return FakeResponse(
+                    {
+                        "error": {
+                            "message": "Generated JSON does not match the expected schema.",
+                            "code": "json_validate_failed",
+                        }
+                    },
+                    status_code=400,
+                )
+            return FakeResponse({"choices": [{"message": {"content": '{"unexpected":true}'}}]})
+
+    monkeypatch.setattr(
+        providers.httpx,
+        "AsyncClient",
+        lambda **kwargs: SequenceClient({}, **kwargs),
+    )
+
+    with pytest.raises(providers.ProviderGenerationError) as caught:
+        asyncio.run(
+            providers.generate_json(
+                groq_configuration(),
+                "Devuelve el contrato solicitado.",
+                {"request": "test"},
+                credential="groq-secret",
+                response_schema={
+                    "type": "object",
+                    "additionalProperties": False,
+                    "required": ["answer"],
+                    "properties": {"answer": {"type": "string"}},
+                },
+            )
+        )
+
+    assert caught.value.category == "structured_contract"
+    assert "descartada" in str(caught.value)
 
 
 def test_groq_invalid_parameter_has_specific_message(monkeypatch: MonkeyPatch) -> None:
