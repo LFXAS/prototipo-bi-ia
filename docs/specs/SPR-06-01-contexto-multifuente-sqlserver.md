@@ -72,6 +72,9 @@ cada conexión parte de la línea base y el analista decide si incorpora orienta
    existan otras fuentes habilitadas.
 9. Analítica filtra los expedientes por fuente y permite cambiar de contexto sin
    eliminar ni desactivar las demás bases.
+10. Al cambiar la fuente, la interfaz descarta inmediatamente tablero, filtros, chat y
+    solicitudes pendientes del contexto anterior. No vuelve a mostrar resultados hasta
+    que la API confirme conjuntamente `connection_id` y `execution_id`.
 
 ## Contratos API
 
@@ -87,6 +90,9 @@ cada conexión parte de la línea base y el analista decide si incorpora orienta
 | `GET /api/v1/copilot/proposals?connection_id={id}` | Versiones generadas para la fuente. |
 | `GET /api/v1/etl/proposals?connection_id={id}` | Propuestas materializables para la fuente. |
 | `GET /api/v1/analytics/executions?connection_id={id}` | Expedientes conciliados de la fuente. |
+| `GET /api/v1/analytics/dashboard?connection_id={id}&execution_id={execution}` | Tablero sólo si la ejecución pertenece a la fuente indicada. |
+| `POST /api/v1/analytics/copilot` | Exige `data_connection_id` y rechaza una ejecución de otra fuente. |
+| `GET /api/v1/analytics/reports/{format}?connection_id={id}&execution_id={execution}` | Exporta exclusivamente el tablero validado para esa fuente. |
 
 ## Reglas y criterios de aceptación
 
@@ -102,6 +108,13 @@ cada conexión parte de la línea base y el analista decide si incorpora orienta
   disponible. Las preguntas personalizadas continúan siendo orientación de negocio y
   no convierten una referencia inexistente en capacidad técnica.
 - Las propuestas, ejecuciones y tableros muestran el nombre de la fuente y la base.
+- Tablero, copiloto y exportación rechazan una combinación
+  `connection_id`--`execution_id` que no pertenezca al mismo expediente.
+- Una respuesta tardía de la fuente anterior no puede reemplazar el tablero de la
+  fuente actualmente seleccionada. Durante el cambio se muestra un estado de carga sin
+  conservar gráficos, filtros ni conversación anteriores.
+- Las preguntas sugeridas del copiloto son neutrales o se construyen con filtros reales
+  del tablero; no incluyen territorios fijos procedentes de otra base demostrativa.
 - AdventureWorks y WideWorldImporters pueden coexistir en el mismo contenedor y usar
   el mismo inicio de sesión de sólo lectura.
 - El código de descubrimiento, propuesta, ETL y analítica no contiene bifurcaciones por
@@ -125,8 +138,8 @@ cada conexión parte de la línea base y el analista decide si incorpora orienta
   entidades necesarias durante la validación académica.
 - No se exponen credenciales en respuestas, registros, documentación ni auditoría.
 - Las pruebas cubren aislamiento de fuentes, pertenencia de instantáneas, catálogo por
-  fuente, selección ETL, rechazo de relaciones de auditoría, etiquetas descriptivas y
-  filtrado analítico.
+  fuente, selección ETL, rechazo de relaciones de auditoría, etiquetas descriptivas,
+  filtrado analítico, respuestas tardías y rechazo cruzado en tablero, reportes y chat.
 
 ## Evidencia integral del 1 de octubre de 2026
 
@@ -151,6 +164,16 @@ La moneda permanece como **moneda de origen** porque la fuente no aportó eviden
 inequívoca; el sistema no inventó USD. El descuento quedó documentado como no disponible
 porque no existía una fuente demostrable. En el tablero, los territorios se presentan por
 nombre (por ejemplo, Texas o California), no por su identificador numérico.
+
+### Verificación de aislamiento analítico
+
+La inspección física confirmó que la ejecución 12 de AdventureWorks usa el esquema
+`mart_ventas_e12` con 121.317 filas, mientras la ejecución 13 de WideWorldImporters usa
+`mart_ventas_e13` con 231.412 filas y columnas propias. La prueba funcional cambió el
+contexto WideWorldImporters → AdventureWorks → WideWorldImporters: en cada transición se
+limpió el tablero y sólo se publicaron la ejecución, productos, territorios y métricas de
+la fuente confirmada por la API. También se automatizó una respuesta tardía de la fuente
+anterior y se comprobó que no puede sustituir el tablero vigente.
 
 ## Fuera de alcance
 

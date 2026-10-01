@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { AnalyticsPage } from './AnalyticsPage'
@@ -163,7 +163,7 @@ describe('AnalyticsPage', () => {
         calculable_kpis: 9, total_kpis: 9,
       },
     ])
-    vi.spyOn(api, 'analyticsDashboard').mockImplementation(async (_token, filters = {}) => ({
+    vi.spyOn(api, 'analyticsDashboard').mockImplementation(async (_token, filters) => ({
       ...dashboard,
       execution_id: filters.executionId ?? 10,
     }))
@@ -178,5 +178,56 @@ describe('AnalyticsPage', () => {
       'test-token',
       expect.objectContaining({ executionId: 9, year: '', territory: '' }),
     ))
+  })
+
+  it('descarta respuestas tardías y contenido sugerido de la fuente anterior', async () => {
+    const sourceExecutions = vi.spyOn(api, 'analyticsExecutions')
+    sourceExecutions.mockImplementation(async (_token, connectionId) => [{
+      execution_id: connectionId === 2 ? 13 : 9,
+      proposal_id: connectionId === 2 ? 96 : 73,
+      data_connection_id: connectionId ?? 1,
+      source_name: connectionId === 2 ? 'WideWorldImporters local' : 'AdventureWorks local',
+      database_name: connectionId === 2 ? 'WideWorldImporters' : 'AdventureWorks2022',
+      label: connectionId === 2 ? 'WWI ejecución #13' : 'AW ejecución #9',
+      provider_kind: 'anthropic-claude',
+      model_id: 'claude-haiku-4-5-20251001',
+      finished_at: '2026-10-01T21:01:19Z',
+      coverage_status: 'complete',
+      calculable_kpis: 7,
+      total_kpis: 7,
+    }])
+    const pending = new Map<number, (value: AnalyticsDashboard) => void>()
+    vi.spyOn(api, 'analyticsDashboard').mockImplementation((_token, filters) => new Promise((resolve) => {
+      pending.set(filters.connectionId, resolve)
+    }))
+
+    const rendered = render(<AnalyticsPage token="test-token" connectionId={1} canExport={false} navigate={vi.fn()} />)
+    await waitFor(() => expect(pending.has(1)).toBe(true))
+
+    rendered.rerender(<AnalyticsPage token="test-token" connectionId={2} canExport={false} navigate={vi.fn()} />)
+    await waitFor(() => expect(pending.has(2)).toBe(true))
+
+    const wideWorldDashboard: AnalyticsDashboard = {
+      ...dashboard,
+      execution_id: 13,
+      proposal_id: 96,
+      data_connection_id: 2,
+      source_name: 'WideWorldImporters local',
+      database_name: 'WideWorldImporters',
+      filters: { years: [], territories: [{ value: 'Texas', label: 'Texas' }] },
+      visuals: [{
+        code: 'products', title: 'Productos líderes', subtitle: 'Ventas; principal categoría',
+        kind: 'bar', dimension: 'Producto',
+        points: [{ key: '1', label: 'Air cushion machine (Blue)', value: 11_107_251, share: 100 }],
+      }],
+    }
+    await act(async () => pending.get(2)?.(wideWorldDashboard))
+    expect(await screen.findByText('Air cushion machine (Blue)')).toBeInTheDocument()
+    expect(screen.queryByText('Mountain-200')).not.toBeInTheDocument()
+    expect(screen.queryByText(/productos más vendidos en Europa/i)).not.toBeInTheDocument()
+
+    await act(async () => pending.get(1)?.(dashboard))
+    expect(screen.getByText('Air cushion machine (Blue)')).toBeInTheDocument()
+    expect(screen.queryByText('Mountain-200')).not.toBeInTheDocument()
   })
 })

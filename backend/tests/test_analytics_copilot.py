@@ -1,9 +1,15 @@
 from datetime import UTC, datetime
+from types import SimpleNamespace
+
+import pytest
+from fastapi import HTTPException
+from pydantic import ValidationError
 
 from app.modules.analytics.router import (
     _ANALYTICS_COPILOT_INSTRUCTION,
     _ANALYTICS_INTENT_INSTRUCTION,
     _analytics_intent_schema,
+    _require_snapshot_connection,
 )
 from app.modules.analytics.schemas import (
     AnalyticsCopilotRequest,
@@ -18,11 +24,32 @@ def test_analytics_copilot_normalizes_question_and_limits_history() -> None:
     payload = AnalyticsCopilotRequest(
         question="  ¿Qué   resultado   debería revisar primero?  ",
         history=[],
+        data_connection_id=1,
         execution_id=7,
     )
 
     assert payload.question == "¿Qué resultado debería revisar primero?"
+    assert payload.data_connection_id == 1
     assert payload.execution_id == 7
+
+
+def test_analytics_copilot_requires_explicit_source_context() -> None:
+    with pytest.raises(ValidationError):
+        AnalyticsCopilotRequest(
+            question="¿Qué resultado debería revisar primero?",
+            history=[],
+            execution_id=7,
+        )
+
+
+def test_dashboard_rejects_execution_from_another_source() -> None:
+    snapshot = SimpleNamespace(data_connection_id=2)
+
+    with pytest.raises(HTTPException) as caught:
+        _require_snapshot_connection(snapshot, 1)  # type: ignore[arg-type]
+
+    assert caught.value.status_code == 409
+    assert "no pertenece a la fuente" in str(caught.value.detail)
 
 
 def test_analytics_copilot_instruction_separates_observation_from_causes() -> None:

@@ -198,13 +198,24 @@ export function AnalyticsPage({ token, connectionId, canExport, navigate }: Prop
   useEffect(() => {
     let cancelled = false
     setLoading(true)
+    setError('')
     setDashboard(null)
+    setExecutions([])
     setExecutionId(0)
+    setMetricCode('')
+    setYear('')
+    setTerritory('')
+    setChatMessages([])
+    setChatQuestion('')
+    setChatError('')
     api.analyticsExecutions(token, connectionId || undefined)
       .then((items) => {
         if (cancelled) return
+        if (items.some((item) => item.data_connection_id !== connectionId)) {
+          throw new Error('La API devolvió ejecuciones de una fuente distinta al contexto seleccionado.')
+        }
         setExecutions(items)
-        setExecutionId((current) => current || items[0]?.execution_id || 0)
+        setExecutionId(items[0]?.execution_id || 0)
         if (!items.length) {
           setError('No existe una ejecución conciliada con datos físicos disponibles para analizar.')
           setLoading(false)
@@ -220,20 +231,24 @@ export function AnalyticsPage({ token, connectionId, canExport, navigate }: Prop
   }, [connectionId, token])
 
   useEffect(() => {
-    if (!executionId) return
+    const selectedExecution = executions.find((item) => item.execution_id === executionId)
+    if (!executionId || selectedExecution?.data_connection_id !== connectionId) return
     let cancelled = false
     setLoading(true)
     setError('')
-    api.analyticsDashboard(token, { executionId, metricCode, year, territory })
+    api.analyticsDashboard(token, { connectionId, executionId, metricCode, year, territory })
       .then((result) => {
         if (cancelled) return
+        if (result.data_connection_id !== connectionId || result.execution_id !== executionId) {
+          throw new Error('El tablero recibido no corresponde a la fuente y ejecución seleccionadas.')
+        }
         setDashboard(result)
         setMetricCode((current) => current || result.metric_code)
       })
       .catch((caught: Error) => { if (!cancelled) setError(caught.message) })
       .finally(() => { if (!cancelled) setLoading(false) })
     return () => { cancelled = true }
-  }, [executionId, metricCode, territory, token, year])
+  }, [connectionId, executionId, executions, metricCode, territory, token, year])
 
   const unit = useMemo(() => dashboard ? metricUnit(dashboard) : 'valor', [dashboard])
 
@@ -257,6 +272,7 @@ export function AnalyticsPage({ token, connectionId, canExport, navigate }: Prop
     setError('')
     try {
       const file = await api.analyticsReport(token, format, {
+        connectionId,
         executionId: activeDashboard.execution_id,
         metricCode: metricCode || activeDashboard.metric_code,
         year,
@@ -299,6 +315,7 @@ export function AnalyticsPage({ token, connectionId, canExport, navigate }: Prop
         question: normalized,
         history,
         view: viewMode,
+        data_connection_id: connectionId,
         execution_id: activeDashboard.execution_id,
         metric_code: metricCode || activeDashboard.metric_code,
         year: year ? Number(year) : undefined,
@@ -323,11 +340,11 @@ export function AnalyticsPage({ token, connectionId, canExport, navigate }: Prop
   const promptGuide = viewMode === 'executive'
     ? [
         { category: 'Comprender', prompts: [`Resume ${selectedMetricLabel} para ${selectedScope}.`, '¿Qué resultado debería revisar primero y por qué?'] },
-        { category: 'Decidir', prompts: ['¿Cuáles son los 5 productos más vendidos en Europa?', 'Prepara tres puntos para una reunión de gerencia.'] },
+        { category: 'Decidir', prompts: ['¿Cuáles son los 5 productos con mayor resultado en el territorio líder?', 'Prepara tres puntos para una reunión de gerencia.'] },
         { category: 'Interpretar con cautela', prompts: ['¿Qué limitaciones tienen estos resultados y qué no puedo concluir?', '¿Qué pregunta adicional debería hacer antes de tomar una decisión?'] },
       ]
     : [
-        { category: 'Comparar', prompts: [`Compara ${selectedMetricLabel} entre los períodos visibles.`, '¿Cuáles son los 5 productos más vendidos en Europa?'] },
+        { category: 'Comparar', prompts: [`Compara ${selectedMetricLabel} entre los períodos visibles.`, '¿Cuáles son los 5 productos con mayor resultado en el territorio líder?'] },
         { category: 'Investigar', prompts: ['¿Qué variación merece una revisión adicional?', 'Señala patrones atípicos sin atribuir causalidad.'] },
         { category: 'Validar', prompts: ['Explica la calidad y trazabilidad de esta selección.', '¿Qué dato agregado faltaría para responder preguntas que este panel no cubre?'] },
       ]

@@ -431,24 +431,23 @@ export const api = {
   applyEtlSpanishInterpretation: (token: string, id: number, body: { confirmation: boolean; analyst_comment: string; groups: Array<{ dimension: string; target_column: string; mappings: Array<{ original: string; label_es: string }> }> }) => request<EtlExecution>(`/etl/executions/${id}/interpret-spanish/apply`, token, { method: 'POST', body: JSON.stringify(body) }),
   etlExecutions: (token: string, limit = 10, offset = 0, connectionId?: number) => request<Page<EtlExecution>>(`/etl/executions?limit=${limit}&offset=${offset}${connectionId ? `&connection_id=${connectionId}` : ''}`, token),
   analyticsExecutions: (token: string, connectionId?: number) => request<AnalyticsExecutionOption[]>(`/analytics/executions${connectionId ? `?connection_id=${connectionId}` : ''}`, token),
-  analyticsDashboard: (token: string, filters: { executionId?: number; metricCode?: string; year?: string; territory?: string } = {}) => {
-    const query = new URLSearchParams()
+  analyticsDashboard: (token: string, filters: { connectionId: number; executionId?: number; metricCode?: string; year?: string; territory?: string }) => {
+    const query = new URLSearchParams({ connection_id: String(filters.connectionId) })
     if (filters.executionId) query.set('execution_id', String(filters.executionId))
     if (filters.metricCode) query.set('metric_code', filters.metricCode)
     if (filters.year) query.set('year', filters.year)
     if (filters.territory) query.set('territory', filters.territory)
-    const suffix = query.size ? `?${query.toString()}` : ''
-    return request<AnalyticsDashboard>(`/analytics/dashboard${suffix}`, token)
+    return request<AnalyticsDashboard>(`/analytics/dashboard?${query.toString()}`, token)
   },
-  analyticsReport: (token: string, format: 'pdf' | 'xlsx', filters: { executionId?: number; metricCode?: string; year?: string; territory?: string; view: 'executive' | 'analyst' }) => {
-    const query = new URLSearchParams({ view: filters.view })
+  analyticsReport: (token: string, format: 'pdf' | 'xlsx', filters: { connectionId: number; executionId?: number; metricCode?: string; year?: string; territory?: string; view: 'executive' | 'analyst' }) => {
+    const query = new URLSearchParams({ connection_id: String(filters.connectionId), view: filters.view })
     if (filters.executionId) query.set('execution_id', String(filters.executionId))
     if (filters.metricCode) query.set('metric_code', filters.metricCode)
     if (filters.year) query.set('year', filters.year)
     if (filters.territory) query.set('territory', filters.territory)
     return requestFile(`/analytics/reports/${format}?${query.toString()}`, token)
   },
-  askAnalyticsCopilot: (token: string, body: { question: string; history: AnalyticsChatTurn[]; view: 'executive' | 'analyst'; execution_id: number; metric_code: string; year?: number; territory?: string }) => request<AnalyticsCopilotAnswer>('/analytics/copilot', token, { method: 'POST', body: JSON.stringify(body) }),
+  askAnalyticsCopilot: (token: string, body: { question: string; history: AnalyticsChatTurn[]; view: 'executive' | 'analyst'; data_connection_id: number; execution_id: number; metric_code: string; year?: number; territory?: string }) => request<AnalyticsCopilotAnswer>('/analytics/copilot', token, { method: 'POST', body: JSON.stringify(body) }),
   audit: (token: string, limit: number, offset: number) => request<Page<AuditEvent>>(`/audit-events?limit=${limit}&offset=${offset}`, token),
   testLlm: (token: string, id: number) => request<{ ok: boolean; message: string }>(`/llm-configurations/${id}/test`, token, { method: 'POST' }),
   saveLlmCredential: (token: string, id: number, apiKey: string) => request<{ credential_configured: boolean; message: string }>(`/llm-configurations/${id}/secret`, token, { method: 'PUT', body: JSON.stringify({ api_key: apiKey }) }),

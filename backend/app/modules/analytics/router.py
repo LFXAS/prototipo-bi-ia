@@ -144,9 +144,21 @@ async def _llm_credential(configuration: LlmConfiguration, session: AsyncSession
         return None
 
 
+def _require_snapshot_connection(snapshot: MetadataSnapshot, connection_id: int) -> None:
+    if snapshot.data_connection_id != connection_id:
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "La ejecución seleccionada no pertenece a la fuente de datos en contexto. "
+                "Actualice el tablero antes de continuar."
+            ),
+        )
+
+
 async def _load_dashboard(
     session: AsyncSession,
     *,
+    connection_id: int,
     execution_id: int | None,
     metric_code: str | None,
     year: int | None,
@@ -155,6 +167,11 @@ async def _load_dashboard(
     statement = select(EtlExecution).where(EtlExecution.status == "succeeded")
     if execution_id is not None:
         statement = statement.where(EtlExecution.id == execution_id)
+    else:
+        snapshot_ids = select(MetadataSnapshot.id).where(
+            MetadataSnapshot.data_connection_id == connection_id
+        )
+        statement = statement.where(EtlExecution.metadata_snapshot_id.in_(snapshot_ids))
     execution = (
         await session.execute(
             statement.order_by(EtlExecution.finished_at.desc(), EtlExecution.id.desc()).limit(1)
@@ -181,6 +198,7 @@ async def _load_dashboard(
             status_code=409,
             detail="El expediente perdió la propuesta o la instantánea requerida para analizarlo.",
         )
+    _require_snapshot_connection(snapshot, connection_id)
     try:
         return await build_dashboard(
             session,
@@ -271,6 +289,7 @@ async def analytics_executions(
 
 @router.get("/analytics/dashboard", response_model=AnalyticsDashboardRead)
 async def analytics_dashboard(
+    connection_id: int = Query(gt=0),
     execution_id: int | None = Query(default=None, gt=0),
     metric_code: str | None = Query(default=None, min_length=1, max_length=80),
     year: int | None = Query(default=None, ge=1900, le=2200),
@@ -280,6 +299,7 @@ async def analytics_dashboard(
 ) -> AnalyticsDashboardRead:
     return await _load_dashboard(
         session,
+        connection_id=connection_id,
         execution_id=execution_id,
         metric_code=metric_code,
         year=year,
@@ -295,6 +315,7 @@ async def analytics_copilot(
 ) -> AnalyticsCopilotRead:
     dashboard = await _load_dashboard(
         session,
+        connection_id=payload.data_connection_id,
         execution_id=payload.execution_id,
         metric_code=payload.metric_code,
         year=payload.year,
@@ -452,6 +473,7 @@ async def analytics_copilot(
 async def export_analytics_report(
     report_format: Literal["pdf", "xlsx"],
     view: Literal["executive", "analyst"] = Query(default="executive"),
+    connection_id: int = Query(gt=0),
     execution_id: int | None = Query(default=None, gt=0),
     metric_code: str | None = Query(default=None, min_length=1, max_length=80),
     year: int | None = Query(default=None, ge=1900, le=2200),
@@ -466,6 +488,7 @@ async def export_analytics_report(
         )
     dashboard = await _load_dashboard(
         session,
+        connection_id=connection_id,
         execution_id=execution_id,
         metric_code=metric_code,
         year=year,
