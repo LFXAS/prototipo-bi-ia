@@ -24,6 +24,7 @@ _CURRENCY_SOURCE_COLUMNS = (
     "sourcecurrencycode",
     "currencycode",
 )
+_AUDIT_RELATION_COLUMNS = {"createdby", "lasteditedby", "modifiedby", "updatedby"}
 
 
 @dataclass(frozen=True)
@@ -83,6 +84,17 @@ def _sqlserver_identifier(value: str) -> str:
 def _source_table(reference: str) -> str:
     schema_name, table_name = reference.split(".", 1)
     return f"{_sqlserver_identifier(schema_name)}.{_sqlserver_identifier(table_name)}"
+
+
+def _is_audit_relation(relation: dict[str, Any]) -> bool:
+    columns = {
+        re.sub(r"[^a-z0-9]+", "", str(column).casefold())
+        for column in [
+            *relation.get("columns", []),
+            *relation.get("referenced_columns", []),
+        ]
+    }
+    return bool(columns & _AUDIT_RELATION_COLUMNS)
 
 
 def _postgres_identifier(value: str) -> str:
@@ -155,7 +167,7 @@ def _relations(
     }
     for source, table in metadata_tables(schema_document).items():
         for relation in table.get("foreign_keys", []):
-            if not isinstance(relation, dict):
+            if not isinstance(relation, dict) or _is_audit_relation(relation):
                 continue
             target = (
                 f"{relation.get('referenced_schema', '')}.{relation.get('referenced_table', '')}"
@@ -713,6 +725,8 @@ def materialize_sales(
                         dimension.display_label_target,
                         dimension.display_type_target,
                     }:
+                        continue
+                    if not re.search(r"char|text", attribute.data_type, re.IGNORECASE):
                         continue
                     if not re.search(
                         r"color|group|category|categoria|status|estado|type|tipo|class|clase|style|estilo|region",

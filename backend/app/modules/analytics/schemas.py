@@ -22,6 +22,9 @@ class AnalyticsOptionRead(BaseModel):
 class AnalyticsExecutionOptionRead(BaseModel):
     execution_id: int
     proposal_id: int
+    data_connection_id: int
+    source_name: str
+    database_name: str
     label: str
     provider_kind: str
     model_id: str
@@ -73,6 +76,9 @@ class AnalyticsFiltersRead(BaseModel):
 class AnalyticsDashboardRead(BaseModel):
     execution_id: int
     proposal_id: int
+    data_connection_id: int
+    source_name: str
+    database_name: str
     title: str
     description: str
     grain: str

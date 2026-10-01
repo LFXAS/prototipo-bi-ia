@@ -20,7 +20,7 @@ from app.modules.copilot.domains import (
     domain_profile,
     normalize_needs_catalog_configuration,
 )
-from app.modules.copilot.models import BiProposal, SemanticAdvice
+from app.modules.copilot.models import AnalysisCatalog, BiProposal, SemanticAdvice
 from app.modules.copilot.needs import assess_business_need
 from app.modules.copilot.schemas import (
     AnalysisCatalogConfiguration,
@@ -131,11 +131,29 @@ async def _parameter(session: AsyncSession, key: str) -> int:
 _ANALYSIS_CATALOG_KEYS = {"ventas": "COPILOT_SALES_NEEDS_CATALOG"}
 
 
-async def _needs_catalog(session: AsyncSession, domain_code: str = "ventas") -> dict[str, object]:
+async def _needs_catalog(
+    session: AsyncSession,
+    domain_code: str = "ventas",
+    connection_id: int | None = None,
+) -> dict[str, object]:
     try:
         parameter_key = _ANALYSIS_CATALOG_KEYS[domain_code]
     except KeyError as exc:
         raise ValueError("El dominio solicitado no está habilitado.") from exc
+    if connection_id is not None:
+        catalog = (
+            await session.execute(
+                select(AnalysisCatalog).where(
+                    AnalysisCatalog.data_connection_id == connection_id,
+                    AnalysisCatalog.domain_code == domain_code,
+                )
+            )
+        ).scalar_one_or_none()
+        if catalog is not None:
+            return normalize_needs_catalog_configuration(catalog.configuration_document)
+        # A new source starts from the universal domain contract. Never inherit an
+        # analyst customization made for another database through the legacy parameter.
+        return default_needs_catalog_configuration()
     value = await session.scalar(select(Parameter.value).where(Parameter.key == parameter_key))
     if not value:
         return default_needs_catalog_configuration()
@@ -146,38 +164,62 @@ async def _needs_catalog(session: AsyncSession, domain_code: str = "ventas") -> 
 
 
 async def _store_needs_catalog(
-    session: AsyncSession, domain_code: str, configuration: dict[str, object]
-) -> Parameter:
+    session: AsyncSession,
+    domain_code: str,
+    configuration: dict[str, object],
+    connection: DataConnection,
+    actor: User,
+) -> AnalysisCatalog:
     try:
         parameter_key = _ANALYSIS_CATALOG_KEYS[domain_code]
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="Dominio analítico no encontrado.") from exc
-    parameter = (
-        await session.execute(select(Parameter).where(Parameter.key == parameter_key))
-    ).scalar_one_or_none()
-    definition = APPROVED_PARAMETERS[parameter_key]
-    serialized = json.dumps(configuration, ensure_ascii=False, separators=(",", ":"))
-    if parameter is None:
-        parameter = Parameter(
-            key=parameter_key,
-            value=serialized,
-            is_active=True,
-            **definition,
+    del parameter_key
+    catalog = (
+        await session.execute(
+            select(AnalysisCatalog).where(
+                AnalysisCatalog.data_connection_id == connection.id,
+                AnalysisCatalog.domain_code == domain_code,
+            )
         )
-        session.add(parameter)
-    else:
-        parameter.value = serialized
-    await session.flush()
-    return parameter
-
-
-async def _readiness(session: AsyncSession) -> CopilotReadiness:
-    connection = (
-        await session.execute(select(DataConnection).where(DataConnection.is_active.is_(True)))
     ).scalar_one_or_none()
+    if catalog is None:
+        catalog = AnalysisCatalog(
+            data_connection_id=connection.id,
+            domain_code=domain_code,
+            version=int(str(configuration.get("version", 2))),
+            configuration_document=configuration,
+            updated_by_user_id=actor.id,
+            updated_by_label=f"{actor.full_name} <{actor.email}>",
+        )
+        session.add(catalog)
+    else:
+        catalog.version = int(str(configuration.get("version", 2)))
+        catalog.configuration_document = configuration
+        catalog.updated_by_user_id = actor.id
+        catalog.updated_by_label = f"{actor.full_name} <{actor.email}>"
+    await session.flush()
+    return catalog
+
+
+async def _readiness(session: AsyncSession, connection_id: int | None = None) -> CopilotReadiness:
+    connection = (
+        await session.get(DataConnection, connection_id)
+        if connection_id is not None
+        else (
+            await session.execute(
+                select(DataConnection)
+                .where(DataConnection.is_active.is_(True))
+                .order_by(DataConnection.id)
+                .limit(1)
+            )
+        ).scalar_one_or_none()
+    )
     snapshot = await _latest_snapshot(session, connection.id if connection else None)
     configuration = await _active_configuration(session)
-    source_ok = connection is not None and connection.last_test_status == "ok"
+    source_ok = (
+        connection is not None and connection.is_active and connection.last_test_status == "ok"
+    )
     metadata_ok = (
         snapshot is not None
         and connection is not None
@@ -190,7 +232,7 @@ async def _readiness(session: AsyncSession) -> CopilotReadiness:
             ready=source_ok,
             label="Fuente de ventas",
             detail=(
-                f"{connection.name} está activa y probada."
+                f"{connection.name} está habilitada y probada."
                 if connection is not None and connection.last_test_status == "ok"
                 else "Falta activar y probar una fuente SQL Server."
             ),
@@ -202,7 +244,7 @@ async def _readiness(session: AsyncSession) -> CopilotReadiness:
             detail=(
                 f"Instantánea {snapshot.content_hash[:12]} disponible."
                 if metadata_ok and snapshot
-                else "Falta crear una instantánea de la fuente activa."
+                else "Falta crear una instantánea de la fuente seleccionada."
             ),
             path="/esquema",
         ),
@@ -221,25 +263,33 @@ async def _readiness(session: AsyncSession) -> CopilotReadiness:
 
 @router.get("/copilot/readiness", response_model=CopilotReadiness)
 async def get_readiness(
+    connection_id: int | None = Query(default=None, gt=0),
     _: User = Depends(require_permission("copilot.proposals.read")),
     session: AsyncSession = Depends(get_session),
 ) -> CopilotReadiness:
-    return await _readiness(session)
+    return await _readiness(session, connection_id)
 
 
 @router.get("/copilot/catalog", response_model=CopilotCatalogRead)
 async def get_catalog(
     metadata_snapshot_id: int = Query(gt=0),
+    connection_id: int | None = Query(default=None, gt=0),
     _: User = Depends(require_permission("copilot.proposals.read")),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, object]:
-    connection = (
-        await session.execute(select(DataConnection).where(DataConnection.is_active.is_(True)))
-    ).scalar_one_or_none()
     snapshot = await session.get(MetadataSnapshot, metadata_snapshot_id)
-    latest = await _latest_snapshot(session, connection.id if connection else None)
+    resolved_connection_id = connection_id or (
+        snapshot.data_connection_id if snapshot is not None else None
+    )
+    connection = (
+        await session.get(DataConnection, resolved_connection_id)
+        if resolved_connection_id is not None
+        else None
+    )
+    latest = await _latest_snapshot(session, resolved_connection_id)
     if (
         connection is None
+        or not connection.is_active
         or snapshot is None
         or latest is None
         or snapshot.id != latest.id
@@ -251,7 +301,10 @@ async def get_catalog(
         )
     return {
         "metadata_snapshot_id": snapshot.id,
-        "domains": catalog_for_snapshot(snapshot.schema_document, await _needs_catalog(session)),
+        "domains": catalog_for_snapshot(
+            snapshot.schema_document,
+            await _needs_catalog(session, connection_id=connection.id),
+        ),
     }
 
 
@@ -280,12 +333,16 @@ async def list_analysis_catalog_domains(
 )
 async def get_analysis_catalog_domain(
     domain_code: str,
+    connection_id: int = Query(gt=0),
     _: User = Depends(require_permission("copilot.catalog.read")),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, object]:
     try:
         domain_profile(domain_code)
-        return await _needs_catalog(session, domain_code)
+        connection = await session.get(DataConnection, connection_id)
+        if connection is None or not connection.is_active:
+            raise HTTPException(status_code=404, detail="Fuente habilitada no encontrada.")
+        return await _needs_catalog(session, domain_code, connection.id)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
@@ -297,6 +354,7 @@ async def get_analysis_catalog_domain(
 async def update_analysis_catalog_domain(
     domain_code: str,
     payload: AnalysisCatalogConfiguration,
+    connection_id: int = Query(gt=0),
     actor: User = Depends(require_permission("copilot.catalog.write")),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, object]:
@@ -310,7 +368,10 @@ async def update_analysis_catalog_domain(
         normalized = normalize_needs_catalog_configuration(payload.model_dump())
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
-    parameter = await _store_needs_catalog(session, domain_code, normalized)
+    connection = await session.get(DataConnection, connection_id)
+    if connection is None or not connection.is_active:
+        raise HTTPException(status_code=404, detail="Fuente habilitada no encontrada.")
+    catalog = await _store_needs_catalog(session, domain_code, normalized, connection, actor)
     await add_audit_event(
         session,
         actor.id,
@@ -318,7 +379,8 @@ async def update_analysis_catalog_domain(
         "analysis_catalog",
         domain_code,
         {
-            "parameter_id": parameter.id,
+            "catalog_id": catalog.id,
+            "data_connection_id": connection.id,
             "question_count": len(cast(list[object], normalized["questions"])),
             "periodicity_count": len(cast(list[object], normalized["periodicities"])),
         },
@@ -333,6 +395,7 @@ async def update_analysis_catalog_domain(
 )
 async def reset_analysis_catalog_domain(
     domain_code: str,
+    connection_id: int = Query(gt=0),
     actor: User = Depends(require_permission("copilot.catalog.write")),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, object]:
@@ -340,15 +403,18 @@ async def reset_analysis_catalog_domain(
         domain_profile(domain_code)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+    connection = await session.get(DataConnection, connection_id)
+    if connection is None or not connection.is_active:
+        raise HTTPException(status_code=404, detail="Fuente habilitada no encontrada.")
     configuration = default_needs_catalog_configuration()
-    parameter = await _store_needs_catalog(session, domain_code, configuration)
+    catalog = await _store_needs_catalog(session, domain_code, configuration, connection, actor)
     await add_audit_event(
         session,
         actor.id,
         "copilot.catalog.reset",
         "analysis_catalog",
         domain_code,
-        {"parameter_id": parameter.id},
+        {"catalog_id": catalog.id, "data_connection_id": connection.id},
     )
     await session.commit()
     return configuration
@@ -409,22 +475,26 @@ def _safe_business_request(
 async def _validated_need_request(
     payload: BusinessNeedInput, session: AsyncSession
 ) -> tuple[MetadataSnapshot, dict[str, object], dict[str, object]]:
-    connection = (
-        await session.execute(select(DataConnection).where(DataConnection.is_active.is_(True)))
-    ).scalar_one_or_none()
     snapshot = await session.get(MetadataSnapshot, payload.metadata_snapshot_id)
+    connection = (
+        await session.get(DataConnection, snapshot.data_connection_id)
+        if snapshot is not None
+        else None
+    )
     latest = await _latest_snapshot(session, connection.id if connection else None)
     if (
         connection is None
+        or not connection.is_active
         or snapshot is None
         or latest is None
         or snapshot.id != latest.id
         or snapshot.data_connection_id != connection.id
     ):
         raise HTTPException(
-            status_code=422, detail="Seleccione la instantánea vigente de la fuente activa."
+            status_code=422,
+            detail="Seleccione la instantánea vigente de la fuente elegida.",
         )
-    catalog_configuration = await _needs_catalog(session, payload.domain_code)
+    catalog_configuration = await _needs_catalog(session, payload.domain_code, connection.id)
     available_catalog = catalog_for_snapshot(snapshot.schema_document, catalog_configuration)
     selected_domain = next(
         (item for item in available_catalog if item["code"] == payload.domain_code), None
@@ -550,7 +620,13 @@ async def create_proposal(
     actor: User = Depends(require_permission("copilot.proposals.generate")),
     session: AsyncSession = Depends(get_session),
 ) -> BiProposal:
-    readiness = await _readiness(session)
+    snapshot = await session.get(MetadataSnapshot, payload.metadata_snapshot_id)
+    connection = (
+        await session.get(DataConnection, snapshot.data_connection_id)
+        if snapshot is not None
+        else None
+    )
+    readiness = await _readiness(session, connection.id if connection else None)
     if not readiness.ready:
         raise HTTPException(
             status_code=422,
@@ -558,10 +634,8 @@ async def create_proposal(
                 "Complete la fuente, los metadatos y el proveedor LLM antes de iniciar el análisis."
             ),
         )
-    snapshot = await session.get(MetadataSnapshot, payload.metadata_snapshot_id)
-    connection = (
-        await session.execute(select(DataConnection).where(DataConnection.is_active.is_(True)))
-    ).scalar_one()
+    if snapshot is None or connection is None:
+        raise HTTPException(status_code=422, detail="La fuente seleccionada no está disponible.")
     latest = await _latest_snapshot(session, connection.id)
     if (
         snapshot is None
@@ -570,12 +644,13 @@ async def create_proposal(
         or snapshot.data_connection_id != connection.id
     ):
         raise HTTPException(
-            status_code=422, detail="Seleccione la instantánea vigente de la fuente activa."
+            status_code=422,
+            detail="Seleccione la instantánea vigente de la fuente elegida.",
         )
     configuration = await _active_configuration(session)
     if configuration is None:
         raise HTTPException(status_code=422, detail="No existe una configuración LLM activa.")
-    catalog_configuration = await _needs_catalog(session, payload.domain_code)
+    catalog_configuration = await _needs_catalog(session, payload.domain_code, connection.id)
     available_catalog = catalog_for_snapshot(snapshot.schema_document, catalog_configuration)
     selected_domain = next(
         (item for item in available_catalog if item["code"] == payload.domain_code), None
@@ -784,8 +859,23 @@ async def create_proposal(
                 ),
                 response_schema=proposal_blueprint_schema(scope, semantic_map),
             )
-            # The LLM proposes dimensions from verified metadata; the catalog never forces them.
-            blueprint["requested_dimensions"] = []
+            requirement_dimensions = {
+                "goal:date": "date",
+                "goal:product": "product",
+                "goal:customer": "customer",
+                "goal:territory": "territory",
+            }
+            assessed_requirements = assessment.get("requirements", [])
+            assessed_requirements = (
+                assessed_requirements if isinstance(assessed_requirements, list) else []
+            )
+            blueprint["requested_dimensions"] = [
+                dimension
+                for requirement in assessed_requirements
+                if isinstance(requirement, dict)
+                and requirement.get("status") in {"direct", "derivable"}
+                and (dimension := requirement_dimensions.get(str(requirement.get("code"))))
+            ]
             proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
             proposal = apply_financial_requirements(proposal, assessment, scope)
             proposal["need_assessment"] = assessment
@@ -844,6 +934,7 @@ async def list_proposals(
     offset: int = Query(default=0, ge=0),
     statuses: list[ProposalStatus] = Query(default_factory=list, alias="status"),
     domain_code: str | None = Query(default=None, min_length=1, max_length=40),
+    connection_id: int | None = Query(default=None, gt=0),
 ) -> PageRead[ProposalRead]:
     total_statement = select(func.count()).select_from(BiProposal)
     items_statement = select(BiProposal)
@@ -857,6 +948,12 @@ async def list_proposals(
             raise HTTPException(status_code=422, detail=str(exc)) from exc
         total_statement = total_statement.where(BiProposal.domain_code == domain_code)
         items_statement = items_statement.where(BiProposal.domain_code == domain_code)
+    if connection_id is not None:
+        snapshot_ids = select(MetadataSnapshot.id).where(
+            MetadataSnapshot.data_connection_id == connection_id
+        )
+        total_statement = total_statement.where(BiProposal.metadata_snapshot_id.in_(snapshot_ids))
+        items_statement = items_statement.where(BiProposal.metadata_snapshot_id.in_(snapshot_ids))
     total = (await session.scalar(total_statement)) or 0
     items = (
         await session.execute(

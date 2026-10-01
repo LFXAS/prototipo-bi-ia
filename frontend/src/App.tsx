@@ -2,7 +2,6 @@ import { FormEvent, useCallback, useEffect, useMemo, useRef, useState, type Reac
 
 import {
   api,
-  type ActiveSource,
   type AnalysisCatalogConfiguration,
   type AnalysisCatalogDomain,
   type AnalysisCatalogPeriodicity,
@@ -33,6 +32,7 @@ import {
   type SemanticCandidate,
   type SemanticPreview,
   type Session,
+  type SourceWorkspace,
   type User,
   sessionExpiredEvent,
 } from './api/security'
@@ -57,6 +57,7 @@ type Values = Record<string, string>
 
 const tokenKey = 'bi_ia_access_token'
 const resumePageKey = 'bi_ia_resume_page'
+const sourceContextKey = 'bi_ia_source_context'
 const pageSize = 10
 const labels: Record<string, string> = {
   '/': 'Inicio',
@@ -181,6 +182,8 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({})
   const [sidebarHidden, setSidebarHidden] = useState(false)
+  const [sources, setSources] = useState<SourceWorkspace[]>([])
+  const [selectedSourceId, setSelectedSourceId] = useState(() => Number(localStorage.getItem(sourceContextKey) ?? 0))
   const loadedPage = useRef(page)
 
   useEffect(() => {
@@ -219,6 +222,24 @@ export default function App() {
   }, [token, revision])
 
   useEffect(() => {
+    if (!token || !session) return
+    api.sources(token).then((items) => {
+      if (!Array.isArray(items)) {
+        setSources([])
+        return
+      }
+      setSources(items)
+      setSelectedSourceId((current) => {
+        const next = items.some((item) => item.connection.id === current)
+          ? current
+          : items[0]?.connection.id ?? 0
+        if (next) localStorage.setItem(sourceContextKey, String(next))
+        return next
+      })
+    }).catch(() => setSources([]))
+  }, [revision, session, token])
+
+  useEffect(() => {
     if (!token || !session || page === '/') return
     const loads: Record<string, () => Promise<PageData>> = {
       '/usuarios': () => api.users(token, pageSize, offset),
@@ -228,7 +249,7 @@ export default function App() {
       '/parametros': () => api.parameters(token, pageSize, offset),
       '/llm': () => api.llm(token, pageSize, offset),
       '/conexiones': () => api.connections(token, pageSize, offset),
-      '/esquema': () => api.metadataSnapshots(token, pageSize, offset),
+      '/esquema': () => api.metadataSnapshots(token, pageSize, offset, selectedSourceId || undefined),
       '/auditoria': () => api.audit(token, pageSize, offset),
     }
     if (loadedPage.current !== page) {
@@ -237,7 +258,13 @@ export default function App() {
     }
     setMessage('')
     loads[page]?.().then(setData).catch((error: Error) => setMessage(error.message))
-  }, [offset, page, revision, session, token])
+  }, [offset, page, revision, selectedSourceId, session, token])
+
+  function selectSource(connectionId: number) {
+    localStorage.setItem(sourceContextKey, String(connectionId))
+    setSelectedSourceId(connectionId)
+    setOffset(0)
+  }
 
   async function submitLogin(event: FormEvent) {
     event.preventDefault()
@@ -303,20 +330,21 @@ export default function App() {
         <button className="sidebar-rail-toggle" aria-expanded={!sidebarHidden} aria-label={sidebarHidden ? 'Mostrar navegación lateral' : 'Ocultar navegación lateral'} title={sidebarHidden ? 'Mostrar navegación lateral' : 'Ocultar navegación lateral'} onClick={() => setSidebarHidden((hidden) => !hidden)}><span aria-hidden="true">{sidebarHidden ? '›' : '‹'}</span></button>
         <section className="content">
           <h1>{labels[page]}</h1>
+          {['/esquema', '/catalogo-analitico', '/asistente', '/datamart-ventas', '/analitica-ventas'].includes(page) && <SourceContextSelector sources={sources} selectedSourceId={selectedSourceId} onChange={selectSource} />}
           {page === '/'
             ? <Home session={session} token={token} navigate={setPage} />
             : page === '/conexiones'
               ? <ConnectionsPage data={data as Page<DataConnection> | null} message={message} token={token} canWrite={session.permissions.includes('connections.write')} canTest={session.permissions.includes('connections.test')} canRefresh={session.permissions.includes('metadata.refresh')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
               : page === '/esquema'
-                ? <SchemaExplorerPage snapshots={data as Page<MetadataSnapshot> | null} message={message} token={token} canRefresh={session.permissions.includes('metadata.refresh')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
+                ? <SchemaExplorerPage source={sources.find((item) => item.connection.id === selectedSourceId) ?? null} snapshots={data as Page<MetadataSnapshot> | null} message={message} token={token} canRefresh={session.permissions.includes('metadata.refresh')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
                 : page === '/asistente'
-                  ? <AnalysisAssistantPage token={token} canGenerate={session.permissions.includes('copilot.proposals.generate')} canReview={session.permissions.includes('copilot.proposals.review')} canPreviewSemantics={session.permissions.includes('metadata.semantic_resolution.read')} navigate={setPage} />
+                  ? <AnalysisAssistantPage key={selectedSourceId} source={sources.find((item) => item.connection.id === selectedSourceId) ?? null} token={token} canGenerate={session.permissions.includes('copilot.proposals.generate')} canReview={session.permissions.includes('copilot.proposals.review')} canPreviewSemantics={session.permissions.includes('metadata.semantic_resolution.read')} navigate={setPage} />
                 : page === '/datamart-ventas'
-                  ? <SalesDatamartPage token={token} canWrite={session.permissions.includes('etl.executions.write')} navigate={setPage} />
+                  ? <SalesDatamartPage key={selectedSourceId} sourceId={selectedSourceId} token={token} canWrite={session.permissions.includes('etl.executions.write')} navigate={setPage} />
                 : page === '/analitica-ventas'
-                  ? <AnalyticsPage token={token} canExport={session.permissions.includes('reports.analytics.export')} navigate={setPage} />
+                  ? <AnalyticsPage key={selectedSourceId} connectionId={selectedSourceId} token={token} canExport={session.permissions.includes('reports.analytics.export')} navigate={setPage} />
                 : page === '/catalogo-analitico'
-                  ? <AnalysisCatalogPage token={token} canWrite={session.permissions.includes('copilot.catalog.write')} />
+                  ? <AnalysisCatalogPage key={selectedSourceId} source={sources.find((item) => item.connection.id === selectedSourceId) ?? null} token={token} canWrite={session.permissions.includes('copilot.catalog.write')} />
               : page === '/parametros'
                 ? <ParametersPage data={data as Page<Parameter> | null} message={message} token={token} canWrite={session.permissions.includes('parameters.write')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
                 : <ResourcePage key={page} page={page} data={data} message={message} token={token} canWrite={session.permissions.includes(writePermissions[page])} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />}
@@ -342,6 +370,12 @@ function groupMenus(menus: Menu[]): NavigationGroup[] {
     groups.set(code, group)
   }
   return [...groups.values()].sort((left, right) => left.order - right.order)
+}
+
+function SourceContextSelector({ sources, selectedSourceId, onChange }: { sources: SourceWorkspace[]; selectedSourceId: number; onChange: (connectionId: number) => void }) {
+  if (!sources.length) return <section className="source-context empty"><div><p className="eyebrow">Contexto de datos</p><strong>No hay fuentes habilitadas</strong><span>Registre, pruebe y habilite una conexión SQL Server.</span></div></section>
+  const selected = sources.find((item) => item.connection.id === selectedSourceId) ?? sources[0]
+  return <section className="source-context" aria-label="Fuente de datos del espacio de trabajo"><div><p className="eyebrow">Fuente en contexto</p><strong>{selected.connection.name}</strong><span>SQL Server · {selected.connection.database_name} · {selected.status === 'ready' ? 'metadatos disponibles' : selected.status === 'metadata_pending' ? 'requiere instantánea' : 'requiere prueba de conexión'}</span></div><label>Cambiar fuente<select value={selected.connection.id} onChange={(event) => onChange(Number(event.target.value))}>{sources.map((source) => <option key={source.connection.id} value={source.connection.id}>{source.connection.name} · {source.connection.database_name}</option>)}</select></label></section>
 }
 
 function Home({ session, token, navigate }: { session: Session; token: string; navigate: (path: string) => void }) {
@@ -630,10 +664,12 @@ function SemanticCopilotPanel({
   </section>
 }
 
-function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemantics, navigate }: { token: string; canGenerate: boolean; canReview: boolean; canPreviewSemantics: boolean; navigate: (path: string) => void }) {
-  const recoveryDraft = useMemo(readAssistantDraft, [])
+function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPreviewSemantics, navigate }: { source: SourceWorkspace | null; token: string; canGenerate: boolean; canReview: boolean; canPreviewSemantics: boolean; navigate: (path: string) => void }) {
+  const recoveryDraft = useMemo(() => {
+    const draft = readAssistantDraft()
+    return draft?.sourceId === source?.connection.id ? draft : null
+  }, [source?.connection.id])
   const [readiness, setReadiness] = useState<CopilotReadiness | null>(null)
-  const [source, setSource] = useState<ActiveSource | null>(null)
   const [catalog, setCatalog] = useState<CopilotCatalog | null>(null)
   const [selectedDomainCode, setSelectedDomainCode] = useState<string | null>(recoveryDraft?.domainCode ?? null)
   const [historyPage, setHistoryPage] = useState<Page<BiProposal>>({ items: [], total: 0, limit: historyPageSize, offset: 0 })
@@ -677,7 +713,8 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
   useEffect(() => {
     if (!selectedDomainCode) return
     const draft: AssistantDraft = {
-      version: 1,
+      version: 2,
+      sourceId: source?.connection.id ?? 0,
       domainCode: selectedDomainCode,
       step,
       goal,
@@ -686,7 +723,7 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
       proposalId: proposal?.id ?? draftProposalId,
     }
     localStorage.setItem(assistantDraftKey, JSON.stringify(draft))
-  }, [draftProposalId, goal, periodicity, proposal?.id, questions, selectedDomainCode, step])
+  }, [draftProposalId, goal, periodicity, proposal?.id, questions, selectedDomainCode, source?.connection.id, step])
 
   useEffect(() => {
     if (!catalog || !recoveryDraft?.proposalId || restoredProposal.current) return
@@ -712,27 +749,32 @@ function AnalysisAssistantPage({ token, canGenerate, canReview, canPreviewSemant
   async function refreshHistory(domainCode = selectedDomainCode, offset = historyOffset, filter = historyFilter) {
     if (!domainCode) return
     const statuses = historyFilterOptions.find((item) => item.value === filter)?.statuses ?? []
-    const attempts = await api.proposals(token, historyPageSize, offset, statuses, domainCode)
+    const attempts = await api.proposals(token, historyPageSize, offset, statuses, domainCode, source?.connection.id)
     setHistoryPage(attempts)
   }
 
   useEffect(() => {
-    Promise.all([api.copilotReadiness(token), api.activeSource(token)])
-      .then(async ([ready, active]) => {
+    if (!source) {
+      setReadiness(null)
+      setCatalog(null)
+      return
+    }
+    api.copilotReadiness(token, source.connection.id)
+      .then(async (ready) => {
         setReadiness(ready)
-        setSource(active)
-        if (active.latest_snapshot) setCatalog(await api.copilotCatalog(token, active.latest_snapshot.id))
+        if (source.latest_snapshot) setCatalog(await api.copilotCatalog(token, source.latest_snapshot.id, source.connection.id))
+        else setCatalog(null)
       })
       .catch((error: Error) => setFeedback({ kind: 'error', message: error.message }))
-  }, [token])
+  }, [source, token])
 
   useEffect(() => {
     if (!selectedDomainCode) return
     const statuses = historyFilterOptions.find((item) => item.value === historyFilter)?.statuses ?? []
-    void api.proposals(token, historyPageSize, historyOffset, statuses, selectedDomainCode)
+    void api.proposals(token, historyPageSize, historyOffset, statuses, selectedDomainCode, source?.connection.id)
       .then(setHistoryPage)
       .catch((error: Error) => setFeedback({ kind: 'error', message: error.message }))
-  }, [historyFilter, historyOffset, selectedDomainCode, token])
+  }, [historyFilter, historyOffset, selectedDomainCode, source?.connection.id, token])
 
   const selectedDomain = catalog?.domains.find((domain) => domain.code === selectedDomainCode)
 
@@ -1350,7 +1392,7 @@ function formatKpiDisplay(value: unknown, unit: string) {
   return `${formatted} ${unit}`
 }
 
-function SalesDatamartPage({ token, canWrite, navigate }: { token: string; canWrite: boolean; navigate: (path: string) => void }) {
+function SalesDatamartPage({ sourceId, token, canWrite, navigate }: { sourceId: number; token: string; canWrite: boolean; navigate: (path: string) => void }) {
   const [catalog, setCatalog] = useState<{ items: EtlProposalCandidate[]; blocked_items: EtlProposalCandidate[]; recommended_proposal_id?: number; guidance: string[] } | null>(null)
   const [executions, setExecutions] = useState<Page<EtlExecution>>({ items: [], total: 0, limit: 5, offset: 0 })
   const [selectedId, setSelectedId] = useState<number | null>(null)
@@ -1366,7 +1408,7 @@ function SalesDatamartPage({ token, canWrite, navigate }: { token: string; canWr
 
   const loadWorkspace = useCallback(async () => {
     try {
-      const [available, history] = await Promise.all([api.etlProposals(token), api.etlExecutions(token, 5, 0)])
+      const [available, history] = await Promise.all([api.etlProposals(token, sourceId || undefined), api.etlExecutions(token, 5, 0, sourceId || undefined)])
       setCatalog(available)
       setExecutions(history)
       const proposedId = available.recommended_proposal_id ?? available.items[0]?.proposal_id ?? null
@@ -1374,7 +1416,7 @@ function SalesDatamartPage({ token, canWrite, navigate }: { token: string; canWr
     } catch (caught) {
       setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible preparar el espacio de trabajo.' })
     }
-  }, [token])
+  }, [sourceId, token])
 
   useEffect(() => { void loadWorkspace() }, [loadWorkspace])
 
@@ -1790,12 +1832,7 @@ function ConnectionsPage({ data, message, token, canWrite, canTest, canRefresh, 
   const [selected, setSelected] = useState<DataConnection | null>(null)
   const [values, setValues] = useState(emptyConnection)
   const [feedback, setFeedback] = useState<{ message: string; kind: 'success' | 'error' } | null>(null)
-  const [activeSource, setActiveSource] = useState<ActiveSource | null>(null)
-  const [capturing, setCapturing] = useState(false)
-
-  useEffect(() => {
-    api.activeSource(token).then(setActiveSource).catch(() => setActiveSource(null))
-  }, [data, token])
+  const [capturingSourceId, setCapturingSourceId] = useState<number | null>(null)
 
   function beginEdit(item: DataConnection) {
     setSelected(item)
@@ -1831,10 +1868,10 @@ function ConnectionsPage({ data, message, token, canWrite, canTest, canRefresh, 
         setFeedback({ message: result.message, kind: result.ok ? 'success' : 'error' })
       } else if (action === 'activate') {
         await api.activateConnection(token, item.id)
-        setFeedback({ message: 'La fuente quedó activa para los siguientes pasos del flujo de análisis.', kind: 'success' })
+        setFeedback({ message: 'La fuente quedó habilitada y ya puede elegirse en el espacio de trabajo.', kind: 'success' })
       } else if (action === 'deactivate') {
         await api.deactivateConnection(token, item.id)
-        setFeedback({ message: 'La fuente fue desactivada.', kind: 'success' })
+        setFeedback({ message: 'La fuente fue deshabilitada.', kind: 'success' })
       } else {
         await api.remove(`/connections/${item.id}`, token)
         setFeedback({ message: 'La conexión y su contraseña cifrada fueron eliminadas.', kind: 'success' })
@@ -1845,39 +1882,32 @@ function ConnectionsPage({ data, message, token, canWrite, canTest, canRefresh, 
     }
   }
 
-  async function captureMetadata() {
+  async function captureMetadata(connectionId: number) {
     setFeedback(null)
-    setCapturing(true)
+    setCapturingSourceId(connectionId)
     try {
-      const result = await api.captureMetadata(token)
+      const result = await api.captureMetadata(token, connectionId)
       setFeedback({ message: result.message, kind: 'success' })
-      setActiveSource(await api.activeSource(token))
       onSaved()
     } catch (caught) {
       setFeedback({ message: caught instanceof Error ? caught.message : 'No fue posible actualizar los metadatos.', kind: 'error' })
     } finally {
-      setCapturing(false)
+      setCapturingSourceId(null)
     }
   }
 
   if (message) return <p className="notice error">{message}</p>
   if (!data) return <p className="notice">Cargando información…</p>
   return <>
-    <p className="lead">Registre una fuente SQL Server sin editar archivos. La contraseña se cifra y nunca vuelve a mostrarse.</p>
-    {activeSource?.connection && <section className="source-summary" aria-label="Fuente activa">
-      <div><p className="eyebrow">Fuente activa</p><h2>{activeSource.connection.name}</h2><p>{activeSource.connection.database_name} · Sólo lectura validada</p></div>
-      <div className="source-metrics"><span><strong>{activeSource.latest_snapshot?.table_count ?? '—'}</strong> tablas</span><span><strong>{activeSource.latest_snapshot?.column_count ?? '—'}</strong> columnas</span><span><strong>{activeSource.latest_snapshot?.relationship_count ?? '—'}</strong> relaciones</span></div>
-      {canRefresh && <button onClick={captureMetadata} disabled={capturing}>{capturing ? 'Leyendo estructura…' : 'Actualizar metadatos'}</button>}
-      <small>{activeSource.latest_snapshot ? `Última instantánea: ${new Date(activeSource.latest_snapshot.captured_at).toLocaleString('es-EC')}` : 'Todavía no existe una instantánea. Esta acción lee estructura, nunca filas.'}</small>
-    </section>}
+    <p className="lead">Registre una o varias fuentes SQL Server sin editar archivos. Pueden permanecer habilitadas simultáneamente; cada usuario elige su contexto de trabajo. Las contraseñas se cifran y nunca vuelven a mostrarse.</p>
     {canWrite && <form className="crud-form" onSubmit={submit}>
-      <div className="form-title"><h2>{selected ? 'Editar conexión' : 'Registrar conexión'}</h2><span>En este sprint se admite una única fuente activa y sólo el motor SQL Server.</span></div>
+      <div className="form-title"><h2>{selected ? 'Editar conexión' : 'Registrar conexión'}</h2><span>Puede habilitar varias fuentes SQL Server; todas recorren el mismo proceso universal.</span></div>
       <div className="form-grid">
         <label>Nombre visible<input required minLength={3} maxLength={120} value={values.name} onChange={(event) => setValues({ ...values, name: event.target.value })} /></label>
         <label>Motor<select value="sqlserver" disabled><option value="sqlserver">SQL Server</option></select></label>
         <label>Servidor<input required placeholder="sqlserver o servidor.empresa.local" value={values.host} onChange={(event) => setValues({ ...values, host: event.target.value })} /></label>
         <label>Puerto<input required type="number" min="1" max="65535" value={values.port} onChange={(event) => setValues({ ...values, port: event.target.value })} /></label>
-        <label>Base de datos<input required placeholder="AdventureWorks2022" value={values.database_name} onChange={(event) => setValues({ ...values, database_name: event.target.value })} /></label>
+        <label>Base de datos<input required placeholder="Ejemplo: VentasCorporativas" value={values.database_name} onChange={(event) => setValues({ ...values, database_name: event.target.value })} /></label>
         <label>Usuario de sólo lectura<input required value={values.username} onChange={(event) => setValues({ ...values, username: event.target.value })} /></label>
         <label>Contraseña<input required={!selected} type="password" minLength={8} autoComplete="new-password" placeholder={selected ? 'Déjela vacía para conservarla' : ''} value={values.password} onChange={(event) => setValues({ ...values, password: event.target.value })} /></label>
       </div>
@@ -1885,12 +1915,11 @@ function ConnectionsPage({ data, message, token, canWrite, canTest, canRefresh, 
       <div className="form-actions"><button>{selected ? 'Guardar cambios' : 'Registrar conexión'}</button>{selected && <button type="button" className="secondary" onClick={cancelEdit}>Cancelar</button>}</div>
     </form>}
     {feedback && <p className={`notice ${feedback.kind}`} role={feedback.kind === 'error' ? 'alert' : 'status'}>{feedback.message}</p>}
-    <div className="table-wrap"><table><thead><tr><th>Fuente</th><th>Destino</th><th>Validación</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>{data.items.map((item) => <tr key={item.id}><td><strong>{item.name}</strong><br /><small>SQL Server</small></td><td>{item.host}:{item.port}<br /><small>{item.database_name} · {item.username}</small></td><td>{item.last_test_status === 'ok' ? 'Sólo lectura validada' : item.last_test_status === 'error' ? 'Prueba fallida' : 'Pendiente'}{item.last_tested_at && <><br /><small>{new Date(item.last_tested_at).toLocaleString('es-EC')}</small></>}</td><td>{item.is_active ? 'Activa' : 'Inactiva'}</td><td><div className="row-actions">{canWrite && !item.is_active && <button className="table-action" onClick={() => beginEdit(item)}>Editar</button>}{canTest && <button className="table-action secondary" onClick={() => perform(item, 'test')}>Probar conexión</button>}{canWrite && (item.is_active ? <button className="table-action secondary" onClick={() => perform(item, 'deactivate')}>Desactivar</button> : <button className="table-action secondary" disabled={item.last_test_status !== 'ok'} onClick={() => perform(item, 'activate')}>Activar</button>)}{canWrite && !item.is_active && <button className="table-action danger" onClick={() => perform(item, 'delete')}>Eliminar</button>}</div></td></tr>)}</tbody></table>{data.items.length === 0 && <p className="notice">Todavía no hay conexiones registradas.</p>}<Pagination page={data} onChange={onChangePage} /></div>
+    <div className="table-wrap"><table><thead><tr><th>Fuente</th><th>Destino</th><th>Validación</th><th>Disponibilidad</th><th>Acciones</th></tr></thead><tbody>{data.items.map((item) => <tr key={item.id}><td><strong>{item.name}</strong><br /><small>SQL Server</small></td><td>{item.host}:{item.port}<br /><small>{item.database_name} · {item.username}</small></td><td>{item.last_test_status === 'ok' ? 'Sólo lectura validada' : item.last_test_status === 'error' ? 'Prueba fallida' : 'Pendiente'}{item.last_tested_at && <><br /><small>{new Date(item.last_tested_at).toLocaleString('es-EC')}</small></>}</td><td>{item.is_active ? 'Habilitada' : 'Deshabilitada'}</td><td><div className="row-actions">{canWrite && !item.is_active && <button className="table-action" onClick={() => beginEdit(item)}>Editar</button>}{canTest && <button className="table-action secondary" onClick={() => perform(item, 'test')}>Probar conexión</button>}{canRefresh && item.is_active && <button className="table-action secondary" disabled={capturingSourceId !== null} onClick={() => captureMetadata(item.id)}>{capturingSourceId === item.id ? 'Leyendo estructura…' : 'Leer metadatos'}</button>}{canWrite && (item.is_active ? <button className="table-action secondary" onClick={() => perform(item, 'deactivate')}>Deshabilitar</button> : <button className="table-action secondary" disabled={item.last_test_status !== 'ok'} onClick={() => perform(item, 'activate')}>Habilitar</button>)}{canWrite && !item.is_active && <button className="table-action danger" onClick={() => perform(item, 'delete')}>Eliminar</button>}</div></td></tr>)}</tbody></table>{data.items.length === 0 && <p className="notice">Todavía no hay conexiones registradas.</p>}<Pagination page={data} onChange={onChangePage} /></div>
   </>
 }
 
-function SchemaExplorerPage({ snapshots, message, token, canRefresh, onSaved, onChangePage }: { snapshots: Page<MetadataSnapshot> | null; message: string; token: string; canRefresh: boolean; onSaved: () => void; onChangePage: (offset: number) => void }) {
-  const [activeSource, setActiveSource] = useState<ActiveSource | null>(null)
+function SchemaExplorerPage({ source, snapshots, message, token, canRefresh, onSaved, onChangePage }: { source: SourceWorkspace | null; snapshots: Page<MetadataSnapshot> | null; message: string; token: string; canRefresh: boolean; onSaved: () => void; onChangePage: (offset: number) => void }) {
   const [snapshotId, setSnapshotId] = useState<number | null>(null)
   const [searchDraft, setSearchDraft] = useState('')
   const [schemaDraft, setSchemaDraft] = useState('')
@@ -1901,10 +1930,6 @@ function SchemaExplorerPage({ snapshots, message, token, canRefresh, onSaved, on
   const [detail, setDetail] = useState<MetadataTableDetail | null>(null)
   const [localFeedback, setLocalFeedback] = useState<{ message: string; kind: 'success' | 'error' } | null>(null)
   const [capturing, setCapturing] = useState(false)
-
-  useEffect(() => {
-    api.activeSource(token).then(setActiveSource).catch((caught: Error) => setLocalFeedback({ message: caught.message, kind: 'error' }))
-  }, [snapshots, token])
 
   useEffect(() => {
     const availableIds = new Set(snapshots?.items.map((item) => item.id) ?? [])
@@ -1949,7 +1974,7 @@ function SchemaExplorerPage({ snapshots, message, token, canRefresh, onSaved, on
     setCapturing(true)
     setLocalFeedback(null)
     try {
-      const result = await api.captureMetadata(token)
+      const result = await api.captureMetadata(token, source?.connection.id)
       setLocalFeedback({ message: result.message, kind: 'success' })
       setSnapshotId(result.snapshot.id)
       setTableOffset(0)
@@ -1969,15 +1994,15 @@ function SchemaExplorerPage({ snapshots, message, token, canRefresh, onSaved, on
 
   if (message) return <p className="notice error">{message}</p>
   if (!snapshots) return <p className="notice">Cargando instantáneas…</p>
-  if (!activeSource?.connection) return <div className="empty-state"><h2>No hay una fuente activa</h2><p>Un administrador debe probar y activar una conexión SQL Server antes de leer su estructura.</p></div>
+  if (!source?.connection) return <div className="empty-state"><h2>No hay una fuente habilitada</h2><p>Un administrador debe probar y habilitar una conexión SQL Server antes de leer su estructura.</p></div>
   if (snapshots.items.length === 0) return <div className="empty-state"><h2>Todavía no hay metadatos</h2><p>La instantánea incluirá tablas, columnas y relaciones declaradas, pero nunca filas ni credenciales.</p>{canRefresh && <button onClick={capture} disabled={capturing}>{capturing ? 'Leyendo estructura…' : 'Crear primera instantánea'}</button>}{localFeedback && <p className={`notice ${localFeedback.kind}`} role={localFeedback.kind === 'error' ? 'alert' : 'status'}>{localFeedback.message}</p>}</div>
 
   const currentSnapshot = snapshots.items.find((item) => item.id === snapshotId) ?? snapshots.items[0]
   return <>
-    <div className="explorer-header"><div><p className="lead">Consulte la estructura capturada de <strong>{activeSource.connection.name}</strong>. Esta vista no lee filas del negocio.</p><p className="snapshot-meta">Instantánea #{currentSnapshot.id} · {new Date(currentSnapshot.captured_at).toLocaleString('es-EC')} · huella {currentSnapshot.content_hash.slice(0, 12)}</p></div>{canRefresh && <button onClick={capture} disabled={capturing}>{capturing ? 'Leyendo estructura…' : 'Actualizar metadatos'}</button>}</div>
+    <div className="explorer-header"><div><p className="lead">Consulte la estructura capturada de <strong>{source.connection.name}</strong>. Esta vista no lee filas del negocio.</p><p className="snapshot-meta">Instantánea #{currentSnapshot.id} · {new Date(currentSnapshot.captured_at).toLocaleString('es-EC')} · huella {currentSnapshot.content_hash.slice(0, 12)}</p></div>{canRefresh && <button onClick={capture} disabled={capturing}>{capturing ? 'Leyendo estructura…' : 'Actualizar metadatos'}</button>}</div>
     <div className="snapshot-metrics" aria-label="Resumen de la instantánea"><article><strong>{currentSnapshot.schema_count}</strong><span>esquemas</span></article><article><strong>{currentSnapshot.table_count}</strong><span>tablas</span></article><article><strong>{currentSnapshot.column_count}</strong><span>columnas</span></article><article><strong>{currentSnapshot.relationship_count}</strong><span>relaciones</span></article></div>
     {snapshots.items.length > 1 && <label className="snapshot-selector">Versión de metadatos<select value={currentSnapshot.id} onChange={(event) => { setSnapshotId(Number(event.target.value)); setTableOffset(0); setSelectedTable(null); setLocalFeedback(null) }}>{snapshots.items.map((item) => <option key={item.id} value={item.id}>#{item.id} · {new Date(item.captured_at).toLocaleString('es-EC')} · {item.content_hash.slice(0, 8)}</option>)}</select></label>}
-    <form className="explorer-filters" onSubmit={applyFilters}><label>Buscar tabla o columna<input value={searchDraft} maxLength={120} placeholder="Ejemplo: pedido, SalesOrderID" onChange={(event) => setSearchDraft(event.target.value)} /></label><label>Esquema<input value={schemaDraft} maxLength={128} placeholder="Ejemplo: Sales" onChange={(event) => setSchemaDraft(event.target.value)} /></label><button>Buscar</button></form>
+    <form className="explorer-filters" onSubmit={applyFilters}><label>Buscar tabla o columna<input value={searchDraft} maxLength={120} placeholder="Ejemplo: pedido, producto o cliente" onChange={(event) => setSearchDraft(event.target.value)} /></label><label>Esquema<input value={schemaDraft} maxLength={128} placeholder="Ejemplo: comercial" onChange={(event) => setSchemaDraft(event.target.value)} /></label><button>Buscar</button></form>
     {localFeedback && <p className={`notice ${localFeedback.kind}`} role={localFeedback.kind === 'error' ? 'alert' : 'status'}>{localFeedback.message}</p>}
     <div className="schema-explorer">
       <section className="schema-table-list" aria-label="Tablas de la instantánea"><h2>Tablas</h2>{!tables ? <p>Cargando tablas…</p> : tables.items.length === 0 ? <p className="notice">No se encontraron coincidencias.</p> : <>{tables.items.map((item) => <button key={`${item.schema_name}.${item.table_name}`} title={`${item.schema_name}.${item.table_name}`} className={selectedTable?.schema_name === item.schema_name && selectedTable?.table_name === item.table_name ? 'selected' : ''} onClick={() => setSelectedTable(item)}><span><small>{item.schema_name}</small><strong>{item.table_name}</strong></span><span>{item.column_count} columnas<br /><small>{item.relationship_count} relaciones salientes</small></span></button>)}<Pagination page={tables} onChange={setTableOffset} /></>}</section>
@@ -1995,10 +2020,12 @@ const supportedPeriodicities: AnalysisCatalogPeriodicity[] = [
   { code: 'year', label: 'Anual', description: 'Agrupa resultados por año cuando existe una fecha de negocio verificable.', enabled: true },
 ]
 
-function AnalysisCatalogPage({ token, canWrite }: { token: string; canWrite: boolean }) {
+function AnalysisCatalogPage({ source, token, canWrite }: { source: SourceWorkspace | null; token: string; canWrite: boolean }) {
   const [domains, setDomains] = useState<AnalysisCatalogDomain[]>([])
   const [domainCode, setDomainCode] = useState('')
   const [draft, setDraft] = useState<AnalysisCatalogConfiguration | null>(null)
+  const [technicalCatalog, setTechnicalCatalog] = useState<CopilotCatalog | null>(null)
+  const [technicalRevision, setTechnicalRevision] = useState(0)
   const [periodicityToAdd, setPeriodicityToAdd] = useState<AnalysisCatalogPeriodicity['code']>('day')
   const [loading, setLoading] = useState(true)
   const [feedback, setFeedback] = useState<{ kind: 'success' | 'error'; message: string } | null>(null)
@@ -2010,13 +2037,23 @@ function AnalysisCatalogPage({ token, canWrite }: { token: string; canWrite: boo
   }, [token])
 
   useEffect(() => {
-    if (!domainCode) return
+    if (!domainCode || !source?.connection.id) return
     setLoading(true); setFeedback(null)
-    api.analysisCatalog(token, domainCode)
+    api.analysisCatalog(token, domainCode, source.connection.id)
       .then(setDraft)
       .catch((error: Error) => setFeedback({ kind: 'error', message: error.message }))
       .finally(() => setLoading(false))
-  }, [domainCode, token])
+  }, [domainCode, source?.connection.id, token])
+
+  useEffect(() => {
+    if (!source?.latest_snapshot) {
+      setTechnicalCatalog(null)
+      return
+    }
+    api.copilotCatalog(token, source.latest_snapshot.id, source.connection.id)
+      .then(setTechnicalCatalog)
+      .catch(() => setTechnicalCatalog(null))
+  }, [source?.connection.id, source?.latest_snapshot, technicalRevision, token])
 
   function changeQuestion(index: number, field: 'label' | 'description' | 'prompt_instruction' | 'enabled', value: string | boolean) {
     setDraft((current) => {
@@ -2051,8 +2088,10 @@ function AnalysisCatalogPage({ token, canWrite }: { token: string; canWrite: boo
     if (!draft) return
     setFeedback(null)
     try {
-      const saved = await api.saveAnalysisCatalog(token, domainCode, draft)
+      if (!source?.connection.id) return
+      const saved = await api.saveAnalysisCatalog(token, domainCode, source.connection.id, draft)
       setDraft(saved)
+      setTechnicalRevision((current) => current + 1)
       setFeedback({ kind: 'success', message: 'El catálogo analítico fue actualizado. Los nuevos análisis usarán esta configuración.' })
     } catch (caught) { setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible guardar el catálogo.' }) }
   }
@@ -2060,8 +2099,10 @@ function AnalysisCatalogPage({ token, canWrite }: { token: string; canWrite: boo
   async function reset() {
     setFeedback(null)
     try {
-      const restored = await api.resetAnalysisCatalog(token, domainCode)
+      if (!source?.connection.id) return
+      const restored = await api.resetAnalysisCatalog(token, domainCode, source.connection.id)
       setDraft(restored)
+      setTechnicalRevision((current) => current + 1)
       setFeedback({ kind: 'success', message: 'Se restauró el catálogo validado del dominio.' })
     } catch (caught) { setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible restaurar el catálogo.' }) }
   }
@@ -2072,10 +2113,16 @@ function AnalysisCatalogPage({ token, canWrite }: { token: string; canWrite: boo
     if (firstMissingPeriodicityCode) setPeriodicityToAdd(firstMissingPeriodicityCode)
   }, [firstMissingPeriodicityCode])
 
+  const technicalDomain = technicalCatalog?.domains.find((item) => item.code === domainCode)
+
   return <>
-    <p className="lead">Administre las guías de negocio que orientan al copiloto para cada dominio implementado. Aquí no se fija el objetivo de un análisis ni se define el modelo dimensional.</p>
-    <section className="catalog-boundary"><strong>Responsabilidades separadas</strong><p>Las preguntas expresan necesidades del negocio y las periodicidades ofrecen estrategias temporales soportadas. La IA descubre dimensiones, hechos, medidas, granularidad, KPIs y el plan ETL desde los metadatos; el analista los supervisa y puede corregirlos sin SQL.</p></section>
+    <p className="lead">Administre las preguntas de negocio de <strong>{source?.connection.name ?? 'la fuente seleccionada'}</strong>. La evidencia técnica se descubre automáticamente desde sus metadatos y nunca se copia desde otra base de datos.</p>
+    <section className="catalog-boundary"><strong>Catálogo de negocio y descubrimiento técnico</strong><p>El analista define qué decisiones desea apoyar. La plataforma recorre tablas, columnas y relaciones reales; la IA interpreta ese alcance y propone el modelo, pero reglas determinísticas vuelven a validar cada referencia antes de permitir su aprobación.</p></section>
     <label className="domain-selector">Dominio habilitado<select value={domainCode} onChange={(event) => setDomainCode(event.target.value)}>{domains.map((domain) => <option value={domain.code} key={domain.code}>{domain.label}</option>)}</select></label>
+    <section className="catalog-technical-evidence" aria-label="Cobertura técnica automática">
+      <div className="catalog-section-heading"><div><p className="eyebrow">Descubrimiento automático</p><h2>Cobertura técnica de la fuente</h2><p>{source?.latest_snapshot ? `Instantánea #${source.latest_snapshot.id}. Las referencias se recalculan con los metadatos vigentes.` : 'Cree una instantánea de metadatos para comprobar la cobertura de esta fuente.'}</p></div></div>
+      {technicalDomain ? <div className="catalog-evidence-grid">{technicalDomain.questions.map((item) => <article className={item.available ? 'available' : 'unavailable'} key={item.code}><span>{item.available ? 'Verificable' : 'No disponible'}</span><h3>{item.label}</h3><p>{item.reason}</p>{item.evidence.length > 0 ? <details><summary>Referencias detectadas</summary><ul>{item.evidence.map((reference) => <li key={reference}>{reference}</li>)}</ul></details> : <small>No se encontró evidencia técnica suficiente.</small>}</article>)}</div> : <p className="notice">La cobertura se mostrará cuando exista una instantánea vigente para esta fuente.</p>}
+    </section>
     {feedback && <p className={`notice ${feedback.kind}`} role={feedback.kind === 'error' ? 'alert' : 'status'}>{feedback.message}</p>}
     {loading || !draft ? <p className="notice">Cargando catálogo…</p> : <form className="analysis-catalog-editor" onSubmit={save}>
       <section><div className="catalog-section-heading"><div><p className="eyebrow">Orientación para la IA</p><h2>Preguntas de negocio</h2><p>El analista las seleccionará junto con un objetivo escrito para cada análisis.</p></div>{canWrite && <button type="button" onClick={addQuestion} disabled={draft.questions.length >= 12}>Agregar pregunta</button>}</div>

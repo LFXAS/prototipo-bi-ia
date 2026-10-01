@@ -37,6 +37,9 @@ def test_intent_schema_closes_metrics_years_and_territories_to_real_options() ->
     dashboard = AnalyticsDashboardRead(
         execution_id=7,
         proposal_id=52,
+        data_connection_id=1,
+        source_name="AdventureWorks local",
+        database_name="AdventureWorks2022",
         title="Ventas",
         description="Ventas conciliadas",
         grain="Una fila por detalle",

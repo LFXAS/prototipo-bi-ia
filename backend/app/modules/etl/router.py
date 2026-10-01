@@ -211,7 +211,9 @@ async def _candidate(proposal: BiProposal, session: AsyncSession) -> EtlProposal
     if snapshot is None:
         blockers.append("La instantánea de metadatos asociada ya no está disponible.")
     if connection is None or not connection.is_active or connection.last_test_status != "ok":
-        blockers.append("La fuente asociada debe estar activa y validada en modo de sólo lectura.")
+        blockers.append(
+            "La fuente asociada debe estar habilitada y validada en modo de sólo lectura."
+        )
     if snapshot is not None:
         current = validate_proposal(
             proposal.proposal_document, proposal.scope_document, snapshot.schema_document
@@ -256,6 +258,11 @@ async def _candidate(proposal: BiProposal, session: AsyncSession) -> EtlProposal
     return EtlProposalCandidateRead(
         proposal_id=proposal.id,
         metadata_snapshot_id=proposal.metadata_snapshot_id,
+        data_connection_id=connection.id if connection is not None else 0,
+        source_name=connection.name if connection is not None else "Fuente no disponible",
+        database_name=(
+            connection.database_name if connection is not None else "Base no disponible"
+        ),
         business_goal=proposal.business_goal,
         periodicity=proposal.periodicity,
         provider_kind=proposal.provider_kind,
@@ -288,15 +295,20 @@ async def _candidate(proposal: BiProposal, session: AsyncSession) -> EtlProposal
 
 @router.get("/etl/proposals", response_model=EtlProposalCatalogRead)
 async def list_eligible_proposals(
+    connection_id: int | None = Query(default=None, gt=0),
     _: User = Depends(require_permission("etl.executions.read")),
     session: AsyncSession = Depends(get_session),
 ) -> EtlProposalCatalogRead:
+    statement = select(BiProposal).where(BiProposal.status == "approved")
+    if connection_id is not None:
+        snapshot_ids = select(MetadataSnapshot.id).where(
+            MetadataSnapshot.data_connection_id == connection_id
+        )
+        statement = statement.where(BiProposal.metadata_snapshot_id.in_(snapshot_ids))
     proposals = list(
         (
             await session.execute(
-                select(BiProposal)
-                .where(BiProposal.status == "approved")
-                .order_by(BiProposal.reviewed_at.desc(), BiProposal.id.desc())
+                statement.order_by(BiProposal.reviewed_at.desc(), BiProposal.id.desc())
             )
         ).scalars()
     )
@@ -455,13 +467,21 @@ async def list_executions(
     session: AsyncSession = Depends(get_session),
     limit: int = Query(default=10, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
+    connection_id: int | None = Query(default=None, gt=0),
 ) -> PageRead[EtlExecutionRead]:
-    total = (await session.scalar(select(func.count()).select_from(EtlExecution))) or 0
+    total_statement = select(func.count()).select_from(EtlExecution)
+    items_statement = select(EtlExecution)
+    if connection_id is not None:
+        snapshot_ids = select(MetadataSnapshot.id).where(
+            MetadataSnapshot.data_connection_id == connection_id
+        )
+        total_statement = total_statement.where(EtlExecution.metadata_snapshot_id.in_(snapshot_ids))
+        items_statement = items_statement.where(EtlExecution.metadata_snapshot_id.in_(snapshot_ids))
+    total = (await session.scalar(total_statement)) or 0
     items = list(
         (
             await session.execute(
-                select(EtlExecution)
-                .order_by(EtlExecution.created_at.desc(), EtlExecution.id.desc())
+                items_statement.order_by(EtlExecution.created_at.desc(), EtlExecution.id.desc())
                 .limit(limit)
                 .offset(offset)
             )

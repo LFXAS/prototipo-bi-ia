@@ -6,6 +6,18 @@ import { api, sessionExpiredEvent } from './api/security'
 import { readAssistantDraft } from './assistantRecovery'
 import { roleChoicesForUserAssignment } from './roleChoices'
 
+const sourceConnection = {
+  id: 1,
+  name: 'Fuente comercial de prueba',
+  connector_kind: 'sqlserver',
+  database_name: 'BaseComercial',
+  last_test_status: 'ok',
+}
+
+function sourceWorkspace(latestSnapshot: Record<string, unknown> | null = null) {
+  return [{ status: latestSnapshot ? 'ready' : 'metadata_pending', connection: sourceConnection, latest_snapshot: latestSnapshot }]
+}
+
 describe('App', () => {
   beforeEach(() => vi.stubGlobal('scrollTo', vi.fn()))
 
@@ -46,8 +58,9 @@ describe('App', () => {
     await expect(api.copilotReadiness('expired-token')).rejects.toThrow(/sesión venció/i)
     expect(expired).toHaveBeenCalledOnce()
 
-    localStorage.setItem('bi_ia_assistant_draft_v1', JSON.stringify({
-      version: 1,
+    localStorage.setItem('bi_ia_assistant_draft_v2', JSON.stringify({
+      version: 2,
+      sourceId: 7,
       domainCode: 'ventas',
       step: 3,
       goal: 'Analizar ventas y margen por producto.',
@@ -57,7 +70,8 @@ describe('App', () => {
       credential: 'no-debe-restaurarse',
     }))
     expect(readAssistantDraft()).toEqual({
-      version: 1,
+      version: 2,
+      sourceId: 7,
       domainCode: 'ventas',
       step: 3,
       goal: 'Analizar ventas y margen por producto.',
@@ -327,9 +341,11 @@ describe('App', () => {
           menus: [{ id: 12, code: 'analysis-catalog', label: 'Catálogo analítico', path: '/catalogo-analitico', position: 5, module_code: 'ai', module_label: 'IA', is_active: true, permissions: [] }],
         }),
       }
+      if (url.endsWith('/sources')) return { ok: true, status: 200, json: async () => sourceWorkspace({ id: 8, data_connection_id: 1, connector_code: 'sqlserver', database_name: 'BaseComercial', contract_version: 1, content_hash: 'c'.repeat(64), schema_count: 4, table_count: 20, column_count: 140, relationship_count: 22, captured_by_label: 'Administradora', captured_at: '2026-10-01T09:00:00Z' }) }
       if (url.endsWith('/analysis-catalog/domains')) return { ok: true, status: 200, json: async () => [{ code: 'ventas', label: 'Datamart de ventas', description: 'Modelo comercial.', enabled: true, implementation_status: 'implemented' }] }
-      if (url.endsWith('/analysis-catalog/domains/ventas') && init?.method === 'PUT') return { ok: true, status: 200, json: async () => JSON.parse(String(init.body)) }
-      if (url.endsWith('/analysis-catalog/domains/ventas')) return { ok: true, status: 200, json: async () => catalog }
+      if (url.includes('/copilot/catalog?')) return { ok: true, status: 200, json: async () => ({ metadata_snapshot_id: 8, domains: [{ code: 'ventas', label: 'Datamart de ventas', description: 'Modelo comercial.', available: true, reason: 'Existe evidencia suficiente.', questions: [{ code: 'sales_over_time', label: 'Evolución de ventas', description: 'Compara períodos.', available: true, reason: 'Fecha comercial y medida verificadas.', evidence: ['Comercial.Pedidos', 'Comercial.DetallePedido'] }], periodicities: [{ code: 'month', label: 'Mensual', description: 'Agrupación mensual.', available: true, reason: 'Fecha verificable.', evidence: ['Comercial.Pedidos.FechaPedido'] }] }] }) }
+      if (url.includes('/analysis-catalog/domains/ventas?') && init?.method === 'PUT') return { ok: true, status: 200, json: async () => JSON.parse(String(init.body)) }
+      if (url.includes('/analysis-catalog/domains/ventas?')) return { ok: true, status: 200, json: async () => catalog }
       throw new Error(`Solicitud inesperada: ${url}`)
     })
     vi.stubGlobal('fetch', fetchMock)
@@ -338,13 +354,16 @@ describe('App', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Diseño y transformación BI' }))
     fireEvent.click(screen.getByRole('button', { name: 'Catálogo analítico' }))
     expect(await screen.findByText('Identificador interno: sales_over_time')).toBeInTheDocument()
+    expect(screen.getByText('Cobertura técnica de la fuente')).toBeInTheDocument()
+    expect(screen.getByText('Comercial.Pedidos')).toBeInTheDocument()
+    expect(screen.getByText(/nunca se copia desde otra base de datos/i)).toBeInTheDocument()
     expect(screen.queryByText(/Dimensiones de interés/i)).not.toBeInTheDocument()
     expect(screen.queryByLabelText(/Objetivo del análisis/i)).not.toBeInTheDocument()
     fireEvent.change(screen.getAllByLabelText('Etiqueta')[0], { target: { value: 'Tendencia comercial mensual' } })
     fireEvent.click(screen.getByRole('button', { name: 'Guardar catálogo' }))
 
     expect(await screen.findByText(/catálogo analítico fue actualizado/i)).toBeInTheDocument()
-    const updateRequest = fetchMock.mock.calls.find(([input, init]) => String(input).endsWith('/analysis-catalog/domains/ventas') && init?.method === 'PUT')
+    const updateRequest = fetchMock.mock.calls.find(([input, init]) => String(input).includes('/analysis-catalog/domains/ventas?') && init?.method === 'PUT')
     const saved = JSON.parse(String(updateRequest?.[1]?.body)) as typeof catalog
     expect(saved.questions[0]).toMatchObject({ code: 'sales_over_time', label: 'Tendencia comercial mensual' })
   })
@@ -374,7 +393,7 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Conexiones de datos' }))
 
     expect(await screen.findByText('Sólo lectura validada')).toBeInTheDocument()
-    expect(screen.getByText('Activa')).toBeInTheDocument()
+    expect(screen.getByText('Habilitada')).toBeInTheDocument()
     expect(screen.queryByText(/password|contraseña guardada/i)).not.toBeInTheDocument()
   })
 
@@ -390,10 +409,10 @@ describe('App', () => {
           menus: [{ id: 10, code: 'schema-explorer', label: 'Explorador de esquema', path: '/esquema', position: 10, module_code: 'data', module_label: 'Datos', is_active: true, permissions: [] }],
         }),
       }
-      if (url.endsWith('/sources/active')) return {
-        ok: true, status: 200, json: async () => ({ status: 'ready', connection: { id: 1, name: 'AdventureWorks local', connector_kind: 'sqlserver', database_name: 'AdventureWorks2022', last_test_status: 'ok' }, latest_snapshot: snapshot }),
+      if (url.endsWith('/sources')) return {
+        ok: true, status: 200, json: async () => sourceWorkspace(snapshot),
       }
-      if (url.endsWith('/metadata/snapshots') && init?.method === 'POST') return {
+      if (url.includes('/metadata/snapshots?connection_id=1') && init?.method === 'POST') return {
         ok: true, status: 200, json: async () => ({ created: false, message: 'La estructura no cambió; se mantiene la instantánea vigente.', snapshot }),
       }
       if (url.includes('/metadata/snapshots/4/tables/Sales/SalesOrderHeader')) return {
@@ -419,7 +438,7 @@ describe('App', () => {
     expect(screen.getByText(/Sales\.Customer/)).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Actualizar metadatos' }))
     expect(await screen.findByText(/La estructura no cambió/)).toBeInTheDocument()
-    expect(fetchMock.mock.calls.some(([input, init]) => String(input).endsWith('/metadata/snapshots') && init?.method === 'POST')).toBe(true)
+    expect(fetchMock.mock.calls.some(([input, init]) => String(input).includes('/metadata/snapshots?connection_id=1') && init?.method === 'POST')).toBe(true)
     expect(screen.queryByText(/contraseña|password/i)).not.toBeInTheDocument()
   })
 
@@ -470,8 +489,8 @@ describe('App', () => {
     const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input)
       if (url.includes('/auth/me')) return { ok: true, status: 200, json: async () => ({ user: { id: 1, email: 'admin@example.test', full_name: 'Administradora', is_active: true, roles: [] }, permissions: ['copilot.proposals.read', 'copilot.proposals.generate', 'copilot.proposals.review'], menus: [{ id: 11, code: 'analysis-assistant', label: 'Asistente de datamart', path: '/asistente', position: 10, module_code: 'ai', module_label: 'IA', is_active: true, permissions: [] }] }) }
-      if (url.endsWith('/copilot/readiness')) return { ok: true, status: 200, json: async () => ({ ready: true, source: { ready: true, label: 'Fuente de ventas', detail: 'AdventureWorks activa.' }, metadata: { ready: true, label: 'Metadatos', detail: 'Instantánea disponible.' }, llm: { ready: true, label: 'Asistente de IA', detail: 'Ollama listo.' } }) }
-      if (url.endsWith('/sources/active')) return { ok: true, status: 200, json: async () => ({ status: 'ready', connection: { id: 1, name: 'AdventureWorks local', connector_kind: 'sqlserver', database_name: 'AdventureWorks2022', last_test_status: 'ok' }, latest_snapshot: { id: 4, data_connection_id: 1, connector_code: 'sqlserver', database_name: 'AdventureWorks2022', contract_version: 1, content_hash: 'b'.repeat(64), schema_count: 6, table_count: 71, column_count: 444, relationship_count: 90, captured_by_label: 'Administradora', captured_at: '2026-09-19T09:00:00Z' } }) }
+      if (url.endsWith('/sources')) return { ok: true, status: 200, json: async () => sourceWorkspace({ id: 4, data_connection_id: 1, connector_code: 'sqlserver', database_name: 'BaseComercial', contract_version: 1, content_hash: 'b'.repeat(64), schema_count: 6, table_count: 71, column_count: 444, relationship_count: 90, captured_by_label: 'Administradora', captured_at: '2026-09-19T09:00:00Z' }) }
+      if (url.includes('/copilot/readiness?')) return { ok: true, status: 200, json: async () => ({ ready: true, source: { ready: true, label: 'Fuente de ventas', detail: 'Fuente habilitada.' }, metadata: { ready: true, label: 'Metadatos', detail: 'Instantánea disponible.' }, llm: { ready: true, label: 'Asistente de IA', detail: 'Proveedor listo.' } }) }
       if (url.includes('/copilot/catalog?')) return { ok: true, status: 200, json: async () => ({ metadata_snapshot_id: 4, domains: [{ code: 'ventas', label: 'Datamart de ventas', description: 'Modelo dimensional comercial.', available: true, reason: 'La fuente permite iniciar una propuesta.', questions: [{ code: 'sales_over_time', label: 'Evolución de ventas en el tiempo', description: 'Compara períodos.', available: true, reason: 'Disponible.', evidence: ['Sales.SalesOrderHeader'] }, { code: 'top_products', label: 'Productos con mayor desempeño', description: 'Compara productos.', available: true, reason: 'Disponible.', evidence: ['Production.Product'] }], periodicities: [{ code: 'month', label: 'Mensual', description: 'Agrupación mensual.', available: true, reason: 'Disponible.', evidence: ['Sales.SalesOrderHeader'] }] }] }) }
       if (url.endsWith('/copilot/needs/formulate') && init?.method === 'POST') return { ok: true, status: 200, json: async () => ({ original_goal: 'Analizar las ventas mensuales por producto y cliente.', suggested_goal: 'Analizar las ventas netas mensuales por producto y cliente para identificar variaciones.', rationale: 'Hace explícito el indicador y la comparación temporal.', improvements: ['Confirme si venta neta es el indicador esperado.'], provider_kind: 'groq-cloud', model_id: 'openai/gpt-oss-120b' }) }
       if (url.endsWith('/copilot/needs/viability') && init?.method === 'POST') return { ok: true, status: 200, json: async () => ({ assessment_hash: 'd'.repeat(64), requirements: [{ code: 'question:sales_over_time', label: 'Evolución de ventas en el tiempo', request_text: 'Compara períodos.', status: 'derivable', evidence: ['Sales.SalesOrderDetail.LineTotal', 'Sales.SalesOrderHeader.OrderDate', 'Ruta declarada: Sales.SalesOrderDetail → Sales.SalesOrderHeader'], resolution: 'Puede resolverse con relaciones declaradas.' }, { code: 'goal:sales_amount', label: 'Ventas o ingresos', request_text: 'Analizar las ventas mensuales por producto y cliente.', status: 'direct', evidence: ['Sales.SalesOrderDetail.LineTotal'], resolution: 'Puede resolverse directamente.' }, { code: 'goal:definition', label: 'Definición de venta neta', request_text: 'Venta neta', status: 'ambiguous', evidence: ['Sales.SalesOrderDetail.LineTotal', 'Sales.SalesOrderHeader.TotalDue'], resolution: 'Confirme qué componentes incluye la venta neta.' }], counts: { direct: 1, derivable: 1, ambiguous: 1, unavailable: 0 }, requires_acknowledgement: ['goal:definition'], can_continue: true, summary: 'La necesidad tiene respaldo suficiente para continuar, con decisiones pendientes.' }) }
@@ -637,7 +656,8 @@ describe('App', () => {
     vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input)
       if (url.includes('/auth/me')) return { ok: true, status: 200, json: async () => ({ user: { id: 1, email: 'analista@example.test', full_name: 'Analista BI', is_active: true, roles: [] }, permissions: ['etl.executions.read', 'etl.executions.write'], menus: [{ id: 20, code: 'sales-datamart', label: 'Datamart de ventas', path: '/datamart-ventas', position: 20, module_code: 'data', module_label: 'Datos', is_active: true, permissions: [] }] }) }
-      if (url.endsWith('/etl/proposals')) return { ok: true, status: 200, json: async () => ({ items: [candidate, executedCandidate], blocked_items: [], recommended_proposal_id: 21, guidance: [] }) }
+      if (url.endsWith('/sources')) return { ok: true, status: 200, json: async () => sourceWorkspace() }
+      if (url.includes('/etl/proposals?')) return { ok: true, status: 200, json: async () => ({ items: [candidate, executedCandidate], blocked_items: [], recommended_proposal_id: 21, guidance: [] }) }
       if (url.endsWith('/etl/executions/5/verify-currency')) return { ok: true, status: 200, json: async () => currencyVerifiedExecution }
       if (url.includes('/etl/executions')) return { ok: true, status: 200, json: async () => ({ items: [execution], total: 1, limit: 5, offset: 0 }) }
       throw new Error(`Solicitud inesperada: ${url}`)
@@ -718,7 +738,8 @@ describe('App', () => {
     vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input)
       if (url.includes('/auth/me')) return { ok: true, status: 200, json: async () => ({ user: { id: 1, email: 'analista@example.test', full_name: 'Analista BI', is_active: true, roles: [] }, permissions: ['etl.executions.read'], menus: [{ id: 20, code: 'sales-datamart', label: 'Datamart de ventas', path: '/datamart-ventas', position: 20, module_code: 'data', module_label: 'Datos', is_active: true, permissions: [] }] }) }
-      if (url.endsWith('/etl/proposals')) return { ok: true, status: 200, json: async () => ({ items: [candidate], blocked_items: [], recommended_proposal_id: null, guidance: [] }) }
+      if (url.endsWith('/sources')) return { ok: true, status: 200, json: async () => sourceWorkspace() }
+      if (url.includes('/etl/proposals?')) return { ok: true, status: 200, json: async () => ({ items: [candidate], blocked_items: [], recommended_proposal_id: null, guidance: [] }) }
       if (url.includes('/etl/executions')) return { ok: true, status: 200, json: async () => ({ items: [execution], total: 1, limit: 5, offset: 0 }) }
       throw new Error(`Solicitud inesperada: ${url}`)
     }))
@@ -773,7 +794,8 @@ describe('App', () => {
     vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input)
       if (url.includes('/auth/me')) return { ok: true, status: 200, json: async () => ({ user: { id: 1, email: 'analista@example.test', full_name: 'Analista BI', is_active: true, roles: [] }, permissions: ['etl.executions.read', 'etl.executions.write'], menus: [{ id: 20, code: 'sales-datamart', label: 'Datamart de ventas', path: '/datamart-ventas', position: 20, module_code: 'data', module_label: 'Datos', is_active: true, permissions: [] }] }) }
-      if (url.endsWith('/etl/proposals')) return { ok: true, status: 200, json: async () => ({ items: [], blocked_items: [blockedCandidate], recommended_proposal_id: null, guidance: [] }) }
+      if (url.endsWith('/sources')) return { ok: true, status: 200, json: async () => sourceWorkspace() }
+      if (url.includes('/etl/proposals?')) return { ok: true, status: 200, json: async () => ({ items: [], blocked_items: [blockedCandidate], recommended_proposal_id: null, guidance: [] }) }
       if (url.includes('/etl/executions')) return { ok: true, status: 200, json: async () => ({ items: [execution], total: 1, limit: 5, offset: 0 }) }
       throw new Error(`Solicitud inesperada: ${url}`)
     }))

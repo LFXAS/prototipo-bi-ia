@@ -42,7 +42,7 @@ DEFAULT_PERMISSIONS: tuple[tuple[str, str, str], ...] = (
     (
         "metadata.refresh",
         "Actualizar metadatos",
-        "Permite leer la estructura de la fuente activa.",
+        "Permite leer la estructura de una fuente habilitada y seleccionada.",
     ),
     (
         "metadata.semantic_resolution.read",

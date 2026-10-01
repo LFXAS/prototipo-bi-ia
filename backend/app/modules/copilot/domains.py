@@ -358,10 +358,37 @@ def _option_capability(
     )
     enabled = bool(configured["enabled"])
     available = enabled and metadata_available
-    required_terms = set().union(*option.required_term_groups)
-    evidence = [
-        reference for reference, table_tokens in tables.items() if table_tokens & required_terms
-    ][:3]
+    evidence: list[str] = []
+    for group in option.required_term_groups:
+        matching: list[tuple[int, str]] = []
+        for reference, table_tokens in tables.items():
+            if not table_tokens & group:
+                continue
+            reference_tokens = _tokens(reference)
+            score = (
+                30 * len(table_tokens & group)
+                + 12 * len(table_tokens & SALES_TERMS)
+                + 8 * len(reference_tokens & SALES_TERMS)
+                + (
+                    20
+                    if all(table_tokens & required for required in option.required_term_groups)
+                    else 0
+                )
+                - 70 * len(reference_tokens & SALES_PROFILE.deprioritized_terms)
+                - 80
+                * len(
+                    reference_tokens
+                    & {"archive", "history", "audit", "log", "staging", "temporary", "temp"}
+                )
+            )
+            matching.append((score, reference))
+        matching.sort(key=lambda item: (-item[0], item[1]))
+        best_score = matching[0][0] if matching else 0
+        for score, reference in matching:
+            if score < best_score - 30 or len(evidence) >= 4:
+                break
+            if reference not in evidence:
+                evidence.append(reference)
     return {
         "code": option.code,
         "label": configured["label"],
@@ -393,26 +420,33 @@ def catalog_for_snapshot(
     result: list[dict[str, object]] = []
     for profile in DOMAIN_PROFILES.values():
         metadata_available = any(term in all_tokens for term in SALES_TERMS)
+        question_profiles = {option.code: option for option in profile.question_options}
         periodicity_profiles = {option.code: option for option in profile.periodicities}
-        questions = [
-            {
-                "code": str(item["code"]),
-                "label": item["label"],
-                "description": item["description"],
-                "available": bool(item["enabled"]) and metadata_available,
-                "reason": (
-                    "La pregunta orientará a la IA; no predefine tablas ni dimensiones."
-                    if bool(item["enabled"]) and metadata_available
-                    else (
-                        "Esta pregunta está deshabilitada en el catálogo analítico."
-                        if not bool(item["enabled"])
-                        else "La fuente no presenta todavía un proceso de ventas reconocible."
-                    )
-                ),
-                "evidence": [],
-            }
-            for item in question_entries
-        ]
+        questions: list[dict[str, object]] = []
+        for item in question_entries:
+            option = question_profiles.get(str(item["code"]))
+            if option is not None:
+                questions.append(_option_capability(option, all_tokens, tables, item))
+                continue
+            questions.append(
+                {
+                    "code": str(item["code"]),
+                    "label": item["label"],
+                    "description": item["description"],
+                    "available": bool(item["enabled"]) and metadata_available,
+                    "reason": (
+                        "La pregunta personalizada orientará a la IA; su alcance técnico "
+                        "se validará contra los metadatos antes de generar una propuesta."
+                        if bool(item["enabled"]) and metadata_available
+                        else (
+                            "Esta pregunta está deshabilitada en el catálogo analítico."
+                            if not bool(item["enabled"])
+                            else "La fuente no presenta todavía un proceso de ventas reconocible."
+                        )
+                    ),
+                    "evidence": [],
+                }
+            )
         periodicities = [
             _option_capability(periodicity_profiles[str(item["code"])], all_tokens, tables, item)
             for item in periodicity_entries

@@ -25,6 +25,9 @@ def _dashboard() -> AnalyticsDashboardRead:
     return AnalyticsDashboardRead(
         execution_id=7,
         proposal_id=53,
+        data_connection_id=1,
+        source_name="AdventureWorks local",
+        database_name="AdventureWorks2022",
         title="Panel ejecutivo de ventas",
         description="Resultados conciliados para decisiones comerciales.",
         grain="Una fila por detalle de venta",

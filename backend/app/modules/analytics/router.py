@@ -14,7 +14,7 @@ from app.modules.copilot.models import BiProposal
 from app.modules.etl.models import EtlExecution
 from app.modules.etl.service import assess_selection_coverage
 from app.modules.metadata.models import MetadataSnapshot
-from app.modules.parameters.models import LlmConfiguration, Parameter, Secret
+from app.modules.parameters.models import DataConnection, LlmConfiguration, Parameter, Secret
 from app.modules.parameters.providers import ProviderGenerationError, generate_json
 from app.modules.parameters.secrets import SecretCipher, SecretDecryptionError
 from app.modules.reports.analytics_export import build_analytics_pdf, build_analytics_xlsx
@@ -197,24 +197,35 @@ async def _load_dashboard(
 
 @router.get("/analytics/executions", response_model=list[AnalyticsExecutionOptionRead])
 async def analytics_executions(
+    connection_id: int | None = Query(default=None, gt=0),
     _: User = Depends(require_permission("analytics.dashboard.read")),
     session: AsyncSession = Depends(get_session),
 ) -> list[AnalyticsExecutionOptionRead]:
     """List only reconciled executions whose physical dataset is still available."""
+    statement = select(EtlExecution).where(EtlExecution.status == "succeeded")
+    if connection_id is not None:
+        snapshot_ids = select(MetadataSnapshot.id).where(
+            MetadataSnapshot.data_connection_id == connection_id
+        )
+        statement = statement.where(EtlExecution.metadata_snapshot_id.in_(snapshot_ids))
     executions = (
         await session.execute(
-            select(EtlExecution)
-            .where(EtlExecution.status == "succeeded")
-            .order_by(EtlExecution.finished_at.desc(), EtlExecution.id.desc())
-            .limit(50)
+            statement.order_by(EtlExecution.finished_at.desc(), EtlExecution.id.desc()).limit(50)
         )
     ).scalars()
     options: list[AnalyticsExecutionOptionRead] = []
     for execution in executions:
         reconciliation = execution.metrics_document.get("reconciliation", {})
         proposal = await session.get(BiProposal, execution.proposal_id)
+        snapshot = await session.get(MetadataSnapshot, execution.metadata_snapshot_id)
+        connection = (
+            await session.get(DataConnection, snapshot.data_connection_id)
+            if snapshot is not None
+            else None
+        )
         if (
             proposal is None
+            or connection is None
             or execution.finished_at is None
             or not isinstance(reconciliation, dict)
             or not bool(reconciliation.get("passed"))
@@ -239,8 +250,12 @@ async def analytics_executions(
             AnalyticsExecutionOptionRead(
                 execution_id=execution.id,
                 proposal_id=execution.proposal_id,
+                data_connection_id=connection.id,
+                source_name=connection.name,
+                database_name=connection.database_name,
                 label=(
-                    f"Ejecución #{execution.id} · propuesta #{execution.proposal_id} · "
+                    f"{connection.name} · {connection.database_name} · ejecución "
+                    f"#{execution.id} · propuesta #{execution.proposal_id} · "
                     f"{coverage_label}"
                 ),
                 provider_kind=proposal.provider_kind,

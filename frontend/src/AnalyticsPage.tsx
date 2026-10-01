@@ -10,7 +10,7 @@ import {
 } from './api/security'
 import './analytics.css'
 
-type Props = { token: string; canExport: boolean; navigate: (path: string) => void }
+type Props = { token: string; connectionId: number; canExport: boolean; navigate: (path: string) => void }
 
 function formatValue(value: number | undefined, unit: string, compact = false) {
   if (value === undefined || !Number.isFinite(value)) return 'Sin valor'
@@ -179,7 +179,7 @@ function Skeleton() {
   return <div className="analytics-skeleton" aria-label="Cargando análisis" aria-busy="true"><div /><div className="skeleton-kpis">{[1, 2, 3, 4].map((item) => <span key={item} />)}</div><div className="skeleton-panels"><span /><span /><span /></div></div>
 }
 
-export function AnalyticsPage({ token, canExport, navigate }: Props) {
+export function AnalyticsPage({ token, connectionId, canExport, navigate }: Props) {
   const [dashboard, setDashboard] = useState<AnalyticsDashboard | null>(null)
   const [executions, setExecutions] = useState<AnalyticsExecutionOption[]>([])
   const [executionId, setExecutionId] = useState(0)
@@ -198,7 +198,9 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
   useEffect(() => {
     let cancelled = false
     setLoading(true)
-    api.analyticsExecutions(token)
+    setDashboard(null)
+    setExecutionId(0)
+    api.analyticsExecutions(token, connectionId || undefined)
       .then((items) => {
         if (cancelled) return
         setExecutions(items)
@@ -215,7 +217,7 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
         }
       })
     return () => { cancelled = true }
-  }, [token])
+  }, [connectionId, token])
 
   useEffect(() => {
     if (!executionId) return
@@ -333,7 +335,7 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
 
   return <div className={`analytics-workspace mode-${viewMode}`}>
     <section className="analytics-hero">
-      <div><div className="analytics-status"><span /> Datos conciliados y publicados</div><h2>{viewMode === 'executive' ? 'Resumen ejecutivo de ventas' : dashboard.title}</h2><p>{viewMode === 'executive' ? 'Indicadores y hallazgos principales para apoyar decisiones comerciales con datos verificados.' : dashboard.description}</p><div className="analytics-context"><span>Ejecución #{dashboard.execution_id}</span><span>Propuesta #{dashboard.proposal_id}</span><span>{dashboard.currency_code}</span><span>{dashboard.period_label}</span></div></div>
+      <div><div className="analytics-status"><span /> Datos conciliados y publicados</div><h2>{viewMode === 'executive' ? 'Resumen ejecutivo de ventas' : dashboard.title}</h2><p>{viewMode === 'executive' ? 'Indicadores y hallazgos principales para apoyar decisiones comerciales con datos verificados.' : dashboard.description}</p><div className="analytics-context"><span>{dashboard.source_name} · {dashboard.database_name}</span><span>Ejecución #{dashboard.execution_id}</span><span>Propuesta #{dashboard.proposal_id}</span><span>{dashboard.currency_code}</span><span>{dashboard.period_label}</span></div></div>
       <div className="analytics-hero-meta"><div className="analytics-view-switch" role="group" aria-label="Tipo de vista"><button className={viewMode === 'executive' ? 'active' : ''} aria-pressed={viewMode === 'executive'} onClick={() => setViewMode('executive')}>Vista ejecutiva</button><button className={viewMode === 'analyst' ? 'active' : ''} aria-pressed={viewMode === 'analyst'} onClick={() => setViewMode('analyst')}>Vista analítica</button></div><small>Última actualización</small><strong>{new Intl.DateTimeFormat('es-EC', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(dashboard.refreshed_at))}</strong><span>{viewMode === 'executive' ? 'Lectura resumida para dirección y gerencia.' : dashboard.grain}</span></div>
     </section>
 

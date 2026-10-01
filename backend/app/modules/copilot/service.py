@@ -16,6 +16,31 @@ ALLOWED_AGGREGATIONS = {"sum", "count", "count_distinct", "average", "min", "max
 ALLOWED_CALCULATED_MEASURE_OPERATIONS = {"multiply", "add", "subtract", "divide"}
 ALLOWED_DESTINATIONS = SALES_PROFILE.destination_names
 PROPOSAL_SCOPE_MAX_TABLES = 8
+AUDIT_RELATION_COLUMNS = {
+    "createdby",
+    "lasteditedby",
+    "modifiedby",
+    "updatedby",
+}
+
+
+def _is_audit_relation(relation: dict[str, Any]) -> bool:
+    """Reject technical ownership trails as business-model join paths.
+
+    Audit foreign keys are structurally valid, but traversing them can connect an
+    operational fact with unrelated people, geography, or cost entities.  The rule
+    is intentionally database-agnostic and only examines the participating column
+    roles.
+    """
+    columns = {
+        re.sub(r"[^a-z0-9]+", "", str(column).casefold())
+        for column in [
+            *relation.get("columns", []),
+            *relation.get("referenced_columns", []),
+        ]
+    }
+    return bool(columns & AUDIT_RELATION_COLUMNS)
+
 
 SEMANTIC_SYSTEM_INSTRUCTION = (
     "Eres un asistente de modelado dimensional de ventas. Interpreta exclusivamente los "
@@ -28,7 +53,7 @@ SEMANTIC_SYSTEM_INSTRUCTION = (
     "con la necesidad. Las explicaciones deben estar en español. Sigue exactamente esta forma: "
     '{"contract_version":1,"candidates":[{"business_concept":"sale_line",'
     '"business_name_es":"Detalle de venta","description_es":"Línea vendida",'
-    '"technical_refs":["Sales.SalesOrderDetail"],"confidence":"high",'
+    '"technical_refs":["esquema.tabla_existente"],"confidence":"high",'
     '"reason":"Contiene cantidades e importes"}],"ambiguities":[]}.'
 )
 
@@ -338,10 +363,11 @@ PROPOSAL_BLUEPRINT_SYSTEM_INSTRUCTION = (
     "semantic_role en cada medida y KPI usando sales_amount, quantity, customer_count o "
     "transaction_count. Cada KPI usa measure_index=0 para la primera medida o 1 para la segunda "
     "y debe tener el mismo semantic_role que su medida. Un KPI customer_count requiere una "
-    "medida customer_count con conteo distinto de un identificador de cliente. CustomerID, "
-    "cliente, account, person o store pueden representar clientes; OrderID, SalesOrderID y "
-    "transaction no los representan. Si la tabla de hechos elegida no contiene una columna de "
-    "cliente compatible, omite la medida y los KPI customer_count. Para transaction_count usa "
+    "medida customer_count con conteo distinto de un identificador de cliente. Los nombres "
+    "equivalentes a cliente, cuenta, persona, comprador, entidad o tienda pueden representarlo; "
+    "los identificadores de pedido, transacción o detalle no. Si la tabla de hechos elegida "
+    "no contiene una columna de cliente compatible, omite la medida y los KPI customer_count. "
+    "Para transaction_count usa "
     "el identificador del pedido con count_distinct, nunca el identificador del detalle. "
     "Conserva columnas monetarias específicas: precio usa price, descuento usa discount y el "
     "importe de venta usa amount o total. Asocia producto, "
@@ -740,7 +766,7 @@ def _semantic_candidate_evidence(
     relation_targets: dict[str, list[str]] = {reference: [] for reference in references}
     for source, table in existing.items():
         for relation in table.get("foreign_keys", []):
-            if not isinstance(relation, dict):
+            if not isinstance(relation, dict) or _is_audit_relation(relation):
                 continue
             target = (
                 f"{relation.get('referenced_schema', '')}.{relation.get('referenced_table', '')}"
@@ -874,7 +900,7 @@ def compact_metadata_blocks(
                         "target_columns": relation.get("referenced_columns", []),
                     }
                     for relation in table.get("foreign_keys", [])
-                    if isinstance(relation, dict)
+                    if isinstance(relation, dict) and not _is_audit_relation(relation)
                 ],
             }
         )
@@ -908,7 +934,7 @@ def _compact_columns(table: dict[str, Any], limit: int = 8) -> list[dict[str, ob
     foreign_key_columns = {
         str(column)
         for relation in table.get("foreign_keys", [])
-        if isinstance(relation, dict)
+        if isinstance(relation, dict) and not _is_audit_relation(relation)
         for column in relation.get("columns", [])
     }
     descriptive_terms = {"name", "nombre", "description", "descripcion", "code", "number"}
@@ -1081,7 +1107,7 @@ def derived_scope(
     graph: dict[str, set[str]] = {reference: set() for reference in tables}
     for source, table in tables.items():
         for relation in table.get("foreign_keys", []):
-            if not isinstance(relation, dict):
+            if not isinstance(relation, dict) or _is_audit_relation(relation):
                 continue
             target = (
                 f"{relation.get('referenced_schema', '')}.{relation.get('referenced_table', '')}"
@@ -1153,7 +1179,7 @@ def derived_scope(
     outbound_neighbors: set[str] = set()
     for reference in selected:
         for relation in tables[reference].get("foreign_keys", []):
-            if not isinstance(relation, dict):
+            if not isinstance(relation, dict) or _is_audit_relation(relation):
                 continue
             target = (
                 f"{relation.get('referenced_schema', '')}.{relation.get('referenced_table', '')}"
@@ -1213,7 +1239,7 @@ def derived_scope(
                 continue
             visited_identity_paths.add(reference)
             for relation in tables[reference].get("foreign_keys", []):
-                if not isinstance(relation, dict):
+                if not isinstance(relation, dict) or _is_audit_relation(relation):
                     continue
                 target = (
                     f"{relation.get('referenced_schema', '')}."
@@ -1240,6 +1266,23 @@ def derived_scope(
                 if isinstance(item, dict)
             ]
         )
+        evidence_tables: list[str] = []
+        for requirement in assessment.get("requirements", []):
+            if not isinstance(requirement, dict) or requirement.get("status") not in {
+                "direct",
+                "derivable",
+            }:
+                continue
+            for evidence in requirement.get("evidence", []):
+                match = re.match(r"^([^.\s]+\.[^.\s]+)\.[^.\s]+$", str(evidence))
+                if match and match.group(1) in tables:
+                    evidence_tables.append(match.group(1))
+        if selected:
+            root = selected[0]
+            for destination in dict.fromkeys(evidence_tables):
+                expanded.update(shortest_path(root, destination))
+        else:
+            expanded.update(evidence_tables)
     customer_role_terms = {
         "customer",
         "client",
@@ -1312,7 +1355,7 @@ def derived_scope(
         incoming_relation_tokens: dict[str, set[str]] = {reference: set() for reference in tables}
         for source, table in tables.items():
             for relation in table.get("foreign_keys", []):
-                if not isinstance(relation, dict):
+                if not isinstance(relation, dict) or _is_audit_relation(relation):
                     continue
                 target = (
                     f"{relation.get('referenced_schema', '')}."
@@ -1365,7 +1408,7 @@ def derived_scope(
                     & identity_entity_terms
                 )
                 for relation in table.get("foreign_keys", [])
-                if isinstance(relation, dict)
+                if isinstance(relation, dict) and not _is_audit_relation(relation)
             )
             score = (
                 80 * len(table_tokens & customer_role_terms)
@@ -1395,7 +1438,7 @@ def derived_scope(
                     continue
                 visited_identity.add(reference)
                 for relation in tables[reference].get("foreign_keys", []):
-                    if not isinstance(relation, dict):
+                    if not isinstance(relation, dict) or _is_audit_relation(relation):
                         continue
                     target = (
                         f"{relation.get('referenced_schema', '')}."
@@ -1416,7 +1459,11 @@ def derived_scope(
             {
                 "ref": reference,
                 "columns": _compact_columns(table, limit=12),
-                "foreign_keys": table.get("foreign_keys", []),
+                "foreign_keys": [
+                    relation
+                    for relation in table.get("foreign_keys", [])
+                    if isinstance(relation, dict) and not _is_audit_relation(relation)
+                ],
             }
         )
     return {"origin": "semantic-discovery:v1", "tables": scope_tables}
@@ -1482,6 +1529,7 @@ def proposal_payload(
                     relation
                     for relation in table.get("foreign_keys", [])
                     if isinstance(relation, dict)
+                    and not _is_audit_relation(relation)
                     and (
                         f"{relation.get('referenced_schema', '')}."
                         f"{relation.get('referenced_table', '')}"
@@ -1512,9 +1560,6 @@ def proposal_payload(
 
 def _semantic_role(value: dict[str, Any], source_column: str = "") -> str:
     """Resolve a provider-declared role with a backwards-compatible deterministic fallback."""
-    declared = str(value.get("semantic_role", ""))
-    if declared in SEMANTIC_ROLES:
-        return declared
     tokens = _search_tokens(
         {
             "name": value.get("name", ""),
@@ -1522,6 +1567,21 @@ def _semantic_role(value: dict[str, Any], source_column: str = "") -> str:
             "column": source_column,
         }
     )
+    if tokens & {"tax", "impuesto", "freight", "flete"}:
+        return "unsupported"
+    if tokens & {"rate", "tasa"} and not tokens & {
+        "amount",
+        "total",
+        "importe",
+        "monto",
+        "sales",
+        "venta",
+        "ventas",
+    }:
+        return "unsupported"
+    declared = str(value.get("semantic_role", ""))
+    if declared in SEMANTIC_ROLES:
+        return declared
     aggregation = str(value.get("aggregation", value.get("operation", "")))
     if tokens & {"customer", "customers", "cliente", "clientes"}:
         return "customer_count"
@@ -1549,14 +1609,6 @@ def _measure_candidates_for_role(role: str, fact_columns: list[dict[str, Any]]) 
             "monto",
             "price",
             "precio",
-            "cost",
-            "costo",
-            "tax",
-            "impuesto",
-            "freight",
-            "flete",
-            "discount",
-            "descuento",
         },
         "quantity": {"qty", "quantity", "cantidad", "unidades", "units"},
         "cost_amount": {"cost", "costo", "coste"},
@@ -1603,14 +1655,6 @@ def _column_supports_role(role: str, column: str) -> bool:
             "monto",
             "price",
             "precio",
-            "cost",
-            "costo",
-            "tax",
-            "impuesto",
-            "freight",
-            "flete",
-            "discount",
-            "descuento",
         },
         "quantity": {"qty", "quantity", "cantidad", "unidades", "units"},
         "cost_amount": {"cost", "costo", "coste"},
@@ -1751,6 +1795,43 @@ def expand_proposal_blueprint(
         )
         proposed_column = str(item.get("source_column", ""))
         role = _semantic_role(item, " ".join(calculation_inputs) or proposed_column)
+        if role not in ROLE_AGGREGATIONS:
+            reason = (
+                f"La medida {name} fue excluida porque su significado no corresponde a "
+                "cantidad, venta, costo, descuento o conteo transaccional verificable."
+            )
+            proposal_warnings.append(reason)
+            decision_diagnostics.append(
+                {
+                    "kind": "measure",
+                    "code": name,
+                    "status": "excluded",
+                    "reason": reason,
+                    "compatible_measures": [],
+                }
+            )
+            continue
+        calculation_tokens = _search_tokens(calculation_inputs)
+        invalid_calculated_role = calculation is not None and (
+            (role == "cost_amount" and not calculation_tokens & {"cost", "costo", "coste"})
+            or (role == "discount_amount" and not calculation_tokens & {"discount", "descuento"})
+        )
+        if invalid_calculated_role:
+            reason = (
+                f"La medida {name} fue excluida porque la fórmula propuesta no contiene "
+                f"ninguna entrada compatible con {role}."
+            )
+            proposal_warnings.append(reason)
+            decision_diagnostics.append(
+                {
+                    "kind": "measure",
+                    "code": name,
+                    "status": "excluded",
+                    "reason": reason,
+                    "compatible_measures": [],
+                }
+            )
+            continue
         suggested_calculation: dict[str, Any] | None = None
         discount_input = next(
             (value for value in calculation_inputs if _looks_like_discount_rate(value)),
@@ -1977,7 +2058,7 @@ def expand_proposal_blueprint(
             }
         )
     dimension_terms = {
-        "dim_producto": {"product", "producto"},
+        "dim_producto": {"product", "producto", "item", "article", "articulo", "stock"},
         "dim_cliente": {
             "customer",
             "person",
@@ -1992,7 +2073,20 @@ def expand_proposal_blueprint(
             "organization",
             "organizacion",
         },
-        "dim_territorio": {"territory", "region", "territorio"},
+        "dim_territorio": {
+            "territory",
+            "region",
+            "territorio",
+            "country",
+            "pais",
+            "state",
+            "province",
+            "provincia",
+            "city",
+            "ciudad",
+            "location",
+            "ubicacion",
+        },
         "dim_fecha": {"date", "calendar", "fecha"},
     }
     chosen_dimensions: dict[str, tuple[int, dict[str, Any]]] = {}
@@ -2106,7 +2200,7 @@ def expand_proposal_blueprint(
     joins: list[dict[str, Any]] = []
     for source, table in scoped.items():
         for relation in table.get("foreign_keys", []):
-            if not isinstance(relation, dict):
+            if not isinstance(relation, dict) or _is_audit_relation(relation):
                 continue
             target = (
                 f"{relation.get('referenced_schema', '')}.{relation.get('referenced_table', '')}"
@@ -2481,7 +2575,7 @@ def controlled_relation_catalog(scope: dict[str, Any]) -> list[dict[str, Any]]:
     options: list[dict[str, Any]] = []
     for source, table in tables.items():
         for relation in table.get("foreign_keys", []):
-            if not isinstance(relation, dict):
+            if not isinstance(relation, dict) or _is_audit_relation(relation):
                 continue
             target = (
                 f"{relation.get('referenced_schema', '')}.{relation.get('referenced_table', '')}"
@@ -2758,7 +2852,7 @@ def apply_financial_requirements(
     graph: dict[str, set[str]] = {reference: set() for reference in tables}
     for source, table in tables.items():
         for relation in table.get("foreign_keys", []):
-            if not isinstance(relation, dict):
+            if not isinstance(relation, dict) or _is_audit_relation(relation):
                 continue
             target = (
                 f"{relation.get('referenced_schema', '')}.{relation.get('referenced_table', '')}"
@@ -2894,10 +2988,18 @@ def apply_financial_requirements(
             {"costo"},
             {"cost"},
         )
+        cost_source_tables = set(product_sources)
+        for source in product_sources:
+            cost_source_tables.update(graph.get(source, set()))
         cost_refs = candidates(
             cost_patterns,
             allowed_tables=product_sources or None,
         )
+        if not cost_refs:
+            cost_refs = candidates(
+                cost_patterns,
+                allowed_tables=cost_source_tables or None,
+            )
         if len(cost_refs) == 1:
             total_cost = append_measure(
                 name="costo_total",
@@ -3165,7 +3267,7 @@ def validate_proposal(
         relation_graph: dict[str, set[str]] = {reference: set() for reference in scoped}
         for source, table in scoped.items():
             for relation in table.get("foreign_keys", []):
-                if not isinstance(relation, dict):
+                if not isinstance(relation, dict) or _is_audit_relation(relation):
                     continue
                 target = (
                     f"{relation.get('referenced_schema', '')}."
@@ -3509,7 +3611,9 @@ def validate_proposal(
             base_source = source_tables[0] if len(source_tables) == 1 else ""
             base_table = all_tables.get(base_source, {})
             base_foreign_keys = [
-                item for item in base_table.get("foreign_keys", []) if isinstance(item, dict)
+                item
+                for item in base_table.get("foreign_keys", [])
+                if isinstance(item, dict) and not _is_audit_relation(item)
             ]
             for variant_index, variant in enumerate(variants):
                 if not isinstance(variant, dict):
@@ -3565,7 +3669,7 @@ def validate_proposal(
     declared_relations = set()
     for source, table in all_tables.items():
         for relation in table.get("foreign_keys", []):
-            if not isinstance(relation, dict):
+            if not isinstance(relation, dict) or _is_audit_relation(relation):
                 continue
             target = (
                 f"{relation.get('referenced_schema', '')}.{relation.get('referenced_table', '')}"
