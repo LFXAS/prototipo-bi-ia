@@ -87,13 +87,13 @@
     Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tipo de documento & Texto base para integración en el trabajo de titulación \\
     Código documental & TES-CAP-03 \\
-    Versión & 1.2.3 \\
-    Periodo cubierto & Sprints 1 al 5; agosto--septiembre de 2026 \\
+    Versión & 1.3.0 \\
+    Periodo cubierto & Sprints 1 al 6; agosto--octubre de 2026 \\
     Estado & Núcleo funcional implementado y verificado; validación académica final pendiente \\
   \end{tabularx}
 
   \vfill
-  {\large Guayaquil, Ecuador -- septiembre de 2026\par}
+  {\large Guayaquil, Ecuador -- octubre de 2026\par}
   \vspace{0.65cm}
   {\color{ugblue}\rule{\textwidth}{2.8pt}}
 \end{titlepage}
@@ -109,7 +109,7 @@
 
 \section{Presentación del capítulo}
 
-Este capítulo documenta la propuesta tecnológica y la ingeniería de software aplicada al prototipo. Reúne el análisis de factibilidad, la metodología de desarrollo, los requisitos, el modelado del sistema, la arquitectura, los incrementos construidos mediante Scrum y la evidencia de verificación disponible al cierre del Sprint 5.
+Este capítulo documenta la propuesta tecnológica y la ingeniería de software aplicada al prototipo. Reúne el análisis de factibilidad, la metodología de desarrollo, los requisitos, el modelado del sistema, la arquitectura, los incrementos construidos mediante Scrum y la evidencia de verificación disponible al cierre del Sprint 6.
 
 El texto es deliberadamente consolidado: explica qué problema resuelve el sistema y cómo se diseñó. Los informes completos de cada sprint, el manual técnico y la bitácora constituyen anexos de evidencia y conservan decisiones, incidentes, comandos y resultados que no deben repetirse íntegramente en el cuerpo de la tesis.
 
@@ -500,7 +500,7 @@ Como validación de cierre se utilizó el motor \file{sales-bi-v6}. La propuesta
 
 Una segunda validación, asociada con la propuesta 86 y la ejecución 11, detectó una limitación en la capa de lectura y no en el ETL. Las medidas estaban cargadas y conciliadas, pero ciertas recetas derivadas dependían directamente de columnas físicas para las cuales no se había creado un KPI agregado redundante; por ello el tablero mostraba \textbf{Sin valor}. La historia HBI-012 introdujo un algoritmo neutral al proveedor que agrega primero las dependencias físicas autorizadas y evalúa después las fórmulas derivadas hasta alcanzar un punto fijo. La corrección recuperó los indicadores sobre el expediente existente, sin volver a materializar ni alterar los datos.
 
-La prueba real de la ejecución 11 obtuvo, para el universo completo, margen bruto de USD 9899411,54, margen de 8,97\%, costo promedio por unidad de USD 365,48 y venta promedio por unidad de USD 401,49. Al filtrar 2013 y Europa, los mismos cálculos produjeron USD 1274769,06, 12,63\%, USD 293,86 y USD 336,34. Esta variación coherente comprobó que la fórmula, sus operandos y el contexto de filtro se resuelven conjuntamente y que el orden de las recetas entregadas por el LLM no controla el resultado.
+La ejecución 11 obtuvo, para el universo completo, margen bruto de USD 9899411,54, margen de 8,97\%, costo promedio por unidad de USD 365,48 y venta promedio por unidad de USD 401,49. Al filtrar 2013 y Europa, los mismos cálculos produjeron USD 1274769,06, 12,63\%, USD 293,86 y USD 336,34. Esta variación coherente comprobó que la fórmula, sus operandos y el contexto de filtro se resuelven conjuntamente y que el orden de las recetas entregadas por el LLM no controla el resultado.
 
 Los cocientes financieros se rotularon conforme a su semántica: costo total dividido para unidades vendidas y ventas brutas divididas para unidades vendidas se presentan como promedios ponderados por unidad vendida. Además, las cinco etapas de las propuestas aprobadas y de las ejecuciones terminadas permanecen navegables en modo de consulta. Esta decisión conserva el artefacto aprobado, impide una segunda materialización accidental y convierte la propia aplicación en evidencia demostrable del proceso.
 
@@ -509,6 +509,16 @@ La repetición completa con Claude Haiku produjo la propuesta 91 y la ejecución
 La revisión de artefactos confirmó además la fidelidad de la reportería. El PDF ejecutivo conserva márgenes, saltos, títulos, tablas y gráfico en cinco páginas. El Excel analítico incluye resumen, una hoja por cada uno de los cuatro gráficos y trazabilidad; sus valores son numéricos y las áreas de impresión caben en A4 horizontal. Se corrigió específicamente el doble escalamiento del margen: 8,53 permanece 8,5\% al abrir o imprimir el libro.
 
 Durante la revisión del alcance, el tutor retiró el pronóstico, MAPE y RMSE. Esta decisión no reduce la demostración central: separa la construcción semiautomatizada de un datamart de un problema predictivo que requeriría hipótesis y validación propias.
+
+\subsection{Sprint 6: contexto multifuente y validación universal}
+
+El sexto incremento sustituyó la conexión activa global por un contexto explícito de fuente. Varias bases SQL Server pueden permanecer habilitadas y cada instantánea, catálogo, propuesta, ejecución y tablero conserva su \file{data\_connection\_id}. La selección es una preferencia de la sesión y no cambia el trabajo de otro usuario. Una instantánea sólo puede participar en procesos de su propia conexión.
+
+El cambio también aclaró el papel de la IA en el catálogo. El analista configura preguntas de negocio y periodicidades por fuente; la plataforma descubre automáticamente tablas, columnas, PK, FK, tipos y rutas desde la instantánea; el LLM interpreta y propone; y FastAPI valida toda referencia, fórmula y cobertura. Por ello el catálogo de WideWorldImporters no es una copia del de AdventureWorks ni un resultado libre del modelo. La pantalla presenta la orientación funcional y la cobertura técnica como capas separadas.
+
+La selección semántica evita relaciones de auditoría como \file{LastEditedBy}, penaliza compras y archivos cuando existe evidencia comercial vigente y obliga a conservar las dimensiones directas o derivables requeridas, aunque el proveedor las omita. No existen condiciones por nombre de base. AdventureWorks2022 y WideWorldImporters funcionan como casos de contraste del mismo algoritmo.
+
+La propuesta 96 y la ejecución 13 validaron el recorrido completo sobre WideWorldImporters. Se conciliaron 231412 líneas con diferencia cero, 73595 pedidos y 9310904 unidades. El sistema calculó 177634276,40 de ventas, 88904313,90 de costo y 88729962,50 de margen bruto; publicó 227 productos, 663 clientes y 53 territorios con nombre. Al no existir evidencia ISO inequívoca, conservó \textbf{moneda de origen}; y al no existir descuento demostrable, lo declaró no disponible. Estas dos decisiones negativas forman parte de la validez del resultado: universalidad no significa completar datos ausentes.
 
 \begin{longtable}{@{}p{0.10\textwidth}p{0.21\textwidth}p{0.43\textwidth}p{0.16\textwidth}@{}}
   \caption{Resumen de incrementos y evidencia.}\\
@@ -525,6 +535,7 @@ Durante la revisión del alcance, el tutor retiró el pronóstico, MAPE y RMSE. 
   3 & Diseño asistido & Metadatos, necesidad, propuesta, validación y decisión. & \ok \\
   4 & Datamart verificable & ETL, KPI variables, 121317 filas, diferencia cero y evidencia semántica. & \ok \\
   5 & Analítica utilizable & Identidad descriptiva, ejecuciones 9/11/12, KPI derivados, dashboard, copiloto, expedientes consultables y reportes PDF/Excel. & \ok \\
+  6 & Contexto multifuente & Fuentes concurrentes, catálogo aislado, evidencia técnica automática y ejecución 13 sobre WideWorldImporters. & \ok \\
   \bottomrule
 \end{longtable}
 
@@ -534,18 +545,18 @@ La validación combina cuatro niveles: análisis estático y pruebas unitarias; 
 
 \begin{table}[ht]
 \centering
-\caption{Matriz de verificación acumulada al Sprint 5.}
+\caption{Matriz de verificación acumulada al Sprint 6.}
 \begin{tabularx}{\textwidth}{@{}p{0.24\textwidth}p{0.47\textwidth}X@{}}
   \toprule
   Dimensión & Evidencia & Resultado \\
   \midrule
   Calidad de código & Ruff, formato, Mypy, ESLint y construcción Vite. & Satisfactorio. \\
-  Pruebas automatizadas & 142 pruebas backend y 21 frontend ejecutadas en imágenes Docker. & Satisfactorio. \\
+  Pruebas automatizadas & Suite backend y frontend completa, acompañada por análisis estático y construcción de producción. & Satisfactorio. \\
   Infraestructura & Compose de desarrollo, entrega, Ollama y release. & Válido. \\
   Seguridad & Denegación por defecto, cifrado, auditoría y lector SQL. & Verificado. \\
   Contrato BI & Referencias, FK, grano, KPI, operaciones y reproducción. & Verificado. \\
-  Conciliación & 121317 filas origen y destino; diferencia cero. & Conciliado. \\
-  Calidad descriptiva & 19820 clientes con nombre y tipo; cero etiquetas vacías. & Verificado. \\
+  Conciliación & AdventureWorks: 121317 filas; WideWorldImporters: 231412 filas; diferencia cero en ambas. & Conciliado. \\
+  Calidad descriptiva & AdventureWorks: 19820 clientes; WideWorldImporters: 227 productos, 663 clientes y 53 territorios con etiqueta. & Verificado. \\
   Analítica y chat & Vistas por perfil, gráficos interactivos, filtros, evidencia, guía de preguntas y comparativa Groq/Claude con propuestas 78--81 bloqueadas de forma segura. & Verificado. \\
   Reportería & PDF de seis páginas y seis hojas Excel renderizadas sin cortes. & Verificado. \\
   Trazabilidad & Propuestas 52/54/73/86 y ejecuciones 6/7/9/11 reabribles. & Verificado. \\
@@ -557,11 +568,11 @@ La validación combina cuatro niveles: análisis estático y pruebas unitarias; 
 
 La propuesta demuestra que la IA puede reducir el trabajo operativo del analista sin convertirse en un ejecutor autónomo inseguro. El sistema identifica conceptos, sugiere una cantidad variable de KPI y ayuda a resolver ambigüedades; las reglas determinísticas evitan referencias inexistentes, SQL libre y fórmulas incompatibles con el significado de los datos.
 
-El alcance vigente se limita a ventas, SQL Server, carga completa y un datamart específico. El flujo funcional central está implementado: configuración, introspección, propuesta, supervisión, materialización, conciliación, analítica, conversación y reportería. Permanecen como trabajo de cierre académico el contraste secundario con AdventureWorksDW cuando exista equivalencia semántica documentada, las pruebas formales de usabilidad, el juicio de expertos y la integración del capítulo con conclusiones, anexos y referencias definitivas. Otros dominios, motores y un despliegue Azure son extensiones futuras.
+El alcance vigente se limita a ventas, SQL Server y carga completa. El flujo funcional central está implementado para múltiples fuentes independientes: configuración, introspección, propuesta, supervisión, materialización, conciliación, analítica, conversación y reportería. Permanecen como trabajo de cierre académico las pruebas formales de usabilidad, el juicio de expertos y la integración del capítulo con conclusiones, anexos y referencias definitivas. Otros dominios, motores, combinación de hechos entre fuentes y un despliegue Azure son extensiones futuras.
 
 \section{Conclusiones del capítulo}
 
-La ingeniería de software aplicada produjo un sistema reproducible, seguro y trazable. Scrum permitió separar riesgos e incrementar valor en cinco entregas; SDD evitó que las decisiones funcionales quedaran implícitas; UML y los contratos de casos de uso muestran responsabilidades y límites; DevOps conserva una línea verificable entre código, pruebas, documentos y entregas.
+La ingeniería de software aplicada produjo un sistema reproducible, seguro y trazable. Scrum permitió separar riesgos e incrementar valor en seis entregas; SDD evitó que las decisiones funcionales quedaran implícitas; UML y los contratos de casos de uso muestran responsabilidades y límites; DevOps conserva una línea verificable entre código, pruebas, documentos y entregas.
 
 La principal decisión arquitectónica es separar recomendación de ejecución. El LLM propone y explica con contexto restringido; la aplicación valida, resuelve, materializa y calcula; el analista conserva autoridad sobre la decisión de negocio. Las ejecuciones 9 y 11 confirman que esta separación puede producir y recuperar un datamart conciliado y semánticamente utilizable sin exigir SQL manual, repetir una carga válida ni recurrir a una herramienta externa.
 
@@ -574,7 +585,7 @@ La principal decisión arquitectónica es separar recomendación de ejecución. 
   \toprule
   Documento & Función \\
   \midrule
-  Informes INF-SPR-01 a INF-SPR-05 & Alcance, decisiones, ejecución, incidencias, evidencias y retrospectivas completas. \\
+  Informes INF-SPR-01 a INF-SPR-06 & Alcance, decisiones, ejecución, incidencias, evidencias y retrospectivas completas. \\
   Manual MAN-TEC-01 & Instalación, configuración, operación, diagnóstico, réplica y recuperación. \\
   Bitácora técnica & Secuencia cronológica de decisiones y verificaciones. \\
   Especificaciones SPR & Contratos previos de comportamiento y aceptación. \\
@@ -603,7 +614,7 @@ Universidad de Guayaquil. \emph{Trabajo de titulación con Capítulo III de prop
   Código & TES-CAP-03 \\
   Fuente editable & \path{docs/tesis/capitulo-03-propuesta-tecnologica.tex} \\
   Compilación & \path{make thesis-chapter3} o \path{make docs} \\
-  Versión & 1.2.3 -- 29-09-2026 \\
+  Versión & 1.3.0 -- 01-10-2026 \\
   Regla de uso & Integrar en la plantilla final y actualizar figuras, requisitos, resultados y referencias al cerrar nuevos sprints. \\
   \bottomrule
 \end{tabularx}

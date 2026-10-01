@@ -1,5 +1,11 @@
 # SPR-03-01: conexión parametrizable e introspección SQL Server
 
+> **Evolución vigente (Sprint 6).** La conexión activa de esta especificación fue el
+> primer caso de uso. El contrato actual se consulta por `connection_id`, permite varias
+> fuentes habilitadas y conserva instantáneas aisladas según
+> [SPR-06-01](SPR-06-01-contexto-multifuente-sqlserver.md). AdventureWorks continúa como
+> evidencia de aceptación, no como dependencia codificada.
+
 - Estado: **implementada y verificada localmente**.
 - Pertenece a: [SPR-03-metadatos-y-propuesta-bi.md](SPR-03-metadatos-y-propuesta-bi.md).
 - Fecha de creación: 2026-09-14.
@@ -50,7 +56,9 @@ El objetivo es implementar el conector `sqlserver` sobre el catálogo parametriz
 
 - Host, puerto, base y usuario se reciben exclusivamente mediante el contrato de configuración de SPR-03-04; el backend los valida y construye la conexión sin aceptar una cadena libre.
 - La contraseña llega únicamente al crear o reemplazar el secreto, se cifra antes de persistirse y nunca vuelve al cliente.
-- La introspección opera sobre la única conexión activa y rechaza un conector que no implemente la capacidad requerida.
+- En Sprint 3 la introspección operaba sobre la única conexión activa. Desde Sprint 6
+  opera sobre la conexión seleccionada y rechaza un identificador ajeno, deshabilitado,
+  no probado o cuyo conector no implemente la capacidad requerida.
 - Los identificadores de tabla usados en consultas de catálogo proceden del resultado del servidor y se tratan como datos, no se concatenan para ejecutar SQL arbitrario.
 - Se excluyen objetos del sistema y se ordena por esquema, tabla, posición de columna y relación para obtener un hash estable.
 - Una falla no elimina la última instantánea válida ni la reemplaza con contenido parcial.

@@ -1,5 +1,11 @@
 # SPR-03-02: propuesta BI asistida por IA y supervisada
 
+> **Evolución vigente (Sprint 6).** Donde este documento dice “fuente activa”, el
+> contrato actual usa la fuente seleccionada y validada mediante `connection_id`. El
+> catálogo funcional es independiente por conexión y la cobertura técnica se recalcula
+> desde su instantánea; véase
+> [SPR-06-01](SPR-06-01-contexto-multifuente-sqlserver.md).
+
 - Estado: **implementado y verificado localmente; pendiente de validación del usuario**.
 - Pertenece a: [SPR-03-metadatos-y-propuesta-bi.md](SPR-03-metadatos-y-propuesta-bi.md).
 - Fecha de creación: 2026-09-14.

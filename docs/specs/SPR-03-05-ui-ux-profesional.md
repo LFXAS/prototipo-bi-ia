@@ -1,5 +1,11 @@
 # SPR-03-05: interfaz y experiencia profesional del asistente BI
 
+> **Evolución vigente (Sprint 6).** El contexto fijo descrito para Sprint 3 se convirtió
+> en un selector de fuente en el espacio de trabajo. Varias conexiones pueden permanecer
+> habilitadas y el cambio de selección no modifica la sesión de otro usuario. El resto de
+> la jerarquía, accesibilidad y supervisión se conserva; véase
+> [SPR-06-01](SPR-06-01-contexto-multifuente-sqlserver.md).
+
 - Estado: **implementado y verificado localmente; pendiente de validación del usuario**.
 - Pertenece a: [SPR-03-metadatos-y-propuesta-bi.md](SPR-03-metadatos-y-propuesta-bi.md).
 - Complementa: [SPR-03-03-explorador-esquema-y-trazabilidad.md](SPR-03-03-explorador-esquema-y-trazabilidad.md).
@@ -53,7 +59,9 @@ La aplicación conserva el cascarón del Sprint 2 y lo amplía sin duplicarlo:
 - **Área principal:** ruta, título, explicación breve, acción principal y contenido de la vista.
 - **Avisos globales:** sesión, acceso denegado o dependencia general; los errores de formulario permanecen junto a su contexto.
 
-La fuente activa se muestra como contexto, no como selector multifuente: nombre visible, estado textual e indicador semántico. Al activarse una conexión distinta, la aplicación actualiza el contexto después de confirmar la operación.
+En Sprint 3 la fuente activa se mostraba sólo como contexto. Desde Sprint 6, el mismo
+espacio presenta un selector multifuente con nombre, base, estado e instantánea; cambiarlo
+actualiza la preferencia local y las consultas posteriores sin deshabilitar otras fuentes.
 
 ## 4. Lenguaje visual
 
