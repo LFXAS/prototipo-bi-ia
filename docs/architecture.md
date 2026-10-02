@@ -7,8 +7,8 @@ Navegador
 React + Vite / Nginx
    |
    v
-FastAPI ---------------> SQL Server / AdventureWorks
-   |                     fuente externa, usuario read-only
+FastAPI ---------------> SQL Server / fuentes habilitadas
+   |                     AdventureWorks, WideWorldImporters u otra base read-only
    v
 PostgreSQL
 configuración interna, RBAC, auditoría y datamart
@@ -20,7 +20,7 @@ configuración interna, RBAC, auditoría y datamart
 - `frontend-delivery`: perfil opcional `delivery`; sirve con Nginx el frontend compilado en el puerto 8080 y comparte el backend y las bases de desarrollo. Permite validar el artefacto web sin reemplazar contenedores.
 - `backend`: FastAPI con recarga en desarrollo; Uvicorn sin recarga y usuario no privilegiado en producción. El servicio `migrate` aplica Alembic antes de iniciar la API.
 - `postgres`: instancia aislada del proyecto, con esquemas `app` y `mart` inicializados en un volumen nombrado.
-- `sqlserver`: instancia aislada del proyecto; descarga y restaura AdventureWorks de forma idempotente en un volumen nombrado.
+- `sqlserver`: instancia aislada del proyecto; descarga y restaura AdventureWorks y WideWorldImporters de forma idempotente en un volumen nombrado.
 - `ollama`: perfil opcional `local-llm`; mantiene modelos locales en el volumen nombrado `ollama_models`, se comunica sólo dentro de la red Compose y no publica un puerto en el host.
 
 El volumen nombrado `secret_key_data` conserva la raíz criptográfica local generada automáticamente. No contiene configuraciones de negocio, no se versiona y permanece separado de PostgreSQL; el backend lo usa únicamente para cifrar y descifrar secretos autorizados en memoria.
@@ -45,13 +45,13 @@ No se recomienda una VM ARM para este conjunto porque SQL Server para Linux requ
 - `system`: salud y diagnóstico técnico mínimo.
 - `security`: autenticación y RBAC mínimo.
 - `parameters`: parámetros del prototipo, catálogo web de conexiones, referencias a secretos cifrados y configuración del proveedor LLM activo.
-- `metadata`: introspección determinística mediante la interfaz del conector activo; SQL Server es el primer adaptador.
+- `metadata`: introspección determinística mediante la interfaz del conector y la fuente seleccionada; SQL Server es el primer adaptador.
 - `copilot`: solicitud guiada de negocio y propuestas estructuradas del LLM, nunca ejecución directa.
 - `etl`: constructor determinístico, vista previa, validación, ejecución backend y trazabilidad de cargas; no depende de SQL escrito por cada usuario.
 - `analytics`: KPIs, filtros, gráficos, hallazgos determinísticos y conversación contextual sobre agregados conciliados.
 - `reports`: exportaciones PDF/Excel operativas y evidencias académicas.
 
-Al cierre local del Sprint 5, `system`, `security`, `parameters`, `metadata`, `copilot`, `etl`, `analytics` y `reports` contienen comportamiento. `etl` incluye selección, compilación, materialización, conciliación, resolución descriptiva y expedientes recuperables. `analytics` consulta exclusivamente ejecuciones conciliadas; `reports` reconstruye en servidor la selección autorizada. El límite `forecasting` se retiró por decisión de alcance del tutor: el proyecto demuestra construcción supervisada de datamarts y analítica explicable, no predicción.
+Al cierre local del Sprint 6, `system`, `security`, `parameters`, `metadata`, `copilot`, `etl`, `analytics` y `reports` contienen comportamiento. Todos transmiten y validan el contexto de conexión. `etl` incluye selección, compilación, materialización, conciliación, resolución descriptiva y expedientes recuperables. `analytics` consulta exclusivamente ejecuciones conciliadas de la fuente elegida; `reports` reconstruye en servidor la selección autorizada. El límite `forecasting` se retiró por decisión de alcance del tutor: el proyecto demuestra construcción supervisada de datamarts y analítica explicable, no predicción.
 
 ## Contrato de evolución (SDD)
 
@@ -59,7 +59,7 @@ Desde el Sprint 2, cada módulo sólo incorpora capacidad funcional a partir de 
 
 ## RBAC previsto
 
-Entidades implementadas hasta el cierre local del Sprint 5: `users`, `roles`, `permissions`, `user_roles`, `role_permissions`, `menus`, `menu_permissions`, `audit_events`, `parameters`, `llm_configurations`, `secrets`, `data_connections`, `metadata_snapshots`, `bi_proposals`, `semantic_advice` y `etl_executions`, todas bajo el esquema `app`. `parameters` conserva tipo, módulo, valor predeterminado y rango; `metadata_snapshots` conserva el documento canónico JSONB, su hash, totales y actor histórico; `bi_proposals` conserva solicitud, perfil, mapa semántico, alcance, propuesta, validación, proveedor/modelo y decisión humana; `semantic_advice` registra consultas contextuales; `etl_executions` fija selección, plan, huellas, validación, métricas y responsable. El chat analítico no almacena conversaciones completas: cada consulta deja una huella y contexto mínimo en auditoría.
+Entidades implementadas hasta el cierre local del Sprint 6: `users`, `roles`, `permissions`, `user_roles`, `role_permissions`, `menus`, `menu_permissions`, `audit_events`, `parameters`, `llm_configurations`, `secrets`, `data_connections`, `analysis_catalogs`, `metadata_snapshots`, `bi_proposals`, `semantic_advice` y `etl_executions`, todas bajo el esquema `app`. `analysis_catalogs` aísla la orientación funcional por conexión y dominio; `metadata_snapshots` conserva el documento canónico JSONB y su procedencia; propuestas y ejecuciones heredan ese contexto. El chat analítico no almacena conversaciones completas: cada consulta deja una huella y contexto mínimo en auditoría.
 
 Reglas arquitectónicas:
 
@@ -93,11 +93,11 @@ El módulo `copilot` consume este contrato mediante una interfaz interna y es el
 
 ## Contrato de Sprint 3
 
-Sprint 3 separa configuración, introspección y razonamiento asistido. La administración puede registrar desde la web una conexión `sqlserver`, cifrar su contraseña, comprobar conectividad y ausencia de permisos de escritura, y dejar una sola fuente activa. El módulo `metadata` consulta catálogos del conector activo, normaliza una instantánea inmutable, calcula su hash y reutiliza la captura vigente cuando la estructura no cambió. El explorador consulta exclusivamente PostgreSQL y no vuelve a leer filas ni metadatos de la fuente por cada búsqueda.
+Sprint 3 separó configuración, introspección y razonamiento asistido con una fuente activa. Sprint 6 evolucionó ese límite: la administración puede registrar varias conexiones `sqlserver`, cifrar sus contraseñas, comprobar sólo lectura y habilitarlas independientemente. El usuario selecciona el contexto de trabajo y `metadata` consulta los catálogos de esa conexión, normaliza una instantánea inmutable y reutiliza la captura cuando la estructura no cambió. El explorador consulta exclusivamente PostgreSQL y filtra por `connection_id`.
 
 El módulo `copilot` calcula primero un catálogo de dominios y capacidades desde la instantánea vigente. El frontend consume ese contrato y no conserva preguntas ni dimensiones de AdventureWorks codificadas. El perfil `ventas` es el único habilitado; incorporar otro dominio exige registrar sus capacidades y validadores.
 
-La orientación funcional del perfil de ventas se desacopla de sus reglas mediante el catálogo estructurado interno `COPILOT_SALES_NEEDS_CATALOG`, administrado exclusivamente por la API y pantalla **Catálogo analítico**. Una persona autorizada puede crear, editar, habilitar o retirar preguntas de negocio y seleccionar varias periodicidades soportadas. El objetivo se escribe para cada análisis y las dimensiones no forman parte del catálogo: el LLM las propone desde los metadatos, FastAPI comprueba sus referencias y el analista las supervisa. Un nuevo dominio o motor sigue requiriendo un perfil o adaptador implementado y probado.
+La orientación funcional del perfil de ventas se desacopla de sus reglas mediante `analysis_catalogs`, administrado por API y pantalla **Catálogo analítico** para cada conexión. Una persona autorizada puede crear, editar, habilitar o retirar preguntas de negocio y periodicidades. La cobertura técnica se calcula separadamente desde la instantánea. El LLM propone dimensiones desde esos metadatos, FastAPI comprueba sus referencias y el analista supervisa. Las cuatro preguntas estándar proceden del perfil; las preguntas personalizadas de una conexión no se heredan en otra.
 
 Después, `copilot` recibe una solicitud guiada de negocio y procesa la instantánea en bloques compactos. El LLM interpreta dinámicamente nombres técnicos en inglés u otro idioma, propone conceptos y explicaciones de negocio en español y conserva las referencias originales. En una segunda llamada toma decisiones analíticas compactas —hecho, medidas, dimensiones y KPI— restringidas por un esquema JSON derivado del alcance. FastAPI descarta referencias inexistentes y expande esas decisiones con PK, FK, atributos, reglas de calidad y operaciones ETL determinísticas. Así un modelo local pequeño no debe repetir información mecánica y queda explícita la frontera entre propuesta de IA y control de la aplicación. No se utiliza un glosario codificado exclusivamente para AdventureWorks.
 
@@ -111,7 +111,7 @@ La arquitectura no está cerrada a AdventureWorks ni a SQL Server. La instantán
 
 El razonamiento también se aísla por perfiles de dominio. Cada perfil declara código, preguntas, conceptos, dimensiones, periodicidades, destinos, prompt contractual y reglas determinísticas. `GET /copilot/catalog` cruza estas definiciones con los términos presentes en la instantánea y devuelve disponibilidad, causa y evidencia. Sprint 3 habilita y valida únicamente `ventas`. Un futuro datamart de inventario deberá incorporar el perfil `inventario`, sus reglas de existencias y movimientos y un conjunto de referencia antes de ofrecerse en la web. Autenticación, secretos, auditoría, versionado, flujo de revisión y adaptadores LLM se reutilizan.
 
-La validación es un expediente acumulativo visible. En Sprint 3, `POST /copilot/proposals/{id}/verify` comprueba la huella de la instantánea, vuelve a ejecutar el validador y reconstruye la propuesta desde `ai_decisions` sin invocar al LLM. Sprint 4 agrega `app.etl_executions`: concilia conteos, unidades, pedidos e importes entre AdventureWorks OLTP y el datamart, conserva KPI y permite revisión semántica posterior sin repetir la carga. Sprint 5 añade cobertura de etiquetas descriptivas, paneles sobre agregados conciliados, chat y reportes reconstruidos en servidor. El chat traduce lenguaje natural a un contrato cerrado de métrica, dimensión, filtros, orden y Top N; FastAPI genera la agregación parametrizada y devuelve universo, denominador y procedencia. Ningún SQL del LLM se ejecuta. La igualdad de hashes demuestra reproducibilidad del artefacto aprobado, no determinismo del proveedor probabilístico; el juicio de expertos se agrega en el cierre académico.
+La validación es un expediente acumulativo visible. Sprint 3 verifica huellas y referencias; Sprint 4 concilia ETL; Sprint 5 añade calidad descriptiva, paneles, chat y reportes; Sprint 6 prueba aislamiento y portabilidad estructural con WideWorldImporters. El chat traduce lenguaje natural a un contrato cerrado y FastAPI genera agregaciones parametrizadas. Ningún SQL del LLM se ejecuta. La igualdad de hashes demuestra reproducibilidad del artefacto aprobado, no determinismo del proveedor probabilístico.
 
 Ante un JWT vencido, React conserva sólo el borrador redactado, códigos de selección, paso y un identificador opaco de versión. Después de autenticarse, recupera el expediente mediante una lectura autorizada; no persiste credenciales, respuestas del LLM ni documentos completos de propuesta.
 

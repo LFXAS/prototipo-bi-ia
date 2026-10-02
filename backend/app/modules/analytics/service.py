@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.modules.copilot.models import BiProposal
 from app.modules.etl.models import EtlExecution
 from app.modules.metadata.models import MetadataSnapshot
+from app.modules.parameters.models import DataConnection
 
 from .schemas import (
     AnalyticsDashboardRead,
@@ -103,6 +104,13 @@ def _dimension_document(proposal: BiProposal, aliases: Iterable[str]) -> dict[st
         if any(alias in name.casefold() for alias in normalized_aliases):
             return item
     return None
+
+
+def _dimension_display_label(dimension: dict[str, Any]) -> str:
+    display = dimension.get("display_label")
+    if not isinstance(display, dict):
+        return ""
+    return str(display.get("target_name", ""))
 
 
 async def _table_columns(session: AsyncSession, schema_name: str, table_name: str) -> set[str]:
@@ -506,7 +514,12 @@ async def run_safe_aggregate_query(
     attributes = attributes if isinstance(attributes, list) else []
     label_column = _preferred_column(
         dimension_columns,
-        [*candidates, *attributes, dimension_document.get("business_key", "")],
+        [
+            _dimension_display_label(dimension_document),
+            *candidates,
+            *attributes,
+            dimension_document.get("business_key", ""),
+        ],
     )
     fact_key = f"{dimension_table}_sk"
     if label_column is None or fact_key not in fact_columns:
@@ -564,12 +577,15 @@ async def run_safe_aggregate_query(
         territory_label = _preferred_column(
             territory_columns,
             [
+                _dimension_display_label(territory_dimension),
                 "group_es",
                 "name_es",
                 "nombre",
                 "name",
                 "group",
                 "countryregioncode",
+                "stateprovincename",
+                "salesterritory",
                 territory_dimension.get("business_key", ""),
             ],
         )
@@ -649,6 +665,9 @@ async def build_dashboard(
     year: int | None,
     territory: str | None,
 ) -> AnalyticsDashboardRead:
+    connection = await session.get(DataConnection, snapshot.data_connection_id)
+    if connection is None:
+        raise AnalyticsUnavailableError("La fuente de origen del expediente ya no está disponible.")
     del snapshot  # Reserved for connector-neutral semantic expansion.
     mart_schema = mart_schema_for_execution(execution)
     fact_document = proposal.proposal_document.get("fact")
@@ -726,12 +745,15 @@ async def build_dashboard(
         territory_label = _preferred_column(
             territory_columns,
             [
+                _dimension_display_label(territory_dimension),
                 "group_es",
                 "name_es",
                 "nombre",
                 "name",
                 "group",
                 "countryregioncode",
+                "stateprovincename",
+                "salesterritory",
                 territory_dimension.get("business_key", ""),
             ],
         )
@@ -873,7 +895,12 @@ async def build_dashboard(
         attributes = raw_attributes if isinstance(raw_attributes, list) else []
         label_column = _preferred_column(
             columns,
-            [*aliases, *attributes, dimension.get("business_key", "")],
+            [
+                _dimension_display_label(dimension),
+                *aliases,
+                *attributes,
+                dimension.get("business_key", ""),
+            ],
         )
         if label_column is None:
             return
@@ -962,6 +989,9 @@ async def build_dashboard(
     return AnalyticsDashboardRead(
         execution_id=execution.id,
         proposal_id=proposal.id,
+        data_connection_id=connection.id,
+        source_name=connection.name,
+        database_name=connection.database_name,
         title="Panel ejecutivo de ventas",
         description=str(overview.get("summary", "Análisis del datamart reconciliado.")),
         grain=str(overview.get("grain", "Granularidad aprobada")),

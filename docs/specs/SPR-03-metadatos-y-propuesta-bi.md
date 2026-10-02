@@ -1,5 +1,11 @@
 # SPR-03: metadatos y propuesta BI supervisada
 
+> **Evolución vigente (Sprint 6).** Este documento conserva el alcance con el que se
+> cerró Sprint 3. La restricción histórica de una sola fuente activa fue reemplazada por
+> el contexto multifuente de
+> [SPR-06-01](SPR-06-01-contexto-multifuente-sqlserver.md). Descubrimiento, propuesta y
+> validación mantienen el mismo contrato, pero reciben `connection_id` explícito.
+
 - Estado: **implementado y verificado localmente; pendiente de validación del usuario y PR**.
 - Sprint: SPR-03.
 - Responsable de especificación: equipo del proyecto.
@@ -113,7 +119,9 @@ El Sprint 3 debe probar la participación real del usuario final sin presentar c
 
 ## 5. Reglas globales
 
-1. Sólo existe una fuente activa en el Sprint 3. El único motor implementado es SQL Server y la validación académica se realiza con AdventureWorks2022.
+1. En el cierre histórico de Sprint 3 sólo existía una fuente activa. Desde Sprint 6
+   varias fuentes SQL Server pueden permanecer habilitadas y la validación académica se
+   amplió de AdventureWorks2022 a WideWorldImporters con el mismo motor universal.
 2. La conexión se crea, prueba, activa y desactiva desde la plataforma. No se exige editar `.env`, Compose, código ni PostgreSQL para la operación ordinaria.
 3. La fuente activa se consulta exclusivamente con intención de lectura y una cuenta sin permisos de escritura.
 4. La introspección procesa metadatos, no filas de ventas, datos personales ni muestras de valores.

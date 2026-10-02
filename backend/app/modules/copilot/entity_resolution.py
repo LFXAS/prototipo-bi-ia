@@ -72,6 +72,7 @@ _PARTY_TERMS = {
     "holder",
     "titular",
 }
+_AUDIT_RELATION_COLUMNS = {"createdby", "lasteditedby", "modifiedby", "updatedby"}
 
 
 def _tokens(value: object) -> set[str]:
@@ -79,6 +80,17 @@ def _tokens(value: object) -> set[str]:
     plain = "".join(character for character in raw if not unicodedata.combining(character))
     separated = re.sub(r"([a-z0-9])([A-Z])", r"\1 \2", plain)
     return {item for item in re.split(r"[^a-zA-Z0-9]+", separated.casefold()) if item}
+
+
+def _is_audit_relation(relation: dict[str, Any]) -> bool:
+    columns = {
+        re.sub(r"[^a-z0-9]+", "", str(column).casefold())
+        for column in [
+            *relation.get("columns", []),
+            *relation.get("referenced_columns", []),
+        ]
+    }
+    return bool(columns & _AUDIT_RELATION_COLUMNS)
 
 
 def _column_type(column: dict[str, Any]) -> str:
@@ -206,7 +218,7 @@ def enrich_dimension_labels(
             )
         else:
             for relation in tables[source].get("foreign_keys", []):
-                if not isinstance(relation, dict):
+                if not isinstance(relation, dict) or _is_audit_relation(relation):
                     continue
                 target = (
                     f"{relation.get('referenced_schema', '')}."

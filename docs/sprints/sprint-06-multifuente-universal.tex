@@ -1,0 +1,321 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage[letterpaper,margin=2.2cm,headheight=15pt]{geometry}
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{xurl}
+\usepackage{tocloft}
+
+\ifdefined\pdfinfoomitdate\pdfinfoomitdate=1\fi
+\ifdefined\pdftrailerid\pdftrailerid{}\fi
+\ifdefined\pdfsuppressptexinfo\pdfsuppressptexinfo=15\fi
+
+\definecolor{ugblue}{HTML}{006A8D}
+\definecolor{deepgreen}{HTML}{123D3A}
+\definecolor{softgray}{HTML}{F1F5F4}
+\definecolor{success}{HTML}{157A57}
+\hypersetup{colorlinks=true,linkcolor=ugblue,urlcolor=ugblue,hypertexnames=false,
+pdftitle={Informe Sprint 6 - Contexto multifuente universal},
+pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Informe Sprint 6}
+\rhead{Prototipo BI asistido por IA}
+\cfoot{\thepage}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+\setlist[itemize]{leftmargin=1.5em,itemsep=0.18em}
+\setlist[enumerate]{leftmargin=1.7em,itemsep=0.24em}
+\renewcommand{\arraystretch}{1.18}
+\setlength{\cftsecnumwidth}{2.6em}
+\setlength{\cftsubsecnumwidth}{3.2em}
+\newcommand{\file}[1]{\texttt{#1}}
+\newcommand{\ok}{\textcolor{success}{\textbf{Completado}}}
+\newcommand{\notebox}[1]{\begin{center}\fcolorbox{ugblue}{softgray}{\begin{minipage}{0.90\textwidth}\textcolor{ugblue}{\textbf{Criterio.}} #1\end{minipage}}\end{center}}
+
+\begin{document}
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+  \thispagestyle{empty}
+  \vspace*{0.8cm}
+  {\color{ugblue}\rule{\textwidth}{2.8pt}}
+  \vspace{1.2cm}
+  {\Large Documentación técnica del producto\\[0.25em]
+  Prototipo BI asistido por inteligencia artificial}
+  \vfill
+  {\color{deepgreen}\fontsize{28}{34}\selectfont\textbf{Informe del Sprint 6}}\\[0.7em]
+  {\LARGE Contexto multifuente y validación universal}\\[0.6em]
+  {\large Ciclo completo desde metadatos hasta analítica\\
+  con fuentes SQL Server independientes\par}
+  \vspace{1.4cm}
+  \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
+    Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
+    Código documental & INF-SPR-06 \\
+    Versión & 1.0.1 \\
+    Fecha de cierre & 1 de octubre de 2026 \\
+    Rama de trabajo & \file{feature/multi-source-sqlserver} \\
+    Estado & Incremento funcional validado localmente \\
+    Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
+  \end{tabularx}
+  \vfill
+  {\color{ugblue}\rule{\textwidth}{2.8pt}}
+\end{titlepage}
+\hypersetup{pageanchor=true}
+\pagenumbering{roman}
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+\section{Resumen ejecutivo}
+
+El Sprint 6 elimina la selección global de una única base y convierte la fuente de datos
+en parte explícita de cada artefacto. Una organización puede mantener varias conexiones
+SQL Server habilitadas y ejecutar, para cada una, el mismo recorrido: captura de metadatos,
+catálogo, formulación, viabilidad, propuesta, aprobación, ETL, conciliación y analítica.
+
+AdventureWorks2022 y WideWorldImporters se usaron como casos de contraste, no como
+personalizaciones. El código no decide por el nombre de la base, tabla o columna. La
+selección se apoya en estructura, función semántica, tipos, claves, relaciones declaradas,
+granularidad y fórmulas controladas.
+
+\notebox{El catálogo no lo construye libremente la IA. El analista administra la orientación
+de negocio; la plataforma descubre evidencia técnica por fuente; el LLM interpreta y
+propone; y validadores determinísticos aceptan o rechazan cada referencia.}
+
+\section{Objetivo, alcance y definición de terminado}
+
+\subsection{Objetivo del incremento}
+
+Permitir que una misma empresa opere varias fuentes al mismo tiempo, sin desactivar una
+para consultar otra y sin mezclar metadatos, propuestas, ejecuciones o resultados.
+
+\subsection{Alcance entregado}
+
+\begin{itemize}
+  \item selector persistente de fuente en el espacio de trabajo;
+  \item conexiones probadas y habilitadas de forma independiente;
+  \item instantáneas, catálogos, propuestas, ETL y analítica filtrados por conexión;
+  \item restauración idempotente de WideWorldImporters para la demostración;
+  \item detección universal de ventas, fecha, producto, cliente, territorio y costo;
+  \item rechazo de rutas de auditoría y evidencia ajena al contexto comercial;
+  \item etiquetas descriptivas en dimensiones, filtros y gráficos;
+  \item documentación y pruebas automatizadas del contrato multifuente.
+\end{itemize}
+
+No se incluyeron pronósticos, combinación de hechos entre bases ni conectores distintos de
+SQL Server. Estas extensiones requieren contratos y pruebas propias.
+
+\subsection{Definición de terminado}
+
+\begin{enumerate}
+  \item dos bases pueden permanecer habilitadas simultáneamente;
+  \item toda petición nueva incluye el identificador de conexión;
+  \item una instantánea no puede usarse con otra conexión;
+  \item el catálogo de una fuente no altera el de otra;
+  \item una propuesta viable no pierde requisitos porque el LLM los omita;
+  \item el ETL lee la fuente asociada a la propuesta aprobada;
+  \item la conciliación produce diferencia cero y la analítica muestra procedencia;
+  \item código, especificación, manual, tesis, bitácora e informe compilan y pasan CI.
+\end{enumerate}
+
+\section{Historias y criterios de aceptación}
+
+\begin{longtable}{@{}p{0.13\textwidth}p{0.32\textwidth}p{0.47\textwidth}@{}}
+  \toprule
+  \textbf{Historia} & \textbf{Necesidad} & \textbf{Criterio verificable} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Historia} & \textbf{Necesidad} & \textbf{Criterio verificable} \\
+  \midrule
+  \endhead
+  MS-01 & Elegir una fuente sin afectar a otros usuarios. & La preferencia vive en la sesión del navegador y cada API recibe \file{connection\_id}. \\
+  MS-02 & Conservar evidencia separada. & Instantáneas, catálogo, propuestas y ejecuciones pertenecen a una sola conexión comprobada. \\
+  MS-03 & Entender qué hace la IA en el catálogo. & La interfaz separa preguntas de negocio y cobertura técnica automática. \\
+  MS-04 & Trabajar con esquemas diferentes. & El motor usa metadatos y FK; no contiene condiciones para AdventureWorks o WideWorldImporters. \\
+  MS-05 & Evitar relaciones técnicamente válidas pero semánticamente falsas. & FK de auditoría como \file{LastEditedBy} se excluyen de las rutas de negocio. \\
+  MS-06 & Mantener los requisitos solicitados. & Toda capacidad directa o derivable debe quedar cubierta o bloquear la aprobación. \\
+  MS-07 & Consultar resultados comprensibles. & Los gráficos usan etiquetas materializadas y conservan claves para trazabilidad. \\
+  \bottomrule
+\end{longtable}
+
+\section{Diseño de la solución}
+
+\subsection{Contexto explícito de fuente}
+
+El contrato dejó de depender de una conexión activa global. La tabla de conexión indica si
+una fuente está habilitada y probada; el contexto elegido acompaña cada consulta. La
+instantánea constituye la frontera de evidencia y vincula el resto del expediente con la
+base exacta usada durante la generación.
+
+La migración de datos incorpora el identificador de conexión al catálogo analítico y crea
+la unicidad por fuente y dominio. Las API de metadatos, asistente, ETL y analítica validan
+pertenencia antes de devolver o modificar un registro.
+
+\subsection{Catálogo de negocio frente a evidencia técnica}
+
+\begin{tabularx}{\textwidth}{@{}p{0.22\textwidth}p{0.31\textwidth}X@{}}
+  \toprule
+  Capa & Responsable & Contenido \\
+  \midrule
+  Orientación funcional & Analista BI & Preguntas, etiquetas, explicaciones y periodicidades por fuente. \\
+  Descubrimiento & Plataforma & Tablas, columnas, tipos, PK, FK, rutas y disponibilidad actual. \\
+  Propuesta & LLM & Interpretación y borrador de modelo sobre metadatos restringidos. \\
+  Aceptación & Motor determinístico & Referencias, cardinalidad, granularidad, fórmulas y cobertura. \\
+  \bottomrule
+\end{tabularx}
+
+La pantalla muestra la instantánea utilizada y, para cada pregunta estándar, si existe
+evidencia verificable. La configuración funcional nunca convierte una columna inexistente
+en una capacidad. Una pregunta personalizada orienta al modelo, pero la propuesta debe
+superar los mismos controles.
+
+La revisión histórica confirmó que las cuatro preguntas iniciales ---tiempo, producto,
+cliente y territorio--- fueron definidas por el perfil de ventas de la aplicación, no por
+el LLM. En AdventureWorks el analista incorporó después dos preguntas personalizadas,
+\textbf{Costos y rentabilidad de las ventas} y \textbf{Ventas y costos por unidad}, a partir
+de recomendaciones conversacionales. WideWorldImporters no hereda esas personalizaciones:
+parte de la línea base y sólo incorpora preguntas adicionales mediante una decisión humana.
+
+\subsection{Selección semántica universal}
+
+La búsqueda privilegia un subgrafo comercial coherente. Primero resuelve la tabla de hechos
+y luego evidencia relacionada para fecha, producto, cliente, territorio y costo. Las
+coincidencias exactas reciben prioridad sobre coincidencias parciales; compras, históricos,
+auditoría y tablas temporales reciben penalización o exclusión según su función.
+
+Las dimensiones solicitadas y respaldadas por evidencia se incorporan aunque el proveedor
+las omita. Las medidas calculadas se reconstruyen con operaciones permitidas. Por ejemplo,
+ventas puede derivarse de precio por cantidad y costo de cantidad por costo unitario, pero
+sólo si ambas entradas existen y están conectadas mediante rutas verificadas.
+
+\section{Ejecución y evidencia}
+
+\subsection{Preparación de WideWorldImporters}
+
+El contenedor descarga el respaldo oficial cuando no está presente, restaura la base de
+forma idempotente y conserva el binario fuera de Git. El lector de demostración se agrega
+a los roles existentes cuyo alcance es ventas. Esto permite que las políticas de seguridad
+por territorio de la base de ejemplo no oculten clientes durante la prueba. Para fuentes
+externas, el producto respeta los permisos definidos por el DBA y no los modifica.
+
+\subsection{Propuesta y materialización}
+
+La propuesta 96 se generó con Claude Haiku 4.5. El proveedor omitió inicialmente elementos
+y propuso componentes incompatibles; el motor común incorporó dimensiones demostrables,
+excluyó fórmulas sin evidencia y mantuvo como limitación el descuento no disponible. La
+aprobación se realizó con cobertura completa de los requisitos viables.
+
+La ejecución 13 materializó el datamart de WideWorldImporters sin modificar el de
+AdventureWorks:
+
+\begin{tabularx}{\textwidth}{@{}X r@{}}
+  \toprule
+  Control & Resultado \\
+  \midrule
+  Filas de origen y destino & 231.412 / 231.412 \\
+  Diferencia & 0 \\
+  Pedidos distintos & 73.595 \\
+  Unidades vendidas & 9.310.904 \\
+  Ventas & 177.634.276,40 \\
+  Costo & 88.904.313,90 \\
+  Margen bruto & 88.729.962,50 \\
+  Margen porcentual & 49,9509\% \\
+  Calidad descriptiva & 227 productos, 663 clientes y 53 territorios \\
+  \bottomrule
+\end{tabularx}
+
+La fuente no proporcionó una moneda ISO inequívoca; por ello los importes se rotulan como
+\textbf{moneda de origen}. Presentar USD habría sido una invención. De igual modo, el
+descuento permanece no disponible.
+
+\subsection{Analítica}
+
+El tablero obtiene filtros y rankings desde la ejecución seleccionada. La dimensión de
+territorio conserva la clave, pero presenta nombres como Texas, Pennsylvania, California
+y New York. Productos y clientes usan los atributos descriptivos materializados. La lista
+de ejecuciones se filtra por fuente y expone conexión, base, propuesta y ejecución.
+
+\section{Pruebas y riesgos}
+
+\begin{tabularx}{\textwidth}{@{}p{0.27\textwidth}X@{}}
+  \toprule
+  Control & Evidencia \\
+  \midrule
+  Aislamiento & Catálogo, instantánea, propuesta, ETL y tablero rechazan referencias cruzadas. \\
+  Descubrimiento & Ventas actuales prevalecen sobre compras y archivos; auditoría no crea rutas de negocio. \\
+  Proveedores & La validación posterior al LLM corrige omisiones y descarta referencias no demostrables. \\
+  Materialización & Conciliación de 231.412 filas con diferencia cero. \\
+  Dimensiones & Producto 227/227, cliente 663/663 y territorio 53/53 con nombre. \\
+  Interfaz & Selector de fuente, cobertura técnica y resultados contextuales probados en React. \\
+  Calidad & Ruff, formato, Mypy, Pytest, ESLint, Vitest, Vite y LaTeX forman la puerta de salida. \\
+  \bottomrule
+\end{tabularx}
+
+El riesgo residual principal es que una fuente externa aplique seguridad por fila que
+oculte datos al lector. Esto no se resuelve elevando privilegios desde la aplicación: debe
+diagnosticarse y coordinarse con el DBA. También permanece fuera del alcance la traducción
+automática de significados propios del negocio que no puedan demostrarse por metadatos.
+
+La ejecución formal de los escenarios MS-E2E-01 a MS-E2E-09 se consolidó en
+\path{docs/testing/Informe_pruebas_integrales_multifuente.pdf}. El informe incorpora
+capturas de las incidencias, repetición post-corrección, conciliaciones de 121.317 y
+231.412 filas, verificación visual de todas las páginas PDF e inspección estructural y
+visual de los libros Excel. La suite final aprobó 157 pruebas de backend y 24 pruebas de
+frontend, además de formato, análisis estático, tipado, lint y compilación de producción.
+
+El escenario MS-E2E-09 añadió una regresión específica para propuestas históricas. La
+consulta de evidencia quedó estrictamente en modo de sólo lectura: una diferencia entre la
+huella persistida y la reconstrucción actual se informa como compatibilidad y no retira una
+decisión humana. La migración \file{20261001\_18} restauró las propuestas 86 y 91 porque
+ambas conservaban ejecuciones conciliadas. Datamart de ventas abre por defecto el último
+expediente publicado y, en AdventureWorks, coincide con Analítica en la ejecución 12 y la
+propuesta 91.
+
+\section{Revisión y retrospectiva}
+
+El contraste entre dos modelos OLTP demostró que universalidad no significa reconocer
+cualquier esquema sólo por semejanza léxica. Significa aplicar el mismo proceso de
+descubrimiento, evaluación, propuesta, validación, materialización y trazabilidad, y detenerse
+cuando falta evidencia.
+
+El problema reportado en el catálogo permitió aclarar una responsabilidad clave: la IA no
+es dueña del catálogo ni de la verdad técnica. Su aporte es interpretativo. La plataforma
+mantiene el contrato y el analista conserva la decisión de negocio.
+
+\subsection*{Control documental}
+
+\begin{tabularx}{\textwidth}{@{}>{\bfseries}p{0.25\textwidth}X@{}}
+  \toprule
+  Campo & Valor \\
+  \midrule
+  Código & INF-SPR-06 \\
+  Fuente editable & \file{docs/sprints/sprint-06-multifuente-universal.tex} \\
+  PDF oficial & \file{docs/sprints/sprint-06-multifuente-universal.pdf} \\
+  Compilación & \file{make sprint6-report} o \file{make docs} \\
+  Especificación & \file{SPR-06-01-contexto-multifuente-sqlserver.md} \\
+  Evidencia integral & \file{docs/testing/Informe\_pruebas\_integrales\_multifuente.pdf} \\
+  Definición de terminado & Código, pruebas, evidencia real y documentación reproducible. \\
+  \bottomrule
+\end{tabularx}
+
+\vspace{1em}
+\begin{tabularx}{\textwidth}{@{}p{0.24\textwidth}X p{0.18\textwidth}@{}}
+  \toprule
+  Rol & Nombre y conformidad & Fecha \\
+  \midrule
+  Responsable & \rule{0.92\linewidth}{0.4pt} & \rule{0.85\linewidth}{0.4pt} \\[0.7em]
+  Responsable & \rule{0.92\linewidth}{0.4pt} & \rule{0.85\linewidth}{0.4pt} \\[0.7em]
+  Tutor/revisor & \rule{0.92\linewidth}{0.4pt} & \rule{0.85\linewidth}{0.4pt} \\
+  \bottomrule
+\end{tabularx}
+
+\end{document}

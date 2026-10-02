@@ -10,7 +10,7 @@ import {
 } from './api/security'
 import './analytics.css'
 
-type Props = { token: string; canExport: boolean; navigate: (path: string) => void }
+type Props = { token: string; connectionId: number; canExport: boolean; navigate: (path: string) => void }
 
 function formatValue(value: number | undefined, unit: string, compact = false) {
   if (value === undefined || !Number.isFinite(value)) return 'Sin valor'
@@ -179,7 +179,7 @@ function Skeleton() {
   return <div className="analytics-skeleton" aria-label="Cargando análisis" aria-busy="true"><div /><div className="skeleton-kpis">{[1, 2, 3, 4].map((item) => <span key={item} />)}</div><div className="skeleton-panels"><span /><span /><span /></div></div>
 }
 
-export function AnalyticsPage({ token, canExport, navigate }: Props) {
+export function AnalyticsPage({ token, connectionId, canExport, navigate }: Props) {
   const [dashboard, setDashboard] = useState<AnalyticsDashboard | null>(null)
   const [executions, setExecutions] = useState<AnalyticsExecutionOption[]>([])
   const [executionId, setExecutionId] = useState(0)
@@ -198,11 +198,24 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
   useEffect(() => {
     let cancelled = false
     setLoading(true)
-    api.analyticsExecutions(token)
+    setError('')
+    setDashboard(null)
+    setExecutions([])
+    setExecutionId(0)
+    setMetricCode('')
+    setYear('')
+    setTerritory('')
+    setChatMessages([])
+    setChatQuestion('')
+    setChatError('')
+    api.analyticsExecutions(token, connectionId || undefined)
       .then((items) => {
         if (cancelled) return
+        if (items.some((item) => item.data_connection_id !== connectionId)) {
+          throw new Error('La API devolvió ejecuciones de una fuente distinta al contexto seleccionado.')
+        }
         setExecutions(items)
-        setExecutionId((current) => current || items[0]?.execution_id || 0)
+        setExecutionId(items[0]?.execution_id || 0)
         if (!items.length) {
           setError('No existe una ejecución conciliada con datos físicos disponibles para analizar.')
           setLoading(false)
@@ -215,23 +228,27 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
         }
       })
     return () => { cancelled = true }
-  }, [token])
+  }, [connectionId, token])
 
   useEffect(() => {
-    if (!executionId) return
+    const selectedExecution = executions.find((item) => item.execution_id === executionId)
+    if (!executionId || selectedExecution?.data_connection_id !== connectionId) return
     let cancelled = false
     setLoading(true)
     setError('')
-    api.analyticsDashboard(token, { executionId, metricCode, year, territory })
+    api.analyticsDashboard(token, { connectionId, executionId, metricCode, year, territory })
       .then((result) => {
         if (cancelled) return
+        if (result.data_connection_id !== connectionId || result.execution_id !== executionId) {
+          throw new Error('El tablero recibido no corresponde a la fuente y ejecución seleccionadas.')
+        }
         setDashboard(result)
         setMetricCode((current) => current || result.metric_code)
       })
       .catch((caught: Error) => { if (!cancelled) setError(caught.message) })
       .finally(() => { if (!cancelled) setLoading(false) })
     return () => { cancelled = true }
-  }, [executionId, metricCode, territory, token, year])
+  }, [connectionId, executionId, executions, metricCode, territory, token, year])
 
   const unit = useMemo(() => dashboard ? metricUnit(dashboard) : 'valor', [dashboard])
 
@@ -255,6 +272,7 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
     setError('')
     try {
       const file = await api.analyticsReport(token, format, {
+        connectionId,
         executionId: activeDashboard.execution_id,
         metricCode: metricCode || activeDashboard.metric_code,
         year,
@@ -297,6 +315,7 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
         question: normalized,
         history,
         view: viewMode,
+        data_connection_id: connectionId,
         execution_id: activeDashboard.execution_id,
         metric_code: metricCode || activeDashboard.metric_code,
         year: year ? Number(year) : undefined,
@@ -318,14 +337,18 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
     : dashboard.visuals
   const selectedMetricLabel = dashboard.available_metrics.find((item) => item.value === (metricCode || dashboard.metric_code))?.label ?? 'el indicador seleccionado'
   const selectedScope = [year || 'todos los años', territory || 'todos los territorios'].join(' y ')
+  const leadingTerritory = dashboard.visuals.find((item) => item.code === 'territories')?.points[0]?.label
+  const leadingTerritoryPrompt = leadingTerritory
+    ? `¿Cuáles son los 5 productos con mayor resultado en ${leadingTerritory}?`
+    : '¿Cuáles son los 5 productos con mayor resultado en el territorio líder?'
   const promptGuide = viewMode === 'executive'
     ? [
         { category: 'Comprender', prompts: [`Resume ${selectedMetricLabel} para ${selectedScope}.`, '¿Qué resultado debería revisar primero y por qué?'] },
-        { category: 'Decidir', prompts: ['¿Cuáles son los 5 productos más vendidos en Europa?', 'Prepara tres puntos para una reunión de gerencia.'] },
+        { category: 'Decidir', prompts: [leadingTerritoryPrompt, 'Prepara tres puntos para una reunión de gerencia.'] },
         { category: 'Interpretar con cautela', prompts: ['¿Qué limitaciones tienen estos resultados y qué no puedo concluir?', '¿Qué pregunta adicional debería hacer antes de tomar una decisión?'] },
       ]
     : [
-        { category: 'Comparar', prompts: [`Compara ${selectedMetricLabel} entre los períodos visibles.`, '¿Cuáles son los 5 productos más vendidos en Europa?'] },
+        { category: 'Comparar', prompts: [`Compara ${selectedMetricLabel} entre los períodos visibles.`, leadingTerritoryPrompt] },
         { category: 'Investigar', prompts: ['¿Qué variación merece una revisión adicional?', 'Señala patrones atípicos sin atribuir causalidad.'] },
         { category: 'Validar', prompts: ['Explica la calidad y trazabilidad de esta selección.', '¿Qué dato agregado faltaría para responder preguntas que este panel no cubre?'] },
       ]
@@ -333,7 +356,7 @@ export function AnalyticsPage({ token, canExport, navigate }: Props) {
 
   return <div className={`analytics-workspace mode-${viewMode}`}>
     <section className="analytics-hero">
-      <div><div className="analytics-status"><span /> Datos conciliados y publicados</div><h2>{viewMode === 'executive' ? 'Resumen ejecutivo de ventas' : dashboard.title}</h2><p>{viewMode === 'executive' ? 'Indicadores y hallazgos principales para apoyar decisiones comerciales con datos verificados.' : dashboard.description}</p><div className="analytics-context"><span>Ejecución #{dashboard.execution_id}</span><span>Propuesta #{dashboard.proposal_id}</span><span>{dashboard.currency_code}</span><span>{dashboard.period_label}</span></div></div>
+      <div><div className="analytics-status"><span /> Datos conciliados y publicados</div><h2>{viewMode === 'executive' ? 'Resumen ejecutivo de ventas' : dashboard.title}</h2><p>{viewMode === 'executive' ? 'Indicadores y hallazgos principales para apoyar decisiones comerciales con datos verificados.' : dashboard.description}</p><div className="analytics-context"><span>{dashboard.source_name} · {dashboard.database_name}</span><span>Ejecución #{dashboard.execution_id}</span><span>Propuesta #{dashboard.proposal_id}</span><span>{dashboard.currency_code}</span><span>{dashboard.period_label}</span></div></div>
       <div className="analytics-hero-meta"><div className="analytics-view-switch" role="group" aria-label="Tipo de vista"><button className={viewMode === 'executive' ? 'active' : ''} aria-pressed={viewMode === 'executive'} onClick={() => setViewMode('executive')}>Vista ejecutiva</button><button className={viewMode === 'analyst' ? 'active' : ''} aria-pressed={viewMode === 'analyst'} onClick={() => setViewMode('analyst')}>Vista analítica</button></div><small>Última actualización</small><strong>{new Intl.DateTimeFormat('es-EC', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(dashboard.refreshed_at))}</strong><span>{viewMode === 'executive' ? 'Lectura resumida para dirección y gerencia.' : dashboard.grain}</span></div>
     </section>
 

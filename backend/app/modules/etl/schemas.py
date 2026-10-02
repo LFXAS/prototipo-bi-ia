@@ -9,6 +9,9 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 class EtlProposalCandidateRead(BaseModel):
     proposal_id: int
     metadata_snapshot_id: int
+    data_connection_id: int
+    source_name: str
+    database_name: str
     business_goal: str
     periodicity: str
     provider_kind: str

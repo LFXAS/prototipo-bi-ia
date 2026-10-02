@@ -4,7 +4,7 @@
 
 Este plan convierte el objetivo específico de validación en evidencia visible y repetible dentro de la plataforma. La validación se incorpora en el sprint donde existe el artefacto que puede comprobarse; no se aplaza toda la evaluación hasta el final ni se declara como aprobada una capacidad todavía no construida.
 
-La persona usuaria principal de la evidencia técnica es el analista BI. La pantalla **IA > Asistente de datamart > Validación estructural de la propuesta - Sprint 3** reúne los controles de la versión seleccionada. Sprint 4 añadió el expediente de conciliación cuantitativa y Sprint 5 incorporó calidad semántica, analítica explicable, conversación segura y reportería fiel.
+La persona usuaria principal de la evidencia técnica es el analista BI. La pantalla **IA > Asistente de datamart > Validación estructural de la propuesta - Sprint 3** reúne los controles de la versión seleccionada. Sprint 4 añadió conciliación cuantitativa, Sprint 5 incorporó calidad semántica, analítica y reportería, y Sprint 6 añadió aislamiento multifuente y contraste universal con WideWorldImporters.
 
 ## Matriz incremental
 
@@ -20,6 +20,8 @@ La persona usuaria principal de la evidencia técnica es el analista BI. La pant
 | Calidad descriptiva de entidades | La población se conserva y la etiqueta visible se obtiene por relaciones verificadas, con cobertura y muestra controlada. | Sprint 5 | Implementado: 19820 clientes con nombre y tipo, sin etiquetas vacías. |
 | Analítica y reportería | Panel, hallazgos, chat, PDF y Excel se reconstruyen desde la ejecución conciliada y respetan vista y filtros. | Sprint 5 | Implementado y revisado visualmente. |
 | Interacción visual segura | Puntos, barras y leyendas permiten explorar valores exactos; sólo una categoría presente en el catálogo autorizado puede convertirse en filtro global. | Sprint 5 | Implementado con teclado, puntero y pruebas automatizadas. |
+| Aislamiento multifuente | Conexión, instantánea, catálogo, propuesta, ejecución y tablero conservan la misma procedencia y rechazan cruces. | Sprint 6 | Implementado con AdventureWorks y WideWorldImporters habilitadas simultáneamente. |
+| Portabilidad estructural | El mismo motor descubre hecho, dimensiones y medidas sin bifurcar por nombre de base; omisiones o invenciones del LLM se corrigen o bloquean. | Sprint 6 | Propuesta 96 aprobada y ejecución 13 conciliada con 231412 filas. |
 | Proveedores LLM intercambiables | Gemini, Groq, Anthropic, Qwen y Ollama conservan un contrato JSON validado; secretos y particularidades de protocolo no llegan al dominio BI. | Sprint 2--5 | Implementado; Anthropic usa Messages API, URL restringida y credencial cifrada. |
 | Neutralidad de recetas y versiones | Los nombres del proveedor compilan a identificadores canónicos, los KPI equivalentes se consolidan y cada ejecución nueva conserva sus tablas sin sustituir otra. | Sprint 4--5 | Implementado en código y regresión; materialización física dual pendiente de evidencia integrada. |
 | Contraste secundario | Resultados equivalentes se contrastan posteriormente con AdventureWorksDW cuando exista correspondencia semántica documentada. | Sprint posterior a ETL | Pendiente. |
@@ -60,7 +62,7 @@ La versión aprobada más reciente y compatible será la sugerencia inicial para
 
 La propuesta 52 generó la ejecución 6 como expediente de referencia. La plataforma conservó las huellas de propuesta e instantánea, compiló 27 operaciones y cargó 121317 líneas tanto en origen como en destino, con diferencia cero. Las dimensiones registraron 1124 fechas, 504 productos, 19820 clientes y 10 territorios; se conciliaron 274914 unidades y 31465 pedidos distintos.
 
-## Evidencia implementada en Sprint 5
+## Evidencia implementada en Sprints 5 y 6
 
 La propuesta 54 y la ejecución 7 corrigen la identidad del cliente sin modificar la población comercial ni el grano. La dimensión contiene 19119 personas y 701 organizaciones, todas con `nombre_cliente` y `tipo_cliente`. La conciliación conserva 121317 líneas, 274914 unidades y 31465 pedidos distintos.
 
@@ -71,6 +73,12 @@ El dashboard sólo abre ejecuciones exitosas y conciliadas. PDF y Excel vuelven 
 Los nueve KPI de la ejecución final quedaron asociados a recetas versionadas. Los importes usan la moneda base USD comprobada mediante `Sales.CurrencyRate.FromCurrencyCode`. `CostoTotal / UnidadesVendidas` y `VentasBrutas / UnidadesVendidas` se muestran como **Costo promedio por unidad vendida** y **Venta promedio por unidad vendida**, respectivamente; la denominación, el código ISO y el valor exacto permanecen trazables. La interpretación española publicó únicamente las etiquetas territoriales revisadas, conservó los valores originales y registró responsable, comentario y fecha.
 
 Una selección idéntica ya ejecutada abre el expediente existente en lugar de materializar nuevamente. Tanto la propuesta aprobada como la ejecución completada permiten recorrer sus cinco etapas en modo de sólo lectura. Las pruebas de interfaz comprueban que los campos permanecen deshabilitados, la materialización no vuelve a ofrecerse y el paso final conserva la conciliación publicada.
+
+Sprint 6 agrega una segunda línea de evidencia real. AdventureWorks2022 conserva sus
+ejecuciones históricas y WideWorldImporters produce la ejecución 13 en un destino físico
+independiente: 231412 filas de origen y destino, diferencia cero, 73595 pedidos y
+9310904 unidades. La calidad descriptiva confirma 227 productos, 663 clientes y 53
+territorios. Moneda y descuento no demostrables permanecen explícitamente sin resolver.
 
 La repetición con Anthropic conservó la propuesta 77 como evidencia sin aprobarla ni ejecutar el ETL. El endurecimiento posterior comprobó que nombres con espacios o idiomas distintos producen las mismas dependencias técnicas, que `AVG(LineTotal)` se rotula como importe promedio por línea y que la razón `SUM(ventas) / SUM(unidades)` permanece calculable en la ejecución histórica 10. El catálogo analítico omite la ejecución 9 porque el materializador legado ya había sustituido sus filas físicas; los nuevos esquemas `mart_ventas_e{id}` evitan esa pérdida en cargas futuras.
 

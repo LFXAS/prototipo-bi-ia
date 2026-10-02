@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, func
+from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -70,4 +70,31 @@ class SemanticAdvice(Base):
     created_by_label: Mapped[str] = mapped_column(String(320), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False, index=True
+    )
+
+
+class AnalysisCatalog(Base):
+    __tablename__ = "analysis_catalogs"
+    __table_args__ = (
+        UniqueConstraint(
+            "data_connection_id",
+            "domain_code",
+            name="uq_app_analysis_catalog_source_domain",
+        ),
+        {"schema": "app"},
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    data_connection_id: Mapped[int] = mapped_column(
+        ForeignKey("app.data_connections.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    domain_code: Mapped[str] = mapped_column(String(40), nullable=False)
+    version: Mapped[int] = mapped_column(Integer, nullable=False, default=2)
+    configuration_document: Mapped[dict[str, object]] = mapped_column(JSONB, nullable=False)
+    updated_by_user_id: Mapped[int | None] = mapped_column(
+        ForeignKey("app.users.id", ondelete="SET NULL"), nullable=True
+    )
+    updated_by_label: Mapped[str] = mapped_column(String(320), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
     )

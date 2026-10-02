@@ -1,5 +1,10 @@
 # SPR-03-04: parametrización web mínima de conexiones y secretos
 
+> **Evolución vigente (Sprint 6).** La activación única descrita aquí fue la línea base
+> de Sprint 3. [SPR-06-01](SPR-06-01-contexto-multifuente-sqlserver.md) permite varias
+> conexiones probadas y habilitadas simultáneamente; el usuario selecciona el contexto y
+> cada proceso valida `connection_id`. Cifrado, sólo lectura y auditoría no cambian.
+
 - Estado: **implementada salvo validación de dependencias futuras**.
 - Pertenece a: [SPR-03-metadatos-y-propuesta-bi.md](SPR-03-metadatos-y-propuesta-bi.md).
 - Complementa la corrección de credenciales LLM de [SPR-02-03](SPR-02-03-parametros-y-llm.md).
@@ -13,7 +18,8 @@ La implementación se limita a una solución académica segura y comprobable:
 
 - un formulario LLM que registra o reemplaza la API key;
 - un formulario de conexión SQL Server;
-- una sola fuente activa;
+- una sola fuente activa en el alcance histórico de Sprint 3; sustituida por fuentes
+  habilitadas y selección explícita desde Sprint 6;
 - un almacén cifrado común para ambas credenciales;
 - cuatro parámetros numéricos y un catálogo analítico por dominio, con permisos separados, realmente consumidos por el Sprint 3.
 
@@ -124,7 +130,8 @@ Las listas mantienen la paginación ya implementada. Cada escritura genera audit
 - [x] AdventureWorks puede registrarse, probarse y activarse desde la web sin editar archivos ni PostgreSQL.
 - [x] La clave LLM y la contraseña SQL Server se almacenan cifradas y nunca se devuelven al navegador.
 - [x] Una conexión con prueba fallida o permisos incompatibles no puede activarse.
-- [x] Sólo una fuente permanece activa.
+- [x] Sprint 3: sólo una fuente permanecía activa. Sprint 6 sustituye este criterio por
+  aislamiento y selección explícita entre varias fuentes habilitadas.
 - [x] Los cuatro parámetros numéricos se muestran con explicación y sólo aceptan valores dentro de su rango; el catálogo analítico tiene pantalla, permisos y CRUD separados por dominio.
 - [x] La auditoría identifica creación, modificación, prueba y activación sin exponer secretos.
 - [ ] Las dependencias impiden eliminar una conexión utilizada.

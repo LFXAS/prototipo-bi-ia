@@ -22,6 +22,9 @@ class AnalyticsOptionRead(BaseModel):
 class AnalyticsExecutionOptionRead(BaseModel):
     execution_id: int
     proposal_id: int
+    data_connection_id: int
+    source_name: str
+    database_name: str
     label: str
     provider_kind: str
     model_id: str
@@ -73,6 +76,9 @@ class AnalyticsFiltersRead(BaseModel):
 class AnalyticsDashboardRead(BaseModel):
     execution_id: int
     proposal_id: int
+    data_connection_id: int
+    source_name: str
+    database_name: str
     title: str
     description: str
     grain: str
@@ -100,6 +106,7 @@ class AnalyticsCopilotRequest(BaseModel):
     question: str = Field(min_length=5, max_length=500)
     history: list[AnalyticsChatTurn] = Field(default_factory=list, max_length=8)
     view: Literal["executive", "analyst"] = "executive"
+    data_connection_id: int = Field(gt=0)
     execution_id: int | None = Field(default=None, gt=0)
     metric_code: str | None = Field(default=None, min_length=1, max_length=80)
     year: int | None = Field(default=None, ge=1900, le=2200)

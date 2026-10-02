@@ -67,7 +67,7 @@
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPI, analítica explicable y reportería \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.5.9 \\
+    Versión de la bitácora & 0.6.1 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -97,7 +97,7 @@ Reglas:
 
 \section{Resumen del alcance vigente}
 
-El alcance vigente define una prueba de concepto académica con una fuente activa SQL Server y AdventureWorks en modo de sólo lectura. La plataforma extrae metadatos, solicita propuestas estructuradas a un LLM, exige aprobación humana y validaciones determinísticas, ejecuta un ETL controlado hacia PostgreSQL y publica KPI variables, visualizaciones, hallazgos explicables, conversación contextual y reportes PDF/Excel.
+El alcance vigente define una prueba de concepto académica con múltiples fuentes SQL Server habilitadas en modo de sólo lectura y un contexto explícito por proceso. AdventureWorks2022 y WideWorldImporters validan el mismo contrato universal. La plataforma extrae metadatos, solicita propuestas estructuradas a un LLM, exige aprobación humana y validaciones determinísticas, ejecuta un ETL controlado hacia PostgreSQL y publica KPI variables, visualizaciones, hallazgos explicables, conversación contextual y reportes PDF/Excel.
 
 El 25 de septiembre de 2026 el tutor retiró pronóstico, MAPE y RMSE porque constituyen un problema predictivo distinto de la construcción semiautomatizada del datamart. Los módulos de seguridad, parámetros, negocio y reportes están implementados con RBAC, auditoría y separación por perfiles. El núcleo funcional se encuentra completo; permanecen el cierre académico, usabilidad formal, juicio de expertos y contraste secundario documentado.
 
@@ -754,7 +754,7 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   Separación editorial & \statusok & El manual, la bitácora y los cinco informes de sprint conservan el detalle técnico completo sin identidad institucional. No se eliminaron decisiones, incidencias, comandos, resultados ni trazabilidad. \\
   Versión académica & \statusok & Se creó un Capítulo III independiente con propuesta tecnológica, factibilidad, metodología, requisitos, casos de uso, UML, arquitectura, sprints, validación, resultados y referencias institucionales. \\
   Ingeniería de software & \statusok & Los diagramas editables cubren ciclo de desarrollo, casos de uso, componentes, despliegue, secuencias y trazabilidad de artefactos. Los casos de uso incluyen actores, precondiciones, excepciones y postcondiciones del ETL. \\
-  Automatización documental & \statusok & Make y CI compilan ocho PDF oficiales y verifican que las versiones generadas coincidan con sus fuentes. \\
+  Automatización documental & \statusok & En ese cierre Make y CI compilaban ocho PDF oficiales; Sprint 6 amplió el conjunto a nueve con \file{INF-SPR-06}. \\
   Criterio de conservación & \statusok & El capítulo académico resume y enlaza; los informes técnicos permanecen como evidencia integral y anexos del trabajo. \\
   \bottomrule
 \end{longtable}
@@ -979,6 +979,67 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \bottomrule
 \end{longtable}
 
+\subsection{1 de octubre de 2026 - Contexto multifuente y WideWorldImporters}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Punto de recuperación & \statusok & Se publicó una etiqueta de recuperación fechada el 30 de septiembre antes de modificar el flujo y se trabajó en la rama \file{feature/multi-source-sqlserver}. \\
+  Contexto de fuente & \statusok & Varias conexiones SQL Server pueden permanecer habilitadas; selector, instantánea, catálogo, propuesta, ETL y analítica transmiten y validan \file{connection\_id}. \\
+  Propiedad del catálogo & \statusok & Cuatro preguntas estándar proceden del perfil. Las dos preguntas financieras fueron añadidas por el analista en AdventureWorks y no se copian a otra fuente. La cobertura técnica se calcula desde la instantánea. \\
+  Descubrimiento universal & \statusok & Se excluyen FK de auditoría y se prioriza un subgrafo comercial actual. WideWorldImporters resolvió fecha, producto, cliente, territorio, cantidad, precio y costo mediante metadatos y rutas declaradas. \\
+  Seguridad por fila & \statusok & El lector del contenedor demostrativo se incorporó a los roles de ventas de WideWorldImporters. Las fuentes externas conservan la política definida por su DBA. \\
+  Propuesta y ETL & \statusok & Propuesta 96 y ejecución 13: 231412 filas origen/destino, diferencia cero, 73595 pedidos, 9310904 unidades, ventas 177634276,40 y costo 88904313,90. \\
+  Calidad descriptiva & \statusok & 227 productos, 663 clientes y 53 territorios con etiqueta; el tablero usa nombres y conserva las claves. \\
+  Evidencia negativa & \statusok & Moneda y descuento no demostrables se publican como moneda de origen y limitación, respectivamente; no se inventa USD ni una fórmula de descuento. \\
+  \bottomrule
+\end{longtable}
+
+\subsection{1 de octubre de 2026 - Prueba integral y evidencia para la tesis}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Aislamiento funcional & \statusok & Se alternó AdventureWorks--WideWorldImporters--AdventureWorks sin cerrar sesión; Inicio, Explorador, catálogo, expedientes y analítica conservaron sólo el contexto confirmado por la API. \\
+  Copiloto & \statusok & La expresión genérica ``territorio líder'' se resolvió determinísticamente como Southwest o Texas desde el ranking vigente antes de ejecutar la agregación segura. \\
+  Reporterías & \statusok & Se abrieron y renderizaron diez páginas PDF y se inspeccionaron ocho hojas Excel; no se observaron cortes, mezclas de fuente ni pérdida de valores. \\
+  Regresión & \statusok & Ruff, formato, Mypy y 157 pruebas Pytest; ESLint, 24 pruebas Vitest y construcción Vite finalizaron correctamente. \\
+  Evidencia académica & \statusok & Se creó \file{INF-TEST-MS-01} con método, escenarios, capturas, resultados, incidencias, limitaciones y conclusión defendible para la tesis. \\
+  \bottomrule
+\end{longtable}
+
+\subsection{1 de octubre de 2026 - Inmutabilidad de versiones y expediente publicado}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Causa raíz & \statusok & La consulta de evidencia trataba una diferencia de reconstrucción histórica como error bloqueante y retiraba automáticamente la aprobación. No existía diferencia de filas ni corrupción del ETL. \\
+  Contrato de consulta & \statusok & \textbf{Verificar evidencia} quedó en modo de sólo lectura; registra \file{approval\_safe} y \file{status\_unchanged} sin cambiar propuesta, revisión ni expediente. \\
+  Corrección de datos de control & \statusok & La migración \file{20261001\_18} restauró las propuestas 86 y 91 porque la retirada correspondía al mensaje automático anterior y las ejecuciones 11 y 12 estaban conciliadas. Cada restauración conserva auditoría. \\
+  Interfaz & \statusok & Se retiró el bloque ambiguo de validaciones futuras. La diferencia de huella se explica como compatibilidad y la huella secundaria se denomina reconstrucción. \\
+  Linaje publicado & \statusok & Datamart de ventas abre ejecución 12/propuesta 91 y Analítica muestra la misma pareja. La propuesta 72 permanece disponible sólo como alternativa no materializada. \\
+  Regresión & \statusok & Pytest cubre diferencias de reproducción no bloqueantes; Vitest comprueba que verificar no retira aprobaciones y que el expediente publicado se abre antes que una propuesta nueva. \\
+  \bottomrule
+\end{longtable}
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}p{0.29\textwidth}@{\hspace{0.18in}}p{0.17\textwidth}@{\hspace{0.18in}}X@{}}
@@ -987,8 +1048,8 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \midrule
   Compose autocontenido válido & \statusok & \file{docker compose config --quiet} \\
   Compose de imágenes válido & \statusok & \file{docker compose -f compose.release.yaml config --quiet} \\
-  Backend calidad y pruebas & \statusok & Ruff, formato, Mypy y 150 pruebas Pytest dentro de Docker \\
-  Frontend calidad y pruebas & \statusok & ESLint, 21 pruebas Vitest y build de Vite dentro de Docker \\
+  Backend calidad y pruebas & \statusok & Ruff, formato, Mypy y 157 pruebas Pytest dentro de Docker \\
+  Frontend calidad y pruebas & \statusok & ESLint, 24 pruebas Vitest y build de Vite dentro de Docker \\
   PostgreSQL disponible & \statusok & Esquemas \file{app} y \file{mart}; endpoint \file{/health/ready} en \file{ok} \\
   AdventureWorks restaurada & \statusok & 71 tablas; \file{bi\_reader}: lectura 1 e inserción 0 \\
   Interfaz disponible & \statusok & Vite saludable en 5173, Nginx opcional en 8080 y API accesible mediante proxy \\
@@ -996,7 +1057,7 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   PDF legible & \statusok & Todas las páginas renderizadas e inspeccionadas sin cortes ni solapamientos \\
   Git local & \statusok & \file{develop} para integración, \file{main} para entregas y ramas enfocadas por pull request \\
   GitHub/GHCR & \statusok & Repositorio público, dos colaboradoras con escritura, ramas protegidas y cinco imágenes públicas en GHCR; la réplica desde una VM Ubuntu se realizó con Docker y VS Code. \\
-  SDD y trazabilidad & \statusok & Especificaciones de Sprints 2 a 5 versionadas; SPR-05-01 a SPR-05-06 cubren dashboard, reportes, calidad semántica, proveedores, conversación y endurecimiento integral. \\
+  SDD y trazabilidad & \statusok & Especificaciones de Sprints 2 a 6 versionadas; SPR-06-01 cubre aislamiento multifuente, catálogo por conexión y validación universal con WideWorldImporters. \\
   \bottomrule
 \end{tabularx}
 
@@ -1093,6 +1154,9 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   0.5.9 & 29-09-2026 & Continuidad del asistente desde versiones históricas, periodicidad fiel y personalización legible con fuentes y fórmulas ejecutables. \\
   0.5.10 & 29-09-2026 & Derivación automática explicada, evidencia de ventas coherente, contraste real de metadatos y recuperación universal del contrato LLM. \\
   0.5.11 & 29-09-2026 & Propuesta Claude 91 y ejecución 12: identidad universal, procedencia física, conciliación completa, analítica contextual y reportería PDF/Excel corregida. \\
+  0.6.0 & 01-10-2026 & Contexto multifuente SQL Server, catálogo aislado y explicable, restauración WideWorldImporters, propuesta 96 y ejecución 13 conciliada. \\
+  0.6.1 & 01-10-2026 & Prueba integral multifuente, reportería inspeccionada, correcciones de contexto y territorio líder, y evidencia formal INF-TEST-MS-01 para la tesis. \\
+  0.6.2 & 01-10-2026 & Verificación histórica de sólo lectura, restauración auditable de propuestas conciliadas y alineación del expediente publicado entre Datamart y Analítica. \\
   \bottomrule
 \end{longtable}
 
