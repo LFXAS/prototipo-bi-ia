@@ -337,14 +337,18 @@ export function AnalyticsPage({ token, connectionId, canExport, navigate }: Prop
     : dashboard.visuals
   const selectedMetricLabel = dashboard.available_metrics.find((item) => item.value === (metricCode || dashboard.metric_code))?.label ?? 'el indicador seleccionado'
   const selectedScope = [year || 'todos los años', territory || 'todos los territorios'].join(' y ')
+  const leadingTerritory = dashboard.visuals.find((item) => item.code === 'territories')?.points[0]?.label
+  const leadingTerritoryPrompt = leadingTerritory
+    ? `¿Cuáles son los 5 productos con mayor resultado en ${leadingTerritory}?`
+    : '¿Cuáles son los 5 productos con mayor resultado en el territorio líder?'
   const promptGuide = viewMode === 'executive'
     ? [
         { category: 'Comprender', prompts: [`Resume ${selectedMetricLabel} para ${selectedScope}.`, '¿Qué resultado debería revisar primero y por qué?'] },
-        { category: 'Decidir', prompts: ['¿Cuáles son los 5 productos con mayor resultado en el territorio líder?', 'Prepara tres puntos para una reunión de gerencia.'] },
+        { category: 'Decidir', prompts: [leadingTerritoryPrompt, 'Prepara tres puntos para una reunión de gerencia.'] },
         { category: 'Interpretar con cautela', prompts: ['¿Qué limitaciones tienen estos resultados y qué no puedo concluir?', '¿Qué pregunta adicional debería hacer antes de tomar una decisión?'] },
       ]
     : [
-        { category: 'Comparar', prompts: [`Compara ${selectedMetricLabel} entre los períodos visibles.`, '¿Cuáles son los 5 productos con mayor resultado en el territorio líder?'] },
+        { category: 'Comparar', prompts: [`Compara ${selectedMetricLabel} entre los períodos visibles.`, leadingTerritoryPrompt] },
         { category: 'Investigar', prompts: ['¿Qué variación merece una revisión adicional?', 'Señala patrones atípicos sin atribuir causalidad.'] },
         { category: 'Validar', prompts: ['Explica la calidad y trazabilidad de esta selección.', '¿Qué dato agregado faltaría para responder preguntas que este panel no cubre?'] },
       ]

@@ -75,6 +75,14 @@ cada conexión parte de la línea base y el analista decide si incorpora orienta
 10. Al cambiar la fuente, la interfaz descarta inmediatamente tablero, filtros, chat y
     solicitudes pendientes del contexto anterior. No vuelve a mostrar resultados hasta
     que la API confirme conjuntamente `connection_id` y `execution_id`.
+11. Inicio muestra la misma fuente seleccionada para el espacio de trabajo y consulta su
+    preparación mediante `connection_id`; no puede presentar el estado de otra conexión.
+12. El explorador muestra siempre la versión de metadatos vigente, aunque exista una sola,
+    y al cambiar de fuente descarta búsqueda, tabla, detalle, paginación, mensajes y
+    respuestas pendientes del contexto anterior.
+13. La migración al catálogo por fuente conserva en la conexión preexistente las preguntas
+    personalizadas del catálogo legado. Una fuente añadida después parte del contrato
+    universal sin heredar personalizaciones de otra empresa o base.
 
 ## Contratos API
 
@@ -115,6 +123,19 @@ cada conexión parte de la línea base y el analista decide si incorpora orienta
   conservar gráficos, filtros ni conversación anteriores.
 - Las preguntas sugeridas del copiloto son neutrales o se construyen con filtros reales
   del tablero; no incluyen territorios fijos procedentes de otra base demostrativa.
+- La sugerencia sobre el territorio líder usa el primer territorio verificado del tablero
+  de la fuente activa. Si el usuario escribe la expresión genérica "territorio líder", la
+  plataforma la resuelve determinísticamente antes de ejecutar la agregación segura.
+- Inicio, Explorador de esquema, Catálogo analítico, Asistente, Generación de datamart y
+  Analítica identifican explícitamente la fuente activa y conservan el mismo contexto al
+  navegar entre módulos.
+- Una búsqueda o tabla válida en la fuente anterior no genera el mensaje "Tabla no
+  encontrada" después del cambio: el estado dependiente de la instantánea se reinicia.
+- El selector "Versión de metadatos" es visible con una o varias instantáneas; queda
+  deshabilitado cuando sólo existe una opción, sin ocultar la trazabilidad.
+- AdventureWorks conserva las preguntas personalizadas "Costos y rentabilidad de las
+  ventas" y "Ventas y costos por unidad" migradas desde el catálogo previo. La conexión
+  WideWorldImporters mantiene su catálogo propio y editable.
 - AdventureWorks y WideWorldImporters pueden coexistir en el mismo contenedor y usar
   el mismo inicio de sesión de sólo lectura.
 - El código de descubrimiento, propuesta, ETL y analítica no contiene bifurcaciones por
@@ -140,6 +161,19 @@ cada conexión parte de la línea base y el analista decide si incorpora orienta
 - Las pruebas cubren aislamiento de fuentes, pertenencia de instantáneas, catálogo por
   fuente, selección ETL, rechazo de relaciones de auditoría, etiquetas descriptivas,
   filtrado analítico, respuestas tardías y rechazo cruzado en tablero, reportes y chat.
+
+## Escenarios integrales de aceptación
+
+| ID | Escenario | Evidencia mínima | Resultado esperado |
+|---|---|---|---|
+| MS-E2E-01 | Navegar Inicio → metadatos → catálogo → asistente → ETL → analítica en AdventureWorks. | Capturas con fuente, instantánea, catálogo, expediente y tablero. | Todos los módulos permanecen en la conexión 1 y usan su ejecución conciliada. |
+| MS-E2E-02 | Repetir el flujo con WideWorldImporters. | Capturas equivalentes y valores propios de WWI. | Todos los módulos permanecen en la conexión 2 y usan su ejecución conciliada. |
+| MS-E2E-03 | Cambiar AW → WWI → AW desde explorador y analítica. | Estado de carga y pantalla final por transición. | No quedan tabla, error, filtro, conversación, producto ni territorio de la fuente anterior. |
+| MS-E2E-04 | Consultar una ejecución con el `connection_id` de la otra fuente. | Prueba automatizada del contrato. | La API rechaza la combinación con 409. |
+| MS-E2E-05 | Revisar catálogos por fuente. | Preguntas y periodicidades visibles. | AW conserva seis preguntas; WWI dispone de su configuración independiente. |
+| MS-E2E-06 | Exportar PDF y Excel desde cada ejecución. | Archivos abiertos y datos de cabecera verificados. | Cada reporte identifica únicamente su fuente, ejecución, filtros y métricas. |
+| MS-E2E-07 | Consultar al copiloto analítico en cada fuente. | Pregunta, respuesta y procedencia. | La consulta usa el expediente activo y no incorpora categorías de la otra base. |
+| MS-E2E-08 | Escribir “territorio líder” sin seleccionar manualmente un territorio. | Alcance, Top 5 y denominador de cada fuente. | La plataforma resuelve el líder desde el ranking conciliado vigente antes de ejecutar la agregación segura. |
 
 ## Evidencia integral del 1 de octubre de 2026
 
@@ -174,6 +208,11 @@ contexto WideWorldImporters → AdventureWorks → WideWorldImporters: en cada t
 limpió el tablero y sólo se publicaron la ejecución, productos, territorios y métricas de
 la fuente confirmada por la API. También se automatizó una respuesta tardía de la fuente
 anterior y se comprobó que no puede sustituir el tablero vigente.
+
+La ejecución formal de MS-E2E-01 a MS-E2E-08, incluidas las capturas, conciliaciones,
+exportaciones y defectos corregidos, se conserva en
+`docs/testing/Informe_pruebas_integrales_multifuente.pdf`. El informe limita la afirmación
+de universalidad al alcance demostrado: dos fuentes SQL Server del dominio ventas.
 
 ## Fuera de alcance
 

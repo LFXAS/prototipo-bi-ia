@@ -9,6 +9,8 @@ from app.modules.analytics.router import (
     _ANALYTICS_COPILOT_INSTRUCTION,
     _ANALYTICS_INTENT_INSTRUCTION,
     _analytics_intent_schema,
+    _leading_territory_requested,
+    _leading_territory_value,
     _require_snapshot_connection,
 )
 from app.modules.analytics.schemas import (
@@ -16,7 +18,9 @@ from app.modules.analytics.schemas import (
     AnalyticsDashboardRead,
     AnalyticsFiltersRead,
     AnalyticsOptionRead,
+    AnalyticsPointRead,
     AnalyticsQualityRead,
+    AnalyticsVisualRead,
 )
 
 
@@ -102,3 +106,53 @@ def test_intent_schema_closes_metrics_years_and_territories_to_real_options() ->
     assert properties["year"]["enum"] == ["__dashboard__", "__all__", "2014"]
     assert properties["territory"]["enum"] == ["__dashboard__", "__all__", "Europe"]
     assert "no generes sql" in _ANALYTICS_INTENT_INSTRUCTION.casefold()
+
+
+def test_leading_territory_is_resolved_from_visible_verified_options() -> None:
+    dashboard = AnalyticsDashboardRead(
+        execution_id=7,
+        proposal_id=52,
+        data_connection_id=1,
+        source_name="Fuente comercial",
+        database_name="BaseComercial",
+        title="Ventas",
+        description="Ventas conciliadas",
+        grain="Una fila por detalle",
+        refreshed_at=datetime.now(UTC),
+        currency_code="USD",
+        currency_status="verified",
+        reconciliation_passed=True,
+        period_label="Todos los períodos",
+        metric_code="total_sales",
+        available_metrics=[AnalyticsOptionRead(value="total_sales", label="Ventas")],
+        filters=AnalyticsFiltersRead(
+            years=[],
+            territories=[
+                AnalyticsOptionRead(value="Southwest", label="Suroeste"),
+                AnalyticsOptionRead(value="Northwest", label="Noroeste"),
+            ],
+        ),
+        kpis=[],
+        visuals=[
+            AnalyticsVisualRead(
+                code="territories",
+                title="Territorios",
+                subtitle="Ventas por territorio",
+                kind="donut",
+                dimension="territorio",
+                points=[AnalyticsPointRead(key="Southwest", label="Suroeste", value=100, share=60)],
+            )
+        ],
+        insights=[],
+        quality=AnalyticsQualityRead(
+            source_rows=1,
+            datamart_rows=1,
+            difference_rows=0,
+            reconciliation_passed=True,
+            tables_loaded=1,
+        ),
+    )
+
+    assert _leading_territory_requested("¿Cuáles son los 5 productos del territorio líder?")
+    assert _leading_territory_requested("Top products in the leading territory")
+    assert _leading_territory_value(dashboard) == "Southwest"

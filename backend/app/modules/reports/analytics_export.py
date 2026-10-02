@@ -129,6 +129,13 @@ def _line_drawing(visual: AnalyticsVisualRead, unit: str) -> Drawing:
 
 
 def _ranking_table(visual: AnalyticsVisualRead, unit: str) -> Table:
+    value_style = ParagraphStyle(
+        "RankingValue",
+        fontName="Helvetica",
+        fontSize=8,
+        leading=10,
+        alignment=2,
+    )
     data = [[visual.dimension, "Valor", "Participación"]]
     for item in visual.points:
         data.append(
@@ -137,8 +144,11 @@ def _ranking_table(visual: AnalyticsVisualRead, unit: str) -> Table:
                     escape(item.label),
                     ParagraphStyle("RankingLabel", fontSize=8, leading=10),
                 ),
-                _format_value(item.value, unit),
-                f"{item.share:.1f}%" if item.share is not None else "-",
+                Paragraph(escape(_format_value(item.value, unit)), value_style),
+                Paragraph(
+                    escape(f"{item.share:.1f}%" if item.share is not None else "-"),
+                    value_style,
+                ),
             ]
         )
     table = Table(

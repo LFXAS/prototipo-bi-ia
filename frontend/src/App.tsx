@@ -241,6 +241,7 @@ export default function App() {
 
   useEffect(() => {
     if (!token || !session || page === '/') return
+    let currentRequest = true
     const loads: Record<string, () => Promise<PageData>> = {
       '/usuarios': () => api.users(token, pageSize, offset),
       '/roles': () => api.roles(token, pageSize, offset),
@@ -257,13 +258,18 @@ export default function App() {
       setData(null)
     }
     setMessage('')
-    loads[page]?.().then(setData).catch((error: Error) => setMessage(error.message))
+    loads[page]?.()
+      .then((result) => { if (currentRequest) setData(result) })
+      .catch((error: Error) => { if (currentRequest) setMessage(error.message) })
+    return () => { currentRequest = false }
   }, [offset, page, revision, selectedSourceId, session, token])
 
   function selectSource(connectionId: number) {
     localStorage.setItem(sourceContextKey, String(connectionId))
     setSelectedSourceId(connectionId)
     setOffset(0)
+    setData(null)
+    setMessage('')
   }
 
   async function submitLogin(event: FormEvent) {
@@ -330,13 +336,13 @@ export default function App() {
         <button className="sidebar-rail-toggle" aria-expanded={!sidebarHidden} aria-label={sidebarHidden ? 'Mostrar navegación lateral' : 'Ocultar navegación lateral'} title={sidebarHidden ? 'Mostrar navegación lateral' : 'Ocultar navegación lateral'} onClick={() => setSidebarHidden((hidden) => !hidden)}><span aria-hidden="true">{sidebarHidden ? '›' : '‹'}</span></button>
         <section className="content">
           <h1>{labels[page]}</h1>
-          {['/esquema', '/catalogo-analitico', '/asistente', '/datamart-ventas', '/analitica-ventas'].includes(page) && <SourceContextSelector sources={sources} selectedSourceId={selectedSourceId} onChange={selectSource} />}
+          {['/', '/esquema', '/catalogo-analitico', '/asistente', '/datamart-ventas', '/analitica-ventas'].includes(page) && <SourceContextSelector sources={sources} selectedSourceId={selectedSourceId} onChange={selectSource} />}
           {page === '/'
-            ? <Home session={session} token={token} navigate={setPage} />
+            ? <Home session={session} token={token} connectionId={selectedSourceId} navigate={setPage} />
             : page === '/conexiones'
               ? <ConnectionsPage data={data as Page<DataConnection> | null} message={message} token={token} canWrite={session.permissions.includes('connections.write')} canTest={session.permissions.includes('connections.test')} canRefresh={session.permissions.includes('metadata.refresh')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
               : page === '/esquema'
-                ? <SchemaExplorerPage source={sources.find((item) => item.connection.id === selectedSourceId) ?? null} snapshots={data as Page<MetadataSnapshot> | null} message={message} token={token} canRefresh={session.permissions.includes('metadata.refresh')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
+                ? <SchemaExplorerPage key={selectedSourceId} source={sources.find((item) => item.connection.id === selectedSourceId) ?? null} snapshots={data as Page<MetadataSnapshot> | null} message={message} token={token} canRefresh={session.permissions.includes('metadata.refresh')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
                 : page === '/asistente'
                   ? <AnalysisAssistantPage key={selectedSourceId} source={sources.find((item) => item.connection.id === selectedSourceId) ?? null} token={token} canGenerate={session.permissions.includes('copilot.proposals.generate')} canReview={session.permissions.includes('copilot.proposals.review')} canPreviewSemantics={session.permissions.includes('metadata.semantic_resolution.read')} navigate={setPage} />
                 : page === '/datamart-ventas'
@@ -378,15 +384,16 @@ function SourceContextSelector({ sources, selectedSourceId, onChange }: { source
   return <section className="source-context" aria-label="Fuente de datos del espacio de trabajo"><div><p className="eyebrow">Fuente en contexto</p><strong>{selected.connection.name}</strong><span>SQL Server · {selected.connection.database_name} · {selected.status === 'ready' ? 'metadatos disponibles' : selected.status === 'metadata_pending' ? 'requiere instantánea' : 'requiere prueba de conexión'}</span></div><label>Cambiar fuente<select value={selected.connection.id} onChange={(event) => onChange(Number(event.target.value))}>{sources.map((source) => <option key={source.connection.id} value={source.connection.id}>{source.connection.name} · {source.connection.database_name}</option>)}</select></label></section>
 }
 
-function Home({ session, token, navigate }: { session: Session; token: string; navigate: (path: string) => void }) {
+function Home({ session, token, connectionId, navigate }: { session: Session; token: string; connectionId: number; navigate: (path: string) => void }) {
   const [readiness, setReadiness] = useState<CopilotReadiness | null>(null)
   const [setupOpen, setSetupOpen] = useState(false)
   const canReadCopilot = session.permissions.includes('copilot.proposals.read')
 
   useEffect(() => {
-    if (!canReadCopilot) return
-    api.copilotReadiness(token).then(setReadiness).catch(() => setReadiness(null))
-  }, [canReadCopilot, token])
+    setReadiness(null)
+    if (!canReadCopilot || !connectionId) return
+    api.copilotReadiness(token, connectionId).then(setReadiness).catch(() => setReadiness(null))
+  }, [canReadCopilot, connectionId, token])
 
   return <>
     <p className="lead">Prepare la fuente y el asistente para convertir una necesidad comercial en una propuesta supervisada de datamart.</p>
@@ -2001,7 +2008,7 @@ function SchemaExplorerPage({ source, snapshots, message, token, canRefresh, onS
   return <>
     <div className="explorer-header"><div><p className="lead">Consulte la estructura capturada de <strong>{source.connection.name}</strong>. Esta vista no lee filas del negocio.</p><p className="snapshot-meta">Instantánea #{currentSnapshot.id} · {new Date(currentSnapshot.captured_at).toLocaleString('es-EC')} · huella {currentSnapshot.content_hash.slice(0, 12)}</p></div>{canRefresh && <button onClick={capture} disabled={capturing}>{capturing ? 'Leyendo estructura…' : 'Actualizar metadatos'}</button>}</div>
     <div className="snapshot-metrics" aria-label="Resumen de la instantánea"><article><strong>{currentSnapshot.schema_count}</strong><span>esquemas</span></article><article><strong>{currentSnapshot.table_count}</strong><span>tablas</span></article><article><strong>{currentSnapshot.column_count}</strong><span>columnas</span></article><article><strong>{currentSnapshot.relationship_count}</strong><span>relaciones</span></article></div>
-    {snapshots.items.length > 1 && <label className="snapshot-selector">Versión de metadatos<select value={currentSnapshot.id} onChange={(event) => { setSnapshotId(Number(event.target.value)); setTableOffset(0); setSelectedTable(null); setLocalFeedback(null) }}>{snapshots.items.map((item) => <option key={item.id} value={item.id}>#{item.id} · {new Date(item.captured_at).toLocaleString('es-EC')} · {item.content_hash.slice(0, 8)}</option>)}</select></label>}
+    <label className="snapshot-selector">Versión de metadatos<select value={currentSnapshot.id} disabled={snapshots.items.length === 1} onChange={(event) => { setSnapshotId(Number(event.target.value)); setTableOffset(0); setSelectedTable(null); setLocalFeedback(null) }}>{snapshots.items.map((item) => <option key={item.id} value={item.id}>#{item.id} · {new Date(item.captured_at).toLocaleString('es-EC')} · {item.content_hash.slice(0, 8)}</option>)}</select>{snapshots.items.length === 1 && <small>Esta fuente dispone de una única versión capturada.</small>}</label>
     <form className="explorer-filters" onSubmit={applyFilters}><label>Buscar tabla o columna<input value={searchDraft} maxLength={120} placeholder="Ejemplo: pedido, producto o cliente" onChange={(event) => setSearchDraft(event.target.value)} /></label><label>Esquema<input value={schemaDraft} maxLength={128} placeholder="Ejemplo: comercial" onChange={(event) => setSchemaDraft(event.target.value)} /></label><button>Buscar</button></form>
     {localFeedback && <p className={`notice ${localFeedback.kind}`} role={localFeedback.kind === 'error' ? 'alert' : 'status'}>{localFeedback.message}</p>}
     <div className="schema-explorer">

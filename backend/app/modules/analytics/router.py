@@ -124,6 +124,29 @@ def _analytics_intent_schema(dashboard: AnalyticsDashboardRead) -> dict[str, obj
     }
 
 
+def _leading_territory_requested(question: str) -> bool:
+    normalized = question.casefold().replace("í", "i")
+    return "territorio lider" in normalized or "leading territory" in normalized
+
+
+def _leading_territory_value(dashboard: AnalyticsDashboardRead) -> str | None:
+    territory_visual = next(
+        (visual for visual in dashboard.visuals if visual.code == "territories"),
+        None,
+    )
+    if territory_visual is None or not territory_visual.points:
+        return None
+    leading = territory_visual.points[0]
+    return next(
+        (
+            option.value
+            for option in dashboard.filters.territories
+            if option.value == leading.key or option.label == leading.label
+        ),
+        None,
+    )
+
+
 async def _active_llm(session: AsyncSession) -> LlmConfiguration | None:
     return (
         await session.execute(
@@ -402,6 +425,8 @@ async def analytics_copilot(
             interpreted_territory = (
                 territory_value if territory_value in available_territories else None
             )
+        if interpreted_territory is None and _leading_territory_requested(payload.question):
+            interpreted_territory = _leading_territory_value(dashboard)
         top_n = max(1, min(int(intent.get("top_n", 5)), 20))
         order = "asc" if str(intent.get("order")) == "asc" else "desc"
         if analysis_mode == "aggregate" and dimension in {"product", "customer", "territory"}:

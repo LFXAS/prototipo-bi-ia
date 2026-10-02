@@ -121,6 +121,106 @@ describe('App', () => {
     expect(submenu).toHaveAttribute('hidden')
   })
 
+  it('mantiene en Inicio la fuente seleccionada y consulta su preparación explícita', async () => {
+    localStorage.setItem('bi_ia_access_token', 'test-token')
+    localStorage.setItem('bi_ia_source_context', '2')
+    const sources = [
+      ...sourceWorkspace({ id: 2, data_connection_id: 1, content_hash: 'a'.repeat(64) }),
+      {
+        status: 'ready',
+        connection: { ...sourceConnection, id: 2, name: 'WideWorldImporters local', database_name: 'WideWorldImporters' },
+        latest_snapshot: { id: 3, data_connection_id: 2, content_hash: 'b'.repeat(64) },
+      },
+    ]
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input)
+      if (url.includes('/auth/me')) return {
+        ok: true, status: 200, json: async () => ({
+          user: { id: 1, email: 'admin@example.test', full_name: 'Administradora', is_active: true, roles: [] },
+          permissions: ['copilot.proposals.read'],
+          menus: [{ id: 1, code: 'home', label: 'Inicio', path: '/', position: 0, module_code: 'home', module_label: 'Inicio', is_active: true, permissions: [] }],
+        }),
+      }
+      if (url.endsWith('/sources')) return { ok: true, status: 200, json: async () => sources }
+      if (url.includes('/copilot/readiness?connection_id=')) {
+        const isWideWorld = url.endsWith('connection_id=2')
+        const name = isWideWorld ? 'WideWorldImporters local' : 'Fuente comercial de prueba'
+        return { ok: true, status: 200, json: async () => ({
+          ready: true,
+          source: { ready: true, label: 'Fuente de ventas', detail: `${name} está habilitada y probada.` },
+          metadata: { ready: true, label: 'Metadatos', detail: `Instantánea ${isWideWorld ? 'bbbbbbbbbbbb' : 'aaaaaaaaaaaa'} disponible.` },
+          llm: { ready: true, label: 'Asistente de IA', detail: 'Proveedor listo.' },
+        }) }
+      }
+      throw new Error(`Solicitud inesperada: ${url}`)
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    render(<App />)
+
+    const sourceSelector = await screen.findByLabelText('Cambiar fuente')
+    expect(sourceSelector).toHaveValue('2')
+    expect(await screen.findByText('WideWorldImporters local está habilitada y probada.')).toBeInTheDocument()
+
+    fireEvent.change(sourceSelector, { target: { value: '1' } })
+
+    expect(await screen.findByText('Fuente comercial de prueba está habilitada y probada.')).toBeInTheDocument()
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining('/copilot/readiness?connection_id=1'),
+      expect.anything(),
+    )
+  })
+
+  it('reinicia el explorador al cambiar de fuente y siempre muestra la versión de metadatos', async () => {
+    localStorage.setItem('bi_ia_access_token', 'test-token')
+    const snapshot = (id: number, connectionId: number, databaseName: string, hash: string) => ({
+      id, data_connection_id: connectionId, connector_code: 'sqlserver', database_name: databaseName,
+      contract_version: 1, content_hash: hash.repeat(64), schema_count: 1, table_count: 1,
+      column_count: 2, relationship_count: 0, captured_by_label: 'Administradora', captured_at: '2026-10-01T09:00:00Z',
+    })
+    const awSnapshot = snapshot(2, 1, 'BaseComercial', 'a')
+    const wwiSnapshot = snapshot(3, 2, 'WideWorldImporters', 'b')
+    const sources = [
+      ...sourceWorkspace(awSnapshot),
+      { status: 'ready', connection: { ...sourceConnection, id: 2, name: 'WideWorldImporters local', database_name: 'WideWorldImporters' }, latest_snapshot: wwiSnapshot },
+    ]
+    let resolveOldDetail: ((response: { ok: boolean; status: number; json: () => Promise<object> }) => void) | undefined
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input)
+      if (url.includes('/auth/me')) return {
+        ok: true, status: 200, json: async () => ({
+          user: { id: 1, email: 'admin@example.test', full_name: 'Administradora', is_active: true, roles: [] },
+          permissions: ['metadata.read'],
+          menus: [{ id: 2, code: 'schema', label: 'Explorador de esquema', path: '/esquema', position: 1, module_code: 'parameters', module_label: 'Preparación del entorno', is_active: true, permissions: [] }],
+        }),
+      }
+      if (url.endsWith('/sources')) return { ok: true, status: 200, json: async () => sources }
+      if (url.includes('/metadata/snapshots?') && url.includes('connection_id=1')) return { ok: true, status: 200, json: async () => ({ items: [awSnapshot], total: 1, limit: 10, offset: 0 }) }
+      if (url.includes('/metadata/snapshots?') && url.includes('connection_id=2')) return { ok: true, status: 200, json: async () => ({ items: [wwiSnapshot], total: 1, limit: 10, offset: 0 }) }
+      if (url.includes('/metadata/snapshots/2/tables?')) return { ok: true, status: 200, json: async () => ({ items: [{ schema_name: 'HumanResources', table_name: 'Department', column_count: 2, relationship_count: 0 }], total: 1, limit: 10, offset: 0 }) }
+      if (url.endsWith('/metadata/snapshots/2/tables/HumanResources/Department')) return new Promise((resolve) => { resolveOldDetail = resolve })
+      if (url.includes('/metadata/snapshots/3/tables?')) return { ok: true, status: 200, json: async () => ({ items: [{ schema_name: 'Application', table_name: 'Cities', column_count: 2, relationship_count: 0 }], total: 1, limit: 10, offset: 0 }) }
+      if (url.endsWith('/metadata/snapshots/3/tables/Application/Cities')) return { ok: true, status: 200, json: async () => ({ schema_name: 'Application', table_name: 'Cities', columns: [{ name: 'CityID', ordinal: 1, data_type: 'int', max_length: 4, nullable: false, primary_key: true }], foreign_keys: [], incoming_relationships: [] }) }
+      throw new Error(`Solicitud inesperada: ${url}`)
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    render(<App />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Preparación del entorno' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Explorador de esquema' }))
+
+    expect(await screen.findByText('Department')).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: /Versión de metadatos/ })).toBeDisabled()
+    fireEvent.change(screen.getByLabelText('Cambiar fuente'), { target: { value: '2' } })
+
+    expect(await screen.findByRole('heading', { name: 'Cities' })).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: /Versión de metadatos/ })).toHaveValue('3')
+    expect(screen.getByRole('combobox', { name: /Versión de metadatos/ })).toBeDisabled()
+    resolveOldDetail?.({ ok: false, status: 404, json: async () => ({ detail: 'Tabla no encontrada en la instantánea.' }) })
+    await waitFor(() => expect(screen.queryByText('Tabla no encontrada en la instantánea.')).not.toBeInTheDocument())
+    expect(screen.queryByText('Department')).not.toBeInTheDocument()
+  })
+
   it('ordena la navegación por flujo profesional sin ampliar las opciones autorizadas', async () => {
     localStorage.setItem('bi_ia_access_token', 'test-token')
     vi.stubGlobal('fetch', vi.fn(async () => ({

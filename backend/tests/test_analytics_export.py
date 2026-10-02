@@ -16,6 +16,7 @@ from app.modules.analytics.schemas import (
 )
 from app.modules.reports.analytics_export import (
     _excel_number_format,
+    _ranking_table,
     build_analytics_pdf,
     build_analytics_xlsx,
 )
@@ -96,6 +97,29 @@ def test_pdf_export_is_a_real_pdf() -> None:
 
     assert result.startswith(b"%PDF")
     assert len(result) > 1_000
+
+
+def test_pdf_ranking_wraps_generic_currency_without_invading_share_column() -> None:
+    visual = AnalyticsVisualRead(
+        code="territories",
+        title="Distribución territorial",
+        subtitle="Resultados por territorio",
+        kind="donut",
+        dimension="Territorio",
+        points=[
+            AnalyticsPointRead(
+                key="Texas",
+                label="Texas",
+                value=12_328_671.15,
+                share=19.6,
+            )
+        ],
+    )
+
+    table = _ranking_table(visual, "Moneda")
+
+    assert table._cellvalues[1][1].getPlainText() == "12,328,671.15 Moneda"
+    assert table._cellvalues[1][2].getPlainText() == "19.6%"
 
 
 def test_excel_export_respects_executive_and_analyst_visibility() -> None:
