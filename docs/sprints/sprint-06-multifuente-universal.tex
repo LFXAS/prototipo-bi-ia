@@ -265,12 +265,20 @@ oculte datos al lector. Esto no se resuelve elevando privilegios desde la aplica
 diagnosticarse y coordinarse con el DBA. También permanece fuera del alcance la traducción
 automática de significados propios del negocio que no puedan demostrarse por metadatos.
 
-La ejecución formal de los escenarios MS-E2E-01 a MS-E2E-08 se consolidó en
+La ejecución formal de los escenarios MS-E2E-01 a MS-E2E-09 se consolidó en
 \path{docs/testing/Informe_pruebas_integrales_multifuente.pdf}. El informe incorpora
 capturas de las incidencias, repetición post-corrección, conciliaciones de 121.317 y
 231.412 filas, verificación visual de todas las páginas PDF e inspección estructural y
 visual de los libros Excel. La suite final aprobó 157 pruebas de backend y 24 pruebas de
 frontend, además de formato, análisis estático, tipado, lint y compilación de producción.
+
+El escenario MS-E2E-09 añadió una regresión específica para propuestas históricas. La
+consulta de evidencia quedó estrictamente en modo de sólo lectura: una diferencia entre la
+huella persistida y la reconstrucción actual se informa como compatibilidad y no retira una
+decisión humana. La migración \file{20261001\_18} restauró las propuestas 86 y 91 porque
+ambas conservaban ejecuciones conciliadas. Datamart de ventas abre por defecto el último
+expediente publicado y, en AdventureWorks, coincide con Analítica en la ejecución 12 y la
+propuesta 91.
 
 \section{Revisión y retrospectiva}
 

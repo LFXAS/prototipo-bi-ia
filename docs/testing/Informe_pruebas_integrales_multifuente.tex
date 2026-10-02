@@ -140,7 +140,7 @@ alteraron los resultados para ocultar fallos.
 Componente & Configuración observada \\
 \midrule
 Aplicación & React/Vite y FastAPI ejecutados mediante Docker Compose \\
-Persistencia de control & PostgreSQL con migraciones Alembic hasta \file{20261001\_17} \\
+Persistencia de control & PostgreSQL con migraciones Alembic hasta \file{20261001\_18} \\
 Fuentes & SQL Server: AdventureWorks2022 y WideWorldImporters \\
 Proveedor visible & Anthropic Claude Haiku 4.5 en las consultas contextuales repetidas \\
 Navegador & Navegador integrado, sesión de Administrador inicial \\
@@ -169,6 +169,7 @@ MS-E2E-05 & Abrir analítica & KPI, filtros, productos y territorios proceden de
 MS-E2E-06 & Interactuar y alternar & Un punto seleccionado en una fuente no persiste al cambiar a la otra. & \ok \\
 MS-E2E-07 & Consultar al copiloto & ``Territorio líder'' se resuelve contra el ranking verificado de la fuente activa. & \ok \\
 MS-E2E-08 & Exportar PDF y Excel & El contenido conserva fuente, ejecución, filtros y maquetación legible. & \ok \\
+MS-E2E-09 & Verificar propuestas históricas & Consultar o reconstruir evidencia no cambia el estado; Datamart y Analítica muestran la misma ejecución y propuesta publicadas. & \ok \\
 \bottomrule
 \end{longtable}
 
@@ -231,6 +232,41 @@ genérica evita asignar una divisa ISO que la fuente no demuestra de forma inequ
 La diferencia Southwest--Texas no constituye una inconsistencia. Es la consecuencia
 correcta de dos modelos operacionales diferentes: AdventureWorks expone territorios
 comerciales y WideWorldImporters permite derivar estados mediante relaciones verificadas.
+
+\subsection{Inmutabilidad de la verificación histórica}
+
+La repetición del escenario MS-E2E-09 reprodujo un defecto de trazabilidad: la acción de
+consulta comparaba la huella de una propuesta histórica con la reconstrucción del motor
+vigente y retiraba automáticamente la aprobación cuando ambas diferían. Las propuestas 91
+y 86 cambiaron de estado aunque sus ejecuciones 12 y 11 ya estaban conciliadas. La causa
+no estaba en los datos ni en el ETL, sino en un efecto lateral indebido de la verificación.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.94\textwidth]{evidencias/incidencia-verificacion-historica.png}
+\caption{Incidencia: una diferencia de reconstrucción histórica aparecía como revisión bloqueante.}
+\end{figure}
+
+La corrección separó tres conceptos: validez estructural vigente, reproducción histórica y
+estado aprobado. \textbf{Verificar evidencia} es ahora una operación de sólo lectura; una
+diferencia de huella se conserva como advertencia de compatibilidad y sólo los errores
+actuales de instantánea, referencia o contrato impiden una ejecución nueva. La migración
+\file{20261001\_18} restauró exclusivamente las aprobaciones retiradas por el mensaje
+automático anterior que además tenían una ejecución conciliada, y registró un evento de
+auditoría por propuesta. Después de volver a verificar la versión 91, PostgreSQL conservó
+\file{status=approved} y el evento registró \file{status\_unchanged=true}.
+
+La segunda inconsistencia era visual: la pantalla de materialización elegía una propuesta
+aprobada no ejecutada como contexto inicial, mientras Analítica leía la ejecución publicada
+más reciente. Ahora Datamart abre primero el último expediente conciliado. Para
+AdventureWorks ambas vistas identificaron ejecución 12 y propuesta 91; la propuesta 72
+permanece disponible sólo como alternativa para una materialización nueva.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.94\textwidth]{evidencias/incidencia-contexto-datamart.png}
+\caption{Incidencia previa: una propuesta no ejecutada aparecía como recomendada aunque el tablero procedía de la propuesta 91.}
+\end{figure}
 
 \section{Aislamiento al alternar fuentes}
 

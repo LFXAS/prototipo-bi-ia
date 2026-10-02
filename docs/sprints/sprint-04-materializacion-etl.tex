@@ -172,6 +172,13 @@ Las transformaciones que requieren supervisión no piden decisiones abstractas a
 
 La tabla \textbf{Expedientes recientes} es parte del flujo, no sólo un registro histórico. Un analista puede cerrar el navegador, volver a iniciar sesión y continuar la revisión sin repetir la materialización. Cuando una propuesta y el mismo conjunto de KPI ya tienen una ejecución vigente, la acción cambia a \textbf{Abrir expediente}.
 
+El contexto inicial prioriza el datamart publicado, no una propuesta pendiente de
+materialización. Si existe una ejecución conciliada, la pantalla abre directamente su paso
+de validación y muestra la misma pareja ejecución--propuesta que consume Analítica de
+ventas. Los contratos con ejecuciones históricas siguen reconstruibles aunque ya no sean
+elegibles para una carga nueva; se muestran en modo de sólo lectura y nunca habilitan una
+repetición del ETL.
+
 \section{IA supervisada y resolución de ambigüedades}
 
 \subsection{Confianza y selección preventiva}

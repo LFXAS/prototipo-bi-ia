@@ -506,6 +506,16 @@ Los cocientes financieros se rotularon conforme a su semántica: costo total div
 
 La repetición completa con Claude Haiku produjo la propuesta 91 y la ejecución 12. La propuesta cubrió 19 de 19 requisitos y superó los controles de instantánea, referencias, consistencia y reproducción. El ETL cargó 121317 filas con diferencia cero en cinco tablas versionadas. La dimensión cliente conservó 19820 nombres y clasificó 19119 personas y 701 organizaciones. Los doce KPI quedaron calculables, incluidos costo total, margen bruto, margen porcentual y promedios ponderados por unidad. En analítica, una consulta Top 5 de productos por unidades en Europa usó un denominador explícito de 53148 unidades y no dependió del filtro visible.
 
+Una regresión posterior permitió precisar el concepto de reproducibilidad. Al reconstruir una
+propuesta histórica con una versión más reciente del normalizador, la huella podía diferir
+sin que existiera un error actual de metadatos, referencias o contrato. El comportamiento
+anterior retiró automáticamente las aprobaciones 91 y 86 sólo por esa diferencia. La
+corrección convirtió la verificación en una consulta de sólo lectura, restauró de manera
+auditable las dos aprobaciones porque sus ejecuciones 12 y 11 estaban conciliadas, y separó
+la advertencia de compatibilidad de la decisión humana. También alineó el contexto visual:
+Datamart y Analítica identifican ahora la misma ejecución 12 y propuesta 91 publicadas,
+mientras las propuestas no ejecutadas permanecen como alternativas futuras.
+
 La revisión de artefactos confirmó además la fidelidad de la reportería. El PDF ejecutivo conserva márgenes, saltos, títulos, tablas y gráfico en cinco páginas. El Excel analítico incluye resumen, una hoja por cada uno de los cuatro gráficos y trazabilidad; sus valores son numéricos y las áreas de impresión caben en A4 horizontal. Se corrigió específicamente el doble escalamiento del margen: 8,53 permanece 8,5\% al abrir o imprimir el libro.
 
 Durante la revisión del alcance, el tutor retiró el pronóstico, MAPE y RMSE. Esta decisión no reduce la demostración central: separa la construcción semiautomatizada de un datamart de un problema predictivo que requeriría hipótesis y validación propias.
@@ -525,7 +535,7 @@ recorrido desde Inicio hasta reportería. AdventureWorks conservó 121317 filas 
 y WideWorldImporters 231412, ambas con diferencia cero. Una consulta contextual sobre el
 ``territorio líder'' produjo Southwest y Texas, respectivamente, porque la plataforma
 resolvió el filtro desde el ranking verificado antes de ejecutar la agregación segura. El
-informe \file{INF-TEST-MS-01} conserva la matriz MS-E2E-01 a MS-E2E-08, capturas,
+informe \file{INF-TEST-MS-01} conserva la matriz MS-E2E-01 a MS-E2E-09, capturas,
 incidencias, correcciones y riesgos. Esta evidencia permite sostener portabilidad funcional
 entre dos fuentes SQL Server del dominio ventas, sin extrapolar todavía a cualquier motor
 o dominio.

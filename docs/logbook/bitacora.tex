@@ -1020,6 +1020,26 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \bottomrule
 \end{longtable}
 
+\subsection{1 de octubre de 2026 - Inmutabilidad de versiones y expediente publicado}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Causa raíz & \statusok & La consulta de evidencia trataba una diferencia de reconstrucción histórica como error bloqueante y retiraba automáticamente la aprobación. No existía diferencia de filas ni corrupción del ETL. \\
+  Contrato de consulta & \statusok & \textbf{Verificar evidencia} quedó en modo de sólo lectura; registra \file{approval\_safe} y \file{status\_unchanged} sin cambiar propuesta, revisión ni expediente. \\
+  Corrección de datos de control & \statusok & La migración \file{20261001\_18} restauró las propuestas 86 y 91 porque la retirada correspondía al mensaje automático anterior y las ejecuciones 11 y 12 estaban conciliadas. Cada restauración conserva auditoría. \\
+  Interfaz & \statusok & Se retiró el bloque ambiguo de validaciones futuras. La diferencia de huella se explica como compatibilidad y la huella secundaria se denomina reconstrucción. \\
+  Linaje publicado & \statusok & Datamart de ventas abre ejecución 12/propuesta 91 y Analítica muestra la misma pareja. La propuesta 72 permanece disponible sólo como alternativa no materializada. \\
+  Regresión & \statusok & Pytest cubre diferencias de reproducción no bloqueantes; Vitest comprueba que verificar no retira aprobaciones y que el expediente publicado se abre antes que una propuesta nueva. \\
+  \bottomrule
+\end{longtable}
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}p{0.29\textwidth}@{\hspace{0.18in}}p{0.17\textwidth}@{\hspace{0.18in}}X@{}}
@@ -1136,6 +1156,7 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   0.5.11 & 29-09-2026 & Propuesta Claude 91 y ejecución 12: identidad universal, procedencia física, conciliación completa, analítica contextual y reportería PDF/Excel corregida. \\
   0.6.0 & 01-10-2026 & Contexto multifuente SQL Server, catálogo aislado y explicable, restauración WideWorldImporters, propuesta 96 y ejecución 13 conciliada. \\
   0.6.1 & 01-10-2026 & Prueba integral multifuente, reportería inspeccionada, correcciones de contexto y territorio líder, y evidencia formal INF-TEST-MS-01 para la tesis. \\
+  0.6.2 & 01-10-2026 & Verificación histórica de sólo lectura, restauración auditable de propuestas conciliadas y alineación del expediente publicado entre Datamart y Analítica. \\
   \bottomrule
 \end{longtable}
 
