@@ -91,7 +91,7 @@
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & MAN-TEC-01 \\
-    Versión del manual & 5.0.0 \\
+    Versión del manual & 5.0.1 \\
     Línea base & Ramas \file{develop} y \file{main} \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
     Clasificación & Documentación técnica - repositorio público \\
@@ -487,6 +487,13 @@ Al confirmar, \file{POST /api/v1/etl/executions} conserva propuesta, instantáne
 El paso \textbf{Validar resultados} compara origen y destino y muestra filas, diferencias, tablas, KPI y estado. Para la ejecución 6 leyó y cargó 121317 líneas, con diferencia cero; calculó seis KPI, 274914 unidades y 31465 pedidos distintos. Los importes se muestran con código ISO sólo después de comprobar una moneda única relacionada con el hecho. AdventureWorks confirmó \file{USD} mediante \path{Sales.CurrencyRate.FromCurrencyCode}; la acción \textbf{Comprobar divisa sin repetir el ETL} enriqueció el expediente existente sin volver a cargar filas. Una fuente mixta o ambigua conserva \textit{moneda de origen} y explica la evidencia faltante.
 
 La prueba multifuente produjo la propuesta 96 y la ejecución 13 sobre WideWorldImporters. El ETL cargó 231412 líneas de origen y destino, diferencia cero, 73595 pedidos y 9310904 unidades. Calculó 177634276,40 de ventas, 88904313,90 de costo y 88729962,50 de margen bruto. Las dimensiones publicaron 227 productos, 663 clientes y 53 territorios con etiqueta descriptiva. Como la estructura no demostró una moneda ISO única, la interfaz mantuvo \textit{moneda de origen}; como tampoco demostró descuento, lo registró como limitación en vez de inventarlo.
+
+La prueba de cierre alternó ambas fuentes sin cerrar sesión y verificó Inicio, Explorador,
+catálogo, expedientes, analítica, copiloto y exportaciones. La expresión ``territorio
+líder'' se resuelve desde el ranking conciliado vigente antes de construir la agregación:
+Southwest para AdventureWorks y Texas para WideWorldImporters. Esta resolución no depende
+del proveedor LLM. El expediente reproducible, con matriz, capturas y resultados, se
+encuentra en \file{docs/testing/Informe\_pruebas\_integrales\_multifuente.pdf}.
 
 La interpretación de categorías se ejecuta después de la conciliación numérica. Sólo considera valores descriptivos, no sensibles y de baja cardinalidad; conserva el dato original y propone una columna española separada. La transformación se anuncia como \textbf{Revisar en el paso 5}. Allí el analista puede corregir, excluir o publicar cada mapeo y debe confirmar su revisión. La ejecución 6 publicó \file{group\_es} para Europa, Norteamérica y Pacífico, sin traducir códigos de país.
 
@@ -1232,6 +1239,7 @@ make verify
   4.0.9 & 29-09-2026 & Derivaciones automáticas explicadas, evidencia coherente contra metadatos reales y recuperación JSON de Groq con contrato local común. \\
   4.0.10 & 29-09-2026 & Recuperación universal del contrato, identidad de cliente por función y rutas FK, propuesta Claude 91, ejecución 12 conciliada y corrección visual de PDF/Excel. \\
   5.0.0 & 01-10-2026 & Sprint 6 multifuente: fuentes SQL Server concurrentes, catálogo funcional aislado, evidencia técnica automática, WideWorldImporters, propuesta 96 y ejecución 13 conciliada. \\
+  5.0.1 & 01-10-2026 & Prueba integral multifuente, resolución determinística de territorio líder, restauración del catálogo legado y verificación visual de PDF/Excel. \\
   \bottomrule
 \end{longtable}
 

@@ -1,6 +1,6 @@
 # Índice de documentación técnica
 
-La documentación forma parte del producto versionado. Las fuentes Markdown y LaTeX se revisan mediante pull request; los nueve PDF oficiales se regeneran dentro de Docker y CI comprueba que coincidan con sus fuentes.
+La documentación forma parte del producto versionado. Las fuentes Markdown y LaTeX se revisan mediante pull request; los diez PDF oficiales se regeneran dentro de Docker y CI comprueba que coincidan con sus fuentes.
 
 ## Entregables oficiales del proyecto
 
@@ -15,6 +15,7 @@ Los ocho documentos técnicos conservan el detalle íntegro del producto y no ut
 - [`sprints/sprint-02-seguridad-y-parametros.pdf`](sprints/sprint-02-seguridad-y-parametros.pdf): objetivo, especificaciones SDD, incremento administrativo, controles RBAC/LLM, evidencias y límites del Sprint 2.
 - [`logbook/bitacora.pdf`](logbook/bitacora.pdf): registro cronológico de decisiones, cambios, verificaciones, incidentes y pendientes.
 - [`tesis/capitulo-03-propuesta-tecnologica.pdf`](tesis/capitulo-03-propuesta-tecnologica.pdf): versión académica consolidada de la propuesta tecnológica, factibilidad, ingeniería de software, UML, casos de uso, sprints y validación.
+- [`testing/Informe_pruebas_integrales_multifuente.pdf`](testing/Informe_pruebas_integrales_multifuente.pdf): protocolo y evidencia reproducible de los escenarios integrales ejecutados con AdventureWorks y WideWorldImporters, incluidas conciliaciones, capturas, incidencias y límites de la validación.
 
 Las fuentes editables se encuentran junto a cada PDF. `referencia-devops-sprint1.tex` y `detalle-tecnico-sprint-01.tex` son capítulos incluidos desde los documentos principales para mantener legible su estructura.
 

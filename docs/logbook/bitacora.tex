@@ -67,7 +67,7 @@
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPI, analítica explicable y reportería \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.6.0 \\
+    Versión de la bitácora & 0.6.1 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -1001,6 +1001,25 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \bottomrule
 \end{longtable}
 
+\subsection{1 de octubre de 2026 - Prueba integral y evidencia para la tesis}
+
+\begin{longtable}{@{}p{0.22\textwidth}p{0.18\textwidth}p{0.52\textwidth}@{}}
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Actividad} & \textbf{Estado} & \textbf{Resultado} \\
+  \midrule
+  \endhead
+  Aislamiento funcional & \statusok & Se alternó AdventureWorks--WideWorldImporters--AdventureWorks sin cerrar sesión; Inicio, Explorador, catálogo, expedientes y analítica conservaron sólo el contexto confirmado por la API. \\
+  Copiloto & \statusok & La expresión genérica ``territorio líder'' se resolvió determinísticamente como Southwest o Texas desde el ranking vigente antes de ejecutar la agregación segura. \\
+  Reporterías & \statusok & Se abrieron y renderizaron diez páginas PDF y se inspeccionaron ocho hojas Excel; no se observaron cortes, mezclas de fuente ni pérdida de valores. \\
+  Regresión & \statusok & Ruff, formato, Mypy y 157 pruebas Pytest; ESLint, 24 pruebas Vitest y construcción Vite finalizaron correctamente. \\
+  Evidencia académica & \statusok & Se creó \file{INF-TEST-MS-01} con método, escenarios, capturas, resultados, incidencias, limitaciones y conclusión defendible para la tesis. \\
+  \bottomrule
+\end{longtable}
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}p{0.29\textwidth}@{\hspace{0.18in}}p{0.17\textwidth}@{\hspace{0.18in}}X@{}}
@@ -1009,8 +1028,8 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \midrule
   Compose autocontenido válido & \statusok & \file{docker compose config --quiet} \\
   Compose de imágenes válido & \statusok & \file{docker compose -f compose.release.yaml config --quiet} \\
-  Backend calidad y pruebas & \statusok & Ruff, formato, Mypy y 150 pruebas Pytest dentro de Docker \\
-  Frontend calidad y pruebas & \statusok & ESLint, 21 pruebas Vitest y build de Vite dentro de Docker \\
+  Backend calidad y pruebas & \statusok & Ruff, formato, Mypy y 157 pruebas Pytest dentro de Docker \\
+  Frontend calidad y pruebas & \statusok & ESLint, 24 pruebas Vitest y build de Vite dentro de Docker \\
   PostgreSQL disponible & \statusok & Esquemas \file{app} y \file{mart}; endpoint \file{/health/ready} en \file{ok} \\
   AdventureWorks restaurada & \statusok & 71 tablas; \file{bi\_reader}: lectura 1 e inserción 0 \\
   Interfaz disponible & \statusok & Vite saludable en 5173, Nginx opcional en 8080 y API accesible mediante proxy \\
@@ -1116,6 +1135,7 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   0.5.10 & 29-09-2026 & Derivación automática explicada, evidencia de ventas coherente, contraste real de metadatos y recuperación universal del contrato LLM. \\
   0.5.11 & 29-09-2026 & Propuesta Claude 91 y ejecución 12: identidad universal, procedencia física, conciliación completa, analítica contextual y reportería PDF/Excel corregida. \\
   0.6.0 & 01-10-2026 & Contexto multifuente SQL Server, catálogo aislado y explicable, restauración WideWorldImporters, propuesta 96 y ejecución 13 conciliada. \\
+  0.6.1 & 01-10-2026 & Prueba integral multifuente, reportería inspeccionada, correcciones de contexto y territorio líder, y evidencia formal INF-TEST-MS-01 para la tesis. \\
   \bottomrule
 \end{longtable}
 

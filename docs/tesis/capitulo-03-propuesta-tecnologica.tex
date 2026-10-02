@@ -87,7 +87,7 @@
     Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tipo de documento & Texto base para integración en el trabajo de titulación \\
     Código documental & TES-CAP-03 \\
-    Versión & 1.3.0 \\
+    Versión & 1.3.1 \\
     Periodo cubierto & Sprints 1 al 6; agosto--octubre de 2026 \\
     Estado & Núcleo funcional implementado y verificado; validación académica final pendiente \\
   \end{tabularx}
@@ -520,6 +520,16 @@ La selección semántica evita relaciones de auditoría como \file{LastEditedBy}
 
 La propuesta 96 y la ejecución 13 validaron el recorrido completo sobre WideWorldImporters. Se conciliaron 231412 líneas con diferencia cero, 73595 pedidos y 9310904 unidades. El sistema calculó 177634276,40 de ventas, 88904313,90 de costo y 88729962,50 de margen bruto; publicó 227 productos, 663 clientes y 53 territorios con nombre. Al no existir evidencia ISO inequívoca, conservó \textbf{moneda de origen}; y al no existir descuento demostrable, lo declaró no disponible. Estas dos decisiones negativas forman parte de la validez del resultado: universalidad no significa completar datos ausentes.
 
+La validación integral alternó ambas fuentes durante una misma sesión y comprobó el
+recorrido desde Inicio hasta reportería. AdventureWorks conservó 121317 filas conciliadas
+y WideWorldImporters 231412, ambas con diferencia cero. Una consulta contextual sobre el
+``territorio líder'' produjo Southwest y Texas, respectivamente, porque la plataforma
+resolvió el filtro desde el ranking verificado antes de ejecutar la agregación segura. El
+informe \file{INF-TEST-MS-01} conserva la matriz MS-E2E-01 a MS-E2E-08, capturas,
+incidencias, correcciones y riesgos. Esta evidencia permite sostener portabilidad funcional
+entre dos fuentes SQL Server del dominio ventas, sin extrapolar todavía a cualquier motor
+o dominio.
+
 \begin{longtable}{@{}p{0.10\textwidth}p{0.21\textwidth}p{0.43\textwidth}p{0.16\textwidth}@{}}
   \caption{Resumen de incrementos y evidencia.}\\
   \toprule
@@ -614,7 +624,7 @@ Universidad de Guayaquil. \emph{Trabajo de titulación con Capítulo III de prop
   Código & TES-CAP-03 \\
   Fuente editable & \path{docs/tesis/capitulo-03-propuesta-tecnologica.tex} \\
   Compilación & \path{make thesis-chapter3} o \path{make docs} \\
-  Versión & 1.3.0 -- 01-10-2026 \\
+  Versión & 1.3.1 -- 01-10-2026 \\
   Regla de uso & Integrar en la plantilla final y actualizar figuras, requisitos, resultados y referencias al cerrar nuevos sprints. \\
   \bottomrule
 \end{tabularx}

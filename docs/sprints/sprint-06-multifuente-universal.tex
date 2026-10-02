@@ -59,7 +59,7 @@ pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}}
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & INF-SPR-06 \\
-    Versión & 1.0.0 \\
+    Versión & 1.0.1 \\
     Fecha de cierre & 1 de octubre de 2026 \\
     Rama de trabajo & \file{feature/multi-source-sqlserver} \\
     Estado & Incremento funcional validado localmente \\
@@ -265,6 +265,13 @@ oculte datos al lector. Esto no se resuelve elevando privilegios desde la aplica
 diagnosticarse y coordinarse con el DBA. También permanece fuera del alcance la traducción
 automática de significados propios del negocio que no puedan demostrarse por metadatos.
 
+La ejecución formal de los escenarios MS-E2E-01 a MS-E2E-08 se consolidó en
+\path{docs/testing/Informe_pruebas_integrales_multifuente.pdf}. El informe incorpora
+capturas de las incidencias, repetición post-corrección, conciliaciones de 121.317 y
+231.412 filas, verificación visual de todas las páginas PDF e inspección estructural y
+visual de los libros Excel. La suite final aprobó 157 pruebas de backend y 24 pruebas de
+frontend, además de formato, análisis estático, tipado, lint y compilación de producción.
+
 \section{Revisión y retrospectiva}
 
 El contraste entre dos modelos OLTP demostró que universalidad no significa reconocer
@@ -287,6 +294,7 @@ mantiene el contrato y el analista conserva la decisión de negocio.
   PDF oficial & \file{docs/sprints/sprint-06-multifuente-universal.pdf} \\
   Compilación & \file{make sprint6-report} o \file{make docs} \\
   Especificación & \file{SPR-06-01-contexto-multifuente-sqlserver.md} \\
+  Evidencia integral & \file{docs/testing/Informe\_pruebas\_integrales\_multifuente.pdf} \\
   Definición de terminado & Código, pruebas, evidencia real y documentación reproducible. \\
   \bottomrule
 \end{tabularx}
