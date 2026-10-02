@@ -18,7 +18,9 @@ El Sprint 4 no utilizará silenciosamente cualquier propuesta aprobada. La panta
 
 La versión aprobada más reciente y compatible aparecerá **preseleccionada**, pero el analista BI deberá confirmar explícitamente **Usar como base del ETL**. Esta regla agiliza el caso normal sin ocultar la decisión humana.
 
-La elegibilidad no confía únicamente en el estado histórico. Antes de listarla y nuevamente antes de crear una ejecución, FastAPI recalcula la validación contra la instantánea y las reglas vigentes. Si falla, retira su aprobación, registra el evento y exige una versión corregida; nunca materializa un contrato inconsistente.
+La elegibilidad no confía únicamente en el estado histórico. Antes de listarla y nuevamente antes de crear una ejecución, FastAPI recalcula la validación contra la instantánea y las reglas vigentes. Si falla, bloquea una ejecución nueva y explica la causa sin retirar automáticamente la aprobación ni alterar expedientes anteriores. La retirada de una aprobación requiere una acción humana explícita y auditada.
+
+La pantalla prioriza la continuidad del datamart publicado. Cuando existe una ejecución conciliada para la fuente, su expediente y su `proposal_id` permanecen accesibles aunque la propuesta ya no sea elegible para una carga nueva. La propuesta mostrada como contexto del datamart vigente debe coincidir con la ejecución publicada que consume Analítica de ventas; otras propuestas aprobadas aparecen como alternativas para nuevas materializaciones, no como si fueran el origen del tablero actual.
 
 ## 2. Comparación de propuestas aprobadas
 
@@ -66,6 +68,8 @@ Cada control mostrará fuente, resultado esperado, resultado obtenido, diferenci
 - [x] Cada KPI calculado usa una receta declarativa conocida, conserva su versión y el resultado del control.
 - [x] Un fallo conserva la evidencia y permite reintento seguro sin alterar la fuente; la interpretación puede reintentarse sin repetir el ETL.
 - [x] Un contrato ya preparado o ejecutado no puede materializarse de nuevo por error: la interfaz abre el expediente existente y la API bloquea también las solicitudes duplicadas o simultáneas.
+- [ ] Una propuesta con ejecución conciliada continúa reconstruible desde el historial aunque su aprobación haya sido retirada; abrirla no habilita una nueva materialización.
+- [ ] Datamart de ventas y Analítica de ventas identifican la misma ejecución y propuesta publicadas; una propuesta nueva o no ejecutada no sustituye visualmente ese contexto.
 
 ## 6. Exclusiones de esta especificación
 

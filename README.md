@@ -1,8 +1,8 @@
 # Prototipo web de inteligencia de negocios asistido por IA
 
-Base técnica del proyecto de titulación **“Prueba de concepto de un prototipo funcional de BI asistido por IA para la construcción semiautomatizada y supervisada de un datamart de ventas”**. El entorno **Docker-first** ejecuta React + Vite, FastAPI, PostgreSQL y AdventureWorks en SQL Server con un usuario de solo lectura. El producto permite configurar desde la web la fuente y sus secretos, capturar su estructura, generar una propuesta dimensional asistida por IA, aprobarla y materializar un datamart trazable. FastAPI construye el ETL desde plantillas y referencias verificadas, calcula KPI variables y concilia origen y destino; nunca ejecuta SQL libre producido por el LLM.
+Base técnica del proyecto de titulación **“Prueba de concepto de un prototipo funcional de BI asistido por IA para la construcción semiautomatizada y supervisada de un datamart de ventas”**. El entorno **Docker-first** ejecuta React + Vite, FastAPI, PostgreSQL y varias fuentes SQL Server con usuarios de solo lectura. AdventureWorks2022 y WideWorldImporters validan el mismo contrato universal. El producto permite configurar desde la web las fuentes y sus secretos, capturar su estructura, generar una propuesta dimensional asistida por IA, aprobarla y materializar un datamart trazable. FastAPI construye el ETL desde plantillas y referencias verificadas, calcula KPI variables y concilia origen y destino; nunca ejecuta SQL libre producido por el LLM.
 
-La versión seleccionada puede verificarse desde la misma plataforma: se comprueban integridad, referencias, calidad y reproducción determinística sin consumir nuevamente el LLM. Sprint 4 amplió el expediente con conciliación OLTP--datamart, KPI sugeridos por IA y recetas controladas. Sprint 5 añadió resolución descriptiva de entidades, dashboard por perfil, gráficos interactivos accesibles, hallazgos explicables, copiloto contextual, agregaciones seguras fuera del lienzo y exportaciones PDF/Excel fieles a la selección. El cierre endureció Groq, incorporó Anthropic Claude, cobertura necesidad--contrato, costos y margen, corrección relacional controlada y recuperación ante sesión vencida. Las propuestas aprobadas y las ejecuciones terminadas conservan sus cinco etapas como pestañas de consulta inmutables; los cocientes monetarios se presentan explícitamente como promedios por unidad vendida. Véanse el [plan acumulativo de validación](docs/validation-plan.md) y las [especificaciones del Sprint 5](docs/specs/SPR-05-analitica-reporteria-y-calidad.md).
+La versión seleccionada puede verificarse desde la misma plataforma: se comprueban integridad, referencias, calidad y reproducción determinística sin consumir nuevamente el LLM. Sprint 4 amplió el expediente con conciliación OLTP--datamart y KPI controlados. Sprint 5 añadió calidad semántica, analítica, conversación y reportería. Sprint 6 incorporó contexto multifuente, catálogo independiente por conexión y evidencia técnica automática, sin bifurcaciones por nombre de base. Las propuestas aprobadas y las ejecuciones terminadas conservan sus cinco etapas como pestañas de consulta inmutables. Véanse el [plan acumulativo de validación](docs/validation-plan.md) y la [especificación multifuente](docs/specs/SPR-06-01-contexto-multifuente-sqlserver.md).
 
 La guía operativa completa para replicar, restaurar, publicar y probar el entorno está en [docs/replication-guide.md](docs/replication-guide.md).
 
@@ -12,9 +12,9 @@ La trazabilidad del trabajo se mantiene en LaTeX y PDF. La bitácora vive en `do
 
 ## Alcance confirmado
 
-El alcance vigente define una prueba de concepto académica con una sola fuente SQL Server/AdventureWorks, introspección de metadatos, propuestas de un LLM sujetas a aprobación humana y validaciones determinísticas, ETL hacia PostgreSQL, KPI variables, visualizaciones, hallazgos explicables, copiloto contextual y reportería. El pronóstico fue retirado por decisión del tutor porque corresponde a un problema predictivo distinto del objetivo central.
+El alcance vigente define una prueba de concepto académica con múltiples fuentes SQL Server independientes, introspección de metadatos, propuestas de un LLM sujetas a aprobación humana y validaciones determinísticas, ETL hacia PostgreSQL, KPI variables, visualizaciones, hallazgos explicables, copiloto contextual y reportería. El pronóstico fue retirado por decisión del tutor porque corresponde a un problema predictivo distinto del objetivo central.
 
-El Sprint 1 implementó el entorno y la observabilidad mínima. El Sprint 2 implementó autenticación, RBAC, auditoría, parámetros y credenciales LLM cifradas desde la web. El Sprint 3 incorporó la fuente SQL Server, introspección determinística y el asistente supervisado. Sprint 4 materializó la propuesta 52 en la ejecución 6. Sprint 5 corrigió la identidad del cliente mediante la propuesta 54 y la ejecución 7: 121317 líneas sin diferencia, 19820 clientes con nombre y tipo, moneda USD comprobada, panel ejecutivo/analítico, conversación contextual y reportes profesionales. Véanse el [informe técnico del Sprint 5](docs/sprints/sprint-05-analitica-y-reporteria.pdf), el [Capítulo III académico](docs/tesis/capitulo-03-propuesta-tecnologica.pdf) y las [especificaciones](docs/specs/README.md).
+El Sprint 1 implementó el entorno y la observabilidad mínima. El Sprint 2 implementó autenticación, RBAC, auditoría, parámetros y credenciales LLM cifradas. El Sprint 3 incorporó SQL Server, introspección y el asistente supervisado. Sprint 4 materializó y concilió el ETL. Sprint 5 añadió identidad descriptiva, paneles, conversación y reportes. Sprint 6 validó el mismo recorrido con AdventureWorks2022 y WideWorldImporters; la ejecución 13 concilió 231412 líneas y publicó dimensiones descriptivas. Véanse el [informe técnico del Sprint 6](docs/sprints/sprint-06-multifuente-universal.pdf), el [Capítulo III académico](docs/tesis/capitulo-03-propuesta-tecnologica.pdf) y las [especificaciones](docs/specs/README.md).
 
 Consulta [docs/scope.md](docs/scope.md) y [docs/architecture.md](docs/architecture.md) para el detalle.
 
@@ -22,7 +22,7 @@ Consulta [docs/scope.md](docs/scope.md) y [docs/architecture.md](docs/architectu
 
 - Docker Engine 24 o superior con Docker Compose v2.
 - Al menos 8 GB de memoria disponibles para ejecutar el conjunto de contenedores. Para la alternativa local con Ollama se recomiendan 16 GB de memoria total y al menos 8 GB adicionales de disco libre para la imagen y el modelo.
-- Conexión a Internet en el primer arranque para descargar las imágenes base y el respaldo oficial de AdventureWorks.
+- Conexión a Internet en el primer arranque para descargar las imágenes base y los respaldos oficiales de AdventureWorks y WideWorldImporters.
 
 No es necesario instalar Node.js ni Python en el equipo anfitrión.
 
@@ -36,7 +36,7 @@ No es necesario instalar Node.js ni Python en el equipo anfitrión.
 
 2. Reemplaza en `.env` todas las claves `ChangeMe_*`. Los puertos de base predeterminados son `55432` y `51433` para no cruzarse con instancias habituales en `5432` y `1433`.
 
-3. Levanta PostgreSQL, SQL Server/AdventureWorks, backend y frontend:
+3. Levanta PostgreSQL, SQL Server con las bases demostrativas, backend y frontend:
 
    ```bash
    docker compose up --build -d
@@ -50,7 +50,7 @@ No es necesario instalar Node.js ni Python en el equipo anfitrión.
    - Estado básico: <http://localhost:8000/api/v1/health/live>
    - Estado de PostgreSQL: <http://localhost:8000/api/v1/health/ready>
 
-La comprobación `live` confirma que FastAPI funciona. `ready` confirma además la conexión a PostgreSQL. En un volumen vacío, SQL Server descarga el respaldo oficial de AdventureWorks 2022, lo restaura y crea el usuario `bi_reader` sin permisos de escritura. Para usarla como fuente de negocio, abra **Parámetros generales > Conexiones de datos**, registre servidor `sqlserver`, puerto `1433`, base y usuario configurados para la instalación, pruebe el modo de sólo lectura, active el registro y seleccione **Actualizar metadatos**. El resultado se consulta en **Datos > Explorador de esquema**.
+La comprobación `live` confirma que FastAPI funciona. `ready` confirma además la conexión a PostgreSQL. En un volumen vacío, SQL Server descarga y restaura los respaldos oficiales de AdventureWorks 2022 y WideWorldImporters y crea el usuario `bi_reader` sin permisos de escritura. Para usar una base, abra **Preparación del entorno > Conexiones de datos**, registre servidor `sqlserver`, puerto `1433`, base y usuario configurados, pruebe el modo de sólo lectura y habilite el registro. Después selecciónela en el contexto del espacio de trabajo y cree su instantánea en **Explorador de esquema**.
 
 En el primer inicio el servicio `migrate` aplica automáticamente las migraciones y el servicio `seed` carga de forma idempotente el catálogo protegido aprobado: permisos, menús, rol administrador y usuario inicial definidos por `BOOTSTRAP_ADMIN_EMAIL` y `BOOTSTRAP_ADMIN_PASSWORD`. Ingrese desde el frontend con esos valores; cámbielos antes de cualquier demostración compartida. Las claves de Gemini, Groq, Anthropic y Qwen se registran con **Registrar credencial** en **Configuración LLM**; no se agregan a `.env`. FastAPI las cifra y la raíz criptográfica se genera automáticamente en el volumen Docker `secret_key_data`, separado de PostgreSQL. Para Anthropic, el preset económico usa `claude-haiku-4-5-20251001` con razonamiento mínimo; el modelo puede cambiarse si la cuenta autoriza Sonnet u otra versión. El catálogo no copia cuentas de prueba, auditoría, configuraciones LLM, claves ni volúmenes entre equipos.
 
@@ -164,5 +164,5 @@ El flujo principal de la prueba de concepto está completo: configurar, introspe
 1. ejecutar pruebas formales de usabilidad y juicio de expertos con instrumentos y actas;
 2. documentar el contraste secundario con AdventureWorksDW sólo donde exista equivalencia semántica demostrada;
 3. cerrar conclusiones, anexos, evidencias y referencias del documento académico completo;
-4. promover el Sprint 5 por PR a `develop` y después a `main` con CI aprobada;
-5. mantener inventario, otros dominios, otros motores y despliegue Azure como extensiones futuras, no como requisitos para demostrar el núcleo actual.
+4. promover el Sprint 6 por PR a `develop` y después a `main` con CI aprobada;
+5. mantener inventario, combinación de fuentes, otros motores y despliegue Azure como extensiones futuras, no como requisitos para demostrar el núcleo actual.

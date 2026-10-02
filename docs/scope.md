@@ -8,7 +8,7 @@ Título acordado el 14 de septiembre de 2026:
 
 > **Prueba de concepto de un prototipo funcional de BI asistido por IA para la construcción semiautomatizada y supervisada de un datamart de ventas.**
 
-La fuente pública funcional es AdventureWorks. Los datos sintéticos se utilizan únicamente para pruebas controladas y valores faltantes; no representan una segunda fuente que el prototipo deba conectar o validar.
+Las fuentes públicas funcionales de validación son AdventureWorks2022 y WideWorldImporters. Ambas se conectan mediante el mismo adaptador SQL Server y el mismo contrato universal; no representan implementaciones particulares. Los datos sintéticos se utilizan únicamente para pruebas controladas y valores faltantes.
 
 ### Usuarios previstos
 
@@ -22,7 +22,7 @@ Desarrollar un prototipo web de inteligencia de negocios asistido por IA que per
 
 ### Objetivos específicos
 
-1. Analizar los requisitos funcionales, técnicos y de calidad de datos necesarios para construir un datamart de ventas a partir de AdventureWorks, considerando datos sintéticos únicamente para pruebas controladas.
+1. Analizar los requisitos funcionales, técnicos y de calidad necesarios para construir un datamart de ventas desde fuentes SQL Server con estructuras diferentes, usando AdventureWorks y WideWorldImporters como evidencia y datos sintéticos sólo para pruebas controladas.
 2. Diseñar la arquitectura y el flujo de trabajo del prototipo, integrando conexión de sólo lectura, introspección del esquema, interpretación de metadatos mediante un LLM, validación humana y ejecución controlada del proceso ETL.
 3. Desarrollar una aplicación web que permita obtener los metadatos de la fuente relacional y generar propuestas supervisadas de modelo dimensional, KPIs y plan ETL mediante inteligencia artificial.
 4. Implementar un proceso ETL trazable que construya y cargue un datamart de ventas desde una base destino vacía y que publique KPIs, visualizaciones, hallazgos analíticos explicables y reportes fieles a la selección autorizada.
@@ -30,7 +30,7 @@ Desarrollar un prototipo web de inteligencia de negocios asistido por IA que per
 
 ## Incluido por el anteproyecto
 
-- Una conexión SQL Server parametrizable desde la web y una sola fuente activa, validada con AdventureWorks; la interfaz interna permite añadir adaptadores futuros sin implementarlos ahora.
+- Múltiples conexiones SQL Server parametrizables desde la web, habilitadas de forma independiente y seleccionadas por contexto; AdventureWorks y WideWorldImporters validan el mismo adaptador y otros motores requieren un adaptador futuro.
 - Credenciales de fuente y LLM ingresadas desde la plataforma y almacenadas mediante referencia cifrada, sin exposición posterior.
 - Introspección de tablas, columnas, tipos, claves primarias, claves foráneas y relaciones declaradas.
 - Metadatos estructurados enviados por bloques a un LLM para interpretar nombres técnicos en inglés y generar conceptos comprensibles en español sin inventar referencias.
@@ -87,10 +87,12 @@ Al cierre del Sprint 4, la propuesta 52 originó la ejecución 6: cinco tablas, 
 
 Sprint 5 corrigió la identidad descriptiva de clientes mediante resolución relacional general, sin depender del nombre literal de una tabla. La propuesta 54 originó la ejecución 7, que conservó las 121317 líneas conciliadas y materializó 19820 clientes con `nombre_cliente` y `tipo_cliente`: 19119 personas y 701 organizaciones, sin etiquetas vacías. Sobre este expediente se publicaron vista ejecutiva y analítica, filtros, KPI variables, cuatro visualizaciones para el analista, hallazgos determinísticos, copiloto conversacional con datos agregados y reportes PDF/Excel fieles a la vista.
 
+Sprint 6 añadió contexto multifuente. Preguntas y periodicidades se aíslan por conexión, mientras la evidencia técnica se recalcula desde cada instantánea. Las cuatro preguntas estándar proceden del perfil del producto; las preguntas personalizadas de costos añadidas por el analista en AdventureWorks no se copian a otra fuente. La propuesta 96 y la ejecución 13 validaron WideWorldImporters con 231412 filas conciliadas, 227 productos, 663 clientes y 53 territorios descriptivos. Moneda y descuento permanecieron sin inventar cuando la fuente no los demostró.
+
 El endurecimiento posterior comprobó la misma necesidad con Anthropic y detectó que etiquetas diferentes podían describir una receta idéntica o confundir `AVG(importe de línea)` con una venta por unidad. El contrato vigente normaliza nombres de medidas, elimina equivalencias y reserva **venta promedio por unidad vendida** para `SUM(ventas) / SUM(unidades)`. El panel identifica además si la selección publicada cubre completa o parcialmente la necesidad. Las materializaciones nuevas se conservan por ejecución y el usuario puede elegir únicamente versiones conciliadas cuyos datos físicos continúan disponibles; una nueva prueba ya no reemplaza el datamart anterior.
 
 ### Decisión de alcance sobre pronósticos
 
 El 25 de septiembre de 2026 el tutor, responsable académico del proyecto, retiró el pronóstico mensual, MAPE y RMSE del alcance. La decisión evita mezclar la validación de construcción y calidad de un datamart con un problema predictivo distinto que requeriría hipótesis, tratamiento temporal, entrenamiento y evaluación propios. No se presenta como trabajo fallido ni pendiente: es una modificación controlada del anteproyecto y se conserva en especificaciones, bitácora, arquitectura, manual e informe del Sprint 5.
 
-La validación se construye de forma acumulativa según `docs/validation-plan.md`. Sprint 3 comprueba integridad de la instantánea, referencias, contrato y reejecución determinística. Sprint 4 concilia cantidades, pedidos, unidades e importes OLTP--datamart. Sprint 5 agrega cobertura descriptiva, identidad de entidades, lectura analítica, seguridad del copiloto y fidelidad de exportaciones. Permanecen como cierre académico el contraste secundario cuando exista equivalencia semántica documentada, pruebas formales de usabilidad y juicio de expertos.
+La validación se construye de forma acumulativa según `docs/validation-plan.md`. Sprint 3 comprueba integridad de la instantánea, referencias, contrato y reejecución determinística. Sprint 4 concilia cantidades, pedidos, unidades e importes OLTP--datamart. Sprint 5 agrega cobertura descriptiva, analítica, copiloto y exportaciones. Sprint 6 agrega aislamiento por fuente y contraste estructural con una segunda base OLTP. Permanecen como cierre académico las pruebas formales de usabilidad y el juicio de expertos.

@@ -4,7 +4,10 @@ set -euo pipefail
 "$@" &
 sqlserver_pid=$!
 
-/usr/local/bin/bootstrap-adventureworks.sh &
+(
+    /usr/local/bin/bootstrap-adventureworks.sh
+    /usr/local/bin/bootstrap-wideworldimporters.sh
+) &
 bootstrap_pid=$!
 
 shutdown() {

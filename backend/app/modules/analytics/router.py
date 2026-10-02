@@ -14,7 +14,7 @@ from app.modules.copilot.models import BiProposal
 from app.modules.etl.models import EtlExecution
 from app.modules.etl.service import assess_selection_coverage
 from app.modules.metadata.models import MetadataSnapshot
-from app.modules.parameters.models import LlmConfiguration, Parameter, Secret
+from app.modules.parameters.models import DataConnection, LlmConfiguration, Parameter, Secret
 from app.modules.parameters.providers import ProviderGenerationError, generate_json
 from app.modules.parameters.secrets import SecretCipher, SecretDecryptionError
 from app.modules.reports.analytics_export import build_analytics_pdf, build_analytics_xlsx
@@ -124,6 +124,29 @@ def _analytics_intent_schema(dashboard: AnalyticsDashboardRead) -> dict[str, obj
     }
 
 
+def _leading_territory_requested(question: str) -> bool:
+    normalized = question.casefold().replace("í", "i")
+    return "territorio lider" in normalized or "leading territory" in normalized
+
+
+def _leading_territory_value(dashboard: AnalyticsDashboardRead) -> str | None:
+    territory_visual = next(
+        (visual for visual in dashboard.visuals if visual.code == "territories"),
+        None,
+    )
+    if territory_visual is None or not territory_visual.points:
+        return None
+    leading = territory_visual.points[0]
+    return next(
+        (
+            option.value
+            for option in dashboard.filters.territories
+            if option.value == leading.key or option.label == leading.label
+        ),
+        None,
+    )
+
+
 async def _active_llm(session: AsyncSession) -> LlmConfiguration | None:
     return (
         await session.execute(
@@ -144,9 +167,21 @@ async def _llm_credential(configuration: LlmConfiguration, session: AsyncSession
         return None
 
 
+def _require_snapshot_connection(snapshot: MetadataSnapshot, connection_id: int) -> None:
+    if snapshot.data_connection_id != connection_id:
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "La ejecución seleccionada no pertenece a la fuente de datos en contexto. "
+                "Actualice el tablero antes de continuar."
+            ),
+        )
+
+
 async def _load_dashboard(
     session: AsyncSession,
     *,
+    connection_id: int,
     execution_id: int | None,
     metric_code: str | None,
     year: int | None,
@@ -155,6 +190,11 @@ async def _load_dashboard(
     statement = select(EtlExecution).where(EtlExecution.status == "succeeded")
     if execution_id is not None:
         statement = statement.where(EtlExecution.id == execution_id)
+    else:
+        snapshot_ids = select(MetadataSnapshot.id).where(
+            MetadataSnapshot.data_connection_id == connection_id
+        )
+        statement = statement.where(EtlExecution.metadata_snapshot_id.in_(snapshot_ids))
     execution = (
         await session.execute(
             statement.order_by(EtlExecution.finished_at.desc(), EtlExecution.id.desc()).limit(1)
@@ -181,6 +221,7 @@ async def _load_dashboard(
             status_code=409,
             detail="El expediente perdió la propuesta o la instantánea requerida para analizarlo.",
         )
+    _require_snapshot_connection(snapshot, connection_id)
     try:
         return await build_dashboard(
             session,
@@ -197,24 +238,35 @@ async def _load_dashboard(
 
 @router.get("/analytics/executions", response_model=list[AnalyticsExecutionOptionRead])
 async def analytics_executions(
+    connection_id: int | None = Query(default=None, gt=0),
     _: User = Depends(require_permission("analytics.dashboard.read")),
     session: AsyncSession = Depends(get_session),
 ) -> list[AnalyticsExecutionOptionRead]:
     """List only reconciled executions whose physical dataset is still available."""
+    statement = select(EtlExecution).where(EtlExecution.status == "succeeded")
+    if connection_id is not None:
+        snapshot_ids = select(MetadataSnapshot.id).where(
+            MetadataSnapshot.data_connection_id == connection_id
+        )
+        statement = statement.where(EtlExecution.metadata_snapshot_id.in_(snapshot_ids))
     executions = (
         await session.execute(
-            select(EtlExecution)
-            .where(EtlExecution.status == "succeeded")
-            .order_by(EtlExecution.finished_at.desc(), EtlExecution.id.desc())
-            .limit(50)
+            statement.order_by(EtlExecution.finished_at.desc(), EtlExecution.id.desc()).limit(50)
         )
     ).scalars()
     options: list[AnalyticsExecutionOptionRead] = []
     for execution in executions:
         reconciliation = execution.metrics_document.get("reconciliation", {})
         proposal = await session.get(BiProposal, execution.proposal_id)
+        snapshot = await session.get(MetadataSnapshot, execution.metadata_snapshot_id)
+        connection = (
+            await session.get(DataConnection, snapshot.data_connection_id)
+            if snapshot is not None
+            else None
+        )
         if (
             proposal is None
+            or connection is None
             or execution.finished_at is None
             or not isinstance(reconciliation, dict)
             or not bool(reconciliation.get("passed"))
@@ -239,8 +291,12 @@ async def analytics_executions(
             AnalyticsExecutionOptionRead(
                 execution_id=execution.id,
                 proposal_id=execution.proposal_id,
+                data_connection_id=connection.id,
+                source_name=connection.name,
+                database_name=connection.database_name,
                 label=(
-                    f"Ejecución #{execution.id} · propuesta #{execution.proposal_id} · "
+                    f"{connection.name} · {connection.database_name} · ejecución "
+                    f"#{execution.id} · propuesta #{execution.proposal_id} · "
                     f"{coverage_label}"
                 ),
                 provider_kind=proposal.provider_kind,
@@ -256,6 +312,7 @@ async def analytics_executions(
 
 @router.get("/analytics/dashboard", response_model=AnalyticsDashboardRead)
 async def analytics_dashboard(
+    connection_id: int = Query(gt=0),
     execution_id: int | None = Query(default=None, gt=0),
     metric_code: str | None = Query(default=None, min_length=1, max_length=80),
     year: int | None = Query(default=None, ge=1900, le=2200),
@@ -265,6 +322,7 @@ async def analytics_dashboard(
 ) -> AnalyticsDashboardRead:
     return await _load_dashboard(
         session,
+        connection_id=connection_id,
         execution_id=execution_id,
         metric_code=metric_code,
         year=year,
@@ -280,6 +338,7 @@ async def analytics_copilot(
 ) -> AnalyticsCopilotRead:
     dashboard = await _load_dashboard(
         session,
+        connection_id=payload.data_connection_id,
         execution_id=payload.execution_id,
         metric_code=payload.metric_code,
         year=payload.year,
@@ -366,6 +425,8 @@ async def analytics_copilot(
             interpreted_territory = (
                 territory_value if territory_value in available_territories else None
             )
+        if interpreted_territory is None and _leading_territory_requested(payload.question):
+            interpreted_territory = _leading_territory_value(dashboard)
         top_n = max(1, min(int(intent.get("top_n", 5)), 20))
         order = "asc" if str(intent.get("order")) == "asc" else "desc"
         if analysis_mode == "aggregate" and dimension in {"product", "customer", "territory"}:
@@ -437,6 +498,7 @@ async def analytics_copilot(
 async def export_analytics_report(
     report_format: Literal["pdf", "xlsx"],
     view: Literal["executive", "analyst"] = Query(default="executive"),
+    connection_id: int = Query(gt=0),
     execution_id: int | None = Query(default=None, gt=0),
     metric_code: str | None = Query(default=None, min_length=1, max_length=80),
     year: int | None = Query(default=None, ge=1900, le=2200),
@@ -451,6 +513,7 @@ async def export_analytics_report(
         )
     dashboard = await _load_dashboard(
         session,
+        connection_id=connection_id,
         execution_id=execution_id,
         metric_code=metric_code,
         year=year,

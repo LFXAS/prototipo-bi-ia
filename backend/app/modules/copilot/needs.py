@@ -46,6 +46,20 @@ def _graph(tables: dict[str, dict[str, Any]]) -> dict[str, set[str]]:
         for relation in table.get("foreign_keys", []):
             if not isinstance(relation, dict):
                 continue
+            relation_columns = {
+                _compact(column)
+                for column in [
+                    *relation.get("columns", []),
+                    *relation.get("referenced_columns", []),
+                ]
+            }
+            if relation_columns & {
+                "createdby",
+                "lasteditedby",
+                "modifiedby",
+                "updatedby",
+            }:
+                continue
             target = (
                 f"{relation.get('referenced_schema', '')}.{relation.get('referenced_table', '')}"
             )
@@ -72,8 +86,28 @@ def _path(graph: dict[str, set[str]], starts: set[str], destinations: set[str]) 
 def _sales_context_score(reference: str) -> int:
     """Prefer a sales subgraph without depending on one product's table names."""
     normalized = _compact(reference)
-    positive = ("sales", "venta", "revenue", "invoice", "customer", "cliente")
-    negative = ("purchase", "purchasing", "procurement", "vendor", "proveedor", "compra")
+    positive = (
+        "sales",
+        "venta",
+        "revenue",
+        "invoice",
+        "order",
+        "commerce",
+        "commercial",
+        "billing",
+        "customer",
+        "cliente",
+    )
+    negative = (
+        "purchase",
+        "purchasing",
+        "procurement",
+        "vendor",
+        "proveedor",
+        "compra",
+        "stockitemtransaction",
+        "inventorytransaction",
+    )
     return sum(token in normalized for token in positive) - sum(
         token in normalized for token in negative
     )
@@ -107,7 +141,10 @@ def _coherent_anchor(
                 missing += 1
             else:
                 distance += len(route) - 1
-        ranked.append((missing, distance, -_sales_context_score(anchor), anchor))
+        # Business coherence wins over a merely shorter route. Operational databases
+        # often connect sales, purchases and inventory through shared entities; choosing
+        # by distance first can therefore explain a sales request with the wrong event.
+        ranked.append((missing, -_sales_context_score(anchor), distance, anchor))
     return {min(ranked)[3]} if ranked else set()
 
 
@@ -153,7 +190,15 @@ CAPABILITIES: dict[str, dict[str, object]] = {
     "product": {
         "label": "Análisis por producto",
         "triggers": ("producto", "productos", "articulo", "articulos"),
-        "columns": ("productid", "itemid", "productnumber", "productname"),
+        "columns": (
+            "productid",
+            "itemid",
+            "stockitemid",
+            "productnumber",
+            "productname",
+            "itemname",
+            "stockitemname",
+        ),
     },
     "customer": {
         "label": "Análisis por cliente",
@@ -163,12 +208,28 @@ CAPABILITIES: dict[str, dict[str, object]] = {
     "territory": {
         "label": "Análisis territorial",
         "triggers": ("territorio", "territorios", "region", "regiones", "pais", "geograf"),
-        "columns": ("territoryid", "regionid", "countryregioncode", "territoryname"),
+        "columns": (
+            "territoryid",
+            "regionid",
+            "countryregioncode",
+            "territoryname",
+            "salesterritory",
+            "countryid",
+            "stateprovinceid",
+            "cityid",
+        ),
     },
     "unit_cost": {
         "label": "Costo unitario",
         "triggers": ("costo", "costos", "coste", "costes"),
-        "columns": ("standardcost", "unitcost", "productcost", "costo"),
+        "columns": (
+            "standardcost",
+            "unitcost",
+            "productcost",
+            "lastcostprice",
+            "costprice",
+            "costo",
+        ),
     },
     "unit_price": {
         "label": "Precio unitario",
@@ -192,6 +253,13 @@ def _find_columns(index: list[tuple[str, str, str]], capability: str) -> list[tu
     patterns = CAPABILITIES[capability]["columns"]
     assert isinstance(patterns, tuple)
     for pattern in patterns:
+        exact_matches = [
+            (reference, column)
+            for reference, column, normalized in index
+            if str(pattern) == normalized
+        ]
+        if exact_matches:
+            return exact_matches
         matches = [
             (reference, column)
             for reference, column, normalized in index
@@ -238,6 +306,34 @@ def _combined_requirement(
     preferred_anchors: set[str] | None = None,
 ) -> dict[str, object]:
     component_results = [_component(component, index) for component in components]
+    derived_component_evidence: list[str] = []
+    derived_component_routes: list[list[str]] = []
+    derived_component_formulas: list[str] = []
+    for position, component in enumerate(components):
+        if component != "sales_amount" or component_results[position][0] != "unavailable":
+            continue
+        price_match, price_route = _nearest_match(
+            _find_columns(index, "unit_price"), preferred_anchors or set(), graph
+        )
+        quantity_match, quantity_route = _nearest_match(
+            _find_columns(index, "quantity"), preferred_anchors or set(), graph
+        )
+        if price_match is None or quantity_match is None:
+            continue
+        price_table, price_column = price_match
+        quantity_table, quantity_column = quantity_match
+        if price_table != quantity_table and not _path(graph, {price_table}, {quantity_table}):
+            continue
+        derived_component_evidence.extend(
+            [f"{price_table}.{price_column}", f"{quantity_table}.{quantity_column}"]
+        )
+        derived_component_routes.extend(route for route in (price_route, quantity_route) if route)
+        derived_component_formulas.append("precio unitario × cantidad")
+        component_results[position] = (
+            "derivable",
+            derived_component_evidence,
+            "El importe se puede derivar con componentes relacionados y verificables.",
+        )
     missing = [
         components[i] for i, item in enumerate(component_results) if item[0] == "unavailable"
     ]
@@ -249,7 +345,9 @@ def _combined_requirement(
         _nearest_match(_find_columns(index, component), anchors, graph) for component in components
     ]
     evidence = [f"{match[0]}.{match[1]}" for match, _ in selected if match is not None]
+    evidence.extend(derived_component_evidence)
     routes = [route for _, route in selected if route]
+    routes.extend(derived_component_routes)
     if missing:
         status = "unavailable"
         resolution = (
@@ -265,14 +363,15 @@ def _combined_requirement(
             "definición de negocio; "
             "ninguna se seleccionará por nombre solamente."
         )
-    elif len(components) == 1:
+    elif len(components) == 1 and component_results[0][0] == "direct":
         status = "direct"
         resolution = "Puede resolverse directamente con la referencia técnica indicada."
-    elif len(components) > 1 and len(routes) == len(components):
+    elif all(item[0] in {"direct", "derivable"} for item in component_results):
         status = "derivable"
+        effective_formula = formula or " y ".join(dict.fromkeys(derived_component_formulas))
         resolution = (
-            f"Puede calcularse de forma controlada como {formula}."
-            if formula
+            f"Puede calcularse de forma controlada como {effective_formula}."
+            if effective_formula
             else (
                 "Puede resolverse uniendo únicamente relaciones declaradas y conservando "
                 "la granularidad."

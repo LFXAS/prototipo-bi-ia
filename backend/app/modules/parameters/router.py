@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 
 import pyodbc  # type: ignore[import-not-found]
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
-from sqlalchemy import func, select, update
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -592,14 +592,9 @@ async def activate_data_connection(
         raise HTTPException(
             status_code=422, detail="Pruebe correctamente la conexión antes de activarla."
         )
-    await session.execute(
-        update(DataConnection)
-        .where(DataConnection.id != connection.id, DataConnection.is_active.is_(True))
-        .values(is_active=False)
-    )
     connection.is_active = True
     await add_audit_event(
-        session, actor.id, "connections.activate", "data_connection", str(connection.id)
+        session, actor.id, "connections.enable", "data_connection", str(connection.id)
     )
     await session.commit()
     return connection
@@ -614,7 +609,7 @@ async def deactivate_data_connection(
     connection = await _get_data_connection(connection_id, session)
     connection.is_active = False
     await add_audit_event(
-        session, actor.id, "connections.deactivate", "data_connection", str(connection.id)
+        session, actor.id, "connections.disable", "data_connection", str(connection.id)
     )
     await session.commit()
     return connection

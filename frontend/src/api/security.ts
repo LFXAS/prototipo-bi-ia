@@ -10,6 +10,7 @@ export type LlmConfiguration = { id: number; name: string; provider_kind: string
 export type DataConnection = { id: number; name: string; connector_kind: 'sqlserver'; host: string; port: number; database_name: string; username: string; encrypt: boolean; trust_server_certificate: boolean; is_active: boolean; last_test_status?: string; last_test_message?: string; last_tested_at?: string }
 export type MetadataSnapshot = { id: number; data_connection_id: number; connector_code: string; database_name: string; contract_version: number; content_hash: string; schema_count: number; table_count: number; column_count: number; relationship_count: number; captured_by_label: string; captured_at: string }
 export type ActiveSource = { status: 'ready' | 'missing'; connection?: { id: number; name: string; connector_kind: string; database_name: string; last_test_status?: string; last_tested_at?: string }; latest_snapshot?: MetadataSnapshot }
+export type SourceWorkspace = { status: 'ready' | 'metadata_pending' | 'test_pending'; connection: { id: number; name: string; connector_kind: string; database_name: string; last_test_status?: string; last_tested_at?: string }; latest_snapshot?: MetadataSnapshot }
 export type SnapshotCapture = { created: boolean; message: string; snapshot: MetadataSnapshot }
 export type MetadataTable = { schema_name: string; table_name: string; column_count: number; relationship_count: number }
 export type MetadataTableDetail = { schema_name: string; table_name: string; columns: Array<{ name: string; ordinal: number; data_type: string; max_length: number; precision: number; scale: number; nullable: boolean; primary_key: boolean }>; foreign_keys: Array<{ name: string; columns: string[]; referenced_schema: string; referenced_table: string; referenced_columns: string[] }>; incoming_relationships: Array<{ name: string; source_schema: string; source_table: string; source_columns: string[]; referenced_columns: string[] }> }
@@ -156,6 +157,9 @@ export type EtlTransformation = {
 export type EtlProposalCandidate = {
   proposal_id: number
   metadata_snapshot_id: number
+  data_connection_id: number
+  source_name: string
+  database_name: string
   business_goal: string
   periodicity: string
   provider_kind: string
@@ -206,6 +210,9 @@ export type AnalyticsOption = { value: string; label: string }
 export type AnalyticsExecutionOption = {
   execution_id: number
   proposal_id: number
+  data_connection_id: number
+  source_name: string
+  database_name: string
   label: string
   provider_kind: string
   model_id: string
@@ -240,6 +247,9 @@ export type AnalyticsInsight = {
 export type AnalyticsDashboard = {
   execution_id: number
   proposal_id: number
+  data_connection_id: number
+  source_name: string
+  database_name: string
   title: string
   description: string
   grain: string
@@ -377,23 +387,25 @@ export const api = {
   parameters: (token: string, limit: number, offset: number) => request<Page<Parameter>>(`/parameters?limit=${limit}&offset=${offset}`, token),
   llm: (token: string, limit: number, offset: number) => request<Page<LlmConfiguration>>(`/llm-configurations?limit=${limit}&offset=${offset}`, token),
   connections: (token: string, limit: number, offset: number) => request<Page<DataConnection>>(`/connections?limit=${limit}&offset=${offset}`, token),
+  sources: (token: string) => request<SourceWorkspace[]>('/sources', token),
   activeSource: (token: string) => request<ActiveSource>('/sources/active', token),
-  metadataSnapshots: (token: string, limit: number, offset: number) => request<Page<MetadataSnapshot>>(`/metadata/snapshots?limit=${limit}&offset=${offset}`, token),
-  captureMetadata: (token: string) => request<SnapshotCapture>('/metadata/snapshots', token, { method: 'POST' }),
+  metadataSnapshots: (token: string, limit: number, offset: number, connectionId?: number) => request<Page<MetadataSnapshot>>(`/metadata/snapshots?limit=${limit}&offset=${offset}${connectionId ? `&connection_id=${connectionId}` : ''}`, token),
+  captureMetadata: (token: string, connectionId?: number) => request<SnapshotCapture>(`/metadata/snapshots${connectionId ? `?connection_id=${connectionId}` : ''}`, token, { method: 'POST' }),
   metadataTables: (token: string, snapshotId: number, search = '', schemaName = '', limit = 10, offset = 0) => request<Page<MetadataTable>>(`/metadata/snapshots/${snapshotId}/tables?search=${encodeURIComponent(search)}&schema_name=${encodeURIComponent(schemaName)}&limit=${limit}&offset=${offset}`, token),
   metadataTable: (token: string, snapshotId: number, schemaName: string, tableName: string) => request<MetadataTableDetail>(`/metadata/snapshots/${snapshotId}/tables/${encodeURIComponent(schemaName)}/${encodeURIComponent(tableName)}`, token),
-  copilotReadiness: (token: string) => request<CopilotReadiness>('/copilot/readiness', token),
-  copilotCatalog: (token: string, snapshotId: number) => request<CopilotCatalog>(`/copilot/catalog?metadata_snapshot_id=${snapshotId}`, token),
+  copilotReadiness: (token: string, connectionId?: number) => request<CopilotReadiness>(`/copilot/readiness${connectionId ? `?connection_id=${connectionId}` : ''}`, token),
+  copilotCatalog: (token: string, snapshotId: number, connectionId?: number) => request<CopilotCatalog>(`/copilot/catalog?metadata_snapshot_id=${snapshotId}${connectionId ? `&connection_id=${connectionId}` : ''}`, token),
   formulateNeed: (token: string, body: BusinessNeedInput) => request<NeedFormulation>('/copilot/needs/formulate', token, { method: 'POST', body: JSON.stringify(body) }),
   validateNeed: (token: string, body: BusinessNeedInput) => request<NeedViability>('/copilot/needs/viability', token, { method: 'POST', body: JSON.stringify(body) }),
   analysisCatalogDomains: (token: string) => request<AnalysisCatalogDomain[]>('/analysis-catalog/domains', token),
-  analysisCatalog: (token: string, domainCode: string) => request<AnalysisCatalogConfiguration>(`/analysis-catalog/domains/${encodeURIComponent(domainCode)}`, token),
-  saveAnalysisCatalog: (token: string, domainCode: string, body: AnalysisCatalogConfiguration) => request<AnalysisCatalogConfiguration>(`/analysis-catalog/domains/${encodeURIComponent(domainCode)}`, token, { method: 'PUT', body: JSON.stringify(body) }),
-  resetAnalysisCatalog: (token: string, domainCode: string) => request<AnalysisCatalogConfiguration>(`/analysis-catalog/domains/${encodeURIComponent(domainCode)}/reset`, token, { method: 'POST' }),
-  proposals: (token: string, limit = 10, offset = 0, statuses: string[] = [], domainCode?: string) => {
+  analysisCatalog: (token: string, domainCode: string, connectionId: number) => request<AnalysisCatalogConfiguration>(`/analysis-catalog/domains/${encodeURIComponent(domainCode)}?connection_id=${connectionId}`, token),
+  saveAnalysisCatalog: (token: string, domainCode: string, connectionId: number, body: AnalysisCatalogConfiguration) => request<AnalysisCatalogConfiguration>(`/analysis-catalog/domains/${encodeURIComponent(domainCode)}?connection_id=${connectionId}`, token, { method: 'PUT', body: JSON.stringify(body) }),
+  resetAnalysisCatalog: (token: string, domainCode: string, connectionId: number) => request<AnalysisCatalogConfiguration>(`/analysis-catalog/domains/${encodeURIComponent(domainCode)}/reset?connection_id=${connectionId}`, token, { method: 'POST' }),
+  proposals: (token: string, limit = 10, offset = 0, statuses: string[] = [], domainCode?: string, connectionId?: number) => {
     const query = new URLSearchParams({ limit: String(limit), offset: String(offset) })
     statuses.forEach((status) => query.append('status', status))
     if (domainCode) query.set('domain_code', domainCode)
+    if (connectionId) query.set('connection_id', String(connectionId))
     return request<Page<BiProposal>>(`/copilot/proposals?${query.toString()}`, token)
   },
   proposal: (token: string, id: number) => request<BiProposal>(`/copilot/proposals/${id}`, token),
@@ -410,33 +422,32 @@ export const api = {
   semanticPreview: (token: string, id: number) => request<SemanticPreview>(`/copilot/proposals/${id}/semantic-preview`, token),
   semanticAdvice: (token: string, id: number, conceptCode: string) => request<SemanticAdvice[]>(`/copilot/proposals/${id}/semantic-advice?concept_code=${encodeURIComponent(conceptCode)}`, token),
   askSemanticAdvice: (token: string, id: number, body: { concept_code: string; question: string }) => request<SemanticAdvice>(`/copilot/proposals/${id}/semantic-advice`, token, { method: 'POST', body: JSON.stringify(body) }),
-  etlProposals: (token: string) => request<EtlProposalCatalog>('/etl/proposals', token),
+  etlProposals: (token: string, connectionId?: number) => request<EtlProposalCatalog>(`/etl/proposals${connectionId ? `?connection_id=${connectionId}` : ''}`, token),
   prepareEtlExecution: (token: string, body: { proposal_id: number; selected_kpi_codes: string[]; confirmation: boolean; analyst_comment: string }) => request<EtlExecution>('/etl/executions', token, { method: 'POST', body: JSON.stringify(body) }),
   runEtlExecution: (token: string, id: number) => request<EtlExecution>(`/etl/executions/${id}/run`, token, { method: 'POST' }),
   etlExecution: (token: string, id: number) => request<EtlExecution>(`/etl/executions/${id}`, token),
   verifyEtlCurrency: (token: string, id: number) => request<EtlExecution>(`/etl/executions/${id}/verify-currency`, token, { method: 'POST' }),
   retryEtlSpanishInterpretation: (token: string, id: number) => request<EtlExecution>(`/etl/executions/${id}/interpret-spanish`, token, { method: 'POST' }),
   applyEtlSpanishInterpretation: (token: string, id: number, body: { confirmation: boolean; analyst_comment: string; groups: Array<{ dimension: string; target_column: string; mappings: Array<{ original: string; label_es: string }> }> }) => request<EtlExecution>(`/etl/executions/${id}/interpret-spanish/apply`, token, { method: 'POST', body: JSON.stringify(body) }),
-  etlExecutions: (token: string, limit = 10, offset = 0) => request<Page<EtlExecution>>(`/etl/executions?limit=${limit}&offset=${offset}`, token),
-  analyticsExecutions: (token: string) => request<AnalyticsExecutionOption[]>('/analytics/executions', token),
-  analyticsDashboard: (token: string, filters: { executionId?: number; metricCode?: string; year?: string; territory?: string } = {}) => {
-    const query = new URLSearchParams()
+  etlExecutions: (token: string, limit = 10, offset = 0, connectionId?: number) => request<Page<EtlExecution>>(`/etl/executions?limit=${limit}&offset=${offset}${connectionId ? `&connection_id=${connectionId}` : ''}`, token),
+  analyticsExecutions: (token: string, connectionId?: number) => request<AnalyticsExecutionOption[]>(`/analytics/executions${connectionId ? `?connection_id=${connectionId}` : ''}`, token),
+  analyticsDashboard: (token: string, filters: { connectionId: number; executionId?: number; metricCode?: string; year?: string; territory?: string }) => {
+    const query = new URLSearchParams({ connection_id: String(filters.connectionId) })
     if (filters.executionId) query.set('execution_id', String(filters.executionId))
     if (filters.metricCode) query.set('metric_code', filters.metricCode)
     if (filters.year) query.set('year', filters.year)
     if (filters.territory) query.set('territory', filters.territory)
-    const suffix = query.size ? `?${query.toString()}` : ''
-    return request<AnalyticsDashboard>(`/analytics/dashboard${suffix}`, token)
+    return request<AnalyticsDashboard>(`/analytics/dashboard?${query.toString()}`, token)
   },
-  analyticsReport: (token: string, format: 'pdf' | 'xlsx', filters: { executionId?: number; metricCode?: string; year?: string; territory?: string; view: 'executive' | 'analyst' }) => {
-    const query = new URLSearchParams({ view: filters.view })
+  analyticsReport: (token: string, format: 'pdf' | 'xlsx', filters: { connectionId: number; executionId?: number; metricCode?: string; year?: string; territory?: string; view: 'executive' | 'analyst' }) => {
+    const query = new URLSearchParams({ connection_id: String(filters.connectionId), view: filters.view })
     if (filters.executionId) query.set('execution_id', String(filters.executionId))
     if (filters.metricCode) query.set('metric_code', filters.metricCode)
     if (filters.year) query.set('year', filters.year)
     if (filters.territory) query.set('territory', filters.territory)
     return requestFile(`/analytics/reports/${format}?${query.toString()}`, token)
   },
-  askAnalyticsCopilot: (token: string, body: { question: string; history: AnalyticsChatTurn[]; view: 'executive' | 'analyst'; execution_id: number; metric_code: string; year?: number; territory?: string }) => request<AnalyticsCopilotAnswer>('/analytics/copilot', token, { method: 'POST', body: JSON.stringify(body) }),
+  askAnalyticsCopilot: (token: string, body: { question: string; history: AnalyticsChatTurn[]; view: 'executive' | 'analyst'; data_connection_id: number; execution_id: number; metric_code: string; year?: number; territory?: string }) => request<AnalyticsCopilotAnswer>('/analytics/copilot', token, { method: 'POST', body: JSON.stringify(body) }),
   audit: (token: string, limit: number, offset: number) => request<Page<AuditEvent>>(`/audit-events?limit=${limit}&offset=${offset}`, token),
   testLlm: (token: string, id: number) => request<{ ok: boolean; message: string }>(`/llm-configurations/${id}/test`, token, { method: 'POST' }),
   saveLlmCredential: (token: string, id: number, apiKey: string) => request<{ credential_configured: boolean; message: string }>(`/llm-configurations/${id}/secret`, token, { method: 'PUT', body: JSON.stringify({ api_key: apiKey }) }),

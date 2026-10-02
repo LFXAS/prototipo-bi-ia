@@ -209,3 +209,94 @@ def test_assessment_keeps_sales_evidence_in_one_coherent_subgraph() -> None:
     assert "CommercialSales.InvoiceLine.LineTotal" in requirement["evidence"]
     assert "CommercialSales.InvoiceHeader.OrderDate" in requirement["evidence"]
     assert not any("Purchasing" in evidence for evidence in requirement["evidence"])
+
+
+def test_assessment_derives_sales_without_database_specific_names() -> None:
+    document = {
+        "schemas": [
+            {
+                "name": "Commerce",
+                "tables": [
+                    {
+                        "name": "OrderLines",
+                        "columns": [
+                            {"name": "OrderLineID", "data_type": "int"},
+                            {"name": "OrderID", "data_type": "int"},
+                            {"name": "StockItemID", "data_type": "int"},
+                            {"name": "Quantity", "data_type": "int"},
+                            {"name": "UnitPrice", "data_type": "decimal"},
+                        ],
+                        "foreign_keys": [
+                            {
+                                "columns": ["OrderID"],
+                                "referenced_schema": "Commerce",
+                                "referenced_table": "Orders",
+                                "referenced_columns": ["OrderID"],
+                            },
+                            {
+                                "columns": ["StockItemID"],
+                                "referenced_schema": "Inventory",
+                                "referenced_table": "StockItems",
+                                "referenced_columns": ["StockItemID"],
+                            },
+                        ],
+                    },
+                    {
+                        "name": "Orders",
+                        "columns": [
+                            {"name": "OrderID", "data_type": "int"},
+                            {"name": "OrderDate", "data_type": "date"},
+                            {"name": "CustomerID", "data_type": "int"},
+                        ],
+                        "foreign_keys": [],
+                    },
+                ],
+            },
+            {
+                "name": "Inventory",
+                "tables": [
+                    {
+                        "name": "StockItems",
+                        "columns": [
+                            {"name": "StockItemID", "data_type": "int"},
+                            {"name": "StockItemName", "data_type": "nvarchar"},
+                        ],
+                        "foreign_keys": [],
+                    },
+                    {
+                        "name": "StockItemHoldings",
+                        "columns": [
+                            {"name": "StockItemID", "data_type": "int"},
+                            {"name": "LastCostPrice", "data_type": "decimal"},
+                        ],
+                        "foreign_keys": [
+                            {
+                                "columns": ["StockItemID"],
+                                "referenced_schema": "Inventory",
+                                "referenced_table": "StockItems",
+                                "referenced_columns": ["StockItemID"],
+                            }
+                        ],
+                    },
+                ],
+            },
+        ]
+    }
+    business_request = {
+        "snapshot_hash": "c" * 64,
+        "goal": "Analizar ventas, unidades, costos y margen por producto y período.",
+        "questions": [],
+        "periodicity": {"code": "month", "label": "Mensual"},
+    }
+
+    result = assess_business_need(document, business_request)
+
+    requirements = {item["code"]: item for item in result["requirements"]}
+    assert requirements["goal:sales_amount"]["status"] == "derivable"
+    assert requirements["goal:sales_amount"]["resolution"] == (
+        "Puede calcularse de forma controlada como precio unitario × cantidad."
+    )
+    assert "Commerce.OrderLines.UnitPrice" in requirements["goal:sales_amount"]["evidence"]
+    assert "Commerce.OrderLines.Quantity" in requirements["goal:sales_amount"]["evidence"]
+    assert requirements["goal:unit_cost"]["status"] == "direct"
+    assert requirements["goal:gross_margin"]["status"] == "derivable"

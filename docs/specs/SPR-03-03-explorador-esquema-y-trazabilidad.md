@@ -1,5 +1,10 @@
 # SPR-03-03: experiencia del asistente y trazabilidad comprensible
 
+> **Evolución vigente (Sprint 6).** El explorador ya no depende de una fuente activa
+> global. La barra de contexto permite seleccionar una fuente habilitada y todas las
+> instantáneas y búsquedas se filtran por su `connection_id`; véase
+> [SPR-06-01](SPR-06-01-contexto-multifuente-sqlserver.md).
+
 - Estado: **implementado y verificado localmente; pendiente de validación del usuario**.
 - Pertenece a: [SPR-03-metadatos-y-propuesta-bi.md](SPR-03-metadatos-y-propuesta-bi.md).
 - Su definición visual e interactiva normativa se encuentra en [SPR-03-05-ui-ux-profesional.md](SPR-03-05-ui-ux-profesional.md).

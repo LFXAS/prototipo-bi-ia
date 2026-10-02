@@ -498,6 +498,56 @@ def test_controlled_relation_catalog_only_enables_unique_declared_target() -> No
     assert dimension["source_locked"] is True
 
 
+def test_audit_foreign_keys_are_not_business_paths_or_controlled_options() -> None:
+    document = {
+        "schemas": [
+            {
+                "name": "Sales",
+                "tables": [
+                    {
+                        "name": "OrderLines",
+                        "columns": [
+                            {"name": "OrderLineID", "data_type": "int", "primary_key": True},
+                            {"name": "LastEditedBy", "data_type": "int", "primary_key": False},
+                        ],
+                        "foreign_keys": [
+                            {
+                                "name": "FK_OrderLines_LastEditedBy",
+                                "columns": ["LastEditedBy"],
+                                "referenced_schema": "Application",
+                                "referenced_table": "People",
+                                "referenced_columns": ["PersonID"],
+                            }
+                        ],
+                    }
+                ],
+            },
+            {
+                "name": "Application",
+                "tables": [
+                    {
+                        "name": "People",
+                        "columns": [
+                            {"name": "PersonID", "data_type": "int", "primary_key": True},
+                            {"name": "FullName", "data_type": "nvarchar", "primary_key": False},
+                        ],
+                        "foreign_keys": [],
+                    }
+                ],
+            },
+        ]
+    }
+    semantic_map, _ = validated_semantic_candidates(
+        [semantic_response("Sales.OrderLines")], document
+    )
+
+    scope = derived_scope(document, semantic_map)
+
+    assert [item["ref"] for item in scope["tables"]] == ["Sales.OrderLines"]
+    assert scope["tables"][0]["foreign_keys"] == []
+    assert controlled_relation_catalog(scope) == []
+
+
 def test_controlled_relation_rejects_duplication_risk() -> None:
     option = {
         "eligible": False,
@@ -530,10 +580,49 @@ def test_catalog_is_derived_from_snapshot_metadata() -> None:
     assert sales["code"] == "ventas"
     assert sales["available"] is True
     assert questions["top_products"]["available"] is True
-    assert questions["territory_performance"]["available"] is True
+    assert questions["territory_performance"]["available"] is False
     assert "dimensions" not in sales
     assert set(periodicities) == {"day", "week", "month", "quarter", "year"}
     assert all(item["available"] is False for item in periodicities.values())
+
+
+def test_catalog_prefers_current_sales_evidence_over_purchase_and_archive_tables() -> None:
+    document = {
+        "schemas": [
+            {
+                "name": "Sales",
+                "tables": [
+                    {
+                        "name": "Orders",
+                        "columns": [
+                            {"name": "OrderDate", "data_type": "date"},
+                            {"name": "CustomerID", "data_type": "int"},
+                        ],
+                    },
+                    {
+                        "name": "Orders_Archive",
+                        "columns": [{"name": "OrderDate", "data_type": "date"}],
+                    },
+                ],
+            },
+            {
+                "name": "Purchasing",
+                "tables": [
+                    {
+                        "name": "PurchaseOrders",
+                        "columns": [{"name": "OrderDate", "data_type": "date"}],
+                    }
+                ],
+            },
+        ]
+    }
+
+    catalog = catalog_for_snapshot(document)[0]
+    evolution = next(item for item in catalog["questions"] if item["code"] == "sales_over_time")
+
+    assert "Sales.Orders" in evolution["evidence"]
+    assert not any("Purchasing" in item for item in evolution["evidence"])
+    assert not any("Archive" in item for item in evolution["evidence"])
 
 
 def test_catalog_labels_and_availability_are_configurable_without_changing_codes() -> None:
@@ -1207,7 +1296,7 @@ def test_analyst_adjustment_rejects_a_kpi_whose_measure_was_removed() -> None:
         )
 
 
-def test_reproducibility_evidence_detects_a_changed_saved_proposal() -> None:
+def test_reproducibility_difference_is_a_non_blocking_diagnostic() -> None:
     semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
     scope = derived_scope(DOCUMENT, semantic_map)
     proposal = expand_proposal_blueprint(valid_blueprint(), scope, semantic_map)
@@ -1224,8 +1313,9 @@ def test_reproducibility_evidence_detects_a_changed_saved_proposal() -> None:
         canonical_hash(DOCUMENT),
     )
 
-    assert evidence["verified"] is False
-    assert evidence["approval_safe"] is False
+    assert evidence["verified"] is True
+    assert evidence["approval_safe"] is True
+    assert evidence["compatibility_warning"] is True
     replay_check = next(check for check in evidence["checks"] if check["code"] == "proposal.replay")
     assert replay_check["passed"] is False
 
@@ -1254,7 +1344,7 @@ def test_previous_engine_version_is_a_non_blocking_compatibility_warning() -> No
     assert "no es comparable" in replay_check["detail"]
 
 
-def test_current_engine_still_blocks_a_non_reproducible_contract() -> None:
+def test_current_engine_keeps_valid_contract_safe_when_replay_differs() -> None:
     semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
     scope = derived_scope(DOCUMENT, semantic_map)
     proposal = expand_proposal_blueprint(valid_blueprint(), scope, semantic_map)
@@ -1271,7 +1361,8 @@ def test_current_engine_still_blocks_a_non_reproducible_contract() -> None:
         "sales-bi-v6",
     )
 
-    assert evidence["approval_safe"] is False
+    assert evidence["approval_safe"] is True
+    assert evidence["compatibility_warning"] is True
     replay_check = next(check for check in evidence["checks"] if check["code"] == "proposal.replay")
     assert replay_check["passed"] is False
 

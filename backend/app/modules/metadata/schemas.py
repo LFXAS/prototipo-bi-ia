@@ -48,6 +48,12 @@ class ActiveSourceRead(BaseModel):
     latest_snapshot: SnapshotSummary | None = None
 
 
+class SourceRead(BaseModel):
+    status: Literal["ready", "metadata_pending", "test_pending"]
+    connection: ActiveConnectionSummary
+    latest_snapshot: SnapshotSummary | None = None
+
+
 class TableSummary(BaseModel):
     schema_name: str
     table_name: str

@@ -1,1 +1,1 @@
-"""Futura introspeccion deterministica de AdventureWorks."""
+"""Introspección determinística de fuentes de datos registradas."""

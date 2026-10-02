@@ -20,6 +20,7 @@ from app.modules.metadata.schemas import (
     SnapshotCaptureResponse,
     SnapshotDetail,
     SnapshotSummary,
+    SourceRead,
     TableDetail,
     TableSummary,
 )
@@ -36,8 +37,20 @@ _secret_cipher = SecretCipher(settings.secrets_key_path)
 
 async def _active_connection(session: AsyncSession) -> DataConnection | None:
     return (
-        await session.execute(select(DataConnection).where(DataConnection.is_active.is_(True)))
+        await session.execute(
+            select(DataConnection)
+            .where(DataConnection.is_active.is_(True))
+            .order_by(DataConnection.id)
+            .limit(1)
+        )
     ).scalar_one_or_none()
+
+
+async def _enabled_connection_or_404(session: AsyncSession, connection_id: int) -> DataConnection:
+    connection = await session.get(DataConnection, connection_id)
+    if connection is None or not connection.is_active:
+        raise HTTPException(status_code=404, detail="La fuente seleccionada no está habilitada.")
+    return connection
 
 
 async def _latest_snapshot(
@@ -83,25 +96,93 @@ async def get_active_source(
     )
 
 
+@router.get("/sources", response_model=list[SourceRead])
+async def list_sources(
+    _: User = Depends(require_permission("metadata.read")),
+    session: AsyncSession = Depends(get_session),
+) -> list[SourceRead]:
+    """List every concurrently enabled source without exposing credentials."""
+    connections = list(
+        (
+            await session.execute(
+                select(DataConnection)
+                .where(DataConnection.is_active.is_(True))
+                .order_by(DataConnection.name, DataConnection.id)
+            )
+        ).scalars()
+    )
+    result: list[SourceRead] = []
+    for connection in connections:
+        snapshot = await _latest_snapshot(session, connection.id)
+        source_status = (
+            "test_pending"
+            if connection.last_test_status != "ok"
+            else "ready"
+            if snapshot is not None
+            else "metadata_pending"
+        )
+        result.append(
+            SourceRead(
+                status=source_status,
+                connection=ActiveConnectionSummary.model_validate(connection, from_attributes=True),
+                latest_snapshot=(
+                    SnapshotSummary.model_validate(snapshot, from_attributes=True)
+                    if snapshot
+                    else None
+                ),
+            )
+        )
+    return result
+
+
+@router.get("/sources/{connection_id}", response_model=SourceRead)
+async def get_source(
+    connection_id: int,
+    _: User = Depends(require_permission("metadata.read")),
+    session: AsyncSession = Depends(get_session),
+) -> SourceRead:
+    connection = await _enabled_connection_or_404(session, connection_id)
+    snapshot = await _latest_snapshot(session, connection.id)
+    source_status = (
+        "test_pending"
+        if connection.last_test_status != "ok"
+        else "ready"
+        if snapshot is not None
+        else "metadata_pending"
+    )
+    return SourceRead(
+        status=source_status,
+        connection=ActiveConnectionSummary.model_validate(connection, from_attributes=True),
+        latest_snapshot=(
+            SnapshotSummary.model_validate(snapshot, from_attributes=True) if snapshot else None
+        ),
+    )
+
+
 @router.post(
     "/metadata/snapshots",
     response_model=SnapshotCaptureResponse,
     status_code=status.HTTP_200_OK,
 )
 async def capture_metadata_snapshot(
+    connection_id: int | None = Query(default=None, gt=0),
     actor: User = Depends(require_permission("metadata.refresh")),
     session: AsyncSession = Depends(get_session),
 ) -> SnapshotCaptureResponse:
-    connection = await _active_connection(session)
+    connection = (
+        await _enabled_connection_or_404(session, connection_id)
+        if connection_id is not None
+        else await _active_connection(session)
+    )
     if connection is None:
         raise HTTPException(
             status_code=422,
-            detail="Active y pruebe una conexión de datos antes de actualizar metadatos.",
+            detail="Habilite y pruebe una conexión de datos antes de actualizar metadatos.",
         )
     if connection.last_test_status != "ok":
         raise HTTPException(
             status_code=422,
-            detail="La fuente activa debe superar nuevamente la prueba de sólo lectura.",
+            detail="La fuente seleccionada debe superar nuevamente la prueba de sólo lectura.",
         )
     lock_acquired = await session.scalar(select(func.pg_try_advisory_xact_lock(connection.id)))
     if not lock_acquired:
@@ -200,12 +281,23 @@ async def list_metadata_snapshots(
     session: AsyncSession = Depends(get_session),
     limit: int = Query(default=10, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
+    connection_id: int | None = Query(default=None, gt=0),
 ) -> PageRead[SnapshotSummary]:
-    total = (await session.scalar(select(func.count()).select_from(MetadataSnapshot))) or 0
+    total_statement = select(func.count()).select_from(MetadataSnapshot)
+    items_statement = select(MetadataSnapshot)
+    if connection_id is not None:
+        total_statement = total_statement.where(
+            MetadataSnapshot.data_connection_id == connection_id
+        )
+        items_statement = items_statement.where(
+            MetadataSnapshot.data_connection_id == connection_id
+        )
+    total = (await session.scalar(total_statement)) or 0
     items = (
         await session.execute(
-            select(MetadataSnapshot)
-            .order_by(MetadataSnapshot.captured_at.desc(), MetadataSnapshot.id.desc())
+            items_statement.order_by(
+                MetadataSnapshot.captured_at.desc(), MetadataSnapshot.id.desc()
+            )
             .limit(limit)
             .offset(offset)
         )
