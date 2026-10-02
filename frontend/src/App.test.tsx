@@ -596,7 +596,7 @@ describe('App', () => {
       if (url.endsWith('/copilot/needs/viability') && init?.method === 'POST') return { ok: true, status: 200, json: async () => ({ assessment_hash: 'd'.repeat(64), requirements: [{ code: 'question:sales_over_time', label: 'Evolución de ventas en el tiempo', request_text: 'Compara períodos.', status: 'derivable', evidence: ['Sales.SalesOrderDetail.LineTotal', 'Sales.SalesOrderHeader.OrderDate', 'Ruta declarada: Sales.SalesOrderDetail → Sales.SalesOrderHeader'], resolution: 'Puede resolverse con relaciones declaradas.' }, { code: 'goal:sales_amount', label: 'Ventas o ingresos', request_text: 'Analizar las ventas mensuales por producto y cliente.', status: 'direct', evidence: ['Sales.SalesOrderDetail.LineTotal'], resolution: 'Puede resolverse directamente.' }, { code: 'goal:definition', label: 'Definición de venta neta', request_text: 'Venta neta', status: 'ambiguous', evidence: ['Sales.SalesOrderDetail.LineTotal', 'Sales.SalesOrderHeader.TotalDue'], resolution: 'Confirme qué componentes incluye la venta neta.' }], counts: { direct: 1, derivable: 1, ambiguous: 1, unavailable: 0 }, requires_acknowledgement: ['goal:definition'], can_continue: true, summary: 'La necesidad tiene respaldo suficiente para continuar, con decisiones pendientes.' }) }
       if (url.endsWith('/copilot/proposals/12/relation-options')) return { ok: true, status: 200, json: async () => ({ proposal_id: 12, dimension_names: ['dim_producto'], options: [{ option_id: 'r'.repeat(64), left_table: 'Sales.SalesOrderDetail', right_table: 'Production.Product', left_columns: ['ProductID'], right_columns: ['ProductID'], left_types: ['int'], right_types: ['int'], cardinality: 'many_to_one', target_unique: true, nullable_source: false, duplication_risk: false, eligible: true, guidance: 'Relación declarada hacia una clave única; conserva la granularidad.' }, { option_id: 'x'.repeat(64), left_table: 'Sales.SalesOrderDetail', right_table: 'Sales.SpecialOfferProduct', left_columns: ['ProductID'], right_columns: ['ProductID'], left_types: ['int'], right_types: ['int'], cardinality: 'unknown', target_unique: false, nullable_source: false, duplication_risk: true, eligible: false, guidance: 'No se puede seleccionar: la clave destino no es única.' }] }) }
       if (url.endsWith('/copilot/proposals/12/revisions') && init?.method === 'POST') return { ok: true, status: 201, json: async () => revisedProposal }
-      if (url.endsWith('/copilot/proposals/11/verify') && init?.method === 'POST') return { ok: true, status: 200, json: async () => ({ proposal_id: 11, verified: true, approval_safe: true, compatibility_warning: false, approval_invalidated: false, checks: [{ code: 'snapshot.integrity', label: 'Integridad de los metadatos', passed: true, detail: 'La huella coincide con la instantánea estructural persistida.' }, { code: 'proposal.replay', label: 'Reproducción determinística del contrato', passed: true, detail: 'Las decisiones persistidas reconstruyen exactamente el mismo contrato.' }], snapshot_hash: 'b'.repeat(64), proposal_hash: 'c'.repeat(64), replay_hash: 'c'.repeat(64), validated_reference_count: 1, rejected_reference_count: 0, validation_errors: 0, validation_warnings: 0, pending_validations: ['Contraste de cifras después de materializar el datamart.'] }) }
+      if (url.endsWith('/copilot/proposals/11/verify') && init?.method === 'POST') return { ok: true, status: 200, json: async () => ({ proposal_id: 11, verified: false, approval_safe: true, compatibility_warning: true, approval_invalidated: true, checks: [{ code: 'snapshot.integrity', label: 'Integridad de los metadatos', passed: true, detail: 'La huella coincide con la instantánea estructural persistida.' }, { code: 'proposal.replay', label: 'Reproducción determinística del contrato', passed: false, detail: 'La reconstrucción actual difiere de la huella persistida.' }], snapshot_hash: 'b'.repeat(64), proposal_hash: 'c'.repeat(64), replay_hash: 'd'.repeat(64), validated_reference_count: 1, rejected_reference_count: 0, validation_errors: 0, validation_warnings: 0, pending_validations: ['Contraste de cifras después de materializar el datamart.'] }) }
       if (url.endsWith('/copilot/proposals/11/invalidate') && init?.method === 'POST') return { ok: true, status: 200, json: async () => ({ ...previousProposal, status: 'invalidated', review_comment: 'La versión contiene una asociación semántica que debe corregirse.' }) }
       if (url.includes('/copilot/proposals/12/semantic-advice?')) return { ok: true, status: 200, json: async () => [] }
       if (url.endsWith('/copilot/proposals/12/semantic-advice') && init?.method === 'POST') return { ok: true, status: 201, json: async () => ({ id: 1, proposal_id: 12, concept_code: 'sales_reason', question: '¿Qué riesgo tendría incluir este concepto en el datamart?', response_document: { conclusion: 'exclude', answer_es: 'Puede existir más de un motivo por pedido.', evidence: [{ technical_ref: 'Sales.SalesReason', detail_es: 'La referencia existe y requiere una relación intermedia.' }], risk_es: 'Podría multiplicar las ventas.', include_consequence_es: 'Requiere una tabla puente.', exclude_consequence_es: 'No se analizarán motivos.', recommended_action_es: 'Mantener excluido salvo necesidad expresa.', confidence: 'medium', selection_changed: false }, provider_kind: 'groq-cloud', model_id: 'openai/gpt-oss-120b', created_by_label: 'Administradora', created_at: '2026-09-23T10:00:00Z' }) }
@@ -697,7 +697,10 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Verificar evidencia' }))
     expect(await screen.findByText('Integridad de los metadatos')).toBeInTheDocument()
     expect(screen.getByText('Reproducción determinística del contrato')).toBeInTheDocument()
-    expect(screen.getByText(/superó las validaciones disponibles/i)).toBeInTheDocument()
+    expect(screen.getByText(/no cambia el estado de la propuesta/i)).toBeInTheDocument()
+    expect(screen.queryByText('Validaciones que se habilitarán posteriormente')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Retirar aprobación' })).toBeInTheDocument()
+    expect(fetchMock.mock.calls.some(([input]) => String(input).endsWith('/copilot/proposals/11/invalidate'))).toBe(false)
     fireEvent.change(screen.getByLabelText('Motivo'), { target: { value: 'La versión contiene una asociación semántica que debe corregirse.' } })
     fireEvent.click(screen.getByRole('button', { name: 'Retirar aprobación' }))
     expect(await screen.findByText(/Se retiró la aprobación de la versión #11/)).toBeInTheDocument()
@@ -767,6 +770,9 @@ describe('App', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Diseño y transformación BI' }))
     fireEvent.click(screen.getByRole('button', { name: 'Datamart de ventas' }))
 
+    expect(await screen.findByText('Datamart vigente: ejecución #5, propuesta #22. Es el mismo expediente publicado en Analítica de ventas.')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Conciliación OLTP–datamart' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Volver a propuestas' }))
     expect(await screen.findByText('Sugerencia automática, decisión humana')).toBeInTheDocument()
     expect(screen.getByText('Versión #21 seleccionada')).toBeInTheDocument()
     expect(screen.getByText('Ya ejecutada · expediente #5')).toBeInTheDocument()
@@ -847,8 +853,8 @@ describe('App', () => {
     render(<App />)
     fireEvent.click(await screen.findByRole('button', { name: 'Diseño y transformación BI' }))
     fireEvent.click(screen.getByRole('button', { name: 'Datamart de ventas' }))
-    fireEvent.click(await screen.findByRole('button', { name: 'Abrir expediente #9' }))
 
+    expect(await screen.findByText('Datamart vigente: ejecución #9, propuesta #73. Es el mismo expediente publicado en Analítica de ventas.')).toBeInTheDocument()
     expect(await screen.findByRole('heading', { name: 'Datamart materializado y conciliado' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Conciliación OLTP–datamart' })).toBeInTheDocument()
     expect(screen.getByText('Revisión publicada')).toBeInTheDocument()
@@ -904,9 +910,7 @@ describe('App', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Diseño y transformación BI' }))
     fireEvent.click(screen.getByRole('button', { name: 'Datamart de ventas' }))
 
-    expect(await screen.findByRole('heading', { name: 'No hay propuestas habilitadas para una ejecución nueva' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Expedientes recientes' })).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Abrir expediente #6' }))
+    expect(await screen.findByText('Datamart vigente: ejecución #6, propuesta #61. Es el mismo expediente publicado en Analítica de ventas.')).toBeInTheDocument()
     expect(await screen.findByRole('heading', { name: 'Expediente histórico conservado' })).toBeInTheDocument()
     expect(screen.getByText('Sólo lectura')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Materializar y cargar datamart' })).not.toBeInTheDocument()

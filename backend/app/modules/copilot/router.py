@@ -1530,16 +1530,6 @@ async def verify_proposal(
         snapshot.content_hash,
         proposal.prompt_version,
     )
-    invalidated = proposal.status == "approved" and not bool(evidence["approval_safe"])
-    if invalidated:
-        proposal.status = "invalidated"
-        proposal.review_comment = (
-            "Aprobación retirada automáticamente: la versión no supera las reglas "
-            "determinísticas vigentes."
-        )
-        proposal.reviewed_by_user_id = actor.id
-        proposal.reviewed_by_label = f"{actor.full_name} <{actor.email}>"
-        proposal.reviewed_at = datetime.now(UTC)
     await add_audit_event(
         session,
         actor.id,
@@ -1548,13 +1538,14 @@ async def verify_proposal(
         str(proposal.id),
         {
             "verified": evidence["verified"],
-            "approval_invalidated": invalidated,
+            "approval_safe": evidence["approval_safe"],
+            "status_unchanged": True,
             "snapshot_hash": snapshot.content_hash[:12],
             "proposal_hash": str(evidence["proposal_hash"])[:12],
         },
     )
     await session.commit()
-    return {"proposal_id": proposal.id, "approval_invalidated": invalidated, **evidence}
+    return {"proposal_id": proposal.id, "approval_invalidated": False, **evidence}
 
 
 @router.post(

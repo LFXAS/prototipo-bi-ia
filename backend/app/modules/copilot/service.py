@@ -660,15 +660,12 @@ def verify_proposal_evidence(
     rejected_reference_count = len(
         [item for item in semantic_map.get("rejected_references", []) if isinstance(item, dict)]
     )
-    replay_blocking = same_engine_version and not deterministic_replay
-    validation_blocking = same_engine_version and not validation_consistent
     approval_safe = (
-        snapshot_integrity
-        and bool(current_validation.get("valid"))
-        and not replay_blocking
-        and not validation_blocking
+        snapshot_integrity and bool(current_validation.get("valid")) and references_valid
     )
-    compatibility_warning = not same_engine_version
+    compatibility_warning = (
+        not same_engine_version or not validation_consistent or not deterministic_replay
+    )
     checks = [
         {
             "code": "snapshot.integrity",
@@ -688,18 +685,24 @@ def verify_proposal_evidence(
         {
             "code": "validation.consistency",
             "label": "Consistencia del contrato BI",
-            "passed": validation_consistent if same_engine_version else False,
+            "passed": bool(current_validation.get("valid")),
             "detail": (
                 (
-                    "La propuesta fue creada con "
-                    f"{proposal_prompt_version} y el motor actual es {PROMPT_VERSION}; "
-                    "la comparación histórica se conserva como advertencia de compatibilidad."
-                )
-                if not same_engine_version
-                else (
-                    "La validación recalculada coincide con la evidencia guardada: "
+                    "La validación vigente detectó "
                     f"{current_validation.get('errors', 0)} errores y "
                     f"{current_validation.get('warnings', 0)} advertencias."
+                )
+                if not bool(current_validation.get("valid"))
+                else (
+                    "La validación vigente conserva un contrato válido: "
+                    f"{current_validation.get('errors', 0)} errores y "
+                    f"{current_validation.get('warnings', 0)} advertencias."
+                    + (
+                        " La evidencia histórica difiere de la reconstrucción actual y "
+                        "se conserva como advertencia de compatibilidad."
+                        if not validation_consistent
+                        else ""
+                    )
                 )
             ),
         },
@@ -716,7 +719,11 @@ def verify_proposal_evidence(
                 else (
                     "Las decisiones persistidas reconstruyen exactamente el mismo contrato."
                     if deterministic_replay
-                    else "El contrato no pudo reconstruirse de forma idéntica."
+                    else (
+                        "La reconstrucción actual difiere de la huella persistida. La "
+                        "diferencia se conserva como advertencia y no sustituye la "
+                        "validación estructural vigente."
+                    )
                 )
             ),
         },

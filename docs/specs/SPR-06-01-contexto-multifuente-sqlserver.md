@@ -174,6 +174,7 @@ cada conexión parte de la línea base y el analista decide si incorpora orienta
 | MS-E2E-06 | Exportar PDF y Excel desde cada ejecución. | Archivos abiertos y datos de cabecera verificados. | Cada reporte identifica únicamente su fuente, ejecución, filtros y métricas. |
 | MS-E2E-07 | Consultar al copiloto analítico en cada fuente. | Pregunta, respuesta y procedencia. | La consulta usa el expediente activo y no incorpora categorías de la otra base. |
 | MS-E2E-08 | Escribir “territorio líder” sin seleccionar manualmente un territorio. | Alcance, Top 5 y denominador de cada fuente. | La plataforma resuelve el líder desde el ranking conciliado vigente antes de ejecutar la agregación segura. |
+| MS-E2E-09 | Abrir y verificar propuestas históricas con ETL conciliado. | Estados antes/después, expediente y cabecera de analítica. | La consulta no retira aprobaciones; Datamart y Analítica conservan la misma pareja ejecución–propuesta. |
 
 ## Evidencia integral del 1 de octubre de 2026
 
@@ -209,7 +210,7 @@ limpió el tablero y sólo se publicaron la ejecución, productos, territorios y
 la fuente confirmada por la API. También se automatizó una respuesta tardía de la fuente
 anterior y se comprobó que no puede sustituir el tablero vigente.
 
-La ejecución formal de MS-E2E-01 a MS-E2E-08, incluidas las capturas, conciliaciones,
+La ejecución formal de MS-E2E-01 a MS-E2E-09, incluidas las capturas, conciliaciones,
 exportaciones y defectos corregidos, se conserva en
 `docs/testing/Informe_pruebas_integrales_multifuente.pdf`. El informe limita la afirmación
 de universalidad al alcance demostrado: dos fuentes SQL Server del dominio ventas.

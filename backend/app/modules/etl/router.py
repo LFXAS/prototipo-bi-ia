@@ -4,7 +4,7 @@ import asyncio
 from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -299,7 +299,13 @@ async def list_eligible_proposals(
     _: User = Depends(require_permission("etl.executions.read")),
     session: AsyncSession = Depends(get_session),
 ) -> EtlProposalCatalogRead:
-    statement = select(BiProposal).where(BiProposal.status == "approved")
+    proposals_with_executions = select(EtlExecution.proposal_id)
+    statement = select(BiProposal).where(
+        or_(
+            BiProposal.status == "approved",
+            BiProposal.id.in_(proposals_with_executions),
+        )
+    )
     if connection_id is not None:
         snapshot_ids = select(MetadataSnapshot.id).where(
             MetadataSnapshot.data_connection_id == connection_id

@@ -1296,7 +1296,7 @@ def test_analyst_adjustment_rejects_a_kpi_whose_measure_was_removed() -> None:
         )
 
 
-def test_reproducibility_evidence_detects_a_changed_saved_proposal() -> None:
+def test_reproducibility_difference_is_a_non_blocking_diagnostic() -> None:
     semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
     scope = derived_scope(DOCUMENT, semantic_map)
     proposal = expand_proposal_blueprint(valid_blueprint(), scope, semantic_map)
@@ -1313,8 +1313,9 @@ def test_reproducibility_evidence_detects_a_changed_saved_proposal() -> None:
         canonical_hash(DOCUMENT),
     )
 
-    assert evidence["verified"] is False
-    assert evidence["approval_safe"] is False
+    assert evidence["verified"] is True
+    assert evidence["approval_safe"] is True
+    assert evidence["compatibility_warning"] is True
     replay_check = next(check for check in evidence["checks"] if check["code"] == "proposal.replay")
     assert replay_check["passed"] is False
 
@@ -1343,7 +1344,7 @@ def test_previous_engine_version_is_a_non_blocking_compatibility_warning() -> No
     assert "no es comparable" in replay_check["detail"]
 
 
-def test_current_engine_still_blocks_a_non_reproducible_contract() -> None:
+def test_current_engine_keeps_valid_contract_safe_when_replay_differs() -> None:
     semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
     scope = derived_scope(DOCUMENT, semantic_map)
     proposal = expand_proposal_blueprint(valid_blueprint(), scope, semantic_map)
@@ -1360,7 +1361,8 @@ def test_current_engine_still_blocks_a_non_reproducible_contract() -> None:
         "sales-bi-v6",
     )
 
-    assert evidence["approval_safe"] is False
+    assert evidence["approval_safe"] is True
+    assert evidence["compatibility_warning"] is True
     replay_check = next(check for check in evidence["checks"] if check["code"] == "proposal.replay")
     assert replay_check["passed"] is False
 

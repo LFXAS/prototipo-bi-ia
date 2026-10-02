@@ -1018,10 +1018,6 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
     try {
       const result = await api.verifyProposal(token, proposal.id)
       setVerification(result)
-      if (result.approval_invalidated && proposal.status === 'approved') {
-        setProposal({ ...proposal, status: 'invalidated', review_comment: 'Aprobación retirada automáticamente porque la versión no supera las reglas vigentes.' })
-        await refreshHistory(selectedDomainCode, 0, historyFilter)
-      }
       setFeedback({
         kind: result.approval_safe ? (result.compatibility_warning ? 'warning' : 'success') : 'error',
         message: result.approval_safe
@@ -1305,7 +1301,7 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
       <div className="proposal-heading"><div><p className="eyebrow">Evidencia de validación técnica</p><h2>Validación estructural de la propuesta</h2></div><button className="secondary" disabled={verifying} onClick={() => void verifyEvidence()}>{verifying ? 'Verificando…' : 'Verificar evidencia'}</button></div>
       <p>Comprueba metadatos, referencias, contrato y reproducción determinística de la versión seleccionada. No vuelve a llamar al LLM, no consulta filas y no ejecuta el ETL.</p>
       <p className="notice">Esta etapa comprueba la estructura, no la igualdad de filas, unidades o importes. La conciliación OLTP–datamart se añadirá automáticamente al expediente después de materializar y ejecutar el ETL.</p>
-      {verification && <><div className="evidence-grid">{verification.checks.map((check) => { const compatibilityOnly = verification.compatibility_warning && ['validation.consistency', 'proposal.replay'].includes(check.code); return <article className={check.passed ? 'passed' : compatibilityOnly ? 'warning' : 'failed'} key={check.code}><span>{check.passed ? 'Cumple' : compatibilityOnly ? 'Compatibilidad' : 'Revisar'}</span><h3>{check.label}</h3><p>{check.detail}</p></article> })}</div>{verification.compatibility_warning && <p className="notice warning">La propuesta pertenece a una versión anterior del motor. Esta diferencia se conserva para trazabilidad, pero no invalida una propuesta sin errores bloqueantes.</p>}<details className="technical-details"><summary>Validaciones que se habilitarán posteriormente</summary><p>Estas comprobaciones aparecerán cuando exista el incremento correspondiente:</p><ul>{verification.pending_validations.map((item) => <li key={item}>{item}</li>)}</ul></details><p className="field-help">Huella de propuesta: {verification.proposal_hash.slice(0, 12)} · Huella de reejecución: {verification.replay_hash.slice(0, 12) || 'no disponible'}</p></>}
+      {verification && <><div className="evidence-grid">{verification.checks.map((check) => { const compatibilityOnly = verification.compatibility_warning && ['validation.consistency', 'proposal.replay'].includes(check.code); return <article className={check.passed ? 'passed' : compatibilityOnly ? 'warning' : 'failed'} key={check.code}><span>{check.passed ? 'Cumple' : compatibilityOnly ? 'Compatibilidad' : 'Revisar'}</span><h3>{check.label}</h3><p>{check.detail}</p></article> })}</div>{verification.compatibility_warning && <p className="notice warning">La reconstrucción difiere de la evidencia histórica. Se conserva para trazabilidad, pero no cambia el estado de la propuesta ni invalida un contrato que supera las reglas estructurales vigentes.</p>}<p className="field-help">Huella de propuesta: {verification.proposal_hash.slice(0, 12)} · Huella de reconstrucción: {verification.replay_hash.slice(0, 12) || 'no disponible'}</p></>}
     </section>}
     <section className="attempt-history"><div className="history-heading"><div><h2>Versiones generadas</h2><p className="field-help">Abra un resultado conservado para revisarlo o aprobarlo sin volver a ejecutar el modelo.</p></div><label>Mostrar<select value={historyFilter} onChange={(event) => { setHistoryFilter(event.target.value); setHistoryOffset(0) }}>{historyFilterOptions.map((item) => <option value={item.value} key={item.value}>{item.label}</option>)}</select></label></div>{historyPage.items.length > 0 ? <><div className="table-wrap"><table><thead><tr><th>Versión</th><th>Necesidad</th><th>Proveedor y modelo</th><th>Estado</th><th>Fecha</th><th>Resultado</th></tr></thead><tbody>{historyPage.items.map((item) => <tr className={proposal?.id === item.id ? 'selected-attempt' : ''} key={item.id}><td>#{item.id}{item.source_proposal_id && <small>Derivada de #{item.source_proposal_id}</small>}</td><td>{item.business_goal}</td><td>{providerLabel(item.provider_kind)} / {item.model_id}</td><td>{proposalStatusLabels[item.status]}</td><td>{new Date(item.created_at).toLocaleString('es-EC')}</td><td><button className="secondary compact" disabled={proposal?.id === item.id} onClick={() => selectSavedProposal(item)}>{proposal?.id === item.id ? 'Seleccionada' : 'Abrir resultado'}</button></td></tr>)}</tbody></table></div><Pagination page={historyPage} onChange={setHistoryOffset} /></> : <p className="notice">No hay versiones en este estado para el dominio seleccionado.</p>}</section>
   </>
@@ -1412,14 +1408,34 @@ function SalesDatamartPage({ sourceId, token, canWrite, navigate }: { sourceId: 
   const [running, setRunning] = useState(false)
   const [execution, setExecution] = useState<EtlExecution | null>(null)
   const [feedback, setFeedback] = useState<{ kind: 'success' | 'warning' | 'error'; message: string } | null>(null)
+  const workspaceInitialized = useRef(false)
 
   const loadWorkspace = useCallback(async () => {
     try {
       const [available, history] = await Promise.all([api.etlProposals(token, sourceId || undefined), api.etlExecutions(token, 5, 0, sourceId || undefined)])
       setCatalog(available)
       setExecutions(history)
+      if (!workspaceInitialized.current) {
+        workspaceInitialized.current = true
+        const published = history.items.find((item) => ['succeeded', 'validation_warning'].includes(item.status))
+        const publishedProposal = published
+          ? [...available.items, ...available.blocked_items].find((item) => item.proposal_id === published.proposal_id)
+          : undefined
+        if (published && publishedProposal) {
+          const persistedSelection = stringArrayValue(published.selection_document.selected_kpi_codes)
+          setSelectedId(published.proposal_id)
+          setSelectedKpis(persistedSelection.length ? persistedSelection : publishedProposal.kpi_recipes.map((item) => item.code))
+          setExecution(published)
+          setStep(5)
+          setFeedback({
+            kind: published.status === 'validation_warning' || !publishedProposal.eligible ? 'warning' : 'success',
+            message: `Datamart vigente: ejecución #${published.id}, propuesta #${published.proposal_id}. Es el mismo expediente publicado en Analítica de ventas.`,
+          })
+          return
+        }
+      }
       const proposedId = available.recommended_proposal_id ?? available.items[0]?.proposal_id ?? null
-      setSelectedId((current) => current && available.items.some((item) => item.proposal_id === current) ? current : proposedId)
+      setSelectedId((current) => current && [...available.items, ...available.blocked_items].some((item) => item.proposal_id === current) ? current : proposedId)
     } catch (caught) {
       setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible preparar el espacio de trabajo.' })
     }
