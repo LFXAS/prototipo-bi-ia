@@ -6,12 +6,24 @@ from app.modules.analytics.service import (
     _derived_recipe_value,
     _display_name_for_recipe,
     _display_unit_for_recipe,
+    _order_scope_note,
     _remember_resolved_measure,
     _resolve_kpi_values,
     _unique_recipes,
     execution_has_materialized_data,
     run_safe_aggregate_query,
 )
+
+
+def test_order_based_dashboard_discloses_non_invoiced_scope() -> None:
+    metadata = {
+        "schemas": [{"name": "Sales", "tables": [{"name": "OrderLines"}, {"name": "InvoiceLines"}]}]
+    }
+    order_proposal = {"grain": {"source_tables": ["Sales.OrderLines"]}}
+    invoice_proposal = {"grain": {"source_tables": ["Sales.InvoiceLines"]}}
+
+    assert "no equivalen" in _order_scope_note(order_proposal, metadata)
+    assert _order_scope_note(invoice_proposal, metadata) == ""
 
 
 def test_financial_metrics_resolve_in_order_with_explicit_denominators() -> None:
@@ -120,6 +132,17 @@ def test_legacy_average_of_line_amount_is_not_labeled_as_unit_price() -> None:
             "operation": "average",
             "measure": "Importe de ventas neto",
         },
+    }
+
+    assert _display_name_for_recipe(recipe) == "Importe promedio por línea de venta"
+
+
+def test_legacy_average_of_line_amount_is_not_labeled_as_transaction_average() -> None:
+    recipe = {
+        "code": "AVG_TRANSACTION",
+        "name": "Importe promedio por transacción",
+        "kind": "aggregate",
+        "recipe": {"operation": "average", "measure": "importe_venta_linea"},
     }
 
     assert _display_name_for_recipe(recipe) == "Importe promedio por línea de venta"

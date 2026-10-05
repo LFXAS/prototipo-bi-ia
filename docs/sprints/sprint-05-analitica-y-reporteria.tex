@@ -62,8 +62,8 @@ pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}}
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & INF-SPR-05 \\
-    Versión & 1.2.3 \\
-    Periodo de referencia & 24 al 29 de septiembre de 2026 \\
+    Versión & 1.3.0 \\
+    Periodo de referencia & 24 de septiembre al 3 de octubre de 2026 \\
     Rama de trabajo & \file{feature/wizard-history-readability} \\
     Estado & Incremento funcional, evidencia y documentación completados localmente \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
@@ -195,7 +195,12 @@ El proveedor puede explicar y resumir; no calcula cifras de autoridad. Los indic
 
 La necesidad se clasifica antes de generar como directa, derivable, ambigua o no disponible. La matriz de cobertura impide descartar silenciosamente costos, rentabilidad u otro requisito solicitado. Las medidas directas muestran su columna; las calculadas muestran fórmula; el grano conserva una fila por detalle. Costos, descuento monetario, margen bruto, margen porcentual, venta por unidad y costo por unidad sólo se materializan cuando existen fuentes y rutas verificadas.
 
-HBI-014 vuelve operativo el término \emph{derivable}: significa resolución automática, no trabajo pendiente para el analista. La interfaz distingue relación y fórmula, anticipa que el motor las aplicará y advierte que una omisión bloqueará la aprobación. La evaluación se obtiene antes del LLM y es idéntica con Claude, Groq u otro proveedor. La matriz posterior identifica cada salida resuelta automáticamente y conserva fórmula o ruta.
+HBI-014 vuelve operativo el término \emph{derivable}: identifica una fórmula o ruta
+controlada que el motor puede aplicar, no una garantía de calidad de datos. La interfaz
+distingue relación y fórmula y advierte que una omisión bloqueará la aprobación.
+La revisión del 3 de octubre combina análisis previo de IA y reglas determinísticas
+comunes a proveedores. La matriz posterior exige una salida efectivamente calculable;
+un margen no queda cubierto por la mera presencia de ventas y costos.
 
 La revisión de la instantánea 2 comparó con SQL Server 23 columnas críticas y siete relaciones entre detalle, cabecera, cliente, persona o tienda, territorio, producto y categorías. Los metadatos coincidieron, pero la primera evidencia de viabilidad mezclaba \file{Purchasing.PurchaseOrderDetail.LineTotal} con ventas por una coincidencia nominal. El selector se corrigió para elegir un subgrafo coherente con la necesidad completa: ventas, fecha, cliente y territorio parten ahora de \file{Sales.SalesOrderDetail}, y el costo usa una ruta FK demostrable hacia \file{Production.Product.StandardCost}.
 
@@ -233,6 +238,48 @@ La interacción de barras y territorios también se ajustó para espacios reduci
 
 \section{Evidencia cuantitativa del cierre}
 
+\subsection{Adenda de semántica gerencial: 3 de octubre}
+
+La auditoría operativa amplió la regresión sin sustituir el cierre histórico. En
+AdventureWorks se rechazó la equivalencia entre \file{AVG(LineTotal)} y promedio por
+transacción. La propuesta 98 y la ejecución 14 usan importe total dividido por pedidos
+distintos: 109846381,4250 entre 31465, equivalente a 3491,07 en pantalla. Se conciliaron
+121317 líneas y nueve KPI; el filtro 2014 se recalculó coherentemente.
+
+En WideWorldImporters, el expediente 13 representa pedidos registrados, no facturación
+emitida. La propuesta 114 y la ejecución 15 construyeron otro datamart con 228265 líneas
+de factura, 70510 facturas y 198043439,45 de importe con impuesto. Son seis KPI
+conciliados y un promedio de 2808,73 por factura. Para 2015, la pantalla y Claude
+coincidieron en 62090220,81, 22250 facturas y 2790,57 por documento. No se afirmó cobro
+ni se asignó moneda sin evidencia.
+
+La lectura gerencial exige identificar evento, unidad, numerador y denominador. Máximo
+de una línea no demuestra producto líder; promedio de una línea no demuestra promedio
+por cliente. La personalización retiró esos KPI de la propuesta de prueba y las reglas
+bilingües bloquean su reaparición. Un último costo registrado tampoco demuestra margen
+histórico; una conciliación aritmética no resuelve esa limitación semántica.
+
+El copiloto incorpora el evento comercial y una salvedad determinística cuando se
+consulta un expediente de pedidos. El reporte de auditoría conserva los casos QA-01
+a QA-16, capturas y contraste SQL de sólo lectura. La evidencia demuestra coherencia
+en estos escenarios, no infalibilidad del texto libre del proveedor. La revisión
+gerencial sigue siendo necesaria, especialmente ante redondeos y afirmaciones causales.
+
+La asesoría previa probada después de estos ETL añadió otra precaución: Claude afirmó
+en una sugerencia bloqueada que \file{ExtendedPrice} excluía impuestos y, en otra
+revisión, presentó \file{UnitPrice} como costo. Se corrigieron el contrato de asesoría
+y la comprobación de roles conocidos; los textos libres se rotulan como propuestas
+para revisar, no como hechos financieros certificados. Este ensayo no recalculó el
+dashboard ni creó una carga: sus resultados corresponden a la puerta de necesidades.
+
+La reformulación AW permaneció bloqueada por una capacidad sin validador, pero la
+revisión del texto propio del analista pudo continuar tras aceptar cinco límites.
+WWI requirió aceptar cuatro. Se habilitó generar sin usar ese botón. Por tanto, no
+se atribuye a estas revisiones un resultado analítico nuevo: las cifras de esta
+adenda proceden exclusivamente de los expedientes 14 y 15 previamente conciliados.
+
+\subsection{Referencia histórica del cierre}
+
 \begin{tabularx}{\textwidth}{@{}p{0.38\textwidth}X@{}}
   \toprule
   Control & Resultado \\
@@ -263,6 +310,17 @@ La interacción de barras y territorios también se ajustó para espacios reduci
 \end{itemize}
 
 \section{Pruebas y verificación}
+
+La matriz siguiente conserva los resultados del cierre previo. La evidencia operativa
+nueva y la adenda de necesidades se registran separadamente en
+\path{docs/testing/Auditoria_operativa_2026-10-03.pdf}, evitando presentar un ETL
+anterior como prueba de una función incorporada después.
+
+La regresión acumulativa del 3 de octubre aprobó \file{make test}: 231 casos backend
+y 34 frontend, acompañados por Ruff, formato, Mypy, ESLint y compilación
+TypeScript/Vite. Se observó sólo un aviso de deprecación Starlette/AnyIO. Este corte
+posterior no reemplaza las cifras históricas de la matriz siguiente ni implica un
+nuevo ETL del asesor de necesidades.
 
 \begin{tabularx}{\textwidth}{@{}p{0.30\textwidth}X@{}}
   \toprule
@@ -313,6 +371,7 @@ Este informe se sustenta en las especificaciones \file{SPR-05-01} a \file{SPR-05
   Campo & Valor \\
   \midrule
   Código & INF-SPR-05 \\
+  Revisión documental & 1.3.0; 03-10-2026: denominadores, pedido/factura, impuestos y límites de la explicación IA. \\
   Fuente editable & \file{docs/sprints/sprint-05-analitica-y-reporteria.tex} \\
   PDF oficial & \file{docs/sprints/sprint-05-analitica-y-reporteria.pdf} \\
   Compilación & \file{make sprint5-report} o \file{make docs} \\

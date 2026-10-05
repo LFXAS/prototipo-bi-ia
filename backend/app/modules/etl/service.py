@@ -313,6 +313,27 @@ def compile_kpi_recipes(proposal: dict[str, Any]) -> tuple[list[dict[str, Any]],
                     "El promedio se aplica a un importe de línea; no representa un precio "
                     "ni una venta por unidad. La etiqueta fue corregida sin cambiar la receta."
                 )
+            if (
+                operation == "average"
+                and semantic_role == "sales_amount"
+                and re.search(
+                    r"\b(promedio|media|average|avg)\b.*\b(transacci[oó]n(?:es)?|pedido(?:s)?|transaction(?:s)?|order(?:s)?|factura(?:s)?|invoice(?:s)?)\b",
+                    name,
+                    re.IGNORECASE,
+                )
+                and re.search(
+                    r"line|detail|l[ií]nea|detalle",
+                    " ".join(
+                        str(item) for item in measures[measure_name].get("source_columns", [])
+                    ),
+                    re.IGNORECASE,
+                )
+            ):
+                effective_name = "Importe promedio por línea de venta"
+                adjustments.append(
+                    "AVG sobre importes de línea no representa el importe por transacción. "
+                    "La etiqueta fue corregida sin alterar la receta."
+                )
             if semantic_role in {
                 "sales_amount",
                 "cost_amount",

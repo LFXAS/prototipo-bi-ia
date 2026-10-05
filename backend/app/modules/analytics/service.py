@@ -97,6 +97,31 @@ def _dict_items(value: object) -> list[dict[str, Any]]:
     return [item for item in value if isinstance(item, dict)]
 
 
+def _order_scope_note(proposal_document: dict[str, Any], metadata_document: dict[str, Any]) -> str:
+    """Explain order intake when an independent invoicing event exists in the source."""
+    grain = proposal_document.get("grain", {})
+    grain = grain if isinstance(grain, dict) else {}
+    sources = [str(item).casefold() for item in grain.get("source_tables", [])]
+    if not sources or any("invoice" in item or "factura" in item for item in sources):
+        return ""
+    if not any("order" in item or "pedido" in item for item in sources):
+        return ""
+    invoice_available = any(
+        "invoice" in str(table.get("name", "")).casefold()
+        or "factura" in str(table.get("name", "")).casefold()
+        for schema in metadata_document.get("schemas", [])
+        if isinstance(schema, dict)
+        for table in schema.get("tables", [])
+        if isinstance(table, dict)
+    )
+    return (
+        "Alcance: líneas de pedido registradas; estos importes no equivalen "
+        "necesariamente a facturas emitidas. "
+        if invoice_available
+        else ""
+    )
+
+
 def _dimension_document(proposal: BiProposal, aliases: Iterable[str]) -> dict[str, Any] | None:
     normalized_aliases = tuple(item.casefold() for item in aliases)
     for item in _dict_items(proposal.proposal_document.get("dimensions")):
@@ -348,7 +373,14 @@ def _display_name_for_recipe(recipe: dict[str, Any]) -> str:
     if (
         parts is not None
         and parts[0] == "average"
-        and re.search(r"\b(unit|unidad|unidades)\b", name, re.IGNORECASE)
+        and (
+            re.search(r"\b(unit|unidad|unidades)\b", name, re.IGNORECASE)
+            or re.search(
+                r"\b(transacci[oó]n(?:es)?|pedido(?:s)?|transaction(?:s)?|order(?:s)?|factura(?:s)?|invoice(?:s)?)\b",
+                name,
+                re.IGNORECASE,
+            )
+        )
         and re.search(r"importe|amount|total|ventas|sales", parts[1], re.IGNORECASE)
     ):
         return "Importe promedio por línea de venta"
@@ -668,7 +700,6 @@ async def build_dashboard(
     connection = await session.get(DataConnection, snapshot.data_connection_id)
     if connection is None:
         raise AnalyticsUnavailableError("La fuente de origen del expediente ya no está disponible.")
-    del snapshot  # Reserved for connector-neutral semantic expansion.
     mart_schema = mart_schema_for_execution(execution)
     fact_document = proposal.proposal_document.get("fact")
     if not isinstance(fact_document, dict):
@@ -981,6 +1012,7 @@ async def build_dashboard(
     currency = currency if isinstance(currency, dict) else {}
     overview = execution.plan_document.get("overview", {})
     overview = overview if isinstance(overview, dict) else {}
+    scope_note = _order_scope_note(proposal.proposal_document, snapshot.schema_document)
     period_label = "Todos los períodos"
     if year is not None:
         period_label = str(year)
@@ -992,8 +1024,9 @@ async def build_dashboard(
         data_connection_id=connection.id,
         source_name=connection.name,
         database_name=connection.database_name,
-        title="Panel ejecutivo de ventas",
-        description=str(overview.get("summary", "Análisis del datamart reconciliado.")),
+        title="Panel ejecutivo de pedidos" if scope_note else "Panel ejecutivo de ventas",
+        description=scope_note
+        + str(overview.get("summary", "Análisis del datamart reconciliado.")),
         grain=str(overview.get("grain", "Granularidad aprobada")),
         refreshed_at=execution.finished_at or execution.created_at,
         currency_code=str(currency.get("currency_code", "moneda de origen")),

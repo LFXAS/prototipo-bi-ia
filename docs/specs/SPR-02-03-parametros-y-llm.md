@@ -80,6 +80,12 @@ La migración `20260918_06` incorpora `app.secrets` y la referencia desde `llm_c
 - Anthropic sólo acepta el endpoint permitido `https://api.anthropic.com`. El
   adaptador llama a `/v1/messages` con `anthropic-version: 2023-06-01`, nunca
   envía la clave en el cuerpo y valida el JSON antes de incorporarlo al flujo.
+  Para respuestas contractuales usa la salida estructurada nativa
+  `output_config.format`, adaptando únicamente las restricciones de esquema
+  que el proveedor admite; el contrato completo se valida de nuevo localmente.
+  Si `stop_reason=max_tokens` corta la salida, se permite un solo reintento
+  acotado con presupuesto ampliado. Ni una respuesta parcial ni un JSON que
+  incumpla el contrato se persisten como propuesta válida.
 - El nivel compartido `minimal` es el valor seguro para Claude. El adaptador no
   fuerza controles de razonamiento incompatibles: el modelo y la cuenta deciden
   su disponibilidad, evitando consumir saldo en pensamiento extendido durante
@@ -105,4 +111,6 @@ La migración `20260918_06` incorpora `app.secrets` y la referencia desde `llm_c
 - [x] La API nunca devuelve claves de proveedor; PostgreSQL conserva únicamente su representación cifrada.
 - [x] Gemini, Groq, Anthropic y Qwen pueden configurarse y probarse desde la web
       sin editar `.env` después de completar la corrección.
+- [x] Claude puede completar una propuesta estructurada real y el resto del
+      sistema sigue aplicando las mismas reglas semánticas y de metadatos.
 - [x] Sólo una configuración LLM queda activa y el cambio conserva auditoría.

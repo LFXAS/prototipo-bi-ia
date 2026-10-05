@@ -255,6 +255,93 @@ def test_anthropic_generation_includes_schema_contract_and_parses_text_blocks(
     assert body["max_tokens"] == 640
     assert "properties" in str(body["system"])
     assert body["messages"] == [{"role": "user", "content": '{"request":"test"}'}]
+    assert body["output_config"] == {
+        "format": {
+            "type": "json_schema",
+            "schema": {
+                "type": "object",
+                "required": ["answer"],
+                "properties": {"answer": {"type": "string"}},
+                "additionalProperties": False,
+            },
+        }
+    }
+
+
+def test_anthropic_output_schema_keeps_shape_but_not_unsupported_constraints() -> None:
+    original = {
+        "type": "object",
+        "required": ["items"],
+        "properties": {
+            "items": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 2,
+                "items": {
+                    "type": "object",
+                    "properties": {"name": {"type": "string", "maxLength": 10}},
+                    "required": ["name"],
+                },
+            }
+        },
+    }
+
+    transformed = providers._anthropic_output_schema(original)
+
+    assert transformed["additionalProperties"] is False
+    items = transformed["properties"]["items"]
+    assert items["minItems"] == 1
+    assert "maxItems" not in items
+    assert items["items"]["additionalProperties"] is False
+    assert "maxLength" not in items["items"]["properties"]["name"]
+    assert original["properties"]["items"]["maxItems"] == 2
+
+
+def test_anthropic_retries_truncated_structured_output_once(monkeypatch: MonkeyPatch) -> None:
+    calls: list[dict[str, object]] = []
+
+    class SequenceClient(FakeAsyncClient):
+        async def post(self, _: str, **kwargs: object) -> FakeResponse:
+            body = kwargs["json"]
+            assert isinstance(body, dict)
+            calls.append(body)
+            if len(calls) == 1:
+                return FakeResponse(
+                    {
+                        "stop_reason": "max_tokens",
+                        "content": [{"type": "text", "text": '{"answer":'}],
+                    }
+                )
+            return FakeResponse(
+                {
+                    "stop_reason": "end_turn",
+                    "content": [{"type": "text", "text": '{"answer":"ok"}'}],
+                }
+            )
+
+    monkeypatch.setattr(
+        providers.httpx,
+        "AsyncClient",
+        lambda **kwargs: SequenceClient({}, **kwargs),
+    )
+    result = asyncio.run(
+        providers.generate_json(
+            anthropic_configuration(),
+            "Devuelve JSON.",
+            {"request": "test"},
+            credential="anthropic-secret",
+            max_output_tokens=128,
+            response_schema={
+                "type": "object",
+                "required": ["answer"],
+                "properties": {"answer": {"type": "string"}},
+                "additionalProperties": False,
+            },
+        )
+    )
+
+    assert result == {"answer": "ok"}
+    assert [call["max_tokens"] for call in calls] == [128, 256]
 
 
 def test_contract_projection_removes_only_surplus_fields_and_items() -> None:

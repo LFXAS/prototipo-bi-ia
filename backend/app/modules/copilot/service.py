@@ -367,8 +367,9 @@ PROPOSAL_BLUEPRINT_SYSTEM_INSTRUCTION = (
     "equivalentes a cliente, cuenta, persona, comprador, entidad o tienda pueden representarlo; "
     "los identificadores de pedido, transacción o detalle no. Si la tabla de hechos elegida "
     "no contiene una columna de cliente compatible, omite la medida y los KPI customer_count. "
-    "Para transaction_count usa "
-    "el identificador del pedido con count_distinct, nunca el identificador del detalle. "
+    "Para transaction_count usa count_distinct sobre el identificador del documento "
+    "comercial correspondiente al hecho elegido (factura si la necesidad exige facturación; "
+    "pedido si analiza pedidos), nunca sobre el identificador de línea. "
     "Conserva columnas monetarias específicas: precio usa price, descuento usa discount y el "
     "importe de venta usa amount o total. Asocia producto, "
     "cliente y territorio con la tabla técnica cuyo nombre corresponda. No inventes "
@@ -402,8 +403,17 @@ ROLE_DEFAULT_AGGREGATION = {
 }
 
 
+def _is_invoice_requirement(item: Any) -> bool:
+    return isinstance(item, dict) and (item.get("coverage_code") or item.get("code")) in {
+        "goal:invoiced_sales",
+        "goal:invoice_event",
+    }
+
+
 def proposal_blueprint_schema(
-    scope: dict[str, Any], semantic_map: dict[str, Any]
+    scope: dict[str, Any],
+    semantic_map: dict[str, Any],
+    assessment: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Constrain the LLM to compact decisions that the application can expand safely."""
     tables = [
@@ -427,6 +437,23 @@ def proposal_blueprint_schema(
     )
     if not fact_candidates:
         fact_candidates = table_enum
+    invoice_required = any(
+        _is_invoice_requirement(item) and item.get("status") in {"direct", "derivable"}
+        for item in (assessment or {}).get("requirements", [])
+    )
+    if invoice_required:
+        invoice_tables = [
+            reference
+            for reference in table_enum
+            if _search_tokens(reference) & {"invoice", "factura", "billing", "facturacion"}
+        ]
+        invoice_lines = [
+            reference
+            for reference in invoice_tables
+            if _search_tokens(reference) & {"line", "lines", "detail", "detalle", "linea"}
+        ]
+        if invoice_lines or invoice_tables:
+            fact_candidates = invoice_lines or invoice_tables
     fact_candidate_set = set(fact_candidates)
     measure_terms = {
         "amount",
@@ -937,6 +964,17 @@ def _search_tokens(value: object) -> set[str]:
     return tokens | {token for token in singulars if len(token) >= 3}
 
 
+def _claims_transaction_average(value: object) -> bool:
+    label = str(value).casefold()
+    return bool(
+        re.search(r"\b(average|avg|promedio|media)\b", label)
+        and re.search(
+            r"\b(transacci[oó]n(?:es)?|pedido(?:s)?|transaction(?:s)?|order(?:s)?|factura(?:s)?|invoice(?:s)?)\b",
+            label,
+        )
+    )
+
+
 def _compact_columns(table: dict[str, Any], limit: int = 8) -> list[dict[str, object]]:
     foreign_key_columns = {
         str(column)
@@ -1011,10 +1049,31 @@ def _discovery_references(
             - 10 * len(reference_tokens & SALES_PROFILE.deprioritized_terms)
         )
     ranked = sorted(tables, key=lambda ref: (-scores[ref], ref))
+    assessment = business_request.get("viability_assessment", {})
+    requirements = assessment.get("requirements", []) if isinstance(assessment, dict) else []
+    invoice_required = any(
+        _is_invoice_requirement(item) and item.get("status") in {"direct", "derivable"}
+        for item in requirements
+    )
+    invoice_terms = {"invoice", "invoices", "factura", "facturas", "facturacion", "billing"}
+    line_terms = {"line", "lines", "detail", "detalle", "linea", "lineas"}
+    invoice_tables = [
+        reference for reference in ranked if _search_tokens(reference) & invoice_terms
+    ]
+    invoice_lines = [
+        reference for reference in invoice_tables if _search_tokens(reference) & line_terms
+    ]
     requested_dimensions = {
         str(value).casefold() for value in business_request.get("requested_dimensions", [])
     }
     selected: list[str] = []
+    if invoice_required and invoice_lines:
+        selected.append(invoice_lines[0])
+        invoice_headers = [
+            reference for reference in invoice_tables if reference not in invoice_lines
+        ]
+        if invoice_headers:
+            selected.append(invoice_headers[0])
     for dimension in sorted(requested_dimensions):
         matching = [reference for reference in ranked if dimension in _search_tokens(reference)]
         if matching:
@@ -1022,6 +1081,12 @@ def _discovery_references(
             if best not in selected:
                 selected.append(best)
     for reference in ranked:
+        if invoice_required and invoice_lines:
+            reference_tokens = _search_tokens(reference)
+            if reference_tokens & {"order", "orders", "pedido", "pedidos"} and not (
+                reference_tokens & invoice_terms
+            ):
+                continue
         if reference not in selected:
             selected.append(reference)
         if len(selected) >= scope_limit:
@@ -1507,6 +1572,7 @@ def proposal_payload(
                 "status": item.get("status"),
                 "components": item.get("components", []),
                 "formula": item.get("formula"),
+                **({"coverage_code": item["coverage_code"]} if item.get("coverage_code") else {}),
             }
             for item in assessment.get("requirements", [])
             if isinstance(item, dict)
@@ -1574,7 +1640,18 @@ def _semantic_role(value: dict[str, Any], source_column: str = "") -> str:
             "column": source_column,
         }
     )
-    if tokens & {"tax", "impuesto", "freight", "flete"}:
+    source_tokens = _search_tokens(source_column)
+    name_text = str(value.get("name", "")).casefold()
+    tax_inclusion_modifier = bool(
+        re.search(
+            r"\b(?:con|incluye|incluido|incluida|including|inclusive|with)\s+"
+            r"(?:el\s+|los\s+)?(?:impuesto|impuestos|tax|taxes)\b",
+            name_text,
+        )
+    )
+    if source_tokens & {"tax", "impuesto", "freight", "flete"} or (
+        tokens & {"tax", "impuesto", "freight", "flete"} and not tax_inclusion_modifier
+    ):
         return "unsupported"
     if tokens & {"rate", "tasa"} and not tokens & {
         "amount",
@@ -1621,7 +1698,15 @@ def _measure_candidates_for_role(role: str, fact_columns: list[dict[str, Any]]) 
         "cost_amount": {"cost", "costo", "coste"},
         "discount_amount": {"discount", "descuento"},
         "customer_count": {"customer", "cliente", "account"},
-        "transaction_count": {"order", "sale", "venta", "transaction", "pedido"},
+        "transaction_count": {
+            "order",
+            "sale",
+            "venta",
+            "transaction",
+            "pedido",
+            "invoice",
+            "factura",
+        },
     }
     terms = role_terms.get(role, set())
     candidates: list[str] = []
@@ -1667,7 +1752,16 @@ def _column_supports_role(role: str, column: str) -> bool:
         "cost_amount": {"cost", "costo", "coste"},
         "discount_amount": {"discount", "descuento"},
         "customer_count": {"customer", "cliente", "account", "person", "store"},
-        "transaction_count": {"order", "sale", "sales", "venta", "transaction", "pedido"},
+        "transaction_count": {
+            "order",
+            "sale",
+            "sales",
+            "venta",
+            "transaction",
+            "pedido",
+            "invoice",
+            "factura",
+        },
     }
     return bool(tokens & required_terms.get(role, set()))
 
@@ -2130,14 +2224,34 @@ def expand_proposal_blueprint(
             - len(reference_tokens)
         )
         if name == "dim_fecha":
+            invoice_fact = bool(
+                _search_tokens(fact_source)
+                & {"invoice", "invoices", "factura", "facturas", "billing"}
+            )
             transaction_date = any(
                 (_search_tokens(column.get("name", "")) & {"date", "fecha"})
-                and (_search_tokens(column.get("name", "")) & {"order", "sale", "venta"})
+                and (
+                    _search_tokens(column.get("name", ""))
+                    & (
+                        {"invoice", "invoices", "factura", "facturas", "billing"}
+                        if invoice_fact
+                        else {"order", "sale", "venta"}
+                    )
+                )
                 for column in columns
                 if isinstance(column, dict)
             )
             score += 80 if transaction_date else 0
-            score += 20 * len(reference_tokens & {"order", "sale", "sales", "venta"})
+            score += 20 * len(
+                reference_tokens
+                & (
+                    {"invoice", "invoices", "factura", "facturas", "billing"}
+                    if invoice_fact
+                    else {"order", "sale", "sales", "venta"}
+                )
+            )
+            if invoice_fact and reference_tokens & {"order", "pedido"}:
+                score -= 100
         return score, -len(reference), reference
 
     requested_destinations = {
@@ -2227,6 +2341,25 @@ def expand_proposal_blueprint(
         if len(joins) >= 6:
             break
 
+    line_grain = bool(
+        _search_tokens(fact_source) & {"line", "detail", "detalle", "linea", "línea"}
+        or _search_tokens(blueprint.get("grain_description", ""))
+        & {"line", "detail", "detalle", "linea", "línea"}
+    )
+    if line_grain:
+        for measure in measures:
+            if (
+                measure.get("semantic_role") == "sales_amount"
+                and measure.get("aggregation") == "average"
+                and _claims_transaction_average(measure.get("name", ""))
+            ):
+                previous_name = str(measure["name"])
+                measure["name"] = "Importe promedio por línea de venta"
+                automatic_adjustments.append(
+                    f"La medida {previous_name} se renombró como promedio por línea: "
+                    "AVG sobre una tabla de detalle no calcula el promedio por transacción."
+                )
+
     kpis: list[dict[str, Any]] = []
     for item in blueprint.get("kpis", []):
         if not isinstance(item, dict):
@@ -2306,7 +2439,60 @@ def expand_proposal_blueprint(
         measure_name = str(formula.get("measure", ""))
         operation = str(formula.get("operation", ""))
         role = str(kpi.get("semantic_role", ""))
-        signature = (measure_name, operation, role)
+        name = str(kpi.get("name", ""))
+        if (
+            line_grain
+            and operation == "average"
+            and role == "sales_amount"
+            and _claims_transaction_average(name)
+        ):
+            sales_total = next(
+                (
+                    item
+                    for item in measures
+                    if item.get("semantic_role") == "sales_amount"
+                    and item.get("aggregation") == "sum"
+                ),
+                None,
+            )
+            transactions = next(
+                (
+                    item
+                    for item in measures
+                    if item.get("semantic_role") == "transaction_count"
+                    and item.get("aggregation") == "count_distinct"
+                ),
+                None,
+            )
+            kpi = deepcopy(kpi)
+            if sales_total is not None and transactions is not None:
+                sales_name = str(sales_total["name"])
+                transaction_name = str(transactions["name"])
+                kpi["formula_kind"] = "ratio"
+                kpi["inputs"] = [sales_name, transaction_name]
+                kpi["unit"] = "moneda de origen por transacción"
+                kpi["provenance"] = {
+                    "source_references": [
+                        *sales_total.get("provenance", {}).get("source_references", []),
+                        *transactions.get("provenance", {}).get("source_references", []),
+                    ],
+                    "formula": f"SUM({sales_name}) ÷ COUNT_DISTINCT({transaction_name})",
+                    "verification": "Medidas y denominador transaccional comprobados.",
+                }
+                automatic_adjustments.append(
+                    f"El KPI {name} se corrigió como ventas totales divididas entre "
+                    "transacciones distintas; AVG de líneas no representa una transacción."
+                )
+                signature = (sales_name, transaction_name, "transaction_average")
+            else:
+                kpi["name"] = "Importe promedio por línea de venta"
+                automatic_adjustments.append(
+                    f"El KPI {name} se renombró como promedio por línea: no existe "
+                    "un denominador de transacciones distintas verificable."
+                )
+                signature = (measure_name, operation, role)
+        else:
+            signature = (measure_name, operation, role)
         if signature in seen_kpi_recipes:
             automatic_adjustments.append(
                 f"El KPI {kpi.get('name', kpi.get('code', 'sin nombre'))} se omitió "
@@ -2696,7 +2882,20 @@ def build_requirement_coverage(
     measures = [item for item in fact.get("measures", []) if isinstance(item, dict)]
     dimensions = [item for item in proposal.get("dimensions", []) if isinstance(item, dict)]
     kpis = [item for item in proposal.get("kpis", []) if isinstance(item, dict)]
+    grain = proposal.get("grain", {}) if isinstance(proposal.get("grain"), dict) else {}
+    invoice_grain = any(
+        _search_tokens(source) & {"invoice", "factura"} for source in grain.get("source_tables", [])
+    )
+    invoice_document = any(
+        measure.get("semantic_role") == "transaction_count"
+        and any(
+            _search_tokens(column) & {"invoice", "factura"}
+            for column in measure.get("source_columns", [])
+        )
+        for measure in measures
+    )
     dimension_outputs = {
+        "invoice_event": ["hecho:fact_ventas"] if invoice_grain and invoice_document else [],
         "date": ["dim_fecha"]
         if any(item.get("name") == "dim_fecha" for item in dimensions)
         else [],
@@ -2725,6 +2924,12 @@ def build_requirement_coverage(
         }.get(component, set())
         outputs: list[str] = []
         for measure in measures:
+            if component == "sales_amount" and measure.get("aggregation") != "sum":
+                continue
+            if component == "quantity" and measure.get("aggregation") != "sum":
+                continue
+            if component == "transactions" and measure.get("aggregation") != "count_distinct":
+                continue
             tokens = _search_tokens(
                 {
                     "name": measure.get("name", ""),
@@ -2745,6 +2950,10 @@ def build_requirement_coverage(
         "goal:cost_per_unit": [
             {"cost", "costo", "coste"},
             {"unit", "unidad"},
+        ],
+        "goal:average_transaction": [
+            {"average", "avg", "promedio", "media"},
+            {"transaction", "transaccion", "transacciones", "pedido", "factura", "invoice"},
         ],
     }
 
@@ -2771,6 +2980,7 @@ def build_requirement_coverage(
         if not isinstance(requirement, dict):
             continue
         code = str(requirement.get("code", ""))
+        coverage_code = str(requirement.get("coverage_code") or code)
         request_status = str(requirement.get("status", "ambiguous"))
         components = [str(item) for item in requirement.get("components", [])]
         outputs: list[str] = []
@@ -2781,10 +2991,15 @@ def build_requirement_coverage(
                 outputs.extend(matches)
             else:
                 component_gaps.append(component)
-        explicit_derived = derived_outputs(code)
+        explicit_derived = derived_outputs(coverage_code)
         if explicit_derived:
             outputs.extend(explicit_derived)
             component_gaps = []
+        elif coverage_code in derived_term_groups:
+            # Having sales and cost operands does not materialize the margin,
+            # ratio or other requested result. Keep its original requirement ID
+            # while requiring a concrete derived measure/KPI in the proposal.
+            component_gaps.append(str(requirement.get("label") or coverage_code))
         if request_status == "unavailable" and code in accepted:
             coverage_status = "accepted_limitation"
             explanation = "La ausencia fue confirmada; no se inventará una fuente o cálculo."
@@ -2829,7 +3044,7 @@ def apply_financial_requirements(
     """
     result = deepcopy(proposal)
     requested = {
-        str(item.get("code"))
+        str(item.get("coverage_code") or item.get("code"))
         for item in assessment.get("requirements", [])
         if isinstance(item, dict) and item.get("status") in {"direct", "derivable"}
     }
@@ -2839,6 +3054,7 @@ def apply_financial_requirements(
         "goal:gross_margin",
         "goal:sales_per_unit",
         "goal:cost_per_unit",
+        "goal:average_transaction",
     }
     if not requested & financial_codes:
         return result
@@ -3069,7 +3285,11 @@ def apply_financial_requirements(
     def add_derived(
         code: str, name: str, kind: str, inputs: list[str], unit: str, formula: str
     ) -> None:
-        if not all(inputs) or any(str(item.get("code")) == code for item in kpis):
+        if not all(inputs) or any(
+            str(item.get("code")) == code
+            or (str(item.get("formula_kind")) == kind and item.get("inputs") == inputs)
+            for item in kpis
+        ):
             return
         kpis.append(
             {
@@ -3087,8 +3307,44 @@ def apply_financial_requirements(
             }
         )
 
-    sales = measure_for_role("sales_amount")
+    sales = next(
+        (
+            item
+            for item in measures
+            if item.get("semantic_role") == "sales_amount" and item.get("aggregation") == "sum"
+        ),
+        None,
+    ) or measure_for_role("sales_amount")
     sales_name = str(sales.get("name")) if sales else ""
+    if "goal:average_transaction" in requested:
+        sales_total = next(
+            (
+                item
+                for item in measures
+                if item.get("semantic_role") == "sales_amount" and item.get("aggregation") == "sum"
+            ),
+            None,
+        )
+        transactions = next(
+            (
+                item
+                for item in measures
+                if item.get("semantic_role") == "transaction_count"
+                and item.get("aggregation") == "count_distinct"
+            ),
+            None,
+        )
+        if sales_total is not None and transactions is not None:
+            total_name = str(sales_total["name"])
+            transaction_name = str(transactions["name"])
+            add_derived(
+                "importe_promedio_transaccion",
+                "Importe promedio por transacción",
+                "ratio",
+                [total_name, transaction_name],
+                "moneda de origen por transacción",
+                f"SUM({total_name}) ÷ COUNT_DISTINCT({transaction_name})",
+            )
     if total_cost is not None:
         total_cost_name = str(total_cost.get("name"))
         add_aggregate("costo_total", "Costo total", total_cost, "moneda de origen")
@@ -3426,16 +3682,20 @@ def validate_proposal(
                             "sales",
                             "transaction",
                             "pedido",
+                            "invoice",
+                            "factura",
+                            "billing",
                         }
                     ):
                         issues.append(
                             _issue(
-                                "measure.transaction_distinct_order",
+                                "measure.transaction_distinct_document",
                                 "error",
                                 f"fact.measures.{index}",
                                 (
                                     "Transacciones debe usar COUNT(DISTINCT) sobre el "
-                                    "identificador del pedido, nunca sobre el detalle."
+                                    "identificador del documento comercial del hecho "
+                                    "(pedido o factura), nunca sobre la línea de detalle."
                                 ),
                             )
                         )
@@ -3787,6 +4047,43 @@ def validate_proposal(
                 kpi if isinstance(kpi, dict) else {},
             )
             operation = str(formula.get("operation", ""))
+            label_tokens = _search_tokens(kpi.get("name", ""))
+            ranked_entity = bool(
+                label_tokens
+                & {"producto", "product", "cliente", "customer", "territorio", "territory"}
+            )
+            if (
+                operation == "max"
+                and ranked_entity
+                and label_tokens & {"mayor", "lider", "líder", "top", "highest", "best"}
+            ):
+                issues.append(
+                    _issue(
+                        "kpi.grouped_ranking_required",
+                        "error",
+                        f"kpis.{index}.formula",
+                        (
+                            "El máximo de una fila no identifica la entidad líder; "
+                            "se requiere agregar por entidad antes de clasificarla."
+                        ),
+                    )
+                )
+            if (
+                operation == "average"
+                and ranked_entity
+                and label_tokens & {"promedio", "media", "average", "avg"}
+            ):
+                issues.append(
+                    _issue(
+                        "kpi.entity_average_requires_distinct_denominator",
+                        "error",
+                        f"kpis.{index}.formula",
+                        (
+                            "El promedio por entidad requiere el total dividido entre "
+                            "entidades distintas, no AVG de filas del hecho."
+                        ),
+                    )
+                )
             if kpi_role != measure_role:
                 issues.append(
                     _issue(
@@ -3830,9 +4127,10 @@ def validate_proposal(
                 )
 
     assessment = proposal.get("need_assessment")
-    coverage = proposal.get("requirement_coverage")
     if isinstance(assessment, dict):
-        coverage_items = coverage if isinstance(coverage, list) else []
+        # A saved matrix is evidence, not authority. Recompute from the actual
+        # measures and KPIs so an older optimistic matrix cannot approve a gap.
+        coverage_items = build_requirement_coverage(proposal, assessment)
         expected_requirements = {
             str(item.get("code"))
             for item in assessment.get("requirements", [])
@@ -3876,6 +4174,55 @@ def validate_proposal(
                         str(item.get("explanation", "Decisión humana registrada.")),
                     )
                 )
+        if any(_is_invoice_requirement(item) for item in assessment.get("requirements", [])):
+            grain_sources = grain.get("source_tables", []) if isinstance(grain, dict) else []
+            invoice_grain = any(
+                _search_tokens(source) & {"invoice", "factura"} for source in grain_sources
+            )
+            invoice_denominator = any(
+                isinstance(measure, dict)
+                and measure.get("semantic_role") == "transaction_count"
+                and any(
+                    _search_tokens(column) & {"invoice", "factura"}
+                    for column in measure.get("source_columns", [])
+                )
+                for measure in (fact.get("measures", []) if isinstance(fact, dict) else [])
+            )
+            if not invoice_grain or not invoice_denominator:
+                issues.append(
+                    _issue(
+                        "grain.invoiced_sales_mismatch",
+                        "error",
+                        "grain",
+                        "La necesidad pide ventas facturadas: el hecho debe conservar líneas "
+                        "de factura y un identificador de factura para el conteo distinto. "
+                        "Las líneas de pedido no son un sustituto equivalente.",
+                    )
+                )
+            date_dimensions = [
+                dimension
+                for dimension in proposal.get("dimensions", [])
+                if isinstance(dimension, dict) and dimension.get("name") == "dim_fecha"
+            ]
+            if date_dimensions and not any(
+                any(
+                    _search_tokens(source)
+                    & {"invoice", "invoices", "factura", "facturas", "billing"}
+                    for source in dimension.get("source_tables", [])
+                )
+                and _search_tokens(dimension.get("business_key", ""))
+                & {"invoice", "factura", "billing"}
+                for dimension in date_dimensions
+            ):
+                issues.append(
+                    _issue(
+                        "dimension.invoice_date_required",
+                        "error",
+                        "dimensions.dim_fecha",
+                        "La evolución de ventas facturadas debe usar la fecha de factura "
+                        "verificada, no la fecha del pedido.",
+                    )
+                )
 
     controlled_revision = proposal.get("controlled_relation_revision")
     if isinstance(controlled_revision, dict) and (
@@ -3894,6 +4241,43 @@ def validate_proposal(
                 ),
             )
         )
+    fact_sources = fact.get("source_tables", []) if isinstance(fact, dict) else []
+    if len(fact_sources) == 1 and str(fact_sources[0]) in scoped:
+        fact_reference = str(fact_sources[0])
+        fact_table_name = fact_reference.rsplit(".", 1)[-1].casefold()
+        fact_columns = {
+            str(column.get("name", ""))
+            for column in scoped[fact_reference].get("columns", [])
+            if isinstance(column, dict)
+        }
+        for index, assumption in enumerate(proposal.get("assumptions", [])):
+            statement = str(assumption)
+            if not re.search(
+                r"\b(?:no existe|no está disponible|does not exist|not available)\b",
+                statement,
+                re.IGNORECASE,
+            ):
+                continue
+            if fact_table_name not in statement.casefold():
+                continue
+            contradicted = next(
+                (
+                    column
+                    for column in fact_columns
+                    if re.search(rf"\b{re.escape(column)}\b", statement, re.IGNORECASE)
+                ),
+                None,
+            )
+            if contradicted:
+                issues.append(
+                    _issue(
+                        "assumption.contradicts_metadata",
+                        "error",
+                        f"assumptions.{index}",
+                        "Una afirmación sobre la ausencia de una columna contradice "
+                        "la instantánea estructural. Revise la propuesta antes de aprobarla.",
+                    )
+                )
     for warning in proposal.get("warnings", []):
         issues.append(_issue("proposal.warning", "warning", "warnings", str(warning)[:500]))
     errors = sum(issue["level"] == "error" for issue in issues)

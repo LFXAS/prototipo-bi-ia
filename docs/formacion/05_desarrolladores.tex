@@ -1,0 +1,158 @@
+\chapterpage{Módulo 5 · Perfil técnico}{Arquitectura: dónde ocurre cada trabajo}
+Esta sección es una ruta de entrada para el desarrollador y el operador técnico. El usuario final puede pasar al módulo de demostración. Aprender la arquitectura ayuda a diagnosticar sin tocar datos innecesariamente.
+\begin{tabularx}{\linewidth}{@{}p{36mm}Y@{}}
+\toprule
+\textbf{Componente}&\textbf{Responsabilidad y tecnología actual}\\
+\midrule
+Navegador&React y TypeScript. Vite en desarrollo; Nginx para el artefacto compilado. Presenta pasos, decisiones, permisos y resultados.\\
+API&FastAPI/Uvicorn. Autoriza, valida contratos y coordina módulos. El navegador no debe decidir por sí solo qué operación está permitida.\\
+SQL Server&Fuentes OLTP de sólo lectura. La conexión identifica cada base. Acceso mediante pyodbc y Microsoft ODBC Driver 18.\\
+PostgreSQL&Seguridad, configuración, metadatos, propuestas y auditoría en el esquema de aplicación; datos analíticos versionados por ejecución.\\
+Proveedor LLM&Cloud configurado u Ollama opcional. Interpreta y devuelve estructura; no recibe permiso general para ejecutar SQL o aprobar.\\
+Migraciones&SQLAlchemy/Alembic y semillas controladas. Evolucionan la aplicación sin convertir un arranque en un borrado del historial.\\
+\bottomrule
+\end{tabularx}
+\sub{Flujo que debe poder dibujar}
+El navegador envía una solicitud autenticada a la API. La API obtiene metadatos del origen o del repositorio de instantáneas; si la tarea necesita IA, prepara un contexto acotado y valida la respuesta. La aprobación se registra. Más tarde, el ETL lee el origen y escribe el datamart; la analítica consulta esa ejecución.
+
+El origen SQL Server no es el destino analítico PostgreSQL. El esquema físico de cada ejecución sigue el patrón \code{mart_ventas_e{id}}. La selección de fuente no combina automáticamente bases ni sus catálogos.
+\sub{Cuatro identificadores que evitan cruces}
+\textbf{Conexión} identifica origen; \textbf{instantánea} identifica estructura; \textbf{propuesta} identifica diseño aprobado; \textbf{ejecución} identifica carga y evidencia. Mantenga su relación en peticiones, caché, estado visual, consultas y exportaciones.
+\begin{note}[Un fallo visual no prueba un fallo físico, ni lo descarta]
+Una respuesta tardía del navegador puede mostrar un contexto anterior. La consulta analítica debe validar también la fuente en servidor. Para diagnosticar, contraste identidad de la petición, respuesta y destino físico antes de concluir que se mezclaron datos.
+\end{note}
+
+\chapterpage{Módulo 5 · Entorno y operación técnica}{Arranque seguro y diagnóstico básico}
+La ruta local de este repositorio es \path{/home/ceo/Proyectos/BI}. En otro equipo sustitúyala por la ubicación real. Lea primero \path{AGENTS.md}, alcance, arquitectura, guía de réplica y última bitácora. Los comandos del proyecto usan Docker; requieren un entorno autorizado y disponible.
+\sub{Primera preparación o revisión del entorno}
+\begin{verbatim}
+cd "/home/ceo/Proyectos/BI"
+make env
+\end{verbatim}
+\textbf{Antes del primer arranque:} revise localmente el archivo de entorno y cambie las contraseñas de ejemplo mediante el procedimiento autorizado. No las incluya en Git, esta guía ni capturas. \code{make env} no debe tratarse como permiso para sobrescribir una configuración existente.
+\begin{verbatim}
+make bootstrap
+make ps
+make doctor
+\end{verbatim}
+\code{bootstrap} valida, construye e inicia servicios y comprueba disponibilidad. Migraciones y semillas preparan la aplicación de forma controlada. Una base comercial adicional debe estar restaurada y accesible; el formulario de conexiones no restaura copias de seguridad.
+\begin{tabularx}{\linewidth}{@{}Yp{42mm}p{42mm}@{}}
+\toprule
+\textbf{Servicio}&\textbf{Desarrollo, host}&\textbf{Entrega completa, host}\\
+\midrule
+Interfaz&5173&8080\\
+API&8000&18000\\
+PostgreSQL&55432&55433\\
+SQL Server&51433&51434\\
+\bottomrule
+\end{tabularx}
+Dentro de la red Docker de desarrollo, la aplicación usa normalmente \code{sqlserver:1433}, no el puerto publicado del host. Verifique la configuración real antes de registrar una conexión.
+\sub{Comprobaciones sin borrar datos}
+\begin{verbatim}
+docker compose ps
+docker compose logs --tail=200 backend
+docker compose logs --tail=200 frontend
+curl http://localhost:8000/api/v1/health/live
+curl http://localhost:8000/api/v1/health/ready
+\end{verbatim}
+Sanee registros antes de compartirlos. Para detener preservando volúmenes existe \code{docker compose down}; \textbf{no añada opciones de eliminación de volúmenes como solución rutinaria}. Eliminar persistencia puede destruir datos o impedir descifrar secretos.
+
+\chapterpage{Módulo 5 · Ubicación del código}{Qué archivo revisar según el problema}
+{\small
+\begin{tabularx}{\linewidth}{@{}p{40mm}Y@{}}
+\toprule
+\textbf{Tema}&\textbf{Ruta desde la raíz del repositorio}\\
+\midrule
+Composición API&\path{backend/app/main.py}; \path{backend/app/api/v1/router.py}\\
+Usuarios, permisos, auditoría&\path{backend/app/modules/security/}\\
+Conexiones y secretos&\path{backend/app/modules/parameters/}\\
+Transporte de proveedores&\path{backend/app/modules/parameters/providers.py}\\
+Lectura de estructura&\path{backend/app/modules/metadata/connectors.py}; \path{introspection.py}; \path{schemas.py} en ese módulo.\\
+Necesidades y revisión IA&\path{backend/app/modules/copilot/need_advisor.py}; \path{needs.py} en ese módulo.\\
+Propuestas y validación&\path{backend/app/modules/copilot/service.py}; \path{router.py}; \path{schemas.py} en ese módulo.\\
+Nombres descriptivos&\path{backend/app/modules/copilot/entity_resolution.py}\\
+Recetas y ejecución ETL&\path{backend/app/modules/etl/service.py}; \path{materializer.py}; \path{router.py} en ese módulo.\\
+Panel, agregados y chat&\path{backend/app/modules/analytics/service.py}; \path{router.py} en ese módulo.\\
+Exportaciones&\path{backend/app/modules/reports/analytics_export.py}\\
+Pantallas&\path{frontend/src/App.tsx}; \path{AnalyticsPage.tsx}; estilos asociados.\\
+Migraciones y semillas&\path{backend/migrations/versions/}; \path{backend/app/db/seed.py}\\
+Contenedores y verificación&\path{compose.yaml}; \path{compose.release.yaml}; \path{Makefile}; \path{.github/workflows/}\\
+\bottomrule
+\end{tabularx}}
+\sub{Cómo investigar sin debilitar el sistema}
+Reproduzca con una entrada mínima y registre el error original. Aísle interfaz, API, proveedor o fuente. Cree una prueba que falle por la causa encontrada y luego corrija. Conserve versiones aprobadas y no cambie las reglas de negocio para acomodar una salida particular de un modelo.
+\begin{note}[Frases de interfaz frente a comportamiento]
+En el corte revisado quedó una ayuda de ETL con redacción de reemplazo del esquema, aunque la implementación usa destinos versionados por ejecución. También hay una discrepancia de nombre de permiso en el acta y una diferencia de PDFs entre verificación local y CI. Son aspectos de mantenimiento documental, no motivos para borrar datos ni ignorar permisos; confirme el contrato y el código vigente.
+\end{note}
+
+\chapterpage{Módulo 5 · Contratos y pruebas}{Qué no debe romper una modificación}
+\begin{enumerate}
+\item \textbf{Metadatos canónicos:} procedencia, tablas, tipos, claves y todas las parejas de una FK compuesta. No incluya credenciales ni muestras de filas en ese documento.
+\item \textbf{Huella estable:} un orden de serialización reproducible permite verificar el artefacto. Su coincidencia no demuestra que un LLM sea determinista ni que una interpretación financiera sea verdadera.
+\item \textbf{Revisión de necesidad:} objetivo, preguntas, periodicidad, instantánea y destino consentido forman el contexto. Una respuesta tardía o de otro contexto no debe habilitar generación.
+\item \textbf{Propuesta controlada:} referencias existentes, tipos compatibles, rutas sin multiplicar el hecho, cobertura de lo solicitado y aprobación explícita.
+\item \textbf{Ejecución y analítica:} selección de KPI, huellas, origen, destino físico y conciliación; validar que la ejecución pertenece a la fuente y puede consultarse.
+\item \textbf{Historia:} consultar no debe reescribir o retirar decisiones aprobadas. Una nueva versión conserva su procedencia.
+\end{enumerate}
+\sub{Comandos existentes de comprobación}
+\begin{verbatim}
+make compose-check
+make workflow-test
+make test
+make lint
+make format-check
+make verify
+\end{verbatim}
+\code{make test} ejecuta etapas Docker de pruebas y controles: backend con Ruff, formato, Mypy y pytest; frontend con ESLint, pruebas y compilación TypeScript/Vite. \code{make verify} añade configuración, política de ramas y documentos. No equivale a llamar de nuevo a todos los LLM ni ejecutar todos los ETL reales.
+\sub{Pruebas que debe cubrir un cambio de BI + IA}
+JSON inválido o incompleto; cuota y tiempo agotado; referencia inventada; tipos incompatibles; relaciones desconectadas o compuestas; precio usado como costo; tasa como dinero; denominador incorrecto; cambio de fuente con respuestas tardías; permiso insuficiente; conciliación; exportación con filtros.
+\begin{good}[Resultado previo, no ejecución nueva de este manual]
+La ampliación auditada cerró con 231 pruebas backend y 34 frontend, además de controles de compilación. Esta guía no reejecutó ese bloque ni usa su redacción como prueba de una nueva versión del software. Registre siempre el corte de código al repetirlo.
+\end{good}
+
+\chapterpage{Módulo 5 · Extensibilidad}{Añadir fuentes o modelos de forma general}
+\sub{Otra base SQL Server no es otro motor}
+Con una base SQL Server accesible, el flujo está diseñado para registrar una conexión, capturar sus metadatos, revisar su catálogo y recorrer el proceso. Aun así necesita una prueba integral: esquema leído no equivale a todos los requisitos BI soportados.
+\sub{Agregar un motor distinto exige más trabajo}
+\begin{enumerate}
+\item Especificar conexión, credenciales, sólo lectura y driver en el entorno.
+\item Normalizar el catálogo del motor: tipos, PK, FK, claves compuestas y huellas; registrar el lector de metadatos.
+\item Adaptar campos y tipos permitidos en API/interfaz.
+\item Adaptar la extracción y el dialecto ETL, además de comprobaciones locales de nombres, moneda y conciliación. El materializador actual usa elementos específicos de SQL Server.
+\item Probar hasta panel y copiloto con un esquema distinto; incluir nombres en español/inglés, ambigüedad, nulos y relaciones que duplicarían hechos.
+\end{enumerate}
+Agregar sólo un lector de tablas no hace que MySQL u otro motor esté soportado de extremo a extremo. Evite condiciones por nombre de base como «si es AdventureWorks»: use capacidades y evidencia del contrato.
+\sub{Agregar otro proveedor LLM}
+\begin{enumerate}
+\item Especificar autenticación, URL permitida, capacidades, razonamiento y límites.
+\item Implementar transporte y extracción de respuesta en el adaptador, con prueba de conexión y errores seguros.
+\item Mantener validación local de formato y negocio. Reintentos acotados, sin cambio silencioso del destino autorizado.
+\item Añadir pruebas de éxito, cuota, timeout, JSON inválido, credencial ausente y modelo no disponible.
+\item Repetir casos reales autorizados registrando modelo y resultados; no cambiar fórmulas financieras por proveedor.
+\end{enumerate}
+\begin{note}[Principio de diseño]
+La adaptación del protocolo es legítima; relajar la semántica para que un modelo «pase» no lo es. Una referencia desconocida sigue siendo desconocida aunque el proveedor afirme con mucha seguridad que es correcta.
+\end{note}
+
+\chapterpage{Módulo 5 · Mantenimiento responsable}{Cambios, documentación y recuperación}
+\sub{Desarrollo guiado por especificaciones}
+Antes de cambiar comportamiento, actualice alcance y criterios en la especificación correspondiente. Si altera una decisión de arquitectura duradera, documente la decisión. Añada pruebas, implemente, verifique y actualice manuales, bitácora y casos de QA. No convierta un incidente aislado en una excepción fija para una base de ejemplo.
+
+El flujo de integración es rama de trabajo, PR a \code{develop} y promoción revisada hacia \code{main}. Este manual no crea PR ni modifica ramas. Una promoción debe identificar qué se verificó y qué queda pendiente.
+\sub{Generación documental disponible en el proyecto}
+\begin{verbatim}
+make technical-manual
+make qa-audit-report
+make thesis-chapter3
+make docs
+\end{verbatim}
+Revise visualmente los PDF; compilar no prueba que tablas y capturas sean legibles. En el corte revisado, \code{make docs} cubre once PDF, mientras el flujo CI enumeraba diez y no incluía aún el PDF de auditoría del 3 de octubre. No afirme paridad total sin corregir y comprobar esa diferencia.
+\sub{Entornos que no deben confundirse}
+\textbf{Desarrollo:} \code{make up}. \textbf{Vista compilada local:} \code{make delivery-preview-up}, que comparte API y datos de desarrollo. \textbf{Entrega completa:} \code{make release-up}, con configuración y volúmenes propios. No levante dos modalidades que disputen el mismo puerto sin revisar su configuración.
+
+\textbf{Ollama opcional:} existen \code{make ollama-up}, \code{make ollama-pull}, \code{make ollama-status} y \code{make ollama-down}. Descargar un modelo consume red/disco y no lo convierte automáticamente en el proveedor activo. Su capacidad debe comprobarse como la de cualquier otro modelo.
+\sub{Secretos, respaldo y recuperación}
+Las credenciales LLM se registran en la aplicación, no en código ni capturas. La persistencia cifrada depende de su clave de descifrado local: perder esa raíz puede impedir recuperar secretos. El responsable debe conservar respaldos de datos y material de recuperación según política, comprobar restauraciones y no publicar esos respaldos como evidencia de tesis.
+\begin{good}[Secuencia frente a un incidente técnico]
+Identificar → preservar evidencia y datos → reproducir en alcance controlado → corregir con prueba → verificar regresión → actualizar documentación → comunicar límites. Reiniciar servicios puede recuperar disponibilidad, pero no demuestra que la causa haya sido corregida.
+\end{good}

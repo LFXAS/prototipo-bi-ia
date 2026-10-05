@@ -73,6 +73,27 @@ class SemanticAdvice(Base):
     )
 
 
+class BusinessNeedReview(Base):
+    __tablename__ = "business_need_reviews"
+    __table_args__ = {"schema": "app"}
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    metadata_snapshot_id: Mapped[int] = mapped_column(
+        ForeignKey("app.metadata_snapshots.id", ondelete="RESTRICT"), nullable=False
+    )
+    input_hash: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    assessment_hash: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    assessment_document: Mapped[dict[str, object]] = mapped_column(JSONB, nullable=False)
+    provider_kind: Mapped[str] = mapped_column(String(40), nullable=False)
+    model_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    created_by_user_id: Mapped[int | None] = mapped_column(
+        ForeignKey("app.users.id", ondelete="SET NULL"), nullable=True
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
 class AnalysisCatalog(Base):
     __tablename__ = "analysis_catalogs"
     __table_args__ = (

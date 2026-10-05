@@ -10,7 +10,10 @@ from app.modules.copilot.domains import (
     normalize_needs_catalog_configuration,
 )
 from app.modules.copilot.entity_resolution import enrich_dimension_labels
+from app.modules.copilot.need_advisor import combine_assessment
 from app.modules.copilot.service import (
+    _discovery_references,
+    _semantic_role,
     apply_analyst_adjustments,
     apply_controlled_relationship,
     apply_financial_requirements,
@@ -76,6 +79,17 @@ def test_proposal_payload_compacts_duplicate_evidence_without_losing_requirement
     assert "viability_assessment" not in payload["business_request"]
     assert "evidence" not in payload["semantic_map"][0]
     assert len(str(payload)) < len(str(request))
+
+    request["viability_assessment"]["requirements"][0].update(
+        {
+            "code": "ai:0",
+            "coverage_code": "goal:gross_margin",
+        }
+    )
+    reviewed_payload = proposal_payload("a" * 64, "sqlserver", request, scope, semantic_map)
+    reviewed_requirement = reviewed_payload["business_request"]["requirements"][0]
+    assert reviewed_requirement["code"] == "ai:0"
+    assert reviewed_requirement["coverage_code"] == "goal:gross_margin"
 
 
 DOCUMENT = {
@@ -254,6 +268,82 @@ def test_kpi_suggestions_are_variable_without_a_fixed_business_catalog() -> None
     assert schema["properties"]["kpis"]["items"]["properties"]["measure_index"]["maximum"] == 5
 
 
+@pytest.mark.parametrize("from_ai", [False, True])
+def test_invoiced_need_limits_fact_choice_to_verified_invoice_lines(from_ai: bool) -> None:
+    scope = {
+        "tables": [
+            {"ref": "Sales.OrderLines", "columns": [{"name": "OrderID", "type": "int"}]},
+            {
+                "ref": "Sales.InvoiceLines",
+                "columns": [
+                    {"name": "InvoiceID", "type": "int"},
+                    {"name": "ExtendedPrice", "type": "decimal"},
+                ],
+            },
+        ]
+    }
+    semantic_map = {
+        "candidates": [
+            {
+                "business_concept": "sales_line",
+                "technical_refs": ["Sales.OrderLines"],
+                "selected": True,
+            }
+        ]
+    }
+    assessment = {"requirements": [{"code": "goal:invoiced_sales", "status": "direct"}]}
+    if from_ai:
+        assessment["requirements"][0].update(
+            {"code": "ai:0", "coverage_code": "goal:invoice_event"}
+        )
+
+    schema = proposal_blueprint_schema(scope, semantic_map, assessment)
+
+    assert schema["properties"]["fact_source"]["enum"] == ["Sales.InvoiceLines"]
+    assert (
+        "ExtendedPrice"
+        in schema["properties"]["measures"]["items"]["properties"]["source_column"]["enum"]
+    )
+
+
+@pytest.mark.parametrize("from_ai", [False, True])
+def test_invoice_need_prioritizes_invoice_metadata_over_orders_in_any_schema(from_ai: bool) -> None:
+    names = [
+        "Commercial.OrderLines",
+        "Commercial.Orders",
+        "Commercial.InvoiceLines",
+        "Commercial.Invoices",
+        "Warehouse.StockItems",
+        "Commercial.Customers",
+        "Geography.Cities",
+        "Geography.StateProvinces",
+    ]
+    tables = {
+        name: {
+            "columns": [{"name": "InvoiceID" if "Invoice" in name else "Name"}],
+            "foreign_keys": [],
+        }
+        for name in names
+    }
+    request = {
+        "goal": "Analizar ventas facturadas por producto, cliente y territorio",
+        "requested_dimensions": [],
+        "viability_assessment": {
+            "requirements": [{"code": "goal:invoiced_sales", "status": "direct"}]
+        },
+    }
+
+    if from_ai:
+        request["viability_assessment"]["requirements"][0].update(
+            {"code": "ai:0", "coverage_code": "goal:invoice_event"}
+        )
+    references = _discovery_references(tables, request)
+
+    assert references[:2] == ["Commercial.InvoiceLines", "Commercial.Invoices"]
+    assert "Commercial.OrderLines" not in references
+    assert "Commercial.Orders" not in references
+
+
 def test_expanded_measures_expose_physical_provenance_and_formula() -> None:
     semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
     scope = derived_scope(DOCUMENT, semantic_map)
@@ -266,7 +356,8 @@ def test_expanded_measures_expose_physical_provenance_and_formula() -> None:
     assert proposal["grain"]["business_keys"] == ["OrderID", "ProductID"]
 
 
-def test_financial_requirements_add_only_traceable_cost_margin_and_unit_kpis() -> None:
+@pytest.mark.parametrize("from_ai", [False, True])
+def test_financial_requirements_add_only_traceable_cost_margin_and_unit_kpis(from_ai: bool) -> None:
     document = deepcopy(DOCUMENT)
     detail = document["schemas"][0]["tables"][0]
     detail["columns"].extend(
@@ -310,6 +401,21 @@ def test_financial_requirements_add_only_traceable_cost_margin_and_unit_kpis() -
         ],
         "accepted_limitations": [],
     }
+    if from_ai:
+        reviewed = []
+        for index, requirement in enumerate(assessment["requirements"]):
+            reviewed.append(
+                {
+                    **requirement,
+                    "code": f"ai:{index}",
+                    "coverage_code": requirement["code"],
+                }
+            )
+        assessment = combine_assessment(
+            {"requirements": [], "can_continue": True},
+            {"requirements": reviewed, "limitations": []},
+            "same-source-and-business-need",
+        )
 
     enriched = apply_financial_requirements(base, assessment, scope)
     enriched["need_assessment"] = assessment
@@ -330,7 +436,24 @@ def test_financial_requirements_add_only_traceable_cost_margin_and_unit_kpis() -
     assert kpis["margen_porcentaje"]["inputs"] == ["margen_bruto", "importe_venta"]
     assert kpis["costo_por_unidad"]["formula_kind"] == "ratio"
     assert kpis["venta_por_unidad"]["formula_kind"] == "ratio"
+    assert all(item["coverage_status"] == "covered" for item in enriched["requirement_coverage"])
+    assert enriched["requirement_coverage"][0]["requirement_code"] == (
+        "ai:0" if from_ai else "goal:gross_margin"
+    )
     assert validate_proposal(enriched, scope, document)["valid"] is True
+
+    missing_margin = deepcopy(enriched)
+    missing_margin["kpis"] = [
+        item
+        for item in missing_margin["kpis"]
+        if item["code"] not in {"margen_bruto", "margen_porcentaje"}
+    ]
+    missing_coverage = build_requirement_coverage(missing_margin, assessment)
+    assert missing_coverage[0]["coverage_status"] == "not_covered"
+    assert any(
+        issue["code"] == "coverage.requirement_missing"
+        for issue in validate_proposal(missing_margin, scope, document)["issues"]
+    )
 
 
 def test_financial_cost_prefers_the_verified_product_dimension_source() -> None:
@@ -458,6 +581,26 @@ def test_requirement_coverage_reports_outputs_and_blocks_silent_omissions() -> N
     assert any(issue["code"] == "coverage.requirement_missing" for issue in validation["issues"])
 
 
+def test_empty_review_components_do_not_claim_coverage() -> None:
+    proposal = valid_proposal()
+    assessment = {
+        "requirements": [
+            {
+                "code": "ai:0",
+                "label": "Objetivo sin correspondencia",
+                "status": "direct",
+                "components": [],
+            }
+        ]
+    }
+
+    coverage = build_requirement_coverage(proposal, assessment)
+
+    assert coverage[0]["requirement_code"] == "ai:0"
+    assert coverage[0]["coverage_status"] == "not_covered"
+    assert coverage[0]["outputs"] == []
+
+
 def test_transaction_count_rejects_detail_identifier() -> None:
     proposal = valid_proposal()
     proposal["fact"]["measures"].append(
@@ -474,8 +617,65 @@ def test_transaction_count_rejects_detail_identifier() -> None:
     validation = validate_proposal(proposal, scope, DOCUMENT)
 
     assert any(
-        issue["code"] == "measure.transaction_distinct_order" for issue in validation["issues"]
+        issue["code"] == "measure.transaction_distinct_document" for issue in validation["issues"]
     )
+
+
+def test_false_missing_column_claim_is_blocked_against_fact_metadata() -> None:
+    proposal = valid_proposal()
+    proposal["assumptions"] = ["LineTotal no existe en OrderDetail."]
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+
+    validation = validate_proposal(proposal, scope, DOCUMENT)
+
+    assert "assumption.contradicts_metadata" in {issue["code"] for issue in validation["issues"]}
+
+
+def test_tax_inclusive_sale_is_not_mistaken_for_a_tax_measure() -> None:
+    assert (
+        _semantic_role(
+            {"name": "Importe total facturado con impuesto", "semantic_role": "sales_amount"},
+            "ExtendedPrice",
+        )
+        == "sales_amount"
+    )
+    assert (
+        _semantic_role({"name": "Impuesto total", "semantic_role": "sales_amount"}, "TaxAmount")
+        == "unsupported"
+    )
+
+
+def test_average_unit_price_does_not_cover_total_sales_requirement() -> None:
+    proposal = {
+        "fact": {
+            "measures": [
+                {
+                    "name": "Precio unitario promedio",
+                    "semantic_role": "sales_amount",
+                    "aggregation": "average",
+                    "source_columns": ["UnitPrice"],
+                }
+            ]
+        },
+        "dimensions": [],
+        "kpis": [],
+        "grain": {"source_tables": ["Sales.InvoiceLines"]},
+    }
+    assessment = {
+        "requirements": [
+            {
+                "code": "goal:sales_amount",
+                "label": "Ventas o ingresos",
+                "status": "derivable",
+                "components": ["sales_amount"],
+            }
+        ]
+    }
+
+    coverage = build_requirement_coverage(proposal, assessment)
+
+    assert coverage[0]["coverage_status"] == "not_covered"
 
 
 def test_controlled_relation_catalog_only_enables_unique_declared_target() -> None:
@@ -847,6 +1047,49 @@ def test_provider_duplicate_unit_averages_are_normalized_before_review() -> None
     )
 
 
+def test_transaction_average_uses_distinct_documents_instead_of_average_lines() -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+    blueprint = valid_blueprint()
+    blueprint["measures"] = [
+        {
+            "name": "Ventas",
+            "source_column": "LineTotal",
+            "aggregation": "sum",
+            "semantic_role": "sales_amount",
+        },
+        {
+            "name": "Pedidos",
+            "source_column": "OrderID",
+            "aggregation": "count_distinct",
+            "semantic_role": "transaction_count",
+        },
+        {
+            "name": "Promedio por pedido",
+            "source_column": "LineTotal",
+            "aggregation": "average",
+            "semantic_role": "sales_amount",
+        },
+    ]
+    blueprint["kpis"] = [
+        {
+            "code": "promedio_pedido",
+            "name": "Importe promedio por pedido",
+            "measure_index": 2,
+            "operation": "average",
+            "unit": "moneda",
+            "semantic_role": "sales_amount",
+        }
+    ]
+
+    proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
+
+    assert proposal["fact"]["measures"][2]["name"] == "Importe promedio por línea de venta"
+    assert proposal["kpis"][0]["formula_kind"] == "ratio"
+    assert proposal["kpis"][0]["inputs"] == ["Ventas", "Pedidos"]
+    assert validate_proposal(proposal, scope, DOCUMENT)["valid"] is True
+
+
 def test_sales_amount_never_uses_an_identifier_as_automatic_replacement() -> None:
     semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
     scope = derived_scope(DOCUMENT, semantic_map)
@@ -1098,6 +1341,44 @@ def test_semantic_mismatch_in_a_saved_kpi_blocks_validation() -> None:
 
     assert validation["valid"] is False
     assert "kpi.semantic_mismatch" in {item["code"] for item in validation["issues"]}
+
+
+@pytest.mark.parametrize(
+    ("name", "operation", "issue_code"),
+    [
+        ("Producto con mayor importe", "max", "kpi.grouped_ranking_required"),
+        (
+            "Venta promedio por cliente",
+            "average",
+            "kpi.entity_average_requires_distinct_denominator",
+        ),
+        ("Highest revenue product", "max", "kpi.grouped_ranking_required"),
+        (
+            "Average sales per customer",
+            "average",
+            "kpi.entity_average_requires_distinct_denominator",
+        ),
+    ],
+)
+def test_entity_kpi_must_not_confuse_line_aggregate_with_group_result(
+    name: str, operation: str, issue_code: str
+) -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+    proposal = valid_proposal()
+    proposal["kpis"] = [
+        {
+            "code": "misleading_entity_metric",
+            "name": name,
+            "formula": {"operation": operation, "measure": "importe_venta"},
+            "unit": "currency",
+        }
+    ]
+
+    validation = validate_proposal(proposal, scope, DOCUMENT)
+
+    assert validation["valid"] is False
+    assert issue_code in {item["code"] for item in validation["issues"]}
 
 
 def test_approved_decisions_reproduce_the_same_validated_proposal() -> None:
@@ -1507,6 +1788,32 @@ def test_invented_table_and_free_sql_block_approval() -> None:
     assert validation["valid"] is False
     assert "reference.table_unknown" in codes
     assert "executable.detected" in codes
+
+
+@pytest.mark.parametrize("from_ai", [False, True])
+def test_invoiced_request_blocks_order_line_grain(from_ai: bool) -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+    proposal = valid_proposal()
+    proposal["need_assessment"] = {
+        "requirements": [
+            {
+                "code": "goal:invoiced_sales",
+                "label": "Ventas facturadas",
+                "status": "direct",
+                "components": ["invoice_event"],
+            }
+        ]
+    }
+    if from_ai:
+        proposal["need_assessment"]["requirements"][0].update(
+            {"code": "ai:0", "coverage_code": "goal:invoice_event"}
+        )
+    proposal["requirement_coverage"] = build_requirement_coverage(
+        proposal, proposal["need_assessment"]
+    )
+    validation = validate_proposal(proposal, scope, DOCUMENT)
+    assert "grain.invoiced_sales_mismatch" in {issue["code"] for issue in validation["issues"]}
 
 
 def test_entity_label_resolution_uses_semantic_role_and_relationship_not_table_name() -> None:

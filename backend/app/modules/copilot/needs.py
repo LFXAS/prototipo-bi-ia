@@ -8,6 +8,26 @@ from collections import deque
 from typing import Any
 
 NeedStatus = str
+ColumnEvidence = tuple[str, str, str, str]
+
+NUMERIC_TYPES = {
+    "tinyint",
+    "smallint",
+    "int",
+    "integer",
+    "bigint",
+    "decimal",
+    "numeric",
+    "money",
+    "smallmoney",
+    "float",
+    "real",
+    "double",
+    "double precision",
+    "number",
+}
+TEMPORAL_TYPES = {"date", "datetime", "datetime2", "smalldatetime", "datetimeoffset"}
+NUMERIC_CAPABILITIES = {"sales_amount", "quantity", "unit_cost", "unit_price", "discount_rate"}
 
 
 def _plain(value: object) -> str:
@@ -31,9 +51,14 @@ def _tables(document: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return result
 
 
-def _column_index(tables: dict[str, dict[str, Any]]) -> list[tuple[str, str, str]]:
+def _column_index(tables: dict[str, dict[str, Any]]) -> list[ColumnEvidence]:
     return [
-        (reference, str(column.get("name", "")), _compact(column.get("name", "")))
+        (
+            reference,
+            str(column.get("name", "")),
+            _compact(column.get("name", "")),
+            re.sub(r"\([^)]*\)", "", str(column.get("data_type", ""))).strip().casefold(),
+        )
         for reference, table in tables.items()
         for column in table.get("columns", [])
         if isinstance(column, dict) and column.get("name")
@@ -63,9 +88,22 @@ def _graph(tables: dict[str, dict[str, Any]]) -> dict[str, set[str]]:
             target = (
                 f"{relation.get('referenced_schema', '')}.{relation.get('referenced_table', '')}"
             )
-            if target in tables:
+            source_columns = {str(item.get("name")) for item in table.get("columns", [])}
+            target_columns = {
+                str(item.get("name")) for item in tables.get(target, {}).get("columns", [])
+            }
+            left = relation.get("columns", [])
+            right = relation.get("referenced_columns", [])
+            if (
+                target in tables
+                and left
+                and len(left) == len(right)
+                and set(left) <= source_columns
+                and set(right) <= target_columns
+            ):
+                # A declared FK follows the many-to-one direction. The reverse
+                # traversal can multiply the fact grain and is not evidence here.
                 graph[source].add(target)
-                graph[target].add(source)
     return graph
 
 
@@ -113,8 +151,58 @@ def _sales_context_score(reference: str) -> int:
     )
 
 
+def _non_sales_event(reference: str) -> bool:
+    return any(
+        token in _compact(reference)
+        for token in (
+            "purchase",
+            "purchasing",
+            "procurement",
+            "compra",
+            "stockitemtransaction",
+            "inventorytransaction",
+            "movimientoinventario",
+        )
+    )
+
+
+def _invoice_index(index: list[ColumnEvidence]) -> list[ColumnEvidence]:
+    """Keep invoice event measures separate from order and purchasing evidence."""
+    invoice_tables = {
+        table
+        for table, _, name, _ in index
+        if "invoice" in _compact(table)
+        or "factura" in _compact(table)
+        or name in {"invoiceid", "facturaid", "idfactura"}
+    }
+    event_columns = {
+        (table, column)
+        for capability in (
+            "sales_amount",
+            "quantity",
+            "unit_price",
+            "discount_rate",
+            "transactions",
+            "date",
+        )
+        for table, column in _find_columns(index, capability)
+    }
+    return [
+        item
+        for item in index
+        if (item[0], item[1]) not in event_columns
+        or (
+            item[0] in invoice_tables
+            and not any(
+                token in item[2]
+                for token in ("orderid", "pedidoid", "idpedido", "orderdate", "fechapedido")
+            )
+        )
+    ]
+
+
 def _coherent_anchor(
-    index: list[tuple[str, str, str]],
+    index: list[ColumnEvidence],
     graph: dict[str, set[str]],
     components: list[str],
 ) -> set[str]:
@@ -122,7 +210,9 @@ def _coherent_anchor(
     anchor_capability = next(
         (
             capability
-            for capability in ("sales_amount", "quantity", "transactions")
+            for capability in dict.fromkeys(
+                ("sales_amount", "quantity", "transactions", "unit_price", *components)
+            )
             if capability in components and _find_columns(index, capability)
         ),
         None,
@@ -155,41 +245,133 @@ def _nearest_match(
 ) -> tuple[tuple[str, str] | None, list[str]]:
     if not matches:
         return None, []
-    ranked: list[tuple[int, int, str, str, list[str]]] = []
-    for table, column in matches:
+    ranked: list[tuple[int, int, int, str, str, list[str]]] = []
+    for position, (table, column) in enumerate(matches):
         route = _path(graph, anchors, {table}) if anchors else [table]
         if route:
-            ranked.append((len(route) - 1, -_sales_context_score(table), table, column, route))
+            ranked.append(
+                (len(route) - 1, -_sales_context_score(table), position, table, column, route)
+            )
     if not ranked:
         return None, []
-    _, _, table, column, route = min(ranked)
+    _, _, _, table, column, route = min(ranked)
     return (table, column), route
 
 
 CAPABILITIES: dict[str, dict[str, object]] = {
     "sales_amount": {
         "label": "Ventas o ingresos",
-        "triggers": ("venta", "ventas", "ingreso", "ingresos", "facturacion", "importe"),
-        "columns": ("linetotal", "salesamount", "salestotal", "subtotal", "totaldue", "revenue"),
+        "triggers": (
+            "venta",
+            "ventas",
+            "ingreso",
+            "ingresos",
+            "facturacion",
+            "importe",
+            "sales",
+            "revenue",
+            "amount",
+            "invoiced",
+        ),
+        "columns": (
+            "linetotal",
+            "extendedprice",
+            "salesamount",
+            "salestotal",
+            "importetotal",
+            "totalventa",
+            "importeventa",
+            "subtotal",
+            "totaldue",
+            "revenue",
+        ),
     },
     "quantity": {
         "label": "Unidades vendidas",
-        "triggers": ("unidad", "unidades", "cantidad", "cantidades", "volumen"),
-        "columns": ("orderqty", "quantity", "qty", "cantidad", "units"),
+        "triggers": (
+            "unidad",
+            "unidades",
+            "cantidad",
+            "cantidades",
+            "volumen",
+            "units",
+            "quantity",
+            "volume",
+        ),
+        "columns": ("orderqty", "quantity", "qty", "cantidadvendida", "cantidad", "units"),
     },
     "transactions": {
         "label": "Número de transacciones o pedidos",
-        "triggers": ("pedido", "pedidos", "transaccion", "transacciones", "ordenes"),
-        "columns": ("salesorderid", "orderid", "transactionid", "pedidoid"),
+        "triggers": (
+            "pedido",
+            "pedidos",
+            "transaccion",
+            "transacciones",
+            "ordenes",
+            "factura",
+            "facturas",
+            "invoice",
+            "invoices",
+            "order",
+            "orders",
+            "transaction",
+            "transactions",
+        ),
+        "columns": (
+            "salesorderid",
+            "orderid",
+            "transactionid",
+            "pedidoid",
+            "invoiceid",
+            "facturaid",
+            "idfactura",
+            "idpedido",
+            "idtransaccion",
+        ),
     },
     "date": {
         "label": "Evolución temporal",
-        "triggers": ("tiempo", "fecha", "periodo", "mensual", "trimestral", "anual", "tendencia"),
-        "columns": ("orderdate", "salesdate", "transactiondate", "fecha", "date"),
+        "triggers": (
+            "tiempo",
+            "fecha",
+            "periodo",
+            "mensual",
+            "trimestral",
+            "anual",
+            "tendencia",
+            "monthly",
+            "quarterly",
+            "yearly",
+            "annual",
+            "daily",
+            "date",
+            "period",
+            "time",
+        ),
+        "columns": (
+            "invoicedate",
+            "fechafactura",
+            "fechaemision",
+            "orderdate",
+            "salesdate",
+            "transactiondate",
+            "fechaventa",
+            "fecha",
+            "date",
+        ),
     },
     "product": {
         "label": "Análisis por producto",
-        "triggers": ("producto", "productos", "articulo", "articulos"),
+        "triggers": (
+            "producto",
+            "productos",
+            "articulo",
+            "articulos",
+            "product",
+            "products",
+            "item",
+            "items",
+        ),
         "columns": (
             "productid",
             "itemid",
@@ -198,16 +380,48 @@ CAPABILITIES: dict[str, dict[str, object]] = {
             "productname",
             "itemname",
             "stockitemname",
+            "idproducto",
+            "idarticulo",
+            "nombreproducto",
+            "nombrearticulo",
         ),
     },
     "customer": {
         "label": "Análisis por cliente",
-        "triggers": ("cliente", "clientes", "comprador", "compradores"),
-        "columns": ("customerid", "clientid", "personid", "accountnumber"),
+        "triggers": (
+            "cliente",
+            "clientes",
+            "comprador",
+            "compradores",
+            "customer",
+            "customers",
+            "client",
+            "clients",
+        ),
+        "columns": (
+            "customerid",
+            "clientid",
+            "idcliente",
+            "nombrecliente",
+            "customername",
+            "personid",
+            "accountnumber",
+        ),
     },
     "territory": {
         "label": "Análisis territorial",
-        "triggers": ("territorio", "territorios", "region", "regiones", "pais", "geograf"),
+        "triggers": (
+            "territorio",
+            "territorios",
+            "region",
+            "regiones",
+            "pais",
+            "geograf",
+            "territory",
+            "territories",
+            "country",
+            "geograph",
+        ),
         "columns": (
             "territoryid",
             "regionid",
@@ -217,11 +431,15 @@ CAPABILITIES: dict[str, dict[str, object]] = {
             "countryid",
             "stateprovinceid",
             "cityid",
+            "idterritorio",
+            "idregion",
+            "idpais",
+            "idciudad",
         ),
     },
     "unit_cost": {
         "label": "Costo unitario",
-        "triggers": ("costo", "costos", "coste", "costes"),
+        "triggers": ("costo", "costos", "coste", "costes", "cost", "costs"),
         "columns": (
             "standardcost",
             "unitcost",
@@ -229,17 +447,25 @@ CAPABILITIES: dict[str, dict[str, object]] = {
             "lastcostprice",
             "costprice",
             "costo",
+            "costounitario",
+            "costeunitario",
         ),
     },
     "unit_price": {
         "label": "Precio unitario",
         "triggers": (),
-        "columns": ("unitprice", "salesprice", "precio"),
+        "columns": ("unitprice", "salesprice", "preciounitario", "precio"),
     },
     "discount_rate": {
         "label": "Descuento",
-        "triggers": ("descuento", "descuentos"),
-        "columns": ("unitpricediscount", "discountrate", "discountpct"),
+        "triggers": ("descuento", "descuentos", "discount", "discounts"),
+        "columns": (
+            "unitpricediscount",
+            "discountrate",
+            "discountpct",
+            "tasadescuento",
+            "porcentajedescuento",
+        ),
     },
 }
 
@@ -249,47 +475,73 @@ def _matches(text: str, values: tuple[str, ...]) -> bool:
     return any(value in words or value in text for value in values)
 
 
-def _find_columns(index: list[tuple[str, str, str]], capability: str) -> list[tuple[str, str]]:
+def _find_columns(index: list[ColumnEvidence], capability: str) -> list[tuple[str, str]]:
     patterns = CAPABILITIES[capability]["columns"]
     assert isinstance(patterns, tuple)
-    for pattern in patterns:
-        exact_matches = [
-            (reference, column)
-            for reference, column, normalized in index
-            if str(pattern) == normalized
-        ]
-        if exact_matches:
-            return exact_matches
-        matches = [
-            (reference, column)
-            for reference, column, normalized in index
-            if str(pattern) in normalized
-        ]
-        if matches:
-            return matches
-    return []
+    expected_types = (
+        NUMERIC_TYPES
+        if capability in NUMERIC_CAPABILITIES
+        else TEMPORAL_TYPES
+        if capability == "date"
+        else None
+    )
+    candidates = [
+        item for item in index if not item[3] or expected_types is None or item[3] in expected_types
+    ]
+    exact_tables = {table for table, _, name, _ in candidates if name in patterns}
+    ranked = [
+        (patterns.index(name) if name in patterns else len(patterns), table, column)
+        for table, column, name, _ in candidates
+        if name in patterns
+        or (table not in exact_tables and any(str(pattern) in name for pattern in patterns))
+    ]
+    return [(table, column) for _, table, column in sorted(ranked)]
 
 
 def _component(
     capability: str,
-    index: list[tuple[str, str, str]],
+    index: list[ColumnEvidence],
+    graph: dict[str, set[str]],
+    anchors: set[str],
 ) -> tuple[NeedStatus, list[str], str]:
     matches = _find_columns(index, capability)
-    evidence = [f"{table}.{column}" for table, column in matches[:5]]
-    if not matches:
+    patterns = CAPABILITIES[capability]["columns"]
+    assert isinstance(patterns, tuple)
+    exact_matches = [match for match in matches if _compact(match[1]) in patterns]
+    selected, route = _nearest_match(exact_matches, anchors, graph)
+    if selected is None:
+        # An audit date on the fact must not eclipse a commercial date on its
+        # declared header. Disconnected exact matches still cannot become evidence.
+        selected, route = _nearest_match(matches, anchors, graph)
+    if selected is None:
         return (
             "unavailable",
             [],
-            "No se encontró una columna compatible en la instantánea vigente.",
+            "No se encontró una referencia de tipo compatible y una ruta que conserve el hecho.",
         )
-    distinct_names = {_compact(column) for _, column in matches}
-    if len(distinct_names) > 1 and capability in {"sales_amount", "date", "unit_cost"}:
+    table, column = selected
+    evidence = [f"{table}.{column}"]
+    if len(route) > 1:
+        evidence.append("Ruta declarada: " + " → ".join(route))
+    data_type = next(kind for ref, name, _, kind in index if (ref, name) == selected)
+    if not data_type and capability in NUMERIC_CAPABILITIES | {"date"}:
+        return (
+            "ambiguous",
+            evidence,
+            "La instantánea no registra el tipo de esta columna; actualice los metadatos "
+            "antes de confirmar el cálculo.",
+        )
+    distinct_names = {_compact(name) for ref, name in matches if ref == table}
+    loose_semantic_match = _compact(column) not in patterns
+    if capability in {"sales_amount", "date", "unit_cost"} and (
+        len(distinct_names) > 1 or loose_semantic_match
+    ):
         return (
             "ambiguous",
             evidence,
             (
-                "Existen varias columnas candidatas; la plataforma debe validar su "
-                "semántica antes de elegir."
+                "El nombre es genérico o existen varias columnas candidatas; "
+                "la plataforma debe validar su semántica antes de elegir."
             ),
         )
     return "direct", evidence, "Existe una columna candidata comprobada en los metadatos."
@@ -300,23 +552,26 @@ def _combined_requirement(
     label: str,
     request_text: str,
     components: list[str],
-    index: list[tuple[str, str, str]],
+    index: list[ColumnEvidence],
     graph: dict[str, set[str]],
     formula: str | None = None,
     preferred_anchors: set[str] | None = None,
 ) -> dict[str, object]:
-    component_results = [_component(component, index) for component in components]
+    anchors = preferred_anchors or _coherent_anchor(index, graph, components)
+    component_results = [_component(component, index, graph, anchors) for component in components]
     derived_component_evidence: list[str] = []
     derived_component_routes: list[list[str]] = []
     derived_component_formulas: list[str] = []
     for position, component in enumerate(components):
         if component != "sales_amount" or component_results[position][0] != "unavailable":
             continue
+        price = _component("unit_price", index, graph, anchors)
+        quantity = _component("quantity", index, graph, anchors)
         price_match, price_route = _nearest_match(
-            _find_columns(index, "unit_price"), preferred_anchors or set(), graph
+            _find_columns(index, "unit_price"), anchors, graph
         )
         quantity_match, quantity_route = _nearest_match(
-            _find_columns(index, "quantity"), preferred_anchors or set(), graph
+            _find_columns(index, "quantity"), anchors, graph
         )
         if price_match is None or quantity_match is None:
             continue
@@ -330,7 +585,7 @@ def _combined_requirement(
         derived_component_routes.extend(route for route in (price_route, quantity_route) if route)
         derived_component_formulas.append("precio unitario × cantidad")
         component_results[position] = (
-            "derivable",
+            "derivable" if price[0] == quantity[0] == "direct" else "ambiguous",
             derived_component_evidence,
             "El importe se puede derivar con componentes relacionados y verificables.",
         )
@@ -340,19 +595,14 @@ def _combined_requirement(
     ambiguous = [
         components[i] for i, item in enumerate(component_results) if item[0] == "ambiguous"
     ]
-    anchors = preferred_anchors or _coherent_anchor(index, graph, components)
-    selected = [
-        _nearest_match(_find_columns(index, component), anchors, graph) for component in components
-    ]
-    evidence = [f"{match[0]}.{match[1]}" for match, _ in selected if match is not None]
+    evidence = [reference for result in component_results for reference in result[1]]
     evidence.extend(derived_component_evidence)
-    routes = [route for _, route in selected if route]
-    routes.extend(derived_component_routes)
+    evidence = list(dict.fromkeys(evidence))
     if missing:
         status = "unavailable"
         resolution = (
             "No generar este requisito. Registre la limitación o incorpore una fuente "
-            "real que aporte: "
+            "real con tipos compatibles y relaciones hacia claves únicas que aporte: "
             + ", ".join(str(CAPABILITIES[item]["label"]) for item in missing)
             + "."
         )
@@ -360,7 +610,7 @@ def _combined_requirement(
         status = "ambiguous"
         resolution = (
             "Revise las alternativas candidatas dentro de la plataforma y confirme la "
-            "definición de negocio; "
+            "definición de negocio y los tipos registrados en los metadatos; "
             "ninguna se seleccionará por nombre solamente."
         )
     elif len(components) == 1 and component_results[0][0] == "direct":
@@ -377,7 +627,7 @@ def _combined_requirement(
                 "la granularidad."
             )
         )
-        for route in routes:
+        for route in derived_component_routes:
             if len(route) > 1:
                 evidence.append("Ruta declarada: " + " → ".join(route))
     else:
@@ -402,10 +652,29 @@ def assess_business_need(
     document: dict[str, Any], business_request: dict[str, Any]
 ) -> dict[str, object]:
     """Classify every explicit business requirement against structural metadata only."""
-    tables = _tables(document)
+    tables = {
+        reference: table
+        for reference, table in _tables(document).items()
+        if not _non_sales_event(reference)
+    }
     index = _column_index(tables)
     graph = _graph(tables)
     goal = _plain(business_request.get("goal", ""))
+    periodicity = business_request.get("periodicity", {})
+    requires_date = isinstance(periodicity, dict) and periodicity.get("code") in {
+        "day",
+        "week",
+        "month",
+        "quarter",
+        "year",
+    }
+    invoice_requested = bool(
+        re.search(
+            r"\b(factura(?:s)?|facturad[ao]s?|facturacion|invoice(?:s|d)?|invoiced|billing)\b", goal
+        )
+    )
+    if invoice_requested:
+        index = _invoice_index(index)
     items: list[dict[str, object]] = []
 
     question_components = {
@@ -419,6 +688,8 @@ def assess_business_need(
         for capability, definition in CAPABILITIES.items()
         if _matches(goal, definition["triggers"])  # type: ignore[arg-type]
     ]
+    if requires_date:
+        requested_components.append("date")
     for question in business_request.get("questions", []):
         if isinstance(question, dict):
             requested_components.extend(question_components.get(str(question.get("code")), []))
@@ -472,8 +743,10 @@ def assess_business_need(
         for capability, definition in CAPABILITIES.items()
         if _matches(goal, definition["triggers"])  # type: ignore[arg-type]
     }
+    if requires_date:
+        detected.add("date")
     derived: list[tuple[str, str, list[str], str]] = []
-    if "descuento" in goal or "descuentos" in goal:
+    if "discount_rate" in detected:
         derived.append(
             (
                 "discount_amount",
@@ -492,7 +765,18 @@ def assess_business_need(
                 "costo unitario × unidades vendidas",
             )
         )
-    if any(term in goal for term in ("margen", "rentabilidad", "utilidad", "beneficio")):
+    if any(
+        term in goal
+        for term in (
+            "margen",
+            "rentabilidad",
+            "utilidad",
+            "beneficio",
+            "margin",
+            "profitability",
+            "profit",
+        )
+    ):
         derived.append(
             (
                 "gross_margin",
@@ -501,7 +785,7 @@ def assess_business_need(
                 "ventas netas − (costo unitario × unidades)",
             )
         )
-    if "por unidad" in goal or "unitario" in goal or "unitaria" in goal:
+    if "por unidad" in goal or "unitario" in goal or "unitaria" in goal or "per unit" in goal:
         if "sales_amount" in detected or "venta" in goal:
             derived.append(
                 (
@@ -520,6 +804,42 @@ def assess_business_need(
                     "costo unitario trazable de la fuente",
                 )
             )
+    if re.search(
+        r"\b(promedio|media|average|avg)\b.*\b(transaccion(?:es)?|pedido(?:s)?|transaction(?:s)?|order(?:s)?|factura(?:s)?|invoice(?:s)?)\b",
+        goal,
+    ):
+        derived.append(
+            (
+                "average_transaction",
+                "Importe promedio por transacción",
+                ["sales_amount", "transactions"],
+                "ventas totales ÷ documentos comerciales distintos",
+            )
+        )
+    if invoice_requested:
+        invoice_index = [
+            item
+            for item in index
+            if (item[0], item[1]) not in _find_columns(index, "transactions")
+            or item[2] in {"invoiceid", "facturaid", "idfactura"}
+        ]
+        invoice_requirement = _combined_requirement(
+            "goal:invoiced_sales",
+            "Ventas facturadas",
+            str(business_request.get("goal", "")),
+            ["sales_amount", "transactions", "date"],
+            invoice_index,
+            graph,
+            preferred_anchors=preferred_anchors,
+        )
+        # Keep the public semantic code used by proposal generation while proving
+        # amount, document identity and date together in the invoice subgraph.
+        invoice_requirement["components"] = ["invoice_event"]
+        invoice_requirement["resolution"] = (
+            str(invoice_requirement["resolution"])
+            + " Los pedidos por sí solos no prueban una venta facturada."
+        )
+        items.append(invoice_requirement)
     for capability in sorted(detected):
         definition = CAPABILITIES[capability]
         items.append(
@@ -590,8 +910,10 @@ def assess_business_need(
         "requires_acknowledgement": blocking,
         "can_continue": bool(items) and counts["direct"] + counts["derivable"] > 0,
         "summary": (
-            "La necesidad tiene respaldo suficiente para continuar, con decisiones pendientes."
+            "Se identificó respaldo estructural parcial, con decisiones pendientes. "
             if blocking
-            else "La necesidad tiene respaldo estructural suficiente para continuar."
-        ),
+            else "Los requisitos reconocidos tienen referencias estructurales compatibles. "
+        )
+        + "Esta comprobación no garantiza cobertura completa del texto, calidad ni "
+        "disponibilidad de datos; la propuesta y el ETL deben verificarse después.",
     }

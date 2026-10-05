@@ -90,7 +90,7 @@
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & INF-SPR-02 \\
-    Versión & 1.0.0 \\
+    Versión & 1.1.0 \\
     Periodo de referencia & 4 al 11 de septiembre de 2026 \\
     Rama de trabajo & \file{feature/rbac-y-parametros} \\
     Línea base & \file{develop}; promoción posterior mediante pull request \\
@@ -217,6 +217,44 @@ La configuración conserva nombre, proveedor, URL permitida, modelo, estado y re
 
 La migración \file{20260918\_06} vincula cada configuración con, como máximo, un secreto. Cambiar de proveedor invalida la credencial anterior; eliminar una configuración inactiva elimina también su secreto. La auditoría registra alta o reemplazo sin incluir la clave. \file{GEMINI\_API\_KEY} y \file{DASHSCOPE\_API\_KEY} se retiraron de Compose y de la plantilla \file{.env.example}.
 
+\subsection{Endurecimiento del contrato LLM y consentimiento}
+
+La revisión acumulativa del 3 de octubre conserva el cierre histórico del Sprint 2,
+pero amplía sus controles compartidos. El adaptador de Claude usa salida JSON
+estructurada nativa y mantiene validación local, sin activar pensamiento extendido.
+Un reintento acotado por presupuesto agotado no autoriza aceptar salida incompleta,
+relajar el contrato o cambiar de proveedor. En la auditoría operativa Claude completó
+el caso de facturas de WideWorldImporters; Groq encontró cuota temporal y Gemini
+respondió HTTP 400. Son resultados de ese ensayo, no una comparación general de calidad.
+
+Las nuevas acciones de sugerir, reformular y revisar necesidades requieren
+consentimiento de envío vinculado a la configuración activa: identificador, proveedor,
+URL y modelo. La interfaz muestra el destino y los datos permitidos antes de enviar;
+el servidor rechaza una huella ausente o desactualizada antes de llamar al proveedor.
+Cambiar el destino o restaurar un borrador no reutiliza una autorización anterior.
+El paquete excluye filas, muestras, propiedades de conexión y credenciales; sólo
+contiene la necesidad y la estructura necesaria para comprobarla.
+
+El ensayo autorizado de asesoría con Claude Haiku mantuvo ese destino durante la
+recuperación: a una salida rechazada se le puede devolver feedback de validación para
+un único reintento, sin relajar restricciones ni activar otro proveedor. El rechazo
+de una necesidad parafraseada evita persistir evidencia sobre un objetivo diferente.
+La versión \file{need-review-2} invalida para generación las evaluaciones previas al
+control adicional de roles semánticos; no modifica contratos históricos aprobados.
+
+La aceptación supervisada del ensayo no eliminó todos los límites del proveedor.
+En AdventureWorks, una reformulación siguió bloqueada tras dos intentos por una
+capacidad sin validador. Se conservó el texto del analista y se revisó por la misma
+ruta autorizada. Ni aceptar advertencias ni habilitar el botón de generación ejecuta
+una propuesta o un ETL por sí solo; no se realizó ninguna de esas acciones en esta
+prueba del asesor.
+
+La auditoría creó los roles Analista BI y Gerente comercial sin asignarlos a usuarios.
+El segundo recibió consulta de tablero y conexiones, más descarga de informes, tras
+autorización explícita. No se amplió acceso a ninguna cuenta. La ejecución del ciclo
+con la sesión administrativa prueba la operación, pero no reemplaza una prueba
+autenticada de segregación de funciones bajo cada rol nuevo.
+
 \subsection{Alternativa local verificable}
 
 El perfil Compose \file{local-llm} incorpora Ollama de forma opcional y privada dentro de la red de contenedores. El modelo local predeterminado es \file{qwen2.5:3b}, elegido para mantener una experiencia ágil en equipos de desarrollo. \file{qwen3:4b} permanece como alternativa de mayor capacidad y mayor consumo. Se opera desde la raíz del repositorio:
@@ -252,6 +290,16 @@ make verify
 \end{lstlisting}
 
 El comando no descarga modelos LLM: valida solamente que el perfil opcional sea una configuración Compose válida. Esta decisión evita que CI consuma almacenamiento, tiempo y recursos de cómputo en cada ejecución.
+
+La adenda QA-NEED de la auditoría del 3 de octubre añade regresiones de consentimiento
+ausente, destino cambiado y respuesta tardía. Los dobles de proveedor verifican cero
+llamadas ante autorización inválida. Estas pruebas locales se distinguen de un ensayo
+con proveedor real y no certifican disponibilidad de cuota ni soporte de modelos futuros.
+
+Después de las correcciones del asesor, \file{make test} aprobó 231 pruebas backend
+y 34 frontend. Ruff, formato, Mypy, ESLint y TypeScript/Vite también finalizaron
+correctamente; sólo se conservó un aviso de deprecación Starlette/AnyIO sin fallo.
+Es el corte acumulativo del 3 de octubre, distinto de la matriz histórica del Sprint 2.
 
 \section{Riesgos y controles}
 
@@ -296,6 +344,7 @@ Los siguientes sprints deben conservar este contrato: primero especificación SD
   0.1.0 & 11-09-2026 & Primera versión: documentación del incremento administrativo, RBAC, UX, parámetros, proveedores LLM y alternativa local Ollama. \\
   0.2.0 & 18-09-2026 & Corrección final: registro web de credenciales cloud, almacenamiento cifrado, volumen de clave maestra, migración, auditoría y verificación integrada. \\
   1.0.0 & 24-09-2026 & Normalización profesional del informe y actualización del estado histórico de cierre. \\
+  1.1.0 & 03-10-2026 & Contrato Claude estructurado, consentimiento por destino para asesoría de necesidades y límites de la prueba de roles, sin alterar el cierre histórico. \\
   \bottomrule
 \end{tabularx}
 

@@ -1,0 +1,272 @@
+\chapterpage{Módulo 1 · Orientación}{Cómo estudiar y qué podrá hacer}
+\sub{Resultado de aprendizaje}
+Al terminar podrá explicar una necesidad comercial, reconocer qué datos la respaldan, recorrer las pantallas sin confundir aprobación con ejecución, revisar un datamart y defender sus cifras frente a otra persona. No necesita memorizar nombres de tablas: necesita saber \textbf{qué preguntar y qué comprobar}.
+\begin{tabularx}{\linewidth}{@{}p{31mm}YY@{}}
+\toprule
+\textbf{Recorrido}&\textbf{Qué estudiar}&\textbf{Qué producir}\\
+\midrule
+Primera lectura&Conceptos BI, proceso de ventas y papel de la IA.&Una explicación propia de pedido, factura, fila y KPI.\\
+Práctica guiada&Uso paso a paso y una necesidad sencilla por fuente.&Ficha con objetivo, alcance, propuesta y evidencia.\\
+Demostración&Guion breve, expedientes probados y preguntas al copiloto.&Una exposición reproducible, con límites explícitos.\\
+Profundización&Doce escenarios, ejercicios y controles negativos.&Casos nuevos identificados como pendientes de ensayo.\\
+\bottomrule
+\end{tabularx}
+\sub{Tres papeles que debe practicar}
+\textbf{Analista BI:} traduce una decisión en datos y cálculos; elige el evento, revisa el grano y las relaciones, interpreta advertencias y documenta su aprobación.
+
+\textbf{Gerente comercial:} pregunta qué ocurre, dónde, con qué magnitud y qué falta para decidir. No necesita aprobar fórmulas técnicas, pero sí entender qué mide cada cifra y qué no demuestra.
+
+\textbf{QA o responsable de calidad:} repite pasos, compara esperado contra obtenido, registra fuente y filtros, prueba errores y evita afirmar que algo está probado sin evidencia.
+\begin{note}[Perspectiva de trabajo no significa permiso informático]
+En la auditoría se crearon los roles Analista BI y Gerente comercial, pero quedaron sin usuarios asignados. El recorrido integral se hizo con una cuenta administrativa autorizada. Cambiar entre Vista ejecutiva y Vista analítica no inicia sesión con otro rol ni prueba por sí mismo la seguridad de acceso.
+\end{note}
+\sub{Qué cubre y qué no cubre esta formación}
+Cubre el dominio de ventas, dos fuentes SQL Server, catálogo por fuente, sugerencias de necesidades, validación, modelado supervisado, ETL, conciliación, analítica, exportación y copiloto. No enseña a ejecutar ventas en un ERP ni certifica contabilidad, tributación, cobranzas o costos históricos. No se implementa un pronóstico de ventas en estos ejercicios.
+\sub{Cómo reconocer el nivel de evidencia}
+\textbf{Probado integralmente:} el caso identificado llegó a ETL, panel y comprobaciones. \textbf{Previabilidad:} sólo se comprobó si podía continuarse. \textbf{Propuesto:} deberá ensayarlo. \textbf{Condicional:} depende de una definición o dato aún por confirmar. Una captura prueba lo que muestra, no todo lo que podría ocurrir después.
+\begin{good}[Antes de pulsar cualquier aprobación]
+Debe poder completar esta frase: «Estoy analizando \underline{\hspace{18mm}}, una fila representa \underline{\hspace{18mm}}, el importe significa \underline{\hspace{18mm}} y el resultado no permite afirmar \underline{\hspace{18mm}}».
+\end{good}
+
+\chapterpage{Módulo 1 · Conceptos de BI}{De registros a decisiones}
+\textbf{BI} significa inteligencia de negocio: organizar datos y medidas para responder preguntas de gestión. No consiste sólo en dibujar gráficos. Primero se define qué ocurrió en el negocio; después se calcula y comunica con trazabilidad.
+\begin{tabularx}{\linewidth}{@{}p{31mm}Y@{}}
+\toprule
+\textbf{Concepto}&\textbf{Explicación desde cero}\\
+\midrule
+Fuente OLTP&Base operativa que registra pedidos, facturas, productos o clientes. Está organizada para las transacciones del negocio.\\
+Metadatos&Descripción de la estructura: tablas, columnas, tipos, claves y relaciones. No son los importes ni los nombres de todos los clientes.\\
+Instantánea&Versión guardada de esos metadatos. Permite saber con qué estructura se construyó una propuesta. No es una copia de todas las ventas.\\
+Datamart&Conjunto analítico para un área, aquí ventas. Reorganiza datos para consultar medidas por dimensiones.\\
+Hecho y grano&El hecho representa el evento medido. El grano dice qué representa exactamente una fila, por ejemplo una línea de factura.\\
+Dimensión&Conjunto descriptivo para clasificar hechos. Producto puede contener nombre, categoría y color. Esos campos son atributos de la dimensión, no medidas.\\
+Medida&Valor sobre el que se calcula: cantidad, importe o costo. No todo número es una medida: un identificador no se suma.\\
+KPI&Indicador definido para una pregunta: total facturado, número de pedidos o importe promedio por factura. Requiere fórmula y unidad.\\
+ETL&Extracción, transformación y carga. Lee la fuente autorizada, aplica reglas controladas y guarda las tablas analíticas.\\
+Linaje&Cadena que explica de dónde salió un resultado: fuente, instantánea, propuesta, ejecución, columna y cálculo.\\
+\bottomrule
+\end{tabularx}
+\sub{Claves y relaciones, sin necesidad de programar}
+Una \textbf{clave primaria (PK)} identifica una fila. Una \textbf{clave foránea (FK)} relaciona una tabla con otra. Una línea puede referirse a su factura; la factura puede referirse a su cliente. El sistema debe comprobar esa ruta. No basta con que dos columnas tengan nombres parecidos.
+
+Una relación uno a muchos mal recorrida puede repetir líneas y aumentar ventas artificialmente. Por eso la aplicación revisa rutas, claves compuestas y conservación del grano. Un resultado que «parece razonable» no sustituye esa comprobación.
+\textbf{Modelo estrella:} un hecho central se relaciona con dimensiones descriptivas. La propuesta usa la estructura que puede validar; no debe forzarse el mismo conjunto de tablas para todas las fuentes. Una métrica se convierte en instrumento de gestión al tener objetivo y contexto: esta guía no presupone que ya estén implementados metas, semáforos o alertas comerciales.
+\begin{good}[Una diferencia decisiva]
+Una factura con tres líneas representa \textbf{una factura, tres filas de detalle y una cantidad de unidades que puede ser distinta de tres}. Para contar facturas se usa el identificador distinto del documento, no el número de filas.
+\end{good}
+
+\chapterpage{Módulo 1 · El negocio de ventas}{Pedido, entrega, factura y cobro}
+Una operación comercial puede atravesar varios eventos. No todas las empresas los realizan en el mismo orden ni cada documento corresponde uno a uno con otro. La necesidad debe nombrar el evento que se quiere medir.
+\begin{tabularx}{\linewidth}{@{}p{27mm}YY@{}}
+\toprule
+\textbf{Evento}&\textbf{Qué indica}&\textbf{Qué no permite asumir}\\
+\midrule
+Pedido&Solicitud comercial registrada; productos, cantidades y condiciones.&Que se haya entregado, facturado o cobrado.\\
+Entrega&Salida o entrega de bienes, si existe evidencia logística.&Que se haya cobrado o facturado todo.\\
+Factura&Documento emitido con líneas e importes.&Que el dinero haya ingresado o que todo su total sea ingreso sin impuestos.\\
+Cobro&Pago aplicado o entrada de dinero según registros verificables.&Que coincida con el mes de la factura o con una única factura.\\
+Devolución / nota de crédito&Ajuste de la operación, si está representado y su relación es comprobable.&Que un importe negativo sea siempre una devolución o que el sistema la reste sin una regla.\\
+\bottomrule
+\end{tabularx}
+\sub{Seis decisiones comerciales antes de pedir el datamart}
+\begin{enumerate}
+\item \textbf{Evento:} ¿pedidos registrados o facturas emitidas? «Ventas» por sí solo puede ser ambiguo.
+\item \textbf{Población:} ¿todos los documentos o sólo un estado comprobado? No dé por hecho que se excluyeron anulados, borradores o devoluciones.
+\item \textbf{Fecha:} ¿pedido, emisión, entrega o cobro? Para una factura mensual normalmente se revisa la fecha de emisión, no la de modificación de la fila.
+\item \textbf{Importe:} ¿precio por cantidad, neto de descuento o total con impuesto? La palabra \emph{total} no responde esta pregunta.
+\item \textbf{Cliente y territorio:} ¿comprador, cuenta de facturación, dirección de entrega o territorio comercial? Debe poder explicar la relación utilizada.
+\item \textbf{Unidad y moneda:} ¿unidades físicas homogéneas? ¿una moneda comprobada? No sume indiscriminadamente monedas distintas ni convierta divisas sin una regla y una fuente.
+\end{enumerate}
+\begin{note}[Aplicación en nuestras fuentes]
+AdventureWorks se demostró desde líneas de pedido de venta. WideWorldImporters tiene evidencia separada de pedidos y facturas. La diferencia entre sus totales \textbf{no demuestra crecimiento, error ni pendiente de cobro}: son poblaciones y definiciones distintas.
+\end{note}
+\sub{Periodicidad no es granularidad}
+\textbf{Mensual} significa agrupar por año y mes. No agrupe sólo por «enero» si hay varios años. Conservar una fila por línea permite luego cambiar la agrupación sin perder trazabilidad. Tampoco significa que el programa programe una carga mensual automática.
+
+\chapterpage{Módulo 1 · Ejemplo numérico de estudio}{Aprender a calcular antes de interpretar}
+El ejemplo siguiente es \textbf{ficticio} y didáctico; no procede de las bases ni describe una regla tributaria. Se define un impuesto ilustrativo del 12\% sobre el neto y costos unitarios conocidos sólo para este ejercicio.
+\begin{tabularx}{\linewidth}{@{}p{17mm}p{15mm}rrrrY@{}}
+\toprule
+\textbf{Doc.}&\textbf{Prod.}&\textbf{Cant.}&\textbf{Precio}&\textbf{Desc.}&\textbf{Neto}&\textbf{Costo total}\\
+\midrule
+P1&A&2&100&20&180&120\\
+P1&B&1&50&0&50&30\\
+P2&A&1&100&0&100&60\\
+\midrule
+Total&&4&&20&330&210\\
+\bottomrule
+\end{tabularx}
+Hay \textbf{3 líneas, 2 documentos y 4 unidades}. El bruto antes de descuento es 350; el descuento monetario es 20; el neto antes de impuesto es 330. El impuesto del ejercicio es 39,60 y el total con impuesto es 369,60.
+\begin{tabularx}{\linewidth}{@{}Yp{59mm}r@{}}
+\toprule
+\textbf{Indicador}&\textbf{Cálculo}&\textbf{Valor}\\
+\midrule
+Promedio neto por línea&330 / 3 líneas&110,00\\
+Promedio neto por documento&330 / 2 documentos&165,00\\
+Neto por unidad&330 / 4 unidades&82,50\\
+Precio unitario promedio simple&(100 + 50 + 100) / 3&83,33\\
+Margen bruto del ejercicio&330 - 210&120,00\\
+Margen sobre venta neta&120 / 330 $\times$ 100&36,36\%\\
+\bottomrule
+\end{tabularx}
+\sub{Qué le enseña este ejemplo}
+\begin{itemize}
+\item Los cuatro promedios contestan preguntas diferentes. No elija el de mayor valor: elija el que corresponde al nombre del indicador.
+\item Una tasa de descuento no es dinero. Para una línea, precio por cantidad por tasa produce un importe de descuento, si ésa es la regla comprobada.
+\item No reste el descuento dos veces de un importe que ya es neto. No mezcle importe con impuesto y costo sin impuesto para llamar al resultado margen comercial comparable.
+\item El margen bruto no es utilidad neta: el ejemplo no incluye personal, alquiler, intereses ni otros gastos.
+\item El margen porcentual del conjunto se calcula con totales compatibles. No se obtiene promediando porcentajes de líneas sin ponderación.
+\end{itemize}
+\begin{good}[Ejercicio resuelto]
+Si filtra únicamente el producto B, quedan 50 de importe y un documento P1. El promedio filtrado es 50 por documento que contiene B; \textbf{no es el total completo de P1}, que en este ejemplo vale 230 antes de impuesto. Todo promedio debe explicar el alcance del filtro.
+\end{good}
+
+\chapterpage{Módulo 1 · Criterio comercial}{Cómo convertir una cifra en una conclusión}
+\begin{tabularx}{\linewidth}{@{}p{31mm}YY@{}}
+\toprule
+\textbf{Pregunta de gestión}&\textbf{Qué revisar}&\textbf{Conclusión que debe evitar}\\
+\midrule
+¿Subieron las ventas?&Mismo evento, moneda, calendario y cobertura; períodos completos comparables.&«Crecimos» al comparar un mes parcial con otro completo.\\
+¿Qué producto lidera?&Suma por producto; aclarar si el ranking es por importe o unidades.&Confundir la línea más cara con el producto de mayor contribución.\\
+¿Qué cliente aporta más?&Identidad comercial, suma, documentos y alcance de cliente/cuenta.&Llamar fidelidad o abandono a un simple ranking de ventas.\\
+¿Qué territorio funciona mejor?&Nivel geográfico y ruta: comercial, entrega, estado o país.&Atribuir causalidad al vendedor sin datos de responsabilidad comercial.\\
+¿Qué tan rentable es?&Base neta, costo compatible y vigencia histórica comprobada.&Presentar costo estándar o último costo como costo real histórico.\\
+¿Cuál es la participación?&Numerador y denominador: universo filtrado o sólo Top N.&Usar porcentaje del Top 5 como cuota de todas las ventas.\\
+\bottomrule
+\end{tabularx}
+\sub{Chequeos operativos que también son de negocio}
+\textbf{Cobertura:} un cliente sin nombre puede seguir contando en los importes. Revise cuántas identidades se resolvieron y cuáles siguen técnicas. No convierta un nulo automáticamente en cero ni lo elimine sin explicar el efecto.
+
+\textbf{Comparabilidad:} cambiar una fuente, un expediente o una dimensión puede cambiar población, grano e importe. Lea siempre la cabecera antes de interpretar una tarjeta.
+
+\textbf{Disponibilidad frente a calidad:} tener una columna de costo demuestra que existe; no demuestra que sea correcta, actualizada o histórica. Un metadato no certifica toda la realidad comercial.
+
+\textbf{Causalidad:} el panel puede mostrar asociación, diferencia o concentración. Para explicar \emph{por qué} ocurrió algo se necesita evidencia adicional. Ni la IA ni una línea ascendente prueban una causa.
+\begin{note}[Vocabulario seguro para la exposición]
+Diga «en este expediente y con estos filtros se observa...», «el dato permite comparar...», «la causa no está demostrada...» o «el margen usa un costo de referencia...». Evite «la IA comprobó que el clima causó la caída» o «todo está correcto porque pasó el ETL».
+\end{note}
+\sub{Una necesidad bien formulada}
+Indique \textbf{decisión + evento + medidas + dimensiones + fecha/período + grano + límites}. Ejemplo: «Para priorizar productos, comparar mensualmente importe y unidades de líneas de factura por producto, conservar factura y línea y no inferir cobros». Las tablas las propone el sistema; el significado lo debe revisar usted.
+
+\chapterpage{Módulo 1 · Modelado dimensional}{Cómo se organiza un análisis de ventas}
+Un \textbf{data warehouse} integra información analítica de un alcance amplio; un \textbf{datamart} se enfoca en un área, como ventas. Este proyecto materializa datamarts. No debe presentarse como una implantación completa de gobierno corporativo de datos para toda una empresa.
+\sub{Un modelo estrella explicado con una venta}
+Imagine una línea que vende dos unidades de un producto a un cliente en una fecha. El hecho conserva las medidas y las referencias a dimensiones; las dimensiones contienen descripciones para agrupar.
+\begin{tabularx}{\linewidth}{@{}p{33mm}YY@{}}
+\toprule
+\textbf{Pieza}&\textbf{Qué contiene conceptualmente}&\textbf{Pregunta que permite responder}\\
+\midrule
+Hecho Venta&Referencia a fecha, producto, cliente y territorio; cantidad e importe; trazabilidad documental.&¿Cuánto ocurrió en cada línea y cómo se relaciona con el documento?\\
+Dimensión Fecha&Día, mes y año de una fecha comercial definida.&¿Cuánto se registró por período?\\
+Dimensión Producto&Identificador, nombre y atributos verificables.&¿Qué productos aportaron más?\\
+Dimensión Cliente&Identificador comercial y descripción comprobada.&¿A quién corresponde el importe?\\
+Dimensión Territorio&Identidad y nivel territorial declarado.&¿Dónde se atribuye comercial o geográficamente?\\
+\bottomrule
+\end{tabularx}
+La tabla anterior es un modelo didáctico, no una obligación de generar exactamente cinco tablas en cualquier necesidad. Categoría y color pueden ser atributos de Producto; no todo atributo requiere una tabla nueva. Las relaciones reales de la fuente condicionan lo que se puede construir.
+\sub{Por qué se conserva el detalle}
+Si guarda sólo el total de cada mes, ya no puede verificar qué factura contribuyó ni separar correctamente productos después. Con un grano de línea, puede agregar por mes, producto o territorio conservando la trazabilidad. No debe unir cabeceras repetidas y sumar de nuevo su total por cada línea: duplicaría dinero.
+\sub{Medidas aditivas y no aditivas}
+\textbf{Aditivas:} cantidades e importes compatibles pueden sumarse a través de grupos sin duplicación. \textbf{No aditivas:} porcentajes, precios medios y ratios no se suman como importes. Un conteo distinto tampoco suele poder sumarse entre productos: el mismo pedido puede contener varios productos.
+\begin{good}[Ejemplo de doble conteo]
+P1 contiene A y B. El conteo por A es 1 y por B es 1; sumarlos produce 2, pero sigue existiendo \textbf{un solo pedido}. El total documental debe volver a calcular el identificador distinto sobre el universo total.
+\end{good}
+
+\chapterpage{Módulo 1 · Calidad y análisis}{De dato disponible a evidencia útil}
+\sub{Seis preguntas sobre calidad de datos}
+\begin{tabularx}{\linewidth}{@{}p{33mm}Y@{}}
+\toprule
+\textbf{Dimensión de calidad}&\textbf{Cómo pensarla en este proyecto}\\
+\midrule
+Completitud&¿Hay importe, fecha e identidad donde se necesitan? Un nulo debe tener tratamiento explícito; no convertirlo silenciosamente en cero.\\
+Unicidad&¿La clave identifica realmente la fila? ¿Una unión está repitiendo el hecho?\\
+Validez&¿El tipo y la operación son compatibles? Una fecha o un identificador no son dinero.\\
+Consistencia&¿Panel, expediente, exportación y copiloto describen el mismo alcance cuando se comparan?\\
+Exactitud&¿La cifra representa lo que ocurrió? La conciliación aporta evidencia, pero no demuestra que toda captura original del negocio sea correcta.\\
+Oportunidad&¿El corte de datos sirve para la decisión? Una carga hecha hoy puede contener ventas históricas y no actualización en tiempo real.\\
+\bottomrule
+\end{tabularx}
+La plataforma aporta controles de estas características, pero no se debe afirmar que calcula automáticamente un índice completo de calidad para todas ellas. El analista debe revisar también las limitaciones del proceso de negocio.
+\sub{Describir, diagnosticar y predecir son tareas distintas}
+\textbf{Descriptivo:} qué importe, unidades o documentos se observan. \textbf{Comparativo:} diferencias entre grupos o períodos equivalentes. \textbf{Diagnóstico:} explicar causas requiere evidencia adicional, no sólo una narrativa. \textbf{Predictivo:} estimar futuro requiere un modelo y evaluación específica; no es el alcance implementado de estas demostraciones.
+\sub{Operaciones analíticas que aprenderá}
+\textbf{Agregar:} sumar por mes. \textbf{Filtrar:} restringir a un año o territorio. \textbf{Desglosar:} comparar categorías de un gráfico. \textbf{Cambiar nivel:} pasar conceptualmente de día a mes o de ciudad a país sólo si el contrato y la interfaz lo soportan. No se promete un explorador OLAP libre con cualquier jerarquía.
+\begin{note}[Métrica, KPI y meta]
+Una métrica es una medida calculada. Un KPI se elige porque importa para una decisión. Para decir «se cumplió el objetivo» además necesita una meta, plazo y criterio de comparación. El hecho de que la interfaz llame KPI al total de ventas no significa que configure automáticamente cuotas, alertas o semáforos de desempeño.
+\end{note}
+\sub{Trazabilidad y reproducibilidad}
+Conservar entrada, fuente, estructura, contrato, fórmula y ejecución permite explicar un resultado. Reproducir la validación de un contrato no significa que el LLM vaya a redactar la misma respuesta cada vez. La evidencia estable pertenece al artefacto validado y a su ejecución, no a una promesa de infalibilidad del modelo.
+
+\chapterpage{Módulo 2 · IA como asistente}{Qué hace un LLM y por qué se le valida}
+Un \textbf{LLM} es un modelo que genera e interpreta lenguaje. Puede traducir una necesidad a una propuesta estructurada y redactar una explicación. Su capacidad lingüística no le convierte en dueño de las reglas de su empresa ni garantiza que cada columna o fórmula sea correcta.
+\sub{Palabras que verá al usarlo}
+\begin{tabularx}{\linewidth}{@{}p{31mm}Y@{}}
+\toprule
+\textbf{Término}&\textbf{Qué significa para el usuario}\\
+\midrule
+Proveedor / modelo&Servicio y modelo configurados. Cambiarlo puede variar latencia y calidad de respuesta, pero no debe cambiar los controles de aprobación.\\
+Contexto&Información que se entrega para una tarea: necesidad, estructura permitida o agregados autorizados, según la etapa. No equivale a acceso irrestricto a la base.\\
+Prompt / instrucción&Petición y reglas que orientan la respuesta. No sustituye la comprobación posterior.\\
+Token / presupuesto&Unidad de procesamiento y límite de salida. Una respuesta cortada puede fallar; aumentar razonamiento no garantiza corrección.\\
+Salida estructurada&Respuesta con un formato contractual, normalmente JSON, que el software puede comprobar. No es un archivo que el analista deba editar.\\
+Alucinación&Referencia, fórmula o afirmación plausible pero no respaldada. El sistema debe descartarla o dejarla por revisar.\\
+Regla determinística&Comprobación reproducible basada en código y datos, no en una nueva opinión del modelo. Por ejemplo, si una columna existe o si un conteo coincide.\\
+\bottomrule
+\end{tabularx}
+\sub{Cuatro niveles distintos de confianza}
+\begin{enumerate}
+\item \textbf{Formato:} la respuesta se puede leer y cumple el contrato.
+\item \textbf{Estructura:} las tablas, tipos, claves y relaciones existen y son compatibles.
+\item \textbf{Semántica:} representan lo solicitado: costo no es precio; factura no es pedido; tasa no es dinero. Hay reglas y también límites que requieren revisión humana.
+\item \textbf{Datos:} la ejecución y sus agregados se concilian con la fuente. Esto ocurre después, no al redactar la necesidad.
+\end{enumerate}
+\begin{good}[La defensa correcta del proyecto]
+El valor de la IA es asistir una interpretación compleja y reducir trabajo manual. El valor del sistema es \textbf{acotar, comprobar, conservar evidencia y exigir decisiones humanas}. Rechazar una respuesta inválida es una protección; no debe ocultarse ni convertirse en aprobación automática.
+\end{good}
+
+\chapterpage{Módulo 2 · Responsabilidades}{Quién hace qué en cada etapa}
+{\small
+\begin{tabularx}{\linewidth}{@{}p{24mm}YYY@{}}
+\toprule
+\textbf{Etapa}&\textbf{IA}&\textbf{Plataforma}&\textbf{Persona}\\
+\midrule
+Conexión y metadatos&No inventa ni captura el esquema.&Prueba acceso y obtiene estructura del motor; conserva instantáneas.&Autoriza fuente y revisa contexto.\\
+Catálogo&No es la autoridad que publica preguntas por sí sola.&Mantiene preguntas por fuente y descubre evidencia técnica.&Define objetivos y preguntas de negocio.\\
+Sugerir / redactar necesidad&Propone textos con el contexto permitido.&Valida referencias y capacidades; separa lo adoptable de lo bloqueado.&Elige o mantiene el texto y vuelve a validar.\\
+Viabilidad&Interpreta requisitos, posibilidades y límites.&Combina revisión con reglas, tipos, rutas y huella del contexto.&Revisa cada límite y acepta sólo un alcance entendido.\\
+Conceptos y propuesta&Propone conceptos, dimensiones, medidas, KPI y plan.&Normaliza y valida contrato y cobertura; rechaza referencias inválidas.&Comprueba evento, grano y significado.\\
+Personalización&Puede asistir una decisión contextual cuando se solicita.&Ofrece selecciones y recetas controladas; valida versiones.&Incluye/excluye, elige opciones válidas y justifica cambios.\\
+Verificar / aprobar&No concede la aprobación.&Recalcula reglas y evidencia; registra decisión.&Aprueba o rechaza explícitamente.\\
+Materializar / ETL&No ejecuta SQL libre del modelo.&Construye y ejecuta el plan controlado; carga y concilia.&Confirma una ejecución y revisa sus resultados.\\
+Etiquetas descriptivas&Puede sugerir normalización o traducción elegible.&Conserva identificadores y limita categorías enviables.&Revisa y publica etiquetas cuando corresponda.\\
+Panel y hallazgos&Los hallazgos automáticos del panel no requieren LLM.&Calcula KPI, gráficos y resúmenes determinísticos.&Elige filtros, compara y evalúa significado.\\
+Copiloto&Interpreta consulta acotada y redacta respuesta.&Obtiene agregados autorizados, impone límites y conserva contexto.&Contrasta cifras y cuestiona conclusiones.\\
+Exportación&No redacta ni recalcula libremente el informe.&Construye PDF/Excel desde la selección autorizada.&Verifica alcance y uso del documento.\\
+\bottomrule
+\end{tabularx}}
+\begin{note}[No todo lo automático es inteligencia artificial]
+Sumar ventas, filtrar un año, detectar una columna inexistente y comparar conteos son tareas del software. Una explicación en español puede provenir de reglas o del LLM; compruebe qué componente está viendo antes de describirlo como «lo hizo la IA».
+\end{note}
+
+\chapterpage{Módulo 2 · Seguridad y límites}{Qué información se usa y qué no se garantiza}
+\sub{La información depende de la etapa}
+\begin{itemize}
+\item \textbf{Necesidad, conceptos y propuesta:} texto del objetivo y metadatos permitidos, como nombres de tablas y columnas, tipos y relaciones. No se envían credenciales ni filas de ventas para estos pasos.
+\item \textbf{Etiquetas durante el flujo de materialización:} pueden enviarse categorías no sensibles de baja cardinalidad para sugerir descripciones. No debe afirmarse que jamás sale ningún valor de datos en todo el sistema.
+\item \textbf{Copiloto analítico:} recibe contexto y agregados autorizados para responder. Un total comercial sigue siendo información de negocio; su organización debe autorizar ese uso.
+\item \textbf{Proveedor local:} una configuración local cambia el destino de procesamiento, no elimina la necesidad de validar respuestas, permisos y alcance.
+\end{itemize}
+\sub{Qué significa independencia del modelo y la fuente}
+El contrato, las reglas y la trazabilidad son comunes. La conexión y la instantánea determinan qué existe en cada base; el adaptador del proveedor determina cómo se solicita una respuesta. No se debería resolver un fallo escribiendo reglas exclusivas para una base de ejemplo o aceptando fórmulas que otro modelo rechazó.
+
+Eso \textbf{no equivale a compatibilidad ya demostrada con cualquier motor, idioma, esquema o modelo}. Esta guía está respaldada por dos fuentes SQL Server. Las pruebas sintéticas en español e inglés amplían la cobertura, pero no sustituyen ensayos de una nueva instalación.
+\sub{Límites conocidos que debe poder explicar}
+\begin{itemize}
+\item Una sugerencia puede quedar bloqueada o no ser útil. En la última repetición de reformulación AW se mantuvo el texto original; no se obtuvo una reformulación utilizable.
+\item Groq encontró un límite temporal de cuota en la auditoría. Claude permitió completar el caso facturado después de correcciones. No se deduce de eso una clasificación estadística de proveedores.
+\item Una columna existente no certifica moneda, impuesto, estado comercial o costo histórico. «Comprobado estructuralmente» no significa «certificado financieramente».
+\item Roles creados sin usuarios asignados no prueban segregación de funciones. Esa prueba autenticada sigue pendiente en la evidencia citada.
+\end{itemize}
+\begin{good}[Regla de seguridad para aprender]
+Trabaje con la fuente de demostración, no pegue secretos en la necesidad ni en el chat, no cambie permisos para sortear un bloqueo y no acepte límites sólo para llegar a la siguiente pantalla. Si el sistema no puede resolver algo, documente qué falta.
+\end{good}

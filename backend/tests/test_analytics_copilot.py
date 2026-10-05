@@ -9,6 +9,8 @@ from app.modules.analytics.router import (
     _ANALYTICS_COPILOT_INSTRUCTION,
     _ANALYTICS_INTENT_INSTRUCTION,
     _analytics_intent_schema,
+    _business_scope_caveat,
+    _ensure_business_scope_caveat,
     _leading_territory_requested,
     _leading_territory_value,
     _require_snapshot_connection,
@@ -62,6 +64,17 @@ def test_analytics_copilot_instruction_separates_observation_from_causes() -> No
     assert "no inventes cifras, causas" in instruction
     assert "nunca enumeres causas hipotéticas" in instruction
     assert "no generes sql" in instruction
+
+
+def test_order_scope_survives_provider_omission() -> None:
+    scope = _business_scope_caveat(
+        "Alcance: líneas de pedido registradas; estos importes no equivalen "
+        "necesariamente a facturas emitidas. Resumen del datamart."
+    )
+    assert "facturas emitidas" in scope
+    assert _ensure_business_scope_caveat("No demuestra causalidad.", scope).startswith(scope)
+    assert _ensure_business_scope_caveat(scope, scope) == scope
+    assert _business_scope_caveat("Ventas conciliadas.") == ""
 
 
 def test_intent_schema_closes_metrics_years_and_territories_to_real_options() -> None:

@@ -13,7 +13,7 @@ Se versionan en GitHub:
 - código y configuración Compose;
 - Dockerfiles de frontend, backend, PostgreSQL y SQL Server;
 - scripts para crear los esquemas PostgreSQL;
-- script que descarga y restaura AdventureWorks desde el respaldo oficial de Microsoft;
+- script que descarga y restaura AdventureWorks y WideWorldImporters desde los respaldos oficiales de Microsoft;
 - migraciones y semillas aprobadas, idempotentes y sin secretos;
 - flujos CI/CD.
 
@@ -22,10 +22,10 @@ Se publican en GHCR cinco imágenes propias:
 - `...-frontend`;
 - `...-backend`;
 - `...-postgres` (PostgreSQL más inicialización de esquemas);
-- `...-sqlserver` (SQL Server más restauración idempotente de AdventureWorks).
+- `...-sqlserver` (SQL Server más restauración idempotente de AdventureWorks y WideWorldImporters).
 - `...-docs` (entorno LaTeX usado para regenerar la bitácora).
 
-No se publican volúmenes Docker ni contraseñas. Los volúmenes son estado local y no forman una imagen reproducible. AdventureWorks se restaura al iniciar un volumen vacío; PostgreSQL se reconstruye mediante migraciones y el catálogo base `seed`. Éste es el patrón que permite repetir el entorno con control de versiones.
+No se publican volúmenes Docker ni contraseñas. Los volúmenes son estado local y no forman una imagen reproducible. Las bases demostrativas se restauran de forma idempotente; PostgreSQL se reconstruye mediante migraciones y el catálogo base `seed`. Éste es el patrón que permite repetir el entorno con control de versiones.
 
 ## 2. Requisitos en cualquier equipo
 
@@ -70,7 +70,7 @@ Las API keys de Gemini, Groq, Anthropic y Qwen no se escriben en `.env`. Inicia 
 
 FastAPI cifra el valor en PostgreSQL y genera automáticamente la raíz criptográfica en el volumen `secret_key_data`. Ambos elementos son necesarios para recuperar la credencial después de reiniciar. No copies ese volumen entre equipos ni lo publiques; cada instalación debe registrar sus propias claves desde la web. Gemini, Groq, Anthropic y Qwen requieren una API key propia por instalación; Ollama local no requiere credencial.
 
-### Registrar AdventureWorks como fuente activa
+### Registrar y elegir las fuentes SQL Server
 
 Inicia sesión con una persona que disponga de `connections.read`, `connections.write` y `connections.test`. Abre **Preparación del entorno > Conexiones de datos** y registra:
 
@@ -82,21 +82,36 @@ Inicia sesión con una persona que disponga de `connections.read`, `connections.
 
 Guarda, ejecuta **Probar conexión** y activa únicamente cuando la pantalla confirme **Sólo lectura validada**. La contraseña queda cifrada y no vuelve al navegador. Cambiar host, base, usuario u opciones invalida la prueba anterior y obliga a probar nuevamente.
 
-Con la fuente activa, selecciona **Actualizar metadatos**. FastAPI leerá únicamente catálogos de tablas, columnas, claves y relaciones; no extrae filas de ventas. La primera ejecución crea una instantánea y las siguientes reutilizan la misma versión mientras su hash no cambie. Abre **Datos > Explorador de esquema** para buscar por esquema, tabla o columna y consultar el detalle técnico. Una conexión con instantáneas no puede eliminarse, porque sus capturas forman parte de la trazabilidad del análisis.
+Repite el registro para `WideWorldImporters local`, usando la base
+`WideWorldImporters` restaurada en la misma instancia y su acceso de sólo lectura.
+Ambas conexiones pueden permanecer habilitadas. El selector **Cambiar fuente** elige
+el contexto de trabajo; no desactiva la otra conexión ni unifica sus datos.
+
+Con la fuente elegida, selecciona **Actualizar metadatos**. FastAPI leerá únicamente catálogos de tablas, columnas, claves y relaciones; no extrae filas de ventas. La primera ejecución crea una instantánea y las siguientes reutilizan la misma versión mientras su hash no cambie. Abre **Preparación del entorno > Explorador de esquema** para buscar por esquema, tabla o columna y consultar el detalle técnico. Una conexión con instantáneas no puede eliminarse, porque sus capturas forman parte de la trazabilidad del análisis.
 
 ### Probar el asistente supervisado del Sprint 3
 
-Antes de entrar en **IA > Asistente de datamart**, comprueba que exista una fuente activa probada, una instantánea vigente y una configuración LLM activa que haya superado **Probar conexión**. La página Inicio muestra estos tres prerrequisitos como un recorrido guiado.
+Antes de entrar en **Diseño y transformación BI > Asistente de datamart**, comprueba que la fuente seleccionada esté habilitada y probada, exista una instantánea vigente y una configuración LLM activa haya superado **Probar conexión**. La página Inicio muestra estos tres prerrequisitos para el mismo contexto.
 
 1. Selecciona **Datamart de ventas** en el catálogo. Comprueba que se muestren preguntas de negocio y varias periodicidades, pero ninguna dimensión preseleccionada.
-2. Describe una necesidad, selecciona las opciones habilitadas y genera un intento inmutable.
-3. Revisa los conceptos, su explicación española y el origen técnico; excluye únicamente los que no representen la necesidad.
-4. En la propuesta válida, abre **Personalizar propuesta**, retira o incorpora dimensiones, medidas o KPIs ya comprobados, cambia una agregación permitida y registra una justificación. Debe crearse otra versión enlazada, sin llamar nuevamente al LLM.
-5. En **Versiones generadas**, confirma que el filtro inicial sea **Lista para revisar**, cambia a otros estados y recorre la paginación cuando exista más de una página.
-6. Aprueba o rechaza una versión. Aprobar registra el contrato, pero no crea tablas ni ejecuta ETL automáticamente.
-7. Ejecuta **Verificar evidencia** y confirma los cuatro controles estructurales antes de materializar.
+2. Comprueba el proveedor/modelo visible y confirma el envío de la necesidad y los metadatos estructurales si autorizas esa operación. No se envían filas ni credenciales. Si cambia el destino LLM, vuelve a confirmar; un borrador restaurado no conserva esta autorización.
+3. Escribe una necesidad o usa **Sugerir necesidades con esta fuente**, incluso con el objetivo vacío. Revisa explicación, evidencia y limitaciones de cada sugerencia y elige explícitamente **Usar esta necesidad**. Esta acción no modifica las preguntas del catálogo.
+4. Opcionalmente usa **Ayúdame a formular la necesidad** sobre tu texto. No adoptes una reformulación que cambie el objetivo comercial. Si no es utilizable, elige **Mantener mi redacción** y revisa el original; no es obligatorio utilizar una sugerencia de IA. Selecciona preguntas y periodicidad habilitadas y revisa la viabilidad del texto definitivo.
+5. Revisa requisitos directos, derivables y pendientes. La interfaz diferencia referencia estructural comprobada, derivación candidata e interpretación propuesta por IA no ejecutable. La presencia de una columna no prueba que sus valores sean correctos o que el costo sea histórico. Un precio de venta no es un costo y una fecha sirve para agrupar, no como operando monetario. Confirma únicamente límites aceptables o corrige la necesidad; revisa también las explicaciones libres, aunque las referencias sean válidas. Cambiar texto, fuente, preguntas o período obliga a revisar nuevamente antes de generar conceptos y propuesta.
+6. Genera el intento inmutable y revisa los conceptos, su explicación española y el origen técnico; excluye únicamente los que no representen la necesidad.
+7. En la propuesta válida, abre **Personalizar propuesta**, retira o incorpora dimensiones, medidas o KPIs ya comprobados, cambia una agregación permitida y registra una justificación. Debe crearse otra versión enlazada, sin llamar nuevamente al LLM.
+8. En **Versiones generadas**, confirma que el filtro inicial priorice las versiones por revisar, cambia a otros estados y recorre la paginación cuando exista más de una página.
+9. Aprueba o rechaza una versión. Aprobar registra el contrato, pero no crea tablas ni ejecuta ETL automáticamente.
+10. Ejecuta **Verificar evidencia** y confirma los cuatro controles estructurales antes de materializar.
 
-Una persona con `copilot.catalog.write` puede abrir **IA > Catálogo analítico**, escoger primero el dominio y administrar preguntas de negocio y periodicidades. El objetivo se escribe directamente en el asistente para cada análisis. No se parametrizan dimensiones: el LLM debe proponerlas desde la estructura de la fuente y la aplicación debe validarlas antes de mostrarlas. Guardar el catálogo afecta sólo propuestas nuevas; no borra ni reescribe versiones históricas.
+Una persona con `copilot.catalog.write` puede abrir **Diseño y transformación BI > Catálogo analítico**, comprobar la fuente y administrar preguntas de negocio y periodicidades del dominio. El objetivo se escribe o adopta directamente en el asistente para cada análisis. No se parametrizan dimensiones: el LLM debe proponerlas desde la estructura de la fuente y la aplicación debe validarlas antes de mostrarlas. Guardar el catálogo afecta sólo propuestas nuevas de esa conexión; no borra ni reescribe versiones históricas ni catálogos de otras fuentes.
+
+Para repetir la ampliación de necesidades, usa ambas fuentes y conserva por separado
+la instantánea, el texto, preguntas/período, proveedor/modelo, evidencia, límites,
+resultado y captura. Una revisión real exitosa acredita únicamente ese escenario.
+No equivale a haber probado todos los modelos, idiomas o motores, ni sustituye un ETL
+conciliado. El protocolo y los resultados están en
+[`testing/auditoria-operativa-2026-10-03.md`](testing/auditoria-operativa-2026-10-03.md).
 
 Si una propuesta anterior muestra **Compatibilidad entre versiones**, revisa los controles antes de tomar una decisión. Esa advertencia no significa que la fuente o las medidas sean incorrectas y **Verificar evidencia** nunca modifica el estado. Las aprobaciones retiradas por el comportamiento automático de versiones anteriores se restauran mediante la migración `20261001_18` sólo cuando existe una ejecución conciliada. Una retirada humana todavía puede restaurarse desde la pantalla con justificación y confirmación; no restaures una versión que muestre errores vigentes de referencias, contrato o semántica.
 
@@ -108,7 +123,7 @@ El valor `OLLAMA_CONTEXT_LENGTH=4096` debe permanecer en `.env`. El contexto ant
 
 ### Probar la materialización y validación del Sprint 4
 
-Con una propuesta aprobada y compatible, abre **Datos > Datamart de ventas**:
+Con una propuesta aprobada y compatible, abre **Diseño y transformación BI > Datamart de ventas** en la misma fuente:
 
 1. Confirma la versión recomendada o compara otra aprobación disponible.
 2. Revisa los KPI sugeridos por IA, sus medidas, periodicidad, unidad y receta controlada.
@@ -123,7 +138,7 @@ La primera prueba de referencia usó la propuesta 52 y la ejecución 6. La versi
 
 ### Probar la analítica, el copiloto y la reportería del Sprint 5
 
-1. Abra **Análisis > Analítica de ventas**. Debe aparecer la ejecución conciliada más reciente.
+1. Abra **Análisis y decisiones > Analítica de ventas**. Debe aparecer una ejecución conciliada de la fuente elegida; confirme fuente, propuesta y expediente antes de comparar resultados.
 2. Compruebe que **Clientes principales** muestre nombres descriptivos, no cuentas `AW...`.
 3. Alterne **Vista ejecutiva** y **Vista analítica**; la segunda añade clientes, tablas de respaldo y trazabilidad.
 4. Aplique año o territorio y verifique que KPIs, gráficos, hallazgos y exportaciones usen la misma selección.
@@ -221,7 +236,7 @@ git commit -m "feat: descripcion breve"
 git push -u origin feature/nombre-cambio
 ```
 
-Abre un pull request hacia `develop`. CI valida Compose, código, pruebas y los siete documentos PDF: seis entregables técnicos completos y el Capítulo III académico. Para publicar una entrega, abre otro pull request de `develop` hacia `main`; sólo esa fusión activa CD y publica las cinco imágenes con las etiquetas `main` y `sha-*`. Una etiqueta Git `v1.0.0` produce además la imagen `v1.0.0`. Consulta `docs/git-workflow.md` para el procedimiento completo y las reglas de protección.
+Abre un pull request hacia `develop`. CI valida Compose, código, pruebas y los doce PDF versionados: diez entregables técnicos y de evidencia, el Capítulo III académico y la guía de formación. Para publicar una entrega, abre otro pull request de `develop` hacia `main`; sólo esa fusión activa CD y publica las cinco imágenes con las etiquetas `main` y `sha-*`. Una etiqueta Git `v1.0.0` produce además la imagen `v1.0.0`. Consulta `docs/git-workflow.md` para el procedimiento completo y las reglas de protección.
 
 ## 6. Levantar el entorno publicado en otra máquina (sin compilar)
 
@@ -290,7 +305,7 @@ Con imágenes GHCR:
 make release-up
 ```
 
-Las migraciones futuras se ejecutarán como un paso controlado antes de iniciar una nueva versión del backend. Después se ejecuta el servicio `seed`, que actualiza sin duplicar el catálogo protegido de permisos, menús, rol administrador y cuenta inicial. Las cuentas temporales, auditoría, claves, configuraciones cloud y datos de negocio permanecen locales: nunca se copiará un volumen manualmente como mecanismo normal de despliegue.
+Las migraciones se ejecutan como un paso controlado antes de iniciar una nueva versión del backend. La ampliación de necesidades requiere `20261003_19`, que agrega `app.business_need_reviews` sin cambiar propuestas ni datamarts existentes. Después se ejecuta el servicio `seed`, que actualiza sin duplicar el catálogo protegido de permisos, menús, rol administrador y cuenta inicial. Las cuentas temporales, auditoría, claves, configuraciones cloud y datos de negocio permanecen locales: nunca se copiará un volumen manualmente como mecanismo normal de despliegue.
 
 Si se necesita repetir el catálogo sin reiniciar PostgreSQL, desde la raíz del repositorio se puede ejecutar:
 
@@ -319,6 +334,11 @@ docker compose --profile local-llm logs --tail=200 ollama
 - GHCR responde `denied`: el paquete es privado o falta `docker login ghcr.io`.
 - En ARM el inicio es lento: verifica que la emulación `linux/amd64` esté habilitada.
 - La prueba de Ollama indica que falta el modelo: ejecuta `make ollama-pull` desde la raíz del repositorio y repite la prueba; el valor predeterminado es `qwen2.5:3b`, elegido para una respuesta local ágil. No copies el volumen de otra máquina.
+- La asesoría pide confirmar el proveedor actual: revisa la configuración visible y renueva el consentimiento; no reutilices una autorización de otro destino.
+- La generación pide revisar nuevamente la necesidad: el texto, preguntas, período o instantánea ya no coinciden con la evaluación guardada. Repite la revisión sobre el estado actual; no recuperes una huella antigua.
+- Después de actualizar reglas a `need-review-2`, una evaluación anterior también requiere repetirse. Su registro se conserva, y esta revisión no cambia aprobaciones ni datamarts previos.
+- Un requisito usa precio de venta como costo o mezcla fecha e importe en una derivación: no lo aceptes como resuelto. El asesor puede pedir una corrección acotada al mismo proveedor; si no la resuelve, conserva la limitación y modifica o excluye sólo el requisito que no quieras analizar.
+- El paquete de metadatos supera el presupuesto: no se envía un esquema truncado. Ajusta el alcance admitido o documenta la limitación; no presupongas que un proveedor diferente elimina el límite del producto.
 
 ## 10. Evidencias para la tesis
 
@@ -330,6 +350,9 @@ Conserva por versión:
 - versión de AdventureWorks (`AdventureWorks2022`);
 - hash del respaldo descargado, cuando se congele la beta;
 - resultados de pruebas y migraciones aplicadas.
+- para la asesoría de necesidades: fuente/instantánea, objetivo final, preguntas,
+  periodicidad, proveedor/modelo, clasificación, referencias, límites y resultado real
+  separado de las pruebas simuladas; nunca una credencial o fila de negocio.
 
 ## 11. Cerrar el ciclo CI/CD en Azure
 
