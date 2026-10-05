@@ -5,6 +5,9 @@
 > el contexto multifuente de
 > [SPR-06-01](SPR-06-01-contexto-multifuente-sqlserver.md). Descubrimiento, propuesta y
 > validación mantienen el mismo contrato, pero reciben `connection_id` explícito.
+> La ampliación del 3 de octubre incorpora sugerencias y revisión previa de la necesidad
+> con metadatos reales, consentimiento por destino LLM y evaluación persistida. El
+> pronóstico fue retirado del alcance por el tutor; no es una capacidad pendiente.
 
 - Estado: **implementado y verificado localmente; pendiente de validación del usuario y PR**.
 - Sprint: SPR-03.
@@ -30,7 +33,7 @@ Este sprint no construye todavía el datamart ni ejecuta el ETL. Su resultado ob
 |---|---|---|
 | Configuración web y secretos | [SPR-03-04-configuracion-web-conexiones-y-secretos.md](SPR-03-04-configuracion-web-conexiones-y-secretos.md) | Una conexión SQL Server configurable, credenciales cifradas, cuatro parámetros numéricos y un catálogo de necesidades analíticas; la extensibilidad queda preparada, no implementada. |
 | Conexión e introspección | [SPR-03-01-conexion-e-introspeccion-adventureworks.md](SPR-03-01-conexion-e-introspeccion-adventureworks.md) | Instantánea reproducible de tablas, columnas, claves y relaciones de la conexión SQL Server activa, validada con AdventureWorks y sin extraer filas del negocio. |
-| Propuesta BI asistida | [SPR-03-02-propuesta-bi-asistida-por-ia.md](SPR-03-02-propuesta-bi-asistida-por-ia.md) | Solicitud de negocio guiada y propuesta JSON de hecho, dimensiones, medidas, KPIs y plan ETL, validada y sometida a aprobación humana. |
+| Propuesta BI asistida | [SPR-03-02-propuesta-bi-asistida-por-ia.md](SPR-03-02-propuesta-bi-asistida-por-ia.md) | Necesidad redactada o sugerida desde metadatos, revisión previa IA/reglas y propuesta JSON de hecho, dimensiones, medidas, KPIs y plan ETL, validada y sometida a aprobación humana. |
 | Exploración y trazabilidad | [SPR-03-03-explorador-esquema-y-trazabilidad.md](SPR-03-03-explorador-esquema-y-trazabilidad.md) | Experiencia responsive con recorrido principal no técnico y explorador avanzado opcional, sin exigir tablas ni SQL al usuario de negocio. |
 | Interfaz y experiencia | [SPR-03-05-ui-ux-profesional.md](SPR-03-05-ui-ux-profesional.md) | Sistema visual e interactivo, pantallas, estados, responsive y accesibilidad del recorrido profesional del Sprint 3. |
 
@@ -44,7 +47,7 @@ Para mantener un trabajo de titulación sólido y alcanzable, el alcance se divi
 |---|---|
 | Obligatorio en Sprint 3 | Configuración web mínima, conexión SQL Server, instantánea de metadatos, solicitud de negocio, interpretación dinámica en español, propuesta estructurada, validación determinística y aprobación humana. |
 | Preparado, no implementado | Interfaz interna para futuros conectores y posibilidad de sustituir el almacén local de secretos. No se muestran capacidades que aún no funcionan. |
-| Sprints posteriores | Construcción física del datamart, ETL, KPIs calculados, dashboard, hallazgos y pronóstico. |
+| Sprints posteriores al cierre histórico | Construcción física del datamart, ETL, KPIs calculados, dashboard y hallazgos, implementados en Sprints 4 y 5. El pronóstico se retiró del alcance. |
 
 La contribución académica no consiste en ofrecer muchos motores ni controles empresariales. Consiste en demostrar un proceso reproducible donde el LLM interpreta metadatos, el software comprueba que no invente objetos y una persona de negocio supervisa el resultado antes de materializarlo.
 
@@ -61,7 +64,14 @@ La demostración del sprint conservará la instantánea y su hash, la solicitud 
 - trazabilidad completa entre concepto español y tabla/columna real;
 - valoración humana de claridad, coherencia y utilidad mediante una rúbrica breve.
 
-La plataforma incorpora desde este sprint una sección **Validación estructural de la propuesta - Sprint 3** para la versión seleccionada. Recalcula integridad de metadatos, validez referencial y contrato, y reconstruye determinísticamente la propuesta desde las decisiones persistidas. Presenta el estado de cada control y enumera las validaciones aún pendientes. La conciliación de cifras contra el OLTP no se simula: se agregará al expediente acumulativo cuando Sprint 4 pueda ejecutar consultas de referencia sobre la fuente y el datamart materializado, conforme a `docs/validation-plan.md`.
+La plataforma incorpora desde este sprint una sección **Validación estructural de la propuesta** para la versión seleccionada. Recalcula integridad de metadatos, validez referencial y contrato, y reconstruye determinísticamente la propuesta desde las decisiones persistidas. Presenta únicamente los controles estructurales disponibles. Desde Sprint 4, la conciliación de cifras contra el OLTP se consulta en el expediente ETL; no se simula ni se presenta como una validación futura en el asistente, conforme a `docs/validation-plan.md`.
+
+La ampliación de necesidades añade otra evidencia, anterior y distinta: el analista
+puede solicitar objetivos desde el esquema o reformular su propio texto, siempre con
+evidencia y límites. La evaluación conjunta IA/reglas del texto definitivo se guarda en
+`business_need_reviews`, enlazada a actor e instantánea, y es obligatoria para generar
+conceptos y propuesta. Respaldo estructural no demuestra valores correctos ni calidad
+de filas; la aprobación y la conciliación siguen siendo controles separados.
 
 Estas evidencias permiten evaluar el aporte de IA y el control del software sin añadir motores, dashboards ni algoritmos fuera del sprint.
 
@@ -72,15 +82,15 @@ Estas evidencias permiten evaluar el aporte de IA y el control del software sin 
 | 1. Analizar requisitos funcionales, técnicos y de calidad | Alcance, contratos, permisos, reglas de seguridad, metadatos y plan de validación especificados. | Cumplido para el alcance de Sprint 3; continúa refinándose con el ETL. |
 | 2. Diseñar arquitectura y flujo | Arquitectura Docker, conexión de sólo lectura, introspección, LLM supervisado, versionado y validación determinística implementados. | Cumplimiento sustancial; falta incorporar el ejecutor ETL. |
 | 3. Desarrollar la aplicación que obtiene metadatos y genera propuestas | Flujo funcional desde fuente activa hasta propuesta versionada, personalizable, validada y aprobable con Ollama y Gemini. | Cumplido para la propuesta; la materialización pertenece al objetivo 4. |
-| 4. Implementar ETL, datamart, KPIs, visualizaciones, hallazgos y pronóstico | Sólo existe la vista previa declarativa del plan; no se ejecutan operaciones. | Pendiente de los sprints posteriores. |
-| 5. Validar exactitud, reproducibilidad y utilidad | Se validan estructura, referencias, contrato y reproducción del artefacto aprobado sin volver a invocar al LLM. | Parcial y correctamente delimitado; conciliación OLTP-datamart, contraste con AdventureWorksDW, juicio de expertos, MAPE y RMSE siguen pendientes. |
+| 4. Implementar ETL, datamart, KPIs, visualizaciones y hallazgos | Al cierre de Sprint 3 existía sólo la vista previa declarativa del plan. | Implementación posterior en Sprints 4 y 5; pronóstico fuera del alcance vigente. |
+| 5. Validar exactitud, reproducibilidad y utilidad | Se validan estructura, referencias, contrato y reproducción del artefacto aprobado sin volver a invocar al LLM. | Conciliación añadida en Sprint 4; contraste con AdventureWorksDW y juicio formal de expertos pendientes. MAPE y RMSE no aplican al alcance vigente. |
 
 ## 3. Actores y responsabilidades
 
 | Actor | Responsabilidad |
 |---|---|
 | Persona administradora técnica | Registra y prueba desde la web la fuente, las credenciales, el proveedor LLM, los usuarios y los permisos. No edita archivos ni crea consultas para cada análisis. |
-| Gerente comercial o solicitante de negocio | Aporta el objetivo, las preguntas y los criterios de utilidad del negocio. Puede revisar el resumen comprensible y, en sprints posteriores, consume KPIs, visualizaciones, hallazgos y pronósticos. No valida relaciones, granularidad ni el plan ETL. |
+| Gerente comercial o solicitante de negocio | Aporta el objetivo, las preguntas y los criterios de utilidad del negocio. Puede revisar el resumen comprensible y, en sprints posteriores, consume KPIs, visualizaciones y hallazgos. No valida relaciones, granularidad ni el plan ETL. |
 | Analista BI o responsable de datos | Es el usuario principal del Asistente de datamart: selecciona el dominio habilitado, registra la necesidad comercial, resuelve ambigüedades, revisa conceptos, personaliza dimensiones, medidas, agregaciones y KPIs dentro del alcance comprobado, y aprueba o rechaza. Debe comprender el negocio y los datos, pero no necesita programar ni escribir SQL. |
 | FastAPI | Autoriza, protege secretos, usa el conector activo, normaliza y compacta metadatos, valida referencias, llama al proveedor activo y audita. |
 | LLM activo | Interpreta los nombres técnicos en su idioma original, propone conceptos comprensibles en español y devuelve una propuesta estructurada; no ejecuta operaciones. |
@@ -94,7 +104,7 @@ Estas evidencias permiten evaluar el aporte de IA y el control del software sin 
 | Sprint 2 | Administración técnica; todavía no existe una función analítica para el gerente. |
 | Sprint 3 | El analista BI crea una solicitud guiada a partir de la necesidad comercial, comprende la propuesta y revisa sus conceptos; todavía no existen indicadores calculados. |
 | Sprint 4 | La propuesta aprobada podrá materializarse mediante un motor ETL controlado y entregar los primeros KPIs y visualizaciones. |
-| Analítica y pronóstico posteriores | El gerente consumirá dashboard, hallazgos explicables, preguntas al copiloto y pronóstico de ventas. |
+| Analítica posterior | El gerente consume dashboard, hallazgos explicables y preguntas al copiloto; no pronósticos. |
 
 El Sprint 3 debe probar la participación real del usuario final sin presentar como terminado un producto que aún no calcula resultados.
 
@@ -105,7 +115,7 @@ El Sprint 3 debe probar la participación real del usuario final sin presentar c
 2. FastAPI valida los campos, cifra el secreto, construye internamente la conexión mediante el adaptador `sqlserver` y nunca devuelve la credencial al navegador.
 3. La persona activa la fuente y solicita actualizar metadatos. FastAPI consulta catálogos del sistema, normaliza el resultado, calcula un hash y crea o reutiliza una instantánea inmutable.
 4. El analista BI abre **IA > Asistente de datamart**. Primero selecciona un dominio de un catálogo calculado desde la instantánea y los perfiles disponibles. En Sprint 3 sólo **Datamart de ventas** está habilitado; inventario u otros dominios aparecerán cuando incorporen perfil y validadores propios, sin rediseñar la pantalla.
-5. El backend combina el dominio, el catálogo dinámico de preguntas y las periodicidades soportadas con la instantánea vigente. El analista escribe en español el objetivo de cada análisis. No selecciona dimensiones en este paso: el LLM debe proponerlas desde los metadatos y el backend comprobarlas.
+5. El backend combina el dominio, el catálogo dinámico de preguntas y las periodicidades soportadas con la instantánea vigente. El analista escribe en español el objetivo o solicita necesidades sugeridas desde los metadatos; puede pedir una reformulación, pero debe adoptar el texto explícitamente. El envío requiere consentimiento para el destino LLM visible. El texto definitivo pasa por revisión IA/reglas y queda persistido con sus límites antes de generar. No selecciona dimensiones en este paso: el LLM debe proponerlas desde los metadatos y el backend comprobarlas.
 6. FastAPI divide los metadatos en bloques de tamaño parametrizado. El LLM interpreta cada bloque según la solicitud y propone candidatos y nombres de negocio en español.
 7. FastAPI descarta toda referencia inexistente y combina únicamente candidatos relacionados mediante claves declaradas.
 8. La aplicación presenta dinámicamente el alcance sugerido y su mapa semántico: concepto español, descripción y origen técnico. El usuario confirma los conceptos; los identificadores permanecen en una sección avanzada.
@@ -205,3 +215,13 @@ El sprint puede cerrarse cuando:
 - La persona administradora puede adaptar desde **Parámetros** el lenguaje y la disponibilidad del catálogo de necesidades sin editar archivos; esta parametrización no crea nuevos dominios ni capacidades técnicas.
 - La supervisión no se limita a aprobar o rechazar: el analista puede derivar una versión modificando decisiones de negocio controladas. Las referencias técnicas y fórmulas libres permanecen fuera de su alcance.
 - El historial se consulta en el servidor por dominio y estado, con paginación. El estado inicial es **Lista para revisar** para priorizar el trabajo pendiente.
+- La revisión previa de necesidades no sustituye las fases posteriores: existencia de una columna no garantiza su idoneidad financiera, historia temporal ni calidad de datos. Los tipos, rutas FK dirigidas y fecha comercial se comprueban; los límites semánticos se exponen al analista.
+- Cambiar objetivo, preguntas, periodicidad, fuente o instantánea requiere revalidar. Cambiar el destino LLM requiere renovar consentimiento; una respuesta tardía o un borrador restaurado no conserva una autorización anterior.
+- Las pruebas de regresión simuladas y el ensayo real autorizado se documentan por separado en la auditoría del 3 de octubre. La nueva capacidad comparte contrato entre proveedores y fuentes, pero no se declara validada para todos los modelos, idiomas ni motores posibles.
+- El ensayo real cierra con aceptación funcional supervisada de la puerta previa en
+  ambas fuentes: después de revisar y aceptar límites explícitos pudo habilitarse la
+  generación, sin crear propuestas ni ETL. No garantiza que toda reformulación resulte
+  utilizable; el analista puede conservar su redacción. Los incidentes semánticos y
+  requisitos rechazados permanecen documentados. Se añadió comprobación de roles ES/EN
+  —precio de venta no equivale a costo— y `need-review-2` obliga a revisar nuevamente
+  evaluaciones previas sin modificar propuestas aprobadas.

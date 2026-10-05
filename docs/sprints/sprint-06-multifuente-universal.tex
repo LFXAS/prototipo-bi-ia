@@ -59,8 +59,9 @@ pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}}
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & INF-SPR-06 \\
-    Versión & 1.0.1 \\
+    Versión & 1.1.0 \\
     Fecha de cierre & 1 de octubre de 2026 \\
+    Revisión acumulativa & 3 de octubre de 2026 \\
     Rama de trabajo & \file{feature/multi-source-sqlserver} \\
     Estado & Incremento funcional validado localmente \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
@@ -225,10 +226,10 @@ AdventureWorks:
   Diferencia & 0 \\
   Pedidos distintos & 73.595 \\
   Unidades vendidas & 9.310.904 \\
-  Ventas & 177.634.276,40 \\
-  Costo & 88.904.313,90 \\
-  Margen bruto & 88.729.962,50 \\
-  Margen porcentual & 49,9509\% \\
+  Importe de pedidos & 177.634.276,40 \\
+  Costo según receta histórica & 88.904.313,90 \\
+  Margen según receta histórica & 88.729.962,50 \\
+  Margen porcentual de esa receta & 49,9509\% \\
   Calidad descriptiva & 227 productos, 663 clientes y 53 territorios \\
   \bottomrule
 \end{tabularx}
@@ -236,6 +237,12 @@ AdventureWorks:
 La fuente no proporcionó una moneda ISO inequívoca; por ello los importes se rotulan como
 \textbf{moneda de origen}. Presentar USD habría sido una invención. De igual modo, el
 descuento permanece no disponible.
+
+La auditoría del 3 de octubre precisó el significado del expediente 13: son pedidos
+registrados, no facturas emitidas. Su costo basado en el último registro no demuestra
+costo histórico de cada venta. La conciliación y las cifras permanecen como evidencia
+de la receta ejecutada, con esa limitación; no se presentan como margen contable
+certificado ni se reescribe el expediente para hacerlo pasar por facturación.
 
 \subsection{Analítica}
 
@@ -245,6 +252,69 @@ y New York. Productos y clientes usan los atributos descriptivos materializados.
 de ejecuciones se filtra por fuente y expone conexión, base, propuesta y ejecución.
 
 \section{Pruebas y riesgos}
+
+\subsection{Contraste operativo y nueva revisión de necesidades}
+
+La auditoría QA-E2E-20261003 recorrió nuevamente ambas fuentes desde sus esquemas.
+AdventureWorks conservó su catálogo de seis preguntas, incluidas las dos personalizadas;
+WideWorldImporters mantuvo cuatro. Las capturas confirmaron 71 tablas y 482 columnas
+en la instantánea 2, frente a 48 tablas y 546 columnas en la instantánea 3. Se corrigió
+una respuesta tardía de navegación entre Roles y Explorador sin tocar las fuentes.
+
+El ciclo nuevo de AdventureWorks produjo la propuesta 98 y ejecución 14: 121317 líneas,
+31465 pedidos, importe 109846381,4250 y nueve KPI. El de facturación de WideWorldImporters
+produjo la propuesta 114 y ejecución 15: 228265 líneas, 70510 facturas,
+198043439,45 con impuesto y seis KPI. Las diferencias de filas fueron cero. Alternar
+las ejecuciones 15, 13 y 14 mantuvo separados evento, filtros, cifras y procedencia.
+El informe de auditoría documenta también las propuestas rechazadas y sus causas;
+no selecciona sólo ejemplos exitosos.
+
+El asesor de necesidades comparte contrato y validación entre proveedores y fuentes.
+Puede sugerir objetivos con la estructura real o revisar el texto del analista;
+comprueba referencias, tipos y FK dirigidas antes de acreditar respaldo. La revisión
+persistida queda vinculada al actor, instantánea y entrada, y el consentimiento al
+destino LLM. Ni las preguntas ni las evaluaciones se reutilizan al cambiar de fuente.
+Las pruebas sintéticas incluyen español e inglés, columnas desconectadas, relaciones
+compuestas, tipos inválidos y respuestas tardías.
+
+La comprobación determinística sobre las dos instantáneas reales eligió fechas
+comerciales conectadas: \file{SalesOrderHeader.OrderDate} e \file{Invoices.InvoiceDate}.
+No bastaba encontrar \file{ModifiedDate}. El respaldo estructural no demuestra calidad
+de filas, cobertura temporal, costo histórico ni utilidad de negocio; esas condiciones
+mantienen sus controles posteriores. Los resultados detallados y el estado de las
+pruebas con proveedor real constan en la adenda QA-NEED, separada de los ciclos ETL.
+
+El ensayo autorizado con Claude Haiku conservó resultados positivos y negativos. Las
+primeras sugerencias de WWI y una reformulación se bloquearon; una evaluación AW
+confundió precio de venta con costo y motivó reglas semánticas compartidas en español
+e inglés. La revisión \file{need-review-2} impide reutilizar evaluaciones anteriores.
+El feedback admite un único reintento con la misma configuración, sin modificar
+metadatos ni relajar tipos o rutas.
+
+La repetición WWI produjo una sugerencia utilizable y otra bloqueada; la revisión
+final presentó seis requisitos directos, dos automáticos y cuatro advertencias, sin
+no disponibles. La aceptación explícita de los límites habilitó generar, pero no se
+creó propuesta ni ETL en ese ensayo. Un caso negativo de clima externo identificó
+información ausente sin confundirla con sensores de refrigeración. Esto demuestra
+comportamientos concretos del flujo, no que cualquier texto o modelo producirá siempre
+una propuesta útil ni que otros motores estén probados.
+
+En AW, la reformulación final conservó una capacidad sin validador después de dos
+intentos y se rechazó. La necesidad escrita por el analista sí alcanzó once requisitos
+directos, uno derivable, cinco advertencias o ambigüedades y cero no disponibles;
+aceptar los cinco límites habilitó el paso de generación, sin ejecutarlo. Los requisitos
+IA muestran referencias comprobadas o derivaciones candidatas y explicitan que su
+interpretación no es ejecutable. Se concluye aceptación supervisada de la puerta de
+viabilidad para ambos textos ensayados, con un límite persistente de reformulación,
+no éxito incondicional de todas las sugerencias.
+
+\subsection{Regresión histórica y riesgos pendientes}
+
+La regresión acumulativa posterior al ensayo real del asesor aprobó \file{make test}
+con 231 pruebas backend y 34 frontend. Ruff, formato, Mypy, ESLint y TypeScript/Vite
+finalizaron correctamente; el aviso de deprecación Starlette/AnyIO no generó fallos.
+Los conteos 157/24 del cierre original y 201/33 del primer corte de QA-NEED se
+conservan como hitos históricos, no como resultados de la revisión vigente.
 
 \begin{tabularx}{\textwidth}{@{}p{0.27\textwidth}X@{}}
   \toprule
@@ -303,6 +373,7 @@ mantiene el contrato y el analista conserva la decisión de negocio.
   Compilación & \file{make sprint6-report} o \file{make docs} \\
   Especificación & \file{SPR-06-01-contexto-multifuente-sqlserver.md} \\
   Evidencia integral & \file{docs/testing/Informe\_pruebas\_integrales\_multifuente.pdf} \\
+  Adenda operativa & \path{docs/testing/Auditoria_operativa_2026-10-03.pdf}; casos de pedido/factura y factibilidad previa. \\
   Definición de terminado & Código, pruebas, evidencia real y documentación reproducible. \\
   \bottomrule
 \end{tabularx}

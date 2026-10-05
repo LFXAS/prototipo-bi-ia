@@ -91,11 +91,11 @@
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & MAN-TEC-01 \\
-    Versión del manual & 5.0.1 \\
+    Versión del manual & 5.1.0 \\
     Línea base & Ramas \file{develop} y \file{main} \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
     Clasificación & Documentación técnica - repositorio público \\
-    Fecha & 1 de octubre de 2026 \\
+    Fecha & 3 de octubre de 2026 \\
   \end{tabularx}
 
   \vfill
@@ -426,7 +426,7 @@ La acción \textbf{Actualizar metadatos} está disponible sobre la fuente selecc
 
 El documento canónico se ordena de forma estable y se almacena como JSONB en \path{app.metadata_snapshots}. Su hash SHA-256 permite reconocer la misma estructura: si no cambió, se reutiliza la instantánea vigente y no se duplica. Cada captura conserva conexión, base, versión contractual, totales, actor histórico y fecha. La migración \path{20260918_08} impide eliminar una conexión que tenga instantáneas asociadas.
 
-La pantalla \textbf{Datos > Explorador de esquema} consulta la captura persistida, no la fuente original. Permite buscar por esquema, tabla o columna y presenta detalle de columnas, PK y relaciones entrantes y salientes. La prueba real registró 6 esquemas, 71 tablas, 444 columnas y 90 relaciones en AdventureWorks; una segunda captura produjo el mismo hash y no añadió otro registro.
+La pantalla \textbf{Datos > Explorador de esquema} consulta la captura persistida, no la fuente original. Permite buscar por esquema, tabla o columna y presenta detalle de columnas, PK y relaciones entrantes y salientes. La auditoría del 3 de octubre confirmó en la instantánea 2 de AdventureWorks 6 esquemas, 71 tablas, 482 columnas y 90 relaciones; en la instantánea 3 de WideWorldImporters, 4 esquemas, 48 tablas, 546 columnas y 98 relaciones. Estos conteos pertenecen a las capturas usadas y no sustituyen la comprobación de una fuente nueva.
 
 \subsection{Restauración académica de WideWorldImporters}
 
@@ -448,7 +448,7 @@ Al elegir el dominio, el backend devuelve preguntas orientadoras y periodicidade
 
 Cada intento se almacena en \path{app.bi_proposals} y queda ligado a la huella de la instantánea, proveedor, modelo, versión de prompt, entrada, mapa semántico, alcance, validación y decisión histórica del actor. Excluir conceptos, cambiar la necesidad o personalizar decisiones crea otra versión; \file{source\_proposal\_id} conserva su origen y nunca sobrescribe el registro anterior. La personalización no llama al LLM y no admite tablas, columnas, relaciones ni fórmulas libres: \file{POST /api/v1/copilot/proposals/\{id\}/revisions} aplica únicamente selecciones válidas y repite la validación determinística.
 
-Antes de invocar al proveedor, la pantalla separa los requisitos en cuatro estados. \textbf{Directo} identifica una referencia física comprobada; \textbf{Derivable automáticamente} identifica una fórmula tipada o una ruta compuesta exclusivamente por FK declaradas. Ninguno exige SQL ni selección manual de tablas. Al generar, FastAPI adjunta la evaluación a la propuesta, aplica las derivaciones inequívocas y construye la matriz necesidad--salida. Si una salida directa o derivable no queda materializada, la validación bloquea la aprobación. Sólo \textbf{Ambiguo} y \textbf{No disponible} requieren una decisión del analista.
+Antes de generar la propuesta, la pantalla combina interpretación de IA y reglas determinísticas para separar los requisitos en cuatro estados. \textbf{Directo} identifica una referencia física comprobada; \textbf{Derivable automáticamente} identifica una fórmula tipada o una ruta compuesta exclusivamente por FK declaradas. Ninguno exige SQL ni selección manual de tablas. Al generar, FastAPI adjunta la evaluación a la propuesta, aplica las derivaciones inequívocas y construye la matriz necesidad--salida. Si una salida directa o derivable no queda materializada, la validación bloquea la aprobación. \textbf{Ambiguo} y \textbf{No disponible} requieren revisar o limitar el objetivo; una declaración del modelo no sustituye la evidencia.
 
 La búsqueda de evidencia conserva un subgrafo coherente con toda la necesidad. No combina, por coincidencia nominal, medidas de compras con dimensiones de ventas. En la instantánea 2 se contrastaron 23 columnas críticas y siete FK contra SQL Server: fecha, cliente, persona o tienda, territorio, producto, categoría, cantidad, precio, descuento, importe y costo coincidieron en nombre, tipo y nulabilidad. La viabilidad de ventas parte de \file{Sales.SalesOrderDetail}; el costo llega a \file{Production.Product.StandardCost} mediante la relación compuesta declarada, sin depender de nombres de tabla fijos.
 
@@ -459,6 +459,79 @@ La sección \textbf{Versiones generadas} consulta el servidor por dominio y esta
 Cuando se abre una versión histórica, el asistente restaura el objetivo, las preguntas y la periodicidad persistida; no reutiliza el valor predeterminado del dominio. Las cinco etapas quedan disponibles como consulta inmutable y la acción \textbf{Crear nueva propuesta} inicia un borrador vacío en el mismo dominio sin cerrar sesión ni modificar el expediente consultado. Esta salida elimina la dependencia operativa de reiniciar la sesión para continuar el trabajo.
 
 En \textbf{Personalización}, cada medida separa su etiqueta de negocio del identificador técnico y muestra su origen calificado y su regla ejecutable. Por ejemplo, el conteo de transacciones expone \path{Sales.SalesOrderDetail.SalesOrderID} y \file{COUNT(DISTINCT SalesOrderID)}; una medida calculada muestra primero la expresión por fila y después la agregación. KPI, selectores y botones conservan el texto completo mediante una disposición adaptativa, evitando concatenaciones como \file{importe\_brutoImporte de ventas}.
+
+\subsection{Sugerir y comprobar una necesidad desde los metadatos}
+
+El paso Necesidad ofrece dos entradas: redactar un objetivo propio o usar
+\textbf{Sugerir necesidades con esta fuente}, disponible incluso con el texto vacío.
+\textbf{Ayúdame a formular la necesidad} mejora un objetivo existente. Ambas acciones
+reciben la estructura real, no sólo la huella de una instantánea. Cada sugerencia
+presenta su propósito, requisitos, referencias comprobadas y límites; \textbf{Usar esta
+necesidad} es una decisión explícita y no modifica el catálogo ni crea un datamart.
+
+Antes del envío se debe revisar y marcar el consentimiento asociado al proveedor y
+modelo mostrados. El paquete incluye necesidad, nombres de esquemas, tablas y columnas,
+tipos, claves y relaciones; excluye filas, muestras, propiedades de conexión y
+credenciales. El servidor verifica una huella del destino activo. Cambiar configuración,
+proveedor, URL o modelo invalida la autorización anterior; restaurar un borrador tampoco
+restaura el consentimiento. Una estructura que excede el límite de contexto se detiene
+con una explicación en lugar de enviarse truncada silenciosamente.
+
+La revisión de viabilidad conserva exactamente el objetivo escrito. El asesor
+\file{need\_advisor} comprueba referencias, tipos compatibles y rutas FK dirigidas; no
+invierte relaciones que multipliquen el grano ni acepta costos desconectados. Para una
+periodicidad exige una fecha comercial verificable y prioriza esa fecha frente a una
+marca de modificación. Si la solicitud pide facturas, no basta con encontrar pedidos
+ni una factura aislada: debe existir evidencia relacionada del evento solicitado.
+
+La migración aditiva \file{20261003\_19} crea \path{app.business_need_reviews}.
+Conserva la evaluación, proveedor/modelo, actor, instantánea y huellas de entrada y
+resultado. La generación exige una revisión persistida coincidente; cambiar objetivo,
+preguntas, período o fuente obliga a repetirla y las respuestas tardías se descartan.
+Estos controles no reescriben propuestas aprobadas ni ejecuciones existentes.
+
+\textbf{Límite operativo:} respaldo estructural no acredita calidad de filas, suficiencia
+histórica ni significado financiero. Un costo último registrado no equivale al costo
+histórico de cada venta. El analista todavía revisa el contrato y aprueba; el ETL todavía
+concilia. Si una propuesta omite un margen solicitado, disponer de sus operandos no
+basta: debe contener el resultado derivado calculable o quedar bloqueada.
+
+La prueba autorizada con Claude Haiku mostró por qué estos controles siguen siendo
+necesarios. Algunas sugerencias de WideWorldImporters y una reformulación se rechazaron
+por ancla, rutas o tipos; un control local con la misma instantánea sí demostró sus
+referencias, por lo que no se modificaron los metadatos para aceptar la respuesta IA.
+La recuperación permite un solo reintento con causas de validación concretas, el mismo
+destino consentido y las mismas reglas. Si falla de nuevo, el analista recibe el límite.
+
+En AdventureWorks, una revisión llamó costo a \file{UnitPrice}. La prueba falló desde
+el criterio BI y motivó un control común de roles en español e inglés: precio no es
+costo, tasa no es importe e identificador no es medida monetaria. La revisión
+\file{need-review-2} impide reutilizar una evaluación anterior como si hubiera superado
+el control nuevo. Las referencias existentes no validan por sí solas una afirmación
+libre sobre impuestos o estados; el texto IA continúa marcado para revisión.
+
+En la repetición de WideWorldImporters se obtuvo una sugerencia utilizable y otra
+bloqueada. La revisión final mostró seis requisitos directos, dos automáticos y cuatro
+advertencias, sin requisitos no disponibles. Aceptar explícitamente los cuatro límites
+habilitó la generación, pero en este ensayo no se generó otra propuesta ni otro ETL.
+El caso negativo de clima externo identificó información ausente y no confundió
+sensores de refrigeración con datos climáticos. El expediente QA-NEED conserva tanto
+estos resultados como los intentos fallidos; no garantiza toda salida futura del LLM.
+
+En el cierre de AdventureWorks, la reformulación continuó no utilizable después de
+dos intentos porque incluyó una capacidad sin validador; no se adoptó. Conservar el
+texto del analista sí permitió revisar la comparación mensual de importe registrado y
+unidades por producto, con trazabilidad al pedido. La viabilidad final mostró once
+requisitos directos, uno derivable, cinco advertencias o ambigüedades y ninguno no
+disponible. Aceptar los cinco límites habilitó \textbf{Generar propuesta}, sin ejecutar
+esa acción ni crear un ETL. El analista puede continuar con su propio texto; no debe
+forzar la adopción de una sugerencia rechazada.
+
+Los requisitos interpretados por IA se identifican como \textbf{Referencia estructural
+comprobada}, \textbf{Derivación candidata} e \textbf{Interpretación propuesta por IA
+(no ejecutable)}, según corresponda. Una fórmula explicativa del proveedor no se
+rotula como fórmula controlada: sólo el contrato validado posterior puede alimentar
+una transformación ejecutable.
 
 \subsection{Validación acumulativa visible}
 
@@ -486,7 +559,7 @@ Al confirmar, \file{POST /api/v1/etl/executions} conserva propuesta, instantáne
 
 El paso \textbf{Validar resultados} compara origen y destino y muestra filas, diferencias, tablas, KPI y estado. Para la ejecución 6 leyó y cargó 121317 líneas, con diferencia cero; calculó seis KPI, 274914 unidades y 31465 pedidos distintos. Los importes se muestran con código ISO sólo después de comprobar una moneda única relacionada con el hecho. AdventureWorks confirmó \file{USD} mediante \path{Sales.CurrencyRate.FromCurrencyCode}; la acción \textbf{Comprobar divisa sin repetir el ETL} enriqueció el expediente existente sin volver a cargar filas. Una fuente mixta o ambigua conserva \textit{moneda de origen} y explica la evidencia faltante.
 
-La prueba multifuente produjo la propuesta 96 y la ejecución 13 sobre WideWorldImporters. El ETL cargó 231412 líneas de origen y destino, diferencia cero, 73595 pedidos y 9310904 unidades. Calculó 177634276,40 de ventas, 88904313,90 de costo y 88729962,50 de margen bruto. Las dimensiones publicaron 227 productos, 663 clientes y 53 territorios con etiqueta descriptiva. Como la estructura no demostró una moneda ISO única, la interfaz mantuvo \textit{moneda de origen}; como tampoco demostró descuento, lo registró como limitación en vez de inventarlo.
+La prueba multifuente produjo la propuesta 96 y la ejecución 13 sobre WideWorldImporters. El ETL cargó 231412 líneas de pedidos de origen y destino, diferencia cero, 73595 pedidos y 9310904 unidades. Calculó 177634276,40 de importe de pedidos, 88904313,90 de costo y 88729962,50 de margen según la receta histórica. Las dimensiones publicaron 227 productos, 663 clientes y 53 territorios con etiqueta descriptiva. La auditoría posterior precisó que este expediente no representa facturación emitida y que el último costo registrado no acredita costo histórico por venta. Sus cifras se conservan con esta limitación, no como margen contable certificado. Como la estructura no demostró una moneda ISO única, la interfaz mantuvo \textit{moneda de origen}; como tampoco demostró descuento, lo registró como limitación en vez de inventarlo.
 
 La prueba de cierre alternó ambas fuentes sin cerrar sesión y verificó Inicio, Explorador,
 catálogo, expedientes, analítica, copiloto y exportaciones. La expresión ``territorio
@@ -530,6 +603,26 @@ Los hallazgos determinísticos citan su evidencia y no explican causas. En parti
 El bloque \textbf{Preguntar sobre estos resultados} está separado del panel de hallazgos. Ofrece preguntas guiadas para comprender, decidir e interpretar con cautela en modo ejecutivo, y para comparar, investigar o validar en modo analista. El servidor reconstruye la selección conciliada y envía al LLM sólo KPIs, puntos agregados, hallazgos, calidad, granularidad y filtros. No envía filas, credenciales ni SQL. La respuesta contiene explicación, evidencias, advertencia, preguntas de seguimiento, proveedor y modelo. Cambiar vista o filtros limpia el contexto anterior.
 
 Para una pregunta como ``¿Cuáles son los 5 productos más vendidos en Europa?'', la primera llamada al LLM sólo completa un esquema JSON cerrado: indicador, dimensión, Top N, orden, año y territorio deben pertenecer a los catálogos enviados por FastAPI. El servidor valida esos valores y construye por código propio una consulta agregada parametrizada; nunca acepta SQL del modelo. La respuesta muestra la interpretación, el total del universo filtrado antes del Top N, la participación de cada elemento y la procedencia de medida, operación y agrupación.
+
+\subsection{Comprobar promedios y evento comercial}
+
+Un promedio por documento se calcula como suma del importe dividida por documentos
+distintos, no como promedio de importes de línea. La auditoría del 3 de octubre contrastó
+la propuesta 98 y la ejecución 14 de AdventureWorks: 121317 líneas, 31465 pedidos,
+109846381,4250 de importe y promedio de 3491,07 por pedido al redondear. Nueve KPI quedaron
+conciliados. Estas cifras deben leerse con la procedencia y el filtro de ese expediente.
+
+En WideWorldImporters la propuesta 114 y la ejecución 15 usan líneas de factura:
+228265 líneas, 70510 facturas, 198043439,45 de \file{ExtendedPrice} y seis KPI conciliados.
+El importe incluye impuesto; no debe llamarse venta neta ni cobro. Para 2015, tablero y
+copiloto coincidieron en 62090220,81, 22250 facturas y 2790,57 por factura. El expediente
+13 de pedidos sigue disponible de forma separada. No se asigna una divisa no demostrada.
+
+Antes de aceptar una explicación gerencial, compruebe el evento, numerador, denominador,
+filtro y limitación. Máximo de una línea no demuestra producto líder; promedio de una
+línea no demuestra venta media por cliente. Los controles bloquean estas equivalencias
+y el analista puede excluir KPI incompatibles antes de aprobar. La evidencia detallada
+se conserva en \path{docs/testing/Auditoria_operativa_2026-10-03.pdf}.
 
 \subsection{Recuperación después de vencer la sesión}
 
@@ -585,7 +678,16 @@ La prueba de conexión es necesaria, pero no suficiente para seleccionar proveed
   \item Claude bajo, propuesta 77: cero errores, siete advertencias y resultado apto sólo para revisión.
 \end{itemize}
 
-Para este proyecto se configura \textbf{Groq bajo} como primera opción y \textbf{Claude Haiku bajo o mínimo} como respaldo. No se recomienda medio/alto para generar el contrato integral: Groq consume más presupuesto de salida o cuota, mientras que el adaptador Claude omite pensamiento extendido y esos niveles no cambian el esfuerzo efectivo. Si Groq falla por saturación, el analista activa Claude, prueba conexión y genera una versión nueva; nunca se reutiliza silenciosamente una salida fallida ni se aprueba una propuesta con errores. La metodología completa se conserva en el documento comparativo \url{docs/experiments/2026-09-27-groq-vs-claude.md}.
+La recomendación del ensayo del 27 de septiembre fue \textbf{Groq bajo} con
+\textbf{Claude Haiku bajo o mínimo} como respaldo. No constituye una preferencia universal:
+en la auditoría del 3 de octubre Groq devolvió cuota temporal y Claude completó el caso
+de facturación después de corregir su adaptador a salida JSON estructurada nativa.
+FastAPI mantiene la validación común y un reintento acotado por salida agotada; no acepta
+contratos incompletos ni cambia automáticamente de proveedor. Medio/alto no equivalen a
+un esfuerzo efectivo distinto en el adaptador Claude sin pensamiento extendido. La
+selección operativa depende de la prueba real del contrato y de la cuota disponible,
+no sólo de conectar. La metodología inicial se conserva en
+\url{docs/experiments/2026-09-27-groq-vs-claude.md} y sus resultados no se reemplazan.
 
 \subsection{Alternativa LLM local con Ollama}
 
@@ -678,6 +780,13 @@ make doctor
 \end{lstlisting}
 
 \subsection{Comprobación completa}
+
+El corte de regresión del 3 de octubre, posterior al ensayo autorizado del asesor,
+aprobó \file{make test}: 231 pruebas backend y 34 frontend en Docker. También
+aprobaron Ruff, formato, Mypy, ESLint y la compilación estricta TypeScript/Vite.
+El aviso de deprecación Starlette/AnyIO no produjo fallos. Estos resultados actualizan
+el corte anterior de 201/33; no convierten los intentos de reformulación bloqueados
+en respuestas satisfactorias ni sustituyen la inspección visual documental.
 
 \begin{lstlisting}[style=terminal,language=bash]
 make verify
@@ -1241,6 +1350,7 @@ make verify
   5.0.0 & 01-10-2026 & Sprint 6 multifuente: fuentes SQL Server concurrentes, catálogo funcional aislado, evidencia técnica automática, WideWorldImporters, propuesta 96 y ejecución 13 conciliada. \\
   5.0.1 & 01-10-2026 & Verificación histórica de sólo lectura, restauración auditable de las propuestas 86/91 y alineación del expediente publicado entre Datamart y Analítica. \\
   5.0.1 & 01-10-2026 & Prueba integral multifuente, resolución determinística de territorio líder, restauración del catálogo legado y verificación visual de PDF/Excel. \\
+  5.1.0 & 03-10-2026 & Necesidades sugeridas y revisadas con metadatos, consentimiento por destino, evaluación persistida; auditoría de pedidos/facturas y promedios por documento, con límites de evidencia explícitos. \\
   \bottomrule
 \end{longtable}
 

@@ -67,7 +67,7 @@
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPI, analítica explicable y reportería \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.6.1 \\
+    Versión de la bitácora & 0.6.5 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -1040,6 +1040,153 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \bottomrule
 \end{longtable}
 
+\subsection{3 de octubre de 2026 - Auditoría operativa con dos orígenes}
+
+Se ejecutó un recorrido supervisado de metadatos, catálogo, necesidad, propuesta,
+aprobación, ETL, conciliación, tablero y copiloto. En AdventureWorks, la propuesta
+98 y la ejecución 14 cerraron el recorrido con 121\,317 filas conciliadas y nueve
+indicadores calculables. La propuesta 97 se rechazó antes de aprobarla porque
+confundía promedio por línea con promedio por documento; se incorporó una regla
+independiente del proveedor para preservar el denominador correcto.
+
+En WideWorldImporters, la ejecución histórica 13 permaneció aislada y conciliada,
+pero representa \emph{pedidos registrados}, no facturas emitidas. Las propuestas
+99 y 100 no se aprobaron por la diferencia entre esos eventos comerciales. Se
+añadió validación estructural de línea, identificador y fecha de factura cuando
+la necesidad exige facturación. Claude inicialmente devolvió JSON inválido;
+se recuperó mediante salida estructurada nativa y reintento acotado, conservando
+la validación independiente del proveedor. Las versiones 111--113 expusieron
+afirmaciones contrarias a los metadatos y KPI calculados a granularidad errónea.
+Se bloquearon o retiraron en la versión supervisada 114. La ejecución 15
+materializó 228\,265 líneas de factura, 70\,510 documentos y
+198\,043\,439,45 de importe con impuesto; diferencia de filas cero y seis KPI.
+El panel y Claude coincidieron para 2015 en 62\,090\,220,81 de facturación,
+22\,250 facturas y promedio 2\,790,57 por documento. El expediente 13 sigue
+disponible y claramente identificado como pedidos. La matriz, cifras, capturas
+y limitaciones constan en el informe
+\file{Auditoria\_operativa\_2026-10-03.pdf}. También se corrigió una
+carrera de navegación entre Roles y Explorador. Se crearon los roles Analista
+BI y Gerente comercial sin asignar usuarios; este último recibió consulta del
+tablero y conexiones, más descarga de informes, tras autorización explícita.
+No se probaron sesiones autenticadas bajo esos roles. Estos resultados no
+prueban otros motores ni dominios.
+
+\subsection{3 de octubre de 2026 - Necesidades con respaldo estructural explícito}
+
+Se detectó que la ayuda de redacción recibía una huella, pero no las tablas y
+relaciones. También se reprodujeron falsos positivos de la comprobación previa:
+costos desconectados, importes textuales y facturas aisladas de ventas de pedidos.
+Se incorporó un asesor común a los proveedores para sugerir objetivos, reformular
+y revisar necesidades con metadatos permitidos. Sus referencias, tipos y rutas
+se comprueban en el servidor. Las FK se recorren en dirección segura y los tipos
+desconocidos requieren revisión. La salida sigue siendo una propuesta supervisada,
+no una prueba de valores ni calidad de filas.
+
+La interfaz incorpora evidencia, límites, adopción explícita del texto y descarte
+de respuestas tardías. Un consentimiento vinculado al destino LLM impide envíos
+silenciosos cuando cambia la configuración. La migración aditiva
+\file{20261003\_19} guarda revisiones no ejecutables, enlazadas al actor, instantánea
+y necesidad; generar exige una revisión persistida coincidente. No se cambiaron
+propuestas aprobadas, datos fuente ni expedientes existentes.
+
+Archivos principales: \file{need\_advisor.py}, \file{needs.py}, rutas/esquemas/modelos
+de Copilot, migración, interfaz, pruebas, arquitectura y SPR-03-02. La matriz
+QA-NEED documenta escenarios reproducibles en la auditoría operativa. Pasaron
+83 pruebas focalizadas de necesidades/servicio, 11 del asesor y 33 del frontend,
+además de tipos y controles estáticos focalizados. La prueba nueva con Claude y
+ambas fuentes reales está pendiente de autorización específica para transmitir
+metadatos; no se confunde con los ciclos completos anteriores. La revisión visual
+local confirmó el botón de sugerencias con objetivo vacío y consentimiento sin
+marcar. El control de permisos detuvo el envío y no se intentó eludirlo.
+
+La revisión cruzada detectó una integración incompleta entre requisitos IA y
+cobertura del contrato. Se corrigió con códigos de capacidad controlados,
+identidad preservada del requisito y pruebas de revisión--cobertura--validación.
+Un margen requiere un resultado derivado real, no sólo operandos presentes.
+También se exige que la IA conserve el objetivo al analizar y que la generación
+renueve consentimiento si cambia el destino. Estos ajustes no debilitan las
+restricciones previas ni aprueban automáticamente sugerencias.
+
+El contraste local de ambas instantáneas confirmó cinco requisitos directos en
+AdventureWorks y cinco directos más dos derivables en WideWorldImporters. Se
+priorizó la fecha comercial exacta conectada sobre fechas genéricas de modificación;
+la periodicidad elegida exige fecha aun si no se menciona en el texto.
+La verificación integral \file{make verify} finalizó sin errores: 201 pruebas
+backend, 33 frontend, controles estáticos y compilación documental. Permanece un
+aviso de deprecación de Starlette/AnyIO, sin fallo de pruebas. No se publicó PR ni
+se realizó una nueva llamada externa para esta ampliación.
+
+\subsection{3 de octubre de 2026 - Ensayo autorizado y documentación de necesidades}
+
+El usuario autorizó probar con Claude la revisión previa y actualizar las
+especificaciones y documentos afectados. La prueba real inicial en WideWorldImporters
+produjo dos sugerencias no utilizables por rutas, tipos o capacidad no soportada;
+una reformulación también se bloqueó por el ancla. El control local de la misma
+instantánea con un hecho de línea pasó cinco referencias directas. Se conservó la
+captura original: no se modificaron FK para acomodar al proveedor.
+
+Una revisión que parafraseaba el objetivo se rechazó sin persistir otro alcance.
+Se añadió recuperación limitada con el mismo destino consentido y feedback del
+validador. También se reforzó la separación entre evidencia estructural y
+afirmaciones financieras: los nombres de columnas no prueban si un importe incluye
+impuestos o si un costo es histórico. Los requisitos identificados por IA conservan
+su código de cobertura hasta la selección y validación de facturas.
+
+Se actualizan las especificaciones de Sprints 3 y 6, el plan de validación, la guía
+operativa, arquitectura, índices, manual, informes de Sprints 2, 3, 5 y 6 y el
+Capítulo III. La auditoría registra cada intento y las capturas reales; no usa los
+ETL anteriores como prueba de las nuevas rutas ni declara universalidad en motores
+no ensayados. No se solicitó publicación de un PR en esta intervención.
+
+El ensayo detectó además precio de venta interpretado como costo y fechas dentro
+de operandos monetarios. Se incorporaron controles comunes de roles ES/EN y guía
+de separación entre medida y agrupación temporal, sin relajar tipos ni rutas.
+La versión \file{need-review-2} obliga a reevaluar sin sobrescribir historia.
+Los textos de IA se etiquetan como interpretación no ejecutable.
+
+La revisión final WWI \#5 registró 6 requisitos directos, 2 derivables,
+4 advertencias y 0 no disponibles; AW \#6 registró 11 directos, 1 derivable,
+5 advertencias y 0 no disponibles. Ambas se resolvieron con una respuesta del
+asesor y habilitaron continuar sólo tras aceptar explícitamente sus límites.
+No se generó otra propuesta ni ETL. El negativo de clima externo fue señalado
+como no disponible. La última reformulación AW siguió bloqueada tras dos
+respuestas: conservar el texto del analista y validarlo sí funcionó. Se documenta
+aceptación supervisada, no éxito incondicional de toda salida del proveedor.
+
+La regresión completa \file{make test} pasó con 231 pruebas backend y 34 frontend,
+Ruff, formato, Mypy, ESLint y compilación TypeScript/Vite. Un primer intento se
+detuvo por formato de un archivo; se corrigió y se repitió el bloque completo.
+El aviso de deprecación Starlette/AnyIO no afectó el resultado. La auditoría
+incorpora siete capturas adicionales, los textos de control y los casos NEED-15
+a NEED-21.
+La verificación integral posterior \file{make verify} terminó con salida 0:
+Compose, política de ramas, regresión y compilación de once PDF. Ocho documentos
+PDF se actualizaron en esta intervención, conservando los estilos existentes.
+
+\subsection{5 de octubre de 2026 - Integración de mejoras y guía de formación}
+
+Se preparó una sola entrega hacia \file{develop} con el código y las pruebas de la
+auditoría operativa: revisión previa de necesidades basada en metadatos,
+consentimiento ligado al proveedor, recuperación acotada de respuestas LLM,
+controles semánticos bilingües, aislamiento de fuentes en la analítica y la
+migración aditiva de revisiones. Se incluyen sus especificaciones, evidencia real,
+manual técnico, informes de sprint y Capítulo III. Los reportes descargados para
+uso local y las credenciales no forman parte del cambio versionado.
+
+La guía de formación desde cero se incorporó con fuentes LaTeX, doce capturas y
+un PDF reproducible. Cubre BI, eventos de venta, uso por perfil, doce escenarios,
+demostración, desarrollo y resolución de problemas. Las fichas de práctica se
+distinguen de las ejecuciones históricas conciliadas. El índice documental y CI
+incorporan el nuevo PDF y la auditoría, y el alcance separa el estado actual de
+los objetivos históricos del Sprint 1. La imagen LaTeX del proyecto utiliza la
+fuente Helvetica disponible; ambos documentos nuevos omiten marcas temporales
+del PDF para que la recompilación pueda contrastarse en CI.
+
+La verificación local se repitió con \file{make verify}: configuración Compose,
+política de ramas, pruebas de backend y frontend, y compilación de los doce PDF.
+La revisión formal por pares y la promoción a \file{main} se tramitan mediante
+pull requests separados, conforme a la política de ramas.
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}p{0.29\textwidth}@{\hspace{0.18in}}p{0.17\textwidth}@{\hspace{0.18in}}X@{}}
@@ -1048,13 +1195,13 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   \midrule
   Compose autocontenido válido & \statusok & \file{docker compose config --quiet} \\
   Compose de imágenes válido & \statusok & \file{docker compose -f compose.release.yaml config --quiet} \\
-  Backend calidad y pruebas & \statusok & Ruff, formato, Mypy y 157 pruebas Pytest dentro de Docker \\
-  Frontend calidad y pruebas & \statusok & ESLint, 24 pruebas Vitest y build de Vite dentro de Docker \\
+  Backend calidad y pruebas & \statusok & Ruff, formato, Mypy y 231 pruebas Pytest dentro de Docker \\
+  Frontend calidad y pruebas & \statusok & ESLint, 34 pruebas Vitest y build de Vite dentro de Docker \\
   PostgreSQL disponible & \statusok & Esquemas \file{app} y \file{mart}; endpoint \file{/health/ready} en \file{ok} \\
   AdventureWorks restaurada & \statusok & 71 tablas; \file{bi\_reader}: lectura 1 e inserción 0 \\
   Interfaz disponible & \statusok & Vite saludable en 5173, Nginx opcional en 8080 y API accesible mediante proxy \\
   Ollama local opcional & \statusok & Perfil \file{local-llm}, modelo ágil \file{qwen2.5:3b} persistente y prueba FastAPI de servicio más modelo, sin puerto público ni descarga CI \\
-  PDF legible & \statusok & Todas las páginas renderizadas e inspeccionadas sin cortes ni solapamientos \\
+  PDF legible & \statusok & Documentos regenerados; revisión visual de páginas modificadas y distribución general \\
   Git local & \statusok & \file{develop} para integración, \file{main} para entregas y ramas enfocadas por pull request \\
   GitHub/GHCR & \statusok & Repositorio público, dos colaboradoras con escritura, ramas protegidas y cinco imágenes públicas en GHCR; la réplica desde una VM Ubuntu se realizó con Docker y VS Code. \\
   SDD y trazabilidad & \statusok & Especificaciones de Sprints 2 a 6 versionadas; SPR-06-01 cubre aislamiento multifuente, catálogo por conexión y validación universal con WideWorldImporters. \\
@@ -1157,6 +1304,10 @@ La primera ejecución aislada de \file{docker compose run --rm migrate} utilizó
   0.6.0 & 01-10-2026 & Contexto multifuente SQL Server, catálogo aislado y explicable, restauración WideWorldImporters, propuesta 96 y ejecución 13 conciliada. \\
   0.6.1 & 01-10-2026 & Prueba integral multifuente, reportería inspeccionada, correcciones de contexto y territorio líder, y evidencia formal INF-TEST-MS-01 para la tesis. \\
   0.6.2 & 01-10-2026 & Verificación histórica de sólo lectura, restauración auditable de propuestas conciliadas y alineación del expediente publicado entre Datamart y Analítica. \\
+  0.6.3 & 03-10-2026 & Auditoría operativa de ambos orígenes, corrección universal de denominadores y alcance pedido/factura, evidencias de conciliación y límites de proveedor. \\
+  0.6.4 & 03-10-2026 & Sugerencias y revisión previa con metadatos, consentimiento por destino, evidencia persistida y regresiones de tipos y relaciones. Ensayo real nuevo pendiente de autorización. \\
+  0.6.5 & 03-10-2026 & Ensayo autorizado con Claude, recuperación acotada, cobertura conservada y actualización integral de especificaciones y documentos. \\
+  0.6.6 & 05-10-2026 & Entrega consolidada de mejoras BI + IA, guía formativa reproducible y control de doce PDF en CI. \\
   \bottomrule
 \end{longtable}
 

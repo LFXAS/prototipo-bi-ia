@@ -23,6 +23,7 @@ El objetivo es integrar la configuración LLM activa del Sprint 2 para convertir
 ### Incluido
 
 - Captura guiada en español del objetivo, preguntas de negocio y periodicidad. Las dimensiones no se solicitan en este paso: el LLM debe proponerlas a partir de la necesidad y de los metadatos verificados.
+- Sugerencias de necesidades desde la instantánea, reformulación de un objetivo y revisión previa IA/reglas, con referencias comprobadas, límites visibles, consentimiento por destino LLM y adopción humana explícita.
 - Descubrimiento semántico dinámico por bloques para interpretar tablas, columnas y relaciones técnicas según la solicitud de ventas.
 - Confirmación de conceptos y alcance en lenguaje de negocio, sin requerir identificadores técnicos.
 - Inclusión automática de tablas y columnas relacionadas por claves declaradas; el usuario sólo las consulta como trazabilidad.
@@ -64,7 +65,8 @@ Si falta un prerrequisito, la interfaz explica el paso necesario y no envía una
 ### 3.2 Flujo principal
 
 1. El analista BI abre **Asistente de datamart**, consulta los dominios disponibles y selecciona **Datamart de ventas**. El catálogo se deriva de la instantánea y de perfiles versionados; sólo se habilitan capacidades con evidencia técnica.
-2. La pantalla obtiene del backend preguntas orientadoras y periodicidades compatibles. El analista escribe el objetivo específico en español; React no mantiene un modelo dimensional fijo de AdventureWorks.
+2. La pantalla obtiene del backend preguntas orientadoras y periodicidades compatibles. El analista escribe el objetivo específico en español o solicita sugerencias desde la fuente; React no mantiene un modelo dimensional fijo de AdventureWorks. Antes del envío confirma proveedor/modelo y datos estructurales permitidos. La sugerencia no sustituye su texto hasta que decide usarla.
+   Antes de generar conceptos se revisa el texto definitivo con IA y reglas determinísticas; la evaluación y sus huellas se persisten para el mismo actor, instantánea, preguntas y período. Las limitaciones se confirman o se modifica la necesidad; la comprobación no aprueba automáticamente el futuro contrato BI.
 3. Las dimensiones, el hecho, las medidas, la granularidad, los KPIs y el plan ETL son decisiones propuestas por el LLM desde los metadatos. La aplicación valida referencias y coherencia; el analista puede personalizar la propuesta sin escribir SQL.
 4. FastAPI valida la solicitud y divide la instantánea en bloques que conservan nombres, tipos, PK y FK.
 5. El LLM identifica en cada bloque posibles conceptos de ventas y los explica en español.
@@ -78,11 +80,11 @@ Si falta un prerrequisito, la interfaz explica el paso necesario y no envía una
 13. Cada medida y KPI declara una función semántica tipada (`sales_amount`, `quantity`, `customer_count` o `transaction_count`). El backend comprueba columna, agregación, operación y compatibilidad KPI--medida; el nombre visible nunca basta para aceptar una fórmula.
 14. Las observaciones libres del proveedor se conservan sólo como trazabilidad. Los ajustes automáticos se muestran como información y únicamente los problemas confirmados por reglas determinísticas cuentan como advertencias o errores.
 15. El historial consulta al servidor por dominio y estado, muestra por defecto versiones listas para revisar y pagina el resultado. Cada fila permite abrir el artefacto persistido sin volver a ejecutar el LLM.
-15. Una persona autorizada selecciona la versión que considera adecuada y la aprueba o rechaza con comentario. La decisión queda auditada y el registro no se sobrescribe.
+16. Una persona autorizada selecciona la versión que considera adecuada y la aprueba o rechaza con comentario. La decisión queda auditada y el registro no se sobrescribe.
 
 Si la primera propuesta no satisface la necesidad, el analista no queda obligado a aceptarla. Puede volver al objetivo, ajustar preguntas y dimensiones, descartar conceptos semánticos no pertinentes y generar una nueva versión con IA; o puede personalizar las decisiones verificadas sin consumir nuevamente el proveedor. La versión anterior se conserva. No se admiten SQL, columnas libres ni relaciones manuales: todo ajuste vuelve a pasar por el validador determinístico.
 
-No existe una lista codificada de tablas AdventureWorks que se presente como interpretación de IA. La misma secuencia debe operar sobre otra base relacional de ventas cuando se implemente su conector: cambian los metadatos y el mapa producido, no el contrato de la experiencia. AdventureWorks sigue siendo la única fuente exigida para las pruebas funcionales de esta investigación.
+No existe una lista codificada de tablas AdventureWorks que se presente como interpretación de IA. La misma secuencia debe operar sobre otra base relacional de ventas cuando se implemente su conector: cambian los metadatos y el mapa producido, no el contrato de la experiencia. Desde Sprint 6 la validación funcional incluye AdventureWorks y WideWorldImporters con el mismo adaptador SQL Server; esto no acredita otros motores ni cualquier esquema desconocido.
 
 La implementación registra `connector_code` y `domain_code`. El contrato de metadatos es neutral al motor y el backend despacha la lectura mediante un registro de adaptadores; SQL Server es el único adaptador habilitado. Las preguntas de negocio son configurables, mientras que las reglas semánticas, destinos admitidos y validadores pertenecen a un perfil de dominio. `ventas` es el único perfil habilitado y validado. Un motor o dominio futuro debe incorporar y probar su adaptador o perfil antes de aparecer como opción disponible.
 
@@ -128,6 +130,17 @@ Tabla `app.bi_proposals`:
 | `created_at`, `reviewed_at` | Fechas UTC del servidor. |
 
 No se persisten claves, encabezados HTTP, cadena de conexión, razonamiento interno del modelo ni una conversación completa. Se conserva la propuesta estructurada necesaria para reproducibilidad académica.
+
+La revisión previa se conserva separadamente en `app.business_need_reviews`, creada
+por la migración aditiva `20261003_19`: instantánea, actor, huella de entrada,
+huella y documento de evaluación, proveedor/modelo e instante. Es evidencia no
+ejecutable; no reemplaza `bi_proposals` ni altera versiones históricas. La generación
+exige encontrar una evaluación coincidente, no aceptar una huella calculada sólo en
+el navegador o por la comprobación heurística anterior.
+La huella incorpora la versión de reglas `need-review-2`: las evaluaciones anteriores
+se conservan para auditoría, pero no autorizan una generación nueva hasta repetir la
+revisión con las reglas vigentes. Esta invalidación de revisión no retira aprobaciones
+ni altera contratos o materializaciones existentes.
 
 ### 4.2 Contrato de descubrimiento semántico
 
@@ -244,12 +257,34 @@ Por tanto, un programador construye el motor como parte del producto, pero no pa
 - Traducción o concepto sin referencia técnica verificable.
 - Solicitud de negocio que intenta introducir instrucciones del sistema, código o identificadores técnicos libres.
 - Medida basada en un tipo no numérico sin transformación declarativa permitida.
+- Contradicción semántica conocida entre capacidad y referencia: un precio de venta
+  no acredita costo unitario, un identificador no acredita importe, ni una tasa
+  acredita un descuento monetario. El control utiliza roles y alias generales en
+  español e inglés; no bifurca por nombre de base. Un nombre no reconocido exige
+  revisión y no se acepta automáticamente por tener tipo numérico.
+- Fecha, texto o clave dimensional usados como operandos de una medida aritmética:
+  sumar ventas por mes requiere importe numérico y fecha separados, no una medida
+  derivada que trate la fecha como número.
 - Agregación fuera del catálogo `sum`, `count`, `count_distinct`, `average`, `min` o `max`.
 - KPI que referencia una medida inexistente o usa fórmula libre.
 - Unión que no corresponde a una FK declarada o no identifica ambos extremos.
 - Granularidad vacía o incompatible con la clave del hecho propuesta.
 - Operación ETL fuera del catálogo permitido, SQL, código ejecutable o instrucción de escritura a la fuente.
 - Más de un hecho o destino fuera del datamart de ventas aprobado.
+- Si la necesidad exige ventas facturadas o facturas emitidas, el hecho y el
+  identificador y la fecha de transacción deben provenir del evento de factura
+  verificado;
+  líneas de pedido no pueden sustituirlo aunque el LLM use el término «venta».
+- Un promedio por transacción debe dividir el importe agregado entre documentos
+  distintos. `AVG(importe de línea)` sólo puede llamarse promedio por línea.
+- Un ranking de producto, cliente o territorio no puede calcularse con el
+  máximo de una línea: primero requiere agregar por entidad. De igual manera,
+  `AVG(importe de línea)` no equivale a promedio por cliente o territorio.
+  Estas reglas se aplican a denominaciones equivalentes en español e inglés.
+- La cobertura declarada por la IA se recalcula desde las medidas y KPI realmente
+  incluidos; no basta con que el texto diga que una necesidad está cubierta.
+- Una afirmación del proveedor que contradiga una columna presente en la
+  instantánea se rechaza antes de la aprobación.
 
 ### Advertencias que requieren atención humana
 
@@ -258,12 +293,24 @@ Por tanto, un programador construye el motor como parte del producto, pero no pa
 - Dimensión prevista por el alcance académico que el modelo omite con justificación.
 - Supuesto no respaldado por metadatos.
 
+La auditoría QA-E2E-20261003 mostró estos riesgos con propuestas reales de
+AdventureWorks y WideWorldImporters. La integración puede adaptar la solicitud
+de salida estructurada a las capacidades de cada proveedor (en Claude,
+`output_config.format` y un reintento acotado ante salida truncada), pero todos
+los resultados pasan por el mismo contrato y validador local. Los errores del
+contrato JSON y los límites de cuota se registran como fallos del proveedor,
+conservando la necesidad y sin aprobar automáticamente ninguna versión. Véase
+`docs/testing/auditoria-operativa-2026-10-03.md`.
+
 El validador devuelve códigos estables y mensajes en español. El revisor debe confirmar que leyó las advertencias antes de aprobar.
 
 ## 6. API prevista
 
 | Método y ruta | Permiso | Resultado |
 |---|---|---|
+| `POST /api/v1/copilot/needs/suggest` | `copilot.proposals.generate` | Sugiere hasta dos necesidades con evidencia y límites desde la instantánea vigente; no exige objetivo inicial ni preguntas seleccionadas. |
+| `POST /api/v1/copilot/needs/formulate` | `copilot.proposals.generate` | Mejora un objetivo existente bajo los límites reales de la estructura y conserva el texto original. |
+| `POST /api/v1/copilot/needs/viability` | `copilot.proposals.generate` | Revisa el objetivo sin sustituirlo, combina IA y reglas, persiste la evaluación y devuelve su huella. |
 | `POST /api/v1/copilot/proposals` | `copilot.proposals.generate` | Crea un intento desde una solicitud de negocio; FastAPI deriva el alcance técnico. |
 | `GET /api/v1/copilot/catalog` | `copilot.proposals.read` | Devuelve dominios, preguntas orientadoras y periodicidades disponibles para la instantánea vigente; no predefine dimensiones. |
 | `GET /api/v1/analysis-catalog/domains` | `copilot.catalog.read` | Lista dominios con catálogo analítico implementado. |
@@ -280,7 +327,12 @@ El validador devuelve códigos estables y mensajes en español. El revisor debe 
 | `POST /api/v1/copilot/proposals/{id}/restore-approval` | `copilot.proposals.review` | Restaura de forma auditada una aprobación retirada cuando no existen errores bloqueantes vigentes. |
 | `POST /api/v1/copilot/proposals/{id}/discard` | `copilot.proposals.generate` | Descarta una versión no aprobada sin borrarla físicamente. |
 
-La solicitud de creación admite `metadata_snapshot_id`, `business_goal` de 20 a 500 caracteres, uno o más códigos de preguntas aprobadas y una periodicidad inicial `month`. El texto libre complementa el objetivo, pero no amplía el dominio ni habilita operaciones. Una petición de inventario, compras, finanzas u otro dominio se rechaza antes de consumir el proveedor con una explicación de alcance. Los conceptos o dimensiones no se vinculan a tablas predefinidas: se descubren desde los metadatos.
+La solicitud de creación admite `metadata_snapshot_id`, `business_goal` de 20 a 2000 caracteres, uno o más códigos de preguntas habilitadas y una periodicidad inicial `month`. Exige además `viability_hash` de una revisión persistida coincidente y `metadata_consent_target` del destino LLM vigente. El texto libre complementa el objetivo, pero no amplía el dominio ni habilita operaciones. Las peticiones claramente ajenas al dominio se rechazan mediante las reglas de entrada; el análisis IA también puede declarar partes sin respaldo, pero no se presenta como detección exhaustiva de toda intención en lenguaje natural. Los conceptos o dimensiones no se vinculan a tablas predefinidas: se descubren desde los metadatos.
+
+Las tres operaciones de necesidad usan `metadata_consent_target`; el servidor lo
+comprueba antes de recuperar la credencial o llamar al proveedor. Las preguntas y
+periodicidad deben pertenecer al catálogo habilitado de la conexión de la instantánea.
+Sugerir no crea ni aprueba una propuesta y no guarda una nueva pregunta del catálogo.
 
 Las operaciones de revisión son idempotentes por estado: repetir una aprobación no duplica eventos; intentar cambiar una decisión final devuelve 409.
 
@@ -301,6 +353,13 @@ sin texto oculto ni superposiciones.
 
 El recorrido principal usa las etiquetas españolas generadas para la fuente activa y explica qué podrá obtenerse. Cada concepto muestra su explicación y un acceso **Ver origen técnico**. La propuesta se presenta por secciones: significado de la venta, granularidad, dimensiones, medidas, KPIs, plan ETL, reglas de calidad, supuestos y advertencias. Los nombres de tablas, relaciones y el JSON permanecen en **Detalles técnicos**, que el analista consulta sólo cuando necesita verificar la trazabilidad.
 
+En la revisión de la necesidad, la interfaz distingue **Referencia estructural
+comprobada** y **Derivación candidata**. Para los requisitos de origen IA (`ai:*`),
+la explicación o fórmula se presenta como **Interpretación propuesta por IA
+(no ejecutable)**, no como receta aprobada. Una reformulación no utilizable permite
+**Mantener mi redacción** y revisar el objetivo original; no obliga a aceptar el texto
+del proveedor ni garantiza que toda reformulación pueda adoptarse.
+
 Estados obligatorios: prerrequisito faltante, generando, proveedor inaccesible, validación fallida, listo para revisar, aprobado y rechazado.
 
 Debajo del recorrido se presenta **Versiones generadas** con paginación y filtro de estado. El filtro inicial es **Lista para revisar** para priorizar trabajo pendiente; el analista puede cambiar a aprobadas, rechazadas, con problemas o todas. Cada fila identifica el proveedor y modelo usados, señala si deriva de otra versión y permite **Abrir resultado**. La versión elegida repone su necesidad, conceptos, propuesta, validación y decisión en las mismas vistas del asistente. Esta consulta no llama nuevamente al LLM y permite preparar previamente una evidencia local lenta —por ejemplo Qwen en CPU— y compararla con una ejecución cloud rápida durante la sustentación. La aplicación no elige automáticamente al “mejor” proveedor: la selección y aprobación pertenecen al analista BI.
@@ -320,13 +379,35 @@ En móvil, cada sección es un acordeón y las acciones de decisión permanecen 
 - La URL se valida según el catálogo del proveedor del Sprint 2; no se aceptan destinos arbitrarios ni redirecciones.
 - El paquete se construye en backend. El cliente no puede inyectar metadatos ni instrucciones del sistema.
 - La solicitud de negocio se delimita, normaliza y limita; nunca se concatena con instrucciones privilegiadas ni se interpreta como SQL.
-- Se limita tamaño, duración, reintentos y respuesta. No se reintenta automáticamente una operación que pueda duplicar consumo sin idempotencia.
+- Se limita tamaño, duración, reintentos y respuesta. La asesoría puede solicitar una
+  única corrección al mismo proveedor cuando la salida no conserva el objetivo o la
+  comprobación local detecta referencias, tipos o rutas sin respaldo. El feedback es
+  estructurado y no amplía el contexto autorizado. No cambia de proveedor en silencio,
+  no repite indefinidamente ni crea propuestas o ETL durante ese reintento; si no se
+  resuelve, conserva el fallo y comunica la limitación. Las operaciones de escritura o
+  ejecución no se reintentan automáticamente de modo que dupliquen sus efectos.
 - Eventos: `copilot.proposal.generate`, `provider_failed`, `validation_failed`, `ready_for_review`, `approve` y `reject`.
 - La auditoría contiene ids, hashes, estado, proveedor/modelo y códigos de validación; nunca clave, prompt completo, cabeceras ni razonamiento del modelo.
 
 ## 9. Criterios de aceptación verificables
 
 - [ ] Sólo se puede generar con instantánea válida, solicitud de negocio confirmada, alcance derivado, permiso y configuración LLM activa/probada.
+- [ ] Sugerir, reformular y analizar reciben estructura real permitida y consentimiento vinculado a configuración, proveedor, destino y modelo; sin consentimiento coincidente no hay envío.
+- [ ] Las sugerencias muestran evidencia y límites; su adopción es explícita y no sobrescribe el objetivo automáticamente. Una sugerencia sin respaldo no puede adoptarse como viable.
+- [ ] La revisión previa comprueba tipos, referencias y rutas FK dirigidas; no confunde importes textuales, costos desconectados, fecha de modificación ni pedidos con evidencia suficiente de facturación.
+- [ ] Cambiar fuente, instantánea, objetivo, preguntas o periodicidad invalida la revisión; una respuesta tardía de otro contexto no la reemplaza. Recuperar un borrador no recupera consentimiento.
+- [ ] Crear una propuesta exige la revisión persistida del mismo actor y entrada; los requisitos de margen o razón requieren resultados derivados reales, no sólo operandos disponibles.
+- [ ] La revisión distingue respaldo estructural de calidad de filas, historia de costos, conciliación y utilidad comercial, que conservan sus controles posteriores.
+- [ ] El feedback correctivo permite como máximo un reintento con el mismo proveedor,
+  sin relajar el contrato ni introducir otra fuente. Si analizar modifica el objetivo
+  original y no lo conserva tras ese intento, se rechaza en lugar de guardar una
+  evaluación de otra necesidad.
+- [ ] Etiquetas como neto, bruto, impuesto incluido o costo histórico no se acreditan
+  sólo porque un nombre de columna parezca compatible; la necesidad y su explicación
+  exponen el límite semántico cuando los metadatos no lo demuestran.
+- [ ] La compatibilidad de tipo no se presenta como equivalencia semántica: los roles
+  conocidos de precio, costo, tasa, cantidad e importe deben corresponder al cálculo.
+  Las evaluaciones de una versión anterior no habilitan generación con reglas nuevas.
 - [ ] Un analista BI puede completar el recorrido guiado sin seleccionar manualmente tablas, escribir identificadores ni programar SQL.
 - [ ] El descubrimiento por bloques deriva un alcance reproducible usando únicamente objetos y PK/FK existentes.
 - [ ] El proveedor recibe exclusivamente el paquete de metadatos permitido y nunca filas, secretos o usuarios.
@@ -360,6 +441,11 @@ En móvil, cada sección es un acordeón y las acciones de decisión permanecen 
 - Seguridad: 401/403, inyección de metadatos, URL no permitida, tamaño excesivo y sanitización de errores.
 - Frontend: recorrido no técnico, prerrequisitos, secciones, advertencias, selección de versiones persistidas, validación visible, confirmaciones, estados y responsive.
 - Evidencia académica: hash de entrada, versión de prompt/contrato, proveedor/modelo, propuesta validada y decisión humana.
+- Revisión previa: respuestas simuladas con columnas inexistentes, tipos incompatibles,
+  tablas desconectadas, FK inversa, necesidad fuera de alcance, cambio de destino sin
+  consentimiento y respuesta tardía; contraste local con ambas instantáneas y ensayo
+  real autorizado documentado por separado. La aprobación de pruebas simuladas no
+  sustituye el ensayo real ni acredita cualquier combinación de proveedor y fuente.
 
 ## 11. Riesgos, dependencias y decisiones
 
@@ -372,6 +458,83 @@ En móvil, cada sección es un acordeón y las acciones de decisión permanecen 
 - Depende de SPR-03-01, SPR-03-04 y ADR 0003.
 
 ## 12. Resultado de implementación
+
+### Ampliación: necesidades fundamentadas, 3 de octubre de 2026
+
+El paso Necesidad ofrece tres operaciones separadas: proponer necesidades desde una
+instantánea, mejorar un objetivo escrito y analizar su viabilidad. Las tres usan el
+adaptador LLM común, sin personalizaciones por base de datos. Antes de cada revisión,
+la interfaz informa proveedor/modelo y exige consentimiento para transmitir únicamente
+objetivo y metadatos estructurales. Una huella vincula la autorización a configuración,
+proveedor, destino y modelo; un cambio de destino invalida esa autorización.
+
+La IA recibe una lista permitida de tablas, columnas, tipos, claves y relaciones, no
+sólo un hash. Propone una descomposición de la intención en requisitos y declara límites semánticos.
+El servidor comprueba existencia, tipos de operandos, identificadores y rutas FK
+dirigidas. Una relación inversa no acredita por sí sola que se preserve la granularidad.
+Una columna de texto no acredita un importe; una tabla de compras o pedidos no prueba
+facturación. Los alias generales españoles e ingleses ayudan al descubrimiento, pero
+no sustituyen la interpretación supervisada ni demuestran equivalencia de negocio.
+
+Las sugerencias muestran evidencia y límites, nunca sustituyen automáticamente el texto
+del analista y no pueden adoptarse cuando sus requisitos declarados carecen de respaldo.
+Después de elegir una, se exige validar su texto definitivo. Las respuestas tardías se
+descartan si cambian fuente, instantánea, texto, preguntas, período o consentimiento.
+
+La revisión conjunta IA/reglas se guarda en `app.business_need_reviews` (migración
+`20261003_19`), vinculada al actor, texto, preguntas, período e instantánea. Crear una
+propuesta exige una revisión persistida coincidente; no basta presentar una huella de
+la comprobación heurística anterior. Los límites requieren confirmación explícita y
+se trasladan a la propuesta. Las propuestas y ejecuciones históricas no se modifican.
+
+El ensayo real detectó que Claude podía presentar `UnitPrice` como costo unitario:
+el tipo numérico y la relación eran correctos, pero el significado no. Se añadió
+validación de roles semánticos y operandos en español/inglés; una contradicción
+conocida queda no disponible y un nombre desconocido permanece ambiguo. La versión
+`need-review-2` obliga a revalidar evaluaciones previas sin borrarlas. También se
+separó en las instrucciones y el feedback la agrupación temporal de la derivación
+aritmética: una fecha no puede ser operando numérico de una «evolución de ventas».
+
+**Límite:** este análisis acredita respaldo estructural condicionado, no cobertura
+exhaustiva demostrada del lenguaje natural, existencia de filas, corrección de valores,
+historia de costos ni conciliación. Se conservan los controles posteriores y aprobación.
+Las nuevas rutas están verificadas con proveedores simulados; su ensayo real con Claude
+fue autorizado y se documenta en la auditoría del 3 de octubre. Los intentos iniciales
+de WideWorldImporters no se califican como éxito: las sugerencias y la reformulación
+quedaron bloqueadas por evidencia relacional insuficiente, y el análisis que modificó
+el objetivo fue rechazado. Se añadió feedback acotado para corregir con el mismo
+proveedor sin debilitar las reglas. Una repetición produjo dos opciones estructuralmente
+usables en AdventureWorks, aunque sus explicaciones contenían afirmaciones incorrectas
+sobre estados de pedidos. WideWorldImporters produjo una opción usable y otra bloqueada;
+su análisis añadió una medida derivada temporal duplicada con una fecha como operando,
+que fue rechazada por las reglas. Estas incidencias se conservan incluso después del
+cierre funcional supervisado: demuestran utilidad y bloqueo seguro, pero no corrección
+semántica exhaustiva del texto del proveedor. La clausura del ensayo y sus resultados se conservan en la auditoría,
+separados de esas incidencias y de los ciclos ETL anteriores; no se atribuye un nuevo ETL
+a estas pruebas de necesidades.
+
+En la repetición correctiva de WideWorldImporters, una necesidad mensual de importe
+registrado en líneas de factura y trazabilidad obtuvo seis requisitos directos, dos
+derivables, cuatro límites de interpretación y ninguno
+no disponible. Los límites distinguieron composición del importe, fecha de factura
+frente a cobro, ausencia de filtrado implícito de notas de crédito y facturas frente
+a pedidos. Después de aceptarlos explícitamente se habilitó generar; no se creó una
+propuesta ni se ejecutó ETL. La prueba negativa de clima identificó la ausencia de
+datos climáticos externos y no confundió sensores frigoríficos o de vehículos con
+esa fuente: sin aceptar un alcance parcial, la generación permaneció deshabilitada.
+
+En AdventureWorks la reformulación final introdujo atributos de producto con capacidad
+`other`, sin validador implementado; permaneció no utilizable después de dos intentos.
+Se conservó el objetivo original: «Comparar por mes el importe registrado y la cantidad
+de unidades de las líneas de venta por producto, conservando su identificador de pedido».
+Con la pregunta de desempeño por producto y características y periodicidad mensual, la
+revisión obtuvo once directos, uno derivable, cinco ambiguos o advertencias y cero no
+disponibles. Tras aceptar explícitamente los cinco límites se habilitó generar, sin
+crear propuesta. El cierre es **aceptación funcional supervisada de la puerta previa**
+en ambos escenarios, no aceptación de toda reformulación ni validación universal del
+lenguaje natural. No se generaron propuestas ni se repitieron ETL en este ensayo.
+
+### Evidencia histórica anterior a esta ampliación
 
 Implementada localmente y pendiente de aceptación de las autoras antes del PR. Con `qwen2.5:3b` en Ollama se comprobó sobre la instantánea real de AdventureWorks la interpretación de cuatro conceptos, la generación de decisiones compactas y la expansión determinística. La prueba correctiva produjo la versión 31 en estado `ready_for_review`, con cero errores y cero advertencias: `LineTotal` y `OrderQty` como medidas y cuatro dimensiones con referencias verificadas. Los cuatro controles de evidencia resultaron satisfactorios. La revisión vigente retiró del paso 1 toda selección de dimensiones; los nuevos intentos dependen de la propuesta del LLM y de la validación posterior.
 

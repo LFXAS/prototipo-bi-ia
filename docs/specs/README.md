@@ -27,9 +27,9 @@ Consulta [`../sdd-workflow.md`](../sdd-workflow.md) para el proceso completo.
 | [SPR-02-03-parametros-y-llm.md](SPR-02-03-parametros-y-llm.md) | implementada y verificada | Configuración web de Gemini, Groq, Anthropic, Qwen y Ollama con credenciales cifradas, sin edición cotidiana de `.env`. |
 | [SPR-02-04-identidad-visual-y-shell-bi.md](SPR-02-04-identidad-visual-y-shell-bi.md) | borrador para aprobación | Dirección visual y cascarón común del prototipo BI asistido por IA. |
 | [SPR-02-matriz-correcciones.md](SPR-02-matriz-correcciones.md) | pendiente de evidencia | Trazabilidad entre observaciones funcionales, requisito y prueba. |
-| [SPR-03-metadatos-y-propuesta-bi.md](SPR-03-metadatos-y-propuesta-bi.md) | implementada; pendiente aceptación usuaria | Alcance mínimo de configuración web, introspección e interpretación BI supervisada para usuario final. |
+| [SPR-03-metadatos-y-propuesta-bi.md](SPR-03-metadatos-y-propuesta-bi.md) | implementada; pendiente aceptación usuaria | Configuración web, introspección, necesidades fundamentadas e interpretación BI supervisada; evidencia de la ampliación en la auditoría del 3 de octubre. |
 | [SPR-03-01-conexion-e-introspeccion-adventureworks.md](SPR-03-01-conexion-e-introspeccion-adventureworks.md) | implementada y verificada | Adaptador SQL Server, sólo lectura e instantáneas canónicas; AdventureWorks como validación. |
-| [SPR-03-02-propuesta-bi-asistida-por-ia.md](SPR-03-02-propuesta-bi-asistida-por-ia.md) | implementada; pendiente aceptación usuaria | Solicitud guiada, interpretación dinámica, contrato LLM, validación y aprobación. |
+| [SPR-03-02-propuesta-bi-asistida-por-ia.md](SPR-03-02-propuesta-bi-asistida-por-ia.md) | implementada; pendiente aceptación usuaria | Sugerencia/reformulación desde metadatos, revisión previa persistida IA/reglas, consentimiento, contrato LLM, validación y aprobación. |
 | [SPR-03-03-explorador-esquema-y-trazabilidad.md](SPR-03-03-explorador-esquema-y-trazabilidad.md) | implementada y verificada | Asistente para negocio y explorador técnico de sólo lectura con experiencia responsive. |
 | [SPR-03-04-configuracion-web-conexiones-y-secretos.md](SPR-03-04-configuracion-web-conexiones-y-secretos.md) | implementada y verificada | Una conexión SQL Server, secretos cifrados y parámetros operativos mínimos desde la web. |
 | [SPR-03-05-ui-ux-profesional.md](SPR-03-05-ui-ux-profesional.md) | implementada; pendiente aceptación usuaria | Arquitectura de información, pantallas, consulta histórica, continuidad de trabajo, responsive y accesibilidad profesional del Sprint 3. |
@@ -44,4 +44,15 @@ Consulta [`../sdd-workflow.md`](../sdd-workflow.md) para el proceso completo.
 | [SPR-05-04-capacidades-y-compatibilidad-llm.md](SPR-05-04-capacidades-y-compatibilidad-llm.md) | implementada y verificada | Capacidades por proveedor, Anthropic Messages API, traducción de razonamiento y tratamiento accionable de incompatibilidades. |
 | [SPR-05-05-copiloto-analitico-contextual.md](SPR-05-05-copiloto-analitico-contextual.md) | implementada y verificada | Conversación guiada sobre datos agregados visibles con evidencia, límites y auditoría. |
 | [SPR-05-06-endurecimiento-integral-asistente-bi.md](SPR-05-06-endurecimiento-integral-asistente-bi.md) | implementada y verificada | Contrato transversal para viabilidad, cobertura, relaciones, métricas, copiloto seguro, sesión, continuidad histórica y regresión. |
-| [SPR-06-01-contexto-multifuente-sqlserver.md](SPR-06-01-contexto-multifuente-sqlserver.md) | implementada y conciliada | Contexto explícito por fuente, catálogo aislado, evidencia técnica automática y ciclo completo sobre AdventureWorks y WideWorldImporters. |
+| [SPR-06-01-contexto-multifuente-sqlserver.md](SPR-06-01-contexto-multifuente-sqlserver.md) | implementada y conciliada | Contexto explícito por fuente, catálogo y revisión de necesidades aislados, evidencia técnica automática y ciclo completo sobre AdventureWorks y WideWorldImporters. |
+
+La revisión previa de necesidades es una ampliación correctiva del Sprint 3 y del
+aislamiento del Sprint 6, no un motor ni dominio nuevo. El resultado estructural sigue
+siendo condicionado: no acredita calidad de filas, costos históricos ni conciliación.
+El ensayo real obtuvo aceptación funcional supervisada de la puerta previa en ambas
+fuentes, sin generar nuevos contratos o ETL. Las reformulaciones pueden quedar no
+utilizables y no se garantiza que toda explicación libre del LLM sea correcta.
+`need-review-2` incorpora roles semánticos ES/EN y obliga a revalidar evaluaciones
+anteriores antes de generar.
+La regresión automatizada y el ensayo real autorizado se informan separadamente en
+[`../testing/auditoria-operativa-2026-10-03.md`](../testing/auditoria-operativa-2026-10-03.md).

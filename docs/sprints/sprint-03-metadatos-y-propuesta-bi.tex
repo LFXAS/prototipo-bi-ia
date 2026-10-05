@@ -59,7 +59,7 @@ pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}}
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & INF-SPR-03 \\
-    Versión & 1.0.1 \\
+    Versión & 1.1.0 \\
     Periodo de referencia & 14 al 20 de septiembre de 2026 \\
     Rama de trabajo & \file{feature/sprint-03-metadata-introspection} \\
     Estado & Aprobado e integrado mediante PR \#35; promoción mediante PR \#36 \\
@@ -179,11 +179,77 @@ El backend envía estructura técnica, nunca filas ni secretos. El contexto se o
   \item obliga a confirmar advertencias antes de aprobar.
 \end{itemize}
 
+\subsection{Necesidades sugeridas y revisión previa verificable}
+
+La auditoría del 3 de octubre detectó que la ayuda de redacción recibía sólo una huella
+y no el esquema, y que algunas comprobaciones confundían la presencia global de una
+columna con una ruta utilizable. El asesor común \file{need\_advisor} corrige esa frontera:
+permite sugerir objetivos sin texto inicial, reformular una necesidad y analizar su
+viabilidad con la estructura real. El modo de análisis debe conservar el objetivo
+exacto. Las sugerencias presentan evidencia y límites, requieren adopción humana y
+no modifican las preguntas del catálogo por fuente.
+
+El contexto permitido incluye esquemas, tablas, columnas, tipos, claves y FK declaradas,
+sin filas, muestras, propiedades de conexión ni credenciales. El envío exige
+consentimiento para el destino LLM mostrado; si cambia, se solicita de nuevo. Un límite
+explícito de tamaño evita que una estructura excesiva se trunque silenciosamente.
+
+La evaluación combina interpretación IA y reglas determinísticas de existencia,
+tipo y ruta. No acredita costos desconectados, importes textuales, inversión de FK
+con multiplicación del grano ni facturas ajenas al hecho de pedidos. Una periodicidad
+exige una fecha verificable; una fecha comercial exacta conectada prevalece sobre una
+marca de modificación. La ausencia de evidencia produce un límite, no una fuente
+inventada. Las reglas no contienen condiciones por nombre de base.
+
+La migración \file{20261003\_19} incorpora \path{app.business_need_reviews}: actor,
+instantánea, proveedor/modelo, evaluación y huellas de entrada y resultado. Generar
+exige una revisión persistida coincidente con texto, preguntas y período. Cambiar
+contexto invalida la evaluación y la interfaz descarta respuestas tardías. Los
+requisitos IA conservan su identidad y se enlazan a capacidades controladas: disponer
+de ventas y costos no cubre un margen si el contrato no contiene su resultado derivado.
+
+Esta puerta comprueba respaldo estructural, no calidad de filas ni historia de costos.
+No aprueba propuestas, no ejecuta ETL y no altera versiones aprobadas. La aceptación
+de negocio, la validación del modelo y la conciliación siguen siendo etapas separadas.
+
+La ampliación real de QA-NEED usó Claude Haiku con autorización de envío. Los primeros
+intentos de WideWorldImporters fallaron por ancla, rutas o tipos, y el análisis rechazó
+un objetivo parafraseado. Un control local sobre las mismas FK pasó cinco requisitos
+directos: la causa no era una captura de metadatos rota. Se añadió un reintento acotado
+con feedback específico, sin debilitar los validadores ni cambiar de destino.
+
+En AdventureWorks hubo sugerencias con referencias válidas, pero afirmaciones de estado
+no demostradas y una revisión que confundió \file{UnitPrice} con costo. Esta última
+falló el criterio QA y originó un contraste semántico común español/inglés; la versión
+\file{need-review-2} evita reaprovechar las evaluaciones anteriores al endurecimiento.
+Una evolución temporal que mezclaba importe y fecha en un solo requisito de medida
+también se rechazó; la corrección pide separar funciones, no aceptar tipos incompatibles.
+
+La repetición WWI obtuvo una sugerencia utilizable y otra bloqueada; la viabilidad
+final mostró seis requisitos directos, dos automáticos y cuatro advertencias, sin
+no disponibles. Sólo después de aceptar explícitamente los cuatro límites se habilitó
+generar. No se ejecutó ese botón ni un ETL nuevo. El control negativo sobre clima
+externo detectó la información ausente y distinguió sensores de refrigeración de
+evidencia climática; no aprobó por sí solo la necesidad.
+
+\begingroup
+\widowpenalty=10000
+El cierre AW mantuvo una limitación observada: la reformulación fue no utilizable por
+una capacidad sin validador en dos intentos y no se adoptó. El texto original del
+analista, sobre comparación mensual de importe registrado y unidades por producto con
+trazabilidad al pedido, sí alcanzó una revisión persistida con once requisitos
+directos, uno derivable, cinco advertencias o ambigüedades y cero no disponibles.
+Aceptar explícitamente los cinco límites habilitó generar, sin ejecutar propuesta ni
+ETL. La interfaz distingue \emph{Referencia estructural comprobada}, \emph{Derivación
+candidata} e \emph{Interpretación propuesta por IA (no ejecutable)}; la explicación
+del modelo no recibe la autoridad de una fórmula controlada.
+\par\endgroup
+
 \subsection{Expediente acumulativo de validación técnica}
 
 La plataforma añade \textbf{Validación estructural de la propuesta - Sprint 3} para la versión seleccionada. Sin llamar otra vez al LLM, FastAPI verifica la huella de los metadatos, repite los controles de referencias y contrato y reconstruye la propuesta a partir de las decisiones IA guardadas. La operación es de sólo lectura: una diferencia entre la huella persistida y la reconstrucción actual se conserva como diagnóstico de compatibilidad, pero no altera el estado aprobado. La seguridad para una ejecución nueva depende de la instantánea, las referencias y los errores estructurales vigentes. Así, la reproducibilidad recae sobre el artefacto aprobado y el motor determinístico, no sobre obtener dos respuestas idénticas de un modelo probabilístico.
 
-La vista separa las evidencias ya disponibles de las pendientes. En Sprint 3 confirma correspondencia estructural con el OLTP, pero aún no compara importes ni cantidades. Sprint 4 deberá presentar conciliaciones de filas, pedidos, unidades, ventas totales y ventas mensuales entre AdventureWorks OLTP y el datamart. El contraste con AdventureWorksDW, la evaluación formal por expertos y MAPE/RMSE se incorporarán posteriormente según \file{docs/validation-plan.md}.
+La vista separa las evidencias ya disponibles de las pendientes. En Sprint 3 confirma correspondencia estructural con el OLTP, pero no compara importes ni cantidades. Sprint 4 incorpora conciliaciones de filas, documentos, unidades e importes entre OLTP y datamart. El contraste secundario con AdventureWorksDW requiere equivalencia semántica y la evaluación formal por expertos pertenece al cierre académico. Pronóstico, MAPE y RMSE se retiraron del alcance por decisión del tutor; no se presentan como validaciones pendientes.
 
 \section{Experiencia UI/UX}
 
@@ -222,6 +288,20 @@ El perfil \file{ventas} reúne reglas semánticas, periodicidades soportadas, t�
 
 \section{Límites y riesgos}
 
+La matriz histórica anterior pertenece al cierre original. La adenda QA-NEED del
+3 de octubre añade casos sintéticos en español e inglés, referencias inventadas,
+tipos incompatibles, FK incompletas, consentimiento y cobertura real de requisitos.
+El contraste determinístico local eligió \file{SalesOrderHeader.OrderDate} en
+AdventureWorks y \file{Invoices.InvoiceDate} en WideWorldImporters, sin reutilizar la
+evidencia de otra fuente. Los ensayos con datos sintéticos no demuestran exhaustividad
+de todas las formulaciones posibles ni compatibilidad con motores no implementados.
+
+El corte final de regresión de esta adenda aprobó \file{make test} con 231 pruebas
+backend y 34 frontend, más Ruff, formato, Mypy, ESLint y TypeScript/Vite. El aviso
+de deprecación Starlette/AnyIO no fue un fallo. Los 201/33 casos del corte previo
+permanecen como evidencia histórica, no como conteo vigente; la reformulación AW
+bloqueada sigue registrada como limitación funcional pese al éxito automatizado.
+
 \begin{itemize}
   \item Un modelo de 3B es una alternativa local de respaldo y puede tardar varios minutos; la calidad final debe compararse con un proveedor cloud disponible.
   \item La prueba de conexión cloud ahora realiza una generación mínima, pues listar modelos no garantiza derecho de uso.
@@ -258,6 +338,7 @@ Sprint 3 demuestra el núcleo del título: la IA interviene en la construcción 
   \midrule
   1.0.0 & 24-09-2026 & Normalización profesional y actualización de aceptación, integración y promoción del Sprint 3. \\
   1.0.1 & 29-09-2026 & Adenda HBI-013: continuidad del modo histórico, periodicidad persistida y trazabilidad visual de medidas y KPI. \\
+  1.1.0 & 03-10-2026 & Asesor de necesidades con metadatos reales, consentimiento, revisiones persistidas, reglas de tipos/rutas y cobertura, sin confundir viabilidad con calidad de datos. \\
   \bottomrule
 \end{tabularx}
 

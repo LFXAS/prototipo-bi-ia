@@ -55,13 +55,13 @@ Desarrollar un prototipo web de inteligencia de negocios asistido por IA que per
 
 El anexo institucional exige evidencia de un módulo de seguridad, parámetros, negocio y reportes. Además, la decisión técnica del equipo exige RBAC con usuarios, roles, permisos y menús por rol. Esto no convierte el prototipo en una plataforma multiusuario avanzada: se implementará un RBAC mínimo, controlado y suficiente para la demostración académica.
 
-En esta fase sólo existe su límite modular y la documentación del contrato. La implementación funcional se realizará en una migración y entrega posteriores.
+El Sprint 2 implementó autenticación, usuarios, roles, permisos, menús autorizados y auditoría. El alcance sigue siendo un RBAC mínimo para esta prueba de concepto; las pruebas con cuentas autenticadas de los roles Analista BI y Gerente comercial permanecen como actividad de validación formal.
 
 ## Aclaración sobre el LLM configurable
 
 El anteproyecto requiere un LLM que proponga artefactos BI, siempre con validación determinística y aprobación humana. Para evitar depender de un único proveedor, la plataforma permite elegir una sola conexión activa entre Gemini Cloud, Groq Cloud, Anthropic Claude, Qwen Cloud y Ollama local. Groq se integra mediante su endpoint compatible con OpenAI y el modelo recomendado `openai/gpt-oss-120b`; Anthropic usa exclusivamente la API Messages oficial y propone `claude-haiku-4-5-20251001` como alternativa económica. Las credenciales cloud se registran o reemplazan desde la web y se conservan cifradas, sin editar `.env` durante la operación ordinaria. Esta parametrización no permite enviar datos crudos ni ejecutar SQL del modelo.
 
-## Objetivo de esta fase
+## Objetivo histórico del Sprint 1
 
 - Repositorio y flujo Git preparados.
 - Frontend y backend ejecutados íntegramente con Docker.
@@ -69,7 +69,11 @@ El anteproyecto requiere un LLM que proponga artefactos BI, siempre con validaci
 - PostgreSQL interno/datamart y SQL Server externo configurables.
 - Endpoints de salud, OpenAPI y pantalla técnica inicial.
 - CI/CD preparado en GitHub Actions.
-- Ningún módulo de negocio implementado todavía.
+- En ese incremento no se implementó aún ningún módulo de negocio.
+
+## Estado funcional vigente
+
+Los Sprints 2 a 6 incorporaron seguridad, parámetros, metadatos, propuestas supervisadas, ETL, conciliación, analítica y múltiples fuentes SQL Server. La auditoría operativa del 3 de octubre de 2026 verificó ciclos completos en AdventureWorks y WideWorldImporters y documentó por separado una revisión previa de necesidades con respaldo estructural. Esta revisión permite continuar sólo después de aceptar límites explícitos; no sustituye la aprobación de la propuesta ni la conciliación del ETL. Véanse `docs/testing/auditoria-operativa-2026-10-03.md` y `docs/validation-plan.md`.
 
 ## Límite aprobado para especificar el Sprint 3
 

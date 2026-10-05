@@ -114,6 +114,30 @@ def _anthropic_text(payload: object) -> str | None:
     return "".join(text_blocks) or None
 
 
+def _anthropic_output_schema(schema: dict[str, Any]) -> dict[str, Any]:
+    """Use Claude's supported schema subset; keep full constraints for local validation."""
+    unsupported = {"maxItems", "maxLength", "minLength", "minimum", "maximum"}
+
+    def simplified(node: object) -> object:
+        if isinstance(node, list):
+            return [simplified(item) for item in node]
+        if not isinstance(node, dict):
+            return node
+        result = {
+            key: simplified(value)
+            for key, value in node.items()
+            if key not in unsupported
+            and (key != "minItems" or isinstance(value, int) and value in (0, 1))
+        }
+        if result.get("type") == "object":
+            result["additionalProperties"] = False
+        return result
+
+    output = simplified(schema)
+    assert isinstance(output, dict)
+    return output
+
+
 def _json_contract_error(value: object, schema: dict[str, Any], path: str = "$") -> str | None:
     """Validate the JSON Schema subset used by every provider adapter.
 
@@ -651,6 +675,23 @@ async def generate_json(
                 choices = response.json().get("choices", [])
                 content = choices[0].get("message", {}).get("content") if choices else None
             elif configuration.provider_kind == "anthropic-cloud":
+                anthropic_body: dict[str, Any] = {
+                    "model": configuration.model_id,
+                    "max_tokens": max_output_tokens,
+                    "temperature": 0,
+                    "system": _anthropic_system_instruction(
+                        system_instruction,
+                        response_schema,
+                    ),
+                    "messages": [{"role": "user", "content": user_content}],
+                }
+                if response_schema is not None:
+                    anthropic_body["output_config"] = {
+                        "format": {
+                            "type": "json_schema",
+                            "schema": _anthropic_output_schema(response_schema),
+                        }
+                    }
                 response = await _post_with_retry(
                     client,
                     f"{base_url}/v1/messages",
@@ -661,20 +702,29 @@ async def generate_json(
                         "anthropic-version": "2023-06-01",
                         "content-type": "application/json",
                     },
-                    json={
-                        "model": configuration.model_id,
-                        "max_tokens": max_output_tokens,
-                        "temperature": 0,
-                        "system": _anthropic_system_instruction(
-                            system_instruction,
-                            response_schema,
-                        ),
-                        "messages": [{"role": "user", "content": user_content}],
-                    },
+                    json=anthropic_body,
                 )
                 if not 200 <= response.status_code < 300:
                     raise _response_error(configuration.provider_kind, response)
-                content = _anthropic_text(response.json())
+                anthropic_result = response.json()
+                if anthropic_result.get("stop_reason") == "max_tokens":
+                    if _allow_contract_retry and max_output_tokens < 4096:
+                        return await generate_json(
+                            configuration,
+                            system_instruction,
+                            payload,
+                            credential=credential,
+                            timeout_seconds=timeout_seconds,
+                            max_output_tokens=min(max_output_tokens * 2, 4096),
+                            response_schema=response_schema,
+                            _allow_contract_retry=False,
+                        )
+                    raise ProviderGenerationError(
+                        "Claude agotó el presupuesto de salida antes de cerrar el JSON. "
+                        "La respuesta incompleta fue descartada sin usarse.",
+                        category="token_budget",
+                    )
+                content = _anthropic_text(anthropic_result)
             else:
                 response = await _post_with_retry(
                     client,
@@ -711,7 +761,26 @@ async def generate_json(
             "No fue posible conectar con el proveedor activo.",
             category="connection",
         ) from exc
-    document, contract_error, projected = _contract_document(content, response_schema)
+    try:
+        document, contract_error, projected = _contract_document(content, response_schema)
+    except ProviderGenerationError:
+        if not _allow_contract_retry or response_schema is None:
+            raise
+        logger.warning(
+            "llm_json_retry provider=%s model=%s",
+            configuration.provider_kind,
+            configuration.model_id,
+        )
+        return await generate_json(
+            configuration,
+            f"{system_instruction.strip()}\n\nREINTENTO ÚNICO: devuelve un objeto JSON completo.",
+            payload,
+            credential=credential,
+            timeout_seconds=timeout_seconds,
+            max_output_tokens=min(max_output_tokens * 2, 4096),
+            response_schema=response_schema,
+            _allow_contract_retry=False,
+        )
     if contract_error is None:
         if projected:
             logger.warning(

@@ -1,13 +1,13 @@
 # Índice de documentación técnica
 
-La documentación forma parte del producto versionado. Las fuentes Markdown y LaTeX se revisan mediante pull request; los diez PDF oficiales se regeneran dentro de Docker y CI comprueba que coincidan con sus fuentes.
+La documentación forma parte del producto versionado. Las fuentes Markdown y LaTeX se revisan mediante pull request; los doce PDF oficiales se regeneran dentro de Docker y CI comprueba que coincidan con sus fuentes.
 
 ## Entregables oficiales del proyecto
 
-Los ocho documentos técnicos conservan el detalle íntegro del producto y no utilizan identidad institucional. El Capítulo III es una versión académica independiente preparada para integrarse en la plantilla general del trabajo de titulación.
+Los diez documentos técnicos conservan el detalle del producto y sus evidencias. El Capítulo III es una versión académica independiente preparada para integrarse en la plantilla general del trabajo de titulación. La guía de formación ofrece el recorrido didáctico para los tres perfiles de uso.
 
 - [`manual-tecnico/manual-tecnico.pdf`](manual-tecnico/manual-tecnico.pdf): instalación, operación, reconstrucción, uso del asistente y explicación detallada del ciclo Docker, Git y CI/CD.
-- [`sprints/sprint-03-metadatos-y-propuesta-bi.pdf`](sprints/sprint-03-metadatos-y-propuesta-bi.pdf): alcance, arquitectura, validación y evidencias del asistente supervisado del Sprint 3.
+- [`sprints/sprint-03-metadatos-y-propuesta-bi.pdf`](sprints/sprint-03-metadatos-y-propuesta-bi.pdf): alcance, arquitectura, revisión previa de necesidades con evidencia estructural y asistente supervisado del Sprint 3.
 - [`sprints/sprint-04-materializacion-etl.pdf`](sprints/sprint-04-materializacion-etl.pdf): materialización controlada, KPI variables, conciliación, interpretación española y evidencia real de la ejecución 6.
 - [`sprints/sprint-05-analitica-y-reporteria.pdf`](sprints/sprint-05-analitica-y-reporteria.pdf): calidad descriptiva, ejecuciones 9/11, KPI derivados, continuidad histórica, paneles por perfil, copiloto contextual y reportería fiel.
 - [`sprints/sprint-06-multifuente-universal.pdf`](sprints/sprint-06-multifuente-universal.pdf): fuentes SQL Server concurrentes, catálogo aislado, descubrimiento universal y ejecución conciliada de WideWorldImporters.
@@ -16,8 +16,16 @@ Los ocho documentos técnicos conservan el detalle íntegro del producto y no ut
 - [`logbook/bitacora.pdf`](logbook/bitacora.pdf): registro cronológico de decisiones, cambios, verificaciones, incidentes y pendientes.
 - [`tesis/capitulo-03-propuesta-tecnologica.pdf`](tesis/capitulo-03-propuesta-tecnologica.pdf): versión académica consolidada de la propuesta tecnológica, factibilidad, ingeniería de software, UML, casos de uso, sprints y validación.
 - [`testing/Informe_pruebas_integrales_multifuente.pdf`](testing/Informe_pruebas_integrales_multifuente.pdf): protocolo y evidencia reproducible de los escenarios integrales ejecutados con AdventureWorks y WideWorldImporters, incluidas conciliaciones, capturas, incidencias y límites de la validación.
+- [`testing/Auditoria_operativa_2026-10-03.pdf`](testing/Auditoria_operativa_2026-10-03.pdf): auditoría operativa posterior, escenarios por perfiles, facturación/pedidos, asesoría de necesidades basada en metadatos, resultados, capturas y límites; distingue pruebas simuladas y ensayos reales.
+- [`formacion/guia_formacion_bi_ia.pdf`](formacion/guia_formacion_bi_ia.pdf): formación desde cero en BI + IA, uso paso a paso, criterios comerciales, doce escenarios para las dos fuentes, doce capturas y resolución de problemas. Su fuente LaTeX y figuras están en el mismo directorio.
 
 Las fuentes editables se encuentran junto a cada PDF. `referencia-devops-sprint1.tex` y `detalle-tecnico-sprint-01.tex` son capítulos incluidos desde los documentos principales para mantener legible su estructura.
+
+La auditoría distingue la aceptación funcional supervisada del nuevo asesor de
+necesidades de los ciclos BI/ETL ya conciliados. La puerta previa se probó en ambas
+fuentes, sin generar propuestas o cargas nuevas; una reformulación puede seguir no
+utilizable. Sugerencias estructuralmente usables no acreditan por sí solas toda su
+explicación semántica; incidentes y límites se conservan, sin presentar éxito universal.
 
 ## Documentos de gobierno y diseño
 
@@ -28,6 +36,7 @@ Las fuentes editables se encuentran junto a cada PDF. `referencia-devops-sprint1
 - [`replication-guide.md`](replication-guide.md): comandos de instalación y réplica.
 - [`validation-plan.md`](validation-plan.md): plan acumulativo de validación técnica, conciliación, calidad semántica, analítica y reportería.
 - [`experiments/2026-09-27-groq-vs-claude.md`](experiments/2026-09-27-groq-vs-claude.md): comparativa integral y decisión de proveedor para la generación de propuestas BI.
+- [`testing/auditoria-operativa-2026-10-03.md`](testing/auditoria-operativa-2026-10-03.md): registro editable de escenarios QA y resultados obtenidos, incluida la revisión previa IA/reglas de necesidades con consentimiento por destino.
 - [`sdd-workflow.md`](sdd-workflow.md) y [`specs/`](specs/README.md): proceso y contratos SDD desde el Sprint 2.
 
 ## Regeneración y verificación
@@ -39,7 +48,7 @@ make docs
 make verify
 ```
 
-`make docs` compila los nueve PDF con la imagen LaTeX del proyecto. `make verify` agrega validación Compose, política de ramas y pruebas de frontend/backend. Un cambio documental no se considera terminado hasta que las fuentes y los PDF estén actualizados y legibles.
+`make docs` compila los doce PDF con la imagen LaTeX del proyecto. `make verify` agrega validación Compose, política de ramas y pruebas de frontend/backend. Un cambio documental no se considera terminado hasta que las fuentes y los PDF estén actualizados y legibles.
 
 ## Separación de material externo
 

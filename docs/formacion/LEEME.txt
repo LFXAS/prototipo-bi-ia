@@ -1,0 +1,58 @@
+GUÍA DE FORMACIÓN DESDE CERO: BI + IA APLICADA A VENTAS
+Versión 1.0 - 3 de octubre de 2026
+
+CONTENIDO DEL PAQUETE
+
+guia_formacion_bi_ia.tex: documento principal y estilo.
+01_fundamentos.tex: fundamentos de BI, ventas, IA, roles y privacidad.
+02_operacion.tex: recorrido de uso paso a paso con capturas reales.
+03_escenarios.tex: doce fichas de necesidades para las dos fuentes.
+04_demostracion_estudio.tex: demostración, QA, problemas y autoevaluación.
+05_desarrolladores.tex: arquitectura, instalación, pruebas y extensiones.
+figuras/: doce capturas originales de la auditoría del 3 de octubre de 2026.
+
+REQUISITOS PARA REGENERAR EL PDF
+
+Una distribución LaTeX con pdfLaTeX y latexmk. Se verifica con la imagen
+LaTeX oficial del proyecto mediante make training-guide.
+Los paquetes utilizados están declarados al inicio del documento principal:
+babel con español, helvet, amsmath, array, tabularx, booktabs, enumitem,
+graphicx, geometry, xcolor, tcolorbox, fancyhdr, lastpage, microtype,
+etoolbox, xurl e hyperref.
+
+Abra una terminal en la carpeta que contiene este archivo y ejecute:
+
+latexmk -pdf -interaction=nonstopmode -halt-on-error guia_formacion_bi_ia.tex
+
+Alternativa: compilar el archivo principal varias veces con pdfLaTeX para
+actualizar índice, referencias y número total de páginas.
+
+No se necesita una clave de IA, conexión a la aplicación ni base de datos
+para compilar este manual. No se ejecutan consultas ni cargas al compilar.
+
+CÓMO EDITAR
+
+Edite los módulos conservando los nombres y la carpeta figuras. El archivo
+principal incluye los módulos en el orden de lectura. Si cambia contenido,
+revise el PDF completo después de compilar: cada ficha y captura tiene una
+paginación deliberada y puede necesitar ajustes. Las capturas se conservan
+en su resolución original; el lector puede ampliarlas o abrirlas aparte.
+
+ALCANCE Y USO RESPONSABLE
+
+Esta guía documenta la instalación y las evidencias disponibles a la fecha
+indicada. Distingue resultados históricos, comprobaciones de viabilidad y
+ejercicios nuevos todavía pendientes de ejecución integral. No se hicieron
+nuevas llamadas a proveedores ni cargas ETL al redactar este documento.
+
+Las tablas y columnas de AdventureWorks2022 y WideWorldImporters son ejemplos
+observados, no reglas que deban codificarse para esas dos bases. La evidencia
+no demuestra compatibilidad con cualquier motor o modelo. Consulte los
+límites específicos en cada capítulo y ficha.
+
+Las instrucciones de resolución de problemas evitan borrar evidencia,
+forzar aprobaciones o presentar datos incompletos como comprobados. Antes
+de usar el manual en otra instalación, revise rutas, permisos y etiquetas.
+
+Las referencias a documentación y pruebas del proyecto figuran al final
+del PDF. Conserve este paquete junto con el PDF para reproducibilidad.

@@ -1,0 +1,329 @@
+\chapterpage{Módulo 3 · Primer acceso}{Entrar y orientarse sin conocimientos previos}
+\sub{Antes de abrir la herramienta}
+El responsable técnico debe haber iniciado la aplicación, restaurado las dos bases y entregado una cuenta autorizada. \textbf{Registrar una conexión no instala SQL Server ni restaura una base inexistente}. Si la página no abre, no intente resolverlo modificando datos: solicite que comprueben los servicios. La instalación y los comandos de infraestructura pertenecen al manual técnico del proyecto.
+\begin{enumerate}
+\item Abra el navegador. En esta instalación de demostración la dirección es \url{http://localhost:5173/}; en otro equipo use la dirección indicada por su administrador. \emph{Localhost} se refiere al propio equipo donde se abre el navegador.
+\item Complete \textbf{Correo} y \textbf{Contraseña}. Pulse \textbf{Iniciar sesión}. No proyecte ni copie la contraseña en la guía, en una necesidad o en una captura.
+\item Compruebe el usuario en el encabezado. Abra \textbf{Menú} si la barra lateral no se ve; el diseño cambia con el ancho de la ventana.
+\item Entre en \textbf{Inicio}. Si su perfil dispone de la preparación, revise fuente, metadatos y asistente de IA. «Todo está listo» sólo indica prerrequisitos. El usuario final puede ir directamente a \textbf{Analítica de ventas} si su permiso no incluye diseño.
+\item Localice \textbf{Fuente en contexto} y \textbf{Cambiar fuente}. Elija la base del ejercicio y compruebe su nombre antes de continuar.
+\end{enumerate}
+\sub{El menú como mapa de trabajo}
+\begin{tabularx}{\linewidth}{@{}p{49mm}Y@{}}
+\toprule
+\textbf{Grupo}&\textbf{Para qué se utiliza}\\
+\midrule
+Preparación del entorno&Conexiones de datos, Explorador de esquema, Configuración LLM y Parámetros. Prepara las condiciones de trabajo.\\
+Diseño y transformación BI&Catálogo analítico, Asistente de datamart y Datamart de ventas. Define, revisa y materializa el análisis.\\
+Análisis y decisiones&Analítica de ventas. Consulta resultados, gráficos, hallazgos, conversación y exportaciones.\\
+Administración y seguridad&Usuarios, roles y permisos disponibles según la cuenta. No es una etapa que el alumno deba modificar para avanzar.\\
+\bottomrule
+\end{tabularx}
+\begin{note}[Si no aparece una opción]
+Puede depender del permiso de su cuenta. Pida al administrador el acceso que corresponde a su función. No use una cuenta ajena ni confunda una opción oculta con un fallo de datos. El perfil gerencial debería consultar y exportar; no necesita administrar credenciales para ver el panel.
+\end{note}
+\sub{Primer ejercicio sin riesgo}
+Cambie de AdventureWorks a WideWorldImporters y vuelva a Inicio. Diga en voz alta qué fuente está seleccionada. Esta acción cambia su contexto de trabajo; no deshabilita ni elimina la otra base.
+
+\chapterpage{Módulo 3 · Preparación autorizada}{Conectar la fuente y dejar lista la IA}
+\sub{A. Conexiones de datos}
+Si AdventureWorks y WideWorldImporters ya están registradas, \textbf{no las duplique}. Revise su nombre y estado. Para una fuente nueva, el responsable autorizado completa:
+\begin{tabularx}{\linewidth}{@{}p{43mm}Y@{}}
+\toprule
+\textbf{Campo}&\textbf{Qué debe introducir}\\
+\midrule
+Nombre visible&Nombre que permita reconocer negocio y entorno, sin incluir contraseñas.\\
+Motor&Actualmente SQL Server; no se ofrece aquí soporte operativo de cualquier motor.\\
+Servidor / Puerto&Dirección y puerto entregados por el administrador, accesibles desde el servicio de la aplicación.\\
+Base de datos&Nombre exacto de la base restaurada. No basta con cambiar el nombre visible.\\
+Usuario de sólo lectura&Cuenta con permisos mínimos para consultar la fuente y sus metadatos.\\
+Contraseña&Secreto de esa cuenta. No se escribe en objetivos ni en comentarios.\\
+Transporte&Opciones de cifrado y certificado revisadas por el administrador. No desactive seguridad para resolver un error sin diagnóstico.\\
+\bottomrule
+\end{tabularx}
+Pulse \textbf{Registrar conexión}, luego \textbf{Probar conexión}. Sólo cuando se valide el acceso de sólo lectura, use \textbf{Habilitar}. Después pulse \textbf{Leer metadatos}. Las fuentes pueden permanecer habilitadas simultáneamente.
+\sub{B. Configuración LLM}
+Con una configuración activa y probada, el alumno no necesita crear otra. Si debe configurarse una: entre en \textbf{Configuración LLM}, complete nombre, proveedor, URL, modelo y razonamiento; use \textbf{Crear registro}. Para cloud: \textbf{Registrar credencial} y \textbf{Guardar credencial}; después \textbf{Probar conexión} y \textbf{Activar}.
+
+Cambiar proveedor, modelo o nivel exige volver a comprobar la configuración. Use exclusivamente las opciones admitidas por el formulario y por su cuenta. En el corte documentado, Claude ofrece Automático, Mínimo y Bajo; no se debe imponer el mismo nivel a todos los proveedores.
+\begin{note}[Dos cambios distintos]
+\textbf{Cambiar fuente} selecciona la base de trabajo. \textbf{Activar una configuración LLM} cambia el proveedor activo para las operaciones posteriores y puede afectar a otras sesiones. No lo cambie durante una exposición compartida sin coordinarlo.
+\end{note}
+\begin{good}[Punto de control]
+Puede continuar cuando reconoce la fuente, el acceso está probado, existe una instantánea y el proveedor está listo. Una prueba LLM correcta sólo acredita conexión y respuesta básica; no garantiza todas las propuestas posteriores.
+\end{good}
+
+\chapterpage{Módulo 3 · Actividad 1}{Leer el esquema antes de pedir un análisis}
+Ruta: \textbf{Preparación del entorno → Explorador de esquema}.
+\begin{enumerate}
+\item Compruebe \textbf{Fuente en contexto}. Si no hay captura, use \textbf{Crear primera instantánea}; si ya existe, consúltela antes de decidir si necesita \textbf{Actualizar metadatos}.
+\item Lea versión, fecha, huella y conteos. \textbf{Versión de metadatos} permite consultar capturas guardadas; con una sola versión puede estar deshabilitada con una explicación.
+\item En \textbf{Buscar tabla o columna}, busque una entidad del caso, pulse \textbf{Buscar} y seleccione la tabla. Revise columnas, tipos, PK y relaciones entrantes/salientes.
+\item Identifique detalle, cabecera, fecha comercial, producto y cliente. En WWI distinga líneas de pedido de líneas de factura.
+\end{enumerate}
+\shot{01_explorador_wwi}{Fuente WWI e instantánea \#3; el explorador consulta estructura guardada.}{112mm}
+\begin{good}[Lo que debe aprender a decir]
+«Existe una línea de factura relacionada con su cabecera; allí está la fecha de emisión». Es una afirmación estructural. «Todas las facturas están cobradas» no puede deducirse de esa relación.
+\end{good}
+\textbf{Importante:} consultar una instantánea histórica en el Explorador no la convierte en selección global para una nueva propuesta. El asistente utiliza la instantánea vigente de la fuente. No debe editar los metadatos para justificar una respuesta del modelo.
+Actualizar metadatos \textbf{no recarga las ventas}. El panel consulta los datos de su ejecución; su «Última actualización» no significa que los documentos comerciales sean de esa fecha.
+
+\chapterpage{Módulo 3 · Actividad 2}{Entender y conservar el catálogo de ventas}
+Ruta: \textbf{Diseño y transformación BI → Catálogo analítico}.
+\begin{enumerate}
+\item Compruebe fuente y \textbf{Dominio habilitado: Datamart de ventas}.
+\item Revise \textbf{Cobertura técnica de la fuente} y sus referencias detectadas. «Verificable» no significa que se haya cargado un datamart; «Por validar» no es una evidencia definitiva.
+\item Lea las \textbf{Preguntas de negocio} y las \textbf{Periodicidades}. Para el primer ejercicio no cambie el catálogo.
+\end{enumerate}
+\shot{02_catalogo_aw}{Catálogo propio de AdventureWorks y separación entre pregunta comercial y descubrimiento técnico.}{108mm}
+\sub{¿Quién construye el catálogo?}
+El sistema parte de un perfil de ventas y descubre evidencia desde los metadatos. El analista configura las preguntas; \textbf{no se publica automáticamente un catálogo particular completo sólo porque lo diga la IA}. En esta instalación AW conserva seis preguntas y WWI cuatro.
+
+Para una modificación autorizada: \textbf{Agregar pregunta}, completar Etiqueta, Explicación para el analista e Instrucción funcional para la IA; después \textbf{Guardar catálogo}. Añadir «¿por qué cayó la venta por clima?» no crea una fuente meteorológica.
+\begin{note}[No confunda restaurar con refrescar]
+\textbf{Restaurar catálogo validado} puede reemplazar la personalización. No lo use durante el ejercicio para actualizar la pantalla, especialmente si ya hay preguntas propias de la empresa.
+\end{note}
+
+\chapterpage{Módulo 3 · Actividad 3}{Escribir una necesidad o pedir sugerencias}
+Ruta: \textbf{Asistente de datamart → Datamart de ventas → Crear propuesta}.
+\begin{enumerate}
+\item Escriba en \textbf{Objetivo del análisis} un texto de una ficha: entre 20 y 2.000 caracteres para validar. No escriba SQL ni secretos.
+\item Marque al menos una de las \textbf{Preguntas de negocio disponibles} pertinentes y seleccione \textbf{Periodicidad: Mensual}.
+\item Lea el \textbf{Destino} proveedor/modelo. Marque la autorización para enviar esa necesidad y los metadatos permitidos a ese destino.
+\item Pulse \textbf{Validar viabilidad}, o solicite ayuda con las opciones siguientes si necesita formular primero el objetivo.
+\end{enumerate}
+\shot{33_necesidad_metadatos_consentimiento}{Campo inicial, consentimiento y preguntas WWI. La captura muestra las acciones de IA bloqueadas hasta autorizar.}{88mm}
+\sub{Tres caminos válidos para el principiante}
+\textbf{Ya sé qué necesito:} escriba el objetivo, configure preguntas/período, autorice y valide.
+
+\textbf{No sé por dónde empezar:} autorice y pulse \textbf{Sugerir necesidades con esta fuente}; lea las opciones y adopte una sólo si representa su decisión comercial.
+
+\textbf{Tengo una idea mal redactada:} use \textbf{Ayúdame a formular la necesidad}. Si la alternativa está habilitada y le sirve, pulse \textbf{Usar esta redacción}; si no, \textbf{Mantener mi redacción}.
+\begin{note}[El consentimiento se revisa al cambiar el objetivo]
+Adoptar una sugerencia o cambiar texto, preguntas, período o contexto invalida la evaluación y puede desmarcar el consentimiento. Termine de editar, vuelva a autorizar el destino y valide de nuevo. No es un fallo que le pida revisar el envío actualizado.
+\end{note}
+
+\chapterpage{Módulo 3 · Actividad 4}{Interpretar la viabilidad y los derivables}
+Después de \textbf{Validar viabilidad}, lea cada requisito. Abra \textbf{Ver evidencia técnica}; no mire únicamente el total de elementos verdes.
+\begin{tabularx}{\linewidth}{@{}p{38mm}Y@{}}
+\toprule
+\textbf{Resultado}&\textbf{Qué hacer como analista}\\
+\midrule
+Directo / referencia comprobada&Confirmar que la referencia representa el concepto solicitado, no sólo que existe.\\
+Derivable / automático&Revisar columnas y relación o receta candidata. La propuesta posterior debe implementarla y validarla; usted no tiene que escribir SQL.\\
+Ambiguo / por decidir&Leer el límite. Si no cambia la decisión principal, aceptarlo conscientemente; si la impide, editar el objetivo.\\
+No disponible&No inventar una fuente. Reducir explícitamente el alcance o conseguir evidencia adicional antes de continuar.\\
+\bottomrule
+\end{tabularx}
+\shot{36_necesidad_wwi_revision}{Caso NEED-18: estructura suficiente y límites pendientes. La continuación no es todavía una carga ETL.}{106mm}
+\begin{note}[No marque todas las advertencias por rutina]
+Si quiere rentabilidad histórica y sólo hay último costo, aceptar esa limitación implica \textbf{otro alcance}, no resolver mágicamente el dato histórico. Si la limitación invalida la decisión, deténgase y reformule.
+\end{note}
+Cuando las condiciones se cumplen se habilita \textbf{Generar propuesta y resolver N derivables}. Al pulsarlo empieza el diseño asistido. Puede consumir IA y producir un rechazo seguro; ni la viabilidad ni ese botón garantizan todos los KPI.
+
+\chapterpage{Módulo 3 · Actividad 5}{Separar interpretación de fórmula ejecutable}
+La interfaz distingue la interpretación libre del modelo de una operación que el sistema puede materializar. Esta separación evita tomar una frase convincente como si ya fuera un cálculo ejecutado.
+\shot{38_necesidad_aw_interpretacion}{La etiqueta «Interpretación propuesta por IA (no ejecutable)» es deliberada. Las referencias comprobadas no certifican por sí solas la composición financiera del importe.}{119mm}
+\sub{Cómo leer una tarjeta del ejemplo}
+\begin{enumerate}
+\item \textbf{Nombre:} «Importe registrado de línea de venta» es una descripción prudente. No presupone que sea bruto, neto o cobrado.
+\item \textbf{Interpretación:} una suma propuesta expresa la intención. Aún debe traducirse al contrato controlado de la propuesta.
+\item \textbf{Referencia:} al abrir la evidencia, compruebe tabla y columna de la fuente correcta.
+\item \textbf{Advertencia:} si la composición del importe no está probada, conserve el nombre neutral o documente evidencia adicional antes de renombrarlo.
+\end{enumerate}
+\begin{good}[Comprobación oral para la demostración]
+Pregunte: «¿La existencia de \code{UnitPrice} demuestra un costo?». Respuesta: no; puede ser precio de venta. Tampoco una fecha o un identificador numérico pueden convertirse en medida monetaria sólo porque el modelo lo proponga.
+\end{good}
+
+\chapterpage{Módulo 3 · Actividades 6 y 7}{Revisar conceptos y diseño del datamart}
+\sub{Paso 2 del asistente: Conceptos}
+Revise qué conceptos aparecen como \textbf{Incluir}. Los de evidencia débil pueden venir excluidos. Abra \textbf{Ver evidencia y cómo resolver}; el \textbf{Consultar al copiloto} contextual es opcional y sirve para entender una decisión, no para aprobarla automáticamente.
+
+No use \textbf{Confirmar inclusión excepcional} sólo para avanzar. Una conversación o recomendación no cambia sola la selección: revise y aplique únicamente una opción comprobable. Continúe con \textbf{Generar propuesta BI}. Si cambia conceptos puede generarse otra versión y consumir IA; si no cambió la selección, el botón puede limitarse a continuar.
+\sub{Paso 3: Propuesta}
+\begin{tabularx}{\linewidth}{@{}p{41mm}Y@{}}
+\toprule
+\textbf{Sección que revisa}&\textbf{Pregunta que debe responder}\\
+\midrule
+Granularidad&¿Una fila es una línea de pedido o factura? ¿Se conserva su identificador?\\
+Hecho y medidas&¿Se eligió el evento correcto? ¿Cada importe tiene fuente, unidad y agregación?\\
+Dimensiones&¿Fecha, producto, cliente y territorio llegan mediante relaciones verificadas sin multiplicar las líneas?\\
+KPIs propuestos&¿Suma, conteo, promedio o cociente responden a la pregunta? ¿Se identifica el denominador?\\
+De la necesidad al datamart&¿Se implementó cada requisito o se muestra su límite? ¿Quedaron sólo los operandos, pero falta el KPI solicitado?\\
+Plan ETL declarativo&¿Describe transformaciones permitidas? No es SQL libre que el analista deba copiar y ejecutar.\\
+Validaciones y advertencias&¿Hay errores bloqueantes? ¿Las exclusiones o límites están comprendidos?\\
+\bottomrule
+\end{tabularx}
+\sub{Comprobar nombres y cobertura}
+Este botón revisa identidades descriptivas en la fuente dentro de la plataforma. Un identificador de cliente puede ser válido aunque el nombre aún no se haya resuelto. La comprobación no es otra opinión del LLM ni significa que se haya ejecutado el ETL completo.
+\begin{good}[Lista mínima antes de seguir]
+Evento correcto; una fila bien definida; fecha comercial; importe con significado explícito; documento contado de forma distinta; dimensiones sin duplicar; requisitos cubiertos o limitados de forma visible.
+\end{good}
+\textbf{Error típico:} una propuesta de facturación usa líneas de pedidos. No se arregla cambiando el título a «facturas». Debe corregirse el origen del hecho y sus relaciones, o rechazarse.
+
+\chapterpage{Módulo 3 · Actividad 8}{Personalizar sin romper lo aprobado}
+Use \textbf{Personalizar propuesta} cuando exista una razón de negocio. Si está conforme, \textbf{Continuar a revisión} o \textbf{Continuar sin cambios}. Personalizar no debe ser un paso obligatorio para hacer una demostración vistosa.
+\sub{Qué se puede revisar en el formulario}
+\begin{itemize}
+\item Incluir o excluir dimensiones, medidas e indicadores que el contrato permite.
+\item Elegir una agregación compatible: Suma, Conteo, Conteo distinto, Promedio, Mínimo o Máximo.
+\item Revisar la \textbf{Medida compatible} de un KPI y, cuando corresponda, \textbf{Definir cálculo controlado} con columnas y operaciones permitidas.
+\item Registrar \textbf{Justificación del ajuste} y pulsar \textbf{Guardar como nueva versión}. Se conserva la procedencia de la versión anterior.
+\end{itemize}
+\sub{Guía para elegir una agregación}
+\begin{tabularx}{\linewidth}{@{}p{30mm}YY@{}}
+\toprule
+\textbf{Opción}&\textbf{Uso razonable}&\textbf{Precaución}\\
+\midrule
+Suma&Unidades o importes aditivos compatibles.&No sumar identificadores, tasas o monedas incompatibles.\\
+Conteo&Número de filas o valores, según contrato.&No llamarlo documentos si el hecho es una línea.\\
+Conteo distinto&Pedidos o facturas únicas.&Verificar la clave documental y el filtro.\\
+Promedio&Media simple de los valores de fila.&No es automáticamente precio ponderado o ticket documental.\\
+Mínimo / Máximo&Menor o mayor valor de una población.&Un máximo de línea no identifica al producto líder por suma.\\
+\bottomrule
+\end{tabularx}
+\textbf{Cocientes agregados:} no son otra opción del selector Agregación. El KPI importe total / documentos distintos debe quedar correctamente propuesto y compilado. La operación \textbf{Dividir} de un cálculo por fila no sustituye ese cociente de agregados; no la use para fabricarlo manualmente.
+\sub{Ejemplo de una justificación útil}
+«Se excluye el indicador de producto líder calculado como máximo de línea, porque la necesidad requiere ordenar la suma por producto. Se conserva el importe total para el ranking analítico y se comprueba que la exclusión no deje requisitos esenciales sin cubrir».
+\begin{note}[No es edición libre de SQL]
+Cambiar sólo el texto del grano no cambia su implementación física. La corrección guiada de relaciones requiere evidencia y es una tarea avanzada. Si no comprende sus consecuencias, conserve la versión y pida revisión; no fuerce una unión ni habilite un KPI por su nombre.
+\end{note}
+\textbf{Criterio:} más KPI no significa mejor datamart. Un indicador excluido con una razón verificable puede ser una decisión de calidad superior a una cifra incorrecta.
+
+\chapterpage{Módulo 3 · Actividad 9}{Verificar la evidencia y aprobar conscientemente}
+\textbf{Verificar evidencia} revisa metadatos, referencias, contrato y reproducción determinística. No llama al LLM, no lee las filas comerciales para conciliar importes y no ejecuta ETL.
+\begin{enumerate}
+\item Compruebe objetivo, fuente, periodicidad y número de versión.
+\item Confirme que no haya errores bloqueantes. Lea el detalle, no sólo el color.
+\item Lea las advertencias y acepte únicamente las que comprende y que no contradicen su decisión comercial.
+\item Escriba un \textbf{Comentario de revisión} con evento, grano, fórmula crítica y límites aceptados.
+\item Pulse \textbf{Aprobar propuesta}; si no corresponde, \textbf{Rechazar propuesta} con motivo o \textbf{Personalizar antes de decidir}.
+\end{enumerate}
+\shot{08_validacion_aw}{Revisión supervisada de AW. La propia pantalla separa aprobación, comprobación estructural y ejecución futura.}{108mm}
+\begin{good}[Ejemplo de comentario]
+«Revisadas fuente y fecha comercial. Se conserva una fila por línea y el número de pedidos usa documentos distintos. El promedio se calcula con importe total dividido por pedidos distintos. Acepto los límites descritos; no interpreto el resultado como cobros».
+\end{good}
+\textbf{Resultado esperado:} una versión aprobada queda disponible para la materialización compatible. \textbf{Aprobar no crea tablas ni carga datos}. Consultar o verificar una versión histórica tampoco debe retirar su aprobación por sí solo.
+
+\chapterpage{Módulo 3 · Actividad 10}{Preparar y ejecutar el ETL}
+Ruta: \textbf{Diseño y transformación BI → Datamart de ventas}.
+\begin{enumerate}
+\item Si se abre un expediente existente, use \textbf{Volver a propuestas} para iniciar una ejecución nueva. Compruebe que eligió su versión aprobada, no sólo la primera tarjeta.
+\item \textbf{Seleccionar} → \textbf{Revisar indicadores}. Lea fórmula, unidad, cobertura y KPI seleccionados.
+\item Pulse \textbf{Revisar transformaciones}. Examine plan, advertencias y decisiones; escriba el \textbf{Registro de decisión} y marque su confirmación.
+\item Pulse \textbf{Preparar materialización}. Esto prepara un expediente; aún no es la carga.
+\item Compruebe fuente y versión otra vez. Pulse \textbf{Materializar y cargar datamart} una sola vez y espere el resultado.
+\end{enumerate}
+\shot{12_conciliacion_aw}{Las cinco etapas del espacio de materialización. Esta captura muestra la llegada al paso de validación, no los conteos de conciliación.}{101mm}
+\sub{Qué ocurre detrás de la pantalla}
+La plataforma lee las columnas autorizadas de SQL Server, aplica operaciones permitidas y guarda hecho y dimensiones en PostgreSQL. El destino está versionado por ejecución; una carga no debe mezclar AdventureWorks con WideWorldImporters. No se ejecuta SQL libre devuelto por el LLM.
+\begin{note}[Acción con efecto real]
+Materializar crea datos analíticos. No lo pulse repetidamente para «ver si avanza». Si falla, abra el expediente y revise el mensaje; no borre datamarts ni retire aprobaciones para reiniciar la demostración.
+\end{note}
+
+\chapterpage{Módulo 3 · Actividad 11}{Conciliar, revisar etiquetas y reconocer la moneda}
+Después de cargar, revise \textbf{Conciliación OLTP--datamart}: filas de origen, filas cargadas, diferencia, calidad de las dimensiones e indicadores conciliados. Un conteo de filas igual es necesario en estos casos, pero no prueba por sí solo todas las definiciones de negocio.
+\shot{31_wwi_facturas_etl15}{WWI, expediente \#15: 228.265 líneas en origen y destino, diferencia cero y moneda todavía sin código comprobado.}{124mm}
+\sub{Qué significa cada observación}
+La dimensión Fecha puede tener menos filas que el hecho: muchas líneas comparten una fecha. «Duplicados controlados» en una dimensión no implica automáticamente duplicación de ventas. Lo importante es conservar una única identidad dimensional compatible y no multiplicar el hecho.
+
+\chapterpage{Módulo 3 · Actividad 11, continuación}{Resolver moneda y etiquetas antes de publicar}
+Puede haber datos cargados y conciliados, pero quedar una decisión de publicación o interpretación. Son estados diferentes; no repita la carga para resolver un texto o una divisa.
+\sub{Si la divisa no está comprobada}
+\begin{enumerate}
+\item Lea el aviso y la unidad de los indicadores. Un total monetario calculable no acredita una moneda única.
+\item Si aparece \textbf{Comprobar divisa sin repetir el ETL}, úselo con el permiso correspondiente y revise la evidencia obtenida.
+\item Si sigue sin existir un código único comprobado, conserve \textbf{moneda de origen}. No seleccione USD por similitud con otro expediente ni convierta valores sin tasa y regla autorizadas.
+\item En una comparación o informe, explique la limitación. Puede describir el total registrado; no combinarlo con importes de otra moneda como si fueran equivalentes.
+\end{enumerate}
+\sub{Si existen etiquetas candidatas pendientes}
+\begin{enumerate}
+\item Revise valor original y etiqueta sugerida. Una traducción cambia la presentación, no debe cambiar identidad ni nivel de la categoría.
+\item Corrija o desmarque lo que no corresponda. No traduzca identificadores, nombres personales o texto libre como si fueran categorías comerciales.
+\item Registre comentario, confirme la revisión y use \textbf{Publicar etiquetas revisadas}. Este botón aparece cuando existen mapeos que requieren esa decisión; no es un botón genérico para crear otro datamart.
+\item Si falló únicamente el proveedor al interpretar etiquetas, use \textbf{Reintentar interpretación sin repetir el ETL}, cuando esté disponible. Conserve la conciliación anterior.
+\end{enumerate}
+\begin{note}[Ejemplo que debe entender el alumno]
+Europe puede presentarse como Europa si el mapeo es correcto y conserva la identidad. Eso no transforma un grupo territorial en un país o estado. La traducción de una etiqueta no añade detalle geográfico.
+\end{note}
+\begin{good}[Puede pasar a analítica cuando...]
+La ejecución está validada/conciliada y publicada, con datos físicos consultables. Si aparece Interpretar o Revisar, resuelva lo señalado. Con diferencias bloqueantes, deténgase y conserve la evidencia. No renombre un error como «dato no importante».
+\end{good}
+
+\chapterpage{Módulo 3 · Actividad 12}{Leer el panel y probar los gráficos}
+Ruta: \textbf{Análisis y decisiones → Analítica de ventas}.
+\begin{enumerate}
+\item Lea fuente, ejecución y propuesta en la cabecera. No interprete tarjetas antes de hacerlo.
+\item Con varias ejecuciones consultables, elija \textbf{Datamart analizado}. Con una sola puede mostrarse una identidad fija; no es necesario un selector vacío.
+\item Empiece por \textbf{Vista ejecutiva}; pruebe \textbf{Año} y \textbf{Territorio}. Use años presentes en los datos, no el año actual por costumbre.
+\item Pulse un punto, barra o categoría. Lea su valor y \textbf{Participación visible}; \textbf{Cerrar detalle} sólo cierra la ficha. \textbf{Filtrar tablero por...}, cuando existe, sí cambia el filtro.
+\item En \textbf{Vista analítica}, seleccione \textbf{Indicador de los gráficos} y abra \textbf{Consultar los datos de este gráfico}. Después pulse \textbf{Restablecer filtros}.
+\end{enumerate}
+\shot{14_dashboard_aw}{Identidad AW: propuesta \#98 y ejecución \#14. Los modos ejecutivo y analítico son vistas, no un cambio de usuario.}{107mm}
+\begin{note}[Tres lecturas que no son equivalentes]
+Un valor nulo o «Sin valor» no es cero. Un porcentaje del conjunto visible no siempre usa el total de la empresa. Una variación entre extremos no prueba una tendencia sostenida ni explica su causa; puede incluir meses parciales.
+\end{note}
+Los \textbf{Hallazgos explicables} del panel se calculan mediante reglas. Lea \textbf{Cómo se generaron}; no los confunda con una conversación nueva con el LLM.
+
+\chapterpage{Módulo 3 · Actividad 13}{Conversar con el copiloto y verificarlo}
+En \textbf{Preguntar sobre estos resultados}, escriba una pregunta concreta y pulse \textbf{Preguntar al copiloto}, o use una sugerencia guiada. Esta acción sí puede consumir IA.
+\sub{Cinco puntos que debe revisar en cada respuesta}
+\textbf{Evento:} pedido o factura. \textbf{Indicador:} importe, cantidad o conteo. \textbf{Filtros:} año y territorio realmente consultados. \textbf{Denominador:} documentos, unidades o total del universo. \textbf{Límite:} qué no permite concluir.
+\shot{32_wwi_facturas_copiloto2015}{Consulta real WWI en 2015: 62.090.220,81, 22.250 facturas y promedio 2.790,57. La respuesta distingue facturación de pedidos y cobros.}{121mm}
+\sub{Preguntas útiles para aprender}
+«¿Qué documento estás contando y cómo calculas su promedio?». «¿Qué cinco productos aportan más y cuál es el denominador de su participación?». «¿Qué limitaciones debo considerar antes de tomar una decisión?».
+\begin{note}[Una pregunta puede cambiar el alcance de la consulta]
+El copiloto puede consultar un filtro permitido que no esté seleccionado en el tablero. Eso no debe confundirse con un cambio automático de los gráficos. Lea la consulta interpretada y el alcance declarado antes de comparar cifras. Si afirma una causa no respaldada, señálela y no la use como evidencia gerencial.
+\end{note}
+
+\chapterpage{Módulo 3 · Lectura guiada}{Leer una respuesta con Top N y participación}
+En esta conversación de AdventureWorks se preguntó por cinco productos en Southwest. Sirve para estudiar cómo debe declararse el universo de una participación; no para aceptar cada redondeo sin comprobarlo.
+\shot{15_copiloto_aw}{Conversación histórica AW. La respuesta identifica territorio, productos e importe; la consulta interpretada muestra el Top 5.}{125mm}
+\sub{Cómo auditar la explicación}
+\begin{enumerate}
+\item Identifique \textbf{indicador} y \textbf{orden}: importe por producto de mayor a menor, no una línea máxima.
+\item Compruebe que los cinco productos pertenecen al territorio consultado y que el período está declarado.
+\item Localice el \textbf{denominador}. Para cuota territorial debe usarse el total territorial, no solamente la suma de los cinco productos.
+\item Compare valores detallados con la evidencia agregada. La auditoría dejó señalada la revisión del redondeo narrativo de centavos: una explicación correcta del alcance no certifica cada centavo escrito por el modelo.
+\end{enumerate}
+\begin{note}[Regla para el usuario final]
+Si un porcentaje no coincide, antes de concluir que hay un error compruebe universo y redondeo. Si todavía difiere, registre el caso y use la cifra verificable; no corrija el número mentalmente mientras comunica una conclusión.
+\end{note}
+
+\chapterpage{Módulo 3 · Actividad 14}{Cambiar de fuente sin mezclar eventos}
+Repita el ejercicio con la otra base. El propósito es demostrar que el mismo procedimiento funciona con estructuras diferentes, no hacer que ambas produzcan los mismos nombres o totales.
+\begin{enumerate}
+\item Anote la fuente y ejecución actual. Quite filtros que no desee conservar.
+\item Use \textbf{Cambiar fuente}. Revise de nuevo nombre de base, instantánea, catálogo y expedientes.
+\item En WWI distinga el expediente de \textbf{pedidos} del de \textbf{facturas}. Las tarjetas pueden ser válidas en ambos y contestar preguntas distintas.
+\item Vuelva a AW y confirme su propia propuesta/ejecución. No deberían quedar productos, territorios o respuestas visibles de la fuente anterior como si pertenecieran a ésta.
+\end{enumerate}
+\shot{24_dashboard_wwi_alcance}{Expediente WWI \#13: la cabecera advierte que son pedidos registrados. No es el expediente de facturas \#15.}{112mm}
+\begin{good}[Qué debe decir durante la demostración]
+«Aquí cambió el contexto, no se sumaron bases. La fuente y el expediente gobiernan qué datos se consultan. En este historial hay pedidos; en el siguiente hay facturas. Voy a verificar el evento antes de comparar».
+\end{good}
+\textbf{Si detecta mezcla:} detenga la interpretación, anote fuente, versión, filtros y pasos; capture la pantalla y registre un incidente. No reconstruya o borre datamarts hasta distinguir un problema visual de uno de datos.
+
+\chapterpage{Módulo 3 · Cierre de la operación}{Exportar, consultar históricos y empezar otra vez}
+\sub{Exportar un resultado entendible}
+\begin{enumerate}
+\item En Analítica, deje seleccionados fuente, expediente, vista, indicador y filtros que quiere comunicar.
+\item Pulse \textbf{Exportar PDF} o \textbf{Exportar Excel}, si su cuenta tiene permiso.
+\item Abra el archivo descargado. Verifique procedencia, unidades, filtros y correspondencia con los gráficos visibles.
+\item Acompañe el informe con una conclusión y sus límites. No distribuya información de negocio fuera de su audiencia autorizada.
+\end{enumerate}
+El PDF no es una captura del navegador: se construye desde la selección autorizada. El Excel contiene agregados que respaldan los gráficos visibles, no todas las filas operativas. No se debe prometer que la exportación incluya toda la conversación del copiloto.
+\sub{Abrir una versión sin consumir de nuevo IA}
+En el Asistente: \textbf{Versiones generadas → Mostrar → Aprobadas}, o el estado que necesite; pulse \textbf{Abrir resultado}. Las cinco etapas se consultan como historial. No se llama otra vez al modelo sólo por abrir una versión.
+
+Para otra necesidad pulse \textbf{Crear nueva propuesta}. No cierre sesión para desbloquear el asistente ni use \textbf{Retirar aprobación} o \textbf{Descartar versión} como si fueran botones de regreso.
+\sub{Consultar un expediente sin repetir el ETL}
+En Datamart de ventas, busque \textbf{Expedientes recientes} y use \textbf{Abrir expediente \#...}. Recorrer sus etapas muestra evidencia; no repite la carga. Un expediente puede seguir siendo auditable aunque no tenga tablas físicas disponibles para analítica o no sea elegible para una nueva ejecución.
+\begin{note}[Propuesta, revisión de necesidad y ejecución tienen números diferentes]
+La revisión de viabilidad \#5 no es la propuesta \#5. Una propuesta \#114 puede originar la ejecución \#15. Registre el tipo de identificador junto al número. La versión recomendada para una nueva materialización no tiene por qué ser la que alimenta el panel que está consultando.
+\end{note}
+\sub{Si vence la sesión}
+Vuelva a \textbf{Iniciar sesión} con su cuenta autorizada. Compruebe contexto y borrador restaurados antes de continuar. El consentimiento puede necesitar renovarse si cambió el objetivo o el destino. No repita una carga sólo porque el navegador le pidió autenticarse.
+\begin{good}[Cierre de la sesión de práctica]
+Guarde la ficha del caso y sus capturas, registre si fue consulta histórica o ejecución nueva y use \textbf{Cerrar sesión}. No documente contraseñas ni tokens en el acta.
+\end{good}

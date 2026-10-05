@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import App from './App'
@@ -18,6 +18,31 @@ function sourceWorkspace(latestSnapshot: Record<string, unknown> | null = null) 
   return [{ status: latestSnapshot ? 'ready' : 'metadata_pending', connection: sourceConnection, latest_snapshot: latestSnapshot }]
 }
 
+async function openNeedAssistant() {
+  localStorage.setItem('bi_ia_access_token', 'test-token')
+  const snapshot = { id: 4, data_connection_id: 1, connector_code: 'sqlserver', database_name: 'BaseComercial', content_hash: 'b'.repeat(64) }
+  vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL) => {
+    const url = String(input)
+    if (url.includes('/auth/me')) return { ok: true, status: 200, json: async () => ({ user: { id: 1, email: 'admin@example.test', full_name: 'Analista', is_active: true, roles: [] }, permissions: ['copilot.proposals.read', 'copilot.proposals.generate'], menus: [{ id: 11, code: 'analysis-assistant', label: 'Asistente de datamart', path: '/asistente', position: 10, module_code: 'ai', module_label: 'IA', is_active: true, permissions: [] }] }) }
+    if (url.endsWith('/sources')) return { ok: true, status: 200, json: async () => [...sourceWorkspace(snapshot), { status: 'ready', connection: { ...sourceConnection, id: 2, name: 'Segunda fuente', database_name: 'OtraBase' }, latest_snapshot: { ...snapshot, id: 5, data_connection_id: 2, database_name: 'OtraBase', content_hash: 'c'.repeat(64) } }] }
+    if (url.includes('/copilot/readiness?')) return { ok: true, status: 200, json: async () => ({ ready: true, source: { ready: true, label: 'Fuente', detail: 'Fuente lista.' }, metadata: { ready: true, label: 'Metadatos', detail: 'Instantánea disponible.' }, llm: { ready: true, label: 'IA', detail: 'Proveedor listo.', metadata_consent_target: 'approved-target', metadata_consent_label: 'Proveedor de prueba · modelo-prueba · https://example.test' } }) }
+    if (url.includes('/copilot/catalog?')) return { ok: true, status: 200, json: async () => ({ metadata_snapshot_id: url.includes('snapshot_id=5') ? 5 : 4, domains: [{ code: 'ventas', label: 'Datamart de ventas', description: 'Análisis comercial.', available: true, reason: 'Estructura disponible.', questions: [{ code: 'sales_over_time', label: 'Evolución de ventas en el tiempo', description: 'Comparación temporal.', available: true, evidence: [], reason: 'Disponible.' }], periodicities: [{ code: 'month', label: 'Mensual', available: true }, { code: 'year', label: 'Anual', available: true }] }] }) }
+    if (url.includes('/copilot/proposals?')) return { ok: true, status: 200, json: async () => ({ items: [], total: 0, limit: 5, offset: 0 }) }
+    throw new Error(`Solicitud inesperada: ${url}`)
+  }))
+  render(<App />)
+  fireEvent.click(await screen.findByRole('button', { name: 'Diseño y transformación BI' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Asistente de datamart' }))
+  fireEvent.click(await screen.findByRole('button', { name: 'Crear propuesta' }))
+  return screen.getByRole('textbox', { name: /Objetivo del análisis/ })
+}
+
+const groundedSuggestions = {
+  metadata_snapshot_id: 4, provider_kind: 'anthropic', model_id: 'modelo-prueba',
+  notice: 'Sugerencias contrastadas con las relaciones declaradas.',
+  suggestions: [{ suggested_goal: 'Comparar el importe de ventas por mes para revisar su evolución.', rationale: 'Existe importe de venta y fecha relacionada.', evidence: ['Comercial.Detalle.Importe', 'Comercial.Cabecera.Fecha'], limitations: ['No demuestra cobros ni moneda.'], usable: true }],
+}
+
 describe('App', () => {
   beforeEach(() => vi.stubGlobal('scrollTo', vi.fn()))
 
@@ -34,6 +59,137 @@ describe('App', () => {
     expect(screen.getByRole('heading', { name: 'BI asistido por IA' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Iniciar sesión' })).toBeInTheDocument()
     expect(screen.getByText(/interfaz y la API validan los permisos reales/i)).toBeInTheDocument()
+  })
+
+  it('sugiere necesidades sin texto previo y exige elección humana con evidencia y límites', async () => {
+    const suggestion = vi.spyOn(api, 'suggestNeeds').mockResolvedValue({ ...groundedSuggestions, suggestions: [...groundedSuggestions.suggestions, { suggested_goal: 'Predecir ventas futuras sin una fuente adicional disponible.', rationale: 'No respaldada.', evidence: [], limitations: ['No existen datos para esa predicción.'], usable: false }] })
+    const validate = vi.spyOn(api, 'validateNeed')
+    const goal = await openNeedAssistant()
+    expect(goal).toHaveValue('')
+    expect(screen.getByRole('button', { name: 'Sugerir necesidades con esta fuente' })).toBeDisabled()
+    expect(screen.getByText(/^La IA recibirá la necesidad/)).toBeInTheDocument()
+    fireEvent.click(screen.getByLabelText(/Autorizo enviar estos metadatos/))
+    fireEvent.click(screen.getByRole('button', { name: 'Sugerir necesidades con esta fuente' }))
+    expect(await screen.findByRole('heading', { name: 'Necesidades propuestas para revisar' })).toBeInTheDocument()
+    expect(suggestion).toHaveBeenCalledWith('test-token', { metadata_snapshot_id: 4, domain_code: 'ventas', periodicity: 'month', business_questions: [], metadata_consent_target: 'approved-target' })
+    expect(goal).toHaveValue('')
+    expect(screen.getByText('Comercial.Detalle.Importe')).toBeInTheDocument()
+    expect(screen.getByText('No demuestra cobros ni moneda.')).toBeInTheDocument()
+    expect(screen.getByText(/respaldo estructural no garantiza la calidad/)).toBeInTheDocument()
+    expect(within(screen.getByRole('article', { name: 'Necesidad sugerida 2' })).getByRole('button', { name: 'Usar esta necesidad' })).toBeDisabled()
+    fireEvent.click(within(screen.getByRole('article', { name: 'Necesidad sugerida 1' })).getByRole('button', { name: 'Usar esta necesidad' }))
+    expect(goal).toHaveValue(groundedSuggestions.suggestions[0].suggested_goal)
+    expect(validate).not.toHaveBeenCalled()
+    expect(screen.queryByRole('heading', { name: 'Necesidades propuestas para revisar' })).not.toBeInTheDocument()
+    expect(screen.getByText(/Necesidad elegida. Revise las preguntas/)).toBeInTheDocument()
+  })
+
+  it.each(['texto', 'preguntas', 'periodicidad', 'autorización'])('descarta sugerencias antiguas al cambiar %s durante la consulta', async (change) => {
+    let finish!: (value: Awaited<ReturnType<typeof api.suggestNeeds>>) => void
+    vi.spyOn(api, 'suggestNeeds').mockImplementation(() => new Promise((resolve) => { finish = resolve }))
+    const goal = await openNeedAssistant()
+    fireEvent.click(screen.getByLabelText(/Autorizo enviar estos metadatos/))
+    fireEvent.click(screen.getByRole('button', { name: 'Sugerir necesidades con esta fuente' }))
+    if (change === 'texto') fireEvent.change(goal, { target: { value: 'Necesidad redactada mientras responde el proveedor.' } })
+    if (change === 'preguntas') fireEvent.click(screen.getByLabelText(/Evolución de ventas/))
+    if (change === 'periodicidad') fireEvent.change(screen.getByLabelText('Periodicidad'), { target: { value: 'year' } })
+    if (change === 'autorización') fireEvent.click(screen.getByLabelText(/Autorizo enviar estos metadatos/))
+    await act(async () => { finish(groundedSuggestions) })
+    expect(screen.queryByRole('heading', { name: 'Necesidades propuestas para revisar' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Sugerir necesidades con esta fuente' })).toBeDisabled()
+    expect(screen.getByLabelText(/Autorizo enviar estos metadatos/)).not.toBeChecked()
+    expect(goal).toHaveValue(change === 'texto' ? 'Necesidad redactada mientras responde el proveedor.' : '')
+  })
+
+  it('no envía metadatos si el proveedor no ofrece un destino comprobable para autorizar', async () => {
+    vi.spyOn(api, 'copilotReadiness').mockResolvedValue({ ready: true, source: { ready: true, label: 'Fuente', detail: 'Lista.' }, metadata: { ready: true, label: 'Metadatos', detail: 'Disponibles.' }, llm: { ready: true, label: 'IA', detail: 'Proveedor sin huella de consentimiento.' } })
+    const suggest = vi.spyOn(api, 'suggestNeeds')
+    await openNeedAssistant()
+    expect(screen.getByLabelText(/Autorizo enviar estos metadatos/)).toBeDisabled()
+    fireEvent.click(screen.getByRole('button', { name: 'Sugerir necesidades con esta fuente' }))
+    expect(suggest).not.toHaveBeenCalled()
+    expect(screen.getByText(/Compruebe la configuración del proveedor/)).toBeInTheDocument()
+  })
+
+  it('no presenta en una fuente la sugerencia pendiente de otra', async () => {
+    let finish!: (value: Awaited<ReturnType<typeof api.suggestNeeds>>) => void
+    const suggest = vi.spyOn(api, 'suggestNeeds').mockImplementationOnce(() => new Promise((resolve) => { finish = resolve })).mockResolvedValue({ ...groundedSuggestions, metadata_snapshot_id: 5 })
+    await openNeedAssistant()
+    fireEvent.click(screen.getByLabelText(/Autorizo enviar estos metadatos/))
+    fireEvent.click(screen.getByRole('button', { name: 'Sugerir necesidades con esta fuente' }))
+    fireEvent.change(screen.getByLabelText('Cambiar fuente'), { target: { value: '2' } })
+    fireEvent.click(await screen.findByRole('button', { name: 'Crear propuesta' }))
+    await act(async () => { finish(groundedSuggestions) })
+    expect(screen.queryByRole('heading', { name: 'Necesidades propuestas para revisar' })).not.toBeInTheDocument()
+    expect(screen.getByLabelText(/Autorizo enviar estos metadatos/)).not.toBeChecked()
+    fireEvent.click(screen.getByLabelText(/Autorizo enviar estos metadatos/))
+    fireEvent.click(screen.getByRole('button', { name: 'Sugerir necesidades con esta fuente' }))
+    expect(await screen.findByRole('heading', { name: 'Necesidades propuestas para revisar' })).toBeInTheDocument()
+    expect(suggest).toHaveBeenLastCalledWith('test-token', { metadata_snapshot_id: 5, domain_code: 'ventas', periodicity: 'month', business_questions: [], metadata_consent_target: 'approved-target' })
+  })
+
+  it('impide usar redacciones no respaldadas y descarta una viabilidad anterior al editar', async () => {
+    vi.spyOn(api, 'formulateNeed').mockResolvedValue({ original_goal: 'Comparar ventas mensuales para decidir prioridades.', suggested_goal: 'Comparar ventas y cobros mensuales.', rationale: 'Cobros no demostrados.', improvements: [], evidence: ['Comercial.Detalle.Importe'], limitations: ['No se comprobó una fuente de cobros.'], usable: false, provider_kind: 'anthropic', model_id: 'modelo-prueba' })
+    let finish!: (value: Awaited<ReturnType<typeof api.validateNeed>>) => void
+    vi.spyOn(api, 'validateNeed').mockImplementation(() => new Promise((resolve) => { finish = resolve }))
+    const goal = await openNeedAssistant()
+    fireEvent.change(goal, { target: { value: 'Comparar ventas mensuales para decidir prioridades.' } })
+    fireEvent.click(screen.getByLabelText(/Evolución de ventas/))
+    fireEvent.click(screen.getByLabelText(/Autorizo enviar estos metadatos/))
+    fireEvent.click(screen.getByRole('button', { name: 'Ayúdame a formular la necesidad' }))
+    expect(await screen.findByRole('heading', { name: 'Redacción propuesta' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Usar esta redacción' })).toBeDisabled()
+    expect(screen.getByText('No se comprobó una fuente de cobros.')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Mantener mi redacción' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Validar viabilidad' }))
+    fireEvent.change(goal, { target: { value: 'Analizar las ventas por producto y territorio ahora.' } })
+    await act(async () => { finish({ assessment_hash: 'old', requirements: [], counts: {}, requires_acknowledgement: [], can_continue: true, summary: 'Respuesta obsoleta.' }) })
+    expect(screen.queryByText('Respuesta obsoleta.')).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Viabilidad contra los metadatos' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Validar viabilidad' })).toBeDisabled()
+  })
+
+  it('distingue interpretaciones IA de reglas controladas y no da autoridad a fórmulas rechazadas', async () => {
+    vi.spyOn(api, 'validateNeed').mockResolvedValue({
+      assessment_hash: 'd'.repeat(64),
+      requirements: [
+        { code: 'ai:0', label: 'Importe sugerido', request_text: 'Importe', status: 'direct', evidence: ['Comercial.Detalle.Importe'], resolution: 'La referencia existe; su significado financiero requiere revisión.' },
+        { code: 'ai:1', label: 'Descuento candidato', request_text: 'Descuento', status: 'derivable', evidence: [], formula: 'precio × tasa × cantidad', resolution: 'Operandos estructurales comprobados.' },
+        { code: 'ai:2', label: 'Costo rechazado', request_text: 'Costo', status: 'unavailable', evidence: ['Comercial.Detalle.UnitPrice'], formula: 'precio de venta como costo', resolution: 'Precio de venta no acredita costo.' },
+        { code: 'goal:sales_amount', label: 'Importe determinístico', request_text: 'Importe', status: 'direct', evidence: ['Comercial.Detalle.Importe'], resolution: 'Referencia verificada por reglas.' },
+        { code: 'goal:discount_amount', label: 'Descuento determinístico', request_text: 'Descuento', status: 'derivable', evidence: [], formula: 'precio × tasa × cantidad', resolution: 'Receta controlada disponible.' },
+      ],
+      counts: { direct: 2, derivable: 2, ambiguous: 0, unavailable: 1 },
+      requires_acknowledgement: ['ai:2'], can_continue: true,
+      summary: 'Revise la interpretación antes de continuar.',
+    })
+    const goal = await openNeedAssistant()
+    fireEvent.change(goal, { target: { value: 'Analizar el importe de ventas mensual con revisión supervisada.' } })
+    fireEvent.click(screen.getByLabelText(/Evolución de ventas/))
+    fireEvent.click(screen.getByLabelText(/Autorizo enviar estos metadatos/))
+    fireEvent.click(screen.getByRole('button', { name: 'Validar viabilidad' }))
+    await screen.findByRole('heading', { name: 'Viabilidad contra los metadatos' })
+
+    const aiDirect = within(screen.getByRole('heading', { name: 'Importe sugerido' }).closest('article')!)
+    expect(aiDirect.getByText('Referencia estructural comprobada')).toBeInTheDocument()
+    expect(aiDirect.queryByText('Directo · fuente verificada')).not.toBeInTheDocument()
+    const candidate = within(screen.getByRole('heading', { name: 'Descuento candidato' }).closest('article')!)
+    expect(candidate.getByText('Derivación candidata')).toBeInTheDocument()
+    expect(candidate.getByText('Interpretación propuesta por IA (no ejecutable):')).toBeInTheDocument()
+    expect(candidate.getByText('Se validará al preparar la propuesta; esta descripción no se ejecuta.')).toBeInTheDocument()
+    expect(candidate.queryByText('Fórmula controlada:')).not.toBeInTheDocument()
+    const rejected = within(screen.getByRole('heading', { name: 'Costo rechazado' }).closest('article')!)
+    expect(rejected.getByText('No disponible')).toBeInTheDocument()
+    expect(rejected.getByText('Interpretación propuesta por IA (no ejecutable):')).toBeInTheDocument()
+    expect(rejected.queryByText('Fórmula controlada:')).not.toBeInTheDocument()
+    expect(rejected.queryByText(/Se resolverá/)).not.toBeInTheDocument()
+    expect(rejected.getByRole('checkbox')).not.toBeChecked()
+    const controlled = within(screen.getByRole('heading', { name: 'Descuento determinístico' }).closest('article')!)
+    expect(controlled.getByText('Automático · fórmula')).toBeInTheDocument()
+    expect(controlled.getByText('Fórmula controlada:')).toBeInTheDocument()
+    expect(controlled.getByText('✓ Se resolverá y volverá a validar al generar la propuesta.')).toBeInTheDocument()
+    expect(screen.getByText('Directo · fuente verificada')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Generar propuesta y resolver 2 derivables' })).toBeDisabled()
   })
 
   it('permite retirar un rol inactivo previamente asignado sin ofrecerlo a cuentas nuevas', () => {
@@ -219,6 +375,43 @@ describe('App', () => {
     resolveOldDetail?.({ ok: false, status: 404, json: async () => ({ detail: 'Tabla no encontrada en la instantánea.' }) })
     await waitFor(() => expect(screen.queryByText('Tabla no encontrada en la instantánea.')).not.toBeInTheDocument())
     expect(screen.queryByText('Department')).not.toBeInTheDocument()
+  })
+
+  it('no interpreta la respuesta de Roles como instantáneas al navegar al explorador', async () => {
+    localStorage.setItem('bi_ia_access_token', 'test-token')
+    const snapshot = {
+      id: 2, data_connection_id: 1, connector_code: 'sqlserver', database_name: 'BaseComercial',
+      contract_version: 1, content_hash: 'a'.repeat(64), schema_count: 1, table_count: 1,
+      column_count: 2, relationship_count: 0, captured_by_label: 'Administradora', captured_at: '2026-10-01T09:00:00Z',
+    }
+    vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input)
+      if (url.includes('/auth/me')) return { ok: true, status: 200, json: async () => ({
+        user: { id: 1, email: 'admin@example.test', full_name: 'Administradora', is_active: true, roles: [] },
+        permissions: ['roles.read', 'metadata.read'],
+        menus: [
+          { id: 1, code: 'roles', label: 'Roles', path: '/roles', position: 1, module_code: 'security', module_label: 'Seguridad', is_active: true, permissions: [] },
+          { id: 2, code: 'schema', label: 'Explorador de esquema', path: '/esquema', position: 2, module_code: 'parameters', module_label: 'Preparación del entorno', is_active: true, permissions: [] },
+        ],
+      }) }
+      if (url.endsWith('/sources')) return { ok: true, status: 200, json: async () => sourceWorkspace(snapshot) }
+      if (url.includes('/roles?')) return { ok: true, status: 200, json: async () => ({ items: [
+        { id: 3, code: 'bi_analyst', name: 'Analista BI', description: 'Diseña modelos.', is_active: true, permissions: [] },
+      ], total: 1, limit: 10, offset: 0 }) }
+      if (url.includes('/metadata/snapshots?')) return { ok: true, status: 200, json: async () => ({ items: [snapshot], total: 1, limit: 10, offset: 0 }) }
+      if (url.includes('/metadata/snapshots/2/tables?')) return { ok: true, status: 200, json: async () => ({ items: [], total: 0, limit: 10, offset: 0 }) }
+      throw new Error(`Solicitud inesperada: ${url}`)
+    }))
+
+    render(<App />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Administración y seguridad' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Roles' }))
+    expect(await screen.findByText('Analista BI')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Preparación del entorno' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Explorador de esquema' }))
+
+    expect(await screen.findByText(/Instantánea #2/)).toBeInTheDocument()
+    expect(screen.queryByText(/El expediente sigue seguro/)).not.toBeInTheDocument()
   })
 
   it('ordena la navegación por flujo profesional sin ampliar las opciones autorizadas', async () => {
@@ -590,10 +783,11 @@ describe('App', () => {
       const url = String(input)
       if (url.includes('/auth/me')) return { ok: true, status: 200, json: async () => ({ user: { id: 1, email: 'admin@example.test', full_name: 'Administradora', is_active: true, roles: [] }, permissions: ['copilot.proposals.read', 'copilot.proposals.generate', 'copilot.proposals.review'], menus: [{ id: 11, code: 'analysis-assistant', label: 'Asistente de datamart', path: '/asistente', position: 10, module_code: 'ai', module_label: 'IA', is_active: true, permissions: [] }] }) }
       if (url.endsWith('/sources')) return { ok: true, status: 200, json: async () => sourceWorkspace({ id: 4, data_connection_id: 1, connector_code: 'sqlserver', database_name: 'BaseComercial', contract_version: 1, content_hash: 'b'.repeat(64), schema_count: 6, table_count: 71, column_count: 444, relationship_count: 90, captured_by_label: 'Administradora', captured_at: '2026-09-19T09:00:00Z' }) }
-      if (url.includes('/copilot/readiness?')) return { ok: true, status: 200, json: async () => ({ ready: true, source: { ready: true, label: 'Fuente de ventas', detail: 'Fuente habilitada.' }, metadata: { ready: true, label: 'Metadatos', detail: 'Instantánea disponible.' }, llm: { ready: true, label: 'Asistente de IA', detail: 'Proveedor listo.' } }) }
+      if (url.includes('/copilot/readiness?')) return { ok: true, status: 200, json: async () => ({ ready: true, source: { ready: true, label: 'Fuente de ventas', detail: 'Fuente habilitada.' }, metadata: { ready: true, label: 'Metadatos', detail: 'Instantánea disponible.' }, llm: { ready: true, label: 'Asistente de IA', detail: 'Proveedor listo.', metadata_consent_target: 'approved-target' } }) }
       if (url.includes('/copilot/catalog?')) return { ok: true, status: 200, json: async () => ({ metadata_snapshot_id: 4, domains: [{ code: 'ventas', label: 'Datamart de ventas', description: 'Modelo dimensional comercial.', available: true, reason: 'La fuente permite iniciar una propuesta.', questions: [{ code: 'sales_over_time', label: 'Evolución de ventas en el tiempo', description: 'Compara períodos.', available: true, reason: 'Disponible.', evidence: ['Sales.SalesOrderHeader'] }, { code: 'top_products', label: 'Productos con mayor desempeño', description: 'Compara productos.', available: true, reason: 'Disponible.', evidence: ['Production.Product'] }], periodicities: [{ code: 'month', label: 'Mensual', description: 'Agrupación mensual.', available: true, reason: 'Disponible.', evidence: ['Sales.SalesOrderHeader'] }] }] }) }
       if (url.endsWith('/copilot/needs/formulate') && init?.method === 'POST') return { ok: true, status: 200, json: async () => ({ original_goal: 'Analizar las ventas mensuales por producto y cliente.', suggested_goal: 'Analizar las ventas netas mensuales por producto y cliente para identificar variaciones.', rationale: 'Hace explícito el indicador y la comparación temporal.', improvements: ['Confirme si venta neta es el indicador esperado.'], provider_kind: 'groq-cloud', model_id: 'openai/gpt-oss-120b' }) }
       if (url.endsWith('/copilot/needs/viability') && init?.method === 'POST') return { ok: true, status: 200, json: async () => ({ assessment_hash: 'd'.repeat(64), requirements: [{ code: 'question:sales_over_time', label: 'Evolución de ventas en el tiempo', request_text: 'Compara períodos.', status: 'derivable', evidence: ['Sales.SalesOrderDetail.LineTotal', 'Sales.SalesOrderHeader.OrderDate', 'Ruta declarada: Sales.SalesOrderDetail → Sales.SalesOrderHeader'], resolution: 'Puede resolverse con relaciones declaradas.' }, { code: 'goal:sales_amount', label: 'Ventas o ingresos', request_text: 'Analizar las ventas mensuales por producto y cliente.', status: 'direct', evidence: ['Sales.SalesOrderDetail.LineTotal'], resolution: 'Puede resolverse directamente.' }, { code: 'goal:definition', label: 'Definición de venta neta', request_text: 'Venta neta', status: 'ambiguous', evidence: ['Sales.SalesOrderDetail.LineTotal', 'Sales.SalesOrderHeader.TotalDue'], resolution: 'Confirme qué componentes incluye la venta neta.' }], counts: { direct: 1, derivable: 1, ambiguous: 1, unavailable: 0 }, requires_acknowledgement: ['goal:definition'], can_continue: true, summary: 'La necesidad tiene respaldo suficiente para continuar, con decisiones pendientes.' }) }
+      if (url.endsWith('/copilot/proposals/14')) return { ok: true, status: 200, json: async () => providerFailedProposal }
       if (url.endsWith('/copilot/proposals/12/relation-options')) return { ok: true, status: 200, json: async () => ({ proposal_id: 12, dimension_names: ['dim_producto'], options: [{ option_id: 'r'.repeat(64), left_table: 'Sales.SalesOrderDetail', right_table: 'Production.Product', left_columns: ['ProductID'], right_columns: ['ProductID'], left_types: ['int'], right_types: ['int'], cardinality: 'many_to_one', target_unique: true, nullable_source: false, duplication_risk: false, eligible: true, guidance: 'Relación declarada hacia una clave única; conserva la granularidad.' }, { option_id: 'x'.repeat(64), left_table: 'Sales.SalesOrderDetail', right_table: 'Sales.SpecialOfferProduct', left_columns: ['ProductID'], right_columns: ['ProductID'], left_types: ['int'], right_types: ['int'], cardinality: 'unknown', target_unique: false, nullable_source: false, duplication_risk: true, eligible: false, guidance: 'No se puede seleccionar: la clave destino no es única.' }] }) }
       if (url.endsWith('/copilot/proposals/12/revisions') && init?.method === 'POST') return { ok: true, status: 201, json: async () => revisedProposal }
       if (url.endsWith('/copilot/proposals/11/verify') && init?.method === 'POST') return { ok: true, status: 200, json: async () => ({ proposal_id: 11, verified: false, approval_safe: true, compatibility_warning: true, approval_invalidated: true, checks: [{ code: 'snapshot.integrity', label: 'Integridad de los metadatos', passed: true, detail: 'La huella coincide con la instantánea estructural persistida.' }, { code: 'proposal.replay', label: 'Reproducción determinística del contrato', passed: false, detail: 'La reconstrucción actual difiere de la huella persistida.' }], snapshot_hash: 'b'.repeat(64), proposal_hash: 'c'.repeat(64), replay_hash: 'd'.repeat(64), validated_reference_count: 1, rejected_reference_count: 0, validation_errors: 0, validation_warnings: 0, pending_validations: ['Contraste de cifras después de materializar el datamart.'] }) }
@@ -621,9 +815,11 @@ describe('App', () => {
     fireEvent.change(needTextarea, { target: { value: 'Analizar las ventas mensuales por producto y cliente.' } })
     await waitFor(() => expect(readAssistantDraft()?.goal).toBe('Analizar las ventas mensuales por producto y cliente.'))
     fireEvent.click(screen.getByLabelText(/Evolución de ventas en el tiempo/))
+    fireEvent.click(screen.getByLabelText(/Autorizo enviar estos metadatos/))
     fireEvent.click(screen.getByRole('button', { name: 'Ayúdame a formular la necesidad' }))
     expect(await screen.findByRole('heading', { name: 'Redacción propuesta' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Usar esta redacción' }))
+    fireEvent.click(screen.getByLabelText(/Autorizo enviar estos metadatos/))
     fireEvent.click(await screen.findByRole('button', { name: 'Validar viabilidad' }))
     expect(await screen.findByRole('heading', { name: 'Viabilidad contra los metadatos' })).toBeInTheDocument()
     expect(screen.getByText('Automático · relación')).toBeInTheDocument()
@@ -636,7 +832,22 @@ describe('App', () => {
     expect(await screen.findByRole('heading', { name: 'Generación interrumpida de forma segura' })).toBeInTheDocument()
     expect(screen.getByText('El problema fue del proveedor, no de su necesidad')).toBeInTheDocument()
     expect(screen.queryByText(/No se encontró un alcance verificable/)).not.toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Reintentar la misma solicitud' }))
+    expect(screen.getByRole('button', { name: 'Reintentar la misma solicitud' })).toBeInTheDocument()
+    await waitFor(() => expect(readAssistantDraft()?.proposalId).toBe(14))
+    cleanup()
+    render(<App />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Diseño y transformación BI' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Asistente de datamart' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Volver a validar y reintentar' }))
+    expect(screen.getByText(/Confirme el proveedor, autorice los metadatos/)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Autorizo enviar estos metadatos/)).not.toBeChecked()
+    expect(screen.getByRole('button', { name: 'Validar viabilidad' })).toBeDisabled()
+    expect(creationAttempts).toBe(1)
+    fireEvent.click(screen.getByLabelText(/Autorizo enviar estos metadatos/))
+    fireEvent.click(screen.getByRole('button', { name: 'Validar viabilidad' }))
+    expect(await screen.findByRole('heading', { name: 'Viabilidad contra los metadatos' })).toBeInTheDocument()
+    fireEvent.click(screen.getByLabelText(/Comprendo esta limitación/))
+    fireEvent.click(screen.getByRole('button', { name: 'Generar propuesta y resolver 1 derivables' }))
     expect(await screen.findByRole('heading', { name: 'Conceptos encontrados' })).toBeInTheDocument()
     expect(screen.getByText('Detalle de venta')).toBeInTheDocument()
     expect(screen.getByText('Motivo de venta')).toBeInTheDocument()
@@ -707,7 +918,7 @@ describe('App', () => {
     expect(fetchMock.mock.calls.some(([input]) => String(input).endsWith('/copilot/proposals/11/invalidate'))).toBe(true)
     expect(fetchMock.mock.calls.some(([input]) => String(input).includes('status=ready_for_review'))).toBe(true)
     const creationRequest = fetchMock.mock.calls.find(([input, init]) => String(input).endsWith('/copilot/proposals') && init?.method === 'POST')
-    expect(JSON.parse(String(creationRequest?.[1]?.body))).toMatchObject({ viability_hash: 'd'.repeat(64), accepted_limitations: ['goal:definition'] })
+    expect(JSON.parse(String(creationRequest?.[1]?.body))).toMatchObject({ viability_hash: 'd'.repeat(64), accepted_limitations: ['goal:definition'], metadata_consent_target: 'approved-target' })
     expect(creationAttempts).toBe(2)
     window.dispatchEvent(new Event(sessionExpiredEvent))
     expect(await screen.findByText(/retomar el punto guardado/i)).toBeInTheDocument()

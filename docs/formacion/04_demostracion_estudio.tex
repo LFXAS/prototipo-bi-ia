@@ -1,0 +1,240 @@
+\chapterpage{Módulo 6 · Preparar la exposición}{Guion de demostración de 25 minutos}
+Prepare una ruta principal con expedientes existentes y una alternativa de práctica en vivo. Así podrá explicar el sistema incluso si se agota la cuota del proveedor. No presente una consulta histórica como generación nueva.
+\begin{tabularx}{\linewidth}{@{}p{18mm}YY@{}}
+\toprule
+\textbf{Minutos}&\textbf{Acción visible}&\textbf{Explicación sugerida}\\
+\midrule
+0--3&Presentar problema y conceptos.&«Convertimos una necesidad comercial en un diseño verificable. La IA asiste; la plataforma comprueba; una persona aprueba».\\
+3--6&Explorador AW y WWI.&«Los metadatos describen fuentes diferentes. Una línea de pedido no es una línea de factura».\\
+6--8&Catálogos por fuente.&«Las preguntas orientan, pero no inventan columnas. AW conserva sus personalizaciones; WWI tiene su propio catálogo».\\
+8--12&Necesidad, consentimiento y viabilidad.&«Los derivables son candidatos. La estructura y los límites se revisan antes de generar». Usar capturas si no se hará una llamada.\\
+12--16&Abrir \#98 y \#114.&«Estas propuestas conservan grano y documentos. El promedio por pedido/factura usa un conteo distinto».\\
+16--19&Abrir expedientes \#14 y \#15.&«Aprobar no fue cargar. Aquí están la ejecución y la conciliación de origen y destino».\\
+19--23&Panel, filtros y gráfico interactivo.&«El dato cambia con el filtro y conserva procedencia. El total de WWI no se supone USD».\\
+23--25&Copiloto, exportación y límites.&«Contrasto indicador, evento, filtro y denominador. No afirmo causalidad ni compatibilidad no probada».\\
+\bottomrule
+\end{tabularx}
+\sub{Lista de preparación del expositor}
+\begin{itemize}
+\item Probar acceso y permisos; confirmar ambas fuentes sin cambiar sus catálogos.
+\item Localizar las propuestas y los expedientes antes de exponer. Si sus datos físicos ya no están, no prometer navegación en vivo del panel.
+\item Preparar capturas y exportaciones con fecha, fuente y filtros. No mostrar claves.
+\item Comprobar cuota sólo si se planean nuevas llamadas autorizadas. No prometer una latencia exacta.
+\item Si se genera un caso nuevo, registrar su propio número. No reemplazar los identificadores de la evidencia histórica.
+\end{itemize}
+\textbf{Cierre sugerido:} «Este recorrido está acreditado en dos fuentes SQL Server. Rechazar una sugerencia sin respaldo y conservar evidencia es parte de la calidad del sistema».
+
+\chapterpage{Módulo 6 · Aprendizaje activo}{Taller guiado para los tres perfiles}
+Los tiempos son orientativos. La práctica de 80 minutos supone aplicación, fuentes, cuenta y proveedor preparados. El estudio de conceptos puede realizarse antes, sin consumir IA.
+\begin{tabularx}{\linewidth}{@{}p{19mm}Yp{45mm}@{}}
+\toprule
+\textbf{Tiempo}&\textbf{Actividad}&\textbf{Producto del alumno}\\
+\midrule
+0--10&Leer conceptos, iniciar sesión y reconocer la fuente.&Explicar pedido, factura, fila y KPI con sus palabras.\\
+10--20&Explorar ambas bases y una relación real.&Identificar PK, FK, fecha y grano candidato.\\
+20--30&Comparar catálogos y escribir objetivo pequeño.&Texto, preguntas, periodicidad y límites.\\
+30--45&Autorizar y validar; leer cada resultado.&Registro de directos, derivables y decisiones pendientes.\\
+45--55&Generar si está autorizado y revisar contrato.&Grano, medida, fórmula, denominador y cobertura.\\
+55--65&Aprobar y ejecutar un caso controlado, o consultar histórico si no alcanza el tiempo.&Identificar honestamente ejecución nueva o consulta.\\
+65--75&Filtrar, abrir gráfico, preguntar y exportar.&Comparación de cifras y captura del alcance.\\
+75--80&Redactar conclusión e incidente si corresponde.&Acta con esperado, obtenido, evidencia y límite.\\
+\bottomrule
+\end{tabularx}
+\sub{Ruta por perfil}
+\textbf{Usuario final / gerencia:} estudie conceptos y criterios de ventas; consulte panel, copiloto y exportaciones. Debe poder cuestionar un promedio sin administrar credenciales.
+
+\textbf{Operador / analista autorizado:} añada catálogo, necesidad, diseño, personalización, aprobación, ETL y conciliación. Debe reconocer cuándo detener el proceso.
+
+\textbf{Administrador / desarrollador:} añada entorno, seguridad, arquitectura, contratos, diagnóstico y pruebas. Debe resolver causas sin debilitar los controles ni confundir un problema de interfaz con uno de datos.
+\begin{note}[Condición de aprobación del taller]
+No se aprueba por llegar a un gráfico. El alumno debe identificar evento, grano, fuente, fórmula y límites, y saber dónde está la conciliación. Un caso negativo bien diagnosticado también demuestra aprendizaje; no debe disfrazarse de caso positivo.
+\end{note}
+\sub{Ejercicio de explicación entre compañeros}
+Una persona hace de gerente y pregunta «¿puedo usar esto para decidir a qué cliente dar crédito?». La otra debe explicar que ventas o facturas por sí solas no prueban capacidad de pago: faltan datos y criterios adecuados. No invente una decisión crediticia desde un ranking comercial.
+
+\chapterpage{Módulo 6 · Valores de referencia}{Controles para repetir sin confundir poblaciones}
+Estos resultados se observaron en la auditoría del 3 de octubre de 2026 o en el expediente histórico señalado. \textbf{No son resultados nuevos producidos al crear este manual}. Identificadores y cifras dependen de la instalación y su corte.
+\begin{tabularx}{\linewidth}{@{}Yrrr@{}}
+\toprule
+\textbf{Control}&\textbf{AW pedidos}&\textbf{WWI pedidos}&\textbf{WWI facturas}\\
+\midrule
+Propuesta / ejecución&98 / 14&96 / 13&114 / 15\\
+Filas de detalle&121.317&231.412&228.265\\
+Documentos distintos&31.465&73.595&70.510\\
+Unidades&No se usa aquí&9.310.904&8.950.628\\
+\bottomrule
+\end{tabularx}
+\sub{Importes y promedios que sí puede contrastar}
+\begin{tabularx}{\linewidth}{@{}Yp{53mm}@{}}
+\toprule
+\textbf{Contexto}&\textbf{Valor observado}\\
+\midrule
+AW \#14: importe de todas las líneas&109.846.381,4250\\
+AW \#14: promedio por pedido&3.491,07\\
+AW \#14, 2014: pedidos / promedio&11.761 / 1.705,46\\
+WWI \#13: importe según receta de pedidos&177.634.276,40\\
+WWI \#15: importe facturado registrado&198.043.439,45\\
+WWI \#15: promedio por factura&2.808,73\\
+WWI \#15, 2015: total / facturas&62.090.220,81 / 22.250\\
+WWI \#15, 2015: promedio por factura&2.790,57\\
+\bottomrule
+\end{tabularx}
+\sub{Cuatro promedios de WWI que no deben confundirse}
+En el expediente \#15: importe medio por línea aproximadamente \textbf{867,603178}; precio unitario medio simple \textbf{45,591688}; importe por unidad \textbf{22,126206}; importe por factura \textbf{2.808,728399}. La etiqueta, la composición del importe y el denominador hacen que respondan preguntas distintas.
+\begin{note}[No es una comparación monetaria entre empresas]
+AW mostró USD en el expediente observado; WWI conserva moneda de origen sin código único demostrado. Además, pedidos y facturas difieren. No calcule diferencias, participaciones o crecimiento entre las tres columnas como si fueran una sola serie de ventas comparable.
+\end{note}
+\textbf{Regla de contraste:} use el valor detallado y la precisión del expediente. Una tarjeta abreviada, como 109,8 M, no permite comprobar diferencias de centavos.
+
+\chapterpage{Módulo 6 · QA para el alumno}{Pruebas positivas, negativas y registro de evidencia}
+\begin{tabularx}{\linewidth}{@{}p{17mm}YY@{}}
+\toprule
+\textbf{Caso}&\textbf{Qué hacer}&\textbf{Resultado que debe comprobar}\\
+\midrule
+P-01&Consultar AW \#14 y filtrar un año presente.&Fuente/ejecución correctas; valores y gráficos responden al mismo filtro.\\
+P-02&Consultar WWI \#15 y filtrar 2015.&Facturas, no pedidos; cifras coherentes con su expediente y denominador.\\
+P-03&Volver de WWI a AW.&No quedan productos, territorios, revisión ni chat de la otra fuente como resultados propios.\\
+N-01&Pedir clima externo con el texto siguiente.&Límite visible; no inventa clima ni sustituye meteorología por sensores internos.\\
+N-02&Tras una revisión, editar el objetivo.&La revisión anterior no autoriza silenciosamente el alcance nuevo; revisar consentimiento.\\
+N-03&Revisar una propuesta cuyo promedio sea de línea.&No aprobarlo como promedio documental. Corregir o etiquetar con honestidad.\\
+N-04&Comparar factura con cobro en el copiloto.&No afirmar cobro sin evidencia; declarar limitación.\\
+\bottomrule
+\end{tabularx}
+\begin{goal}
+Analizar las ventas mensuales registradas y explicar cuánto influyó el clima de cada ciudad usando temperaturas externas que no están en esta base de datos.
+\end{goal}
+El negativo climático fue observado en NEED-20: se detectó el dato ausente y no se aceptó alcance parcial ni se generó ETL. El ensayo también encontró un problema temporal corregido antes del positivo final. \textbf{Un nuevo intento debe documentarse aparte}; no se ejecuta para demostrar que todo texto debe pasar.
+\sub{Plantilla de ficha para la tesis o el taller}
+\begin{tabularx}{\linewidth}{@{}p{42mm}Y@{}}
+\toprule
+Identificación&ID del caso, fecha, responsable y perfil utilizado.\\
+Preparación&Fuente, instantánea, proveedor/modelo, permisos y versión del programa.\\
+Entradas&Objetivo exacto, preguntas, periodicidad y límites aceptados.\\
+Pasos&Acciones reproducibles; indicar consulta histórica o generación nueva.\\
+Esperado / obtenido&Criterio antes de probar; observación real después, sin reescribir el esperado para hacerlo pasar.\\
+Evidencia&Versión/ejecución si existen, capturas, filtros y conciliación.\\
+Conclusión&Aprobado, fallido, parcial o no ejecutado; incidencia y riesgo pendiente.\\
+\bottomrule
+\end{tabularx}
+
+\chapterpage{Módulo 6 · Qué hacer ante problemas}{Acceso, preparación e inteligencia artificial}
+\sub{Primero deténgase, identifique y conserve}
+No pulse varias veces una operación con efecto real. Registre pantalla, mensaje, fuente, versión, hora y última acción. No incluya credenciales. Distinga si falló el \textbf{acceso}, la \textbf{conexión}, el \textbf{proveedor}, el \textbf{contrato} o el \textbf{cálculo}.
+{\small
+\begin{tabularx}{\linewidth}{@{}p{29mm}YY@{}}
+\toprule
+\textbf{Síntoma}&\textbf{Acción segura del usuario}&\textbf{Cuándo escalar / qué evitar}\\
+\midrule
+No abre la página&Verificar dirección y si está en el equipo correcto; avisar al responsable técnico.&No borrar volúmenes ni reinstalar por intuición. Revisar servicios y puertos.\\
+No puede entrar&Comprobar correo; usar el acceso asignado. Si venció sesión, volver a autenticar.&No compartir claves ni usar otra cuenta para saltarse permisos.\\
+No aparece una opción&Confirmar perfil y permiso con administrador.&La vista ejecutiva no otorga permisos. No modificar roles para una demostración sin autorización.\\
+Fuente no lista&Revisar conexión probada, habilitación e instantánea.&El administrador revisa acceso de sólo lectura, servidor y base. No duplicar conexión por cada fallo.\\
+No hay metadatos&Crear primera instantánea con permiso. Si hay una, revisar contexto y versión.&Actualizar estructura no carga ventas. No cambiar metadatos para que acepte una referencia falsa.\\
+Validar deshabilitado&Objetivo entre 20 y 2.000 caracteres, pregunta, período, destino y consentimiento.&Leer mensaje; adoptar una sugerencia obliga a revisar otra vez el contexto.\\
+Sugerencia bloqueada&Mantener texto propio; revisar qué referencia o capacidad falta.&No asumir que la necesidad comercial es inválida sólo porque una reformulación falló.\\
+Cuota / límite temporal&Conservar objetivo; esperar el intervalo indicado o usar históricos.&No reintentar sin límite ni cambiar proveedor sin coordinar la configuración activa.\\
+JSON inválido o truncado&No usar la respuesta descartada. Reintentar de forma acotada cuando la aplicación lo permita.&Desarrollador revisa categoría del error y contrato. No copiar JSON parcial para aprobarlo manualmente.\\
+Necesidad no disponible&Reducir alcance con decisión explícita o aportar una fuente autorizada.&No inventar datos. Si lo ausente es central para la decisión, no continúe como si estuviera resuelto.\\
+\bottomrule
+\end{tabularx}}
+\begin{note}[Durante una exposición]
+Diga qué falló, muestre que se conservó el trabajo y pase al expediente de referencia identificado como histórico. Esa recuperación es demostrable; ocultar el fallo y afirmar que la generación fue exitosa no lo es.
+\end{note}
+
+\chapterpage{Módulo 6 · Qué hacer ante problemas}{Diseño, ETL, panel y coherencia comercial}
+{\small
+\begin{tabularx}{\linewidth}{@{}p{29mm}YY@{}}
+\toprule
+\textbf{Síntoma}&\textbf{Qué comprobar y hacer}&\textbf{Qué no debe hacer}\\
+\midrule
+Error bloqueante en propuesta&Leer referencias, grano, tipos y cobertura. Personalizar una opción válida o generar una nueva versión corregida.&No aprobar ni eliminar la regla para desbloquear.\\
+Histórico con advertencias&Distinguir aprobación histórica, compatibilidad actual y datos disponibles. Verificar evidencia y registrar diferencias.&No retirar aprobación ni descartar versiones sólo por consultarlas.\\
+No puede crear otra necesidad&Usar Crear nueva propuesta desde el histórico.&No cerrar sesión como método normal ni borrar el resultado anterior.\\
+KPI Sin valor&Revisar estado, fórmula, medida base, denominador y filtro.&No sustituir nulo por cero ni afirmar «no hubo ventas» sin respaldo.\\
+Promedio incoherente&Identificar si es por línea, documento o unidad. Comparar totales del mismo alcance.&No cambiar sólo la etiqueta para justificar otra fórmula.\\
+ETL fallido&Abrir expediente, leer etapa y error; técnico revisa registros y conectividad.&No ejecutar repetidamente ni eliminar datamarts anteriores.\\
+Diferencia en conciliación&Conservar resultados, revisar población, uniones, precisión y fórmula antes de publicar.&No normalizar la diferencia como aceptable sin criterio documentado.\\
+Etiqueta pendiente&Revisar mapeos y usar publicación o reintento de interpretación sin repetir ETL.&No traducir identificadores o nombres personales ni cargar de nuevo por un texto.\\
+Moneda desconocida&Usar Comprobar divisa sin repetir ETL si aparece; mantener moneda de origen si no se prueba.&No asumir USD ni convertir importes sin evidencia.\\
+Panel ausente&Comprobar fuente, permiso, ejecución conciliada/publicada y tablas físicas.&Un historial guardado no garantiza datos físicos consultables.\\
+Gráfico y chat distintos&Comparar evento, indicador, filtros, Top N, denominador y redondeo.&No asumir cruce de fuentes antes de revisar el alcance interpretado; si hay cruce real, detener análisis.\\
+Fuente cruzada visible&Registrar pasos/captura y detener conclusiones; escalar a QA/desarrollo.&No ocultar el problema cambiando etiquetas ni reconstruir a ciegas ambas fuentes.\\
+\bottomrule
+\end{tabularx}}
+\sub{Paquete mínimo para solicitar ayuda}
+Pantalla y acción; fuente/instantánea; propuesta/ejecución; objetivo sin secretos; indicador y filtros; esperado y obtenido; fecha; captura legible. El técnico puede añadir categoría de error y registros saneados. Un caso reproducible vale más que «no funciona».
+
+\chapterpage{Módulo 6 · Evaluación de aprendizaje}{Preguntas para comprobar que comprendió BI + IA}
+Intente responder antes de leer la siguiente página. No hace falta memorizar código.
+\begin{enumerate}
+\item ¿En qué se diferencia una fuente OLTP de un datamart?
+\item ¿Qué es el grano? Si una factura tiene tres líneas, ¿cuántas facturas cuenta?
+\item ¿Qué diferencia existe entre dimensión Producto y atributo Categoría?
+\item ¿Qué demuestra una FK y qué no demuestra sobre los importes?
+\item ¿Por qué Mensual no significa perder el detalle ni programar ETL mensual?
+\item ¿Pedido, factura y cobro pueden usarse como sinónimos? Dé un contraejemplo.
+\item ¿Cuándo no debe llamar venta neta al importe de una columna?
+\item ¿Cuál es la diferencia entre promedio de línea, por documento y por unidad?
+\item ¿Por qué el producto con la línea más cara puede no ser el producto líder?
+\item ¿Qué diferencia existe entre costo estándar, último costo y costo histórico?
+\item ¿Qué hace la IA al sugerir una necesidad y qué sigue decidiendo la persona?
+\item ¿Qué significa derivable? ¿Ya está conciliado ese cálculo?
+\item ¿Aprobar una propuesta ejecuta ETL? ¿Verificar evidencia lo ejecuta?
+\item ¿Los Hallazgos explicables del panel necesitan una llamada al LLM?
+\item Si una respuesta del copiloto usa otro año, ¿debe coincidir con el panel actual?
+\item ¿Qué significa que las filas concilien? ¿Certifica toda la interpretación comercial?
+\item ¿Qué tres datos de procedencia debe mirar antes de leer el tablero?
+\item ¿Por qué «moneda de origen» puede ser más correcto que mostrar USD?
+\item ¿Cambiar Vista ejecutiva a Vista analítica demuestra que otro rol tiene acceso?
+\item ¿Qué debe registrar cuando una prueba no puede completarse por cuota?
+\end{enumerate}
+\begin{good}[Criterio de dominio]
+Puede usar la herramienta con criterio cuando responde estas preguntas con ejemplos, identifica la evidencia de una cifra y sabe detener una aprobación. Saber navegar sin comprender el evento y el denominador todavía no es dominar BI.
+\end{good}
+
+\chapterpage{Módulo 6 · Respuestas de estudio}{Respuestas comentadas y errores que evitan}
+{\small
+\begin{enumerate}
+\item La fuente registra operaciones; el datamart organiza un alcance analítico. Aquí SQL Server es fuente y PostgreSQL almacena la materialización.
+\item El grano define una fila. Tres líneas de una factura son tres hechos de detalle, pero un documento distinto. Evita inflar conteos.
+\item Producto es el conjunto descriptivo; Categoría es uno de sus atributos. No es necesario crear una dimensión independiente por cada campo.
+\item Una FK acredita una relación declarada entre claves. No acredita pago, composición fiscal ni calidad económica de los valores.
+\item Mensual agrupa por año y mes. La fila puede seguir siendo una línea; la agenda de cargas es otro asunto.
+\item No. Un pedido puede no haberse facturado; una factura puede estar pendiente de cobro. Cada evento requiere fuente y fecha propias.
+\item Cuando no se conoce si incluye descuentos, impuestos, ajustes o qué población representa. Use importe registrado y documente límites.
+\item Línea: importe / filas; documento: importe / documentos distintos; unidad: importe / unidades. El filtro y la base del importe deben coincidir.
+\item Una línea máxima es una observación individual; el liderazgo por producto depende de sumar sus líneas. Confundirlos cambia la decisión.
+\item Estándar es una referencia; último costo describe el valor disponible más reciente; histórico corresponde al momento/evento si existe evidencia. No son intercambiables.
+\item La IA propone una redacción según contexto. La persona elige objetivo, acepta límites y aprueba después; la plataforma comprueba la salida.
+\item Existe una ruta o receta candidata. Debe implementarse en el contrato y luego ejecutarse y conciliarse. No equivale a dato ya calculado.
+\item No en ambos casos. Aprobar habilita una propuesta elegible; verificar comprueba estructura. La carga requiere la confirmación específica de materialización.
+\item No: esos resúmenes se calculan por reglas. La conversación del copiloto sí puede interpretar y redactar mediante IA.
+\item Sólo si usa el mismo alcance. Lea consulta interpretada y filtros; una consulta permitida no necesariamente cambia el tablero.
+\item En estos ensayos acredita igualdad del detalle cargado; se revisan también medidas/KPI. No certifica por sí sola historia de costos, cobro o interpretación fiscal.
+\item Fuente, propuesta y ejecución. Luego revise indicador, unidad, filtros y fecha de la carga.
+\item Porque puede no existir evidencia de una moneda ISO única. Inventar un símbolo añade una certeza falsa.
+\item No. Son modos de presentación. Debe probarse una cuenta autenticada con sus permisos reales.
+\item Entradas, proveedor/modelo, hora, error, estado alcanzado y alternativa utilizada. Marque parcial/no ejecutado; no lo cuente como éxito de generación.
+\end{enumerate}}
+\sub{Ejercicio final de síntesis}
+Explique en dos minutos una cifra del panel con esta estructura: \emph{«Proviene de esta fuente y ejecución; mide este evento con este grano; usa esta fórmula y estos filtros; se concilió así; y no permite concluir esto otro»}. Si puede hacerlo, está conectando operación, BI y juicio comercial.
+
+\chapterpage{Referencia y trazabilidad documental}{Fuentes, vigencia y uso académico}
+\sub{Qué se utilizó para construir esta guía}
+\begin{enumerate}[label=R\arabic*.]
+\item \textbf{Auditoría operativa BI + IA, 3 de octubre de 2026.} Archivo del proyecto \path{docs/testing/auditoria-operativa-2026-10-03.md}. Casos QA-01 a QA-16 y ampliación NEED-01 a NEED-21. Sustenta resultados, incidentes, alcance y limitaciones.
+\item \textbf{Manual técnico del prototipo.} \path{docs/manual-tecnico/manual-tecnico.tex}. Secciones de operación, asistencia, materialización, analítica, configuración y recuperación. Se contrastaron sus instrucciones con el código actual.
+\item \textbf{Arquitectura, alcance y réplica.} \path{docs/architecture.md}, \path{docs/scope.md}, \path{docs/replication-guide.md} y \path{AGENTS.md}. Sustentan la separación de responsabilidades y el trabajo de desarrollo.
+\item \textbf{Interfaz vigente.} \path{frontend/src/App.tsx} y \path{frontend/src/AnalyticsPage.tsx}. Sustentan nombres de botones, estados, rutas, consentimiento y filtros; algunas capturas históricas muestran una disposición anterior.
+\item \textbf{Contratos y servicios.} Módulos backend de metadatos, parámetros/proveedores, copiloto, ETL, analítica y reportes; Makefile y flujos CI/CD. Se revisaron para no atribuir al LLM tareas determinísticas ni prometer motores no implementados.
+\item \textbf{Registros persistidos consultados en sólo lectura.} Catálogos, propuestas \#96/\#98/\#114 y expedientes \#13/\#14/\#15 del entorno de demostración. Sustentan la diferenciación de eventos y los controles de agregados.
+\end{enumerate}
+\sub{Procedencia de las capturas}
+Las doce imágenes incluidas provienen de \path{docs/testing/evidencias/qa-20261003/}. Sus nombres originales se conservan en la carpeta \path{figuras/} del paquete LaTeX. Se reutilizan como evidencia real de aquella auditoría; no son interfaces recreadas ni pruebas nuevas realizadas durante la redacción.
+
+Las capturas cubren explorador, catálogo, consentimiento, viabilidad, interpretación IA, aprobación, etapas de ETL, conciliación, panel, conversación y distinción de pedidos. La guía explica qué demuestra cada imagen y qué no.
+\sub{Qué sigue pendiente fuera de este documento}
+Una ejecución nueva de cada texto propuesto; pruebas de cuentas autenticadas de los roles nuevos; validación integral de otros motores/modelos/esquemas; y cualquier afirmación histórica o financiera que requiera datos adicionales. Esta guía no transforma esos pendientes en resultados aprobados.
+\begin{good}[Cómo citarla en su trabajo]
+Puede identificarla como \emph{Guía de formación desde cero: BI + IA aplicada a ventas}, versión 1.0, 3 de octubre de 2026, material de apoyo del prototipo. Para afirmar un resultado experimental, cite además el caso de auditoría y su evidencia; no use una ficha propuesta como si fuera una observación obtenida.
+\end{good}
