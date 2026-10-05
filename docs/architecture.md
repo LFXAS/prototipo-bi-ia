@@ -59,7 +59,7 @@ Desde el Sprint 2, cada módulo sólo incorpora capacidad funcional a partir de 
 
 ## RBAC previsto
 
-Entidades implementadas hasta el cierre local del Sprint 6: `users`, `roles`, `permissions`, `user_roles`, `role_permissions`, `menus`, `menu_permissions`, `audit_events`, `parameters`, `llm_configurations`, `secrets`, `data_connections`, `analysis_catalogs`, `metadata_snapshots`, `bi_proposals`, `semantic_advice` y `etl_executions`, todas bajo el esquema `app`. `analysis_catalogs` aísla la orientación funcional por conexión y dominio; `metadata_snapshots` conserva el documento canónico JSONB y su procedencia; propuestas y ejecuciones heredan ese contexto. El chat analítico no almacena conversaciones completas: cada consulta deja una huella y contexto mínimo en auditoría.
+Entidades implementadas hasta el cierre local del Sprint 6 y su endurecimiento: `users`, `roles`, `permissions`, `user_roles`, `role_permissions`, `menus`, `menu_permissions`, `audit_events`, `parameters`, `llm_configurations`, `secrets`, `data_connections`, `analysis_catalogs`, `metadata_snapshots`, `business_need_reviews`, `bi_proposals`, `semantic_advice` y `etl_executions`, todas bajo el esquema `app`. `analysis_catalogs` aísla la orientación funcional por conexión y dominio; `metadata_snapshots` conserva el documento canónico JSONB y su procedencia; revisiones de necesidad, propuestas y ejecuciones heredan ese contexto. El chat analítico no almacena conversaciones completas: cada consulta deja una huella y contexto mínimo en auditoría.
 
 Reglas arquitectónicas:
 
@@ -80,6 +80,45 @@ Los menús son una representación de permisos ya autorizados por FastAPI. En es
 ### Perfiles de uso
 
 La administración técnica configura desde la web fuente, credenciales, proveedor LLM y permisos. El gerente comercial aporta objetivos, preguntas y criterios de utilidad y consume posteriormente los resultados. El analista BI o responsable de datos es el usuario operativo del asistente: selecciona el dominio habilitado, registra la necesidad, revisa conceptos, personaliza decisiones de negocio ya verificadas y aprueba o rechaza la propuesta sin escribir SQL. Las programadoras mantienen el motor y sus plantillas, pero no intervienen en cada análisis de operación.
+
+Desde el paso Necesidad, la IA puede sugerir objetivos desde los metadatos o mejorar
+un objetivo existente. `need_advisor` envía sólo estructura permitida y valida sus
+referencias, tipos y rutas antes de mostrar respaldo. El envío exige consentimiento
+vinculado al destino LLM actual. La viabilidad combina interpretación IA y reglas;
+`business_need_reviews` conserva su resultado no ejecutable y huellas de entrada y
+evaluación. La generación exige una evaluación persistida del mismo actor, texto,
+preguntas, período e instantánea. No cambia contratos aprobados ni datamarts anteriores.
+La huella incluye `need-review-2`; el cambio de reglas obliga a revisar nuevamente
+antes de generar y conserva evaluaciones previas como evidencia histórica.
+Esta puerta no reemplaza la validación del modelo dimensional, la decisión humana ni
+la conciliación del ETL; un esquema correcto no acredita datos completos o significado
+financiero histórico. No se considera probada la universalidad en motores no ensayados.
+
+El paquete de asesoría conserva sólo nombres estructurales, tipos, claves y relaciones;
+no incluye propiedades de conexión, muestras, filas ni credenciales. Su tamaño se limita
+explícitamente: si supera el presupuesto, se detiene con una explicación y no se envía
+un esquema truncado silenciosamente. Las sugerencias no modifican el catálogo por
+fuente. Sus requisitos se vinculan a capacidades controladas para que la generación
+posterior compruebe cobertura real del contrato, no sólo coincidencias de etiquetas.
+
+Si el borrador incumple las comprobaciones de estructura o cambia el objetivo durante
+el análisis, la asesoría admite como máximo una corrección con feedback al mismo
+proveedor y con el mismo contexto autorizado. No se cambia de modelo automáticamente
+ni se considera éxito una respuesta que siga sin pasar las reglas. Tampoco se deduce
+que un importe incluya impuestos o represente venta neta, o que un costo sea histórico,
+sólo por su nombre técnico.
+
+Tipo y significado son controles distintos. El asesor rechaza contradicciones
+conocidas entre precio de venta, costo, tasa, cantidad, identificador e importe;
+los roles se reconocen mediante alias generales españoles e ingleses, no por base
+de datos. Los nombres desconocidos permanecen ambiguos y no se convierten en hechos
+por autoridad del LLM. Las agrupaciones temporales separan la medida numérica de
+la fecha, que no se admite como operando aritmético. Las explicaciones del proveedor
+siguen sujetas a revisión: estructura válida no garantiza que toda frase sea cierta.
+React distingue evidencia estructural y derivación candidata; las fórmulas o
+explicaciones de requisitos `ai:*` se rotulan como interpretación propuesta por IA
+no ejecutable. Una reformulación bloqueada puede descartarse conservando el objetivo
+original, que deberá pasar su propia revisión antes de generar.
 
 ## Contrato de configuración LLM
 

@@ -50,6 +50,7 @@ class BusinessNeedInput(BaseModel):
     business_questions: list[str] = Field(min_length=1, max_length=12)
     periodicity: str = Field(default="month", min_length=3, max_length=20)
     domain_code: Literal["ventas"] = "ventas"
+    metadata_consent_target: str | None = Field(default=None, max_length=64)
 
     @field_validator("business_goal")
     @classmethod
@@ -69,6 +70,33 @@ class NeedFormulationRead(BaseModel):
     improvements: list[str]
     provider_kind: str
     model_id: str
+    evidence: list[str] = Field(default_factory=list)
+    limitations: list[str] = Field(default_factory=list)
+    usable: bool = False
+
+
+class NeedSuggestionInput(BaseModel):
+    metadata_snapshot_id: int = Field(gt=0)
+    domain_code: Literal["ventas"] = "ventas"
+    periodicity: str = Field(default="month", min_length=3, max_length=20)
+    business_questions: list[str] = Field(default_factory=list, max_length=12)
+    metadata_consent_target: str | None = Field(default=None, max_length=64)
+
+
+class NeedSuggestionRead(BaseModel):
+    suggested_goal: str
+    rationale: str
+    evidence: list[str]
+    limitations: list[str]
+    usable: bool
+
+
+class NeedSuggestionsRead(BaseModel):
+    metadata_snapshot_id: int
+    provider_kind: str
+    model_id: str
+    notice: str
+    suggestions: list[NeedSuggestionRead]
 
 
 class NeedViabilityRequirement(BaseModel):
@@ -89,6 +117,9 @@ class NeedViabilityRead(BaseModel):
     requires_acknowledgement: list[str]
     can_continue: bool
     summary: str
+    review_notice: str | None = None
+    provider_kind: str | None = None
+    model_id: str | None = None
 
 
 class ProposalCreate(BusinessNeedInput):
@@ -96,7 +127,7 @@ class ProposalCreate(BusinessNeedInput):
     excluded_concepts: list[str] = Field(default_factory=list, max_length=20)
     source_proposal_id: int | None = Field(default=None, gt=0)
     viability_hash: str = Field(min_length=64, max_length=64, pattern=r"^[a-f0-9]{64}$")
-    accepted_limitations: list[str] = Field(default_factory=list, max_length=30)
+    accepted_limitations: list[str] = Field(default_factory=list, max_length=100)
 
     @field_validator("requested_dimensions", "excluded_concepts", "accepted_limitations")
     @classmethod
@@ -315,6 +346,8 @@ class SemanticPreviewRead(BaseModel):
 
 
 class ReadinessComponent(BaseModel):
+    metadata_consent_target: str | None = None
+    metadata_consent_label: str | None = None
     ready: bool
     label: str
     detail: str

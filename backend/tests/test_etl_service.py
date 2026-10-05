@@ -293,6 +293,32 @@ def test_duplicate_average_of_line_total_is_deduplicated_and_named_honestly() ->
     assert recipes[0]["adjustments"]
 
 
+def test_legacy_average_of_lines_is_not_described_as_average_per_transaction() -> None:
+    candidate = proposal()
+    candidate["fact"]["measures"].append(
+        {
+            "name": "Importe de línea",
+            "source_columns": ["LineTotal"],
+            "aggregation": "average",
+            "semantic_role": "sales_amount",
+        }
+    )
+    candidate["kpis"] = [
+        {
+            "code": "avg_transaction",
+            "name": "Importe promedio por transacción",
+            "formula": {"operation": "average", "measure": "Importe de línea"},
+            "unit": "moneda",
+            "semantic_role": "sales_amount",
+        }
+    ]
+
+    recipes, issues = compile_kpi_recipes(candidate)
+
+    assert issues == []
+    assert recipes[0]["name"] == "Importe promedio por línea de venta"
+
+
 def test_selection_coverage_marks_omitted_requested_financial_kpis_as_partial() -> None:
     candidate = proposal()
     candidate["need_assessment"] = {

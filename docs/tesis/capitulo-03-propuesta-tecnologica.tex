@@ -87,7 +87,7 @@
     Autoras & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tipo de documento & Texto base para integración en el trabajo de titulación \\
     Código documental & TES-CAP-03 \\
-    Versión & 1.3.1 \\
+    Versión & 1.4.0 \\
     Periodo cubierto & Sprints 1 al 6; agosto--octubre de 2026 \\
     Estado & Núcleo funcional implementado y verificado; validación académica final pendiente \\
   \end{tabularx}
@@ -214,6 +214,7 @@ Se aplicó Scrum de forma incremental, complementado con desarrollo guiado por e
   RF-13 & Resolver etiquetas descriptivas de entidades mediante relaciones verificadas y cobertura controlada. & \ok \\
   RF-14 & Permitir preguntas contextuales sobre agregados visibles, con evidencia y límites explícitos. & \ok \\
   RF-15 & Exportar PDF y Excel fieles a la vista, filtros, permisos y expediente conciliado. & \ok \\
+  RF-16 & Sugerir y revisar necesidades con metadatos, consentimiento al destino y evidencia persistida antes de generar. & Implementado; ensayo documentado en QA-NEED. \\
   \bottomrule
 \end{longtable}
 
@@ -528,7 +529,7 @@ El cambio también aclaró el papel de la IA en el catálogo. El analista config
 
 La selección semántica evita relaciones de auditoría como \file{LastEditedBy}, penaliza compras y archivos cuando existe evidencia comercial vigente y obliga a conservar las dimensiones directas o derivables requeridas, aunque el proveedor las omita. No existen condiciones por nombre de base. AdventureWorks2022 y WideWorldImporters funcionan como casos de contraste del mismo algoritmo.
 
-La propuesta 96 y la ejecución 13 validaron el recorrido completo sobre WideWorldImporters. Se conciliaron 231412 líneas con diferencia cero, 73595 pedidos y 9310904 unidades. El sistema calculó 177634276,40 de ventas, 88904313,90 de costo y 88729962,50 de margen bruto; publicó 227 productos, 663 clientes y 53 territorios con nombre. Al no existir evidencia ISO inequívoca, conservó \textbf{moneda de origen}; y al no existir descuento demostrable, lo declaró no disponible. Estas dos decisiones negativas forman parte de la validez del resultado: universalidad no significa completar datos ausentes.
+La propuesta 96 y la ejecución 13 validaron el recorrido completo sobre WideWorldImporters. Se conciliaron 231412 líneas con diferencia cero, 73595 pedidos y 9310904 unidades. El sistema calculó 177634276,40 de importe de pedidos, 88904313,90 de costo y 88729962,50 de margen según la receta histórica; publicó 227 productos, 663 clientes y 53 territorios con nombre. Al no existir evidencia ISO inequívoca, conservó \textbf{moneda de origen}; y al no existir descuento demostrable, lo declaró no disponible. La auditoría posterior precisó que pedidos no equivale a facturación y que un último costo registrado no acredita costo histórico de venta; aquellas cifras demuestran la receta conciliada, no un margen contable certificado. Estas decisiones negativas forman parte de la validez del resultado: universalidad no significa completar datos ausentes.
 
 La validación integral alternó ambas fuentes durante una misma sesión y comprobó el
 recorrido desde Inicio hasta reportería. AdventureWorks conservó 121317 filas conciliadas
@@ -539,6 +540,37 @@ informe \file{INF-TEST-MS-01} conserva la matriz MS-E2E-01 a MS-E2E-09, capturas
 incidencias, correcciones y riesgos. Esta evidencia permite sostener portabilidad funcional
 entre dos fuentes SQL Server del dominio ventas, sin extrapolar todavía a cualquier motor
 o dominio.
+
+\subsection{Revisión de la necesidad y evidencia previa a la propuesta}
+
+La auditoría del 3 de octubre identificó una brecha de validez de constructo: la ayuda
+de redacción operaba con la huella de una instantánea, pero sin sus tablas y relaciones.
+Además, la existencia de columnas en el esquema completo podía interpretarse como
+factibilidad aun cuando no estuvieran conectadas al hecho o tuvieran tipos incompatibles.
+Se incorporó un asesor común que permite sugerir objetivos, reformular el texto del
+analista y evaluar la necesidad con la estructura permitida. No se confunde generación
+de lenguaje plausible con demostración de factibilidad.
+
+La propuesta de IA se somete a comprobación local de referencias, tipos y rutas FK
+dirigidas. No se aceptan inversiones de relación que multipliquen el grano, importes
+textuales ni costos desconectados. La periodicidad exige fecha comercial verificable.
+La revisión combina esa evidencia con requisitos interpretados por IA y conserva el
+objetivo original, las limitaciones y el estado de cada requisito. Una cobertura de
+margen requiere el resultado derivado en el contrato, no únicamente sus operandos.
+
+La transmisión exige consentimiento vinculado a configuración, proveedor, URL y modelo;
+se limita a necesidad y metadatos estructurales, excluyendo filas y credenciales. La
+evaluación se persiste con actor, instantánea y huellas de entrada y resultado. Cambiar
+fuente, objetivo, preguntas o período obliga a repetirla. La selección explícita de una
+sugerencia no aprueba el modelo dimensional ni modifica el catálogo. Se preservan
+separadamente recomendación, evidencia técnica y decisión humana.
+
+El diseño es compartido por proveedores y fuentes, pero la evidencia empírica sigue
+acotada. Los casos sintéticos en español e inglés y el contraste de ambas instantáneas
+SQL Server prueban reglas concretas, no la comprensión exhaustiva de cualquier esquema
+o idioma. Un respaldo estructural positivo tampoco acredita datos completos, costo
+histórico, suficiencia temporal ni utilidad gerencial; esas preguntas requieren
+conciliación, conocimiento del negocio y evaluación humana posteriores.
 
 \begin{longtable}{@{}p{0.10\textwidth}p{0.21\textwidth}p{0.43\textwidth}p{0.16\textwidth}@{}}
   \caption{Resumen de incrementos y evidencia.}\\
@@ -563,6 +595,13 @@ o dominio.
 
 La validación combina cuatro niveles: análisis estático y pruebas unitarias; integración con PostgreSQL y SQL Server; comprobación del contrato BI; y aceptación funcional en la interfaz. CI reconstruye imágenes, valida Compose, aplica la política de ramas y compila la documentación.
 
+El corte acumulativo del 3 de octubre, posterior al ensayo real de la asesoría de
+necesidades, aprobó \file{make test} con 231 casos backend y 34 frontend, además de
+Ruff, formato, Mypy, ESLint y TypeScript/Vite. El aviso de deprecación Starlette/AnyIO
+no ocasionó fallos. Se distinguen esos resultados de los conteos históricos y de la
+aceptación funcional: una suite aprobada no demuestra que toda reformulación del LLM
+sea utilizable, ni elimina los límites observados en los casos reales.
+
 \begin{table}[ht]
 \centering
 \caption{Matriz de verificación acumulada al Sprint 6.}
@@ -585,6 +624,68 @@ La validación combina cuatro niveles: análisis estático y pruebas unitarias; 
 \end{table}
 
 \section{Resultados, limitaciones y trabajo posterior}
+
+\subsection{Auditoría operativa con perspectivas QA, BI y gerencia}
+
+Se aplicó un recorrido de interfaz, contraste de agregados de sólo lectura y regresión
+automatizada, documentado en QA-E2E-20261003. La perspectiva QA verificó navegación,
+aislamiento y recuperación; la de analista BI examinó grano, fuentes y denominadores;
+la gerencial distinguió pedido, factura, impuesto y cobro. Esta revisión técnica con
+perspectivas de rol no se presenta como juicio independiente de expertos ni como
+estudio de usabilidad con participantes externos.
+
+AdventureWorks produjo la propuesta 98 y ejecución 14: 121317 líneas, 31465 pedidos,
+109846381,4250 de importe y nueve KPI conciliados. Se corrigió el promedio por
+transacción a suma de importe dividida por pedidos distintos, 3491,07 al redondear.
+WideWorldImporters produjo la propuesta 114 y ejecución 15: 228265 líneas de factura,
+70510 facturas, 198043439,45 de importe con impuesto y seis KPI conciliados. Para 2015,
+tablero y Claude coincidieron en 62090220,81, 22250 facturas y 2790,57 por factura.
+Las dos cargas tuvieron diferencia de filas cero y permanecieron separadas del
+expediente histórico 13 de pedidos.
+
+Se conservaron los casos negativos: selección de pedidos para una necesidad de
+facturación, promedio por línea etiquetado como transacción, máximo de línea presentado
+como producto líder y afirmaciones de columnas ausentes contradichas por la instantánea.
+Las correcciones se expresan en reglas comunes, sin excepciones por nombre de base.
+Claude completó el caso tras usar salida estructurada nativa; Groq encontró cuota
+temporal y Gemini devolvió HTTP 400. Estas observaciones no establecen superioridad
+general de un proveedor ni equivalencia de sus niveles de razonamiento.
+
+Los roles Analista BI y Gerente comercial se crearon sin asignación de usuarios; el
+ciclo se ejecutó con la sesión administrativa autorizada. Falta un ensayo autenticado
+con cada rol para demostrar segregación funcional. La adenda QA-NEED separa los nuevos
+casos de asesoría de los ETL anteriores: su evidencia no se transfiere retrospectivamente
+a capacidades que todavía no existían durante aquellas materializaciones.
+
+El ensayo autorizado posterior de QA-NEED utilizó Claude Haiku y las mismas
+instantáneas. Los primeros intentos WWI fueron rechazados por ancla, rutas y tipos;
+un control determinístico de esas FK mostró que la captura era correcta. En AW se
+detectó una confusión de precio y costo aun con columna numérica existente. Por ello
+se distinguieron validez estructural y rol semántico, se añadieron regresiones
+español/inglés y se versionó la evaluación para no reutilizar evidencia anterior a
+la corrección. La recuperación mantiene un único reintento con feedback y no cambia
+de proveedor ni debilita las condiciones de aceptación.
+
+Tras los ajustes, WWI produjo una sugerencia utilizable y otra bloqueada. La revisión
+final obtuvo seis requisitos directos, dos automáticos y cuatro advertencias, sin
+no disponibles; aceptar los límites habilitó el paso siguiente, sin ejecutar una
+propuesta ni otro ETL. Un caso negativo sobre clima externo reconoció la falta de
+esa información y no convirtió sensores de refrigeración en evidencia climática.
+Las afirmaciones libres sobre impuestos y estados siguieron bajo revisión humana.
+Estos resultados no se presentan como garantía universal ni como un nuevo ciclo
+completo de materialización.
+
+El caso final AW retuvo una limitación reproducida: dos intentos de reformulación
+incluyeron una capacidad sin validador y no fueron adoptados. La necesidad escrita por
+el analista sí obtuvo once requisitos directos, uno derivable, cinco advertencias o
+ambigüedades y cero no disponibles. Tras aceptar los cinco límites se habilitó generar,
+sin ejecutar esa acción. Este resultado sustenta la continuidad supervisada de los
+textos de prueba en ambas fuentes, pero no la utilidad garantizada de cada sugerencia.
+La interfaz diferencia referencia estructural, derivación candidata e interpretación
+IA no ejecutable; esta separación evita presentar una explicación probabilística
+como transformación controlada ya validada.
+
+\subsection{Alcance de las conclusiones}
 
 La propuesta demuestra que la IA puede reducir el trabajo operativo del analista sin convertirse en un ejecutor autónomo inseguro. El sistema identifica conceptos, sugiere una cantidad variable de KPI y ayuda a resolver ambigüedades; las reglas determinísticas evitan referencias inexistentes, SQL libre y fórmulas incompatibles con el significado de los datos.
 
@@ -611,6 +712,7 @@ La principal decisión arquitectónica es separar recomendación de ejecución. 
   Especificaciones SPR & Contratos previos de comportamiento y aceptación. \\
   Arquitectura y ADR & Límites de módulos y decisiones duraderas. \\
   Plan de validación & Controles acumulativos y evidencia pendiente. \\
+  Auditoría QA-E2E-20261003 & Escenarios positivos y negativos, cifras contrastadas, capturas, límites de rol y adenda de necesidades. \\
   \bottomrule
 \end{tabularx}
 \end{table}
@@ -633,8 +735,8 @@ Universidad de Guayaquil. \emph{Trabajo de titulación con Capítulo III de prop
   \midrule
   Código & TES-CAP-03 \\
   Fuente editable & \path{docs/tesis/capitulo-03-propuesta-tecnologica.tex} \\
-  Compilación & \path{make thesis-chapter3} o \path{make docs} \\
-  Versión & 1.3.1 -- 01-10-2026 \\
+  Compilación & \file{make thesis-chapter3} o \file{make docs} \\
+  Versión & 1.4.0 -- 03-10-2026 \\
   Regla de uso & Integrar en la plantilla final y actualizar figuras, requisitos, resultados y referencias al cerrar nuevos sprints. \\
   \bottomrule
 \end{tabularx}

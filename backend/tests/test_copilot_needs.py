@@ -79,6 +79,46 @@ def test_assessment_classifies_direct_and_derived_requirements() -> None:
     assert len(result["assessment_hash"]) == 64
 
 
+def test_average_per_transaction_requires_sales_and_distinct_documents() -> None:
+    result = assess_business_need(
+        DOCUMENT,
+        request("Comparar el importe promedio por transacción cada mes."),
+    )
+    requirements = {item["code"]: item for item in result["requirements"]}
+    assert requirements["goal:average_transaction"]["status"] == "derivable"
+    assert requirements["goal:average_transaction"]["components"] == [
+        "sales_amount",
+        "transactions",
+    ]
+
+
+def test_invoiced_sales_is_not_equated_with_orders() -> None:
+    document = deepcopy(DOCUMENT)
+    document["schemas"][0]["tables"].append(
+        {
+            "name": "InvoiceLines",
+            "columns": [{"name": "InvoiceLineID"}, {"name": "InvoiceID"}],
+            "foreign_keys": [],
+        }
+    )
+    result = assess_business_need(
+        document,
+        request("Analizar ventas facturadas y promedio por factura distinta."),
+    )
+    requirements = {item["code"]: item for item in result["requirements"]}
+    assert requirements["goal:invoiced_sales"]["status"] == "unavailable"
+    assert requirements["goal:invoiced_sales"]["components"] == ["invoice_event"]
+    assert requirements["goal:average_transaction"]["status"] == "unavailable"
+    assert "goal:invoiced_sales" in result["requires_acknowledgement"]
+
+    missing = assess_business_need(
+        DOCUMENT,
+        request("Analizar ventas facturadas y promedio por factura distinta."),
+    )
+    missing_requirements = {item["code"]: item for item in missing["requirements"]}
+    assert missing_requirements["goal:invoiced_sales"]["status"] == "unavailable"
+
+
 def test_assessment_never_hides_an_unavailable_cost_requirement() -> None:
     document = deepcopy(DOCUMENT)
     product = document["schemas"][1]["tables"][0]
@@ -135,8 +175,8 @@ def test_assessment_keeps_sales_evidence_in_one_coherent_subgraph() -> None:
                         "name": "PurchaseOrderDetail",
                         "columns": [
                             {"name": "PurchaseOrderID"},
-                            {"name": "OrderQty"},
-                            {"name": "LineTotal"},
+                            {"name": "OrderQty", "data_type": "int"},
+                            {"name": "LineTotal", "data_type": "decimal"},
                         ],
                         "foreign_keys": [
                             {
@@ -161,8 +201,8 @@ def test_assessment_keeps_sales_evidence_in_one_coherent_subgraph() -> None:
                         "name": "InvoiceLine",
                         "columns": [
                             {"name": "SalesOrderID"},
-                            {"name": "OrderQty"},
-                            {"name": "LineTotal"},
+                            {"name": "OrderQty", "data_type": "int"},
+                            {"name": "LineTotal", "data_type": "decimal"},
                         ],
                         "foreign_keys": [
                             {
@@ -177,7 +217,7 @@ def test_assessment_keeps_sales_evidence_in_one_coherent_subgraph() -> None:
                         "name": "InvoiceHeader",
                         "columns": [
                             {"name": "SalesOrderID"},
-                            {"name": "OrderDate"},
+                            {"name": "OrderDate", "data_type": "date"},
                             {"name": "CustomerID"},
                         ],
                         "foreign_keys": [],
@@ -298,5 +338,290 @@ def test_assessment_derives_sales_without_database_specific_names() -> None:
     )
     assert "Commerce.OrderLines.UnitPrice" in requirements["goal:sales_amount"]["evidence"]
     assert "Commerce.OrderLines.Quantity" in requirements["goal:sales_amount"]["evidence"]
-    assert requirements["goal:unit_cost"]["status"] == "direct"
-    assert requirements["goal:gross_margin"]["status"] == "derivable"
+    # The cost table points to the product, not the other way around. Without
+    # evidence of one-to-one cardinality a reverse path could multiply sales.
+    assert requirements["goal:unit_cost"]["status"] == "unavailable"
+    assert requirements["goal:gross_margin"]["status"] == "unavailable"
+
+
+def test_disconnected_components_cannot_claim_a_calculable_margin() -> None:
+    document = deepcopy(DOCUMENT)
+    document["schemas"][0]["tables"][0]["foreign_keys"] = []
+    result = assess_business_need(
+        document, request("Analizar ventas, costos y margen por producto.")
+    )
+    requirements = {item["code"]: item for item in result["requirements"]}
+
+    assert requirements["goal:unit_cost"]["status"] == "unavailable"
+    assert requirements["goal:product"]["evidence"] == ["Sales.SalesOrderDetail.ProductID"]
+    assert requirements["goal:gross_margin"]["status"] == "unavailable"
+    assert "goal:gross_margin" in result["requires_acknowledgement"]
+
+
+def test_numeric_and_temporal_names_do_not_override_incompatible_types() -> None:
+    document = deepcopy(DOCUMENT)
+    detail = document["schemas"][0]["tables"][0]
+    for column in detail["columns"]:
+        if column["name"] in {"LineTotal", "OrderQty"}:
+            column["data_type"] = "nvarchar"
+    detail["columns"].append({"name": "OrderDate", "data_type": "nvarchar"})
+    result = assess_business_need(document, request("Analizar ventas y unidades mensuales."))
+    requirements = {item["code"]: item for item in result["requirements"]}
+
+    for code in ("sales_amount", "quantity", "date"):
+        assert requirements[f"goal:{code}"]["status"] == "unavailable"
+
+
+def test_legacy_missing_types_are_pending_confirmation_not_proof() -> None:
+    document = deepcopy(DOCUMENT)
+    for column in document["schemas"][0]["tables"][0]["columns"]:
+        column.pop("data_type", None)
+    result = assess_business_need(document, request("Analizar ventas y unidades por producto."))
+    requirements = {item["code"]: item for item in result["requirements"]}
+
+    assert requirements["goal:sales_amount"]["status"] == "ambiguous"
+    assert "goal:sales_amount" in result["requires_acknowledgement"]
+    assert "tipos" in requirements["goal:sales_amount"]["resolution"]
+
+
+def test_purchase_only_metadata_does_not_prove_sales() -> None:
+    document = deepcopy(DOCUMENT)
+    document["schemas"][0]["name"] = "Purchasing"
+    document["schemas"][0]["tables"][0]["name"] = "PurchaseOrderDetail"
+    result = assess_business_need(document, request("Analizar ventas y unidades por producto."))
+    requirements = {item["code"]: item for item in result["requirements"]}
+
+    assert requirements["goal:sales_amount"]["status"] == "unavailable"
+    assert requirements["goal:quantity"]["status"] == "unavailable"
+    assert not any("Purchase" in ref for item in result["requirements"] for ref in item["evidence"])
+
+
+def test_invoice_requirement_uses_invoice_amount_identity_and_date_together() -> None:
+    document = deepcopy(DOCUMENT)
+    document["schemas"][0]["tables"].extend(
+        [
+            {
+                "name": "InvoiceLines",
+                "columns": [
+                    {"name": "InvoiceID", "data_type": "int"},
+                    {"name": "ExtendedPrice", "data_type": "decimal"},
+                    {"name": "Quantity", "data_type": "int"},
+                ],
+                "foreign_keys": [
+                    {
+                        "columns": ["InvoiceID"],
+                        "referenced_schema": "Sales",
+                        "referenced_table": "Invoices",
+                        "referenced_columns": ["InvoiceID"],
+                    }
+                ],
+            },
+            {
+                "name": "Invoices",
+                "columns": [
+                    {"name": "InvoiceID", "data_type": "int"},
+                    {"name": "InvoiceDate", "data_type": "date"},
+                    {"name": "OrderDate", "data_type": "date"},
+                ],
+                "foreign_keys": [],
+            },
+        ]
+    )
+    result = assess_business_need(
+        document, request("Analizar ventas facturadas mensuales y promedio por factura.")
+    )
+    requirements = {item["code"]: item for item in result["requirements"]}
+
+    assert requirements["goal:invoiced_sales"]["status"] == "derivable"
+    evidence = requirements["goal:invoiced_sales"]["evidence"]
+    assert "Sales.InvoiceLines.ExtendedPrice" in evidence
+    assert "Sales.InvoiceLines.InvoiceID" in evidence
+    assert "Sales.Invoices.InvoiceDate" in evidence
+    assert not any("Order" in ref for ref in evidence)
+    assert requirements["goal:average_transaction"]["status"] == "derivable"
+
+
+def test_general_spanish_metadata_and_english_goal_are_supported() -> None:
+    document = {
+        "schemas": [
+            {
+                "name": "Comercial",
+                "tables": [
+                    {
+                        "name": "Facturas",
+                        "columns": [
+                            {"name": "IdFactura", "data_type": "int"},
+                            {"name": "ImporteTotal", "data_type": "numeric(12,2)"},
+                            {"name": "CantidadVendida", "data_type": "integer"},
+                            {"name": "FechaEmision", "data_type": "date"},
+                            {"name": "IdCliente", "data_type": "int"},
+                        ],
+                        "foreign_keys": [],
+                    }
+                ],
+            }
+        ]
+    }
+    business_request = request(
+        "Analyze monthly invoiced revenue, units and average per invoice by customer."
+    )
+    business_request["questions"] = []
+    result = assess_business_need(document, business_request)
+    requirements = {item["code"]: item for item in result["requirements"]}
+
+    assert requirements["goal:invoiced_sales"]["status"] == "derivable"
+    assert requirements["goal:sales_amount"]["status"] == "direct"
+    assert requirements["goal:quantity"]["status"] == "direct"
+    assert requirements["goal:customer"]["status"] == "direct"
+    assert requirements["goal:average_transaction"]["status"] == "derivable"
+    assert result["requires_acknowledgement"] == []
+    assert "no garantiza cobertura completa" in result["summary"]
+
+
+def test_viability_does_not_depend_on_metadata_table_order() -> None:
+    document = deepcopy(DOCUMENT)
+    business_request = request("Analizar ventas y costos por producto.")
+    original = assess_business_need(document, business_request)
+    document["schemas"].reverse()
+    for schema in document["schemas"]:
+        schema["tables"].reverse()
+        for table in schema["tables"]:
+            table["columns"].reverse()
+
+    assert assess_business_need(document, business_request) == original
+
+
+def test_reverse_foreign_key_does_not_make_header_sales_compatible_with_line_grain() -> None:
+    document = {
+        "schemas": [
+            {
+                "name": "Sales",
+                "tables": [
+                    {
+                        "name": "Orders",
+                        "columns": [
+                            {"name": "OrderID", "data_type": "int", "primary_key": True},
+                            {"name": "SalesAmount", "data_type": "decimal"},
+                        ],
+                        "foreign_keys": [],
+                    },
+                    {
+                        "name": "Lines",
+                        "columns": [
+                            {"name": "OrderID", "data_type": "int"},
+                            {"name": "ProductID", "data_type": "int"},
+                            {"name": "Quantity", "data_type": "int"},
+                        ],
+                        "foreign_keys": [
+                            {
+                                "columns": ["OrderID"],
+                                "referenced_schema": "Sales",
+                                "referenced_table": "Orders",
+                                "referenced_columns": ["OrderID"],
+                            }
+                        ],
+                    },
+                ],
+            }
+        ]
+    }
+    result = assess_business_need(document, request("Analizar ventas por producto y unidades."))
+    requirements = {item["code"]: item for item in result["requirements"]}
+
+    assert requirements["goal:sales_amount"]["status"] == "direct"
+    assert requirements["goal:product"]["status"] == "unavailable"
+    assert requirements["question:top_products"]["status"] == "unavailable"
+
+
+def test_amount_alias_on_coherent_fact_wins_over_first_global_alias() -> None:
+    document = deepcopy(DOCUMENT)
+    detail = document["schemas"][0]["tables"][0]
+    for column in detail["columns"]:
+        if column["name"] == "LineTotal":
+            column["name"] = "SalesAmount"
+    document["schemas"][0]["tables"].append(
+        {
+            "name": "DailyTotals",
+            "columns": [{"name": "LineTotal", "data_type": "decimal"}],
+            "foreign_keys": [],
+        }
+    )
+    result = assess_business_need(document, request("Analizar ventas por producto y unidades."))
+    requirements = {item["code"]: item for item in result["requirements"]}
+
+    assert requirements["goal:sales_amount"]["status"] == "direct"
+    assert requirements["goal:sales_amount"]["evidence"] == ["Sales.SalesOrderDetail.SalesAmount"]
+    assert requirements["question:top_products"]["status"] == "derivable"
+
+
+def test_an_unrelated_date_name_is_not_proof_of_sales_time() -> None:
+    document = deepcopy(DOCUMENT)
+    document["schemas"][0]["tables"][0]["columns"].append(
+        {
+            "name": "BirthDate",
+            "data_type": "date",
+        }
+    )
+    result = assess_business_need(document, request("Analizar ventas mensuales por producto."))
+    requirements = {item["code"]: item for item in result["requirements"]}
+
+    assert requirements["goal:date"]["status"] == "ambiguous"
+
+
+def test_commercial_header_date_wins_over_audit_date_on_fact_only_when_reachable() -> None:
+    document = deepcopy(DOCUMENT)
+    detail = document["schemas"][0]["tables"][0]
+    detail["columns"].append({"name": "ModifiedDate", "data_type": "datetime"})
+    document["schemas"][0]["tables"].append(
+        {
+            "name": "OrderHeader",
+            "columns": [
+                {"name": "SalesOrderID", "data_type": "int", "primary_key": True},
+                {"name": "OrderDate", "data_type": "date"},
+            ],
+            "foreign_keys": [],
+        }
+    )
+    detail["foreign_keys"].append(
+        {
+            "columns": ["SalesOrderID"],
+            "referenced_schema": "Sales",
+            "referenced_table": "OrderHeader",
+            "referenced_columns": ["SalesOrderID"],
+        }
+    )
+    business_request = request("Analizar ventas mensuales por producto y conservar pedidos.")
+
+    result = assess_business_need(document, business_request)
+    temporal = next(item for item in result["requirements"] if item["code"] == "goal:date")
+    assert temporal["status"] == "direct"
+    assert "Sales.OrderHeader.OrderDate" in temporal["evidence"]
+    assert not any("ModifiedDate" in ref for ref in temporal["evidence"])
+
+    detail["foreign_keys"].pop()
+    disconnected = assess_business_need(document, business_request)
+    temporal = next(item for item in disconnected["requirements"] if item["code"] == "goal:date")
+    assert temporal["status"] == "ambiguous"
+    assert temporal["evidence"] == ["Sales.SalesOrderDetail.ModifiedDate"]
+
+
+def test_selected_periodicity_requires_a_reachable_date_even_when_goal_omits_time() -> None:
+    document = deepcopy(DOCUMENT)
+    document["schemas"][0]["tables"].append(
+        {
+            "name": "OtherEvents",
+            "columns": [{"name": "OrderDate", "data_type": "date"}],
+            "foreign_keys": [],
+        }
+    )
+    business_request = request(
+        "Comparar ventas y unidades por producto para priorizar el catálogo."
+    )
+
+    for periodicity in ("day", "week", "month", "quarter", "year"):
+        business_request["periodicity"] = {"code": periodicity}
+        result = assess_business_need(document, business_request)
+        temporal = next(item for item in result["requirements"] if item["code"] == "goal:date")
+        assert temporal["status"] == "unavailable"
+        assert temporal["evidence"] == []
+        assert "goal:date" in result["requires_acknowledgement"]

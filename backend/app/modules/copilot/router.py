@@ -20,7 +20,26 @@ from app.modules.copilot.domains import (
     domain_profile,
     normalize_needs_catalog_configuration,
 )
-from app.modules.copilot.models import AnalysisCatalog, BiProposal, SemanticAdvice
+from app.modules.copilot.models import (
+    AnalysisCatalog,
+    BiProposal,
+    BusinessNeedReview,
+    SemanticAdvice,
+)
+from app.modules.copilot.need_advisor import (
+    DRAFT_SCHEMA,
+    REVIEW_NOTICE,
+    SUGGESTION_SCHEMA,
+    combine_assessment,
+    consent_target,
+    metadata_context,
+    review_input_hash,
+    reviewed_dimensions,
+    validate_draft,
+)
+from app.modules.copilot.need_advisor import (
+    SYSTEM_INSTRUCTION as NEED_ADVISOR_INSTRUCTION,
+)
 from app.modules.copilot.needs import assess_business_need
 from app.modules.copilot.schemas import (
     AnalysisCatalogConfiguration,
@@ -31,6 +50,8 @@ from app.modules.copilot.schemas import (
     CopilotCatalogRead,
     CopilotReadiness,
     NeedFormulationRead,
+    NeedSuggestionInput,
+    NeedSuggestionsRead,
     NeedViabilityRead,
     ProposalCreate,
     ProposalDecision,
@@ -79,29 +100,6 @@ from app.modules.security.service import add_audit_event, require_permission
 
 router = APIRouter(tags=["copilot"])
 _secret_cipher = SecretCipher(settings.secrets_key_path)
-
-NEED_FORMULATION_SYSTEM_INSTRUCTION = (
-    "Actúas como especialista en análisis de negocio. Mejora la redacción de una necesidad "
-    "analítica sin añadir indicadores, dimensiones, fuentes ni supuestos que el usuario no "
-    "haya solicitado. Conserva la intención y el alcance. No generes SQL. La propuesta debe "
-    "expresar propósito, indicadores esperados, comparación o segmentación y período cuando "
-    "estén presentes. Si falta información, indícalo en improvements; no la inventes. Responde "
-    "únicamente con el JSON solicitado y en español."
-)
-NEED_FORMULATION_SCHEMA: dict[str, object] = {
-    "type": "object",
-    "additionalProperties": False,
-    "required": ["suggested_goal", "rationale", "improvements"],
-    "properties": {
-        "suggested_goal": {"type": "string", "minLength": 20, "maxLength": 2000},
-        "rationale": {"type": "string", "minLength": 10, "maxLength": 500},
-        "improvements": {
-            "type": "array",
-            "maxItems": 6,
-            "items": {"type": "string", "minLength": 5, "maxLength": 240},
-        },
-    },
-}
 
 
 async def _active_configuration(session: AsyncSession) -> LlmConfiguration | None:
@@ -250,6 +248,12 @@ async def _readiness(session: AsyncSession, connection_id: int | None = None) ->
         ),
         llm=ReadinessComponent(
             ready=llm_ok,
+            metadata_consent_target=consent_target(configuration) if configuration else None,
+            metadata_consent_label=(
+                f"{configuration.provider_kind} · {configuration.model_id}"
+                if configuration
+                else None
+            ),
             label="Asistente de IA",
             detail=(
                 f"{configuration.name} · {configuration.model_id}."
@@ -421,10 +425,11 @@ async def reset_analysis_catalog_domain(
 
 
 def _safe_business_request(
-    payload: BusinessNeedInput, configuration: dict[str, object]
+    payload: BusinessNeedInput | NeedSuggestionInput, configuration: dict[str, object]
 ) -> dict[str, object]:
     profile = domain_profile(payload.domain_code)
-    lowered = payload.business_goal.casefold()
+    goal = getattr(payload, "business_goal", "")
+    lowered = goal.casefold()
     if re.search(
         r"\b(select|insert|update|delete|drop|alter|create table|exec(?:ute)?)\b", lowered
     ):
@@ -452,7 +457,7 @@ def _safe_business_request(
     selected_periodicity = configured_periodicities[payload.periodicity]
     return {
         "domain": profile.code,
-        "goal": payload.business_goal,
+        "goal": goal,
         "questions": [
             {
                 "code": item["code"],
@@ -473,7 +478,7 @@ def _safe_business_request(
 
 
 async def _validated_need_request(
-    payload: BusinessNeedInput, session: AsyncSession
+    payload: BusinessNeedInput | NeedSuggestionInput, session: AsyncSession
 ) -> tuple[MetadataSnapshot, dict[str, object], dict[str, object]]:
     snapshot = await session.get(MetadataSnapshot, payload.metadata_snapshot_id)
     connection = (
@@ -524,6 +529,168 @@ async def _validated_need_request(
     return snapshot, _safe_business_request(payload, catalog_configuration), catalog_configuration
 
 
+async def _generate_need_advice(
+    snapshot: MetadataSnapshot,
+    request_document: dict[str, object],
+    mode: str,
+    authorized_target: str | None,
+    session: AsyncSession,
+    *,
+    validation_feedback: list[dict[str, object]] | None = None,
+) -> tuple[dict[str, object], LlmConfiguration]:
+    configuration = await _active_configuration(session)
+    if configuration is None:
+        raise HTTPException(status_code=422, detail="No existe una configuración LLM activa.")
+    if authorized_target != consent_target(configuration):
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "Confirme el envío de metadatos al proveedor actual antes de solicitar "
+                "la revisión IA. Si cambió el proveedor, actualice la pantalla "
+                "y vuelva a confirmar."
+            ),
+        )
+    credential = await _credential(configuration, session)
+    timeout = await _parameter(session, "LLM_TIMEOUT_SECONDS")
+    try:
+        context = metadata_context(snapshot.schema_document)
+        for attempt in range(2):
+            result = await generate_json(
+                configuration,
+                NEED_ADVISOR_INSTRUCTION,
+                {
+                    "mode": mode,
+                    "business_request": request_document,
+                    "metadata_snapshot_hash": snapshot.content_hash,
+                    "metadata": context,
+                    **({"validation_feedback": validation_feedback} if validation_feedback else {}),
+                },
+                credential=credential,
+                timeout_seconds=timeout,
+                max_output_tokens=5000,
+                response_schema=SUGGESTION_SCHEMA if mode == "suggest" else DRAFT_SCHEMA,
+            )
+            goal_changed = mode == "analyze" and " ".join(
+                str(result.get("suggested_goal", "")).split()
+            ) != " ".join(str(request_document.get("goal", "")).split())
+            if goal_changed:
+                validation_feedback = [
+                    {
+                        "reason": (
+                            "Cambiaste el objetivo al analizar. Debes analizar TODO el alcance "
+                            "original y copiar exact_goal literalmente en suggested_goal; "
+                            "no lo resumas ni lo reformules."
+                        ),
+                        "exact_goal": request_document.get("goal", ""),
+                    }
+                ]
+                continue
+            checked = [
+                validate_draft(snapshot.schema_document, item)
+                for item in (
+                    cast(list[dict[str, object]], result["suggestions"])
+                    if mode == "suggest"
+                    else [result]
+                )
+            ]
+            needs_repair = (
+                any(
+                    item.get("validation_errors")
+                    for suggestion in checked
+                    for item in suggestion["requirements"]
+                )
+                if mode == "analyze"
+                else not any(suggestion["usable"] for suggestion in checked)
+            )
+            if not needs_repair or attempt == 1:
+                result["_advice_attempts"] = attempt + 1
+                return result, configuration
+            validation_feedback = _need_repair_feedback(checked, structural_only=mode == "analyze")
+    except ProviderGenerationError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    raise HTTPException(
+        status_code=502,
+        detail=(
+            "La IA cambió el objetivo durante la revisión incluso después de corregirla. "
+            "No se guardó una evaluación de otro alcance; puede reintentar sin modificar "
+            "su necesidad."
+        ),
+    )
+
+
+def _need_repair_feedback(
+    suggestions: list[dict[str, object]], *, structural_only: bool = False
+) -> list[dict[str, object]]:
+    return [
+        {
+            "suggested_goal": suggestion["suggested_goal"],
+            "anchor_table": suggestion.get("anchor_table"),
+            "issues": [
+                {"label": item["label"], "status": item["status"], "reason": item["resolution"]}
+                for item in cast(list[dict[str, object]], suggestion["requirements"])
+                if item.get("validation_errors")
+                or not structural_only
+                and item["status"] in {"ambiguous", "unavailable"}
+            ]
+            or [{"reason": "La sugerencia necesita una medida comprobada."}],
+        }
+        for suggestion in suggestions
+    ] or [{"issues": [{"reason": "No se recibió ninguna sugerencia."}]}]
+
+
+@router.post("/copilot/needs/suggest", response_model=NeedSuggestionsRead)
+async def suggest_business_needs(
+    payload: NeedSuggestionInput,
+    actor: User = Depends(require_permission("copilot.proposals.generate")),
+    session: AsyncSession = Depends(get_session),
+) -> dict[str, object]:
+    snapshot, request_document, _ = await _validated_need_request(payload, session)
+    result, configuration = await _generate_need_advice(
+        snapshot, request_document, "suggest", payload.metadata_consent_target, session
+    )
+    suggestions = [
+        validate_draft(snapshot.schema_document, item)
+        for item in cast(list[dict[str, object]], result["suggestions"])
+    ]
+    for suggestion in suggestions:
+        suggestion["limitations"] = list(
+            dict.fromkeys(
+                [
+                    *suggestion["limitations"],
+                    *(
+                        item["resolution"]
+                        for item in suggestion["requirements"]
+                        if item["status"] in {"ambiguous", "unavailable"}
+                    ),
+                ]
+            )
+        )
+    await add_audit_event(
+        session,
+        actor.id,
+        "copilot.need.suggested",
+        "metadata_snapshot",
+        str(snapshot.id),
+        {
+            "provider_kind": configuration.provider_kind,
+            "model_id": configuration.model_id,
+            "count": len(suggestions),
+            "attempts": result.get("_advice_attempts", 1),
+            "usable_count": sum(bool(item["usable"]) for item in suggestions),
+        },
+    )
+    await session.commit()
+    return {
+        "metadata_snapshot_id": snapshot.id,
+        "provider_kind": configuration.provider_kind,
+        "model_id": configuration.model_id,
+        "notice": REVIEW_NOTICE,
+        "suggestions": suggestions,
+    }
+
+
 @router.post("/copilot/needs/formulate", response_model=NeedFormulationRead)
 async def formulate_business_need(
     payload: BusinessNeedInput,
@@ -531,46 +698,36 @@ async def formulate_business_need(
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, object]:
     snapshot, request_document, _ = await _validated_need_request(payload, session)
-    configuration = await _active_configuration(session)
-    if configuration is None:
-        raise HTTPException(status_code=422, detail="No existe una configuración LLM activa.")
-    credential = await _credential(configuration, session)
-    timeout = await _parameter(session, "LLM_TIMEOUT_SECONDS")
-    try:
-        result = await generate_json(
-            configuration,
-            NEED_FORMULATION_SYSTEM_INSTRUCTION,
-            {
-                "goal": payload.business_goal,
-                "questions": request_document["questions"],
-                "periodicity": request_document["periodicity"],
-                "constraints": {
-                    "preserve_intent": True,
-                    "do_not_invent": True,
-                    "metadata_snapshot_hash": snapshot.content_hash,
-                },
-            },
-            credential=credential,
-            timeout_seconds=timeout,
-            max_output_tokens=900,
-            response_schema=NEED_FORMULATION_SCHEMA,
-        )
-    except ProviderGenerationError as exc:
-        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    result, configuration = await _generate_need_advice(
+        snapshot, request_document, "formulate", payload.metadata_consent_target, session
+    )
+    checked = validate_draft(snapshot.schema_document, result)
     await add_audit_event(
         session,
         actor.id,
         "copilot.need.formulated",
         "metadata_snapshot",
         str(snapshot.id),
-        {"provider_kind": configuration.provider_kind, "model_id": configuration.model_id},
+        {
+            "provider_kind": configuration.provider_kind,
+            "model_id": configuration.model_id,
+            "attempts": result.get("_advice_attempts", 1),
+            "usable": checked["usable"],
+        },
     )
     await session.commit()
     return {
         "original_goal": payload.business_goal,
         "suggested_goal": str(result["suggested_goal"]),
         "rationale": str(result["rationale"]),
-        "improvements": list(result["improvements"]),
+        "improvements": [
+            item["resolution"]
+            for item in checked["requirements"]
+            if item["status"] in {"ambiguous", "unavailable"}
+        ],
+        "evidence": checked["evidence"],
+        "limitations": checked["limitations"],
+        "usable": checked["usable"],
         "provider_kind": configuration.provider_kind,
         "model_id": configuration.model_id,
     }
@@ -583,9 +740,29 @@ async def validate_business_need_viability(
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, object]:
     snapshot, request_document, _ = await _validated_need_request(payload, session)
-    assessment = assess_business_need(
+    structural = assess_business_need(
         snapshot.schema_document,
         {**request_document, "snapshot_hash": snapshot.content_hash},
+    )
+    result, configuration = await _generate_need_advice(
+        snapshot, request_document, "analyze", payload.metadata_consent_target, session
+    )
+    checked = validate_draft(snapshot.schema_document, result)
+    input_hash = review_input_hash(snapshot.id, snapshot.content_hash, request_document)
+    assessment = combine_assessment(structural, checked, input_hash)
+    assessment.update(
+        {"provider_kind": configuration.provider_kind, "model_id": configuration.model_id}
+    )
+    session.add(
+        BusinessNeedReview(
+            metadata_snapshot_id=snapshot.id,
+            input_hash=input_hash,
+            assessment_hash=assessment["assessment_hash"],
+            assessment_document=assessment,
+            provider_kind=configuration.provider_kind,
+            model_id=configuration.model_id,
+            created_by_user_id=actor.id,
+        )
     )
     await add_audit_event(
         session,
@@ -596,6 +773,7 @@ async def validate_business_need_viability(
         {
             "assessment_hash": assessment["assessment_hash"],
             "counts": assessment["counts"],
+            "attempts": result.get("_advice_attempts", 1),
         },
     )
     await session.commit()
@@ -650,6 +828,14 @@ async def create_proposal(
     configuration = await _active_configuration(session)
     if configuration is None:
         raise HTTPException(status_code=422, detail="No existe una configuración LLM activa.")
+    if payload.metadata_consent_target != consent_target(configuration):
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "El destino de IA no coincide con el autorizado. Vuelva al paso Necesidad "
+                "y confirme el proveedor actual antes de generar."
+            ),
+        )
     catalog_configuration = await _needs_catalog(session, payload.domain_code, connection.id)
     available_catalog = catalog_for_snapshot(snapshot.schema_document, catalog_configuration)
     selected_domain = next(
@@ -677,11 +863,19 @@ async def create_proposal(
             ),
         )
     request_document = _safe_business_request(payload, catalog_configuration)
-    assessment = assess_business_need(
-        snapshot.schema_document,
-        {**request_document, "snapshot_hash": snapshot.content_hash},
+    review = await session.scalar(
+        select(BusinessNeedReview)
+        .where(
+            BusinessNeedReview.input_hash
+            == review_input_hash(snapshot.id, snapshot.content_hash, request_document),
+            BusinessNeedReview.assessment_hash == payload.viability_hash,
+            BusinessNeedReview.created_by_user_id == actor.id,
+            BusinessNeedReview.metadata_snapshot_id == snapshot.id,
+        )
+        .order_by(BusinessNeedReview.id.desc())
+        .limit(1)
     )
-    if payload.viability_hash != assessment["assessment_hash"]:
+    if review is None:
         raise HTTPException(
             status_code=422,
             detail=(
@@ -689,6 +883,7 @@ async def create_proposal(
                 "viabilidad. Valide nuevamente antes de generar la propuesta."
             ),
         )
+    assessment = deepcopy(review.assessment_document)
     required_acknowledgements = set(cast(list[str], assessment["requires_acknowledgement"]))
     missing_acknowledgements = required_acknowledgements - set(payload.accepted_limitations)
     if missing_acknowledgements:
@@ -753,7 +948,41 @@ async def create_proposal(
     timeout = await _parameter(session, "LLM_TIMEOUT_SECONDS")
     block_size = await _parameter(session, "METADATA_BLOCK_MAX_ITEMS")
     try:
-        if source_proposal is not None and source_proposal.semantic_map_document.get("candidates"):
+        assessed_requirements = assessment.get("requirements", [])
+        assessed_requirements = (
+            assessed_requirements if isinstance(assessed_requirements, list) else []
+        )
+        invoice_required = any(
+            isinstance(item, dict)
+            and str(item.get("coverage_code") or item.get("code"))
+            in {"goal:invoiced_sales", "goal:invoice_event"}
+            and item.get("status") in {"direct", "derivable"}
+            for item in assessed_requirements
+        )
+        raw_prior_candidates = (
+            source_proposal.semantic_map_document.get("candidates", [])
+            if source_proposal is not None
+            else []
+        )
+        prior_candidates = raw_prior_candidates if isinstance(raw_prior_candidates, list) else []
+        prior_invoice_line = any(
+            isinstance(candidate, dict)
+            and any(
+                re.search(r"invoice|factur|billing", str(reference), re.IGNORECASE)
+                and re.search(r"line|detail|detalle|linea", str(reference), re.IGNORECASE)
+                for reference in (
+                    candidate.get("technical_refs", [])
+                    if isinstance(candidate.get("technical_refs", []), list)
+                    else []
+                )
+            )
+            for candidate in prior_candidates
+        )
+        if (
+            source_proposal is not None
+            and prior_candidates
+            and (not invoice_required or prior_invoice_line)
+        ):
             semantic_map = deepcopy(source_proposal.semantic_map_document)
             raw_rejected = semantic_map.get("rejected_references", [])
             rejected = (
@@ -857,25 +1086,9 @@ async def create_proposal(
                     if configuration.provider_kind in {"groq-cloud", "anthropic-cloud"}
                     else 700
                 ),
-                response_schema=proposal_blueprint_schema(scope, semantic_map),
+                response_schema=proposal_blueprint_schema(scope, semantic_map, assessment),
             )
-            requirement_dimensions = {
-                "goal:date": "date",
-                "goal:product": "product",
-                "goal:customer": "customer",
-                "goal:territory": "territory",
-            }
-            assessed_requirements = assessment.get("requirements", [])
-            assessed_requirements = (
-                assessed_requirements if isinstance(assessed_requirements, list) else []
-            )
-            blueprint["requested_dimensions"] = [
-                dimension
-                for requirement in assessed_requirements
-                if isinstance(requirement, dict)
-                and requirement.get("status") in {"direct", "derivable"}
-                and (dimension := requirement_dimensions.get(str(requirement.get("code"))))
-            ]
+            blueprint["requested_dimensions"] = reviewed_dimensions(assessment)
             proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
             proposal = apply_financial_requirements(proposal, assessment, scope)
             proposal["need_assessment"] = assessment

@@ -60,6 +60,12 @@ faltaría. Nunca enumeres causas hipotéticas ni afirmes que existe un problema 
 si el contexto no aporta evidencia causal. Si el usuario pregunta "por qué", separa con
 claridad lo observado de lo que aún debe investigarse. Al mencionar participaciones,
 explica el denominador recibido. No generes SQL. Devuelve únicamente el objeto JSON solicitado.
+Si business_scope indica que el datamart refleja pedidos y no necesariamente facturas,
+conserva esa distinción en la respuesta y en sus limitaciones. Nunca llames
+facturación emitida a importes derivados de pedidos.
+No confundas el filtro actual con una imposibilidad de análisis: si hay años o
+territorios disponibles, explica que la comparación requiere cambiar el filtro
+o consultar un agregado adicional, no que el sistema carezca de esos datos.
 """.strip()
 
 _ANALYTICS_COPILOT_SCHEMA: dict[str, object] = {
@@ -127,6 +133,18 @@ def _analytics_intent_schema(dashboard: AnalyticsDashboardRead) -> dict[str, obj
 def _leading_territory_requested(question: str) -> bool:
     normalized = question.casefold().replace("í", "i")
     return "territorio lider" in normalized or "leading territory" in normalized
+
+
+def _business_scope_caveat(description: str) -> str:
+    if not description.startswith("Alcance:"):
+        return ""
+    return description.split(". ", 1)[0].rstrip(".") + "."
+
+
+def _ensure_business_scope_caveat(caveat: str, scope: str) -> str:
+    if not scope or scope.casefold() in caveat.casefold():
+        return caveat
+    return f"{scope} {caveat}"
 
 
 def _leading_territory_value(dashboard: AnalyticsDashboardRead) -> str | None:
@@ -372,6 +390,7 @@ async def analytics_copilot(
         "available_territories": [item.model_dump() for item in dashboard.filters.territories],
     }
     interpreted_query = None
+    business_scope = _business_scope_caveat(dashboard.description)
     context: dict[str, object] = {
         "audience": "dirección y gerencia" if payload.view == "executive" else "analista BI",
         "question": payload.question,
@@ -390,6 +409,9 @@ async def analytics_copilot(
         "deterministic_insights": [item.model_dump() for item in dashboard.insights],
         "quality": dashboard.quality.model_dump(),
         "grain": dashboard.grain,
+        "business_scope": business_scope,
+        "available_years": [item.model_dump() for item in dashboard.filters.years],
+        "available_territories": [item.model_dump() for item in dashboard.filters.territories],
     }
     try:
         intent = await generate_json(
@@ -466,6 +488,7 @@ async def analytics_copilot(
             model_id=configuration.model_id,
             interpreted_query=interpreted_query,
         )
+        result.caveat = _ensure_business_scope_caveat(result.caveat, business_scope)
     except AnalyticsUnavailableError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except (ProviderGenerationError, ValueError) as exc:

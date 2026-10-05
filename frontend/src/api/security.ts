@@ -15,15 +15,17 @@ export type SnapshotCapture = { created: boolean; message: string; snapshot: Met
 export type MetadataTable = { schema_name: string; table_name: string; column_count: number; relationship_count: number }
 export type MetadataTableDetail = { schema_name: string; table_name: string; columns: Array<{ name: string; ordinal: number; data_type: string; max_length: number; precision: number; scale: number; nullable: boolean; primary_key: boolean }>; foreign_keys: Array<{ name: string; columns: string[]; referenced_schema: string; referenced_table: string; referenced_columns: string[] }>; incoming_relationships: Array<{ name: string; source_schema: string; source_table: string; source_columns: string[]; referenced_columns: string[] }> }
 export type AuditEvent = { id: number; actor_user_id?: number; actor_label?: string; action: string; resource_type: string; resource_id?: string; created_at: string }
-export type ReadinessComponent = { ready: boolean; label: string; detail: string; path?: string }
+export type ReadinessComponent = { ready: boolean; label: string; detail: string; path?: string; metadata_consent_target?: string; metadata_consent_label?: string }
 export type CopilotReadiness = { ready: boolean; source: ReadinessComponent; metadata: ReadinessComponent; llm: ReadinessComponent }
 export type CapabilityOption = { code: string; label: string; description: string; available: boolean; reason: string; evidence: string[] }
 export type DomainCapability = { code: string; label: string; description: string; available: boolean; reason: string; questions: CapabilityOption[]; periodicities: CapabilityOption[] }
 export type CopilotCatalog = { metadata_snapshot_id: number; domains: DomainCapability[] }
-export type BusinessNeedInput = { metadata_snapshot_id: number; business_goal: string; business_questions: string[]; periodicity: string; domain_code: 'ventas' }
-export type NeedFormulation = { original_goal: string; suggested_goal: string; rationale: string; improvements: string[]; provider_kind: string; model_id: string }
+export type BusinessNeedInput = { metadata_snapshot_id: number; business_goal: string; business_questions: string[]; periodicity: string; domain_code: 'ventas'; metadata_consent_target?: string }
+export type NeedSuggestion = { suggested_goal: string; rationale: string; evidence: string[]; limitations: string[]; usable: boolean }
+export type NeedSuggestions = { metadata_snapshot_id: number; provider_kind: string; model_id: string; notice: string; suggestions: NeedSuggestion[] }
+export type NeedFormulation = { original_goal: string; suggested_goal: string; rationale: string; improvements: string[]; provider_kind: string; model_id: string; evidence?: string[]; limitations?: string[]; usable?: boolean }
 export type NeedViabilityRequirement = { code: string; label: string; request_text: string; components?: string[]; status: 'direct' | 'derivable' | 'ambiguous' | 'unavailable'; evidence: string[]; formula?: string; resolution: string }
-export type NeedViability = { assessment_hash: string; requirements: NeedViabilityRequirement[]; counts: Record<string, number>; requires_acknowledgement: string[]; can_continue: boolean; summary: string }
+export type NeedViability = { assessment_hash: string; requirements: NeedViabilityRequirement[]; counts: Record<string, number>; requires_acknowledgement: string[]; can_continue: boolean; summary: string; review_notice?: string; provider_kind?: string; model_id?: string }
 export type AnalysisCatalogQuestion = { code: string; label: string; description: string; prompt_instruction: string; enabled: boolean }
 export type AnalysisCatalogPeriodicity = { code: 'day' | 'week' | 'month' | 'quarter' | 'year'; label: string; description: string; enabled: boolean }
 export type AnalysisCatalogConfiguration = { version: 2; domain_code: string; questions: AnalysisCatalogQuestion[]; periodicities: AnalysisCatalogPeriodicity[] }
@@ -396,6 +398,7 @@ export const api = {
   copilotReadiness: (token: string, connectionId?: number) => request<CopilotReadiness>(`/copilot/readiness${connectionId ? `?connection_id=${connectionId}` : ''}`, token),
   copilotCatalog: (token: string, snapshotId: number, connectionId?: number) => request<CopilotCatalog>(`/copilot/catalog?metadata_snapshot_id=${snapshotId}${connectionId ? `&connection_id=${connectionId}` : ''}`, token),
   formulateNeed: (token: string, body: BusinessNeedInput) => request<NeedFormulation>('/copilot/needs/formulate', token, { method: 'POST', body: JSON.stringify(body) }),
+  suggestNeeds: (token: string, body: Omit<BusinessNeedInput, 'business_goal'>) => request<NeedSuggestions>('/copilot/needs/suggest', token, { method: 'POST', body: JSON.stringify(body) }),
   validateNeed: (token: string, body: BusinessNeedInput) => request<NeedViability>('/copilot/needs/viability', token, { method: 'POST', body: JSON.stringify(body) }),
   analysisCatalogDomains: (token: string) => request<AnalysisCatalogDomain[]>('/analysis-catalog/domains', token),
   analysisCatalog: (token: string, domainCode: string, connectionId: number) => request<AnalysisCatalogConfiguration>(`/analysis-catalog/domains/${encodeURIComponent(domainCode)}?connection_id=${connectionId}`, token),

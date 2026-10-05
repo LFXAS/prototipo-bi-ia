@@ -1,0 +1,266 @@
+\chapterpage{Módulo 4 · Banco de ejercicios}{Elegir una necesidad para cada demostración}
+Todas las fichas conservan detalle documental y usan periodicidad Mensual. Los KPI son \textbf{criterios para revisar el contrato}, no campos que deba escribir libremente. Las letras del catálogo se explicaron en la página anterior.
+\begin{tabularx}{\linewidth}{@{}p{18mm}Yp{41mm}r@{}}
+\toprule
+\textbf{Caso}&\textbf{Qué se aprende}&\textbf{Tipo de evidencia}&\textbf{Pág.}\\
+\midrule
+AW-01&Tendencia e importe por pedido&Capacidad E2E previa&\pageref{aw01}\\
+AW-02&Objetivo sencillo por producto&Previabilidad del texto&\pageref{aw02}\\
+AW-03&Cliente e identidad descriptiva&Nuevo texto propuesto&\pageref{aw03}\\
+AW-04&Territorio y denominador&Capacidad analítica previa&\pageref{aw04}\\
+AW-05&Importe ponderado por unidad&Nuevo texto propuesto&\pageref{aw05}\\
+AW-06&Descuento, costo y margen&Avanzado condicional&\pageref{aw06}\\
+\midrule
+WWI-01&Facturación integral&Texto/alcance E2E previo&\pageref{wwi01}\\
+WWI-02&Objetivo mínimo de factura&Previabilidad del texto&\pageref{wwi02}\\
+WWI-03&Producto facturado y unidad&Capacidad E2E previa&\pageref{wwi03}\\
+WWI-04&Cliente y ticket por factura&Nuevo texto propuesto&\pageref{wwi04}\\
+WWI-05&Pedido no equivale a factura&Capacidad E2E histórica&\pageref{wwi05}\\
+WWI-06&Geografía y trazabilidad&Nuevo texto propuesto&\pageref{wwi06}\\
+\bottomrule
+\end{tabularx}
+\sub{Dos formas de usar el banco}
+\textbf{Exposición estable:} abra los resultados conservados AW propuesta \#98 / ejecución \#14 y WWI propuesta \#114 / ejecución \#15, si siguen disponibles. Explique qué se ejecutó y muestre sus cifras. Es una consulta histórica, no una ejecución nueva en directo.
+
+\textbf{Práctica de generación:} comience por AW-02 o WWI-02 para aprender viabilidad; después amplíe a un caso de negocio. Registre el número de la nueva versión y no espere que repita exactamente la redacción o las decisiones de otra respuesta del modelo.
+\sub{Cómo registrar cada intento}
+Anote fuente, instantánea, proveedor/modelo, texto, preguntas y período; luego qué límite apareció, cuál se aceptó y por qué. Si sólo habilitó la generación, escriba \textbf{previabilidad}. Si materializó, anote conciliación, ejecución y filtros usados para comprobarla.
+\begin{note}[No restaure datos ni aprobaciones para igualar el ejemplo]
+Los números de versión, ejecución y los valores de referencia pertenecen al corte auditado. Si su fuente cambió, un resultado diferente no implica por sí solo un fallo. Compare el mismo evento, población, fórmula y corte temporal, y explique cualquier diferencia.
+\end{note}
+\sub{Recomendación para la tesis}
+No mezcle ensayos previos con nuevos. Identifique cada ejecución, conserve las capturas y describa incidentes y recuperación. No calcule una tasa de éxito de proveedores con intentos cuyo código, objetivo o configuración fueron cambiando.
+
+\casepage{AW-01}{Básico}{Pedidos por mes y promedio documental}{Respaldado por capacidad probada integralmente; texto propuesto para repetir.}\label{aw01}
+\begin{goal}
+Comparar mensualmente el importe registrado de las líneas de venta, las unidades vendidas y el número de pedidos distintos. Calcular el importe promedio por pedido como el importe total dividido entre los pedidos distintos, conservando la trazabilidad de cada línea y sin asumir que los pedidos fueron cobrados.
+\end{goal}
+\params{AdventureWorks2022}{T: Evolución de ventas en el tiempo.}{Mensual}{Una línea de pedido de venta; conservar pedido y línea.}{Fecha comercial; producto, cliente o territorio sólo si se incluyen y verifican.}
+\sub{Qué revisar en la propuesta}
+\begin{itemize}
+\item Importe y unidades con \textbf{Suma}; pedido con \textbf{Conteo distinto}.
+\item Promedio por pedido = importe total / pedidos distintos bajo el mismo filtro.
+\item Referencias observadas: \code{Sales.SalesOrderDetail} y cabecera \code{Sales.SalesOrderHeader}, con \code{OrderDate}. Son puntos de revisión, no instrucciones para imponer tablas.
+\end{itemize}
+\begin{good}
+La ejecución histórica \#14, propuesta \#98, concilió 121.317 líneas y 31.465 pedidos. El importe fue 109.846.381,4250 y el promedio 3.491,07. Úselos como referencia sólo con el mismo corte, fórmula y población.
+\end{good}
+\copilot{¿Cuántos pedidos distintos hay y por qué el promedio por pedido no es el promedio por línea? Indica el numerador y el denominador.}
+\begin{note}
+\code{AVG(LineTotal)} es promedio de línea; contar todas las apariciones de un pedido cuenta líneas. No presente pedidos registrados como dinero cobrado.
+\end{note}
+\evidence{QA-03 a QA-07 del acta operativa. La funcionalidad se probó hasta panel y copiloto; el texto de esta ficha no se volvió a generar durante la preparación del manual.}
+
+\casepage{AW-02}{Primer ensayo de IA}{Importe y unidades por producto}{Texto exacto que superó la revisión previa; no se ejecutó otro ETL en ese ensayo.}\label{aw02}
+\begin{goal}
+Comparar por mes el importe registrado y la cantidad de unidades de las líneas de venta por producto, conservando su identificador de pedido.
+\end{goal}
+\params{AdventureWorks2022}{P: Desempeño por producto y características.}{Mensual}{Una línea de venta, sin perder el pedido original.}{Fecha comercial y producto; atributos adicionales sólo si están verificados.}
+\sub{Qué revisar en la propuesta}
+\begin{itemize}
+\item Suma del importe de línea y suma de cantidades; identificador de producto como clasificación, no como importe.
+\item Relación del detalle con la cabecera para la fecha y con el producto para su identidad.
+\item Si aparecen categoría, subcategoría u otros atributos, verificar su ruta y evitar que multipliquen el hecho. No todos los atributos se convierten automáticamente en filtros del panel.
+\end{itemize}
+\begin{good}[Qué ocurrió en la prueba previa]
+La revisión de necesidad \#6 tuvo 11 directos, 1 derivable, 5 advertencias y 0 no disponibles. Aceptar los cinco límites habilitó continuar, pero \textbf{no se pulsó generar ni se cargó otro datamart}. Los conteos no representan 17 KPI únicos.
+\end{good}
+\copilot{¿Qué producto aporta más importe y cuál aporta más unidades? Si son distintos, explica qué mide cada clasificación sin inventar una causa.}
+\begin{note}
+El importe registrado no debe etiquetarse automáticamente como cobrado, sin impuesto o limitado a pedidos completados. Si una reformulación de IA se bloquea, mantenga este texto y vuelva a validar su alcance; no altere los metadatos para aceptar la sugerencia.
+\end{note}
+\evidence{NEED-17 y NEED-19. La reformulación final no produjo una alternativa utilizable; la previabilidad del texto original sí fue positiva. La pregunta al copiloto de esta ficha es una práctica propuesta para después de materializar.}
+
+\casepage{AW-03}{Intermedio}{Clientes reconocibles y población comercial}{Nuevo texto propuesto; requiere una ejecución propia para declararlo aprobado.}\label{aw03}
+\begin{goal}
+Comparar mensualmente el importe registrado, las unidades vendidas y los pedidos distintos por cliente. Mostrar un nombre descriptivo y el tipo de cliente cuando puedan obtenerse mediante relaciones verificadas, conservando su identificador original y sin incluir personas ajenas a la población comercial.
+\end{goal}
+\params{AdventureWorks2022}{C: Desempeño por cliente; T: Evolución de ventas en el tiempo.}{Mensual}{Una línea de pedido; conservar cliente y pedido de origen.}{Fecha y cliente; nombre y tipo condicionados a su evidencia.}
+\sub{Qué revisar en la propuesta}
+\begin{itemize}
+\item Importe/unidades con Suma y pedidos con Conteo distinto.
+\item Cliente comercial relacionado desde la cabecera, no todas las personas de la base.
+\item Enriquecimiento de \code{Sales.Customer} hacia persona o tienda sólo por rutas verificadas. Un cliente organización no tiene por qué tener persona individual.
+\end{itemize}
+\begin{good}
+Use \textbf{Comprobar nombres y cobertura}. El conjunto de clientes debe mantener su población y sus identificadores. Después del ETL, los importes no deben aumentar por duplicaciones de la relación descriptiva.
+\end{good}
+\copilot{¿Cuáles son los principales clientes por importe dentro del período consultado? Aclara qué identidad representa cliente y qué porcentaje del total aporta cada uno.}
+\begin{note}
+Un nombre ausente requiere revisión, no eliminación automática de la venta. Un ranking no demuestra fidelidad, abandono o potencial de compra. No intercambie cliente comercial con persona, contacto o dirección.
+\end{note}
+\evidence{La resolución descriptiva y las dimensiones de cliente tienen evidencia en el proyecto, pero este objetivo concreto es un caso de práctica nuevo. La presencia del atributo en el contrato no garantiza un gráfico dedicado en todas las vistas.}
+
+\casepage{AW-04}{Intermedio}{Territorios y contribución comercial}{Capacidad de filtros y Top N probada; objetivo compuesto nuevo.}\label{aw04}
+\begin{goal}
+Comparar mensualmente el importe registrado, las unidades vendidas y los pedidos distintos por territorio comercial. Identificar los territorios y productos con mayor contribución dentro del período seleccionado, indicando el conjunto usado como denominador de cada participación y respetando el nivel territorial existente en la fuente.
+\end{goal}
+\params{AdventureWorks2022}{G: Desempeño por territorio; P: Desempeño por producto y características; T: Evolución de ventas en el tiempo.}{Mensual}{Una línea de pedido, relacionada con su territorio comercial.}{Fecha, territorio comercial y producto.}
+\sub{Qué revisar en la propuesta y el panel}
+\begin{itemize}
+\item Importe/unidades sumados y pedidos distintos. Territorio ligado al evento mediante relaciones comprobadas.
+\item Producto líder calculado mediante suma agrupada por producto, no máximo de una sola línea.
+\item Nivel territorial explícito: grupo, territorio, estado o país no son sinónimos. Una traducción de etiqueta no cambia su nivel.
+\end{itemize}
+\begin{good}[Prueba que puede mostrar]
+En AW \#14 se ensayó 2014: 11.761 pedidos y promedio de 1.705,46. También se consultó Top 5 en Southwest con un denominador territorial de 24.184.609,60. No mezcle los filtros de ambos controles.
+\end{good}
+\copilot{¿Cuáles son los cinco productos con mayor importe en Southwest? Indica la participación sobre todo el territorio y diferencia ese denominador de la suma del Top 5.}
+\begin{note}
+Una participación visible en el gráfico puede usar sólo las categorías mostradas. Compare explícitamente los denominadores antes de afirmar que el panel y el copiloto se contradicen.
+\end{note}
+\evidence{QA-07 documenta filtro y conversación. La nueva necesidad de esta ficha requiere revisar de nuevo el contrato; no se promete que el modelo seleccione exactamente el mismo nivel de territorio.}
+
+\casepage{AW-05}{Intermedio}{Venta por unidad y promedios ponderados}{Nuevo texto propuesto para aprender agregación y denominadores.}\label{aw05}
+\begin{goal}
+Comparar mensualmente el importe registrado por unidad vendida entre productos. Sumar primero el importe y las unidades de las líneas de venta y dividir el importe total entre las unidades totales dentro de cada grupo. Conservar el pedido de origen, mostrar la cantidad usada como denominador y no confundir este indicador con el promedio simple de precios unitarios. No incluir costos en este ejercicio.
+\end{goal}
+\params{AdventureWorks2022}{P: Desempeño por producto y características; T: Evolución de ventas en el tiempo.}{Mensual}{Una línea de venta con cantidad e importe compatibles.}{Producto y fecha.}
+\sub{Qué revisar en la propuesta}
+\begin{itemize}
+\item Dos medidas base: importe y cantidad, ambas sumadas.
+\item Importe por unidad = suma de importes / suma de cantidades. Revisar tratamiento de cantidad nula o cero.
+\item Si la IA propone promedio simple del precio, exigir otra etiqueta o una fórmula compatible con la necesidad; no aceptarlo como sustituto silencioso.
+\end{itemize}
+\begin{good}
+Compare el total de importe y el total de unidades del mismo alcance. Su cociente debe coincidir, dentro del redondeo mostrado, con el KPI por unidad. En cada agregado por producto, ambos operandos deben corresponder al mismo producto; no se presupone un filtro de producto en el tablero.
+\end{good}
+\copilot{Explica la diferencia entre importe por unidad, precio unitario promedio simple y promedio por pedido. ¿Cuál de ellos está calculando este expediente?}
+\begin{note}
+No se marca U sólo para añadir costos: esta necesidad excluye costos deliberadamente. Si el catálogo orienta la respuesta a un alcance mayor, revise y mantenga el objetivo. Un valor por unidad no es automáticamente un precio de lista ni una utilidad.
+\end{note}
+\evidence{Las recetas de cociente de agregados tienen pruebas en el proyecto; este texto y su nuevo resultado deben ensayarse. Sirve para reconocer el error observado anteriormente de promedios etiquetados de forma incorrecta.}
+
+\casepage{AW-06}{Avanzado condicional}{Descuentos, costos y margen de referencia}{Aprobar sólo con definición comercial y evidencia compatibles.}\label{aw06}
+\begin{goal}
+Comparar mensualmente por producto el importe registrado, las unidades y el descuento monetario calculable con referencias verificadas. Incorporar costo total, venta por unidad, costo por unidad y margen sólo si existe una fuente de costo semánticamente comprobada. Si es un costo estándar de referencia y no el costo histórico de la venta, indicar esa limitación y no presentar el margen como rentabilidad histórica real.
+\end{goal}
+\params{AdventureWorks2022}{R: Costos y rentabilidad de las ventas; U: Ventas y costos por unidad; P: Desempeño por producto y características.}{Mensual}{Una línea de venta; operandos trazables y relacionados sin duplicación.}{Producto y fecha, ampliaciones sólo verificadas.}
+\sub{Qué revisar en la propuesta}
+\begin{itemize}
+\item Descuento monetario: precio por tasa por cantidad cuando ésa sea la receta comprobada; no sumar tasas como dinero.
+\item Costo total: cantidad por costo unitario válido. \code{Production.Product.StandardCost} es candidato de costo de referencia, no prueba automática de costo histórico.
+\item Venta/costo por unidad: cociente de totales. Margen: base de venta compatible menos costo; porcentaje con denominador definido.
+\end{itemize}
+\begin{note}
+No convierta \code{UnitPrice} en costo. No reste nuevamente descuentos incluidos en el importe. Si falta evidencia, excluya el KPI o limite explícitamente el alcance; no declare cubierta la rentabilidad histórica solicitada con una simple estimación.
+\end{note}
+\copilot{¿Este margen usa costo histórico o un costo de referencia? Explica fórmula, base del importe y qué decisión no debería tomarse con esta limitación.}
+\evidence{Existen recetas financieras y pruebas históricas, entre ellas \#91/\#12. La ficha es avanzada y condicional: una conciliación numérica no certifica la interpretación histórica del costo ni convierte el margen en utilidad neta.}
+
+\casepage{WWI-01}{Demostración integral}{Facturación emitida para la gerencia}{Objetivo persistido de la propuesta \#114; ciclo integral probado en \#15.}\label{wwi01}
+\begin{goal}
+Para priorizar productos y territorios, analizar mensualmente ventas efectivamente facturadas a nivel de línea de factura. El importe comercial es el total de la línea de factura con impuesto tal como consta en la fuente, no el precio unitario por cantidad antes de impuesto. Comparar ese importe y las unidades por producto, cliente y territorio; contar facturas distintas y calcular importe promedio por factura como total facturado dividido para facturas distintas. Usar la fecha de emisión de la factura, conservar el identificador de línea y factura y el pedido de origen cuando la relación esté verificada. Sólo usar atributos y relaciones comprobados.
+\end{goal}
+\params{WideWorldImporters}{T, P, C y G: las cuatro preguntas del catálogo WWI.}{Mensual}{Una línea de factura; conservar factura y línea.}{Fecha de emisión, producto, cliente y territorio verificado.}
+\sub{Qué revisar y mostrar}
+\begin{itemize}
+\item Hecho de factura, no de pedido; referencia observada \code{Sales.InvoiceLines}, cabecera \code{Sales.Invoices} y \code{InvoiceDate}.
+\item Importe/unidades sumados; facturas distintas; ticket = total / facturas distintas.
+\item En este corte se comprobó que \code{ExtendedPrice} incluye impuesto: 172.261.341,20 de precio por cantidad más 25.782.098,25 de impuesto.
+\end{itemize}
+\begin{good}
+El expediente \#15 concilió 228.265 líneas, 70.510 facturas y 198.043.439,45. Promedio por factura: 2.808,73; sin código de moneda único demostrado. Use «moneda de origen».
+\end{good}
+\copilot{Para 2015, ¿cuál es el importe total facturado, cuántas facturas distintas hubo y cuál fue el promedio por factura? Explica el denominador y si son pedidos, facturas o cobros.}
+\evidence{QA-14 a QA-16. La composición fiscal se confirmó en esta instalación por conciliación; no se infiere sólo del nombre ExtendedPrice ni se traslada a otras fuentes. Repetir hoy la generación es un ensayo nuevo.}
+
+\casepage{WWI-02}{Primer ensayo de IA}{Una necesidad mínima de facturación}{Texto exacto de previabilidad NEED-18; no una nueva carga probada.}\label{wwi02}
+\begin{goal}
+Analizar mensualmente el importe registrado de las líneas de factura, conservando la trazabilidad con su factura y sin inferir cobros ni composición de impuestos.
+\end{goal}
+\params{WideWorldImporters}{T: Evolución de ventas en el tiempo.}{Mensual}{Una línea de factura, conservando factura y línea.}{Fecha comercial de la factura; otras dimensiones sólo si se incluyen y verifican.}
+\sub{Qué revisar en la propuesta}
+\begin{itemize}
+\item Importe de línea con Suma; fecha de emisión y vínculo con la factura.
+\item No aceptar una tabla de pedidos como sustituto de facturas; no usar fecha de modificación como fecha comercial por defecto.
+\item Conservar el nombre neutral «importe registrado» si no se aporta la evidencia de composición que se explicó en WWI-01.
+\end{itemize}
+\begin{good}[Resultado realmente observado]
+Revisión de necesidad \#5: 6 directos, 2 derivables, 4 advertencias y 0 no disponibles. Una respuesta del asesor. Al aceptar los cuatro límites se habilitó generar, pero \textbf{no se pulsó el botón ni se ejecutó otro ETL}.
+\end{good}
+\copilot{Resume el importe del período y aclara qué evento y qué fecha representan los datos. ¿Este expediente demuestra que se cobró ese importe?}
+\begin{note}
+Es un buen primer ejercicio porque limita la complejidad. La referencia numérica del expediente \#15 no debe presentarse como resultado de esta previabilidad: pertenecen a etapas e identificadores diferentes.
+\end{note}
+\evidence{NEED-18 y capturas 36/37. Los números de requisitos no son un conteo de indicadores materializados. La pregunta al copiloto es una práctica posterior propuesta, condicionada a generar y publicar un datamart.}
+
+\casepage{WWI-03}{Intermedio}{Productos facturados e importe por unidad}{Nuevo texto apoyado en capacidades conciliadas del expediente \#15.}\label{wwi03}
+\begin{goal}
+Comparar mensualmente el importe registrado y las unidades de las líneas de factura por producto, mostrando nombres descriptivos comprobados y conservando los identificadores de factura y línea. Ordenar los productos por la suma de sus importes y calcular el importe por unidad como importe total dividido entre unidades totales. No confundir ese cociente con el promedio simple del precio unitario.
+\end{goal}
+\params{WideWorldImporters}{T: Evolución de ventas en el tiempo; P: Productos con mayor desempeño.}{Mensual}{Una línea de factura.}{Fecha y producto; atributos sólo si se verifican.}
+\sub{Qué revisar en la propuesta}
+\begin{itemize}
+\item Suma de importe registrado y cantidad. En el expediente observado se usaron \code{ExtendedPrice} y \code{Quantity}.
+\item Producto por relación comprobada con \code{Warehouse.StockItems}, con identificador y descripción conservados.
+\item Ranking por suma agrupada; cociente de totales para el importe por unidad y control de denominador cero.
+\end{itemize}
+\begin{good}
+En \#15 se conciliaron 227 productos y 8.950.628 unidades. El importe global por unidad fue aproximadamente 22,126206 en moneda de origen. No es el promedio simple de \code{UnitPrice}, que fue aproximadamente 45,591688.
+\end{good}
+\copilot{¿Qué cinco productos tienen mayor importe facturado? Para el primero explica su cantidad, importe por unidad y denominador de participación. No uses el máximo de una sola línea para ordenar productos.}
+\begin{note}
+Ambos promedios pueden ser numéricamente correctos y significar cosas distintas. Además, la composición del importe puede incluir impuesto mientras el precio unitario no lo incluye. No espere igualdad sólo por llevar la palabra «precio» o «unidad».
+\end{note}
+\evidence{Contrato y métricas conciliadas de \#114/\#15. La capacidad está documentada; el texto nuevo y la consulta propuesta no se ejecutaron nuevamente para esta guía.}
+
+\casepage{WWI-04}{Intermedio}{Clientes e importe promedio por factura}{Nuevo caso de práctica con cálculo documental previamente probado.}\label{wwi04}
+\begin{goal}
+Comparar mensualmente la facturación registrada por cliente usando su nombre descriptivo mediante relaciones verificadas. Sumar el importe de las líneas de factura, contar facturas distintas y calcular el importe promedio por factura como importe total dividido entre facturas distintas. Conservar factura y línea; no interpretar el promedio de una línea como promedio de una factura ni considerar una factura como un cobro.
+\end{goal}
+\params{WideWorldImporters}{T: Evolución de ventas en el tiempo; C: Desempeño por cliente.}{Mensual}{Una línea de factura relacionada con el cliente del documento.}{Fecha y cliente comercial; distinguir cuenta de facturación si aparece.}
+\sub{Qué revisar en la propuesta}
+\begin{itemize}
+\item Importe con Suma; \code{InvoiceID} con Conteo distinto; cociente de ambos con idéntico filtro.
+\item Población de clientes vinculada a factura. \code{BillToCustomerID} puede representar una cuenta distinta: no intercambiarla silenciosamente con el cliente.
+\item Nombre descriptivo, cobertura y linaje sin multiplicar líneas o documentos.
+\end{itemize}
+\begin{good}
+El expediente \#15 tiene 663 clientes descriptivos. El ticket global conciliado es 2.808,73; con 2015, 2.790,57. Son controles del expediente histórico, no valores que deba forzar en cualquier propuesta nueva.
+\end{good}
+\copilot{Dentro de este período, ¿qué clientes concentran más facturación y cuál es su promedio por factura? Explica qué población de cliente y documentos estás utilizando.}
+\begin{note}
+Si filtra líneas por producto, el promedio describe el importe seleccionado de las facturas que contienen ese producto, no necesariamente el total completo de cada factura. No sume identificadores ni use cantidad de unidades como número de clientes.
+\end{note}
+\evidence{QA-15/16 y expediente \#15. La dimensión y el promedio están comprobados; esta necesidad por cliente sigue siendo un ensayo propuesto hasta que se registre su propia ejecución.}
+
+\casepage{WWI-05}{Comparación de eventos}{Pedidos registrados, no facturas emitidas}{Texto nuevo simplificado; alcance histórico probado en \#96/\#13.}\label{wwi05}
+\begin{goal}
+Analizar mensualmente los pedidos de venta registrados a nivel de línea. Comparar cantidades pedidas e importe calculado como precio unitario por cantidad, por producto. Contar pedidos distintos y conservar identificadores de pedido y línea. No presentar estos resultados como facturas emitidas ni como cobros.
+\end{goal}
+\params{WideWorldImporters}{T: Evolución de ventas en el tiempo; P: Productos con mayor desempeño.}{Mensual}{Una línea de pedido registrado, no una línea de factura.}{Fecha de pedido y producto.}
+\sub{Qué revisar en la propuesta}
+\begin{itemize}
+\item Referencias observadas: \code{Sales.OrderLines}, \code{Sales.Orders} y \code{OrderDate}.
+\item Suma de cantidades; suma del resultado precio por cantidad; pedidos distintos por \code{OrderID}.
+\item Etiquetas del panel que declaren pedidos. No añadir impuestos, descuentos o estados por deducción no comprobada.
+\end{itemize}
+\begin{good}
+El expediente histórico \#13 concilió 231.412 líneas, 73.595 pedidos, 9.310.904 unidades y 177.634.276,40 de importe según la receta de pedidos. La cabecera analítica advierte su alcance.
+\end{good}
+\copilot{¿Este datamart representa pedidos o facturas? Explica por qué su total no puede compararse directamente con el expediente de facturación como si fuera crecimiento comercial.}
+\begin{note}
+La diferencia con 198.043.439,45 del expediente de facturas no es automáticamente deuda pendiente, crecimiento ni error. Difieren evento, población y composición del importe. No reste ambos como saldo de cobranza.
+\end{note}
+\evidence{QA-08, QA-11, QA-13 y QA-16. El historial \#13 contiene más decisiones que este texto simplificado; volver a generar esta necesidad es una práctica nueva. No use sus costos de referencia como prueba de rentabilidad histórica.}
+
+\casepage{WWI-06}{Intermedio condicional}{Facturación y geografía del cliente}{Nuevo texto para estudiar relaciones y nivel territorial.}\label{wwi06}
+\begin{goal}
+Comparar mensualmente el importe registrado y las unidades de las líneas de factura por ubicación geográfica del cliente, usando únicamente relaciones declaradas y conservando factura y línea. Mostrar un nombre territorial descriptivo e indicar si corresponde a ciudad, estado o provincia, país u otro nivel. No atribuir la ubicación a un vendedor ni convertirla en territorio comercial si esa relación no existe.
+\end{goal}
+\params{WideWorldImporters}{T: Evolución de ventas en el tiempo; G: Desempeño por territorio; C: Desempeño por cliente.}{Mensual}{Una línea de factura; geografía alcanzada sin duplicar el hecho.}{Fecha, cliente y nivel geográfico verificado.}
+\sub{Qué revisar en la propuesta}
+\begin{itemize}
+\item Ruta desde factura a cliente y geografía comprobada; no elegir una ciudad desconectada sólo porque tiene nombre.
+\item Aclarar qué dirección se usa y si su valor representa la ubicación actual o hay evidencia histórica. No asumir historia de cambios de domicilio.
+\item Importes/unidades con Suma. La definición territorial debe ser uniforme dentro del gráfico.
+\end{itemize}
+\begin{good}
+El expediente \#15 usa territorio descriptivo \code{StateProvinceName} y concilió 53 territorios. Esto respalda una dimensión geográfica de esa ejecución, no una regla universal de que toda fuente deba analizarse por estados.
+\end{good}
+\copilot{¿Qué representa el territorio de este resultado y mediante qué relación se asocia a la factura? Compara los principales territorios sin atribuir causas ni responsabilidad a vendedores.}
+\begin{note}
+Cambiar el nombre «estado» por «hemisferio» no modifica el nivel de los datos. Una geografía más detallada no siempre es mejor: debe responder a la decisión y conservar cobertura y comparabilidad.
+\end{note}
+\evidence{Dimensión y cobertura registradas en \#15; esta necesidad y la consulta sobre geografía son propuestas para ensayar. La prueba negativa sobre clima se incluye más adelante para enseñar los límites de estas relaciones.}

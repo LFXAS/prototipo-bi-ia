@@ -59,6 +59,13 @@ Quedan fuera el pronóstico de ventas, alertas autónomas, edición libre del da
     aprobada, la agrega directamente con su operación declarada aunque el proveedor
     no haya creado además un KPI agregado con el mismo nombre. El orden de las
     recetas del proveedor no puede cambiar el resultado.
+15. Cuando existe un evento de facturación independiente en los metadatos y el
+    hecho materializado representa pedidos, la cabecera declara **pedidos** y
+    advierte que sus importes no acreditan facturas emitidas. La distinción se
+    transmite al copiloto y se conserva como salvedad aun si el LLM la omite.
+16. El copiloto no debe confundir el filtro visible «Todos los períodos» con una
+    imposibilidad técnica de comparar años disponibles; diferencia entre lo
+    observado en pantalla y lo que exige otra consulta agregada.
 
 ## 4. API e interfaz
 
@@ -92,7 +99,7 @@ Requiere `analytics.dashboard.read`. La consulta de datos agregados no otorga ac
       sin aceptar valores ajenos al catálogo autorizado.
 - [x] El selector de datamart cambia de ejecución sin repetir el ETL y conserva la
       selección en filtros, chat y exportaciones.
-- [ ] Dos ejecuciones nuevas pueden consultarse de forma independiente después de
+- [x] Dos ejecuciones nuevas pueden consultarse de forma independiente después de
       materializar la segunda.
 - [x] Los expedientes sin tablas físicas no aparecen como datamarts consultables.
 - [x] Si sólo existe un datamart con filas físicas, se identifica en modo lectura,
@@ -108,3 +115,12 @@ Requiere `analytics.dashboard.read`. La consulta de datos agregados no otorga ac
 ## 7. Evidencia
 
 La ejecución conciliada 7, derivada de la propuesta 54, publica 121317 líneas sin diferencia. El panel presenta nombres descriptivos de clientes, código de moneda USD comprobado, siete indicadores disponibles, cuatro visualizaciones en modo analista y evidencia asociada a cada hallazgo. La ejecución 11 añadió una regresión real de dependencias derivadas: el expediente conservaba los cuatro KPI financieros conciliados y el dashboard recuperó sus valores dinámicos sin repetir el ETL, tanto para el universo completo como para 2013 y Europa. La validación se completa con pruebas backend, pruebas de componentes, compilación de producción y revisión visual de ambos modos.
+
+La auditoría QA-E2E-20261003 agregó una prueba con dos ejecuciones físicas
+independientes de WideWorldImporters: #13/#96 (líneas de pedido, 177,6 millones)
+y #15/#114 (líneas de factura, 198,0 millones). El selector mantiene el linaje,
+los filtros y el contexto del copiloto propios de cada expediente. Para 2015,
+la ejecución #15 mostró 62.090.220,81 de importe con impuesto, 22.250 facturas
+distintas y 2.790,57 por factura; el copiloto explicó el denominador y advirtió
+que facturado no implica cobrado. AdventureWorks #14 continuó mostrando sólo sus
+datos al volver a esa conexión. Véase `docs/testing/auditoria-operativa-2026-10-03.md`.

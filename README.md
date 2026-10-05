@@ -4,7 +4,7 @@ Base técnica del proyecto de titulación **“Prueba de concepto de un prototip
 
 La versión seleccionada puede verificarse desde la misma plataforma: se comprueban integridad, referencias, calidad y reproducción determinística sin consumir nuevamente el LLM. Sprint 4 amplió el expediente con conciliación OLTP--datamart y KPI controlados. Sprint 5 añadió calidad semántica, analítica, conversación y reportería. Sprint 6 incorporó contexto multifuente, catálogo independiente por conexión y evidencia técnica automática, sin bifurcaciones por nombre de base. Las propuestas aprobadas y las ejecuciones terminadas conservan sus cinco etapas como pestañas de consulta inmutables. Véanse el [plan acumulativo de validación](docs/validation-plan.md) y la [especificación multifuente](docs/specs/SPR-06-01-contexto-multifuente-sqlserver.md).
 
-La guía operativa completa para replicar, restaurar, publicar y probar el entorno está en [docs/replication-guide.md](docs/replication-guide.md).
+La guía operativa para replicar, restaurar, publicar y probar el entorno está en [docs/replication-guide.md](docs/replication-guide.md). Para aprender BI + IA desde cero y preparar una demostración por perfiles, consulte la [guía de formación](docs/formacion/guia_formacion_bi_ia.pdf), con fuentes LaTeX y capturas versionadas junto al PDF.
 
 Desde el Sprint 2 el proyecto aplica desarrollo guiado por especificaciones (SDD). Antes de crear una funcionalidad se redacta su especificación, criterios de aceptación, riesgos y evidencia de prueba en [`docs/specs/`](docs/specs/README.md). El flujo completo está en [`docs/sdd-workflow.md`](docs/sdd-workflow.md).
 
@@ -164,5 +164,5 @@ El flujo principal de la prueba de concepto está completo: configurar, introspe
 1. ejecutar pruebas formales de usabilidad y juicio de expertos con instrumentos y actas;
 2. documentar el contraste secundario con AdventureWorksDW sólo donde exista equivalencia semántica demostrada;
 3. cerrar conclusiones, anexos, evidencias y referencias del documento académico completo;
-4. promover el Sprint 6 por PR a `develop` y después a `main` con CI aprobada;
+4. integrar las correcciones de la auditoría operativa por PR a `develop` y promover a `main` sólo tras revisión y CI aprobada;
 5. mantener inventario, combinación de fuentes, otros motores y despliegue Azure como extensiones futuras, no como requisitos para demostrar el núcleo actual.

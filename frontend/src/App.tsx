@@ -21,6 +21,7 @@ import {
   type MetadataTable,
   type MetadataTableDetail,
   type NeedFormulation,
+  type NeedSuggestions,
   type NeedViability,
   type Page,
   type Parameter,
@@ -321,6 +322,10 @@ export default function App() {
     )
   }
 
+  // A page change renders before its loading effect clears the previous page's data.
+  // Never hand a role/user response to a schema or other page-specific component.
+  const visibleData = loadedPage.current === page ? data : null
+
   return (
     <main className="app-shell">
       <header className="application-header">
@@ -340,9 +345,9 @@ export default function App() {
           {page === '/'
             ? <Home session={session} token={token} connectionId={selectedSourceId} navigate={setPage} />
             : page === '/conexiones'
-              ? <ConnectionsPage data={data as Page<DataConnection> | null} message={message} token={token} canWrite={session.permissions.includes('connections.write')} canTest={session.permissions.includes('connections.test')} canRefresh={session.permissions.includes('metadata.refresh')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
+              ? <ConnectionsPage data={visibleData as Page<DataConnection> | null} message={message} token={token} canWrite={session.permissions.includes('connections.write')} canTest={session.permissions.includes('connections.test')} canRefresh={session.permissions.includes('metadata.refresh')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
               : page === '/esquema'
-                ? <SchemaExplorerPage key={selectedSourceId} source={sources.find((item) => item.connection.id === selectedSourceId) ?? null} snapshots={data as Page<MetadataSnapshot> | null} message={message} token={token} canRefresh={session.permissions.includes('metadata.refresh')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
+                ? <SchemaExplorerPage key={selectedSourceId} source={sources.find((item) => item.connection.id === selectedSourceId) ?? null} snapshots={visibleData as Page<MetadataSnapshot> | null} message={message} token={token} canRefresh={session.permissions.includes('metadata.refresh')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
                 : page === '/asistente'
                   ? <AnalysisAssistantPage key={selectedSourceId} source={sources.find((item) => item.connection.id === selectedSourceId) ?? null} token={token} canGenerate={session.permissions.includes('copilot.proposals.generate')} canReview={session.permissions.includes('copilot.proposals.review')} canPreviewSemantics={session.permissions.includes('metadata.semantic_resolution.read')} navigate={setPage} />
                 : page === '/datamart-ventas'
@@ -352,8 +357,8 @@ export default function App() {
                 : page === '/catalogo-analitico'
                   ? <AnalysisCatalogPage key={selectedSourceId} source={sources.find((item) => item.connection.id === selectedSourceId) ?? null} token={token} canWrite={session.permissions.includes('copilot.catalog.write')} />
               : page === '/parametros'
-                ? <ParametersPage data={data as Page<Parameter> | null} message={message} token={token} canWrite={session.permissions.includes('parameters.write')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
-                : <ResourcePage key={page} page={page} data={data} message={message} token={token} canWrite={session.permissions.includes(writePermissions[page])} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />}
+                ? <ParametersPage data={visibleData as Page<Parameter> | null} message={message} token={token} canWrite={session.permissions.includes('parameters.write')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
+                : <ResourcePage key={page} page={page} data={visibleData} message={message} token={token} canWrite={session.permissions.includes(writePermissions[page])} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />}
         </section>
       </div>
     </main>
@@ -671,6 +676,13 @@ function SemanticCopilotPanel({
   </section>
 }
 
+function NeedGrounding({ evidence = [], limitations = [] }: { evidence?: string[]; limitations?: string[] }) {
+  return <div className="need-grounding">
+    {evidence.length > 0 && <details><summary>Referencias existentes en la instantánea</summary><ul>{evidence.map((item) => <li key={item}>{item}</li>)}</ul></details>}
+    {limitations.length > 0 && <div><strong>Límites y decisiones pendientes</strong><ul>{limitations.map((item) => <li key={item}>{item}</li>)}</ul></div>}
+  </div>
+}
+
 function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPreviewSemantics, navigate }: { source: SourceWorkspace | null; token: string; canGenerate: boolean; canReview: boolean; canPreviewSemantics: boolean; navigate: (path: string) => void }) {
   const recoveryDraft = useMemo(() => {
     const draft = readAssistantDraft()
@@ -687,9 +699,12 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
   const [questions, setQuestions] = useState<string[]>(recoveryDraft?.questions ?? [])
   const [periodicity, setPeriodicity] = useState(recoveryDraft?.periodicity ?? 'month')
   const [needFormulation, setNeedFormulation] = useState<NeedFormulation | null>(null)
+  const [needSuggestions, setNeedSuggestions] = useState<NeedSuggestions | null>(null)
+  const [needConsentTarget, setNeedConsentTarget] = useState<string | null>(null)
   const [viability, setViability] = useState<NeedViability | null>(null)
   const [acceptedLimitations, setAcceptedLimitations] = useState<string[]>([])
   const [formulatingNeed, setFormulatingNeed] = useState(false)
+  const [suggestingNeeds, setSuggestingNeeds] = useState(false)
   const [validatingNeed, setValidatingNeed] = useState(false)
   const [proposal, setProposal] = useState<BiProposal | null>(null)
   const [draftProposalId, setDraftProposalId] = useState<number | undefined>(recoveryDraft?.proposalId)
@@ -716,6 +731,31 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
   const [previewingSemantics, setPreviewingSemantics] = useState(false)
   const [recoveryNotice, setRecoveryNotice] = useState(recoveryDraft ? 'Recuperamos el borrador local. Compruebe la necesidad y continúe desde el paso guardado.' : '')
   const restoredProposal = useRef(false)
+  const needRequestId = useRef(0)
+
+  useEffect(() => {
+    needRequestId.current += 1
+    setNeedFormulation(null)
+    setNeedSuggestions(null)
+    setNeedConsentTarget(null)
+    setViability(null)
+    setAcceptedLimitations([])
+    setFormulatingNeed(false)
+    setSuggestingNeeds(false)
+    setValidatingNeed(false)
+    return () => { needRequestId.current += 1 }
+  }, [source?.connection.id, source?.latest_snapshot?.id, source?.latest_snapshot?.content_hash, token])
+
+  useEffect(() => {
+    needRequestId.current += 1
+    setNeedConsentTarget(null)
+    setNeedFormulation(null)
+    setNeedSuggestions(null)
+    setViability(null)
+    setFormulatingNeed(false)
+    setSuggestingNeeds(false)
+    setValidatingNeed(false)
+  }, [readiness?.llm.metadata_consent_target])
 
   useEffect(() => {
     if (!selectedDomainCode) return
@@ -784,6 +824,7 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
   }, [historyFilter, historyOffset, selectedDomainCode, source?.connection.id, token])
 
   const selectedDomain = catalog?.domains.find((domain) => domain.code === selectedDomainCode)
+  const needAssistanceAuthorized = Boolean(needConsentTarget && needConsentTarget === readiness?.llm.metadata_consent_target)
 
   function selectDomain(code: string) {
     const domain = catalog?.domains.find((item) => item.code === code)
@@ -792,9 +833,7 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
     setGoal('')
     setQuestions([])
     setPeriodicity(domain.periodicities.find((item) => item.available)?.code ?? 'month')
-    setNeedFormulation(null)
-    setViability(null)
-    setAcceptedLimitations([])
+    invalidateNeedAssessment()
     setHistoryFilter('ready_for_review')
     setHistoryOffset(0)
     setProposal(null)
@@ -808,6 +847,7 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
   }
 
   function changeDomain() {
+    invalidateNeedAssessment()
     localStorage.removeItem(assistantDraftKey)
     setRecoveryNotice('')
     setSelectedDomainCode(null)
@@ -821,9 +861,7 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
     setGoal('')
     setQuestions([])
     setPeriodicity(selectedDomain?.periodicities.find((item) => item.available)?.code ?? 'month')
-    setNeedFormulation(null)
-    setViability(null)
-    setAcceptedLimitations([])
+    invalidateNeedAssessment()
     setExcludedConcepts([])
     setConfirmedConcepts([])
     setAdviceConceptCode(null)
@@ -848,8 +886,16 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
   }
 
   function invalidateNeedAssessment() {
+    needRequestId.current += 1
+    setNeedFormulation(null)
+    setNeedSuggestions(null)
+    setNeedConsentTarget(null)
+    setFormulatingNeed(false)
+    setSuggestingNeeds(false)
+    setValidatingNeed(false)
     setViability(null)
     setAcceptedLimitations([])
+    setFeedback(null)
   }
 
   function needInput() {
@@ -860,36 +906,70 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
       business_questions: questions,
       periodicity,
       domain_code: selectedDomainCode as 'ventas',
+      metadata_consent_target: needConsentTarget ?? undefined,
     }
   }
 
   async function formulateNeed() {
     const payload = needInput()
-    if (!payload) return
+    if (!payload || !needConsentTarget || needConsentTarget !== readiness?.llm.metadata_consent_target) return
+    const requestId = ++needRequestId.current
     setFormulatingNeed(true); setFeedback(null)
     try {
-      setNeedFormulation(await api.formulateNeed(token, payload))
+      const result = await api.formulateNeed(token, payload)
+      if (requestId !== needRequestId.current) return
+      setNeedFormulation(result)
     } catch (caught) {
+      if (requestId !== needRequestId.current) return
       setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible ayudar a formular la necesidad.' })
-    } finally { setFormulatingNeed(false) }
+    } finally { if (requestId === needRequestId.current) setFormulatingNeed(false) }
+  }
+
+  async function suggestNeeds() {
+    if (!source?.latest_snapshot || !selectedDomainCode || !needConsentTarget || needConsentTarget !== readiness?.llm.metadata_consent_target) return
+    const requestId = ++needRequestId.current
+    setSuggestingNeeds(true); setFeedback(null)
+    try {
+      const result = await api.suggestNeeds(token, {
+        metadata_snapshot_id: source.latest_snapshot.id,
+        domain_code: selectedDomainCode as 'ventas',
+        periodicity,
+        business_questions: questions,
+        metadata_consent_target: needConsentTarget,
+      })
+      if (requestId !== needRequestId.current || result.metadata_snapshot_id !== source.latest_snapshot.id) return
+      setNeedSuggestions(result)
+    } catch (caught) {
+      if (requestId !== needRequestId.current) return
+      setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible sugerir necesidades para esta fuente.' })
+    } finally { if (requestId === needRequestId.current) setSuggestingNeeds(false) }
   }
 
   async function validateNeed() {
     const payload = needInput()
-    if (!payload) return
+    if (!payload || !needConsentTarget || needConsentTarget !== readiness?.llm.metadata_consent_target) return
+    const requestId = ++needRequestId.current
     setValidatingNeed(true); setFeedback(null)
     try {
       const assessment = await api.validateNeed(token, payload)
+      if (requestId !== needRequestId.current) return
       setViability(assessment)
       setAcceptedLimitations([])
       setFeedback({ kind: assessment.can_continue ? (assessment.requires_acknowledgement.length ? 'warning' : 'success') : 'error', message: assessment.summary })
     } catch (caught) {
+      if (requestId !== needRequestId.current) return
       setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible validar la viabilidad.' })
-    } finally { setValidatingNeed(false) }
+    } finally { if (requestId === needRequestId.current) setValidatingNeed(false) }
   }
 
   async function generate(exclusions = excludedConcepts) {
     if (!source?.latest_snapshot) return
+    if (!needConsentTarget || needConsentTarget !== readiness?.llm.metadata_consent_target) {
+      invalidateNeedAssessment()
+      setStep(1)
+      setFeedback({ kind: 'warning', message: 'Confirme el proveedor indicado y autorice los metadatos; después valide nuevamente la necesidad antes de generar la propuesta.' })
+      return
+    }
     if (!viability) {
       setStep(1)
       setFeedback({ kind: 'warning', message: 'Valide la viabilidad de la necesidad antes de invocar a la IA.' })
@@ -904,6 +984,7 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
     try {
       const result = await api.createProposal(token, {
         metadata_snapshot_id: source.latest_snapshot.id,
+        metadata_consent_target: needConsentTarget,
         business_goal: goal,
         business_questions: questions,
         requested_dimensions: [],
@@ -947,7 +1028,7 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
       setStep(1)
       setFeedback({
         kind: 'warning',
-        message: 'Conservamos la necesidad. Valide nuevamente su viabilidad y reintente con el proveedor activo.',
+        message: 'Conservamos la necesidad. Confirme el proveedor, autorice los metadatos y valide nuevamente su viabilidad antes de reintentar.',
       })
       return
     }
@@ -985,6 +1066,7 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
   }
 
   function selectSavedProposal(item: BiProposal) {
+    invalidateNeedAssessment()
     setProposal(item)
     setDraftProposalId(item.id)
     setViability(null)
@@ -1171,13 +1253,51 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
       <fieldset className="read-only-scope" disabled={proposalReadOnly}>
       <div className="form-title"><div><p className="eyebrow">Paso 1</p><h2>Necesidad de negocio</h2></div><span>Se enviarán la necesidad y metadatos estructurales; nunca filas ni credenciales.</span></div>
       <label className="need-goal-field">Objetivo del análisis<textarea required minLength={20} maxLength={2000} rows={12} value={goal} placeholder="Ejemplo: analizar ventas netas, costos y margen por producto y territorio, comparando su evolución mensual." onChange={(event) => { setGoal(event.target.value); setNeedFormulation(null); invalidateNeedAssessment() }} /><span className="character-counter" aria-live="polite">{goal.length.toLocaleString('es-EC')} / 2.000 caracteres</span><small className="field-help">Explique qué decisión desea apoyar, qué indicadores espera y cómo necesita compararlos. No escriba SQL.</small></label>
-      <div className="need-assistance-actions"><button type="button" className="secondary" disabled={!canGenerate || formulatingNeed || goal.trim().length < 20 || questions.length === 0} onClick={() => void formulateNeed()}>{formulatingNeed ? 'Preparando una redacción…' : 'Ayúdame a formular la necesidad'}</button><small>La IA sólo propone una redacción; usted decide si la usa.</small></div>
-      {needFormulation && <section className="need-formulation" aria-label="Propuesta de redacción"><div><p className="eyebrow">Sugerencia de la IA</p><h3>Redacción propuesta</h3><p>{needFormulation.suggested_goal}</p></div><p className="field-help">{needFormulation.rationale}</p>{needFormulation.improvements.length > 0 && <ul>{needFormulation.improvements.map((item) => <li key={item}>{item}</li>)}</ul>}<div className="form-actions"><button type="button" onClick={() => { setGoal(needFormulation.suggested_goal); setNeedFormulation(null); invalidateNeedAssessment() }}>Usar esta redacción</button><button type="button" className="secondary" onClick={() => setNeedFormulation(null)}>Mantener mi redacción</button></div></section>}
+      <section className="need-consent" aria-label="Autorización de asistencia con metadatos">
+        <p>La IA recibirá la necesidad y nombres, tipos, claves y relaciones de esta fuente; nunca filas ni credenciales.</p>
+        <p><strong>Destino:</strong> {readiness?.llm.metadata_consent_label || readiness?.llm.detail || 'Proveedor no disponible.'}</p>
+        <label className="confirmation"><input type="checkbox" disabled={!canGenerate || !readiness?.llm.metadata_consent_target} checked={needAssistanceAuthorized} onChange={(event) => { if (event.target.checked) setNeedConsentTarget(readiness?.llm.metadata_consent_target ?? null); else invalidateNeedAssessment() }} />Autorizo enviar estos metadatos y la necesidad al proveedor indicado para esta revisión.</label>
+        {!readiness?.llm.metadata_consent_target && <small>Compruebe la configuración del proveedor antes de solicitar asistencia.</small>}
+      </section>
+      <div className="need-assistance-actions">
+        <button type="button" className="secondary" disabled={!canGenerate || !needAssistanceAuthorized || !source?.latest_snapshot || !periodicity || suggestingNeeds || formulatingNeed || validatingNeed} onClick={() => void suggestNeeds()}>{suggestingNeeds ? 'Buscando objetivos respaldados…' : 'Sugerir necesidades con esta fuente'}</button>
+        <button type="button" className="secondary" disabled={!canGenerate || !needAssistanceAuthorized || formulatingNeed || suggestingNeeds || validatingNeed || goal.trim().length < 20 || questions.length === 0} onClick={() => void formulateNeed()}>{formulatingNeed ? 'Preparando una redacción…' : 'Ayúdame a formular la necesidad'}</button>
+        <small>La IA propone desde los metadatos de esta fuente; usted decide qué texto utilizar. No se consultan filas.</small>
+      </div>
+      {needSuggestions && <section className="need-source-suggestions" aria-label="Necesidades sugeridas para esta fuente">
+        <div><p className="eyebrow">Exploración asistida</p><h3>Necesidades propuestas para revisar</h3><p>{needSuggestions.notice}</p><small>{providerLabel(needSuggestions.provider_kind)} · {needSuggestions.model_id} · Instantánea #{needSuggestions.metadata_snapshot_id}</small></div>
+        <div className="need-suggestion-grid">{needSuggestions.suggestions.map((item, index) => <article className="need-formulation" key={`${index}-${item.suggested_goal}`} aria-label={`Necesidad sugerida ${index + 1}`}>
+          <div><h4>Opción {index + 1}</h4><p>{item.suggested_goal}</p></div><p className="field-help">{item.rationale}</p>
+          <NeedGrounding evidence={item.evidence} limitations={item.limitations} />
+          {!item.usable && <p className="notice warning">Esta sugerencia no tiene respaldo suficiente para utilizarse.</p>}
+          <button type="button" disabled={!item.usable} onClick={() => { setGoal(item.suggested_goal); invalidateNeedAssessment(); setFeedback({ kind: 'success', message: 'Necesidad elegida. Revise las preguntas y valide su viabilidad antes de generar la propuesta.' }) }}>Usar esta necesidad</button>
+        </article>)}</div>
+        {needSuggestions.suggestions.length === 0 && <p className="notice warning">No se encontraron sugerencias con respaldo suficiente. Puede redactar una necesidad y comprobar su viabilidad.</p>}
+        <p className="field-help">El respaldo estructural no garantiza la calidad ni la disponibilidad de los datos. La propuesta, los cálculos y el ETL se validarán después.</p>
+      </section>}
+      {needFormulation && <section className="need-formulation" aria-label="Propuesta de redacción"><div><p className="eyebrow">Sugerencia de la IA</p><h3>Redacción propuesta</h3><p>{needFormulation.suggested_goal}</p></div><p className="field-help">{needFormulation.rationale}</p>{needFormulation.improvements.length > 0 && <ul>{needFormulation.improvements.map((item) => <li key={item}>{item}</li>)}</ul>}<NeedGrounding evidence={needFormulation.evidence} limitations={needFormulation.limitations} />{needFormulation.usable === false && <p className="notice warning">Esta redacción no tiene respaldo suficiente para utilizarse.</p>}<div className="form-actions"><button type="button" disabled={needFormulation.usable === false} onClick={() => { setGoal(needFormulation.suggested_goal); invalidateNeedAssessment() }}>Usar esta redacción</button><button type="button" className="secondary" onClick={() => setNeedFormulation(null)}>Mantener mi redacción</button></div></section>}
       <fieldset><legend>Preguntas de negocio disponibles</legend><p className="field-help">Seleccione las preguntas que orientarán a la IA. No fijan tablas, columnas ni dimensiones.</p><div className="choice-grid">{selectedDomain.questions.map((item) => <label className={!item.available ? 'unavailable-choice' : ''} title={item.reason} key={item.code}><input type="checkbox" disabled={!item.available} checked={questions.includes(item.code)} onChange={() => { toggleValue(item.code, questions, setQuestions); setNeedFormulation(null); invalidateNeedAssessment() }} /><span>{item.label}<small>{item.description}</small></span></label>)}</div></fieldset>
       <p className="notice">La IA propondrá las dimensiones, medidas, granularidad, KPIs y plan ETL a partir del objetivo, las preguntas seleccionadas y los metadatos verificados. Usted podrá revisarlos y personalizarlos sin escribir SQL.</p>
       <label>Periodicidad<select value={periodicity} onChange={(event) => { setPeriodicity(event.target.value); setNeedFormulation(null); invalidateNeedAssessment() }}>{selectedDomain.periodicities.filter((item) => item.available).map((item) => <option value={item.code} key={item.code}>{item.label}</option>)}</select></label>
-      {viability && <section className="need-viability" aria-label="Cobertura de la necesidad"><div className="need-viability-heading"><div><p className="eyebrow">Comprobación previa</p><h3>Viabilidad contra los metadatos</h3></div><span>{viability.counts.direct ?? 0} directos · {viability.counts.derivable ?? 0} automáticos · {(viability.counts.ambiguous ?? 0) + (viability.counts.unavailable ?? 0)} por decidir</span></div><div className="derivation-guidance" role="note"><div><strong>¿Qué significa derivable automáticamente?</strong><p>No requiere que seleccione tablas, escriba SQL ni complete fórmulas. Al continuar, la plataforma aplicará únicamente relaciones declaradas y cálculos controlados.</p></div><ol><li><span>1</span><p><strong>La IA propone</strong> usando el mismo contrato para cualquier proveedor.</p></li><li><span>2</span><p><strong>La plataforma resuelve</strong> las rutas y fórmulas inequívocas.</p></li><li><span>3</span><p><strong>El validador comprueba</strong> cada requisito; si alguno falta, bloquea la aprobación.</p></li></ol></div><div className="need-requirement-list">{viability.requirements.map((item) => { const pending = item.status === 'ambiguous' || item.status === 'unavailable'; const statusLabel = item.status === 'direct' ? 'Directo · fuente verificada' : item.status === 'derivable' ? item.formula ? 'Automático · fórmula' : 'Automático · relación' : item.status === 'ambiguous' ? 'Decisión del analista' : 'No disponible'; return <article className={`need-requirement ${item.status}`} key={item.code}><div><span className="need-status">{statusLabel}</span><h4>{item.label}</h4></div>{item.formula && <p><strong>Fórmula controlada:</strong> {item.formula}</p>}<p>{item.resolution}</p>{item.status === 'derivable' && <small className="automatic-resolution">✓ Se resolverá y volverá a validar al generar la propuesta.</small>}{item.evidence.length > 0 && <details><summary>Ver evidencia técnica</summary><ul>{item.evidence.map((evidence) => <li key={evidence}>{evidence}</li>)}</ul></details>}{pending && <label className="confirmation"><input type="checkbox" checked={acceptedLimitations.includes(item.code)} onChange={() => toggleValue(item.code, acceptedLimitations, setAcceptedLimitations)} />Comprendo esta limitación y acepto continuar sin que el sistema invente una solución.</label>}</article> })}</div></section>}
-      {!viability && <button disabled={!canGenerate || validatingNeed || questions.length === 0 || goal.trim().length < 20}>{validatingNeed ? 'Contrastando con la fuente…' : 'Validar viabilidad'}</button>}
+      {viability && <section className="need-viability" aria-label="Cobertura de la necesidad"><div className="need-viability-heading"><div><p className="eyebrow">Comprobación previa</p><h3>Viabilidad contra los metadatos</h3></div><span>{viability.counts.direct ?? 0} directos · {viability.counts.derivable ?? 0} automáticos · {(viability.counts.ambiguous ?? 0) + (viability.counts.unavailable ?? 0)} por decidir</span></div><div className="derivation-guidance" role="note"><div><strong>¿Qué significa derivable automáticamente?</strong><p>No requiere que seleccione tablas, escriba SQL ni complete fórmulas. Al continuar, la plataforma aplicará únicamente relaciones declaradas y cálculos controlados.</p></div><ol><li><span>1</span><p><strong>La IA propone</strong> usando el mismo contrato para cualquier proveedor.</p></li><li><span>2</span><p><strong>La plataforma resuelve</strong> las rutas y fórmulas inequívocas.</p></li><li><span>3</span><p><strong>El validador comprueba</strong> cada requisito; si alguno falta, bloquea la aprobación.</p></li></ol></div><div className="need-requirement-list">{viability.requirements.map((item) => {
+        const pending = item.status === 'ambiguous' || item.status === 'unavailable'
+        const proposedByAi = item.code.startsWith('ai:')
+        const statusLabel = item.status === 'direct'
+          ? proposedByAi ? 'Referencia estructural comprobada' : 'Directo · fuente verificada'
+          : item.status === 'derivable'
+            ? proposedByAi ? 'Derivación candidata' : item.formula ? 'Automático · fórmula' : 'Automático · relación'
+            : item.status === 'ambiguous' ? 'Decisión del analista' : 'No disponible'
+        return <article className={`need-requirement ${item.status}`} key={item.code}>
+          <div><span className="need-status">{statusLabel}</span><h4>{item.label}</h4></div>
+          {item.formula && <p><strong>{proposedByAi ? 'Interpretación propuesta por IA (no ejecutable):' : 'Fórmula controlada:'}</strong> {item.formula}</p>}
+          <p>{item.resolution}</p>
+          {item.status === 'derivable' && <small className="automatic-resolution">{proposedByAi ? 'Se validará al preparar la propuesta; esta descripción no se ejecuta.' : '✓ Se resolverá y volverá a validar al generar la propuesta.'}</small>}
+          {item.evidence.length > 0 && <details><summary>Ver evidencia técnica</summary><ul>{item.evidence.map((evidence) => <li key={evidence}>{evidence}</li>)}</ul></details>}
+          {pending && <label className="confirmation"><input type="checkbox" checked={acceptedLimitations.includes(item.code)} onChange={() => toggleValue(item.code, acceptedLimitations, setAcceptedLimitations)} />Comprendo esta limitación y acepto continuar sin que el sistema invente una solución.</label>}
+        </article>
+      })}</div></section>}
+      {viability && <div className="need-review-notice" role="note"><p>{viability.review_notice || 'Esta comprobación establece respaldo estructural, no calidad ni existencia de filas. La propuesta y el ETL requieren validaciones posteriores.'}</p>{viability.provider_kind && <small>Revisión asistida: {providerLabel(viability.provider_kind)} · {viability.model_id}</small>}</div>}
+      {!viability && <button disabled={!canGenerate || !needAssistanceAuthorized || validatingNeed || suggestingNeeds || formulatingNeed || questions.length === 0 || goal.trim().length < 20}>{validatingNeed ? 'Contrastando con la fuente…' : 'Validar viabilidad'}</button>}
       {viability && <div className="form-actions"><button disabled={!canGenerate || generating || !viability.can_continue || viability.requires_acknowledgement.some((code) => !acceptedLimitations.includes(code))}>{generating ? 'Resolviendo y validando la propuesta…' : `Generar propuesta y resolver ${viability.counts.derivable ?? 0} derivables`}</button><button type="button" className="secondary" onClick={() => { setViability(null); setAcceptedLimitations([]) }}>Volver a editar</button></div>}
       {!canGenerate && <p className="field-help">Su perfil puede consultar propuestas, pero no generar nuevos intentos.</p>}
       </fieldset>
@@ -2144,7 +2264,7 @@ function AnalysisCatalogPage({ source, token, canWrite }: { source: SourceWorksp
     <label className="domain-selector">Dominio habilitado<select value={domainCode} onChange={(event) => setDomainCode(event.target.value)}>{domains.map((domain) => <option value={domain.code} key={domain.code}>{domain.label}</option>)}</select></label>
     <section className="catalog-technical-evidence" aria-label="Cobertura técnica automática">
       <div className="catalog-section-heading"><div><p className="eyebrow">Descubrimiento automático</p><h2>Cobertura técnica de la fuente</h2><p>{source?.latest_snapshot ? `Instantánea #${source.latest_snapshot.id}. Las referencias se recalculan con los metadatos vigentes.` : 'Cree una instantánea de metadatos para comprobar la cobertura de esta fuente.'}</p></div></div>
-      {technicalDomain ? <div className="catalog-evidence-grid">{technicalDomain.questions.map((item) => <article className={item.available ? 'available' : 'unavailable'} key={item.code}><span>{item.available ? 'Verificable' : 'No disponible'}</span><h3>{item.label}</h3><p>{item.reason}</p>{item.evidence.length > 0 ? <details><summary>Referencias detectadas</summary><ul>{item.evidence.map((reference) => <li key={reference}>{reference}</li>)}</ul></details> : <small>No se encontró evidencia técnica suficiente.</small>}</article>)}</div> : <p className="notice">La cobertura se mostrará cuando exista una instantánea vigente para esta fuente.</p>}
+      {technicalDomain ? <div className="catalog-evidence-grid">{technicalDomain.questions.map((item) => <article className={item.available && item.evidence.length > 0 ? 'available' : item.available ? 'pending' : 'unavailable'} key={item.code}><span>{item.available ? item.evidence.length > 0 ? 'Verificable' : 'Por validar' : 'No disponible'}</span><h3>{item.label}</h3><p>{item.reason}</p>{item.evidence.length > 0 ? <details><summary>Referencias detectadas</summary><ul>{item.evidence.map((reference) => <li key={reference}>{reference}</li>)}</ul></details> : <small>{item.available ? 'La evidencia técnica se comprobará antes de aprobar una propuesta.' : 'No se encontró evidencia técnica suficiente.'}</small>}</article>)}</div> : <p className="notice">La cobertura se mostrará cuando exista una instantánea vigente para esta fuente.</p>}
     </section>
     {feedback && <p className={`notice ${feedback.kind}`} role={feedback.kind === 'error' ? 'alert' : 'status'}>{feedback.message}</p>}
     {loading || !draft ? <p className="notice">Cargando catálogo…</p> : <form className="analysis-catalog-editor" onSubmit={save}>

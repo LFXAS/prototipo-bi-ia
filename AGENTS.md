@@ -19,7 +19,7 @@ Build the academic BI proof of concept described in `docs/scope.md`. Keep the im
 - Treat AdventureWorks as read-only. Frontend restrictions never replace FastAPI authorization or SQL Server permissions.
 - The LLM may propose and explain; deterministic validators and explicit human approval must precede execution.
 - Preserve the current phase boundary. Do not implement business modules unless the active task explicitly requests the next iteration.
-- RBAC is mandatory but currently scaffolded. When implemented, authorization belongs in FastAPI and menus only reflect backend permissions.
+- RBAC is mandatory and implemented. Authorization belongs in FastAPI; menus only reflect backend permissions.
 
 ## Definition of done for every Codex change
 
@@ -50,7 +50,7 @@ Build the academic BI proof of concept described in `docs/scope.md`. Keep the im
 - `copilot`: structured LLM proposals only.
 - `etl`: preview, validation, execution and traceability.
 - `analytics`: KPIs, charts and explainable insights.
-- `forecasting`: linear regression, MAPE and RMSE.
+- Forecasting is outside the approved project scope.
 - `reports`: academic evidence and reports.
 
 Keep dependencies flowing through explicit interfaces; do not let modules execute arbitrary LLM-produced SQL.

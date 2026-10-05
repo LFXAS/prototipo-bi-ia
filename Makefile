@@ -1,4 +1,4 @@
-.PHONY: help env bootstrap build up seed delivery-preview-up ollama-up ollama-pull ollama-status ollama-down release-up release-down down logs ps test lint format-check compose-check workflow-test doctor docs-image logbook sprint-report sprint2-report sprint3-report sprint4-report sprint5-report sprint6-report multisource-test-report thesis-chapter3 technical-manual docs verify
+.PHONY: help env bootstrap build up seed delivery-preview-up ollama-up ollama-pull ollama-status ollama-down release-up release-down down logs ps test lint format-check compose-check workflow-test doctor docs-image logbook sprint-report sprint2-report sprint3-report sprint4-report sprint5-report sprint6-report multisource-test-report qa-audit-report training-guide thesis-chapter3 technical-manual docs verify
 
 COMPOSE := docker compose
 
@@ -30,6 +30,8 @@ help:
 	@echo "  make sprint5-report Regenera el informe PDF del Sprint 5"
 	@echo "  make sprint6-report Regenera el informe PDF del Sprint 6"
 	@echo "  make multisource-test-report Regenera el informe integral multifuente"
+	@echo "  make qa-audit-report Regenera la auditoria operativa para la tesis"
+	@echo "  make training-guide Regenera la guia de formacion BI + IA"
 	@echo "  make thesis-chapter3 Regenera el Capitulo III academico"
 	@echo "  make technical-manual Regenera el manual tecnico PDF"
 	@echo "  make docs           Regenera todos los documentos PDF"
@@ -165,6 +167,18 @@ multisource-test-report: docs-image
 		-v "$$(pwd)/docs:/workspace" -w /workspace/testing \
 		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error Informe_pruebas_integrales_multifuente.tex
 
+qa-audit-report: docs-image
+	docker run --rm --user "$$(id -u):$$(id -g)" \
+		-e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts \
+		-v "$$(pwd)/docs:/workspace" -w /workspace/testing \
+		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error Auditoria_operativa_2026-10-03.tex
+
+training-guide: docs-image
+	docker run --rm --user "$$(id -u):$$(id -g)" \
+		-e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts \
+		-v "$$(pwd)/docs:/workspace" -w /workspace/formacion \
+		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error guia_formacion_bi_ia.tex
+
 thesis-chapter3: docs-image
 	docker run --rm --user "$$(id -u):$$(id -g)" \
 		-e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts \
@@ -177,6 +191,6 @@ technical-manual: docs-image
 		-v "$$(pwd)/docs:/workspace" -w /workspace/manual-tecnico \
 		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error manual-tecnico.tex
 
-docs: logbook sprint-report sprint2-report sprint3-report sprint4-report sprint5-report sprint6-report multisource-test-report thesis-chapter3 technical-manual
+docs: logbook sprint-report sprint2-report sprint3-report sprint4-report sprint5-report sprint6-report multisource-test-report qa-audit-report training-guide thesis-chapter3 technical-manual
 
 verify: compose-check workflow-test test docs

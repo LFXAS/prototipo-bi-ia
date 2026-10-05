@@ -41,7 +41,7 @@ que exista una plantilla técnica copiada entre bases. Se separan cuatro respons
 |---|---|---|
 | Analista BI | Preguntas de negocio, etiquetas comprensibles y periodicidades que desea ofrecer en una fuente. | La configuración se guarda únicamente para `(data_connection_id, domain_code)`. |
 | Plataforma | Tablas, columnas, PK, FK, tipos, rutas de unión, cardinalidad y evidencia disponible en la instantánea seleccionada. | Se vuelve a descubrir al cambiar la instantánea; no se hereda de otra fuente. |
-| LLM | Interpretación del objetivo y propuesta explicada de dimensiones, medidas, KPI y transformaciones. | Sólo puede citar el subconjunto de metadatos entregado y su respuesta no se considera evidencia. |
+| LLM | Sugerencias de necesidades desde el esquema, reformulación y análisis del objetivo, y propuesta explicada de dimensiones, medidas, KPI y transformaciones. | Sólo puede citar los metadatos entregados; su declaración de respaldo debe ser comprobada por el servidor. |
 | Validadores determinísticos | Existencia, tipo, relación, unicidad, granularidad, fórmula, cobertura y trazabilidad. | Una propuesta inválida no puede aprobarse ni materializarse, aunque el proveedor la presente como correcta. |
 
 La pantalla **Catálogo analítico** muestra ambos planos sin mezclarlos: arriba expone la
@@ -67,7 +67,10 @@ cada conexión parte de la línea base y el analista decide si incorpora orienta
 5. El catálogo analítico se consulta y personaliza exclusivamente para esa fuente.
 6. La cobertura técnica del catálogo se recalcula contra la instantánea vigente; la IA
    no decide por sí sola qué capacidades existen.
-7. El asistente valida la necesidad contra la instantánea vigente de la fuente elegida.
+7. El asistente permite escribir, reformular o elegir una necesidad sugerida desde la
+   instantánea vigente de la fuente elegida. El analista autoriza el destino LLM visible
+   antes de enviar estructura; adopta el texto explícitamente y obtiene una revisión
+   IA/reglas persistida antes de generar. La sugerencia no cambia el catálogo por fuente.
 8. La propuesta aprobada conserva la procedencia y el ETL usa esa conexión, aunque
    existan otras fuentes habilitadas.
 9. Analítica filtra los expedientes por fuente y permite cambiar de contexto sin
@@ -93,6 +96,9 @@ cada conexión parte de la línea base y el analista decide si incorpora orienta
 | `POST /api/v1/metadata/snapshots?connection_id={id}` | Captura metadatos de la fuente indicada. |
 | `GET /api/v1/metadata/snapshots?connection_id={id}` | Lista instantáneas de la fuente indicada. |
 | `GET /api/v1/copilot/readiness?connection_id={id}` | Valida preparación del contexto elegido. |
+| `POST /api/v1/copilot/needs/suggest` | Usa la instantánea vigente y el catálogo de su conexión; devuelve necesidades con evidencia, límites y posibilidad de adopción. |
+| `POST /api/v1/copilot/needs/formulate` | Reformula el objetivo bajo los límites de esa misma instantánea. |
+| `POST /api/v1/copilot/needs/viability` | Persiste la revisión IA/reglas del actor, instantánea y entrada; devuelve una huella exigida al generar. |
 | `GET /api/v1/copilot/catalog?...` | Exige que la instantánea pertenezca a la fuente indicada. |
 | `GET/PUT /api/v1/analysis-catalog/domains/{code}?connection_id={id}` | Catálogo aislado por fuente. |
 | `GET /api/v1/copilot/proposals?connection_id={id}` | Versiones generadas para la fuente. |
@@ -107,6 +113,18 @@ cada conexión parte de la línea base y el analista decide si incorpora orienta
 - Activar una conexión no desactiva otras.
 - No se aceptan identificadores de conexión inexistentes, deshabilitados o no probados.
 - Una instantánea sólo puede usarse con la conexión a la que pertenece.
+- Sugerencias, reformulación y revisión previa usan únicamente los metadatos de esa
+  instantánea. No pueden incorporar columnas, relaciones ni evaluaciones de otra fuente.
+- La generación exige una revisión persistida del mismo actor, objetivo, preguntas,
+  período e instantánea. Cambiar de fuente o necesidad invalida la revisión y descarta
+  respuestas en curso; un borrador restaurado no restaura consentimiento de envío.
+- Una revisión anterior a la versión de reglas vigente no habilita otra generación:
+  `need-review-2` conserva registros históricos, pero exige reevaluar. Las
+  comprobaciones de roles precio/costo/tasa/importe y de agrupación temporal son las
+  mismas para ambas fuentes; un nombre nuevo no se considera semánticamente conocido
+  sólo por tener un tipo compatible.
+- El consentimiento de metadatos se vincula a configuración, proveedor, URL y modelo.
+  Si cambia el destino debe renovarse antes de cualquier llamada de asesoría.
 - Un catálogo personalizado en una fuente no cambia el catálogo de otra.
 - Restaurar el catálogo de una fuente recupera su configuración funcional validada,
   pero nunca copia tablas, columnas ni relaciones desde otra base.
@@ -121,6 +139,14 @@ cada conexión parte de la línea base y el analista decide si incorpora orienta
 - Una respuesta tardía de la fuente anterior no puede reemplazar el tablero de la
   fuente actualmente seleccionada. Durante el cambio se muestra un estado de carga sin
   conservar gráficos, filtros ni conversación anteriores.
+- Una respuesta tardía de otro módulo, por ejemplo Roles, tampoco puede
+  tratarse como metadatos al navegar hacia Explorador: cada pantalla renderiza
+  únicamente el resultado correspondiente a su solicitud vigente.
+- El aislamiento técnico no basta para equivalencia comercial: si una fuente
+  dispone de pedidos y facturas como eventos distintos, el contrato conserva
+  cuál fue materializado y bloquea una solicitud explícita de facturación
+  construida sobre pedidos. El control depende de metadatos y relaciones,
+  nunca del nombre configurado de la conexión.
 - Las preguntas sugeridas del copiloto son neutrales o se construyen con filtros reales
   del tablero; no incluyen territorios fijos procedentes de otra base demostrativa.
 - La sugerencia sobre el territorio líder usa el primer territorio verificado del tablero
@@ -175,6 +201,9 @@ cada conexión parte de la línea base y el analista decide si incorpora orienta
 | MS-E2E-07 | Consultar al copiloto analítico en cada fuente. | Pregunta, respuesta y procedencia. | La consulta usa el expediente activo y no incorpora categorías de la otra base. |
 | MS-E2E-08 | Escribir “territorio líder” sin seleccionar manualmente un territorio. | Alcance, Top 5 y denominador de cada fuente. | La plataforma resuelve el líder desde el ranking conciliado vigente antes de ejecutar la agregación segura. |
 | MS-E2E-09 | Abrir y verificar propuestas históricas con ETL conciliado. | Estados antes/después, expediente y cabecera de analítica. | La consulta no retira aprobaciones; Datamart y Analítica conservan la misma pareja ejecución–propuesta. |
+| MS-E2E-10 | Crear facturación nueva cuando ya existe un datamart de pedidos en la misma conexión. | Fuente del hecho, fecha, sumas, conteo documental y capturas de ambas ejecuciones. | Ambos expedientes persisten separados; el panel no confunde pedido, factura ni impuesto. |
+| MS-E2E-11 | Sugerir o reformular una necesidad y revisar su viabilidad en ambas fuentes. | Proveedor/modelo autorizado, instantánea, texto adoptado, referencias y limitaciones, evaluación persistida y capturas. | Cada necesidad usa sólo su fuente; los fallos se conservan como tales y no alteran propuestas ni ETL anteriores. |
+| MS-E2E-12 | Cambiar de fuente o destino LLM mientras existe una revisión o respuesta pendiente. | Pruebas de estado y consentimiento. | Se descarta el resultado anterior; generar requiere revisión y consentimiento vigentes. |
 
 ## Evidencia integral del 1 de octubre de 2026
 
@@ -214,6 +243,44 @@ La ejecución formal de MS-E2E-01 a MS-E2E-09, incluidas las capturas, conciliac
 exportaciones y defectos corregidos, se conserva en
 `docs/testing/Informe_pruebas_integrales_multifuente.pdf`. El informe limita la afirmación
 de universalidad al alcance demostrado: dos fuentes SQL Server del dominio ventas.
+
+### Auditoría adicional del 3 de octubre de 2026
+
+Se completó MS-E2E-10 con la propuesta WWI #114 y la ejecución #15, sin modificar
+la histórica #13. El hecho nuevo procede de líneas de factura, su período usa
+la fecha de factura y la conciliación registró 228.265 filas a cada lado,
+70.510 facturas y 198.043.439,45 de importe con impuesto. El importe antes de
+impuesto calculado por precio por cantidad (172.261.341,20) y el impuesto
+(25.782.098,25) se mantuvieron conceptualmente separados. El tablero permite
+volver a #13, cuyo alcance sigue siendo pedidos, y a AdventureWorks #14 sin
+retener valores o filtros de otra fuente. La respuesta contextual de Claude
+para 2015 coincidió con el expediente #15 y distinguió facturación de cobro.
+Las capturas y escenarios están en `docs/testing/auditoria-operativa-2026-10-03.md`.
+
+La ampliación posterior del asesor de necesidades se evalúa separadamente de ese
+ciclo ETL. El ensayo autorizado con Claude generó dos sugerencias estructuralmente
+usables en AdventureWorks, pero con afirmaciones incorrectas sobre estados; en una
+repetición de WideWorldImporters generó una usable y otra bloqueada. Se detectaron
+además confusión de precio de venta con costo y una agrupación temporal presentada
+como derivación aritmética, que motivaron controles comunes de significado y
+feedback acotado. El cierre posterior es funcional y supervisado: no acredita que
+toda la explicación del LLM sea correcta ni que estas pruebas hayan repetido otro ETL.
+
+La repetición correctiva de WWI sobre importe mensual de líneas de factura produjo
+seis directos, dos derivables, cuatro límites de interpretación y cero requisitos no
+disponibles. Se comprobó la habilitación de generar únicamente tras aceptación
+explícita de los límites, sin crear otra propuesta ni carga. Una necesidad de clima
+externo no se consideró cubierta por los sensores internos existentes y permaneció
+bloqueada sin aceptar alcance parcial. Los escenarios y capturas se conservan en la
+misma auditoría; el resultado corresponde únicamente al objetivo y contexto probados.
+
+AdventureWorks cerró la revisión del objetivo original con once directos, uno
+derivable, cinco ambiguos o advertencias y cero no disponibles. Aceptar los cinco
+límites habilitó generar sin crear propuesta. Su reformulación permaneció no
+utilizable por una capacidad `other` sin validador tras dos intentos; se verificó
+la alternativa de conservar la redacción del analista. Ambas fuentes alcanzaron
+la aceptación funcional supervisada de la puerta previa, no una garantía de
+reformulación exitosa ni otro ciclo completo de BI/ETL.
 
 ## Fuera de alcance
 
