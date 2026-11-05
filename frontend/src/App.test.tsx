@@ -1394,6 +1394,65 @@ describe('App', () => {
     expect(screen.queryByText('No fue posible mostrar esta pantalla')).not.toBeInTheDocument()
   })
 
+  it.each(['verified', 'unresolved'])('presenta las unidades completas de un expediente con divisa %s sin depender de códigos KPI', async (currencyStatus) => {
+    localStorage.setItem('bi_ia_access_token', 'test-token')
+    const kpis = [
+      { code: 'KPI_004', name: 'Importe promedio por pedido', unit: 'moneda de origen por transacción', value: '3491.06567', status: 'reconciled' },
+      { code: 'avg_custom', name: 'Importe por documento externo', unit: 'currency per issued document', value: '21.28', status: 'reconciled' },
+      { code: 'usd_order', name: 'Precio por pedido', unit: 'USD per order', value: '21.28', status: 'reconciled' },
+      { code: 'fractional_quantity', name: 'Cantidad fraccionaria', unit: 'unidades', value: '1.25', status: 'reconciled' },
+      { code: 'documents', name: 'Documentos emitidos', unit: 'documentos', value: '31', status: 'reconciled' },
+      { code: 'loaded_rows', name: 'Filas del indicador', unit: ' ROW ', value: '31', status: 'reconciled' },
+      { code: 'customer_order', name: 'Clientes por pedido', unit: 'clientes por pedido', value: '1.25', status: 'reconciled' },
+      { code: 'custom_score', name: 'Puntuación del análisis', unit: 'puntos', value: '1.25', status: 'reconciled' },
+      { code: 'venta_por_unidad', name: 'Venta por unidad heredada', unit: 'moneda', value: '365.4760316808', status: 'reconciled' },
+    ]
+    const candidate = {
+      proposal_id: 31, metadata_snapshot_id: 2, business_goal: 'Revisar importes y cantidades.', periodicity: 'month',
+      provider_kind: 'proveedor-prueba', model_id: 'modelo-prueba', created_at: '2026-11-05T10:00:00Z', reviewed_at: '2026-11-05T10:10:00Z',
+      reviewed_by_label: 'Revisor', proposal_hash: 'a'.repeat(64), snapshot_hash: 'b'.repeat(64), summary: 'Modelo comercial',
+      grain: 'Una fila por línea.', fact_name: 'fact_ventas', dimensions: ['dim_fecha'], measures: ['importe', 'cantidad', 'documentos'],
+      kpi_count: 1, kpi_recipes: [{ code: 'KPI_004', name: 'Importe promedio por pedido', description: 'Importe dividido para pedidos.', kind: 'ratio', unit: 'moneda de origen por transacción', periodicity: 'inherit', definition_version: 'sales-kpi-v1', inputs: ['importe', 'documentos'], recipe: { template: 'ratio', numerator: 'importe', denominator: 'documentos' } }],
+      transformation_plan: [], warnings: [], eligible: true, blocking_reasons: [], recommended: false,
+    }
+    const execution = {
+      id: 31, proposal_id: 31, metadata_snapshot_id: 2, status: 'succeeded', domain_code: 'ventas',
+      builder_version: 'sales-etl-builder-v1', proposal_hash: 'a'.repeat(64), snapshot_hash: 'b'.repeat(64), selection_document: {}, plan_document: {},
+      validation_document: { message: 'El datamart quedó conciliado.' },
+      metrics_document: {
+        reconciliation: { passed: true, source_rows: 31, datamart_rows: 31, difference_rows: 0 },
+        currency_context: { status: currencyStatus, currency_code: 'USD' },
+        tables: [{ table: 'fact_ventas', source_rows: 31, loaded_rows: 31, deduplicated_rows: 0 }],
+        kpis, semantic_interpretation: { status: 'not_required', message: 'No hubo categorías por revisar.', mappings: [] },
+      },
+      created_by_label: 'Revisor', created_at: '2026-11-05T10:20:00Z', finished_at: '2026-11-05T10:21:00Z',
+    }
+    vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input)
+      if (url.includes('/auth/me')) return { ok: true, status: 200, json: async () => ({ user: { id: 1, email: 'consulta@example.test', full_name: 'Consulta', is_active: true, roles: [] }, permissions: ['etl.executions.read'], menus: [{ id: 20, code: 'sales-datamart', label: 'Datamart de ventas', path: '/datamart-ventas', position: 20, module_code: 'data', module_label: 'Datos', is_active: true, permissions: [] }] }) }
+      if (url.endsWith('/sources')) return { ok: true, status: 200, json: async () => sourceWorkspace() }
+      if (url.includes('/etl/proposals?')) return { ok: true, status: 200, json: async () => ({ items: [candidate], blocked_items: [], recommended_proposal_id: null, guidance: [] }) }
+      if (url.includes('/etl/executions')) return { ok: true, status: 200, json: async () => ({ items: [execution], total: 1, limit: 5, offset: 0 }) }
+      throw new Error(`Solicitud inesperada: ${url}`)
+    }))
+
+    render(<App />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Diseño y transformación BI' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Datamart de ventas' }))
+    await screen.findByRole('heading', { name: 'Indicadores calculados' })
+
+    expect(screen.getByText('Importe promedio por pedido').nextElementSibling).toHaveTextContent(currencyStatus === 'verified' ? /USD\s+3\.491,07 por transacción/ : '3.491,07 moneda de origen por transacción')
+    expect(screen.getByText('Importe por documento externo').nextElementSibling).toHaveTextContent(currencyStatus === 'verified' ? /USD\s+21,28 per issued document/ : '21,28 currency per issued document')
+    expect(screen.getByText('Precio por pedido').nextElementSibling).toHaveTextContent(/USD\s+21,28 per order/)
+    expect(screen.getByText('Cantidad fraccionaria').nextElementSibling).toHaveTextContent('1,25 unidades')
+    expect(screen.getByText('Documentos emitidos').nextElementSibling).toHaveTextContent(/^31 documentos$/)
+    expect(screen.getByText('Filas del indicador').nextElementSibling).toHaveTextContent(/^31 ROW$/)
+    expect(screen.getByText('Clientes por pedido').nextElementSibling).toHaveTextContent('1,25 clientes por pedido')
+    expect(screen.getByText('Puntuación del análisis').nextElementSibling).toHaveTextContent('1,25 puntos')
+    expect(screen.getByText('Venta promedio por unidad vendida').nextElementSibling).toHaveTextContent(currencyStatus === 'verified' ? /USD\s+365,48 por unidad/ : '365,48 moneda de origen por unidad')
+    expect(screen.getByTitle('Valor exacto: 3491.06567')).toBeInTheDocument()
+  })
+
   it('mantiene accesibles los expedientes cuando no hay propuestas habilitadas', async () => {
     localStorage.setItem('bi_ia_access_token', 'test-token')
     const blockedCandidate = {

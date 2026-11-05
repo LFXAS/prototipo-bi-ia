@@ -1578,11 +1578,16 @@ function businessKpiLabel(code: string, fallback: string) {
 }
 
 function businessKpiUnit(code: string, unit: string, currency: Record<string, unknown>) {
-  if (!['costo_por_unidad', 'venta_por_unidad'].includes(code)) return unit
+  const declaredUnit = unit.trim().replace(/\s+/g, ' ')
   const currencyCode = stringValue(currency.currency_code, '')
-  return currency.status === 'verified' && /^[A-Z]{3}$/.test(currencyCode)
-    ? `${currencyCode} por unidad`
-    : 'moneda de origen por unidad'
+  const verifiedCurrency = currency.status === 'verified' && /^[A-Z]{3}$/.test(currencyCode) ? currencyCode : ''
+  const originUnit = declaredUnit.match(/^(?:moneda(?: de origen)?|currency)((?:\s+(?:por|per)\s+.+|\/.+)?)$/i)
+  const resolvedUnit = originUnit && verifiedCurrency ? `${verifiedCurrency}${originUnit[1]}` : declaredUnit
+  // Older catalog recipes omitted the denominator; retain their per-unit meaning.
+  if (['costo_por_unidad', 'venta_por_unidad'].includes(code) && !/(?:\s+(?:por|per)\s+|\/)/i.test(resolvedUnit)) {
+    return `${/^[A-Z]{3}$/.test(resolvedUnit) ? resolvedUnit : verifiedCurrency || 'moneda de origen'} por unidad`
+  }
+  return resolvedUnit
 }
 
 function formatInteger(value: unknown) {
@@ -1590,27 +1595,37 @@ function formatInteger(value: unknown) {
   return Number.isFinite(number) ? new Intl.NumberFormat('es-EC', { maximumFractionDigits: 0 }).format(number) : '—'
 }
 
+function isCountKpiUnit(unit: string) {
+  const normalized = unit.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+  return /^(?:pedidos?|clientes?|filas?|facturas?|transaccion(?:es)?|documentos?|registros?|lineas?|conteos?|orders?|customers?|rows?|invoices?|transactions?|documents?|records?|lines?|counts?)$/.test(normalized)
+}
+
+function kpiCurrencyUnit(unit: string) {
+  const parsed = unit.match(/^([A-Z]{3})((?:\s+(?:por|per)\s+.+|\/.+)?)$/i)
+  return parsed && /^[A-Z]{3}$/.test(parsed[1]) && !isCountKpiUnit(unit) ? parsed : null
+}
+
 function formatKpiValue(value: unknown, unit: string) {
   const number = typeof value === 'number' ? value : Number(value)
   if (!Number.isFinite(number)) return '—'
-  const currency = unit.match(/^([A-Z]{3})(?: por unidad)?$/)
+  const currency = kpiCurrencyUnit(unit)
   if (currency) {
     return new Intl.NumberFormat('es-EC', {
       style: 'currency', currency: currency[1], currencyDisplay: 'code', minimumFractionDigits: 2, maximumFractionDigits: 2,
     }).format(number)
   }
-  const isCount = /(unidad|pedido|cliente|registro|fila)/i.test(unit)
-  const isMoney = /moneda/i.test(unit)
+  const isCount = isCountKpiUnit(unit)
   return new Intl.NumberFormat('es-EC', {
-    minimumFractionDigits: isMoney ? 2 : 0,
-    maximumFractionDigits: isMoney ? 2 : isCount ? 0 : 2,
+    minimumFractionDigits: isCount ? 0 : 2,
+    maximumFractionDigits: isCount ? 0 : 2,
   }).format(number)
 }
 
 function formatKpiDisplay(value: unknown, unit: string) {
   const formatted = formatKpiValue(value, unit)
-  if (/^[A-Z]{3}$/.test(unit) || formatted === '—') return formatted
-  if (/^[A-Z]{3} por unidad$/.test(unit)) return `${formatted} por unidad`
+  if (formatted === '—') return formatted
+  const currency = kpiCurrencyUnit(unit)
+  if (currency) return `${formatted}${currency[2]}`
   return `${formatted} ${unit}`
 }
 
