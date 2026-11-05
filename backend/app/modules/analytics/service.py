@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Iterable
+from datetime import date
 from decimal import Decimal
 from typing import Any
 
@@ -9,6 +10,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.copilot.models import BiProposal
+from app.modules.etl.materializer import _relations, _shortest_path
 from app.modules.etl.models import EtlExecution
 from app.modules.metadata.models import MetadataSnapshot
 from app.modules.parameters.models import DataConnection
@@ -33,6 +35,48 @@ _MART_SCHEMA = re.compile(r"^mart_ventas(?:_e[1-9][0-9]*)?$")
 
 class AnalyticsUnavailableError(RuntimeError):
     """Raised when the current materialized mart cannot support a dashboard."""
+
+
+_TIMELINE_PERIODS = {
+    "daily": ("day", "día"),
+    "weekly": ("week", "semana"),
+    "monthly": ("month", "mes"),
+    "quarterly": ("quarter", "trimestre"),
+    "yearly": ("year", "año"),
+}
+_MONTH_LABELS = ("Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic")
+_PROPOSAL_PERIOD_ALIASES = {
+    "day": "daily",
+    "week": "weekly",
+    "month": "monthly",
+    "quarter": "quarterly",
+    "year": "yearly",
+}
+
+
+def _timeline_period(recipe: dict[str, Any], proposal_periodicity: str) -> str:
+    value = str(recipe.get("periodicity", "inherit"))
+    if value == "inherit":
+        value = proposal_periodicity
+    # Catalog/proposal periods and KPI periods use two closed vocabularies.
+    value = _PROPOSAL_PERIOD_ALIASES.get(value, value)
+    if value not in _TIMELINE_PERIODS:
+        raise AnalyticsUnavailableError("La periodicidad del indicador no está soportada.")
+    return value
+
+
+def _timeline_label(period: str, start: date) -> tuple[str, str]:
+    if period == "daily":
+        return start.isoformat(), start.strftime("%d/%m/%Y")
+    if period == "weekly":
+        iso_year, iso_week, _ = start.isocalendar()
+        return f"{iso_year:04d}-W{iso_week:02d}", f"Sem {iso_week:02d} {iso_year}"
+    if period == "quarterly":
+        quarter = (start.month - 1) // 3 + 1
+        return f"{start.year:04d}-Q{quarter}", f"T{quarter} {start.year}"
+    if period == "yearly":
+        return str(start.year), str(start.year)
+    return f"{start.year:04d}-{start.month:02d}", f"{_MONTH_LABELS[start.month - 1]} {start.year}"
 
 
 def _safe_identifier(value: object) -> str:
@@ -95,6 +139,128 @@ def _dict_items(value: object) -> list[dict[str, Any]]:
     if not isinstance(value, list):
         return []
     return [item for item in value if isinstance(item, dict)]
+
+
+def dimension_temporal_caveat() -> str:
+    return (
+        "Los atributos dimensionales reflejan el estado disponible en el origen durante el ETL. "
+        "No se verifica que esos atributos fueran vigentes en la fecha del hecho ni que "
+        "representen una entrega realizada; la fecha del hecho no demuestra esas condiciones."
+    )
+
+
+def dimension_provenance(
+    execution: EtlExecution, proposal: BiProposal, snapshot: MetadataSnapshot
+) -> dict[str, Any]:
+    """Describe the existing full-load semantics and the builder's FK paths, never rows."""
+    document = proposal.proposal_document
+    fact = document.get("fact", {})
+    fact = fact if isinstance(fact, dict) else {}
+    fact_sources = [str(value) for value in fact.get("source_tables", [])]
+    graph = _relations(snapshot.schema_document)
+    dimensions = []
+    for dimension in _dict_items(document.get("dimensions")):
+        sources = [str(value) for value in dimension.get("source_tables", [])]
+        path = []
+        path_status = "unavailable"
+        if len(fact_sources) == 1 and len(sources) == 1:
+            try:
+                # Reuse precisely the path resolver used for the materialized fact.
+                path = [
+                    {
+                        "left_table": left,
+                        "right_table": right,
+                        "left_columns": left_columns,
+                        "right_columns": right_columns,
+                    }
+                    for left, right, left_columns, right_columns in _shortest_path(
+                        graph, fact_sources[0], sources[0]
+                    )
+                ]
+                path_status = (
+                    "same_source" if fact_sources[0] == sources[0] else "declared_foreign_keys"
+                )
+            except ValueError:
+                pass
+        display = dimension.get("display_label")
+        label_provenance = None
+        if isinstance(display, dict):
+            base_source = sources[0] if len(sources) == 1 else None
+            label_provenance = {
+                "target_name": str(display.get("target_name", "")),
+                "fallback_source_table": base_source,
+                "fallback_column": str(
+                    display.get("fallback_column", dimension.get("business_key", ""))
+                ),
+                "variants": [
+                    {
+                        "source_table": str(variant.get("source_table", "")),
+                        "columns": [str(value) for value in variant.get("columns", [])],
+                        "operation": str(variant.get("operation", "")),
+                        "relationship": (
+                            {
+                                "left_table": base_source,
+                                "right_table": str(variant.get("source_table", "")),
+                                "left_columns": [
+                                    str(value) for value in variant.get("left_columns", [])
+                                ],
+                                "right_columns": [
+                                    str(value) for value in variant.get("right_columns", [])
+                                ],
+                            }
+                            if variant.get("source_table") != base_source
+                            else None
+                        ),
+                    }
+                    for variant in _dict_items(display.get("variants"))
+                ],
+            }
+        dimensions.append(
+            {
+                "name": str(dimension.get("name", "")),
+                "source_tables": sources,
+                "business_key": str(dimension.get("business_key", "")),
+                "attributes": [str(value) for value in dimension.get("attributes", [])],
+                "relationship_path_status": path_status,
+                "relationship_path": path,
+                "label_provenance": label_provenance,
+            }
+        )
+    return {
+        "execution_id": execution.id,
+        "proposal_id": proposal.id,
+        "fact_source_tables": fact_sources,
+        "etl_started_at": execution.started_at.isoformat() if execution.started_at else None,
+        "etl_finished_at": execution.finished_at.isoformat() if execution.finished_at else None,
+        "etl_timestamps_semantics": "execution_window_not_exact_source_read_time",
+        "dimension_value_semantics": "source_state_read_during_etl",
+        "source_last_updated_at_verified": False,
+        "single_transactional_snapshot_verified": False,
+        "scd2_implemented": False,
+        "historical_effective_dates_verified": False,
+        "dimension_values_at_fact_time_verified": False,
+        "delivery_events_verified": False,
+        "fact_date_establishes_dimension_validity": False,
+        "dimensions": dimensions,
+        "caveat": dimension_temporal_caveat(),
+    }
+
+
+def dimension_provenance_insight(
+    execution: EtlExecution, proposal: BiProposal, snapshot: MetadataSnapshot
+) -> AnalyticsInsightRead:
+    provenance = dimension_provenance(execution, proposal, snapshot)
+    sources = sorted(
+        {source for dimension in provenance["dimensions"] for source in dimension["source_tables"]}
+    )
+    source_note = ", ".join(sources) or "sin fuentes dimensionales detalladas en el contrato"
+    return AnalyticsInsightRead(
+        code="dimension_temporal_provenance",
+        title="Vigencia de los atributos dimensionales",
+        statement=dimension_temporal_caveat(),
+        evidence=f"Ejecución ETL #{execution.id}. Fuentes dimensionales: {source_note}.",
+        tone="attention",
+    )
 
 
 def _order_scope_note(proposal_document: dict[str, Any], metadata_document: dict[str, Any]) -> str:
@@ -427,7 +593,7 @@ def _insights(visuals: list[AnalyticsVisualRead], unit: str) -> list[AnalyticsIn
                     ),
                     evidence=(
                         f"Comparación directa de {first.value:,.2f} y {last.value:,.2f} "
-                        f"{unit}; no prueba una tendencia ni causalidad y los meses extremos "
+                        f"{unit}; no prueba una tendencia ni causalidad y los períodos extremos "
                         "pueden tener cobertura parcial."
                     ),
                     tone=tone,
@@ -437,7 +603,7 @@ def _insights(visuals: list[AnalyticsVisualRead], unit: str) -> list[AnalyticsIn
             AnalyticsInsightRead(
                 code="peak_period",
                 title="Período de mayor valor",
-                statement=f"{peak.label} concentra el valor mensual más alto de la selección.",
+                statement=f"{peak.label} concentra el valor por período más alto de la selección.",
                 evidence=f"Valor conciliado: {peak.value:,.2f} {unit}.",
                 tone="positive",
             )
@@ -863,35 +1029,22 @@ async def build_dashboard(
             )
         )
 
+    timeline_period = _timeline_period(selected_recipe, proposal.periodicity)
+    bucket, period_label = _TIMELINE_PERIODS[timeline_period]
     timeline_rows = (
         await session.execute(
             text(
-                f"SELECT EXTRACT(YEAR FROM d.{_quoted(date_column)})::int AS year, "
-                f"EXTRACT(MONTH FROM d.{_quoted(date_column)})::int AS month, "
+                f"SELECT date_trunc('{bucket}', d.{_quoted(date_column)})::date AS period_start, "
                 f"{expression} AS value "
-                f"{from_sql} GROUP BY 1, 2 ORDER BY 1, 2"
+                f"{from_sql} GROUP BY 1 ORDER BY 1"
             ),
             params,
         )
     ).all()
-    month_names = (
-        "Ene",
-        "Feb",
-        "Mar",
-        "Abr",
-        "May",
-        "Jun",
-        "Jul",
-        "Ago",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dic",
-    )
     timeline = [
         AnalyticsPointRead(
-            key=f"{row.year:04d}-{row.month:02d}",
-            label=f"{month_names[row.month - 1]} {row.year}",
+            key=_timeline_label(timeline_period, row.period_start)[0],
+            label=_timeline_label(timeline_period, row.period_start)[1],
             value=_number(row.value),
         )
         for row in timeline_rows
@@ -902,7 +1055,7 @@ async def build_dashboard(
         AnalyticsVisualRead(
             code="trend",
             title="Evolución en el tiempo",
-            subtitle=f"{metric_name} por mes",
+            subtitle=f"{metric_name} por {period_label}",
             kind="line",
             dimension="Fecha",
             points=timeline,
@@ -1048,7 +1201,10 @@ async def build_dashboard(
         ),
         kpis=kpis,
         visuals=visuals,
-        insights=_insights(visuals, metric_unit),
+        insights=[
+            dimension_provenance_insight(execution, proposal, snapshot),
+            *_insights(visuals, metric_unit),
+        ],
         quality=AnalyticsQualityRead(
             source_rows=int(reconciliation.get("source_rows", 0)),
             datamart_rows=int(reconciliation.get("datamart_rows", 0)),

@@ -2,7 +2,203 @@ from __future__ import annotations
 
 from copy import deepcopy
 
-from app.modules.copilot.needs import assess_business_need
+import pytest
+
+from app.modules.copilot.needs import assess_business_need, requests_invoice_event
+
+
+@pytest.mark.parametrize(
+    ("goal", "expected"),
+    [
+        ("Analizar pedidos mensuales, sin asumir facturación.", False),
+        ("Analizar pedidos y no facturas.", False),
+        ("Analyze orders, not invoices.", False),
+        ("Analyze orders without invoiced revenue.", False),
+        ("Analizar facturas, no pedidos.", True),
+        ("Analyze invoiced revenue, not orders.", True),
+        ("No sólo facturas sino también pedidos.", True),
+        ("Analizar importe sin excluir facturas.", True),
+        ("Analizar importe; no excluir facturas.", True),
+        ("Analyze amounts without excluding invoices.", True),
+        ("Analyze amounts; do not exclude invoices.", True),
+        ("Analizar importe; nunca incluir facturas.", False),
+        ("Analyze amounts; never include invoices.", False),
+    ],
+)
+def test_original_invoice_intent_distinguishes_positive_request_from_exclusion(goal, expected):
+    business_request = request(goal)
+    assert requests_invoice_event(business_request) is expected
+    assessment = assess_business_need(DOCUMENT, business_request)
+    assert (
+        any(item["code"] == "goal:invoiced_sales" for item in assessment["requirements"])
+        is expected
+    )
+
+
+def test_invoice_requested_by_original_question_is_not_lost():
+    business_request = {
+        "goal": "Comparar importes comerciales",
+        "questions": [{"instruction": "Analizar facturas emitidas por mes, sin asumir cobros."}],
+    }
+    assert requests_invoice_event(business_request) is True
+
+
+@pytest.mark.parametrize(
+    "goal",
+    [
+        "Analizar importe; no excluir clientes ni productos, sin asumir costos.",
+        "Analyze amounts; do not exclude customers nor products, without assuming costs.",
+        "Analizar importe sin omitir clientes ni productos, excluyendo costos.",
+        "Analyze amounts without omitting customers nor products, excluding costs.",
+    ],
+)
+def test_negated_exclusion_keeps_all_entities_but_not_a_later_real_exclusion(goal):
+    business_request = request(goal)
+    business_request["questions"] = []
+    requirements = assess_business_need(DOCUMENT, business_request)["requirements"]
+    codes = {item["code"] for item in requirements}
+    assert {"goal:customer", "goal:product"} <= codes
+    assert not {"goal:unit_cost", "goal:total_cost", "goal:gross_margin"} & codes
+
+
+@pytest.mark.parametrize(
+    "goal",
+    [
+        "Conservar el importe de origen sin asumir moneda, utilidad ni composición fiscal. "
+        "Limitar los indicadores a importe total, unidades totales, facturas distintas e "
+        "importe promedio por factura.",
+        "Keep the source amount without assuming currency, profit or tax composition. "
+        "Limit indicators to total amount, total units, distinct invoices and average "
+        "amount per invoice.",
+    ],
+)
+def test_coordinated_caution_is_not_an_additional_margin_requirement(goal):
+    business_request = request(goal)
+    business_request["questions"] = []
+    result = assess_business_need(DOCUMENT, business_request)
+    requirements = {item["code"]: item for item in result["requirements"]}
+    assert "goal:gross_margin" not in requirements
+    assert "goal:unit_cost" not in requirements
+    assert "goal:total_cost" not in requirements
+    assert "goal:gross_margin" not in result["requires_acknowledgement"]
+    assert {
+        "goal:sales_amount",
+        "goal:quantity",
+        "goal:transactions",
+        "goal:average_transaction",
+        "goal:invoiced_sales",
+    } <= requirements.keys()
+
+
+@pytest.mark.parametrize(
+    ("goal", "absent"),
+    [
+        (
+            "Analizar ventas sin calcular costos ni descuentos.",
+            {"unit_cost", "total_cost", "discount_amount"},
+        ),
+        (
+            "Analyze sales without calculating costs or discounts.",
+            {"unit_cost", "total_cost", "discount_amount"},
+        ),
+        (
+            "Analizar ventas, no clientes, productos ni territorios.",
+            {"customer", "product", "territory"},
+        ),
+        (
+            "Analyze sales, not customers, products or territories.",
+            {"customer", "product", "territory"},
+        ),
+        (
+            "Comparar importe; excluir promedio por pedido y venta por unidad.",
+            {"average_transaction", "sales_per_unit", "transactions", "quantity"},
+        ),
+        (
+            "Compare amount; exclude average per order and sales per unit.",
+            {"average_transaction", "sales_per_unit", "transactions", "quantity"},
+        ),
+        ("Analizar ventas sin cantidades ni fechas.", {"quantity", "date"}),
+        ("Analyze sales without quantities or dates.", {"quantity", "date"}),
+    ],
+)
+def test_exclusions_apply_to_all_capabilities_and_derived_formulas(goal, absent):
+    business_request = request(goal)
+    business_request["questions"] = []
+    business_request["periodicity"] = {}
+    result = assess_business_need(DOCUMENT, business_request)
+    codes = {item["code"] for item in result["requirements"]}
+    assert "goal:sales_amount" in codes
+    assert not {f"goal:{capability}" for capability in absent} & codes
+
+
+@pytest.mark.parametrize(
+    "goal",
+    [
+        "Sin asumir moneda, calcular utilidad por producto.",
+        "Without assuming currency, calculate profit by product.",
+        "No analizar descuentos, sino margen por producto.",
+        "Do not analyze discounts, but compare margin by product.",
+        "No sólo ventas sino también utilidad por producto.",
+        "Not only sales but also profit by product.",
+        "Analizar ventas sin moneda y calcular margen por producto.",
+        "Analyze sales without currency and calculate margin by product.",
+        "No calcular utilidad. Comparar margen por producto.",
+        "Do not calculate profit. Compare margin by product.",
+    ],
+)
+def test_positive_margin_request_survives_exclusions_and_correlative_language(goal):
+    document = deepcopy(DOCUMENT)
+    document["schemas"][1]["tables"][0]["columns"] = [{"name": "ProductID", "data_type": "int"}]
+    business_request = request(goal)
+    business_request["questions"] = []
+    result = assess_business_need(document, business_request)
+    requirements = {item["code"]: item for item in result["requirements"]}
+    assert requirements["goal:gross_margin"]["status"] == "unavailable"
+    assert "goal:gross_margin" in result["requires_acknowledgement"]
+
+
+@pytest.mark.parametrize("code", ["top_products", "custom_comparison"])
+@pytest.mark.parametrize(
+    "instruction",
+    [
+        "Comparar ventas por producto sin asumir costos, clientes ni cantidades.",
+        "Compare sales by product without assuming costs, customers or quantity.",
+    ],
+)
+def test_selected_question_scans_positive_instructions_without_readding_exclusions(
+    code, instruction
+):
+    business_request = request("Comparar ventas por producto.")
+    business_request["questions"] = [{"code": code, "instruction": instruction}]
+    result = assess_business_need(DOCUMENT, business_request)
+    question = next(item for item in result["requirements"] if item["code"] == f"question:{code}")
+    assert set(question["components"]) == {"sales_amount", "product"}
+
+
+def test_positive_selected_question_is_not_erased_by_an_opposite_goal_caution():
+    business_request = request("Comparar ventas sin asumir costos.")
+    business_request["questions"] = [
+        {"code": "custom_cost", "instruction": "Calcular costos por producto."}
+    ]
+    result = assess_business_need(DOCUMENT, business_request)
+    question = next(
+        item for item in result["requirements"] if item["code"] == "question:custom_cost"
+    )
+    assert "unit_cost" in question["components"]
+
+
+def test_question_with_only_exclusions_stays_ambiguous_without_fabricated_components():
+    business_request = request("Comparar ventas por producto.")
+    business_request["questions"] = [
+        {"code": "custom_caution", "instruction": "No asumir utilidad, costos ni demanda."}
+    ]
+    result = assess_business_need(DOCUMENT, business_request)
+    question = next(
+        item for item in result["requirements"] if item["code"] == "question:custom_caution"
+    )
+    assert question["status"] == "ambiguous"
+    assert question["components"] == []
+
 
 DOCUMENT = {
     "schemas": [

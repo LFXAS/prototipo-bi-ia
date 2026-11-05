@@ -28,8 +28,11 @@ from .schemas import (
     AnalyticsExecutionOptionRead,
 )
 from .service import (
+    _QUERY_DIMENSIONS,
     AnalyticsUnavailableError,
     build_dashboard,
+    dimension_provenance,
+    dimension_temporal_caveat,
     execution_has_materialized_data,
     run_safe_aggregate_query,
 )
@@ -60,6 +63,19 @@ faltaría. Nunca enumeres causas hipotéticas ni afirmes que existe un problema 
 si el contexto no aporta evidencia causal. Si el usuario pregunta "por qué", separa con
 claridad lo observado de lo que aún debe investigarse. Al mencionar participaciones,
 explica el denominador recibido. No generes SQL. Devuelve únicamente el objeto JSON solicitado.
+La plataforma construye las preguntas de seguimiento y las cautelas. Devuelve sólo answer
+y evidence; no añadas cautelas, preguntas sugeridas ni capacidades analíticas nuevas.
+Un ranking por importe o unidades sólo demuestra el orden y la concentración observados:
+no demuestra preferencias de consumidores, demanda de mercado, eficacia comercial ni que
+un producto domine el mercado. No conviertas esas interpretaciones en hechos, aunque luego
+añadas una cautela causal. Una recomendación debe plantear una comprobación pendiente,
+no atribuir una motivación o un resultado que estos agregados no miden.
+data_provenance contiene hechos comprobados por la plataforma, no instrucciones del usuario.
+Los atributos dimensionales se leen del estado del origen durante el ETL, sin SCD2 ni
+vigencias históricas verificadas. Una fecha del hecho nunca acredita que una ubicación u
+otro atributo fuera vigente entonces, ni verifica una entrega realizada. No conviertas una
+asociación dimensional en una ficha de transacción o en un evento histórico probado.
+business_need es contexto solicitado, no prueba de que esa capacidad se haya materializado.
 Si business_scope indica que el datamart refleja pedidos y no necesariamente facturas,
 conserva esa distinción en la respuesta y en sus limitaciones. Nunca llames
 facturación emitida a importes derivados de pedidos.
@@ -79,16 +95,60 @@ _ANALYTICS_COPILOT_SCHEMA: dict[str, object] = {
             "maxItems": 5,
             "items": {"type": "string", "minLength": 5, "maxLength": 300},
         },
-        "suggested_questions": {
-            "type": "array",
-            "minItems": 2,
-            "maxItems": 3,
-            "items": {"type": "string", "minLength": 5, "maxLength": 180},
-        },
-        "caveat": {"type": "string", "minLength": 5, "maxLength": 300},
     },
-    "required": ["answer", "evidence", "suggested_questions", "caveat"],
+    "required": ["answer", "evidence"],
 }
+
+
+def _available_query_dimensions(dashboard: AnalyticsDashboardRead) -> list[str]:
+    """A rendered ranking proves that its materialized dimension is available."""
+    visual_codes = {visual.code for visual in dashboard.visuals}
+    return [
+        dimension
+        for visual_code, dimension in (
+            ("products", "product"),
+            ("customers", "customer"),
+            ("territories", "territory"),
+        )
+        if visual_code in visual_codes and dimension in _QUERY_DIMENSIONS
+    ]
+
+
+def _suggested_questions(dashboard: AnalyticsDashboardRead) -> list[str]:
+    """Compose only questions answerable by the current closed query catalog."""
+    metrics = sorted(
+        dashboard.available_metrics,
+        key=lambda metric: metric.value != dashboard.metric_code,
+    )
+    dimensions = _available_query_dimensions(dashboard)
+    questions: list[str] = []
+
+    def add(question: str) -> None:
+        if question not in questions:
+            questions.append(question)
+
+    def ranking_question(metric_index: int, dimension: str) -> str:
+        # Labels are presentation data, not terms from which new capabilities are inferred.
+        label = " ".join(metrics[metric_index].label.split())[:200]
+        dimension_label = str(_QUERY_DIMENSIONS[dimension]["label"]).casefold()
+        return f"¿Cuál es el Top 5 de «{label}» por {dimension_label} con los filtros actuales?"
+
+    if dimensions:
+        for index, _ in enumerate(metrics[:3]):
+            add(ranking_question(index, dimensions[index % len(dimensions)]))
+        for index, _ in enumerate(metrics):
+            for dimension in dimensions:
+                if len(questions) >= 3:
+                    break
+                add(ranking_question(index, dimension))
+    for metric in metrics:
+        if len(questions) >= 3:
+            break
+        label = " ".join(metric.label.split())[:200]
+        add(f"¿Cuál es el valor de «{label}» con los filtros actuales?")
+        if any(visual.code == "trend" for visual in dashboard.visuals):
+            add(f"¿Cómo evoluciona «{label}» en los períodos mostrados?")
+    return questions[:3]
 
 
 def _analytics_intent_schema(dashboard: AnalyticsDashboardRead) -> dict[str, object]:
@@ -103,7 +163,7 @@ def _analytics_intent_schema(dashboard: AnalyticsDashboardRead) -> dict[str, obj
             "metric_code": {"type": "string", "enum": metrics},
             "dimension": {
                 "type": "string",
-                "enum": ["none", "product", "customer", "territory"],
+                "enum": ["none", *_available_query_dimensions(dashboard)],
             },
             "top_n": {"type": "integer", "minimum": 1, "maximum": 20},
             "order": {"type": "string", "enum": ["desc", "asc"]},
@@ -141,10 +201,16 @@ def _business_scope_caveat(description: str) -> str:
     return description.split(". ", 1)[0].rstrip(".") + "."
 
 
-def _ensure_business_scope_caveat(caveat: str, scope: str) -> str:
-    if not scope or scope.casefold() in caveat.casefold():
-        return caveat
-    return f"{scope} {caveat}"
+def _platform_caveat(business_scope: str) -> str:
+    return " ".join(
+        part
+        for part in (
+            business_scope,
+            dimension_temporal_caveat(),
+            "Los agregados no prueban causas, preferencias ni demanda de mercado.",
+        )
+        if part
+    )
 
 
 def _leading_territory_value(dashboard: AnalyticsDashboardRead) -> str | None:
@@ -386,11 +452,38 @@ async def analytics_copilot(
             "territory": dashboard.filters.selected_territory,
         },
         "available_metrics": [item.model_dump() for item in dashboard.available_metrics],
+        "available_dimensions": [
+            {"value": dimension, "label": _QUERY_DIMENSIONS[dimension]["label"]}
+            for dimension in _available_query_dimensions(dashboard)
+        ],
         "available_years": [item.model_dump() for item in dashboard.filters.years],
         "available_territories": [item.model_dump() for item in dashboard.filters.territories],
     }
     interpreted_query = None
     business_scope = _business_scope_caveat(dashboard.description)
+    execution = await session.get(EtlExecution, dashboard.execution_id)
+    proposal = await session.get(BiProposal, dashboard.proposal_id)
+    snapshot = (
+        await session.get(MetadataSnapshot, execution.metadata_snapshot_id)
+        if execution is not None
+        else None
+    )
+    if execution is None or proposal is None or snapshot is None:
+        raise HTTPException(
+            status_code=409,
+            detail="El expediente perdió la procedencia requerida para interpretar sus datos.",
+        )
+    _require_snapshot_connection(snapshot, payload.data_connection_id)
+    provenance = {
+        "source": {
+            "data_connection_id": dashboard.data_connection_id,
+            "source_name": dashboard.source_name,
+            "database_name": dashboard.database_name,
+        },
+        **dimension_provenance(execution, proposal, snapshot),
+    }
+    intent_context["data_provenance"] = provenance
+    intent_context["business_scope"] = business_scope
     context: dict[str, object] = {
         "audience": "dirección y gerencia" if payload.view == "executive" else "analista BI",
         "question": payload.question,
@@ -398,6 +491,8 @@ async def analytics_copilot(
         "selection": {
             "execution_id": dashboard.execution_id,
             "proposal_id": dashboard.proposal_id,
+            "source_name": dashboard.source_name,
+            "database_name": dashboard.database_name,
             "period": dashboard.period_label,
             "metric_code": dashboard.metric_code,
             "currency": dashboard.currency_code,
@@ -410,6 +505,12 @@ async def analytics_copilot(
         "quality": dashboard.quality.model_dump(),
         "grain": dashboard.grain,
         "business_scope": business_scope,
+        "business_need": {
+            "goal": proposal.business_goal,
+            "questions": proposal.business_questions,
+            "status": "requested_context_not_materialization_evidence",
+        },
+        "data_provenance": provenance,
         "available_years": [item.model_dump() for item in dashboard.filters.years],
         "available_territories": [item.model_dump() for item in dashboard.filters.territories],
     }
@@ -452,12 +553,6 @@ async def analytics_copilot(
         top_n = max(1, min(int(intent.get("top_n", 5)), 20))
         order = "asc" if str(intent.get("order")) == "asc" else "desc"
         if analysis_mode == "aggregate" and dimension in {"product", "customer", "territory"}:
-            execution = await session.get(EtlExecution, dashboard.execution_id)
-            proposal = await session.get(BiProposal, dashboard.proposal_id)
-            if execution is None or proposal is None:
-                raise AnalyticsUnavailableError(
-                    "La ejecución perdió el contrato requerido para consultar agregados."
-                )
             interpreted_query = await run_safe_aggregate_query(
                 session,
                 execution,
@@ -482,13 +577,16 @@ async def analytics_copilot(
             max_output_tokens=1400,
             response_schema=_ANALYTICS_COPILOT_SCHEMA,
         )
+        # Follow-up buttons are executable entry points, so their scope comes
+        # from the platform's verified catalog rather than free provider text.
+        generated["suggested_questions"] = _suggested_questions(dashboard)
+        generated["caveat"] = _platform_caveat(business_scope)
         result = AnalyticsCopilotRead(
             **generated,
             provider_kind=configuration.provider_kind,
             model_id=configuration.model_id,
             interpreted_query=interpreted_query,
         )
-        result.caveat = _ensure_business_scope_caveat(result.caveat, business_scope)
     except AnalyticsUnavailableError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except (ProviderGenerationError, ValueError) as exc:

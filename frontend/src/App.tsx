@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { FormEvent, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 
 import {
   api,
@@ -464,43 +464,61 @@ const historyFilterOptions = [
   { value: 'all', label: 'Todas', statuses: [] },
 ]
 
+type RevisionChoice = Record<string, unknown> & { editor_key: string; editor_included: boolean; editor_editable: boolean; editor_reason: string }
+
+function revisionChoices(item: BiProposal, kind: 'measure' | 'dimension' | 'kpi'): RevisionChoice[] {
+  const document = item.proposal_document
+  const decisions = objectValue(document.ai_decisions)
+  const key = kind === 'kpi' ? 'code' : 'name'
+  const collection = kind === 'measure' ? 'measures' : kind === 'dimension' ? 'dimensions' : 'kpis'
+  const raw = arrayValue(decisions[collection])
+  const effective = arrayValue(kind === 'measure' ? objectValue(document.fact).measures : document[collection])
+  const effectiveByKey = new Map(effective.map((value) => [stringValue(value[key], ''), value]))
+  const rawKeys = new Set(raw.map((value) => stringValue(value[key], '')))
+  const rawMeasureNames = new Set(arrayValue(decisions.measures).map((value) => stringValue(value.name, '')))
+  const diagnostics = arrayValue(document.decision_diagnostics)
+  const choices = raw.map((value, index) => {
+    const id = stringValue(value[key], '')
+    const compiled = effectiveByKey.get(id)
+    const diagnostic = diagnostics.filter((entry) => entry.kind === kind && entry.code === id).at(-1)
+    // Never merge raw source_column/calculation into a compiled measure that
+    // deliberately replaced or removed them. The name/code is the stable join.
+    const result = { ...(compiled ?? value) }
+    if (!compiled && !result.calculation && result.calculation_operation !== 'direct') {
+      const inputs = stringArrayValue(result.calculation_inputs)
+      if (inputs.length) result.calculation = { operation: result.calculation_operation, inputs }
+    }
+    const primaryMeasure = stringValue(objectValue(compiled?.formula).measure, stringArrayValue(compiled?.inputs)[0] ?? '')
+    const editable = kind !== 'kpi' || !compiled || !primaryMeasure || rawMeasureNames.has(primaryMeasure)
+    return { ...result, editor_key: `${kind}:${index}:${id}`, editor_included: Boolean(compiled), editor_editable: editable, editor_reason: !editable ? 'La receta depende de una salida añadida por la validación y se conserva automáticamente.' : compiled ? '' : stringValue(diagnostic?.reason, 'Esta decisión no forma parte del contrato actual.') }
+  })
+  return [...choices, ...effective.filter((value) => !rawKeys.has(stringValue(value[key], ''))).map((value, index) => ({ ...value, editor_key: `${kind}:compiled:${index}:${stringValue(value[key], '')}`, editor_included: true, editor_editable: false, editor_reason: 'Salida añadida por la validación. Se conserva automáticamente; este formulario no modifica su origen.' }))]
+}
+
 function revisionFromProposal(item: BiProposal): ProposalRevision {
-  const decisions = objectValue(item.proposal_document.ai_decisions)
-  const measures = arrayValue(decisions.measures)
-  const includedKpis = new Set(arrayValue(item.proposal_document.kpis).map((kpi) => stringValue(kpi.code, '')).filter(Boolean))
-  const decisionKpis = arrayValue(decisions.kpis)
+  const measures = revisionChoices(item, 'measure')
+  const includedMeasures = measures.filter((measure) => measure.editor_included && measure.editor_editable)
+  const decisionKpis = revisionChoices(item, 'kpi')
+  const rawMeasures = arrayValue(objectValue(item.proposal_document.ai_decisions).measures)
   const storedCalculations = Object.fromEntries(measures.map((measure) => {
     const calculation = objectValue(measure.calculation)
     const operation = stringValue(calculation.operation, '')
     const inputs = stringArrayValue(calculation.inputs)
     return operation && inputs.length >= 2 ? [stringValue(measure.name, ''), { operation, inputs }] : []
   }).filter((entry) => entry.length === 2)) as ProposalRevision['measure_calculations']
-  const factSource = stringValue(decisions.fact_source, '')
-  const factColumns = (item.scope_document.tables ?? []).find((table) => table.ref === factSource)?.columns ?? []
-  const numericNames = factColumns.filter((column) => /tinyint|smallint|int|bigint|decimal|numeric|money|float|real/i.test(column.type)).map((column) => column.name)
-  const derivedCalculations = Object.fromEntries(measures.flatMap((measure) => {
-    const name = stringValue(measure.name, '')
-    const source = stringValue(measure.source_column, '')
-    if (!/(discount|descuento)/i.test(source) || /(amount|importe|monto|total|value|valor)/i.test(source)) return []
-    const discount = numericNames.filter((column) => /(discount|descuento)/i.test(column) && !/(amount|importe|monto|total|value|valor)/i.test(column))
-    const price = numericNames.filter((column) => /(price|precio)/i.test(column) && !/(discount|descuento)/i.test(column))
-    const quantity = numericNames.filter((column) => /(qty|quantity|cantidad|units|unidades)/i.test(column))
-    return discount.length === 1 && price.length === 1 && quantity.length === 1
-      ? [[name, { operation: 'multiply' as const, inputs: [price[0], discount[0], quantity[0]] }]]
-      : []
-  }))
   return {
-    summary: stringValue(decisions.summary, stringValue(item.proposal_document.summary, 'Propuesta dimensional')),
-    grain_description: stringValue(decisions.grain_description, stringValue(objectValue(item.proposal_document.grain).description, 'Una fila por operación de negocio.')),
-    dimension_names: arrayValue(decisions.dimensions).map((dimension) => stringValue(dimension.name, '')).filter(Boolean),
-    measure_names: measures.map((measure) => stringValue(measure.name, '')).filter(Boolean),
-    kpi_codes: decisionKpis.map((kpi) => stringValue(kpi.code, '')).filter((code) => code && includedKpis.has(code)),
+    summary: stringValue(item.proposal_document.summary, 'Propuesta dimensional'),
+    grain_description: stringValue(objectValue(item.proposal_document.grain).description, 'Una fila por operación de negocio.'),
+    dimension_names: revisionChoices(item, 'dimension').filter((dimension) => dimension.editor_included && dimension.editor_editable).map((dimension) => stringValue(dimension.name, '')).filter(Boolean),
+    measure_names: includedMeasures.map((measure) => stringValue(measure.name, '')).filter(Boolean),
+    kpi_codes: decisionKpis.filter((kpi) => kpi.editor_included && kpi.editor_editable).map((kpi) => stringValue(kpi.code, '')).filter(Boolean),
     kpi_measure_names: Object.fromEntries(decisionKpis.map((kpi) => {
+      const formula = objectValue(kpi.formula)
       const index = Number(kpi.measure_index ?? 0)
-      return [stringValue(kpi.code, ''), stringValue(measures[index]?.name, '')]
+      return [stringValue(kpi.code, ''), stringValue(formula.measure, stringArrayValue(kpi.inputs)[0] ?? stringValue(rawMeasures[index]?.name, ''))]
     }).filter(([code, measure]) => code && measure)),
     measure_aggregations: Object.fromEntries(measures.map((measure) => [stringValue(measure.name, ''), stringValue(measure.aggregation, 'sum')])) as ProposalRevision['measure_aggregations'],
-    measure_calculations: { ...derivedCalculations, ...storedCalculations },
+    measure_calculations: storedCalculations,
     comment: '',
   }
 }
@@ -524,7 +542,7 @@ function measureExecutionRule(
   calculation?: ProposalRevision['measure_calculations'][string],
 ) {
   const symbols: Record<string, string> = { multiply: ' × ', add: ' + ', subtract: ' − ', divide: ' ÷ ' }
-  const expression = calculation?.inputs.length
+  const expression = calculation?.inputs?.length
     ? calculation.inputs.join(symbols[calculation.operation] ?? ` ${calculation.operation} `)
     : measureSourceColumn(item)
   if (!expression) return 'Regla pendiente de comprobar'
@@ -536,6 +554,8 @@ function measureExecutionRule(
 }
 
 function qualifiedMeasureSource(item: Record<string, unknown>, factSource: string) {
+  const references = stringArrayValue(objectValue(item.provenance).source_references)
+  if (references.length) return references.join(' · ')
   const source = measureSourceColumn(item)
   if (!source) return factSource || 'Origen pendiente de comprobar'
   return source.includes('.') || !factSource ? source : `${factSource}.${source}`
@@ -554,12 +574,14 @@ function MeasureRevisionEditor({
   draft,
   numericColumns,
   factSource,
+  kpiDependencies,
   onChange,
 }: {
-  measures: Record<string, unknown>[]
+  measures: RevisionChoice[]
   draft: ProposalRevision
   numericColumns: string[]
   factSource: string
+  kpiDependencies: Record<string, string[]>
   onChange: (value: ProposalRevision) => void
 }) {
   const operationLabels = {
@@ -569,10 +591,11 @@ function MeasureRevisionEditor({
     divide: 'Dividir el primero para el segundo',
   }
   return <fieldset><legend>Medidas, agregaciones y cálculos controlados</legend>
-    <p className="field-help">La plataforma aplica automáticamente las correcciones inequívocas. Si debe intervenir, sólo puede usar columnas numéricas existentes y operaciones seguras; nunca SQL libre.</p>
+    <p className="field-help">El contrato actual muestra el origen y la regla comprobados. Los cambios del borrador se validarán al crear otra versión. Compare nombre, origen y regla: dos importes pueden representar conceptos distintos.</p>
+    <p>Contrato actual: {measures.filter((item) => item.editor_included).length} medidas incluidas · {measures.filter((item) => !item.editor_included).length} decisiones fuera del contrato.</p>
     <div className="revision-grid">{measures.map((item) => {
       const name = stringValue(item.name, '')
-      const selected = draft.measure_names.includes(name)
+      const selected = item.editor_editable ? draft.measure_names.includes(name) : item.editor_included
       const calculation = draft.measure_calculations[name]
       const aggregation = draft.measure_aggregations[name] ?? 'sum'
       const orderedOperation = calculation?.operation === 'subtract' || calculation?.operation === 'divide'
@@ -583,14 +606,16 @@ function MeasureRevisionEditor({
         else delete calculations[name]
         onChange({ ...draft, measure_calculations: calculations })
       }
-      return <article className={calculation ? 'calculated-measure-card' : ''} key={name}>
-        <label className="measure-choice"><input type="checkbox" checked={selected} onChange={() => {
-          const dependentKpis = Object.entries(draft.kpi_measure_names).filter(([, measure]) => measure === name).map(([code]) => code)
+      return <article className={calculation ? 'calculated-measure-card' : ''} key={item.editor_key}>
+        <label className="measure-choice"><input type="checkbox" disabled={!item.editor_editable} checked={selected} onChange={() => {
+          const dependentKpis = Object.entries(draft.kpi_measure_names).filter(([code, measure]) => measure === name || kpiDependencies[code]?.includes(name)).map(([code]) => code)
           onChange({ ...draft, measure_names: selected ? draft.measure_names.filter((value) => value !== name) : [...draft.measure_names, name], kpi_codes: selected ? draft.kpi_codes.filter((code) => !dependentKpis.includes(code)) : draft.kpi_codes })
-        }} /><span className="measure-identity"><strong>{semanticRoleLabel(semanticRole(item))}</strong><small>Identificador técnico</small><code>{name}</code></span></label>
-        <label className="measure-aggregation"><span>Agregación</span><select aria-label={`Agregación de ${name}`} disabled={!selected} value={aggregation} onChange={(event) => onChange({ ...draft, measure_aggregations: { ...draft.measure_aggregations, [name]: event.target.value as ProposalRevision['measure_aggregations'][string] } })}><option value="sum">Suma</option><option value="count">Conteo</option><option value="count_distinct">Conteo distinto</option><option value="average">Promedio</option><option value="min">Mínimo</option><option value="max">Máximo</option></select></label>
-        <div className="measure-provenance"><span><b>Origen:</b> <code>{qualifiedMeasureSource(item, factSource)}</code></span><span><b>Regla ejecutable:</b> <code>{measureExecutionRule(item, aggregation, calculation)}</code></span></div>
-        {calculation ? <div className="controlled-calculation">
+        }} /><span className="measure-identity"><strong>{name}</strong><small>{item.editor_included ? 'Función del contrato' : 'Función propuesta por IA'}</small><span>{semanticRoleLabel(semanticRole(item))}</span><small>Identificador técnico</small><code>{name}</code></span></label>
+        <p className="field-help">{item.editor_included ? 'Incluida en el contrato actual.' : 'Fuera del contrato actual · no ejecutable.'} {item.editor_reason}</p>
+        {!item.editor_included && selected && <p className="notice warning">Reintroducida sólo en el borrador. Debe superar de nuevo la validación antes de ejecutarse.</p>}
+        <label className="measure-aggregation"><span>Agregación</span><select aria-label={`Agregación de ${name}`} disabled={!selected || !item.editor_editable} value={aggregation} onChange={(event) => onChange({ ...draft, measure_aggregations: { ...draft.measure_aggregations, [name]: event.target.value as ProposalRevision['measure_aggregations'][string] } })}><option value="sum">Suma</option><option value="count">Conteo</option><option value="count_distinct">Conteo distinto</option><option value="average">Promedio</option><option value="min">Mínimo</option><option value="max">Máximo</option></select></label>
+        <div className="measure-provenance"><span><b>{item.editor_included ? 'Origen validado:' : 'Origen propuesto, no validado:'}</b> <code>{qualifiedMeasureSource(item, factSource)}</code></span>{item.editor_included && <span><b>Regla del contrato actual:</b> <code>{measureExecutionRule(item, stringValue(item.aggregation, 'sum') as ProposalRevision['measure_aggregations'][string], objectValue(item.calculation) as ProposalRevision['measure_calculations'][string])}</code></span>}<span><b>Regla del borrador, pendiente de validar:</b> <code>{measureExecutionRule(item, aggregation, calculation)}</code></span></div>
+        <fieldset disabled={!selected || !item.editor_editable}>{calculation ? <div className="controlled-calculation">
           <div><strong>{recommended ? 'Corrección automática recomendada' : 'Columna calculada controlada'}</strong><button className="secondary compact" type="button" onClick={() => updateCalculation()}>Usar columna directa</button></div>
           {recommended && <p>Se detectó una tasa usada como importe. La receta precio × tasa × cantidad produce el descuento monetario por fila.</p>}
           <label>Operación<select value={calculation.operation} onChange={(event) => updateCalculation({ operation: event.target.value as typeof calculation.operation, inputs: [] })}>{Object.entries(operationLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
@@ -599,7 +624,7 @@ function MeasureRevisionEditor({
             <label>Segundo valor<select value={calculation.inputs[1] ?? ''} onChange={(event) => updateCalculation({ ...calculation, inputs: [calculation.inputs[0] ?? '', event.target.value].filter(Boolean) })}><option value="">Seleccione una columna</option>{numericColumns.filter((column) => column !== calculation.inputs[0]).map((column) => <option key={column} value={column}>{column}</option>)}</select></label>
           </div> : <fieldset className="formula-inputs"><legend>Factores o componentes, en orden</legend>{numericColumns.map((column) => <label key={column}><input type="checkbox" checked={calculation.inputs.includes(column)} disabled={!calculation.inputs.includes(column) && calculation.inputs.length >= 4} onChange={() => updateCalculation({ ...calculation, inputs: calculation.inputs.includes(column) ? calculation.inputs.filter((value) => value !== column) : [...calculation.inputs, column] })} />{column}</label>)}</fieldset>}
           <small>El sistema verificará tipo, existencia, cantidad de entradas y trazabilidad antes de crear la versión.</small>
-        </div> : <button className="secondary compact" type="button" disabled={!selected || numericColumns.length < 2} onClick={() => updateCalculation({ operation: 'multiply', inputs: [] })}>Definir cálculo controlado</button>}
+        </div> : <button className="secondary compact" type="button" disabled={!selected || numericColumns.length < 2} onClick={() => updateCalculation({ operation: 'multiply', inputs: [] })}>Definir cálculo controlado</button>}</fieldset>
       </article>
     })}</div>
   </fieldset>
@@ -712,6 +737,7 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
   const [confirmedConcepts, setConfirmedConcepts] = useState<string[]>([])
   const [adviceConceptCode, setAdviceConceptCode] = useState<string | null>(null)
   const [revisionDraft, setRevisionDraft] = useState<ProposalRevision | null>(null)
+  const [revisionSourceId, setRevisionSourceId] = useState<number | null>(null)
   const [generating, setGenerating] = useState(false)
   const [savingRevision, setSavingRevision] = useState(false)
   const [relationCatalog, setRelationCatalog] = useState<ControlledRelationCatalog | null>(null)
@@ -731,6 +757,7 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
   const [previewingSemantics, setPreviewingSemantics] = useState(false)
   const [recoveryNotice, setRecoveryNotice] = useState(recoveryDraft ? 'Recuperamos el borrador local. Compruebe la necesidad y continúe desde el paso guardado.' : '')
   const restoredProposal = useRef(false)
+  const proposalSelectionVersion = useRef(0)
   const needRequestId = useRef(0)
 
   useEffect(() => {
@@ -774,8 +801,11 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
 
   useEffect(() => {
     if (!catalog || !recoveryDraft?.proposalId || restoredProposal.current) return
-    restoredProposal.current = true
+    let cancelled = false
+    const selectionVersion = proposalSelectionVersion.current
     void api.proposal(token, recoveryDraft.proposalId).then((savedProposal) => {
+      if (cancelled || selectionVersion !== proposalSelectionVersion.current) return
+      restoredProposal.current = true
       setProposal(savedProposal)
       setDraftProposalId(savedProposal.id)
       setGoal(savedProposal.business_goal)
@@ -787,10 +817,13 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
       setRevisionDraft(revisionFromProposal(savedProposal))
       setStep(recoveryDraft.step)
     }).catch(() => {
+      if (cancelled || selectionVersion !== proposalSelectionVersion.current) return
+      restoredProposal.current = true
       setDraftProposalId(undefined)
       setStep(1)
       setRecoveryNotice('La versión guardada ya no está disponible. Conservamos la necesidad para que pueda validarla nuevamente.')
     })
+    return () => { cancelled = true }
   }, [catalog, recoveryDraft, token])
 
   async function refreshHistory(domainCode = selectedDomainCode, offset = historyOffset, filter = historyFilter) {
@@ -829,6 +862,7 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
   function selectDomain(code: string) {
     const domain = catalog?.domains.find((item) => item.code === code)
     if (!domain?.available) return
+    invalidateProposalRecovery()
     setSelectedDomainCode(code)
     setGoal('')
     setQuestions([])
@@ -847,6 +881,7 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
   }
 
   function changeDomain() {
+    invalidateProposalRecovery()
     invalidateNeedAssessment()
     localStorage.removeItem(assistantDraftKey)
     setRecoveryNotice('')
@@ -854,6 +889,7 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
   }
 
   function startNewProposal() {
+    invalidateProposalRecovery()
     localStorage.removeItem(assistantDraftKey)
     setRecoveryNotice('')
     setProposal(null)
@@ -896,6 +932,14 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
     setViability(null)
     setAcceptedLimitations([])
     setFeedback(null)
+  }
+
+  function invalidateProposalRecovery() {
+    restoredProposal.current = true
+    proposalSelectionVersion.current += 1
+    setRevisionSourceId(null)
+    setVerifying(false)
+    setPreviewingSemantics(false)
   }
 
   function needInput() {
@@ -995,7 +1039,9 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
         viability_hash: viability.assessment_hash,
         accepted_limitations: acceptedLimitations,
       })
+      invalidateProposalRecovery()
       setProposal(result)
+      setDraftProposalId(result.id)
       setSemanticPreview(null)
       setVerification(null)
       setExcludedConcepts(defaultExcludedConcepts(result))
@@ -1066,6 +1112,7 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
   }
 
   function selectSavedProposal(item: BiProposal) {
+    invalidateProposalRecovery()
     invalidateNeedAssessment()
     setProposal(item)
     setDraftProposalId(item.id)
@@ -1074,6 +1121,10 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
     setNeedFormulation(null)
     setVerification(null)
     setSemanticPreview(null)
+    setRelationCatalog(null)
+    setRelationDimension('')
+    setRelationOptionId('')
+    setRelationComment('')
     setGoal(item.business_goal)
     setQuestions(item.business_questions)
     setPeriodicity(item.periodicity)
@@ -1096,9 +1147,11 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
 
   async function verifyEvidence() {
     if (!proposal) return
+    const selectionVersion = proposalSelectionVersion.current
     setVerifying(true); setFeedback(null)
     try {
       const result = await api.verifyProposal(token, proposal.id)
+      if (selectionVersion !== proposalSelectionVersion.current) return
       setVerification(result)
       setFeedback({
         kind: result.approval_safe ? (result.compatibility_warning ? 'warning' : 'success') : 'error',
@@ -1109,23 +1162,27 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
           : `La versión #${proposal.id} presenta diferencias bloqueantes que deben revisarse.`,
       })
     } catch (caught) {
+      if (selectionVersion !== proposalSelectionVersion.current) return
       setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible verificar la evidencia.' })
-    } finally { setVerifying(false) }
+    } finally { if (selectionVersion === proposalSelectionVersion.current) setVerifying(false) }
   }
 
   async function previewSemanticIdentity() {
     if (!proposal) return
+    const selectionVersion = proposalSelectionVersion.current
     setPreviewingSemantics(true); setFeedback(null)
     try {
       const result = await api.semanticPreview(token, proposal.id)
+      if (selectionVersion !== proposalSelectionVersion.current) return
       setSemanticPreview(result)
       setFeedback({
         kind: result.all_passed ? 'success' : 'error',
         message: result.message,
       })
     } catch (caught) {
+      if (selectionVersion !== proposalSelectionVersion.current) return
       setFeedback({ kind: 'error', message: caught instanceof Error ? caught.message : 'No fue posible comprobar los nombres descriptivos.' })
-    } finally { setPreviewingSemantics(false) }
+    } finally { if (selectionVersion === proposalSelectionVersion.current) setPreviewingSemantics(false) }
   }
 
   async function restoreApproval() {
@@ -1147,19 +1204,31 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
   }
 
   function openPersonalization(item = proposal) {
-    if (!item) return
+    if (!item || !canGenerate || !['ready_for_review', 'approved', 'invalidated', 'validation_failed'].includes(item.status)) return
+    const selectionVersion = proposalSelectionVersion.current
+    setRevisionSourceId(item.id)
     setRevisionDraft(revisionFromProposal(item))
     setRelationCatalog(null)
     setRelationDimension('')
     setRelationOptionId('')
     setRelationComment('')
     void api.relationOptions(token, item.id).then((catalog) => {
+      if (selectionVersion !== proposalSelectionVersion.current) return
       setRelationCatalog(catalog)
       setRelationDimension(catalog.dimension_names[0] ?? '')
       setRelationOptionId(catalog.options.find((option) => option.eligible)?.option_id ?? '')
-    }).catch((caught: Error) => setFeedback({ kind: 'error', message: caught.message }))
+    }).catch((caught: Error) => {
+      if (selectionVersion === proposalSelectionVersion.current) setFeedback({ kind: 'error', message: caught.message })
+    })
     setFeedback(null)
     setStep(4)
+  }
+
+  function viewProposalStep(nextStep: number) {
+    setRevisionSourceId(null)
+    if (proposal) setRevisionDraft(revisionFromProposal(proposal))
+    setAdviceConceptCode(null)
+    setStep(nextStep)
   }
 
   async function saveControlledRelation() {
@@ -1167,10 +1236,7 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
     setSavingRelation(true); setFeedback(null)
     try {
       const revised = await api.reviseRelation(token, proposal.id, { dimension_name: relationDimension, option_id: relationOptionId, comment: relationComment })
-      setProposal(revised)
-      setRevisionDraft(revisionFromProposal(revised))
-      setVerification(null)
-      setRelationCatalog(null)
+      selectSavedProposal(revised)
       setStep(3)
       await refreshHistory(selectedDomainCode, 0, historyFilter)
       setFeedback({ kind: revised.status === 'ready_for_review' ? 'success' : 'error', message: revised.status === 'ready_for_review' ? `La relación fue corregida en la versión #${revised.id} y volvió a superar todas las reglas.` : `La versión #${revised.id} conserva observaciones bloqueantes; revise la matriz de cobertura.` })
@@ -1183,10 +1249,15 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
     if (!proposal || !revisionDraft) return
     setSavingRevision(true); setFeedback(null)
     try {
-      const revised = await api.reviseProposal(token, proposal.id, revisionDraft)
-      setProposal(revised)
-      setRevisionDraft(revisionFromProposal(revised))
-      setVerification(null)
+      const selectedMeasures = new Set(revisionDraft.measure_names)
+      const selectedKpis = new Set(revisionDraft.kpi_codes)
+      const revised = await api.reviseProposal(token, proposal.id, {
+        ...revisionDraft,
+        measure_aggregations: Object.fromEntries(Object.entries(revisionDraft.measure_aggregations).filter(([name]) => selectedMeasures.has(name))),
+        measure_calculations: Object.fromEntries(Object.entries(revisionDraft.measure_calculations).filter(([name]) => selectedMeasures.has(name))),
+        kpi_measure_names: Object.fromEntries(Object.entries(revisionDraft.kpi_measure_names).filter(([code]) => selectedKpis.has(code))),
+      })
+      selectSavedProposal(revised)
       setStep(3)
       setFeedback({ kind: revised.status === 'ready_for_review' ? 'success' : 'error', message: revised.status === 'ready_for_review' ? `La personalización creó la versión #${revised.id} y superó la validación estructural.` : `La versión #${revised.id} requiere correcciones antes de aprobarse.` })
       await refreshHistory(selectedDomainCode, 0, historyFilter)
@@ -1232,21 +1303,24 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
   const semanticQuality = arrayValue(document.semantic_quality)
   const validation = proposal?.validation_document
   const revisionDecisions = objectValue(proposal?.proposal_document.ai_decisions)
-  const revisionDimensions = arrayValue(revisionDecisions.dimensions)
-  const revisionMeasures = arrayValue(revisionDecisions.measures)
-  const revisionKpis = arrayValue(revisionDecisions.kpis)
-  const revisionFactSource = stringValue(revisionDecisions.fact_source, '')
+  const revisionDimensions = proposal ? revisionChoices(proposal, 'dimension') : []
+  const revisionMeasures = proposal ? revisionChoices(proposal, 'measure') : []
+  const revisionKpis = proposal ? revisionChoices(proposal, 'kpi') : []
+  const revisionKpiDependencies = Object.fromEntries(revisionKpis.map((kpi) => [stringValue(kpi.code, ''), stringArrayValue(kpi.inputs)]))
+  const revisionSelectedMeasures = new Set([...(revisionDraft?.measure_names ?? []), ...revisionMeasures.filter((measure) => measure.editor_included && !measure.editor_editable).map((measure) => stringValue(measure.name, ''))])
+  const revisionFactSource = stringArrayValue(fact.source_tables)[0] ?? stringValue(revisionDecisions.fact_source, '')
   const revisionNumericColumns = (proposal?.scope_document.tables ?? [])
     .find((table) => table.ref === revisionFactSource)?.columns
     ?.filter((column) => /tinyint|smallint|int|bigint|decimal|numeric|money|float|real/i.test(column.type))
     .map((column) => column.name) ?? []
   const selectedRelationOption = relationCatalog?.options?.find((item) => item.option_id === relationOptionId)
   const proposalReadOnly = Boolean(proposal && ['approved', 'rejected', 'invalidated', 'discarded'].includes(proposal.status))
+  const creatingRevision = Boolean(proposal && step === 4 && revisionSourceId === proposal.id)
   return <>
     <div className="assistant-context"><div><p className="eyebrow">Dominio seleccionado</p><strong>{selectedDomain.label}</strong><span>{source.connection?.name} · instantánea #{source.latest_snapshot?.id}</span></div><button className="secondary" onClick={changeDomain}>Cambiar tipo de datamart</button></div>
     <p className="lead">Describa una necesidad comercial. La IA interpretará metadatos, propondrá el modelo y la aplicación comprobará cada referencia antes de su revisión.</p>
-    <ol className={`assistant-stepper ${proposalReadOnly ? 'read-only' : ''}`} aria-label={`Paso ${step} de 5`}>{['Necesidad', 'Conceptos', 'Propuesta', 'Personalización', 'Revisión'].map((label, index) => <li className={step === index + 1 ? 'current' : step > index + 1 ? 'complete' : ''} key={label}>{proposalReadOnly ? <button type="button" aria-current={step === index + 1 ? 'step' : undefined} onClick={() => { setAdviceConceptCode(null); setStep(index + 1) }}><span>{index + 1}</span>{label}</button> : <><span>{index + 1}</span>{label}</>}</li>)}</ol>
-    {proposalReadOnly && <section className="notice read-only-notice"><div><strong>Consulta de la versión #{proposal?.id}.</strong><span>Puede recorrer las cinco etapas para revisar lo aprobado. Los campos y decisiones permanecen bloqueados.</span></div><button type="button" onClick={startNewProposal}>Crear nueva propuesta</button></section>}
+    <ol className={`assistant-stepper ${proposalReadOnly ? 'read-only' : ''}`} aria-label={`Paso ${step} de 5`}>{['Necesidad', 'Conceptos', 'Propuesta', 'Personalización', 'Revisión'].map((label, index) => <li className={step === index + 1 ? 'current' : step > index + 1 ? 'complete' : ''} key={label}>{proposalReadOnly ? <button type="button" aria-current={step === index + 1 ? 'step' : undefined} onClick={() => viewProposalStep(index + 1)}><span>{index + 1}</span>{label}</button> : <><span>{index + 1}</span>{label}</>}</li>)}</ol>
+    {proposalReadOnly && <section className="notice read-only-notice"><div><strong>{creatingRevision ? `Nueva versión a partir de #${proposal?.id}.` : `Consulta de la versión #${proposal?.id}.`}</strong><span>{creatingRevision ? 'Los ajustes se guardarán como otra versión y volverán a validarse. La versión original conserva su estado y sus datos.' : 'Puede recorrer las cinco etapas para revisar lo aprobado. Los campos y decisiones permanecen bloqueados.'}</span></div><button type="button" onClick={startNewProposal}>Crear nueva propuesta</button></section>}
     {recoveryNotice && <p className="notice success" role="status"><strong>Avance restaurado.</strong> {recoveryNotice}</p>}
     {feedback && <p className={`notice ${feedback.kind}`} role={feedback.kind === 'error' ? 'alert' : 'status'}>{feedback.message}</p>}
     {step === 1 && <form className="analysis-panel" onSubmit={(event) => { event.preventDefault(); if (proposalReadOnly) return; if (viability) void generate([]); else void validateNeed() }}>
@@ -1378,14 +1452,39 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
       </fieldset>
     </section>}
     {step === 4 && proposal && revisionDraft && <section className="analysis-panel revision-panel">
-      <fieldset className="read-only-scope" disabled={proposalReadOnly}>
+      <fieldset className="read-only-scope" disabled={proposalReadOnly && !creatingRevision}>
       <div className="form-title"><div><p className="eyebrow">Paso 4 · Supervisión del analista BI</p><h2>Personalizar sin escribir SQL</h2></div><span>Los ajustes crean una nueva versión y vuelven a pasar por las reglas determinísticas.</span></div>
       <label>Resumen de negocio<input maxLength={160} value={revisionDraft.summary} onChange={(event) => setRevisionDraft({ ...revisionDraft, summary: event.target.value })} /></label>
       <label>Granularidad propuesta<textarea rows={2} maxLength={240} value={revisionDraft.grain_description} onChange={(event) => setRevisionDraft({ ...revisionDraft, grain_description: event.target.value })} /></label>
-      <fieldset><legend>Dimensiones incluidas</legend><div className="choice-grid">{revisionDimensions.map((item) => { const name = stringValue(item.name, ''); return <label key={name}><input type="checkbox" checked={revisionDraft.dimension_names.includes(name)} onChange={() => setRevisionDraft({ ...revisionDraft, dimension_names: revisionDraft.dimension_names.includes(name) ? revisionDraft.dimension_names.filter((value) => value !== name) : [...revisionDraft.dimension_names, name] })} />{name}</label> })}</div></fieldset>
-      <MeasureRevisionEditor measures={revisionMeasures} draft={revisionDraft} numericColumns={revisionNumericColumns} factSource={revisionFactSource} onChange={setRevisionDraft} />
-      <fieldset><legend>KPIs incluidos y medida asociada</legend><div className="kpi-revision-grid">{revisionKpis.map((item) => { const code = stringValue(item.code, ''); const role = semanticRole(item); const compatible = revisionMeasures.filter((measure) => semanticRole(measure) === role && revisionDraft.measure_names.includes(stringValue(measure.name, ''))); const selectedMeasure = revisionDraft.kpi_measure_names[code] ?? ''; const unavailable = compatible.length === 0; const selected = revisionDraft.kpi_codes.includes(code); return <article className={unavailable ? 'unavailable-choice' : ''} key={code}><label><input type="checkbox" disabled={unavailable} checked={!unavailable && selected} onChange={() => { const nextSelected = !selected; const fallback = compatible.some((measure) => stringValue(measure.name, '') === selectedMeasure) ? selectedMeasure : stringValue(compatible[0]?.name, ''); setRevisionDraft({ ...revisionDraft, kpi_codes: nextSelected ? [...revisionDraft.kpi_codes, code] : revisionDraft.kpi_codes.filter((value) => value !== code), kpi_measure_names: { ...revisionDraft.kpi_measure_names, [code]: fallback } }) }} /><span className="measure-identity"><strong>{stringValue(item.name, code)}</strong><small>Función de negocio</small><span>{semanticRoleLabel(role)}</span><small>Identificador técnico</small><code>{code}</code></span></label>{unavailable ? <p><strong>No disponible:</strong> no existe una medida seleccionada con la misma función semántica. Excluya este KPI o genere una versión que incluya esa medida.</p> : <label className="compatible-measure-field"><span>Medida compatible</span><select aria-label={`Medida para ${stringValue(item.name, code)}`} disabled={!selected} value={compatible.some((measure) => stringValue(measure.name, '') === selectedMeasure) ? selectedMeasure : stringValue(compatible[0]?.name, '')} onChange={(event) => setRevisionDraft({ ...revisionDraft, kpi_measure_names: { ...revisionDraft.kpi_measure_names, [code]: event.target.value } })}>{compatible.map((measure) => { const name = stringValue(measure.name, ''); return <option value={name} key={name}>{semanticRoleLabel(semanticRole(measure))} — {name}</option> })}</select></label>}</article> })}</div></fieldset>
-      {!proposalReadOnly && <section className="relation-correction-panel" aria-labelledby="relation-correction-title">
+      <fieldset><legend>Dimensiones incluidas</legend><div className="choice-grid">{revisionDimensions.map((item) => { const name = stringValue(item.name, ''); return <label key={item.editor_key}><input type="checkbox" disabled={!item.editor_editable} checked={item.editor_editable ? revisionDraft.dimension_names.includes(name) : item.editor_included} onChange={() => setRevisionDraft({ ...revisionDraft, dimension_names: revisionDraft.dimension_names.includes(name) ? revisionDraft.dimension_names.filter((value) => value !== name) : [...revisionDraft.dimension_names, name] })} />{name}</label> })}</div></fieldset>
+      <MeasureRevisionEditor measures={revisionMeasures} draft={revisionDraft} numericColumns={revisionNumericColumns} factSource={revisionFactSource} kpiDependencies={revisionKpiDependencies} onChange={setRevisionDraft} />
+      <fieldset><legend>KPIs incluidos y medida asociada</legend>
+        <p>Contrato actual: {revisionKpis.filter((item) => item.editor_included).length} KPI incluidos · {revisionKpis.filter((item) => !item.editor_included).length} decisiones fuera del contrato.</p>
+        <div className="kpi-revision-grid">{revisionKpis.map((item) => {
+          const code = stringValue(item.code, '')
+          const role = semanticRole(item)
+          const compatible = revisionMeasures.filter((measure) => measure.editor_editable && semanticRole(measure) === role && revisionSelectedMeasures.has(stringValue(measure.name, '')))
+          const selectedMeasure = revisionDraft.kpi_measure_names[code] ?? ''
+          const missingInputs = stringArrayValue(item.inputs).filter((name) => !revisionSelectedMeasures.has(name))
+          const unavailable = item.editor_editable && (compatible.length === 0 || missingInputs.length > 0)
+          const selected = item.editor_editable ? revisionDraft.kpi_codes.includes(code) : item.editor_included
+          const formula = objectValue(item.formula)
+          const currentRule = stringValue(objectValue(item.provenance).formula, `${stringValue(formula.operation, '')}(${stringValue(formula.measure, '')})`)
+          return <article className={unavailable ? 'unavailable-choice' : ''} key={item.editor_key}>
+            <label><input type="checkbox" disabled={unavailable || !item.editor_editable} checked={!unavailable && selected} onChange={() => {
+              const nextSelected = !selected
+              const fallback = compatible.some((measure) => stringValue(measure.name, '') === selectedMeasure) ? selectedMeasure : stringValue(compatible[0]?.name, '')
+              setRevisionDraft({ ...revisionDraft, kpi_codes: nextSelected ? [...revisionDraft.kpi_codes, code] : revisionDraft.kpi_codes.filter((value) => value !== code), kpi_measure_names: { ...revisionDraft.kpi_measure_names, [code]: fallback } })
+            }} /><span className="measure-identity"><strong>{stringValue(item.name, code)}</strong><small>{item.editor_included ? 'Función del contrato' : 'Función propuesta por IA'}</small><span>{semanticRoleLabel(role)}</span><small>Identificador técnico</small><code>{code}</code></span></label>
+            <p className="field-help">{item.editor_included ? 'Incluido en el contrato actual.' : 'Fuera del contrato actual · no ejecutable.'} {item.editor_reason}</p>
+            {item.editor_included && <p><b>Regla del contrato actual:</b> <code>{currentRule}</code></p>}
+            {stringArrayValue(item.inputs).length > 0 && <p><b>Entradas del contrato:</b> {stringArrayValue(item.inputs).join(' · ')}</p>}
+            {!item.editor_included && selected && <p className="notice warning">Reintroducido sólo en el borrador; debe superar de nuevo la validación.</p>}
+            {!item.editor_editable ? null : unavailable ? <p><strong>No disponible en este borrador:</strong> {missingInputs.length ? `faltan las medidas de la receta: ${missingInputs.join(', ')}.` : 'no existe una medida seleccionada con la misma función semántica.'} Excluya este KPI o genere una versión que incluya esa medida.</p> : <label className="compatible-measure-field"><span>{item.formula_kind === 'ratio' ? 'Numerador del borrador' : 'Medida del borrador'}</span><select aria-label={`Medida para ${stringValue(item.name, code)}`} disabled={!selected || !item.editor_editable} value={compatible.some((measure) => stringValue(measure.name, '') === selectedMeasure) ? selectedMeasure : stringValue(compatible[0]?.name, '')} onChange={(event) => setRevisionDraft({ ...revisionDraft, kpi_measure_names: { ...revisionDraft.kpi_measure_names, [code]: event.target.value } })}>{compatible.map((measure) => { const name = stringValue(measure.name, ''); return <option value={name} key={name}>{name} — {semanticRoleLabel(semanticRole(measure))}</option> })}</select><small>La asociación se comprobará al crear la nueva versión.</small></label>}
+          </article>
+        })}</div>
+      </fieldset>
+      {(!proposalReadOnly || creatingRevision) && <section className="relation-correction-panel" aria-labelledby="relation-correction-title">
         <div className="relation-correction-heading">
           <div><p className="eyebrow">Corrección guiada opcional</p><h3 id="relation-correction-title">Resolver una relación con evidencia</h3></div>
           <span>Sin SQL libre</span>
@@ -1410,7 +1509,7 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
       </section>}
       <label>Justificación del ajuste<textarea required minLength={10} maxLength={500} rows={3} value={revisionDraft.comment} onChange={(event) => setRevisionDraft({ ...revisionDraft, comment: event.target.value })} placeholder="Explique por qué este ajuste representa mejor la necesidad del negocio." /></label>
       <p className="notice">No puede inventar tablas, columnas, relaciones ni fórmulas. Si una selección deja de ser coherente, el backend rechazará o bloqueará la nueva versión.</p>
-      <div className="form-actions"><button disabled={savingRevision || revisionDraft.comment.trim().length < 10 || revisionDraft.dimension_names.length === 0 || revisionDraft.measure_names.length === 0 || revisionDraft.kpi_codes.length === 0} onClick={() => void saveRevision()}>{savingRevision ? 'Validando nueva versión…' : 'Guardar como nueva versión'}</button><button className="secondary" onClick={() => setStep(5)}>Continuar sin cambios</button><button className="secondary" onClick={() => setStep(3)}>Cancelar</button></div>
+      <div className="form-actions"><button disabled={savingRevision || revisionDraft.comment.trim().length < 10 || revisionDraft.dimension_names.length === 0 || revisionDraft.measure_names.length === 0 || revisionDraft.kpi_codes.length === 0} onClick={() => void saveRevision()}>{savingRevision ? 'Validando nueva versión…' : 'Guardar como nueva versión'}</button><button className="secondary" onClick={() => viewProposalStep(5)}>Continuar sin cambios</button><button className="secondary" onClick={() => viewProposalStep(3)}>Cancelar</button></div>
       </fieldset>
     </section>}
     {step === 5 && proposal && <section className="analysis-panel review-panel">
@@ -2327,26 +2426,54 @@ function Pagination({ page, onChange }: { page: { total: number; limit: number; 
 function CrudForm({ page, token, selected, onSaved }: { page: string; token: string; selected: Row | null; onSaved: () => void }) {
   const [roles, setRoles] = useState<Role[]>([])
   const [permissions, setPermissions] = useState<Permission[]>([])
+  const [catalogState, setCatalogState] = useState<{ status: 'loading' | 'ready' | 'error'; message?: string }>({ status: 'loading' })
+  const [catalogRevision, setCatalogRevision] = useState(0)
+  const protectedUser = page === '/usuarios' && selected?.is_system_protected === true
+  const needsCatalog = (page === '/usuarios' && !protectedUser) || page === '/roles' || page === '/menus'
+  const catalogReady = !needsCatalog || catalogState.status === 'ready'
   const config = useMemo(() => formConfig(page, token, roles, permissions, selected), [page, permissions, roles, selected, token])
-  const [values, setValues] = useState<Values>(config.empty)
+  const [values, setValues] = useState<Values>(() => selected ? config.read(selected) : { ...config.empty })
   const [error, setError] = useState('')
+  const recordIdentity = `${page}:${selected?.id ?? 'new'}`
+  const initializedRecord = useRef(recordIdentity)
+
+  useLayoutEffect(() => {
+    if (initializedRecord.current === recordIdentity) return
+    initializedRecord.current = recordIdentity
+    setValues(selected ? config.read(selected) : { ...config.empty })
+    setError('')
+  }, [config, recordIdentity, selected])
 
   useEffect(() => {
-    setValues(selected ? config.read(selected) : config.empty)
-    setError('')
-  }, [config, selected])
-  useEffect(() => {
-    if (page === '/usuarios') api.roles(token, 100, 0).then((result) => setRoles(result.items)).catch(() => setRoles([]))
-    if (page === '/roles' || page === '/menus') api.permissions(token, 100, 0).then((result) => setPermissions(result.items)).catch(() => setPermissions([]))
-  }, [page, token])
+    if (!needsCatalog) return
+    let cancelled = false
+    setCatalogState({ status: 'loading' })
+    const load = page === '/usuarios' ? api.roles(token, 100, 0) : api.permissions(token, 100, 0)
+    load.then((result) => {
+      if (cancelled) return
+      if (page === '/usuarios') setRoles(result.items as Role[])
+      else setPermissions(result.items as Permission[])
+      setCatalogState({ status: 'ready' })
+    }).catch((caught) => {
+      if (cancelled) return
+      const detail = caught instanceof Error ? caught.message : 'No fue posible consultar las opciones.'
+      setCatalogState({ status: 'error', message: `No se pudieron cargar ${page === '/usuarios' ? 'los roles' : 'los permisos'}. ${detail}` })
+    })
+    return () => { cancelled = true }
+  }, [catalogRevision, needsCatalog, page, token])
   if (!config) return null
 
   async function submit(event: FormEvent) {
     event.preventDefault()
     setError('')
+    if (!catalogReady) {
+      setError(catalogState.message ?? 'Espere a que termine la carga de opciones antes de guardar.')
+      return
+    }
     try {
       if (selected) await config.update(selected, values)
       else await config.create(values)
+      if (!selected) setValues({ ...config.empty })
       onSaved()
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'No fue posible guardar el cambio.')
@@ -2355,28 +2482,30 @@ function CrudForm({ page, token, selected, onSaved }: { page: string; token: str
 
   return <form className="crud-form" onSubmit={submit}>
     <div className="form-title"><h2>{selected ? `Editar ${config.singular}` : config.createTitle}</h2><span>{selected ? 'Actualice los datos y guarde los cambios.' : config.help}</span></div>
-    <div className="form-grid">{config.fields.map((field) => field.kind === 'checks' ? <CheckboxTable key={field.key} field={field} value={values[field.key] ?? ''} onChange={(value) => setValues({ ...values, [field.key]: value })} /> : <label key={field.key}>{field.label}{field.kind === 'select' ? <select required={field.required ?? true} value={values[field.key] ?? ''} onChange={(event) => {
+    {needsCatalog && catalogState.status === 'loading' && <p role="status">Cargando {page === '/usuarios' ? 'roles' : 'permisos'}…</p>}
+    {needsCatalog && catalogState.status === 'error' && <div><p className="notice error" role="alert">{catalogState.message}</p><button type="button" className="secondary" onClick={() => setCatalogRevision((value) => value + 1)}>Reintentar carga de opciones</button></div>}
+    <div className="form-grid">{config.fields.map((field) => field.kind === 'checks' ? <CheckboxTable key={field.key} field={field} disabled={!catalogReady || field.disabled} value={values[field.key] ?? ''} onChange={(value) => setValues((current) => ({ ...current, [field.key]: value }))} /> : <label key={field.key}>{field.label}{field.kind === 'select' ? <select required={field.required ?? true} disabled={!catalogReady || field.disabled} value={values[field.key] ?? ''} onChange={(event) => {
       const value = event.target.value
-      if (page === '/llm' && field.key === 'provider_kind') setValues({ ...values, provider_kind: value, ...(llmProviderPresets[value] ?? {}) })
-      else setValues({ ...values, [field.key]: value })
-    }}>{(page === '/llm' && field.key === 'reasoning_level' ? llmReasoningChoices(values.provider_kind) : field.options)?.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select> : <input required={(field.required ?? true) && !(selected && field.secret)} type={field.secret ? 'password' : field.inputType ?? 'text'} placeholder={selected && field.secret ? 'Déjela vacía para conservar la contraseña actual' : field.placeholder} value={values[field.key] ?? ''} onChange={(event) => setValues({ ...values, [field.key]: event.target.value })} />}</label>)}</div>
-    <div className="form-actions"><button>{selected ? 'Guardar cambios' : 'Crear registro'}</button>{selected && <button type="button" className="secondary" onClick={onSaved}>Cancelar</button>}</div>
+      if (page === '/llm' && field.key === 'provider_kind') setValues((current) => ({ ...current, provider_kind: value, ...(llmProviderPresets[value] ?? {}) }))
+      else setValues((current) => ({ ...current, [field.key]: value }))
+    }}>{(page === '/llm' && field.key === 'reasoning_level' ? llmReasoningChoices(values.provider_kind) : field.options)?.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select> : <input required={(field.required ?? true) && !(selected && field.secret)} disabled={!catalogReady || field.disabled} readOnly={field.readOnly} type={field.secret ? 'password' : field.inputType ?? 'text'} placeholder={selected && field.secret ? 'Déjela vacía para conservar la contraseña actual' : field.placeholder} value={values[field.key] ?? ''} onChange={(event) => { const value = event.target.value; setValues((current) => ({ ...current, [field.key]: value })) }} />}{field.help && <small>{field.help}</small>}</label>)}</div>
+    <div className="form-actions"><button disabled={!catalogReady}>{selected ? 'Guardar cambios' : 'Crear registro'}</button>{selected && <button type="button" className="secondary" onClick={onSaved}>Cancelar</button>}</div>
     {error && <p className="notice error">{error}</p>}
   </form>
 }
 
-function CheckboxTable({ field, value, onChange }: { field: Field; value: string; onChange: (value: string) => void }) {
+function CheckboxTable({ field, value, onChange, disabled = false }: { field: Field; value: string; onChange: (value: string) => void; disabled?: boolean }) {
   const selected = new Set(value.split(',').filter(Boolean))
   const toggle = (option: Choice) => {
     if (selected.has(option.value)) selected.delete(option.value)
     else selected.add(option.value)
     onChange(Array.from(selected).join(','))
   }
-  return <fieldset className="checkbox-table-field"><legend>{field.label}</legend><p>{field.help ?? 'Marque las opciones que correspondan.'}</p><div className="checkbox-table-wrap"><table><thead><tr><th>Asignar</th><th>Nombre</th><th>Descripción</th></tr></thead><tbody>{field.options?.map((option) => <tr key={option.value}><td><input type="checkbox" aria-label={`Asignar ${option.label}`} checked={selected.has(option.value)} onChange={() => toggle(option)} /></td><td>{option.label}</td><td>{option.detail ?? '—'}</td></tr>)}</tbody></table></div></fieldset>
+  return <fieldset className="checkbox-table-field" disabled={disabled}><legend>{field.label}</legend><p>{field.help ?? 'Marque las opciones que correspondan.'}</p><div className="checkbox-table-wrap"><table><thead><tr><th>Asignar</th><th>Nombre</th><th>Descripción</th></tr></thead><tbody>{field.options?.map((option) => <tr key={option.value}><td><input type="checkbox" aria-label={`Asignar ${option.label}`} checked={selected.has(option.value)} onChange={() => toggle(option)} /></td><td>{option.label}</td><td>{option.detail ?? '—'}</td></tr>)}</tbody></table></div></fieldset>
 }
 
 type Choice = { value: string; label: string; detail?: string }
-type Field = { key: string; label: string; placeholder?: string; secret?: boolean; inputType?: 'email' | 'text'; required?: boolean; kind?: 'select' | 'checks'; options?: Choice[]; help?: string }
+type Field = { key: string; label: string; placeholder?: string; secret?: boolean; inputType?: 'email' | 'text'; required?: boolean; kind?: 'select' | 'checks'; options?: Choice[]; help?: string; readOnly?: boolean; disabled?: boolean }
 type FormConfig = { singular: string; createTitle: string; help: string; fields: Field[]; empty: Values; read: (row: Row) => Values; create: (values: Values) => Promise<unknown>; update: (row: Row, values: Values) => Promise<unknown> }
 
 const llmProviderPresets: Record<string, Partial<Values>> = {
@@ -2406,10 +2535,10 @@ function formConfig(page: string, token: string, roles: Role[], permissions: Per
   const active = (row: Row) => String(row.is_active ?? true)
   if (page === '/usuarios') return {
     singular: 'usuario', createTitle: 'Crear usuario', help: 'Seleccione uno o varios roles activos. La contraseña nunca se muestra después de guardarla.',
-    fields: [{ key: 'email', label: 'Correo', inputType: 'email', placeholder: 'operador@empresa.com' }, { key: 'full_name', label: 'Nombre completo' }, { key: 'password', label: 'Contraseña', secret: true }, { key: 'role_ids', label: 'Roles asignados', required: false, kind: 'checks', help: 'Marque uno o varios roles. Al editar, cambiar roles no modifica la contraseña. Los roles inactivos ya asignados se muestran sólo para poder retirarlos.', options: roleChoicesForUserAssignment(roles, ((selected?.roles as Row[] | undefined) ?? []).map((role) => String(role.id))) }],
+    fields: [{ key: 'email', label: 'Correo', inputType: 'email', placeholder: 'operador@empresa.com', readOnly: selected !== null, help: selected ? 'El correo identifica la cuenta y no se modifica desde esta pantalla.' : undefined }, { key: 'full_name', label: 'Nombre completo' }, { key: 'password', label: 'Contraseña', secret: true }, { key: 'role_ids', label: 'Roles asignados', required: false, kind: 'checks', disabled: selected?.is_system_protected === true, help: selected?.is_system_protected === true ? 'Los roles de esta cuenta protegida son de consulta y se conservan al guardar sus datos permitidos.' : 'Marque uno o varios roles. Al editar, cambiar roles no modifica la contraseña. Los roles inactivos ya asignados se muestran sólo para poder retirarlos.', options: roleChoicesForUserAssignment(selected?.is_system_protected === true ? (selected.roles as Role[] ?? []) : roles, ((selected?.roles as Row[] | undefined) ?? []).map((role) => String(role.id))) }],
     empty: { email: '', full_name: '', password: '', role_ids: '' }, read: (row) => ({ email: String(row.email), full_name: String(row.full_name), password: '', role_ids: ((row.roles as Row[] | undefined) ?? []).map((role) => role.id).join(',') }),
     create: (v) => api.create('/users', token, { email: v.email, full_name: v.full_name, password: v.password, role_ids: parseSelectedIds(v.role_ids) }),
-    update: (row, v) => api.update(`/users/${row.id}`, token, { full_name: v.full_name, ...(v.password ? { password: v.password } : {}), role_ids: parseSelectedIds(v.role_ids) }),
+    update: (row, v) => api.update(`/users/${row.id}`, token, { full_name: v.full_name, ...(v.password ? { password: v.password } : {}), ...(row.is_system_protected === true ? {} : { role_ids: parseSelectedIds(v.role_ids) }) }),
   }
   if (page === '/roles') return {
     singular: 'rol', createTitle: 'Crear rol', help: 'La plataforma genera la clave interna. Seleccione los permisos por nombre y descripción.',

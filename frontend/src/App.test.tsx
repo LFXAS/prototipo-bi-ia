@@ -2,7 +2,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testi
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import App from './App'
-import { api, sessionExpiredEvent } from './api/security'
+import { api, sessionExpiredEvent, type BiProposal } from './api/security'
 import { readAssistantDraft } from './assistantRecovery'
 import { roleChoicesForUserAssignment } from './roleChoices'
 
@@ -16,6 +16,26 @@ const sourceConnection = {
 
 function sourceWorkspace(latestSnapshot: Record<string, unknown> | null = null) {
   return [{ status: latestSnapshot ? 'ready' : 'metadata_pending', connection: sourceConnection, latest_snapshot: latestSnapshot }]
+}
+
+const editableRole = { id: 2, code: 'analyst', name: 'Analista BI', is_active: true, permissions: [] }
+const editablePermission = { id: 3, code: 'analytics.dashboard.read', name: 'Consultar análisis', is_active: true }
+
+async function openSecurityResource(label: 'Usuarios' | 'Roles' | 'Menús', protectedUser = false) {
+  const path = ({ Usuarios: '/usuarios', Roles: '/roles', Menús: '/menus' })[label]
+  localStorage.setItem('bi_ia_access_token', 'test-token')
+  const user = { id: 8, email: 'cuenta@example.test', full_name: 'Nombre original', is_active: true, is_system_protected: protectedUser, roles: [editableRole] }
+  vi.spyOn(api, 'session').mockResolvedValue({ user, permissions: ['security.users.write', 'security.roles.write', 'security.menus.write'], menus: [{ id: 1, code: 'resource', label, path, position: 1, module_code: 'security', module_label: 'Seguridad', is_active: true, permissions: [] }] })
+  vi.spyOn(api, 'sources').mockResolvedValue([])
+  vi.spyOn(api, 'users').mockResolvedValue({ items: [user], total: 1, limit: 5, offset: 0 })
+  if (!vi.isMockFunction(api.roles)) vi.spyOn(api, 'roles').mockResolvedValue({ items: [editableRole], total: 1, limit: 100, offset: 0 })
+  if (!vi.isMockFunction(api.permissions)) vi.spyOn(api, 'permissions').mockResolvedValue({ items: [editablePermission], total: 1, limit: 100, offset: 0 })
+  vi.spyOn(api, 'menus').mockResolvedValue({ items: [{ id: 5, code: 'sales', label: 'Ventas', path: '/analitica-ventas', position: 1, module_code: 'analytics', module_label: 'Análisis', is_active: true, permissions: [editablePermission] }], total: 1, limit: 5, offset: 0 })
+  render(<App />)
+  fireEvent.click(await screen.findByRole('button', { name: 'Administración y seguridad' }))
+  fireEvent.click(screen.getByRole('button', { name: label }))
+  await screen.findByRole('button', { name: 'Editar' })
+  return user
 }
 
 async function openNeedAssistant() {
@@ -37,6 +57,67 @@ async function openNeedAssistant() {
   return screen.getByRole('textbox', { name: /Objetivo del análisis/ })
 }
 
+function correctedEditorProposal(): BiProposal {
+  const rawMeasures = [
+    { name: 'documentos_distintos', source_column: 'Amount', aggregation: 'sum', semantic_role: 'transaction_count' },
+    { name: 'tasa_impuesto', source_column: 'TaxRate', aggregation: 'average', semantic_role: 'cost_amount' },
+    { name: 'importe_total', source_column: 'Amount', aggregation: 'sum', semantic_role: 'sales_amount' },
+    { name: 'importe_con_impuesto', source_column: 'Amount', aggregation: 'sum', semantic_role: 'sales_amount', calculation_operation: 'add', calculation_inputs: ['Amount', 'MissingTax'] },
+    { name: 'Precio unitario promedio', source_column: 'UnitPrice', aggregation: 'average', semantic_role: 'sales_amount' },
+  ]
+  return {
+    id: 123, metadata_snapshot_id: 4, business_goal: 'Comparar importes y documentos por producto.', business_questions: ['top_products'], requested_dimensions: ['product'], periodicity: 'month', domain_code: 'ventas',
+    scope_document: { tables: [{ ref: 'Commercial.Movement', columns: [{ name: 'Amount', type: 'decimal' }, { name: 'DocumentID', type: 'int' }, { name: 'UnitPrice', type: 'decimal' }, { name: 'TaxRate', type: 'decimal' }] }] }, semantic_map_document: { candidates: [] },
+    status: 'ready_for_review', input_hash: 'a'.repeat(64), prompt_version: 'sales-bi-v7', contract_version: 1, provider_kind: 'anthropic', model_id: 'modelo-prueba',
+    proposal_document: {
+      summary: 'Contrato corregido', grain: { description: 'Una fila por movimiento.' },
+      fact: { source_tables: ['Commercial.Movement'], name: 'fact_ventas', measures: [
+        { name: 'importe_total', source_columns: ['Amount'], aggregation: 'sum', semantic_role: 'sales_amount' },
+        { name: 'documentos_distintos', source_columns: ['DocumentID'], aggregation: 'count_distinct', semantic_role: 'transaction_count', provenance: { source_references: ['Commercial.Movement.DocumentID'], formula: 'COUNT_DISTINCT(DocumentID)' } },
+        { name: 'Precio unitario promedio', source_columns: ['UnitPrice'], aggregation: 'average', semantic_role: 'sales_amount' },
+      ] },
+      dimensions: [{ name: 'dim_producto', attributes: ['Nombre'] }],
+      kpis: [
+        { code: 'docs', name: 'Documentos emitidos', semantic_role: 'transaction_count', formula: { measure: 'documentos_distintos', operation: 'count_distinct' } },
+        { code: 'avg_doc', name: 'Importe promedio por documento', semantic_role: 'sales_amount', formula_kind: 'ratio', inputs: ['importe_total', 'documentos_distintos'], formula: { measure: 'importe_total', operation: 'average' }, provenance: { formula: 'SUM(importe_total) ÷ COUNT_DISTINCT(documentos_distintos)' } },
+        { code: 'avg_price', name: 'Precio unitario promedio', semantic_role: 'sales_amount', formula: { measure: 'Precio unitario promedio', operation: 'average' } },
+      ],
+      decision_diagnostics: [{ kind: 'measure', code: 'tasa_impuesto', status: 'excluded', reason: 'La tasa no acredita un costo.' }, { kind: 'measure', code: 'importe_con_impuesto', status: 'excluded', reason: 'MissingTax no existe en la instantánea.' }, { kind: 'kpi', code: 'tax', status: 'excluded', reason: 'La medida fue excluida.' }],
+      ai_decisions: { summary: 'Borrador IA', grain_description: 'Grano propuesto.', fact_source: 'Commercial.Movement', measures: rawMeasures, dimensions: [{ name: 'dim_producto', source_table: 'Commercial.Product' }], kpis: [
+        { code: 'docs', name: 'Documentos emitidos', measure_index: 0, operation: 'sum', semantic_role: 'transaction_count' },
+        { code: 'avg_doc', name: 'Importe promedio por documento', measure_index: 4, operation: 'average', semantic_role: 'sales_amount' },
+        { code: 'avg_price', name: 'Precio unitario promedio', measure_index: 4, operation: 'average', semantic_role: 'sales_amount' },
+        { code: 'tax', name: 'Impuesto promedio', measure_index: 1, operation: 'average', semantic_role: 'cost_amount' },
+      ] },
+    },
+    validation_document: { valid: true, errors: 0, warnings: 1, issues: [] }, warnings_confirmed: false, created_by_label: 'Analista', created_at: '2026-11-04T10:00:00Z',
+  }
+}
+
+async function openStoredEditor(proposal: BiProposal, enterEditor = true) {
+  localStorage.setItem('bi_ia_access_token', 'test-token')
+  localStorage.setItem('bi_ia_assistant_draft_v2', JSON.stringify({ version: 2, sourceId: 1, domainCode: 'ventas', step: 3, goal: proposal.business_goal, questions: proposal.business_questions, periodicity: 'month', proposalId: proposal.id }))
+  vi.spyOn(api, 'proposal').mockResolvedValue(proposal)
+  vi.spyOn(api, 'relationOptions').mockResolvedValue({ proposal_id: proposal.id, dimension_names: ['dim_producto'], options: [] })
+  vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL) => {
+    const url = String(input)
+    if (url.includes('/auth/me')) return { ok: true, status: 200, json: async () => ({ user: { id: 1, email: 'analista@example.test', full_name: 'Analista', is_active: true, roles: [] }, permissions: ['copilot.proposals.read', 'copilot.proposals.generate'], menus: [{ id: 11, code: 'analysis-assistant', label: 'Asistente de datamart', path: '/asistente', position: 10, module_code: 'ai', module_label: 'IA', is_active: true, permissions: [] }] }) }
+    if (url.endsWith('/sources')) return { ok: true, status: 200, json: async () => sourceWorkspace({ id: 4, data_connection_id: 1, content_hash: 'b'.repeat(64) }) }
+    if (url.includes('/copilot/readiness?')) return { ok: true, status: 200, json: async () => ({ ready: true, source: { ready: true, label: 'Fuente', detail: 'Lista.' }, metadata: { ready: true, label: 'Metadatos', detail: 'Disponibles.' }, llm: { ready: true, label: 'IA', detail: 'Lista.' } }) }
+    if (url.includes('/copilot/catalog?')) return { ok: true, status: 200, json: async () => ({ metadata_snapshot_id: 4, domains: [{ code: 'ventas', label: 'Datamart de ventas', available: true, questions: [], periodicities: [{ code: 'month', label: 'Mensual', available: true }] }] }) }
+    if (url.includes('/copilot/proposals?')) return { ok: true, status: 200, json: async () => ({ items: [proposal], total: 1, limit: 5, offset: 0 }) }
+    throw new Error(`Solicitud inesperada: ${url}`)
+  }))
+  render(<App />)
+  fireEvent.click(await screen.findByRole('button', { name: 'Diseño y transformación BI' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Asistente de datamart' }))
+  await screen.findByRole('button', { name: 'Verificar evidencia' })
+  if (enterEditor) {
+    fireEvent.click(await screen.findByRole('button', { name: 'Personalizar propuesta' }))
+    await screen.findByRole('heading', { name: 'Personalizar sin escribir SQL' })
+  }
+}
+
 const groundedSuggestions = {
   metadata_snapshot_id: 4, provider_kind: 'anthropic', model_id: 'modelo-prueba',
   notice: 'Sugerencias contrastadas con las relaciones declaradas.',
@@ -51,6 +132,225 @@ describe('App', () => {
     localStorage.clear()
     vi.restoreAllMocks()
     vi.unstubAllGlobals()
+  })
+
+  it.each(['approved', 'invalidated'] as const)('crea una hija sólo tras la acción explícita desde una versión %s', async (status) => {
+    const parent = { ...correctedEditorProposal(), status, warnings_confirmed: true }
+    const original = JSON.stringify(parent)
+    const child: BiProposal = { ...parent, id: 124, source_proposal_id: parent.id, status: 'ready_for_review', warnings_confirmed: false, proposal_document: { ...parent.proposal_document, summary: 'Contrato hijo corregido' } }
+    const revise = vi.spyOn(api, 'reviseProposal').mockResolvedValue(child)
+    const approve = vi.spyOn(api, 'approveProposal')
+    await openStoredEditor(parent, false)
+
+    fireEvent.click(screen.getByRole('button', { name: /Personalización/ }))
+    expect(screen.getByLabelText('Resumen de negocio')).toBeDisabled()
+    expect(screen.getByLabelText('Justificación del ajuste')).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Guardar como nueva versión' })).toBeDisabled()
+    fireEvent.click(screen.getByRole('button', { name: /Revisión/ }))
+    fireEvent.click(screen.getByRole('button', { name: 'Crear versión corregida desde ésta' }))
+    expect(screen.getByLabelText('Resumen de negocio')).toBeEnabled()
+    expect(screen.getByText(/La versión original conserva su estado y sus datos/)).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText('Resumen de negocio'), { target: { value: 'Borrador que se cancela' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }))
+    fireEvent.click(screen.getByRole('button', { name: /Personalización/ }))
+    expect(screen.getByLabelText('Resumen de negocio')).toBeDisabled()
+    expect(screen.getByLabelText('Resumen de negocio')).toHaveValue('Contrato corregido')
+    fireEvent.click(screen.getByRole('button', { name: /Revisión/ }))
+    fireEvent.click(screen.getByRole('button', { name: 'Crear versión corregida desde ésta' }))
+    fireEvent.change(screen.getByLabelText('Resumen de negocio'), { target: { value: 'Contrato hijo corregido' } })
+    fireEvent.change(screen.getByLabelText('Justificación del ajuste'), { target: { value: 'Crear una versión nueva sin alterar el expediente original.' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar como nueva versión' }))
+
+    expect(await screen.findByRole('heading', { name: 'Contrato hijo corregido' })).toBeInTheDocument()
+    expect(revise).toHaveBeenCalledWith('test-token', parent.id, expect.objectContaining({ summary: 'Contrato hijo corregido', comment: 'Crear una versión nueva sin alterar el expediente original.' }))
+    await waitFor(() => expect(readAssistantDraft()?.proposalId).toBe(child.id))
+    expect(JSON.stringify(parent)).toBe(original)
+    expect(approve).not.toHaveBeenCalled()
+  })
+
+  it('personaliza el contrato efectivo por nombre y deja excluidas las decisiones que no se ejecutan', async () => {
+    const proposal = correctedEditorProposal()
+    const original = JSON.stringify(proposal)
+    const revise = vi.spyOn(api, 'reviseProposal').mockResolvedValue({ ...proposal, id: 124, source_proposal_id: 123 })
+    await openStoredEditor(proposal)
+    expect(screen.getByLabelText('Resumen de negocio')).toHaveValue('Contrato corregido')
+    expect(screen.getByText('Contrato actual: 3 medidas incluidas · 2 decisiones fuera del contrato.')).toBeInTheDocument()
+    expect(screen.getByText('Contrato actual: 3 KPI incluidos · 1 decisiones fuera del contrato.')).toBeInTheDocument()
+    const documents = screen.getByRole('checkbox', { name: /documentos_distintos/ })
+    const documentCard = within(documents.closest('article')!)
+    expect(documents).toBeChecked()
+    expect(documentCard.getByText('Commercial.Movement.DocumentID')).toBeInTheDocument()
+    expect(documentCard.queryByText('Commercial.Movement.Amount')).not.toBeInTheDocument()
+    expect(documentCard.getAllByText('COUNT(DISTINCT DocumentID)')).toHaveLength(2)
+    expect(screen.getByRole('combobox', { name: 'Agregación de documentos_distintos' })).toHaveValue('count_distinct')
+    expect(screen.getByRole('checkbox', { name: /tasa_impuesto/ })).not.toBeChecked()
+    expect(screen.getByRole('checkbox', { name: /importe_con_impuesto/ })).not.toBeChecked()
+    expect(screen.getAllByText(/Fuera del contrato actual · no ejecutable/)).toHaveLength(3)
+    expect(screen.getByText(/La tasa no acredita un costo/)).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: 'Medida para Importe promedio por documento' })).toHaveValue('importe_total')
+    expect(screen.getByText('SUM(importe_total) ÷ COUNT_DISTINCT(documentos_distintos)')).toBeInTheDocument()
+    const averagePrice = within(screen.getByRole('group', { name: 'Medidas, agregaciones y cálculos controlados' })).getByRole('checkbox', { name: /Precio unitario promedio/ })
+    expect(within(averagePrice.closest('article')!).getByText('Commercial.Movement.UnitPrice')).toBeInTheDocument()
+    fireEvent.click(averagePrice)
+    fireEvent.change(screen.getByLabelText('Justificación del ajuste'), { target: { value: 'Conservar únicamente los indicadores solicitados.' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar como nueva versión' }))
+    await waitFor(() => expect(revise).toHaveBeenCalled())
+    expect(revise.mock.calls[0][2]).toMatchObject({ measure_names: ['documentos_distintos', 'importe_total'], kpi_codes: ['docs', 'avg_doc'], kpi_measure_names: { docs: 'documentos_distintos', avg_doc: 'importe_total' }, measure_aggregations: { documentos_distintos: 'count_distinct', importe_total: 'sum' }, measure_calculations: {} })
+    expect(JSON.stringify(proposal)).toBe(original)
+  })
+
+  it('reintroduce una exclusión sólo como borrador y retira el KPI si falta una entrada de su razón', async () => {
+    await openStoredEditor(correctedEditorProposal())
+    fireEvent.click(screen.getByRole('checkbox', { name: /importe_con_impuesto/ }))
+    expect(screen.getByText(/Reintroducida sólo en el borrador/)).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: 'Agregación de importe_con_impuesto' })).toBeEnabled()
+    fireEvent.click(screen.getByRole('checkbox', { name: /documentos_distintos/ }))
+    expect(screen.getByRole('checkbox', { name: /Importe promedio por documento/ })).not.toBeChecked()
+    expect(screen.getByRole('checkbox', { name: /Importe promedio por documento/ })).toBeDisabled()
+    expect(screen.getByText(/faltan las medidas de la receta: documentos_distintos/)).toBeInTheDocument()
+  })
+
+  it('muestra el correo de edición sólo para lectura y envía únicamente los campos admitidos', async () => {
+    const update = vi.spyOn(api, 'update').mockResolvedValue({})
+    await openSecurityResource('Usuarios')
+    expect(await screen.findByLabelText('Correo')).not.toHaveAttribute('readonly')
+    fireEvent.click(screen.getByRole('button', { name: 'Editar' }))
+    const email = screen.getByLabelText(/Correo/)
+    expect(email).toHaveAttribute('readonly')
+    expect(email).toHaveValue('cuenta@example.test')
+    expect(screen.getByText(/El correo identifica la cuenta/)).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Guardar cambios' })).toBeEnabled())
+    fireEvent.change(screen.getByLabelText('Nombre completo'), { target: { value: 'Nombre revisado' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }))
+    await waitFor(() => expect(update).toHaveBeenCalledWith('/users/8', 'test-token', { full_name: 'Nombre revisado', role_ids: [2] }))
+    expect(update.mock.calls[0][2]).not.toHaveProperty('email')
+    expect(update.mock.calls[0][2]).not.toHaveProperty('password')
+  })
+
+  it('permite editar el nombre protegido sin intentar modificar sus roles', async () => {
+    const update = vi.spyOn(api, 'update').mockResolvedValue({})
+    await openSecurityResource('Usuarios', true)
+    fireEvent.click(screen.getByRole('button', { name: 'Editar' }))
+    expect(screen.getByRole('checkbox', { name: 'Asignar Analista BI' })).toBeDisabled()
+    expect(screen.getByText(/Los roles de esta cuenta protegida son de consulta/)).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText('Nombre completo'), { target: { value: 'Nombre protegido revisado' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }))
+    await waitFor(() => expect(update).toHaveBeenCalledWith('/users/8', 'test-token', { full_name: 'Nombre protegido revisado' }))
+    expect(update.mock.calls[0][2]).not.toHaveProperty('role_ids')
+  })
+
+  it('bloquea creación y actualización si falló la lectura de roles y permite recuperarla', async () => {
+    const roles = vi.spyOn(api, 'roles').mockRejectedValueOnce(new Error('Fallo de red al leer roles.')).mockResolvedValue({ items: [editableRole], total: 1, limit: 100, offset: 0 })
+    const update = vi.spyOn(api, 'update').mockResolvedValue({})
+    const create = vi.spyOn(api, 'create').mockResolvedValue({})
+    await openSecurityResource('Usuarios')
+    expect(await screen.findByRole('alert')).toHaveTextContent('Fallo de red al leer roles.')
+    expect(screen.getByRole('button', { name: 'Crear registro' })).toBeDisabled()
+    fireEvent.click(screen.getByRole('button', { name: 'Editar' }))
+    const save = screen.getByRole('button', { name: 'Guardar cambios' })
+    expect(save).toBeDisabled()
+    fireEvent.submit(save.closest('form')!)
+    expect(update).not.toHaveBeenCalled()
+    expect(create).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', { name: 'Reintentar carga de opciones' }))
+    await waitFor(() => expect(save).toBeEnabled())
+    expect(roles).toHaveBeenCalledTimes(2)
+    expect(screen.getByRole('checkbox', { name: 'Asignar Analista BI' })).toBeChecked()
+  })
+
+  it.each(['Roles', 'Menús'] as const)('bloquea guardar %s ante un error real de permisos', async (resource) => {
+    vi.spyOn(api, 'permissions').mockRejectedValue(new Error('Acceso al catálogo rechazado.'))
+    const update = vi.spyOn(api, 'update')
+    const upsert = vi.spyOn(api, 'upsert')
+    await openSecurityResource(resource)
+    fireEvent.click(screen.getByRole('button', { name: 'Editar' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('Acceso al catálogo rechazado.')
+    const save = screen.getByRole('button', { name: 'Guardar cambios' })
+    expect(save).toBeDisabled()
+    fireEvent.submit(save.closest('form')!)
+    expect(update).not.toHaveBeenCalled()
+    expect(upsert).not.toHaveBeenCalled()
+  })
+
+  it('mantiene Guardar deshabilitado mientras todavía se cargan los roles', async () => {
+    let finish!: (value: Awaited<ReturnType<typeof api.roles>>) => void
+    vi.spyOn(api, 'roles').mockImplementation(() => new Promise((resolve) => { finish = resolve }))
+    await openSecurityResource('Usuarios')
+    expect(screen.getByRole('status')).toHaveTextContent('Cargando roles')
+    expect(screen.getByRole('button', { name: 'Crear registro' })).toBeDisabled()
+    await act(async () => { finish({ items: [editableRole], total: 1, limit: 100, offset: 0 }) })
+    expect(screen.getByRole('button', { name: 'Crear registro' })).toBeEnabled()
+  })
+
+  it.each(['personalización', 'relación'] as const)('selecciona la hija de %s y descarta una recuperación anterior tardía', async (change) => {
+    localStorage.setItem('bi_ia_access_token', 'test-token')
+    localStorage.setItem('bi_ia_assistant_draft_v2', JSON.stringify({ version: 2, sourceId: 1, domainCode: 'ventas', step: 3, goal: 'Comparar ventas por producto.', questions: ['top_products'], periodicity: 'month', proposalId: 121 }))
+    const measures = [
+      { name: 'importe_venta', source_column: 'Importe', aggregation: 'sum', semantic_role: 'sales_amount' },
+      { name: 'clientes_distintos', source_column: 'ClienteID', aggregation: 'count_distinct', semantic_role: 'customer_count' },
+    ]
+    const decisions = { summary: 'Modelo anterior', grain_description: 'Una fila por línea.', fact_source: 'Comercial.Linea', dimensions: [{ name: 'dim_producto', source_table: 'Comercial.Producto' }], measures, kpis: [{ code: 'ventas_totales', name: 'Ventas totales', measure_index: 0, operation: 'sum', unit: 'moneda', semantic_role: 'sales_amount' }] }
+    const parent: BiProposal = {
+      id: 121, metadata_snapshot_id: 4, business_goal: 'Comparar ventas por producto.', business_questions: ['top_products'], requested_dimensions: ['product'], periodicity: 'month', domain_code: 'ventas',
+      scope_document: { tables: [{ ref: 'Comercial.Linea', columns: [{ name: 'Importe', type: 'decimal' }, { name: 'ClienteID', type: 'int' }] }] }, semantic_map_document: { candidates: [] },
+      status: 'ready_for_review', input_hash: 'a'.repeat(64), prompt_version: 'sales-bi-v7', contract_version: 1, provider_kind: 'anthropic', model_id: 'modelo-prueba',
+      proposal_document: { summary: 'Modelo anterior', grain: { description: 'Una fila por línea.' }, fact: { name: 'fact_ventas', measures }, dimensions: [{ name: 'dim_producto', attributes: ['Nombre'] }], kpis: [{ code: 'ventas_totales', name: 'Ventas totales' }], ai_decisions: decisions },
+      validation_document: { valid: true, errors: 0, warnings: 1, issues: [] }, warnings_confirmed: true, created_by_label: 'Analista', created_at: '2026-11-04T10:00:00Z',
+    }
+    const child: BiProposal = { ...parent, id: 122, source_proposal_id: 121, warnings_confirmed: false, proposal_document: { ...parent.proposal_document, summary: 'Modelo hijo', fact: { name: 'fact_ventas', measures: measures.slice(0, 1) }, ai_decisions: { ...decisions, summary: 'Modelo hijo', measures: measures.slice(0, 1) } } }
+    let finishRecovery!: (value: BiProposal) => void
+    let failRecovery!: (error: Error) => void
+    const recovery = vi.spyOn(api, 'proposal').mockImplementation(() => new Promise((resolve, reject) => { finishRecovery = resolve; failRecovery = reject }))
+    let finishVerification!: (value: Awaited<ReturnType<typeof api.verifyProposal>>) => void
+    vi.spyOn(api, 'verifyProposal').mockImplementation(() => new Promise((resolve) => { finishVerification = resolve }))
+    const revise = vi.spyOn(api, 'reviseProposal').mockResolvedValue(child)
+    const reviseRelation = vi.spyOn(api, 'reviseRelation').mockResolvedValue(child)
+    const approve = vi.spyOn(api, 'approveProposal').mockResolvedValue({ ...child, status: 'approved' })
+    vi.spyOn(api, 'relationOptions').mockResolvedValue({ proposal_id: 121, dimension_names: ['dim_producto'], options: [{ option_id: 'verified-path', left_table: 'Comercial.Linea', right_table: 'Comercial.Producto', left_columns: ['ProductoID'], right_columns: ['ID'], left_types: ['int'], right_types: ['int'], cardinality: 'many_to_one', target_unique: true, nullable_source: false, duplication_risk: false, eligible: true, guidance: 'Conserva la granularidad.' }] })
+    vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input)
+      if (url.includes('/auth/me')) return { ok: true, status: 200, json: async () => ({ user: { id: 1, email: 'analista@example.test', full_name: 'Analista', is_active: true, roles: [] }, permissions: ['copilot.proposals.read', 'copilot.proposals.generate', 'copilot.proposals.review'], menus: [{ id: 11, code: 'analysis-assistant', label: 'Asistente de datamart', path: '/asistente', position: 10, module_code: 'ai', module_label: 'IA', is_active: true, permissions: [] }] }) }
+      if (url.endsWith('/sources')) return { ok: true, status: 200, json: async () => sourceWorkspace({ id: 4, data_connection_id: 1, content_hash: 'b'.repeat(64) }) }
+      if (url.includes('/copilot/readiness?')) return { ok: true, status: 200, json: async () => ({ ready: true, source: { ready: true, label: 'Fuente', detail: 'Lista.' }, metadata: { ready: true, label: 'Metadatos', detail: 'Disponibles.' }, llm: { ready: true, label: 'IA', detail: 'Lista.' } }) }
+      if (url.includes('/copilot/catalog?')) return { ok: true, status: 200, json: async () => ({ metadata_snapshot_id: 4, domains: [{ code: 'ventas', label: 'Datamart de ventas', available: true, questions: [], periodicities: [{ code: 'month', label: 'Mensual', available: true }] }] }) }
+      if (url.includes('/copilot/proposals?')) return { ok: true, status: 200, json: async () => ({ items: revise.mock.calls.length || reviseRelation.mock.calls.length ? [child, parent] : [parent], total: 2, limit: 5, offset: 0 }) }
+      throw new Error(`Solicitud inesperada: ${url}`)
+    }))
+    render(<App />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Diseño y transformación BI' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Asistente de datamart' }))
+    await waitFor(() => expect(recovery).toHaveBeenCalledWith('test-token', 121))
+    fireEvent.click(await screen.findByRole('button', { name: 'Abrir resultado' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Verificar evidencia' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Personalizar propuesta' }))
+    if (change === 'personalización') {
+      fireEvent.click(screen.getByRole('checkbox', { name: /clientes_distintos/ }))
+      fireEvent.change(screen.getByLabelText('Justificación del ajuste'), { target: { value: 'Se excluye el conteo de clientes.' } })
+      fireEvent.click(screen.getByRole('button', { name: 'Guardar como nueva versión' }))
+    } else {
+      fireEvent.change(await screen.findByLabelText('Justificación de esta corrección'), { target: { value: 'Usar la relación declarada del producto.' } })
+      fireEvent.click(screen.getByRole('button', { name: 'Crear versión con relación corregida' }))
+    }
+    expect(await screen.findByRole('heading', { name: 'Modelo hijo' })).toBeInTheDocument()
+    await waitFor(() => expect(readAssistantDraft()?.proposalId).toBe(122))
+    await act(async () => {
+      if (change === 'personalización') finishRecovery(parent)
+      else failRecovery(new Error('La recuperación anterior falló.'))
+      finishVerification({ proposal_id: 121, verified: false, approval_safe: false, compatibility_warning: false, approval_invalidated: false, checks: [{ code: 'old', label: 'Evidencia anterior tardía', passed: false, detail: 'Pertenece a la versión anterior.' }], snapshot_hash: 'b'.repeat(64), proposal_hash: 'a'.repeat(64), replay_hash: '', validated_reference_count: 0, rejected_reference_count: 0, validation_errors: 1, validation_warnings: 0, pending_validations: [] })
+    })
+    expect(screen.getByRole('heading', { name: 'Modelo hijo' })).toBeInTheDocument()
+    expect(readAssistantDraft()?.proposalId).toBe(122)
+    expect(screen.queryByText('Evidencia anterior tardía')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Verificar evidencia' })).toBeEnabled()
+    expect(within(screen.getByRole('row', { name: /#122/ })).getByRole('button', { name: 'Seleccionada' })).toBeDisabled()
+    fireEvent.click(screen.getByRole('button', { name: 'Personalizar propuesta' }))
+    expect(screen.queryByRole('checkbox', { name: /clientes_distintos/ })).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Continuar a revisión' }))
+    expect(screen.getByRole('button', { name: 'Aprobar propuesta' })).toBeDisabled()
+    fireEvent.click(screen.getByLabelText(/Leí y comprendí las advertencias/))
+    fireEvent.click(screen.getByRole('button', { name: 'Aprobar propuesta' }))
+    await waitFor(() => expect(approve).toHaveBeenCalledWith('test-token', 122, { comment: undefined, warnings_confirmed: true }))
   })
 
   it('presenta el acceso con un mensaje de orientación', () => {
@@ -519,9 +819,12 @@ describe('App', () => {
     render(<App />)
     fireEvent.click(await screen.findByRole('button', { name: 'Preparación del entorno' }))
     fireEvent.click(screen.getByRole('button', { name: 'Configuración LLM' }))
-    fireEvent.change(await screen.findByLabelText('Nombre de configuración'), { target: { value: 'Groq para análisis BI' } })
+    const name = await screen.findByLabelText('Nombre de configuración')
+    fireEvent.change(name, { target: { value: 'Groq para análisis BI' } })
+    expect(screen.getByLabelText('Nombre de configuración')).toHaveValue('Groq para análisis BI')
     fireEvent.change(screen.getByLabelText('Proveedor'), { target: { value: 'groq-cloud' } })
 
+    expect(screen.getByLabelText('Nombre de configuración')).toHaveValue('Groq para análisis BI')
     expect(screen.getByLabelText('URL del servicio')).toHaveValue('https://api.groq.com/openai/v1')
     expect(screen.getByLabelText('Modelo')).toHaveValue('openai/gpt-oss-120b')
     expect(screen.getByLabelText('Nivel de razonamiento')).toHaveValue('low')
@@ -532,12 +835,14 @@ describe('App', () => {
     await waitFor(() => expect(fetchMock.mock.calls.some(([input, init]) => String(input).includes('/llm-configurations') && init?.method === 'POST')).toBe(true))
     const request = fetchMock.mock.calls.find(([input, init]) => String(input).includes('/llm-configurations') && init?.method === 'POST')
     expect(JSON.parse(String(request?.[1]?.body))).toMatchObject({
+      name: 'Groq para análisis BI',
       provider_kind: 'groq-cloud',
       base_url: 'https://api.groq.com/openai/v1',
       model_id: 'openai/gpt-oss-120b',
       reasoning_level: 'low',
       is_active: false,
     })
+    await waitFor(() => expect(screen.getByLabelText('Nombre de configuración')).toHaveValue(''))
   })
 
   it('preconfigura Anthropic Claude con Haiku 4.5 y nivel mínimo', async () => {
@@ -752,6 +1057,9 @@ describe('App', () => {
     ;(proposal.proposal_document.ai_decisions.measures as Array<Record<string, unknown>>).push({
       name: 'numero_transacciones', source_column: 'SalesOrderID', aggregation: 'count_distinct', semantic_role: 'transaction_count',
     })
+    ;(proposal.proposal_document.fact.measures as Array<Record<string, unknown>>).push({
+      name: 'numero_transacciones', source_columns: ['SalesOrderID'], aggregation: 'count_distinct', semantic_role: 'transaction_count',
+    })
     const previousProposal = {
       ...proposal,
       id: 11,
@@ -879,8 +1187,8 @@ describe('App', () => {
     expect(screen.getByText('No detectado')).toBeInTheDocument()
     expect(screen.getByText('Columna calculada controlada')).toBeInTheDocument()
     expect(screen.getByText('Sales.SalesOrderDetail.SalesOrderID')).toBeInTheDocument()
-    expect(screen.getByText('COUNT(DISTINCT SalesOrderID)')).toBeInTheDocument()
-    expect(screen.getByText('SUM(UnitPrice × UnitPriceDiscount × OrderQty)')).toBeInTheDocument()
+    expect(screen.getAllByText('COUNT(DISTINCT SalesOrderID)')).toHaveLength(2)
+    expect(screen.getAllByText('SUM(UnitPrice × UnitPriceDiscount × OrderQty)')).toHaveLength(2)
     expect(screen.getByText(/no existe una medida seleccionada con la misma función semántica/i)).toBeInTheDocument()
     fireEvent.change(screen.getByLabelText('Justificación del ajuste'), { target: { value: 'Ajuste validado por el analista BI.' } })
     fireEvent.click(screen.getByRole('button', { name: 'Guardar como nueva versión' }))

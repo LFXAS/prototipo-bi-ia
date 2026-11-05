@@ -9,7 +9,8 @@ from typing import Any
 from app.modules.copilot.domains import SALES_PROFILE
 from app.modules.copilot.entity_resolution import enrich_dimension_labels
 
-PROMPT_VERSION = "sales-bi-v6"
+PROMPT_VERSION = "sales-bi-v7"
+COMPILATION_RULES_VERSION = 3
 CONTRACT_VERSION = 1
 ALLOWED_OPERATIONS = {"extract", "join", "filter", "derive", "aggregate", "load"}
 ALLOWED_AGGREGATIONS = {"sum", "count", "count_distinct", "average", "min", "max"}
@@ -370,6 +371,12 @@ PROPOSAL_BLUEPRINT_SYSTEM_INSTRUCTION = (
     "Para transaction_count usa count_distinct sobre el identificador del documento "
     "comercial correspondiente al hecho elegido (factura si la necesidad exige facturación; "
     "pedido si analiza pedidos), nunca sobre el identificador de línea. "
+    "El rol transaction_count no representa un conteo de líneas o filas: no conserves ese "
+    "rótulo al contar pedidos o facturas. Los identificadores, claves primarias y foráneas "
+    "no son magnitudes y no pueden ser operandos de cálculos por fila aunque sean numéricos. "
+    "Para un importe promedio por documento declara una medida de importe total con sum "
+    "y otra de documentos con count_distinct; el compilador construirá su razón de agregados. "
+    "No dividas el importe de cada fila por el valor de un identificador. "
     "Conserva columnas monetarias específicas: precio usa price, descuento usa discount y el "
     "importe de venta usa amount o total. Asocia producto, "
     "cliente y territorio con la tabla técnica cuyo nombre corresponda. No inventes "
@@ -658,15 +665,21 @@ def verify_proposal_evidence(
     ]
     references_valid = not reference_errors
     validation_consistent = canonical_hash(current_validation) == canonical_hash(stored_validation)
+    persisted_rules_version = proposal_document.get("compilation_rules_version", 1)
     same_engine_version = (
         proposal_prompt_version is None or proposal_prompt_version == PROMPT_VERSION
-    )
+    ) and persisted_rules_version == COMPILATION_RULES_VERSION
 
     blueprint = proposal_document.get("ai_decisions")
     replay_hash = ""
     deterministic_replay = False
     if isinstance(blueprint, dict):
-        replay = expand_proposal_blueprint(blueprint, scope, semantic_map)
+        replay = expand_proposal_blueprint(
+            blueprint,
+            scope,
+            semantic_map,
+            compilation_rules_version=int(persisted_rules_version),
+        )
         stored_assessment = proposal_document.get("need_assessment")
         if isinstance(stored_assessment, dict):
             replay = apply_financial_requirements(replay, stored_assessment, scope)
@@ -692,6 +705,24 @@ def verify_proposal_evidence(
     )
     compatibility_warning = (
         not same_engine_version or not validation_consistent or not deterministic_replay
+    )
+    if not isinstance(blueprint, dict):
+        replay_detail = "No se conservaron decisiones de IA para reconstruir el contrato."
+    elif deterministic_replay:
+        replay_detail = (
+            "Las decisiones persistidas reconstruyen exactamente el mismo contrato "
+            "con sus reglas de compilación persistidas."
+        )
+    else:
+        replay_detail = (
+            "La reconstrucción con las reglas persistidas difiere de la huella persistida. "
+            "La diferencia se conserva como advertencia y no sustituye la validación "
+            "estructural vigente."
+        )
+    replay_detail += (
+        f" Instrucciones persistidas: {proposal_prompt_version or 'sin versión registrada'}; "
+        f"actuales: {PROMPT_VERSION}. Reglas de compilación persistidas: "
+        f"{persisted_rules_version}; actuales: {COMPILATION_RULES_VERSION}."
     )
     checks = [
         {
@@ -736,23 +767,8 @@ def verify_proposal_evidence(
         {
             "code": "proposal.replay",
             "label": "Reproducción determinística del contrato",
-            "passed": deterministic_replay if same_engine_version else False,
-            "detail": (
-                (
-                    "La reproducción exacta no es comparable porque la propuesta pertenece "
-                    f"a {proposal_prompt_version} y el motor actual es {PROMPT_VERSION}."
-                )
-                if not same_engine_version
-                else (
-                    "Las decisiones persistidas reconstruyen exactamente el mismo contrato."
-                    if deterministic_replay
-                    else (
-                        "La reconstrucción actual difiere de la huella persistida. La "
-                        "diferencia se conserva como advertencia y no sustituye la "
-                        "validación estructural vigente."
-                    )
-                )
-            ),
+            "passed": deterministic_replay,
+            "detail": replay_detail,
         },
     ]
     return {
@@ -973,6 +989,76 @@ def _claims_transaction_average(value: object) -> bool:
             label,
         )
     )
+
+
+def _claims_record_count(value: dict[str, Any]) -> bool:
+    """A line/row count must not become a document count under the same label."""
+    tokens = _search_tokens(f"{value.get('name', '')} {value.get('code', '')}")
+    return bool(
+        tokens
+        & {"line", "detail", "detalle", "linea", "línea", "row", "fila", "registro", "record"}
+    )
+
+
+def _identifier_columns(
+    table: dict[str, Any], *, compilation_rules_version: int = COMPILATION_RULES_VERSION
+) -> set[str]:
+    """Use declared keys first; conventional identifier names are only a fallback."""
+    foreign_keys = {
+        str(column)
+        for relation in table.get("foreign_keys", [])
+        if isinstance(relation, dict)
+        for column in relation.get("columns", [])
+    }
+    result = set(foreign_keys)
+    for column in table.get("columns", []):
+        if not isinstance(column, dict):
+            continue
+        name = str(column.get("name", ""))
+        tokens = _search_tokens(name)
+        numbered_identifier = bool(
+            tokens & {"number", "numero", "número"}
+            and tokens
+            & {
+                "invoice",
+                "factura",
+                "order",
+                "pedido",
+                "transaction",
+                "transaccion",
+                "document",
+                "documento",
+                "receipt",
+                "recibo",
+                "folio",
+                "serial",
+                "serie",
+                "customer",
+                "cliente",
+                "account",
+                "cuenta",
+                "product",
+                "producto",
+                "item",
+                "articulo",
+                "lot",
+                "lote",
+            }
+            and not tokens & {"qty", "quantity", "cantidad", "units", "unidades"}
+        )
+        name_keys = {"identifier", "identificador", "key", "clave", "code", "codigo", "código"}
+        if compilation_rules_version <= 2:
+            # Replays retain the exact lexical decisions of the previous compiler.
+            name_keys.update({"number", "numero", "número"})
+        if (
+            column.get("pk")
+            or column.get("primary_key")
+            or re.search(r"(?:^id$|_id$|ID$)", name)
+            or tokens & name_keys
+            or (compilation_rules_version >= 3 and numbered_identifier)
+        ):
+            result.add(name)
+    return result
 
 
 def _compact_columns(table: dict[str, Any], limit: int = 8) -> list[dict[str, object]]:
@@ -1573,6 +1659,16 @@ def proposal_payload(
                 "components": item.get("components", []),
                 "formula": item.get("formula"),
                 **({"coverage_code": item["coverage_code"]} if item.get("coverage_code") else {}),
+                **(
+                    {"identity_references": deepcopy(item["identity_references"])}
+                    if "identity_references" in item
+                    else {}
+                ),
+                **(
+                    {"analytical_operation": deepcopy(item["analytical_operation"])}
+                    if "analytical_operation" in item
+                    else {}
+                ),
             }
             for item in assessment.get("requirements", [])
             if isinstance(item, dict)
@@ -1682,7 +1778,12 @@ def _semantic_role(value: dict[str, Any], source_column: str = "") -> str:
     return "sales_amount"
 
 
-def _measure_candidates_for_role(role: str, fact_columns: list[dict[str, Any]]) -> list[str]:
+def _measure_candidates_for_role(
+    role: str,
+    fact_columns: list[dict[str, Any]],
+    *,
+    compilation_rules_version: int = COMPILATION_RULES_VERSION,
+) -> list[str]:
     role_terms = {
         "sales_amount": {
             "amount",
@@ -1718,6 +1819,8 @@ def _measure_candidates_for_role(role: str, fact_columns: list[dict[str, Any]]) 
             or name.casefold().endswith("id")
             or bool(tokens & {"code", "codigo", "key", "number", "numero"})
         )
+        if compilation_rules_version >= 3:
+            identifier_like = name in _identifier_columns({"columns": [column]})
         if role in {"sales_amount", "quantity"} and identifier_like:
             continue
         if role == "transaction_count" and tokens & {"detail", "line", "detalle", "linea"}:
@@ -1849,6 +1952,8 @@ def expand_proposal_blueprint(
     blueprint: dict[str, Any],
     scope: dict[str, Any],
     semantic_map: dict[str, Any],
+    *,
+    compilation_rules_version: int = COMPILATION_RULES_VERSION,
 ) -> dict[str, Any]:
     """Expand compact AI decisions into a deterministic, auditable proposal contract."""
     scoped = {
@@ -1873,6 +1978,13 @@ def expand_proposal_blueprint(
     measure_index_map: dict[int, int] = {}
     measures: list[dict[str, Any]] = []
     fact_columns_by_name = {str(item.get("name")): item for item in fact_columns}
+    strict_semantics = compilation_rules_version >= 2
+    identifier_columns = (
+        _identifier_columns(fact_table, compilation_rules_version=compilation_rules_version)
+        if strict_semantics
+        else set()
+    )
+    deferred_transaction_averages: list[int] = []
     for source_index, item in enumerate(blueprint.get("measures", [])):
         if not isinstance(item, dict):
             continue
@@ -1900,6 +2012,23 @@ def expand_proposal_blueprint(
             reason = (
                 f"La medida {name} fue excluida porque su significado no corresponde a "
                 "cantidad, venta, costo, descuento o conteo transaccional verificable."
+            )
+            proposal_warnings.append(reason)
+            decision_diagnostics.append(
+                {
+                    "kind": "measure",
+                    "code": name,
+                    "status": "excluded",
+                    "reason": reason,
+                    "compatible_measures": [],
+                }
+            )
+            continue
+        if strict_semantics and role == "transaction_count" and _claims_record_count(item):
+            reason = (
+                f"La medida {name} fue excluida: contar líneas o registros no equivale a "
+                "contar documentos distintos. El contrato actual no admite un conteo de "
+                "líneas con el rol transaccional; no se sustituye por pedidos o facturas."
             )
             proposal_warnings.append(reason)
             decision_diagnostics.append(
@@ -2007,6 +2136,42 @@ def expand_proposal_blueprint(
                 )
         if calculation is not None:
             operation = str(calculation.get("operation", ""))
+            identifier_inputs = [
+                value for value in calculation_inputs if value in identifier_columns
+            ]
+            transaction_average = (
+                strict_semantics
+                and role in {"sales_amount", "cost_amount", "discount_amount"}
+                and _claims_transaction_average(name)
+            )
+            if identifier_inputs or transaction_average:
+                reason = (
+                    (
+                        f"La medida calculada {name} fue excluida porque "
+                        f"{', '.join(identifier_inputs)} identifica registros o relaciones; "
+                        "su tipo numérico no la convierte en un operando monetario. Los "
+                        "promedios por documento deben dividir agregados, no importes por IDs."
+                    )
+                    if identifier_inputs
+                    else (
+                        f"La medida calculada {name} fue excluida porque un promedio por "
+                        "documento requiere una razón de agregados y no aritmética entre "
+                        "columnas de cada fila."
+                    )
+                )
+                proposal_warnings.append(reason)
+                decision_diagnostics.append(
+                    {
+                        "kind": "measure",
+                        "code": name,
+                        "status": "excluded",
+                        "reason": reason,
+                        "compatible_measures": [],
+                    }
+                )
+                if role == "sales_amount" and _claims_transaction_average(name):
+                    deferred_transaction_averages.append(source_index)
+                continue
             valid_width = 2 <= len(calculation_inputs) <= 4
             if operation in {"subtract", "divide"}:
                 valid_width = len(calculation_inputs) == 2
@@ -2093,8 +2258,38 @@ def expand_proposal_blueprint(
                     "columnas verificadas, sin SQL libre."
                 )
             continue
-        candidates = _measure_candidates_for_role(role, fact_columns)
+        candidates = _measure_candidates_for_role(
+            role, fact_columns, compilation_rules_version=compilation_rules_version
+        )
+        if strict_semantics and role in {
+            "sales_amount",
+            "cost_amount",
+            "discount_amount",
+            "quantity",
+        }:
+            candidates = [column for column in candidates if column not in identifier_columns]
         proposed_column_is_physical = proposed_column in fact_columns_by_name
+        if (
+            strict_semantics
+            and role in {"sales_amount", "cost_amount", "discount_amount", "quantity"}
+            and proposed_column in identifier_columns
+            and not candidates
+        ):
+            reason = (
+                f"La medida {name} fue excluida porque {proposed_column} es un identificador "
+                "y no existe una magnitud física compatible verificable."
+            )
+            proposal_warnings.append(reason)
+            decision_diagnostics.append(
+                {
+                    "kind": "measure",
+                    "code": name,
+                    "status": "excluded",
+                    "reason": reason,
+                    "compatible_measures": [],
+                }
+            )
+            continue
         if not candidates and (
             not proposed_column_is_physical or not _column_supports_role(role, proposed_column)
         ):
@@ -2158,6 +2353,29 @@ def expand_proposal_blueprint(
                 },
             }
         )
+    if deferred_transaction_averages:
+        sales_index = next(
+            (
+                index
+                for index, measure in enumerate(measures)
+                if measure.get("semantic_role") == "sales_amount"
+                and measure.get("aggregation") == "sum"
+            ),
+            None,
+        )
+        has_transactions = any(
+            measure.get("semantic_role") == "transaction_count"
+            and measure.get("aggregation") == "count_distinct"
+            for measure in measures
+        )
+        if sales_index is not None and has_transactions:
+            for source_index in deferred_transaction_averages:
+                measure_index_map[source_index] = sales_index
+            automatic_adjustments.append(
+                "El promedio por documento se conserva únicamente como KPI de razón entre "
+                "ventas agregadas y documentos distintos; se eliminó la aritmética por fila "
+                "con identificadores."
+            )
     dimension_terms = {
         "dim_producto": {"product", "producto", "item", "article", "articulo", "stock"},
         "dim_cliente": {
@@ -2364,6 +2582,26 @@ def expand_proposal_blueprint(
     for item in blueprint.get("kpis", []):
         if not isinstance(item, dict):
             continue
+        if (
+            strict_semantics
+            and _semantic_role(item) == "transaction_count"
+            and _claims_record_count(item)
+        ):
+            reason = (
+                f"El KPI {item.get('name', 'sin nombre')} fue excluido: su rótulo de líneas "
+                "o registros no representa documentos distintos."
+            )
+            proposal_warnings.append(reason)
+            decision_diagnostics.append(
+                {
+                    "kind": "kpi",
+                    "code": str(item.get("code", "")),
+                    "status": "excluded",
+                    "reason": reason,
+                    "compatible_measures": [],
+                }
+            )
+            continue
         raw_index = item.get("measure_index", 0)
         index = raw_index if isinstance(raw_index, int) else 0
         effective_index = measure_index_map.get(index)
@@ -2441,8 +2679,8 @@ def expand_proposal_blueprint(
         role = str(kpi.get("semantic_role", ""))
         name = str(kpi.get("name", ""))
         if (
-            line_grain
-            and operation == "average"
+            (line_grain or strict_semantics)
+            and (operation == "average" or strict_semantics)
             and role == "sales_amount"
             and _claims_transaction_average(name)
         ):
@@ -2485,6 +2723,22 @@ def expand_proposal_blueprint(
                 )
                 signature = (sales_name, transaction_name, "transaction_average")
             else:
+                if strict_semantics:
+                    reason = (
+                        f"El KPI {name} fue excluido porque el promedio por documento "
+                        "requiere un importe agregado y documentos distintos verificables."
+                    )
+                    proposal_warnings.append(reason)
+                    decision_diagnostics.append(
+                        {
+                            "kind": "kpi",
+                            "code": str(kpi.get("code", "")),
+                            "status": "excluded",
+                            "reason": reason,
+                            "compatible_measures": [],
+                        }
+                    )
+                    continue
                 kpi["name"] = "Importe promedio por línea de venta"
                 automatic_adjustments.append(
                     f"El KPI {name} se renombró como promedio por línea: no existe "
@@ -2594,7 +2848,7 @@ def expand_proposal_blueprint(
     )
     dimensions, semantic_quality = enrich_dimension_labels(dimensions, scope, semantic_map)
     summary = str(blueprint.get("summary", "Propuesta dimensional de ventas."))
-    return {
+    proposal: dict[str, Any] = {
         "contract_version": CONTRACT_VERSION,
         "domain": SALES_PROFILE.code,
         "summary": summary,
@@ -2636,6 +2890,9 @@ def expand_proposal_blueprint(
         "semantic_quality": semantic_quality,
         "ai_decisions": blueprint,
     }
+    if strict_semantics:
+        proposal["compilation_rules_version"] = compilation_rules_version
+    return proposal
 
 
 def apply_analyst_adjustments(
@@ -2883,6 +3140,53 @@ def build_requirement_coverage(
     dimensions = [item for item in proposal.get("dimensions", []) if isinstance(item, dict)]
     kpis = [item for item in proposal.get("kpis", []) if isinstance(item, dict)]
     grain = proposal.get("grain", {}) if isinstance(proposal.get("grain"), dict) else {}
+
+    def qualified_references(value: object) -> set[str]:
+        reference = str(value)
+        if reference.count(".") >= 2:
+            return {reference}
+        return {f"{source}.{reference}" for source in fact.get("source_tables", [])}
+
+    preserved_identity = {
+        reference
+        for column in fact.get("business_keys", [])
+        for reference in qualified_references(column)
+    }
+    for measure in measures:
+        if isinstance(measure.get("calculation"), dict):
+            continue
+        for column in measure.get("source_columns", []):
+            preserved_identity.update(qualified_references(column))
+    identity_graph: dict[str, set[str]] = {}
+    for join in proposal.get("joins", []):
+        if not isinstance(join, dict):
+            continue
+        left_columns, right_columns = join.get("left_columns", []), join.get("right_columns", [])
+        if (
+            not isinstance(left_columns, list)
+            or not isinstance(right_columns, list)
+            or not left_columns
+            or len(left_columns) != len(right_columns)
+            or not all(left_columns + right_columns)
+        ):
+            continue
+        for left, right in zip(left_columns, right_columns, strict=True):
+            left_ref = f"{join.get('left_table')}.{left}"
+            right_ref = f"{join.get('right_table')}.{right}"
+            identity_graph.setdefault(left_ref, set()).add(right_ref)
+            identity_graph.setdefault(right_ref, set()).add(left_ref)
+
+    def identity_is_preserved(reference: str) -> bool:
+        pending, visited = [reference], set()
+        while pending:
+            current = pending.pop()
+            if current in preserved_identity:
+                return True
+            if current not in visited:
+                visited.add(current)
+                pending.extend(identity_graph.get(current, set()) - visited)
+        return False
+
     invoice_grain = any(
         _search_tokens(source) & {"invoice", "factura"} for source in grain.get("source_tables", [])
     )
@@ -3000,7 +3304,26 @@ def build_requirement_coverage(
             # ratio or other requested result. Keep its original requirement ID
             # while requiring a concrete derived measure/KPI in the proposal.
             component_gaps.append(str(requirement.get("label") or coverage_code))
-        if request_status == "unavailable" and code in accepted:
+        identity_gaps: list[str] = []
+        if "identity_references" in requirement:
+            identity_references = requirement.get("identity_references")
+            if not isinstance(identity_references, list) or not identity_references:
+                identity_gaps.append("las referencias de identidad del documento y su detalle")
+            else:
+                identity_gaps = [
+                    str(ref) for ref in identity_references if not identity_is_preserved(str(ref))
+                ]
+                if not identity_gaps:
+                    component_gaps = [gap for gap in component_gaps if gap != "transactions"]
+                    outputs.extend(f"clave:{ref}" for ref in identity_references)
+        if identity_gaps:
+            coverage_status = "not_covered"
+            explanation = (
+                "La propuesta no conserva todavía las claves físicas: "
+                + ", ".join(identity_gaps)
+                + "."
+            )
+        elif request_status == "unavailable" and code in accepted:
             coverage_status = "accepted_limitation"
             explanation = "La ausencia fue confirmada; no se inventará una fuente o cálculo."
         elif request_status == "ambiguous" and code in accepted:
@@ -3028,6 +3351,11 @@ def build_requirement_coverage(
                 "coverage_status": coverage_status,
                 "outputs": list(dict.fromkeys(outputs)),
                 "explanation": explanation,
+                **(
+                    {"analytical_operation": deepcopy(requirement["analytical_operation"])}
+                    if "analytical_operation" in requirement
+                    else {}
+                ),
             }
         )
     return coverage
@@ -3403,6 +3731,17 @@ def validate_proposal(
     scoped = {
         str(item.get("ref")): item for item in scope.get("tables", []) if isinstance(item, dict)
     }
+    rules_version = proposal.get("compilation_rules_version", 1)
+    strict_semantics = isinstance(rules_version, int) and rules_version >= 2
+    identifier_references = (
+        {
+            f"{table_ref}.{column}"
+            for table_ref, table in scoped.items()
+            for column in _identifier_columns(table, compilation_rules_version=rules_version)
+        }
+        if strict_semantics
+        else set()
+    )
     if proposal.get("contract_version") != CONTRACT_VERSION:
         issues.append(
             _issue(
@@ -3619,6 +3958,50 @@ def validate_proposal(
                     if isinstance(measure.get("calculation"), dict)
                     else None
                 )
+                if strict_semantics:
+                    identifier_inputs = [
+                        str(column)
+                        for column in (source_columns if isinstance(source_columns, list) else [])
+                        if source_reference(column) in identifier_references
+                    ]
+                    if identifier_inputs and (
+                        calculation is not None
+                        or role in {"sales_amount", "cost_amount", "discount_amount", "quantity"}
+                    ):
+                        issues.append(
+                            _issue(
+                                "measure.identifier_operand",
+                                "error",
+                                f"fact.measures.{index}",
+                                f"{name} usa identificadores como magnitudes aritméticas: "
+                                f"{', '.join(identifier_inputs)}. Un tipo numérico no acredita "
+                                "un importe o cantidad.",
+                            )
+                        )
+                    if role == "transaction_count" and _claims_record_count(measure):
+                        issues.append(
+                            _issue(
+                                "measure.record_count_as_transaction",
+                                "error",
+                                f"fact.measures.{index}",
+                                "La etiqueta cuenta líneas o registros, pero la receta "
+                                "cuenta documentos distintos.",
+                            )
+                        )
+                    if (
+                        calculation is not None
+                        and role in {"sales_amount", "cost_amount", "discount_amount"}
+                        and _claims_transaction_average(name)
+                    ):
+                        issues.append(
+                            _issue(
+                                "measure.transaction_average_row_calculation",
+                                "error",
+                                f"fact.measures.{index}",
+                                "Un promedio por documento debe ser una razón de agregados, "
+                                "no un cálculo monetario por fila.",
+                            )
+                        )
                 if (
                     calculation is None
                     and role in {"sales_amount", "discount_amount"}
@@ -3995,6 +4378,20 @@ def validate_proposal(
                 )
                 continue
             code = str(kpi.get("code", ""))
+            if (
+                strict_semantics
+                and _semantic_role(kpi) == "transaction_count"
+                and _claims_record_count(kpi)
+            ):
+                issues.append(
+                    _issue(
+                        "kpi.record_count_as_transaction",
+                        "error",
+                        f"kpis.{index}",
+                        "El rótulo de líneas o registros no corresponde a un conteo "
+                        "de documentos distintos.",
+                    )
+                )
             kind = str(kpi.get("formula_kind", "aggregate"))
             if kind in {"ratio", "share", "difference"}:
                 inputs = [str(item) for item in kpi.get("inputs", [])]
