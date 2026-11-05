@@ -1,0 +1,39 @@
+{
+  "fecha": "2026-11-04T23:12:47.514073-05:00",
+  "archivo": "evidencias_exportaciones/ventas-ejecucion-17-executive.pdf",
+  "sha256": "d38dae932f5a0016fbaea526b1d2fb0c5b12b0c98f670bb2606610f2a395cc91",
+  "paginas_revisadas": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "metodo": "Poppler a 120 ppp; apertura individual de las cinco páginas",
+  "estado": "Revisión visual completa; original no editado",
+  "resultado": "Contenido legible, sin superposiciones, tablas partidas, cifras cortadas ni deformación de imágenes. La portada identifica la propuesta 120, la ejecución 17 y la selección 2013/Northwest con dos KPI.",
+  "hallazgos": [
+    {
+      "id": "EXP17-VIS-01",
+      "tipo": "Presentación",
+      "gravedad": "Menor",
+      "pagina": 1,
+      "observacion": "La cuadrícula de indicadores conserva una tercera celda vacía al presentar sólo dos KPI. No representa un indicador faltante; es espacio de la plantilla."
+    },
+    {
+      "id": "EXP17-VIS-02",
+      "tipo": "Presentación",
+      "gravedad": "Menor",
+      "pagina": 4,
+      "observacion": "La distribución territorial contiene una sola fila y ocupa una página independiente casi vacía, por la estructura fija de cinco páginas."
+    },
+    {
+      "id": "EXP17-VIS-03",
+      "tipo": "Lectura del gráfico",
+      "gravedad": "Limitación",
+      "pagina": 2,
+      "observacion": "El gráfico muestra cuadrícula y valor exacto del máximo, sin escala numérica vertical ni importes exactos de los demás puntos."
+    }
+  ],
+  "limite": "Esta revisión visual no sustituye la conciliación numérica ni acredita escenarios distintos de la selección exportada."
+}

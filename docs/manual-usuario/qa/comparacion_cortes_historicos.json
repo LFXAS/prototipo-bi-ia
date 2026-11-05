@@ -1,0 +1,36 @@
+{
+  "fecha_utc": "2026-11-05T04:55:09.598347+00:00",
+  "metodo": "Comparación de hashes de dos informes de sólo lectura ya conservados. Incluye cambio de código de revisión entre ambos cortes, no sólo comparación de dos versiones de service.py bajo imports actuales. No consultas ni escrituras adicionales.",
+  "informes": [
+    "compatibilidad_historicos_20261104.json",
+    "compatibilidad_historicos_final_20261104.json"
+  ],
+  "casos": [
+    {
+      "propuesta": 91,
+      "documento_guardado_identico": true,
+      "validacion_identica": true,
+      "replay_identico_entre_cortes": true
+    },
+    {
+      "propuesta": 98,
+      "documento_guardado_identico": true,
+      "validacion_identica": true,
+      "replay_identico_entre_cortes": true
+    },
+    {
+      "propuesta": 117,
+      "documento_guardado_identico": true,
+      "validacion_identica": true,
+      "replay_identico_entre_cortes": true
+    },
+    {
+      "propuesta": 120,
+      "documento_guardado_identico": true,
+      "validacion_identica": true,
+      "replay_identico_entre_cortes": true
+    }
+  ],
+  "todos_identicos": true,
+  "nota": "La discrepancia de 91 entre contrato guardado y replay ya existía y conserva el mismo replay en ambos cortes."
+}

@@ -1,0 +1,330 @@
+{
+  "secciones": [
+    {
+      "titulo": "Exportar un resultado: elegir PDF o Excel y fijar la selección",
+      "objetivo": "Generar un informe de la vista autorizada con fuente, ejecución, indicador y filtros definidos antes de descargar.",
+      "rol": "Usuario con Consultar análisis visual (analytics.dashboard.read), Exportar reportes analíticos (reports.analytics.export) y Consultar metadatos (metadata.read) para elegir la fuente en la interfaz.",
+      "requisitos": [
+        "Sesión activa y panel cargado sin errores para una ejecución conciliada con datos físicos disponibles.",
+        "Permisos efectivos analytics.dashboard.read y reports.analytics.export; conceder sólo exportación no autoriza el panel. La ruta de informe comprueba ambos en el backend.",
+        "El Gerente comercial tiene cuatro permisos configurados: Consultar análisis visual, Consultar conexiones, Consultar metadatos y Exportar reportes analíticos. Consultar metadatos se agregó con autorización del usuario y se verificaron las cuatro casillas; no se probó una sesión propia del gerente. El recorrido observado se realizó con Administrador inicial.",
+        "Carpeta de descarga identificable y espacio disponible. El navegador puede guardar automáticamente o pedir destino según su configuración.",
+        "No cambiar de fuente, ejecución, indicador o filtros mientras se está generando el archivo que se quiere comprobar."
+      ],
+      "pasos": [
+        "Abra Análisis > Analítica de ventas y compruebe Fuente en contexto y la base elegida.",
+        "Seleccione el Datamart analizado si existen varias ejecuciones. Anote ejecución y propuesta de la cabecera; no elija una versión únicamente por su fecha.",
+        "Elija Vista ejecutiva para una lectura resumida o Vista analítica para incluir gráfico de clientes y trazabilidad adicional cuando estén disponibles.",
+        "Si necesita cambiar el indicador de los gráficos, hágalo en Vista analítica. Si vuelve a Vista ejecutiva, revise los subtítulos: el indicador se conserva aunque el selector quede oculto.",
+        "Seleccione Año y Territorio y espere a que deje de aparecer «Actualizando resultados…». Confirme período, unidad y tarjetas. No exporte mientras la selección se actualiza o muestre error de consulta.",
+        "Elija Exportar PDF para lectura, impresión o presentación; elija Exportar Excel para revisar valores numéricos y datos agregados de los gráficos. Ambos usan la selección vigente.",
+        "Espere Generando…; durante la operación los botones de exportación quedan deshabilitados. Si el navegador pide destino, seleccione la carpeta de trabajo del caso.",
+        "Al terminar, abra el archivo descargado y compruebe contenido y contexto. El regreso del botón a su texto normal no sustituye la revisión del archivo."
+      ],
+      "resultado": "Se descarga un PDF o XLSX del datamart autorizado con la vista, indicador, año y territorio usados al solicitarlo.",
+      "verificacion": [
+        "El nombre enviado por la plataforma sigue el patrón ventas-ejecucion-{id}-{vista}.{formato}, por ejemplo ventas-ejecucion-18-executive.pdf o ventas-ejecucion-19-executive.xlsx. Los códigos de vista en el nombre son analyst y executive.",
+        "El nombre no contiene año, territorio, indicador ni fuente. Dos selecciones distintas pueden solicitar exactamente el mismo nombre; hay que identificarlas al guardarlas.",
+        "Las opciones de exportación sólo aparecen en la interfaz cuando se recibe reports.analytics.export. Si no aparecen, revisar permiso antes de diagnosticar un fallo de descarga.",
+        "El informe declara Fuente, Base de datos, Propuesta, Ejecución, Período, Moneda, Actualización y Vista. Compare esos campos con la pantalla preparada; compruebe el indicador en los subtítulos de las visualizaciones.",
+        "Para practicar con la evidencia conservada, use AdventureWorks local / AdventureWorks2022, propuesta #122, ejecución #18, año 2013 y Northwest; o WideWorldImporters local / WideWorldImporters, propuesta #124, ejecución #19, año 2015 y California. Los informes ejecutivos finales de ambos casos están identificados en las fuentes de este capítulo. Si la ejecución ya no conserva datos físicos, consulte esos archivos como evidencia y no prometa regenerarla."
+      ],
+      "errores": [
+        "Descargar primero y decidir después qué selección debía representar el informe.",
+        "Interpretar PDF como captura literal del navegador: se trata de un documento construido en servidor a partir del dashboard autorizado.",
+        "Suponer que el archivo de nombre más reciente corresponde al filtro que se acaba de elegir; el nombre de descarga no distingue filtros.",
+        "Cambiar de vista pensando que el indicador volvió automáticamente a ventas monetarias.",
+        "Presentar las cuatro casillas del Gerente comercial como prueba de que se inició sesión y se exportó con una cuenta de ese rol. La configuración y una prueba autenticada son evidencias diferentes."
+      ],
+      "explicacion": [
+        "PDF conviene para una lectura estable que reúna contexto, KPI, visualizaciones y hallazgos. Excel conviene para inspeccionar valores y datos agregados, contrastarlos o preparar una lectura adicional fuera de la aplicación.",
+        "Los dos formatos se reconstruyen en el backend desde la ejecución conciliada. La solicitud incluye conexión, ejecución, código del indicador, año, territorio y vista; el servidor no confía en cifras suministradas por el navegador.",
+        "Exportar consulta una materialización existente. No vuelve a ejecutar el ETL, no modifica el origen y no invoca al copiloto para redactar un informe nuevo."
+      ],
+      "fuentes": [
+        "../../../../Proyectos/BI/frontend/src/AnalyticsPage.tsx",
+        "../../../../Proyectos/BI/frontend/src/api/security.ts",
+        "../../../../Proyectos/BI/backend/app/modules/analytics/router.py",
+        "../../../../Proyectos/BI/backend/app/modules/analytics/schemas.py",
+        "../../../../Proyectos/BI/backend/app/modules/metadata/router.py",
+        "capturas/33_gerente_permiso_metadatos.jpg",
+        "contenido_roles_parametros.json",
+        "qa/verificacion_exportacion18_final.json",
+        "qa/verificacion_exportacion19_final.json"
+      ]
+    },
+    {
+      "titulo": "Leer y comprobar el PDF exportado",
+      "objetivo": "Reconocer las secciones del informe PDF, su alcance de presentación y las comprobaciones que exige antes de incorporarlo a una entrega.",
+      "rol": "Usuario autorizado para exportar; analista o expositor que revisa el documento.",
+      "requisitos": [
+        "Archivo PDF descargado completamente y aplicación lectora disponible.",
+        "Selección de pantalla anotada antes de exportar.",
+        "Conocer que la paginación depende de visualizaciones, cantidad de KPI y longitud de textos. Los ejemplos ejecutivos finales de las ejecuciones #18 y #19 tienen cinco páginas cada uno; ese resultado no fija el total de cualquier informe."
+      ],
+      "pasos": [
+        "Abra el PDF desde la descarga o desde la carpeta donde se guardó. Compruebe que abre como documento PDF y no como página de error guardada con extensión PDF.",
+        "En la portada lea la descripción de alcance y los campos Fuente, Base de datos, Período, Moneda, Propuesta, Ejecución, Actualización y Vista. Deténgase si no corresponden al caso preparado.",
+        "Compare las tarjetas de Indicadores con la pantalla. Las cifras grandes del panel pueden estar abreviadas. El PDF presenta dos decimales para importes, cantidades y razones; los conteos declarados, como pedidos o clientes, se presentan sin decimales.",
+        "Revise Tendencia del indicador y el subtítulo que identifica qué medida se representa por mes. Compruebe que corresponde al indicador elegido, no necesariamente a todos los KPI de la portada.",
+        "Revise cada sección Composición de los resultados. Los rankings se presentan como tablas de categoría, valor y participación; el PDF no reproduce todos los gráficos como una captura idéntica de barras o anillo.",
+        "Revise Hallazgos explicables, su lectura y evidencia. Lea completo el aviso Vigencia de los atributos dimensionales: los atributos corresponden al estado disponible en el origen durante el ETL; no se verifica que fueran vigentes en la fecha del hecho ni que acrediten una entrega realizada. Son hallazgos determinísticos del dashboard, no la conversación del copiloto.",
+        "En Vista analítica revise Calidad y trazabilidad con filas de origen, filas cargadas, diferencia y cantidad de tablas. Es evidencia de la ejecución completa, no el tamaño de un filtro parcial.",
+        "Recorra todas las páginas a un tamaño de lectura normal. Verifique nombres largos, cifras, porcentajes, saltos de página, márgenes y pie con ejecución y numeración.",
+        "Antes de incorporarlo a una sustentación, registre el indicador y los filtros junto al archivo. Use los campos de fuente, base y ejecución de la portada para identificarlo; no sustituya esa lectura por el nombre del archivo."
+      ],
+      "resultado": "PDF revisado en contexto y en presentación, apto para el uso declarado o marcado con una incidencia concreta.",
+      "verificacion": [
+        "El PDF se construye en A4 horizontal e incluye pie con Ejecución ETL # y número de página.",
+        "Vista ejecutiva excluye la visualización de clientes. Vista analítica incluye las visualizaciones disponibles y la sección de calidad.",
+        "La portada muestra todos los KPI de la ejecución recalculados con los filtros. Elegir indicador cambia los gráficos; no reduce la portada a una sola tarjeta.",
+        "La portada imprime explícitamente la fuente y la base de datos. Los valores largos se ajustan dentro de la tabla; deben poder leerse completos, sin invadir los campos contiguos.",
+        "La versión actual usa el título fijo Resumen ejecutivo de ventas en PDF ejecutivo incluso si el alcance representa pedidos. La descripción puede conservar la salvedad de pedidos; se debe leerla y evitar presentar el título como prueba de facturación.",
+        "La precisión depende de la unidad completa declarada: pedidos, clientes y otros conteos reconocidos se muestran como enteros; unidades, razones y unidades compuestas como USD por unidad conservan dos decimales de presentación. La palabra unidad por sí sola no provoca un redondeo a entero. El valor numérico sin ese redondeo se consulta en Excel.",
+        "Actualización usa fecha y hora ISO con su desplazamiento, por ejemplo 2026-11-05 04:24+00:00. Si el dato no informa zona, el reporte lo declara con (zona no informada); no se debe atribuir una zona que no consta.",
+        "En el caso #18 / propuesta #122 / 2013 · Northwest, el importe numérico es 6015174.735836 USD, las unidades 17452, los pedidos 2053 y la razón importe/pedidos 2929.943855740867. El PDF presenta el importe como 6,015,174.74 USD y la razón con dos decimales.",
+        "En el caso #19 / propuesta #124 / 2015 · California, el importe numérico es 1215705.55, las unidades 57142, los pedidos 481 y la razón importe/pedidos 2527.454365904366. La moneda declarada es moneda de origen; no la cambie a USD ni sume este importe al de AdventureWorks.",
+        "Los PDF finales de #18 y #19 se revisaron visualmente en sus cinco páginas y tienen contexto, cifras, tablas y aviso temporal completos. La tendencia rotula su máximo y no imprime una escala vertical numérica; use los puntos de Excel para leer valores mensuales exactos."
+      ],
+      "errores": [
+        "Exigir siempre cinco páginas porque los dos ejemplos finales tienen cinco, o seis porque un informe histórico tuvo seis.",
+        "Dar por perdido un gráfico de clientes en un informe ejecutivo: su exclusión pertenece a esa vista.",
+        "Presentar los rankings PDF como exportación íntegra de todas las categorías del datamart; corresponden a los puntos del ranking visible, limitado por la consulta.",
+        "Confundir un redondeo de presentación con un cambio en la cifra almacenada sin contrastar el valor subyacente.",
+        "Usar el título genérico de ventas para afirmar facturación sin leer el alcance de pedidos, la fuente, la base y la moneda declarados."
+      ],
+      "explicacion": [
+        "La fidelidad funcional significa conservar ejecución, recetas, selección y visualizaciones visibles según vista. No significa identidad de composición entre la pantalla y cada página del PDF.",
+        "Una participación de ranking conserva la base de puntos mostrados del dashboard. Si hay más categorías que las ocho visibles, no debe interpretarse como participación sobre toda la población.",
+        "Actualización corresponde a la ejecución publicada, no a una carga nueva al descargar. El PDF conserva el desplazamiento horario informado. Una hora 04:24+00:00 equivale a las 23:24 del día anterior en America/Guayaquil (UTC−05:00); compare el instante y la ejecución antes de concluir que cambió la carga. Si aparece zona no informada, la equivalencia no puede establecerse sólo con ese texto.",
+        "Un PDF puede ser auténtico y abrir correctamente y, aun así, ser inadecuado para una conclusión si corresponde a otra selección o contiene un redondeo que impide la precisión exigida. La validez técnica del archivo y la validez de su uso son comprobaciones diferentes."
+      ],
+      "fuentes": [
+        "../../../../Proyectos/BI/backend/app/modules/reports/analytics_export.py",
+        "../../../../Proyectos/BI/backend/app/modules/analytics/service.py",
+        "../../../../Proyectos/BI/backend/tests/test_analytics_export.py",
+        "qa/verificacion_exportacion18_final.json",
+        "qa/verificacion_exportacion19_final.json",
+        "evidencias_exportaciones/analitica-ventas-18-executive-final.pdf",
+        "evidencias_exportaciones/analitica-ventas-19-executive-final.pdf"
+      ]
+    },
+    {
+      "titulo": "Leer y comprobar el Excel exportado",
+      "objetivo": "Inspeccionar el resumen y los puntos agregados en XLSX sin confundirlos con datos crudos ni con un modelo recalculable completo del datamart.",
+      "rol": "Analista BI, gerencia o expositor autorizado para exportar y revisar el archivo.",
+      "requisitos": [
+        "Archivo XLSX descargado y aplicación compatible con libros de cálculo.",
+        "Selección de la pantalla anotada para cotejar ejecución, vista, indicador y filtros.",
+        "Mantener una copia original del archivo exportado antes de realizar cálculos o cambios de presentación externos."
+      ],
+      "pasos": [
+        "Abra el libro y revise la hoja Resumen: descripción de alcance, Período, Moneda, Actualización, Propuesta, Ejecución, Vista, Fuente y Base de datos. Compare su contexto con la selección que preparó.",
+        "Compare Indicadores con los filtros visibles con las tarjetas del panel. Las celdas numéricas conservan valores, mientras que un KPI sin valor se escribe como Sin valor.",
+        "Lea Hallazgos explicables en Resumen y distinga texto descriptivo de valores numéricos. Lea completo el aviso sobre la vigencia de atributos dimensionales; no convierta un territorio o atributo disponible durante el ETL en prueba de su vigencia histórica o de una entrega realizada. La hoja no contiene el historial de preguntas y respuestas del copiloto.",
+        "Abra las hojas de visualizaciones disponibles: Evolución en el tiempo, Productos líderes, Distribución territorial y, en la vista analítica, Clientes principales cuando esa dimensión exista.",
+        "En cada hoja revise título, subtítulo, categoría, Valor y Participación. Los datos comienzan bajo los encabezados y respaldan el gráfico incrustado; no son todas las filas del origen.",
+        "Seleccione una celda de valor para consultar el número subyacente. Los importes, cantidades y razones pueden mostrar dos decimales sin perder su valor numérico guardado; pedidos y otros conteos declarados se presentan como enteros. Si necesita más decimales, cambie el formato de una copia de trabajo y conserve el exportado original.",
+        "En vista analítica abra Trazabilidad. Revise ejecución, propuesta, filas de origen y destino, diferencia, tablas, conciliación y granularidad.",
+        "Revise gráficos, contexto y hallazgos a tamaño de lectura normal y en la vista previa de impresión. La altura de las filas se calcula para ajustar los textos del contexto y de los avisos. Compruebe que se vean completos, también si cambia de aplicación lectora.",
+        "Si filtra u ordena celdas en Excel, identifique ese trabajo como análisis posterior. Para obtener otro informe oficial de la plataforma, ajuste filtros en el panel y vuelva a exportar."
+      ],
+      "resultado": "Libro revisado con valores y agregados identificables, conservando la diferencia entre exportación oficial y análisis posterior.",
+      "verificacion": [
+        "La hoja Resumen existe en ambas vistas. Trazabilidad sólo se agrega en vista analítica.",
+        "El número de hojas depende de las dimensiones disponibles y de la vista. Los ejemplos ejecutivos finales de #18 y #19 tienen cuatro: Resumen, Evolución en el tiempo, Productos líderes y Distribución territorial. La vista ejecutiva excluye clientes y no agrega Trazabilidad; con cuatro visualizaciones disponibles, la analítica tiene Resumen, cuatro hojas visuales y Trazabilidad.",
+        "Las hojas de visualizaciones incluyen datos agregados y gráficos editables del libro, paneles congelados, filtro de tabla y configuración de impresión horizontal.",
+        "Los KPI derivados llegan como valores calculados por la plataforma; el exportador no entrega todas las fórmulas Excel y dependencias de un modelo de BI recalculable.",
+        "La participación de los puntos se almacena como fracción en la celda y se muestra como porcentaje. Un valor de participación 0,25 corresponde a 25 %; no se vuelve a multiplicar por 100 al utilizarlo en una fórmula.",
+        "Los KPI porcentuales del dashboard ya usan escala 0–100 y el resumen aplica un símbolo % de presentación; no se debe aplicar indiscriminadamente el formato porcentual estándar a toda cifra de la hoja.",
+        "Fuente y Base de datos se escriben expresamente en Resumen, y Actualización conserva el desplazamiento ISO o declara zona no informada. El indicador se identifica en los subtítulos de las hojas visuales; regístrelo también al organizar la entrega.",
+        "Los textos se conservan como texto literal: una etiqueta que empiece por = no se convierte automáticamente en fórmula y una URL no se convierte automáticamente en hipervínculo. Las fórmulas introducidas después por quien edita una copia pertenecen a ese análisis externo.",
+        "En #18, los valores guardados del resumen son importe 6015174.735836, unidades 17452, pedidos 2053 y razón 2929.943855740867. En #19 son 1215705.55, 57142, 481 y 2527.454365904366, respectivamente. El total de los doce períodos y el territorio coinciden con el importe del caso, admitiendo la mínima diferencia de representación numérica registrada en el QA de #18.",
+        "La revisión de los dos XLSX finales comprobó valores, formatos, contexto, ausencia de fórmulas de hoja y de hipervínculos automáticos. La visualización mediante ArtifactTool mostró completos el contexto y los avisos. No se completó una revisión Calc de estos archivos finales; el control de otra aplicación debe registrarse con su propio resultado."
+      ],
+      "errores": [
+        "Tratar cada fila de una hoja visual como transacción OLTP o línea de la tabla de hechos.",
+        "Esperar todas las categorías cuando el gráfico original contiene un ranking Top 8.",
+        "Cambiar filtros locales del libro y suponer que se vuelve a consultar SQL Server o el datamart.",
+        "Modificar un valor y seguir presentando el libro como exportación original de la plataforma.",
+        "Aplicar formato porcentual estándar a un KPI que ya está en escala 0–100 y producir una cifra cien veces mayor.",
+        "Esperar que cambiar una celda de KPI recalcule automáticamente todos los hallazgos y gráficos como el backend.",
+        "Suponer que cualquier unidad cuyo nombre incluya unidad debe verse sin decimales: cantidades fraccionarias y razones conservan dos decimales de presentación.",
+        "Confundir una etiqueta que parece fórmula o enlace con una instrucción ejecutada por la exportación; el libro conserva esas cadenas como texto."
+      ],
+      "explicacion": [
+        "Excel facilita inspección y reutilización de agregados. La aplicación escribe los números y textos obtenidos del dashboard y crea los gráficos a partir de esos puntos; no exporta credenciales, conexiones activas a la base ni un motor ETL dentro del libro.",
+        "Los porcentajes de participación de ranking y los porcentajes de KPI se almacenan con convenciones distintas de formato. La revisión del valor subyacente evita introducir errores al combinar datos fuera de la plataforma.",
+        "Una diferencia de separador decimal o de miles puede ser presentación de la aplicación lectora. Para comprobar igualdad, compare el valor numérico y la unidad y no sólo la forma de la cadena mostrada.",
+        "El nombre de cada hoja visual se deriva del título y se limita a la longitud que admite Excel. La ausencia de una hoja también puede corresponder a una dimensión no disponible en esa ejecución; hay que compararla con la vista exportada.",
+        "El ajuste de texto y la altura calculada evitan el recorte del contexto y de los hallazgos en la versión vigente. Los ejemplos de Excel recortado pertenecen al historial de incidencias del capítulo 16; no describen los archivos finales identificados aquí. Conserve esa distinción si utiliza capturas anteriores para explicar la corrección."
+      ],
+      "fuentes": [
+        "../../../../Proyectos/BI/backend/app/modules/reports/analytics_export.py",
+        "../../../../Proyectos/BI/backend/tests/test_analytics_export.py",
+        "qa/verificacion_exportacion18_final.json",
+        "qa/verificacion_exportacion19_final.json",
+        "qa/comparativo_exportaciones18_19_final.json",
+        "qa/verificacion_altura_insights_xlsx.json",
+        "evidencias_exportaciones/analitica-ventas-18-executive-final.xlsx",
+        "evidencias_exportaciones/analitica-ventas-19-executive-final.xlsx"
+      ]
+    },
+    {
+      "titulo": "Qué incluyen y qué excluyen los informes de la plataforma",
+      "objetivo": "Usar los informes con expectativas precisas y explicar qué significa fidelidad a la selección autorizada.",
+      "rol": "Todos los usuarios que reciben o distribuyen una exportación.",
+      "requisitos": [
+        "Distinguir vista ejecutiva y analítica e identificar el alcance de la ejecución.",
+        "No equiparar el permiso de exportación con acceso irrestricto al origen o con anonimización de etiquetas."
+      ],
+      "pasos": [
+        "Antes de compartir, identifique el formato, vista, ejecución, indicador y filtros que representa el archivo.",
+        "Compruebe el contenido común: fuente y base de datos, propuesta y ejecución, período, moneda, actualización con zona declarada, KPI filtrados y hallazgos explicables disponibles.",
+        "Compruebe las visualizaciones de la vista. Ejecutiva omite clientes; analítica puede incluir clientes y trazabilidad. Los gráficos y hojas se basan en el indicador seleccionado.",
+        "Identifique lo que el informe no contiene: conversación del copiloto, una nueva explicación generativa, expediente ETL íntegro, contrato completo, todas las tablas de origen, todas las categorías de rankings, secretos o instrucciones SQL libres.",
+        "Si necesita demostrar conciliación detallada o aprobación humana, acompañe el informe con el expediente o evidencia identificada correspondiente; no declare que el reporte analítico sustituye ese expediente.",
+        "Si necesita respaldar una respuesta específica del chat, documente la Consulta interpretada y su alcance por el procedimiento autorizado de evidencia. No afirme que Exportar PDF o Excel incluye automáticamente esa respuesta.",
+        "Si requiere otro año, territorio o indicador, cambie la selección en el panel y exporte otra versión identificada. No reutilice el nombre de un archivo como prueba de que sus filtros cambiaron.",
+        "Al comparar rankings con una respuesta del chat, lea el denominador de cada participación. En los informes de ejemplo, productos contiene las ocho categorías mostradas y sus participaciones suman 100 % entre ellas, salvo redondeos de presentación. La consulta Top 3 del chat usa el total del filtro; sus porcentajes no tienen por qué coincidir con el ranking del reporte."
+      ],
+      "resultado": "El receptor conoce exactamente qué información respalda el archivo y qué evidencia debe consultar aparte.",
+      "verificacion": [
+        "La ruta de informe vuelve a ejecutar la construcción del dashboard con parámetros autorizados; no acepta una lista de cifras arbitrarias del navegador.",
+        "La reconstrucción exige una ejecución exitosa y conciliada de la conexión indicada; la relación fuente–ejecución se valida de nuevo.",
+        "El servidor registra la exportación en auditoría con actor, ejecución, formato, vista, indicador y filtros. La descarga no registra una nueva materialización.",
+        "Las etiquetas descriptivas de cliente o producto pueden estar presentes según vista y datos. Un reporte agregado no equivale a un documento anónimo.",
+        "Las filas de trazabilidad corresponden a la conciliación de la carga completa; los KPI y puntos visuales corresponden a la selección filtrada del informe.",
+        "En el ranking de productos de #18, las ocho categorías mostradas suman 2192595.016681; en #19 suman 307083.35. Esos denominadores son menores que el importe total de cada selección. No use el porcentaje Top 8 como cuota sobre todas las ventas o pedidos.",
+        "El aviso sobre atributos dimensionales forma parte de los hallazgos exportados en los dos ejemplos finales. No afirma vigencia histórica ni entrega efectiva de los atributos por el hecho de disponer de una fecha del hecho."
+      ],
+      "errores": [
+        "Decir que Excel exporta toda la base porque contiene tablas y gráficos.",
+        "Decir que el PDF contiene la respuesta más reciente del copiloto porque se generó después de la conversación.",
+        "Afirmar que el servidor reproduce los elementos temporales de la pantalla, como una barra seleccionada, un detalle abierto o la posición de desplazamiento.",
+        "Suponer que ocultar clientes en la vista ejecutiva representa una política de seguridad por fila o por entidad.",
+        "Utilizar un reporte de pedidos para sostener una afirmación de facturación por su título genérico.",
+        "Sumar o comparar como una sola moneda los importes de AdventureWorks en USD y WideWorldImporters en moneda de origen, sin una divisa única verificada y un criterio de conversión autorizado."
+      ],
+      "explicacion": [
+        "Fiel a la selección significa mismo contexto de conexión y ejecución, recetas y filtros recibidos por el servidor y visualizaciones permitidas por vista. El archivo puede utilizar tablas donde la pantalla muestra barras y un estilo distinto sin perder esa fidelidad funcional.",
+        "La selección visible del tablero y la de una consulta adicional del copiloto pueden ser distintas. El informe se solicita con los filtros del tablero; no adopta por sí solo otro territorio o año que el chat haya consultado.",
+        "Como la reconstrucción consulta los datos publicados en el momento de la solicitud, conviene conservar el informe con su contexto y fecha. No constituye una copia de seguridad de toda la aplicación ni reemplaza la conservación del expediente y la materialización.",
+        "La fuente, la base y la moneda identifican el alcance de cada caso. Que dos informes tengan estructura semejante y cifras conciliadas no los vuelve directamente comparables: compruebe evento comercial, período, territorio, unidad y moneda antes de utilizarlos en una misma conclusión."
+      ],
+      "fuentes": [
+        "../../../../Proyectos/BI/backend/app/modules/analytics/router.py",
+        "../../../../Proyectos/BI/backend/app/modules/analytics/service.py",
+        "../../../../Proyectos/BI/backend/app/modules/reports/analytics_export.py",
+        "../../../../Proyectos/BI/frontend/src/AnalyticsPage.tsx",
+        "../../../../Proyectos/BI/docs/specs/SPR-05-02-reporteria-fiel-pdf-excel.md",
+        "qa/comparativo_exportaciones18_19_final.json"
+      ]
+    },
+    {
+      "titulo": "Guardar y organizar descargas sin sobrescribir evidencia",
+      "objetivo": "Localizar los archivos descargados, conservar originales y crear copias finales con nombres que permitan recuperar el contexto.",
+      "rol": "Usuario que descarga y persona responsable de la entrega documental.",
+      "requisitos": [
+        "Conocer la carpeta de descargas elegida por el navegador y la ubicación de entrega del proyecto.",
+        "Conservar el archivo exportado original y los documentos anteriores del usuario.",
+        "Para entregas documentales de este proyecto, leer las instrucciones del destino /home/ceo/Proyectos/Información adicional proyecto BI y utilizar una nueva carpeta Versiones/AAAA-MM-DD_vNN con fecha America/Guayaquil e incremento disponible."
+      ],
+      "pasos": [
+        "En la lista de descargas del navegador localice el informe terminado. Use Mostrar en carpeta, Abrir ubicación del archivo o la acción equivalente que ofrezca su navegador.",
+        "Si no se ofrece esa acción, abra el gestor de archivos y vaya al destino de descarga configurado. Use la búsqueda por ventas-ejecucion y por la extensión .pdf o .xlsx, no sólo por la fecha.",
+        "Verifique que la descarga terminó y que no se está seleccionando un archivo temporal o incompleto. Abra el informe antes de copiarlo a la entrega.",
+        "Conserve una copia con el nombre original enviado por la plataforma y prepare, si necesita distinguir filtros, una copia identificada con fuente, ejecución, vista, indicador, año y territorio.",
+        "Use un nombre descriptivo de archivo, por ejemplo AW_e18_ejecutiva_importe_2013_Northwest_2026-11-05.pdf o WWI_e19_ejecutiva_importe_2015_California_2026-11-05.xlsx. Es una convención de organización: no sustituye los identificadores internos ni demuestra que el contenido coincida.",
+        "Si existe otro archivo con el mismo nombre y contenido distinto, conserve primero la versión anterior en un historial fechado. No sobrescriba una versión fechada ya entregada.",
+        "Copie los informes finales al nuevo directorio de entrega, mantenga el índice del conjunto y actualice LEEME_PRIMERO.md para señalar la entrega vigente según las instrucciones del proyecto.",
+        "Registre origen, fecha de descarga, fuente/base, ejecución/propuesta, vista, indicador, filtros y estado de verificación. La entrega final debe comprobar copia por SHA-256 sin alterar el original.",
+        "Comparta únicamente los entregables autorizados. No adjunte carpetas completas del sistema que incluyan credenciales, bases, volúmenes, dependencias, cachés o registros internos."
+      ],
+      "resultado": "Exportaciones localizadas, verificadas y copiadas a una entrega con contexto recuperable y conservación de versiones previas.",
+      "verificacion": [
+        "Se mantiene la relación entre el archivo con nombre original y su copia identificada para entrega.",
+        "Los posibles sufijos automáticos del navegador, como (1), no se interpretan como versión de contenido validada.",
+        "La copia final coincide por SHA-256 con el archivo verificado de origen; renombrar una copia no cambia su contenido.",
+        "El índice identifica qué archivos son vigentes y cuáles son referencias históricas, pruebas o simulaciones.",
+        "La carpeta fechada anterior se conserva y no se borran originales del usuario.",
+        "Los informes de ejemplo identificados con -final corresponden al corte corregido del 5 de noviembre de 2026. Los informes anteriores sin fuente/base o con avisos recortados son referencias históricas del capítulo 16 y no se presentan como vigentes."
+      ],
+      "errores": [
+        "Usar una descarga con sufijo (2) como prueba de que contiene el filtro más reciente.",
+        "Guardar sólo una captura del gráfico cuando se necesita el informe descargado.",
+        "Mover o borrar el original del usuario al reorganizar la entrega.",
+        "Renombrar otro archivo con el nombre de la ejecución correcta sin revisar su contenido.",
+        "Copiar una carpeta de trabajo entera para entregar un PDF y exponer material ajeno o sensible."
+      ],
+      "explicacion": [
+        "El navegador controla dónde guarda la descarga; la aplicación construye el nombre base y entrega el contenido. Las acciones del gestor de archivos varían entre equipos, por lo que el criterio estable es localizar la descarga terminada, abrirla, identificarla y copiarla conservando historial.",
+        "La plataforma no añade filtros al nombre. La organización documental debe suplir esa limitación mediante nombre descriptivo e índice, sin atribuir a la plataforma un versionado documental que no realiza.",
+        "La revisión del archivo y la copia verificada son pasos diferentes: que el PDF de autoría abra correctamente no demuestra que la copia del destino sea idéntica. La entrega registra ambas comprobaciones."
+      ],
+      "fuentes": [
+        "../../../../Proyectos/BI/frontend/src/AnalyticsPage.tsx",
+        "../../../../Proyectos/BI/backend/app/modules/analytics/router.py",
+        "../AGENTS.md",
+        "../../../../Proyectos/Información adicional proyecto BI/AGENTS.md",
+        "qa/comparativo_exportaciones18_19_final.json"
+      ]
+    },
+    {
+      "titulo": "Cuándo un informe no es utilizable y cómo recuperarlo",
+      "objetivo": "Detectar errores de descarga, selección, cálculo o presentación y repetir únicamente la operación necesaria.",
+      "rol": "Usuario que revisa el informe; analista para fórmulas y conciliación; administración para permisos o configuración.",
+      "requisitos": [
+        "Archivo descargado y contexto de la solicitud anotados.",
+        "Distinguir informe técnicamente corrupto, selección equivocada, dato no calculable y defecto de presentación.",
+        "Usar el informe y la verificación que correspondan al mismo corte. Los archivos finales #18 y #19 tienen comprobaciones reales registradas; una prueba de código o una captura de un archivo anterior no sustituye la revisión del archivo que se quiere entregar."
+      ],
+      "pasos": [
+        "Si el archivo no aparece, compruebe la lista de descargas y la carpeta configurada. Revise si el navegador bloqueó la descarga o espera que se elija un destino.",
+        "Si no abre o está incompleto, conserve el nombre y el mensaje y repita sólo la descarga desde un dashboard cargado correctamente. No repita el ETL por un archivo corrupto.",
+        "Si faltan botones o se deniega la descarga, revise sesión y permisos. La exportación exige lectura del dashboard y permiso de exportación; el selector de fuentes usa metadata.read. El Gerente comercial ya tiene esos permisos dentro de sus cuatro casillas configuradas; si una cuenta sigue sin acceso, compruebe sus asignaciones efectivas con administración.",
+        "Si el contenido pertenece a otra ejecución, vista, indicador o filtro, marque el archivo como referencia equivocada, establezca la selección correcta y exporte una copia nueva con contexto identificable.",
+        "Si el informe mezcla pedidos, facturas, impuesto o moneda de forma incompatible con la pregunta, no lo utilice para esa conclusión. Revise el alcance de la ejecución y seleccione o prepare un contrato apropiado mediante el flujo supervisado.",
+        "Si un KPI aparece Sin valor, compruebe si la ejecución carece de una dependencia o el denominador es cero. El informe puede describir correctamente esa incidencia, pero ese KPI no se presenta como resultado válido ni como cero.",
+        "Si las cifras aparentan diferir sólo por separadores o redondeo, compare valor numérico y unidad. El PDF muestra dos decimales para importes, cantidades y razones, y enteros para conteos declarados. Use el número guardado en Excel para conciliar un cociente y no edite la cifra del original.",
+        "Si hay cortes de nombres o avisos, valores superpuestos, páginas vacías inesperadas o gráficos ilegibles, marque ese archivo como no apto para entrega y comunique formato, vista, ejecución y selección. Fuente/base ausentes y avisos XLSX recortados fueron incidencias anteriores ya corregidas en los ejemplos finales; si reaparecen, identifique la versión y genere un archivo nuevo con el exportador vigente.",
+        "Si sólo un archivo es defectuoso y el dashboard mantiene sus cifras y conciliación, descargue el otro formato para contrastar y conserve la incidencia. No dé por fallida la carga completa sin evidencia.",
+        "Después de recuperar, vuelva a abrir el archivo nuevo y repita la comprobación de contexto y legibilidad antes de incorporarlo al índice final."
+      ],
+      "resultado": "Informe correcto recuperado o incidencia documentada con la causa y acción adecuadas, sin reprocesar datos innecesariamente.",
+      "verificacion": [
+        "No es utilizable para una conclusión un informe de otra población aunque abra correctamente.",
+        "Para una comprobación que exige más de dos decimales, el PDF aporta presentación redondeada y Excel aporta el número guardado. Una cifra cortada o ilegible no sirve como evidencia; una cifra redondeada debe identificarse como tal y contrastarse con el valor numérico.",
+        "Un campo Sin valor no se corrige editando un cero en el archivo; su causa se revisa en la ejecución.",
+        "Un defecto de exportación no se resuelve alterando la necesidad comercial ni relajando la conciliación.",
+        "El error y la recuperación se registran con estado real: pendiente, corregido y verificado, o no comprobado.",
+        "Los registros de verificación finales de #18 y #19 documentan cinco páginas PDF por archivo, cuatro hojas XLSX por libro, fuente, base y desplazamiento horario visibles, sumas y razones conformes, participaciones Top 8 correctas y aviso temporal completo.",
+        "La revisión visual de esos PDF y la visualización de sus XLSX mediante ArtifactTool están completadas. La revisión Calc de los archivos finales no se completó; no la declare realizada ni use una prueba sintética anterior como si fuera el mismo archivo.",
+        "El cambio autorizado del Gerente comercial está verificado como configuración de cuatro permisos. La exportación observada pertenece a Administrador inicial; el recorrido autenticado propio de Gerente comercial o Analista BI no está acreditado por estos informes."
+      ],
+      "errores": [
+        "Pulsar Materializar o ejecutar otra carga para resolver una descarga fallida.",
+        "Editar manualmente cifras del informe para que coincidan con la expectativa y seguir llamándolo exportación original.",
+        "Aceptar una cifra incorrecta porque el pie del PDF dice datos conciliados.",
+        "Declarar comprobado visualmente un PDF o Excel basándose sólo en que el código contiene un exportador o existen pruebas automatizadas.",
+        "Confundir una diferencia de hora por zona horaria con una ejecución distinta sin revisar los identificadores."
+      ],
+      "explicacion": [
+        "La frase datos conciliados identifica la condición del expediente que usa el exportador; no sustituye la revisión del archivo ni demuestra que el usuario eligió el expediente apropiado.",
+        "La corrección puede pertenecer a tres lugares: selección de usuario, presentación del exportador o datos/contrato de la ejecución. Sólo el último caso puede requerir una nueva versión y carga, siempre con el flujo supervisado y la evidencia del diagnóstico.",
+        "Las pruebas del repositorio comprueban estructura PDF, visibilidad por vista, hojas, unidades, texto literal, contexto, zona horaria y ajuste de texto. La revisión de los archivos reales comprueba además cifras y presentación de ese contenido concreto. Para repetir el procedimiento, conserve el archivo revisado y su registro de integridad; no atribuya una verificación de otro corte al que acaba de descargar."
+      ],
+      "fuentes": [
+        "../../../../Proyectos/BI/backend/app/modules/analytics/router.py",
+        "../../../../Proyectos/BI/frontend/src/AnalyticsPage.tsx",
+        "../../../../Proyectos/BI/backend/app/modules/reports/analytics_export.py",
+        "../../../../Proyectos/BI/backend/tests/test_analytics_export.py",
+        "../../../../Proyectos/BI/docs/specs/SPR-05-02-reporteria-fiel-pdf-excel.md",
+        "qa/verificacion_exportacion18_final.json",
+        "qa/verificacion_exportacion19_final.json",
+        "qa/comparativo_exportaciones18_19_final.json",
+        "capturas/33_gerente_permiso_metadatos.jpg"
+      ]
+    }
+  ]
+}

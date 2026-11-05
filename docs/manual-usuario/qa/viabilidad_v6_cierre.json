@@ -1,0 +1,40 @@
+{
+  "fecha_utc": "2026-11-05T06:35:08.322Z",
+  "commit_codigo": "bf50172",
+  "revision_codigo": "need-review-6; versión del código al ejecutar, no inferida de contratos históricos",
+  "proveedor": "anthropic-cloud",
+  "modelo": "claude-haiku-4-5-20251001",
+  "metodo": "Operación de interfaz: objetivo exacto, cuatro preguntas, Mensual, consentimiento al destino indicado y Validar viabilidad. No se pulsó generar propuesta ni se aprobaron decisiones pendientes.",
+  "casos": [
+    {
+      "fuente": "AdventureWorks local",
+      "instantanea": 2,
+      "objetivo": "Conservar cada línea de pedido de venta en un datamart. Para priorizar productos y territorios, comparar mensualmente cuatro indicadores: suma del importe registrado de las líneas, suma de unidades, conteo de identificadores de pedido distintos e importe total dividido entre pedidos distintos. Usar fecha y territorio comercial del pedido, producto y cliente con nombre verificable. Los rankings comparan sumas por entidad. Mantener la trazabilidad de cada línea al pedido. La moneda se reportará sólo si se comprueba en la fuente.",
+      "longitud": 532,
+      "directos": 15,
+      "automaticos": 7,
+      "por_decidir": 10,
+      "resultado": "La respuesta conservó el objetivo y reconoció la trazabilidad de línea a pedido. Dejó decisiones de nombres de clientes, composición del importe, moneda y cobertura temporal/territorial; también un aviso global de alcance insuficiente. No se aceptaron esas decisiones ni se presenta como nuevo recorrido ETL.",
+      "ax": "viabilidad_final_aw_v6_ax.txt",
+      "captura": "viabilidad_final_aw_v6.jpg"
+    },
+    {
+      "fuente": "WideWorldImporters local",
+      "instantanea": 3,
+      "objetivo": "Diseñar un datamart cuyo grano físico sea una línea de factura. Sobre ese detalle, resumir mensualmente el importe registrado de la línea, las unidades y las facturas distintas por producto y cliente. Usar la fecha de emisión. Para el territorio, usar la provincia de la ciudad de entrega registrada en la ficha del cliente y aclarar que no representa necesariamente su ubicación histórica. Conservar el importe de origen sin asumir moneda, utilidad ni composición fiscal. Limitar los indicadores a importe total, unidades totales, facturas distintas e importe promedio por factura. Los rankings deben comparar totales por producto; el máximo de una sola línea no identifica al producto líder.",
+      "longitud": 693,
+      "directos": 16,
+      "automaticos": 7,
+      "por_decidir": 7,
+      "resultado": "La respuesta conservó el objetivo completo y no añadió un requisito de margen a partir de la utilidad expresamente excluida. Mantiene siete decisiones para revisión; no se generó otra propuesta ni otro ETL.",
+      "ax": "viabilidad_final_wwi_v6_ax.txt",
+      "captura": "viabilidad_final_wwi_v6.jpg"
+    }
+  ],
+  "limites": [
+    "Son dos revisiones reales adicionales, no dos ejecuciones nuevas de datamart ni una prueba de todos los modelos.",
+    "Los casos de éxito integral conservados son122/18 y124/19, con su corte propio.",
+    "Cambiar preguntas o período puede invalidar el consentimiento: se confirma después de fijar la selección definitiva.",
+    "Una advertencia propuesta por la IA debe revisarse con evidencia; no se aceptó un límite sólo para habilitar el botón."
+  ]
+}

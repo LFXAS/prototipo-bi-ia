@@ -1,0 +1,243 @@
+{
+  "titulo": "Compatibilidad e inmutabilidad de propuestas históricas tras correcciones universales",
+  "fecha_local": "2026-11-04",
+  "zona_horaria": "America/Guayaquil",
+  "tipo": "Comparación de contratos y validadores por consultas SELECT y reconstrucción en memoria; no es reejecución de ETL",
+  "objetivo": "Demostrar que las correcciones para solicitudes nuevas no reescriben ni cambian la reproducción anterior de las propuestas aprobadas 91, 98, 117 y 120.",
+  "versiones": {
+    "revision_previa": "need-review-2",
+    "revision_nueva": "need-review-3",
+    "prompt_guardado": "sales-bi-v6",
+    "prompt_nuevo": "sales-bi-v7",
+    "reglas_compilacion_historicas": 1,
+    "reglas_compilacion_nuevas": 2
+  },
+  "metodo": [
+    "El estado y los documentos se leyeron desde BiProposal y MetadataSnapshot con transacción PostgreSQL SET TRANSACTION READ ONLY.",
+    "El revisor de compilación cargó el código base de service.py de HEAD en memoria, contrastó su validación/reproducción con la versión actual y no modificó filas.",
+    "La segunda revisión consultó por separado el estado y las huellas actuales mediante verify_proposal_evidence; las huellas de 117 y 120 se habían registrado antes de estas correcciones.",
+    "La reconstrucción de propuestas opera sobre decisiones e instantáneas persistidas. No invoca al LLM, no lee filas OLTP para cargar y no crea ni modifica tablas del datamart.",
+    "El informe omite credenciales, datos de conexión, filas comerciales y contenido completo de propuestas; conserva identificadores, hashes y resultados de control."
+  ],
+  "consultas_reproducibles_sin_credenciales": [
+    {
+      "motor": "PostgreSQL",
+      "sql": "SET TRANSACTION READ ONLY; SELECT id, status, prompt_version, metadata_snapshot_id, proposal_document, validation_document, scope_document, semantic_map_document FROM app.bi_proposals WHERE id IN (91, 98, 117, 120);",
+      "salida_publicada": "Sólo estado y hashes canónicos de documentos; los documentos completos se procesaron internamente."
+    },
+    {
+      "motor": "PostgreSQL",
+      "sql": "SELECT id, content_hash, schema_document FROM app.metadata_snapshots WHERE id IN (SELECT metadata_snapshot_id FROM app.bi_proposals WHERE id IN (91, 98, 117, 120));",
+      "salida_publicada": "Los documentos de instantánea se utilizaron en memoria para comprobar integridad, referencias y reproducción."
+    }
+  ],
+  "calculo_huellas": "canonical_hash serializa JSON con claves ordenadas, sin ASCII forzado y separadores compactos; calcula SHA-256 de UTF-8. Se usó la misma función para antes y después.",
+  "comparaciones": [
+    {
+      "proposal_id": 91,
+      "stored_status": "approved",
+      "stored_prompt_version": "sales-bi-v6",
+      "current_prompt_version": "sales-bi-v7",
+      "stored_compilation_rules_version": null,
+      "stored_proposal_hash": "4a35a7df33e079f0a0586bf8f9f3a8a0c9c01f63f14ffd58d721162798f99e98",
+      "stored_validation_hash": "581b7c03add152c2162fd4173b5bd772e2239faf5ccdfb79271f55f620cb4f85",
+      "replay_hash": "5e5b36be3aff349383b987e79231c55a8daba04e16b58afa8e20414d442af187",
+      "approval_safe": true,
+      "compatibility_warning": true,
+      "checks": [
+        {
+          "code": "snapshot.integrity",
+          "passed": true
+        },
+        {
+          "code": "references.current",
+          "passed": true
+        },
+        {
+          "code": "validation.consistency",
+          "passed": true
+        },
+        {
+          "code": "proposal.replay",
+          "passed": false
+        }
+      ],
+      "baseline_source": "service.py de HEAD, árbol base c2ecb1c equivalente a 6bbc9ab; comparación en memoria realizada por el agente revisor de compilación",
+      "before": {
+        "stored_proposal_hash": "4a35a7df33e079f0a0586bf8f9f3a8a0c9c01f63f14ffd58d721162798f99e98",
+        "stored_validation_hash": "581b7c03add152c2162fd4173b5bd772e2239faf5ccdfb79271f55f620cb4f85",
+        "replay_hash": "5e5b36be3aff349383b987e79231c55a8daba04e16b58afa8e20414d442af187",
+        "approval_safe": true
+      },
+      "stored_proposal_unchanged": true,
+      "stored_validation_unchanged": true,
+      "replay_before_equals_after": true,
+      "replay_equals_stored_document": false
+    },
+    {
+      "proposal_id": 98,
+      "stored_status": "approved",
+      "stored_prompt_version": "sales-bi-v6",
+      "current_prompt_version": "sales-bi-v7",
+      "stored_compilation_rules_version": null,
+      "stored_proposal_hash": "f910a0ab617b362709ca4b735e4d12cd413398cfc22ed2d4dc2111409486a839",
+      "stored_validation_hash": "38df730bc9b446b5948b8e692d02ddfedf7fcbd86770966379c9381c1e922c7f",
+      "replay_hash": "f910a0ab617b362709ca4b735e4d12cd413398cfc22ed2d4dc2111409486a839",
+      "approval_safe": true,
+      "compatibility_warning": true,
+      "checks": [
+        {
+          "code": "snapshot.integrity",
+          "passed": true
+        },
+        {
+          "code": "references.current",
+          "passed": true
+        },
+        {
+          "code": "validation.consistency",
+          "passed": true
+        },
+        {
+          "code": "proposal.replay",
+          "passed": false
+        }
+      ],
+      "baseline_source": "service.py de HEAD, árbol base c2ecb1c equivalente a 6bbc9ab; comparación en memoria realizada por el agente revisor de compilación",
+      "before": {
+        "stored_proposal_hash": "f910a0ab617b362709ca4b735e4d12cd413398cfc22ed2d4dc2111409486a839",
+        "stored_validation_hash": "38df730bc9b446b5948b8e692d02ddfedf7fcbd86770966379c9381c1e922c7f",
+        "replay_hash": "f910a0ab617b362709ca4b735e4d12cd413398cfc22ed2d4dc2111409486a839",
+        "approval_safe": true
+      },
+      "stored_proposal_unchanged": true,
+      "stored_validation_unchanged": true,
+      "replay_before_equals_after": true,
+      "replay_equals_stored_document": true
+    },
+    {
+      "proposal_id": 117,
+      "stored_status": "approved",
+      "stored_prompt_version": "sales-bi-v6",
+      "current_prompt_version": "sales-bi-v7",
+      "stored_compilation_rules_version": null,
+      "stored_proposal_hash": "a13f1cb198ebdd6f10b3a3294b376c102ed1208b3301da4c79983b15c918a7fd",
+      "stored_validation_hash": "0eaf3b55863f34baa895e7c3aca2a554028d84f13249696e6e366910e6b26b72",
+      "replay_hash": "a13f1cb198ebdd6f10b3a3294b376c102ed1208b3301da4c79983b15c918a7fd",
+      "approval_safe": true,
+      "compatibility_warning": true,
+      "checks": [
+        {
+          "code": "snapshot.integrity",
+          "passed": true
+        },
+        {
+          "code": "references.current",
+          "passed": true
+        },
+        {
+          "code": "validation.consistency",
+          "passed": true
+        },
+        {
+          "code": "proposal.replay",
+          "passed": false
+        }
+      ],
+      "baseline_source": "service.py de HEAD, árbol base c2ecb1c equivalente a 6bbc9ab; comparación en memoria realizada por el agente revisor de compilación",
+      "before": {
+        "stored_proposal_hash": "a13f1cb198ebdd6f10b3a3294b376c102ed1208b3301da4c79983b15c918a7fd",
+        "stored_validation_hash": "0eaf3b55863f34baa895e7c3aca2a554028d84f13249696e6e366910e6b26b72",
+        "replay_hash": "a13f1cb198ebdd6f10b3a3294b376c102ed1208b3301da4c79983b15c918a7fd",
+        "approval_safe": true
+      },
+      "stored_proposal_unchanged": true,
+      "stored_validation_unchanged": true,
+      "replay_before_equals_after": true,
+      "replay_equals_stored_document": true
+    },
+    {
+      "proposal_id": 120,
+      "stored_status": "approved",
+      "stored_prompt_version": "sales-bi-v6",
+      "current_prompt_version": "sales-bi-v7",
+      "stored_compilation_rules_version": null,
+      "stored_proposal_hash": "1bfe9bb1c76141361e9688da18fc0eecd6e7940a8ece5b3faa9bf25fc92d8769",
+      "stored_validation_hash": "26bd0c55ba6289a0ca9be9d1e764793356b3735aeb9c40b2f942f106aec52675",
+      "replay_hash": "1bfe9bb1c76141361e9688da18fc0eecd6e7940a8ece5b3faa9bf25fc92d8769",
+      "approval_safe": true,
+      "compatibility_warning": true,
+      "checks": [
+        {
+          "code": "snapshot.integrity",
+          "passed": true
+        },
+        {
+          "code": "references.current",
+          "passed": true
+        },
+        {
+          "code": "validation.consistency",
+          "passed": true
+        },
+        {
+          "code": "proposal.replay",
+          "passed": false
+        }
+      ],
+      "baseline_source": "service.py de HEAD, árbol base c2ecb1c equivalente a 6bbc9ab; comparación en memoria realizada por el agente revisor de compilación",
+      "before": {
+        "stored_proposal_hash": "1bfe9bb1c76141361e9688da18fc0eecd6e7940a8ece5b3faa9bf25fc92d8769",
+        "stored_validation_hash": "26bd0c55ba6289a0ca9be9d1e764793356b3735aeb9c40b2f942f106aec52675",
+        "replay_hash": "1bfe9bb1c76141361e9688da18fc0eecd6e7940a8ece5b3faa9bf25fc92d8769",
+        "approval_safe": true
+      },
+      "stored_proposal_unchanged": true,
+      "stored_validation_unchanged": true,
+      "replay_before_equals_after": true,
+      "replay_equals_stored_document": true
+    }
+  ],
+  "resultado": {
+    "propuestas_consultadas": 4,
+    "todas_aprobadas": true,
+    "documentos_inmutados": true,
+    "replay_antes_despues_identico": true,
+    "aprobacion_segura_antes_y_despues": true,
+    "distincion_91": "La propuesta 91 ya tenía una diferencia entre su reconstrucción determinística y el documento guardado. El mismo hash reconstruido aparece antes y después; no se atribuye al arreglo nuevo ni se afirma coincidencia con lo guardado.",
+    "distincion_version": "Las propuestas v6 conservan approval_safe=true. La función informa compatibility_warning=true y marca el control visual de reproducción como no cumplido al comparar una versión de motor diferente, incluso cuando los hashes sí coinciden. Esa advertencia no equivale a retirada de aprobación ni pérdida de tablas.",
+    "nueva_autorizacion": "need-review-3 invalida sólo la reutilización de una revisión previa para generar otra propuesta. El usuario debe reevaluar la misma necesidad compleja; no se reduce ni reescribe el objetivo para eludir un caso fallido.",
+    "borradores_historicos": "Los borradores v6, como 118 y 119, permanecen como evidencia original. No se consideran reparados por cambiar el código; el arreglo debe probarse mediante una revisión y propuesta nuevas del mismo alcance. Esta auditoría no modificó ninguna fila persistida."
+  },
+  "regresion_codigo": {
+    "backend": {
+      "estado": "aprobado",
+      "tests": 281,
+      "advertencias": 1,
+      "nota_advertencia": "Deprecación Starlette/AnyIO, sin fallo.",
+      "registro": "/tmp/bi-universal-backend-final-20261104.log"
+    },
+    "mypy": {
+      "estado": "aprobado",
+      "modulos": 57,
+      "registro": "/tmp/bi-universal-mypy-final-20261104.log"
+    },
+    "ruff": "aprobado",
+    "formato": {
+      "estado": "aprobado",
+      "archivos": 90
+    },
+    "git_diff_check": "aprobado",
+    "documentos_pdf": "Regeneración final pendiente de coordinación del responsable; no se ejecutó make verify documental durante la edición simultánea de los TEX."
+  },
+  "cambios_de_datos": false,
+  "ejecuciones_ETL_iniciadas": false,
+  "llamadas_LLM": false,
+  "fuentes": [
+    "/home/ceo/Proyectos/BI/backend/app/modules/copilot/service.py:verify_proposal_evidence",
+    "/home/ceo/Proyectos/BI/backend/app/modules/copilot/need_advisor.py:REVIEW_VERSION",
+    "/home/ceo/Proyectos/BI/backend/tests/test_copilot_service.py",
+    "/home/ceo/Proyectos/BI/backend/tests/test_need_advisor.py",
+    "/home/ceo/Proyectos/BI/backend/tests/test_copilot_needs.py"
+  ]
+}

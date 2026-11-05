@@ -1,0 +1,1082 @@
+{
+  "secciones": [
+    {
+      "titulo": "Del catálogo a un resultado defendible: propósito y responsabilidades",
+      "objetivo": "Entender por qué la herramienta separa describir una necesidad, diseñar, aprobar, cargar y comprobar; reconocer qué evidencia se obtiene en cada etapa.",
+      "rol": "Analista BI autorizado para diseñar y revisar; responsable de negocio para confirmar significado y límites; usuario gerencial para consultar resultados publicados.",
+      "requisitos": [
+        "Cuenta propia con permisos suficientes, fuente seleccionada mediante Fuente en contexto y Cambiar fuente, conexión de sólo lectura habilitada e instantánea vigente de metadatos.",
+        "Para operaciones nuevas que solicitan IA: configuración LLM activa y disponible, conocimiento del Destino y autorización de envío de la necesidad y los metadatos indicados.",
+        "Para una consulta de demostración: identificar previamente propuesta y ejecución existentes. Consultar históricos no exige crear ni aprobar otra propuesta ni repetir ETL."
+      ],
+      "pasos": [
+        "Consulta — Catálogo analítico: examine qué decisiones comerciales se ofrecen y qué estructura real respalda cada una.",
+        "Diseño con registros persistentes — Asistente de datamart: recorra Necesidad → Conceptos → Propuesta → Personalización → Revisión. Las propuestas son versiones de diseño; todavía no son tablas cargadas.",
+        "Preparación y carga con efectos persistentes — Datamart de ventas: recorra Elegir propuesta → Revisar indicadores → Confirmar ejecución → Materializar y cargar → Validar resultados.",
+        "Consulta y revisión — Lea conciliación, unidades, cobertura y, cuando corresponda, etiquetas semánticas; conserve identificadores de fuente, instantánea, propuesta y ejecución.",
+        "Consulta gerencial — Pase a Analítica de ventas con el expediente correcto y explique la cifra con su evento, fórmula, filtros y limitaciones."
+      ],
+      "resultado": "Una cadena trazable entre decisión de negocio, estructura, modelo aprobado, carga concreta y resultado consultable. Cada eslabón tiene una finalidad distinta.",
+      "verificacion": [
+        "Puede señalar qué documento describe el diseño y qué expediente conserva la carga.",
+        "Puede explicar que Verificar evidencia y Aprobar propuesta no ejecutan ETL, y que Preparar materialización tampoco carga ventas.",
+        "Reconoce si está viendo un histórico o haciendo una operación nueva."
+      ],
+      "errores": [
+        "Tomar una propuesta estructuralmente válida como demostración de importes conciliados.",
+        "Confundir una revisión de viabilidad, una propuesta y una ejecución porque sus identificadores usan el mismo símbolo #.",
+        "Atribuir a la IA todos los cálculos o presentar una aceptación humana como si fuera una garantía financiera."
+      ],
+      "explicacion": [
+        "La IA interpreta contexto, propone redacciones, conceptos y decisiones de diseño; puede explicar categorías permitidas. No decide por sí sola que una columna exista ni ejecuta SQL libre sobre la fuente.",
+        "Los validadores determinísticos comprueban existencia y tipos de referencias, relaciones permitidas, contrato, grano, fórmulas y cobertura. El constructor materializa únicamente el contrato controlado y registra sus resultados.",
+        "La persona confirma la necesidad, el evento comercial, la pertinencia de dimensiones e indicadores, las advertencias y las etiquetas. Una máquina puede comprobar que una suma usa una columna numérica; la persona debe decidir si esa columna expresa el concepto económico que pretende comunicar.",
+        "Un permiso de interfaz no reemplaza la autorización del servidor. Que un botón aparezca no convierte una acción en una mera consulta."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1246",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1430",
+        "/home/ceo/Proyectos/BI/docs/architecture.md:145",
+        "/home/ceo/Proyectos/BI/AGENTS.md"
+      ]
+    },
+    {
+      "titulo": "Catálogo analítico: consultar cobertura antes de diseñar",
+      "objetivo": "Distinguir las preguntas de negocio configuradas por el analista de la evidencia técnica descubierta en la fuente.",
+      "rol": "Analista con permiso de consulta del catálogo; edición sólo con permiso copilot.catalog.write.",
+      "requisitos": [
+        "Fuente correcta en contexto. El catálogo se conserva por conexión y dominio: una personalización de AdventureWorks no debe aparecer automáticamente en WideWorldImporters.",
+        "Instantánea vigente para ver Cobertura técnica de la fuente. Sin instantánea se puede reconocer la falta de preparación, pero no afirmar que la cobertura esté comprobada."
+      ],
+      "pasos": [
+        "Consulta — Abra Diseño y transformación BI → Catálogo analítico.",
+        "Consulta — Compruebe Dominio habilitado y seleccione Datamart de ventas, el dominio implementado en este corte.",
+        "Consulta — Lea Catálogo de negocio y descubrimiento técnico y Cobertura técnica de la fuente. Anote la instantánea mostrada.",
+        "Consulta — Abra Referencias detectadas para cada pregunta que le interese. Identifique tablas, columnas o relaciones de la fuente seleccionada.",
+        "Consulta — Lea Preguntas de negocio y Periodicidades; no pulse Guardar catálogo ni Restaurar catálogo validado para refrescar la pantalla."
+      ],
+      "resultado": "Una selección informada de preguntas para una necesidad futura, con evidencia y límites visibles; todavía no hay un datamart creado.",
+      "verificacion": [
+        "Verificable: la pregunta está disponible y existen referencias detectadas. Esto es respaldo estructural, no una cifra calculada.",
+        "Por validar: la pregunta puede orientarse al asistente, pero no tiene evidencia técnica suficiente para presentarla como comprobada en el catálogo.",
+        "No disponible: no se encontró evidencia suficiente o la opción no puede usarse en este contexto.",
+        "Al cambiar de fuente, el nombre de conexión, las preguntas personalizadas y las referencias corresponden a esa fuente."
+      ],
+      "errores": [
+        "Pensar que escribir una pregunta crea la información que falta en la base.",
+        "Confundir Verificable con ya cargado, conciliado o aprobado financieramente.",
+        "Elegir una pregunta únicamente porque contiene la palabra ventas sin revisar el evento y su evidencia."
+      ],
+      "explicacion": [
+        "El catálogo de negocio expresa qué decisiones se desean apoyar. Los metadatos expresan qué estructura está disponible. Una relación entre tablas puede permitir enlazar una línea con un cliente; no prueba cobro, rentabilidad histórica ni causalidad.",
+        "El perfil de ventas ofrece criterios universales para tiempo, producto, cliente y territorio. La IA propone el modelo a partir del objetivo y la estructura; las preguntas no fijan por sí mismas tablas, columnas ni dimensiones.",
+        "Los conteos históricos de preguntas —por ejemplo seis en AW y cuatro en WWI durante la auditoría del 3 de octubre— describen aquella instalación; no son un requisito universal ni un resultado nuevo de esta revisión."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:2166",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/domains.py:204",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/router.py:130",
+        "/home/ceo/Proyectos/BI/docs/testing/auditoria-operativa-2026-10-03.md:24"
+      ]
+    },
+    {
+      "titulo": "Diccionario del catálogo: significado de cada campo y criterio de edición",
+      "objetivo": "Configurar preguntas claras y periodicidades justificadas, sin confundir orientación comercial con programación del sistema.",
+      "rol": "Analista con autorización para mantener el catálogo de la fuente.",
+      "requisitos": [
+        "Antes de guardar, documentar qué decisión cambiará y comprobar la fuente y el dominio.",
+        "Conservar una referencia del catálogo anterior cuando la revisión documental o el procedimiento institucional lo exijan. La edición del catálogo afecta los análisis nuevos."
+      ],
+      "pasos": [
+        "Borrador local — Agregar pregunta crea una tarjeta de edición. Hay entre 1 y 12 preguntas en el contrato; no se debe añadir una tarjeta por cada sinónimo.",
+        "Campo Habilitada: marque sólo preguntas que deban estar disponibles para nuevos análisis. Deshabilitar una pregunta conserva su definición y evita ofrecerla como opción activa; Retirar pregunta la quita de la configuración cuando ésta se guarde.",
+        "Campo Etiqueta: redacte un título reconocible de 3 a 120 caracteres. Correcto: Desempeño por cliente. Débil: Reporte 2, porque no dice qué decisión permite.",
+        "Campo Explicación para el analista: entre 10 y 300 caracteres; explique qué comparar y para qué. Ejemplo: Comparar el importe registrado por cliente para identificar concentración comercial, sin inferir capacidad de pago.",
+        "Campo Instrucción funcional para la IA: entre 10 y 500 caracteres; describa el significado esperado y sus límites. Ejemplo: Relacione el evento comercial con el cliente mediante referencias verificadas y conserve la trazabilidad documental. No introduzca SQL, credenciales ni órdenes para ignorar validadores.",
+        "Identificador interno: distingue de manera estable la opción; no es el texto que debe memorizar el usuario. Cambiar la etiqueta no equivale a crear una capacidad técnica nueva.",
+        "En Periodicidades, revise Habilitada, Etiqueta y Explicación. La etiqueta admite 3 a 100 caracteres y la explicación 10 a 240. Agregar periodicidad → Agregar sólo ofrece estrategias soportadas que aún no están en la configuración.",
+        "Persistente — Guardar catálogo valida y almacena la configuración de esta conexión y dominio. Las tarjetas previas en edición no constituyen por sí mismas una entrega guardada.",
+        "Persistente — Restaurar catálogo validado reemplaza la configuración por el catálogo base del dominio. Úselo sólo como decisión de mantenimiento; puede retirar preguntas propias de la fuente."
+      ],
+      "resultado": "Un catálogo guardado que orienta nuevos análisis con etiquetas comprensibles, instrucciones prudentes y opciones temporales admitidas.",
+      "verificacion": [
+        "La explicación informa al analista; la instrucción funcional orienta a la IA; ninguna sustituye evidencia técnica.",
+        "Las preguntas no son duplicados redactados de otra manera y tienen una decisión comercial identificable.",
+        "Tras guardar aparece El catálogo analítico fue actualizado. Los nuevos análisis usarán esta configuración.",
+        "El otro origen conserva su catálogo propio; no se anuncia que las propuestas históricas hayan sido recalculadas."
+      ],
+      "errores": [
+        "Etiqueta: Ventas netas reales y cobradas, cuando sólo existen importes registrados de pedidos. La redacción promete hechos que no han sido demostrados.",
+        "Instrucción: use siempre determinada tabla de AW. Acopla una orientación comercial al nombre físico de una sola fuente.",
+        "Pulsar Restaurar catálogo validado para solucionar un bloqueo del LLM o para recargar metadatos.",
+        "Cambiar Mensual por Cada lunes en la etiqueta pensando que así se programa una tarea."
+      ],
+      "explicacion": [
+        "El catálogo no es una lista cerrada de cifras ni una garantía de que toda pregunta se ejecutará. Es una configuración de intenciones comerciales que cada nueva propuesta debe contrastar con el esquema vigente.",
+        "Una buena pregunta contiene objeto, comparación y utilidad: qué se mide, por qué perspectiva y qué decisión orienta. Si mezcla ventas, crédito, clima y logística sin fuentes para ello, conviene separar necesidades antes de generar."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:2201",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:2269",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/domains.py:228",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/schemas.py:138"
+      ]
+    },
+    {
+      "titulo": "Diccionario de preguntas de negocio: cómo elegir y qué no demuestran",
+      "objetivo": "Seleccionar preguntas pertinentes para la necesidad sin marcar todas por costumbre ni asumir una estructura idéntica entre fuentes.",
+      "rol": "Analista y responsable de negocio.",
+      "requisitos": [
+        "Objetivo comercial suficientemente concreto y catálogo de la fuente consultado.",
+        "Para opciones personalizadas: revisar su Etiqueta, Explicación para el analista e Instrucción funcional para la IA; no inferir su significado sólo por el nombre."
+      ],
+      "pasos": [
+        "Evolución de ventas en el tiempo: elija esta opción para comparar importes, unidades o documentos entre períodos con una fecha comercial verificable. Ejemplo correcto: importe de líneas de factura por año y mes. Error: usar fecha de modificación técnica como fecha de venta sin justificarlo.",
+        "Productos con mayor desempeño: elija si la decisión exige ordenar productos por el importe o las unidades que acumulan. Precise el indicador y el universo. Error: identificar al líder mediante el máximo de una sola línea en lugar de sumar por producto.",
+        "Desempeño por cliente: elija para segmentar ventas según el cliente asociado al evento. Revise cómo se resuelven personas, cuentas o tiendas y su nombre descriptivo. Error: usar una relación con empleados o proveedores sólo porque sus claves son compatibles.",
+        "Desempeño por territorio: elija para comparar ubicaciones o territorios comerciales. Confirme qué nivel representa la fuente: grupo territorial, país, estado o ciudad. Error: traducir Europe como Europa y concluir que se ha obtenido detalle por país.",
+        "Preguntas personalizadas: seleccione únicamente las que expresan la decisión de este caso y revise la evidencia. Una pregunta de costos requiere fuentes de costo; una de características requiere atributos descriptivos; una de cobros requiere el evento y sus relaciones correspondientes.",
+        "En Preguntas de negocio disponibles, marque al menos una opción disponible y explique en la ficha del caso por qué aporta. La selección orienta la propuesta; la aprobación exige comprobar después qué dimensión, medida o KPI la implementa."
+      ],
+      "resultado": "Una selección pequeña y defendible de perspectivas comerciales, compatible con el objetivo y con la evidencia disponible.",
+      "verificacion": [
+        "Cada pregunta seleccionada tiene una utilidad comercial y una salida identificable en De la necesidad al datamart.",
+        "El indicador de desempeño está definido: importe, unidades, documentos, participación u otro resultado comprobable.",
+        "Las perspectivas no prometen niveles geográficos o atributos ausentes."
+      ],
+      "errores": [
+        "Marcar todas las opciones para que el análisis parezca más completo.",
+        "Tratar mayor desempeño como sinónimo de mayor beneficio sin costo verificado.",
+        "Confundir una segmentación por cliente con evaluación crediticia o causalidad comercial.",
+        "Suponer que preguntas con la misma etiqueta en dos fuentes producen la misma población y moneda."
+      ],
+      "explicacion": [
+        "Las cuatro preguntas base son intenciones generales, no consultas SQL prefabricadas exclusivas de AW o WWI. La plataforma descubre estructura y vuelve a validar la propuesta para el contexto seleccionado.",
+        "Una pregunta puede resolverse mediante más de una salida. Por ejemplo, desempeño por producto puede necesitar una dimensión Producto y una medida aditiva; el ranking se obtiene después agregando por producto. No hace falta inventar un KPI máximo de línea llamado producto líder."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/domains.py:49",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1275",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/service.py:67"
+      ]
+    },
+    {
+      "titulo": "Grano, periodicidad y carga completa: tres decisiones diferentes",
+      "objetivo": "Comprender qué representa una fila, cómo se agrupan resultados en el tiempo y qué alcance físico se carga.",
+      "rol": "Toda persona que diseña, aprueba o interpreta el datamart.",
+      "requisitos": [
+        "Evento definido: pedido registrado, línea de factura u otro evento soportado.",
+        "Fecha comercial y clave del detalle verificables; no basta una columna numérica o una fecha cualquiera."
+      ],
+      "pasos": [
+        "Defina el grano en una frase que empiece Una fila representa… Ejemplo: una línea identificable de pedido. Verifique la Clave del grano en la propuesta.",
+        "Elija Periodicidad según la decisión: Diaria para variación por día; Semanal para seguimiento de semanas; Mensual para comparar meses; Trimestral para revisión de trimestres; Anual para visión por años.",
+        "Use períodos con año. Enero de 2013 y enero de 2014 no deben fusionarse sólo porque comparten nombre de mes. Revise límites y meses incompletos antes de interpretar variaciones.",
+        "Compruebe que la fecha elegida corresponde al evento: fecha de pedido para pedidos, fecha de factura para facturas. Una fecha de carga o edición no se convierte en fecha comercial por seleccionarla.",
+        "Explique el alcance de carga: el constructor realiza una materialización completa de la población y columnas aprobadas para esa ejecución; la interfaz descrita no ofrece aquí una agenda de cargas ni una configuración incremental por periodicidad.",
+        "Al consultar un histórico, mantenga el grano y la periodicidad que fueron guardados; no los sustituya por las opciones predeterminadas de un borrador nuevo."
+      ],
+      "resultado": "Un modelo que conserva el detalle necesario y una agrupación temporal coherente, sin prometer automatizaciones de carga inexistentes.",
+      "verificacion": [
+        "Una factura con tres líneas puede producir tres hechos de detalle y una factura distinta. El número de filas no es el número de documentos.",
+        "Mensual describe cómo agrupar o presentar; la tabla puede seguir conservando una fila por línea.",
+        "Carga realizada hoy puede contener ventas históricas; fecha de ejecución y período comercial son dos fechas diferentes.",
+        "La periodicidad seleccionada no programa una carga mensual automática ni aplica por sí sola un filtro de estado, cobro o fecha actual."
+      ],
+      "errores": [
+        "Cambiar el texto Granularidad propuesta a una fila por factura sin cambiar el contrato físico del detalle.",
+        "Interpretar carga completa como copia de toda la base de datos, incluidos datos ajenos a la necesidad.",
+        "Suponer que Anual permite contar filas de detalle como si fueran clientes únicos o documentos únicos.",
+        "Elegir el año actual aunque la base de demostración contenga únicamente años históricos."
+      ],
+      "explicacion": [
+        "Grano responde qué es una observación. Periodicidad responde cómo se divide el tiempo para comparar. Carga responde qué datos físicos se extraen y conservan en una ejecución. Confundirlos cambia el significado de los conteos y las comparaciones.",
+        "Un datamart de líneas puede agruparse por mes y por producto sin perder la clave de cada línea. Si se agregara físicamente antes de conservarla, se perdería trazabilidad que después no se puede recuperar con una etiqueta.",
+        "La fuente sigue en sólo lectura. La materialización guarda estructuras analíticas en PostgreSQL, versionadas por ejecución; no actualiza pedidos ni facturas en SQL Server."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:2158",
+        "/home/ceo/Proyectos/BI/docs/formacion/01_fundamentos.tex:84",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/materializer.py:826",
+        "/home/ceo/Proyectos/BI/docs/architecture.md:161"
+      ]
+    },
+    {
+      "titulo": "Asistente, paso 1: formular la necesidad y elegir un camino de ayuda",
+      "objetivo": "Redactar una petición comercial verificable y comprender las diferencias entre escribir, pedir sugerencias, reformular, validar y generar.",
+      "rol": "Analista con permiso copilot.proposals.generate para nuevas solicitudes; consulta histórica con permiso de lectura.",
+      "requisitos": [
+        "Fuente, metadatos y asistente preparados. Si aparece Antes de analizar, complete los componentes pendientes, use Resolver para dirigirse al componente faltante.",
+        "Asistente de datamart → Datamart de ventas → Crear propuesta. Si sólo se permite lectura puede aparecer Consultar versiones.",
+        "Distinguir solicitud nueva de consulta. Los recorridos observados AW 122/18 y WWI 124/19 completaron diseño y materialización; una repetición debe registrar sus propios identificadores y operaciones. Las consultas de históricos siguen siendo una vía distinta y no requieren llamadas adicionales."
+      ],
+      "pasos": [
+        "Borrador — En Objetivo del análisis, escriba entre 20 y 2.000 caracteres: qué decisión necesita, qué evento analizará, qué indicadores espera, por qué perspectivas comparará y qué debe quedar fuera. El contador muestra el tamaño del texto.",
+        "Borrador — Seleccione Preguntas de negocio disponibles y Periodicidad. Las preguntas orientan a la IA; no fijan tablas, columnas ni dimensiones.",
+        "Autorización para una operación nueva — Lea Destino y la explicación de datos enviados. Sólo después marque Autorizo enviar estos metadatos y la necesidad al proveedor indicado para esta revisión.",
+        "Camino A, ya conozco mi necesidad — Conserve su propia redacción y use Validar viabilidad.",
+        "Camino B, necesito ideas — Sugerir necesidades con esta fuente pide opciones basadas en metadatos. Lea motivo, evidencia y límites de cada una; Usar esta necesidad sólo adopta el texto, no lo aprueba ni genera por sí mismo un datamart.",
+        "Camino C, tengo una idea que necesita claridad — Ayúdame a formular la necesidad propone una redacción. Si está respaldada y representa su intención use Usar esta redacción; en otro caso Mantener mi redacción conserva su texto.",
+        "Después de adoptar o editar texto, preguntas, periodicidad o contexto, revise nuevamente consentimiento y Validar viabilidad. No reutilice automáticamente una evaluación anterior.",
+        "Registro nuevo y posible consumo IA — Cuando la viabilidad permita continuar y los límites estén aceptados, Generar propuesta y resolver N derivables inicia el diseño asistido. No equivale a ejecutar la carga."
+      ],
+      "resultado": "Una necesidad conservada con contexto, evaluación y decisiones explícitas; si se genera, una versión auditable de propuesta o un fallo seguro registrado.",
+      "verificacion": [
+        "El objetivo no contiene SQL, secretos, tasas inventadas ni instrucciones para saltar controles.",
+        "El Destino corresponde al proveedor/modelo que se autorizó. Un cambio del destino invalida la autorización de asistencia anterior.",
+        "La sugerencia marcada usable tiene respaldo suficiente; las opciones sin respaldo no permiten su adopción.",
+        "La evaluación pertenece a esta fuente, instantánea, objetivo, preguntas y periodicidad."
+      ],
+      "errores": [
+        "Escribir sólo Quiero un dashboard: no indica evento, indicador ni comparación.",
+        "Aceptar una reformulación que añade rentabilidad histórica, cobros o causalidad no solicitados.",
+        "Pensar que Usar esta redacción significa aprobado o que las sugerencias son pruebas de calidad de filas.",
+        "Cambiar fuente o texto y avanzar con una viabilidad o consentimiento de la versión anterior."
+      ],
+      "explicacion": [
+        "La asistencia inicial envía la necesidad y nombres, tipos, claves y relaciones permitidas; la pantalla afirma que no remite filas ni credenciales en esta etapa. La comprobación estructural no demuestra existencia de registros ni calidad de sus valores.",
+        "La viabilidad combina reglas locales con revisión asistida y evidencia contrastada. Por ello Validar viabilidad pertenece a las acciones de asistencia que pueden consumir IA, mientras Verificar evidencia, en una propuesta ya creada, es una comprobación determinística sin nueva llamada al LLM.",
+        "La recuperación local puede restaurar un borrador tras interrumpirse la sesión. El mensaje Avance restaurado pide comprobarlo; no convierte el borrador en un diseño aprobado."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1252",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:686",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/schemas.py:47",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/router.py:643"
+      ]
+    },
+    {
+      "titulo": "Asistente, paso 1: razonar los estados directo, derivable, ambiguo y no disponible",
+      "objetivo": "Leer la viabilidad como un argumento con evidencia y límites, sin confundir una descripción de IA con una fórmula ejecutable.",
+      "rol": "Analista y responsable de negocio antes de generar.",
+      "requisitos": [
+        "Evaluación de Viabilidad contra los metadatos correspondiente al contexto actual.",
+        "Disponibilidad para detener o reformular si el dato ausente invalida la decisión principal."
+      ],
+      "pasos": [
+        "Directo · fuente verificada: compruebe la referencia física, tipo y significado. Ejemplo: una cantidad numérica de la línea del evento correcto puede servir como cantidad. La mera existencia de una columna no basta para afirmar que mide cobro o costo.",
+        "Referencia estructural comprobada, para requisitos ai:*: significa que la referencia mencionada por la IA existe. Si aparece Interpretación propuesta por IA (no ejecutable), el texto no es todavía un contrato de cálculo.",
+        "Automático · relación: hay una ruta declarada y segura para obtener el dato desde el evento. Ejemplo: llegar desde la línea a la fecha comercial de su cabecera mediante una relación válida.",
+        "Automático · fórmula: hay una receta tipada con componentes comprobados. Ejemplo: precio × tasa de descuento × cantidad, cuando los tres roles y unidades están respaldados.",
+        "Derivación candidata, para requisitos ai:*: examine la interpretación y la evidencia. Se validará al preparar la propuesta; la prosa propuesta no se ejecuta.",
+        "Decisión del analista: existe ambigüedad de significado, población o evidencia. Ejemplo: hay un importe registrado pero no está demostrada su composición fiscal. Mantenga un nombre neutral o solicite evidencia adicional.",
+        "No disponible: no hay datos o capacidades verificadas suficientes. Ejemplo: temperaturas externas por ciudad ausentes de la base. Reduzca explícitamente el alcance o consiga una fuente autorizada; no sustituya clima por sensores internos.",
+        "Consulta — Abra Ver evidencia técnica en cada requisito. Lea fórmula, ruta, referencia y resolución, además del conteo global.",
+        "Decisión — Sólo si entiende y acepta el alcance resultante, marque cada Comprendo esta limitación y acepto continuar sin que el sistema invente una solución. Si el límite destruye la utilidad del análisis, use Volver a editar.",
+        "Antes de generar compruebe que no queda una limitación pendiente y que se habilita el botón; su habilitación permite intentar el diseño, no garantiza aprobación ni conciliación."
+      ],
+      "resultado": "Requisitos respaldados o límites conscientemente aceptados, con una ruta explícita hacia el modelo; las carencias no quedan ocultas.",
+      "verificacion": [
+        "Un derivable no exige que el principiante escriba SQL, elija tablas manualmente o invente una fórmula: la plataforma resuelve únicamente rutas y cálculos inequívocos y vuelve a validarlos.",
+        "Al generar, todo requisito directo o derivable debe quedar implementado en las salidas o producir bloqueo por falta de cobertura.",
+        "Aceptar una limitación no crea el dato ausente ni cambia un último costo en costo histórico.",
+        "Precio de venta no se acepta como costo sólo por ser numérico; una fecha o un identificador no son operandos monetarios válidos por su tipo técnico."
+      ],
+      "errores": [
+        "Contar todos los elementos verdes y omitir qué se verificó exactamente.",
+        "Traducir derivable como ya calculado o conciliado.",
+        "Marcar todas las limitaciones para llegar al gráfico aunque contradigan la decisión comercial.",
+        "Tomar una interpretación elegante del modelo como evidencia de impuestos, moneda o historia de costos."
+      ],
+      "explicacion": [
+        "La diferencia central es entre obtener un valor desde una referencia existente, obtenerlo mediante una transformación segura y tomar una decisión sobre significado no demostrado. Una FK acredita una ruta estructural; no prueba por sí misma el significado económico de sus importes.",
+        "La evaluación parte de la instantánea y reglas determinísticas. La revisión de IA puede ampliar la explicación, pero sus referencias y roles deben contrastarse. Los requisitos desconocidos deben conservar su incertidumbre.",
+        "La cadena de cobertura impide que un requisito aparezca viable en la necesidad y desaparezca al crear el modelo. Si se pide margen, no basta con conservar venta y costo como operandos si no existe la salida de margen comprometida."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1281",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/needs.py",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/need_advisor.py",
+        "/home/ceo/Proyectos/BI/docs/specs/SPR-05-06-endurecimiento-integral-asistente-bi.md:191",
+        "/home/ceo/Proyectos/BI/docs/testing/auditoria-operativa-2026-10-03.md:151"
+      ]
+    },
+    {
+      "titulo": "Asistente, paso 2: revisar conceptos y resolver inclusiones con criterio",
+      "objetivo": "Distinguir confianza declarada, evidencia comprobada y decisión humana antes de continuar con el diseño.",
+      "rol": "Analista con permiso de generación para cambiar el alcance; consulta de históricos sin modificar sus decisiones.",
+      "requisitos": [
+        "Versión generada o histórica que conserve su mapa de conceptos.",
+        "Comprender la necesidad y sus límites; no incluir un concepto sólo porque parezca útil para otra decisión."
+      ],
+      "pasos": [
+        "Consulta — En Conceptos encontrados lea nombre de negocio, descripción, origen y razón de cada tarjeta.",
+        "Revise Incluir y las señales Confianza alta, Confianza media o Revisar junto con Confirmado automáticamente, Estructura respaldada, Evidencia insuficiente o Decisión de negocio requerida.",
+        "Abra Ver evidencia y cómo resolver. Compruebe la fuente técnica y los controles cumplidos; la confianza no sustituye estas pruebas.",
+        "Borrador de decisión — Excluya conceptos que no respondan a la necesidad o carezcan de respaldo suficiente. La exclusión no elimina datos de origen.",
+        "Si incluye un concepto con evidencia débil, la interfaz exige Confirmar inclusión excepcional. Hágalo sólo cuando pueda explicar el alcance y el riesgo; puede desmarcarlo para mantener la exclusión segura.",
+        "Asistencia opcional con posible consumo IA — Consultar al copiloto abre ayuda contextual para ese concepto. La recomendación no modifica sola la selección; cualquier aplicación debe ser explícita.",
+        "Persistente cuando cambia el diseño — Generar propuesta BI continúa a la propuesta actual si la selección no cambió; si cambió, puede generar otra versión con IA y volver a validar.",
+        "Si aparece Generación interrumpida de forma segura, lea el fallo. Reintentar la misma solicitud o Volver a validar y reintentar son nuevas operaciones, no consultas; conserve el contexto y evite reintentos ilimitados."
+      ],
+      "resultado": "Conceptos incluidos por respaldo o decisión explícita, con exclusiones visibles y una propuesta que debe superar de nuevo las reglas.",
+      "verificacion": [
+        "No queda pendiente una inclusión excepcional sin confirmar; puede retirarse en lugar de forzarla.",
+        "No se han excluido todos los conceptos y los conservados responden a la decisión.",
+        "Un fallo del proveedor se registra como fallo de generación; no se presenta como necesidad comercial inviable.",
+        "Las propuestas antiguas sin expediente visual se reconocen como tales; no se atribuyen controles que no conservan."
+      ],
+      "errores": [
+        "Leer alta confianza como aprobación financiera o seguridad absoluta.",
+        "Confirmar inclusión excepcional para apagar un aviso sin entenderlo.",
+        "Confundir una conversación contextual con una aprobación de propuesta.",
+        "Copiar una respuesta incompleta del proveedor fuera de la plataforma para ejecutarla manualmente."
+      ],
+      "explicacion": [
+        "La selección semántica es una hipótesis de diseño supervisada. La existencia de una tabla relacionada no demuestra que represente el rol correcto: cliente, empleado, vendedor y proveedor son roles diferentes.",
+        "Las referencias de los conceptos ya se contrastaron con la instantánea, pero el contrato posterior debe probar que se pueden usar con grano y relaciones seguros. La aprobación humana llegará después.",
+        "Ante un proveedor que devuelve un contrato incompleto o inválido, el sistema descarta la salida no utilizable y conserva necesidad y viabilidad; las recuperaciones del proveedor son acotadas y vuelven a pasar por el mismo validador local."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1307",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:434",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/router.py:1075",
+        "/home/ceo/Proyectos/BI/docs/specs/SPR-05-06-endurecimiento-integral-asistente-bi.md:191"
+      ]
+    },
+    {
+      "titulo": "Asistente, paso 3: leer el modelo dimensional y su cobertura",
+      "objetivo": "Revisar una propuesta como contrato entre la necesidad y el cálculo, comprendiendo hecho, dimensiones, medidas e indicadores.",
+      "rol": "Analista diseñador y revisor de negocio.",
+      "requisitos": [
+        "Propuesta con resumen, contrato y validación conservados.",
+        "Tener visible el objetivo original y la fuente; no evaluar únicamente el título del modelo."
+      ],
+      "pasos": [
+        "Consulta — En Granularidad lea qué representa una fila y la Clave del grano. Compruebe que el evento coincide con el objetivo.",
+        "Consulta — En Hecho y medidas identifique la tabla de hechos y, para cada medida, su agregación, Origen y Fórmula. Exija componentes físicos verificables.",
+        "Consulta — En Dimensiones revise Columnas de origen y Campos que creará el ETL. Un nombre descriptivo o tipo derivado debe obtenerse por relaciones verificadas; no es una traducción libre de identidades.",
+        "Consulta — Lea KPIs propuestos y después De la necesidad al datamart. Compruebe las Salidas de cada requisito y su estado: Cubierto directamente, Resuelto automáticamente, Limitación aceptada, Decisión humana o No cubierto.",
+        "Consulta — En Nombres reconocibles antes de materializar revise si existen rutas para etiquetas comprensibles. Con permiso, Comprobar nombres y cobertura consulta la fuente de manera controlada; no llama al LLM ni ejecuta la carga completa.",
+        "Consulta — Abra Ver muestra controlada y origen si se ha realizado esa comprobación. La muestra queda dentro de la plataforma y no se envía al LLM.",
+        "Consulta — Lea Plan ETL declarativo, Ajustes automáticos aplicados, Validaciones y advertencias, Decisiones que requieren intervención y Detalles técnicos y trazabilidad.",
+        "Si está conforme y la versión está Lista para revisar, use Continuar a revisión. Si necesita ajustes use Personalizar propuesta. Ajustar conceptos y Crear nueva versión con IA cambian el trabajo de diseño y pueden originar otra generación."
+      ],
+      "resultado": "Una evaluación comprensible del contrato: qué evento se modela, qué mide, con qué perspectivas y qué requisitos siguen limitados o bloqueados.",
+      "verificacion": [
+        "Referencias y contrato validados significa ausencia de los errores estructurales detectados; no significa que ya se hayan comparado ventas de origen y destino.",
+        "Si se ve No puede aprobarse o un requisito viable No cubierto, la propuesta debe corregirse antes de aprobar.",
+        "La cobertura descriptiva muestra total de entidades, porcentaje y entidades sin nombre; una clave válida sin nombre útil puede ser insuficiente para publicar un análisis legible.",
+        "Las observaciones originales del proveedor se conservan para trazabilidad; no se consideran comprobaciones hasta ser confirmadas por reglas."
+      ],
+      "errores": [
+        "Corregir una propuesta de pedidos a facturas cambiando únicamente el resumen.",
+        "Suponer que una dimensión por cada columna es un modelo mejor. Categoría puede ser atributo de Producto, no una dimensión independiente.",
+        "Aprobar porque hay muchas medidas aunque falte el resultado solicitado.",
+        "Interpretar un campo descriptivo generado como dato comercial nuevo o como cambio de identidad del cliente."
+      ],
+      "explicacion": [
+        "El hecho representa las observaciones del evento al grano declarado; una medida cuantifica algo de ese evento; una dimensión aporta contexto descriptivo para agrupar y filtrar. Un KPI es una lectura calculada para evaluar la necesidad y puede usar una o varias medidas.",
+        "Ejemplo didáctico: una línea de factura tiene cantidad e importe como medidas; Producto y Fecha permiten agruparlas; el importe total es una agregación; importe total dividido por facturas distintas es un indicador por documento. Cada uno responde a una pregunta distinta.",
+        "La cobertura funcional evita una ilusión frecuente: disponer de todos los operandos no equivale a publicar el KPI derivado. Para cumplir una necesidad de margen deben estar resueltas sus dependencias y el resultado esperado, no sólo venta y costo por separado."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1348",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1366",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/service.py",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/service.py:67"
+      ]
+    },
+    {
+      "titulo": "Asistente, paso 4: diccionario de personalización y reglas para elegir",
+      "objetivo": "Ajustar un modelo con opciones guiadas, conservando significado, dependencias y procedencia de las versiones.",
+      "rol": "Analista con permiso de generación; correcciones avanzadas de relaciones requieren comprensión del modelo.",
+      "requisitos": [
+        "Propuesta con decisiones editables y una razón comercial concreta para cambiarla.",
+        "Si está conforme, continuar sin cambios es válido: personalizar no es obligatorio."
+      ],
+      "pasos": [
+        "Resumen de negocio: describa el alcance de manera fiel. Cambiarlo mejora comunicación; no altera por sí solo el evento físico.",
+        "Granularidad propuesta: describa una fila y su alcance. No use este campo para prometer una agregación física distinta de las claves y fuentes del contrato.",
+        "Dimensiones incluidas: conserve las perspectivas necesarias y respaldadas. Excluir Producto mientras se necesita ordenar productos deja una contradicción que debe resolverse.",
+        "Medidas, agregaciones y cálculos controlados: revise nombre de negocio, Identificador técnico, Origen y Regla ejecutable. Seleccione sólo magnitudes pertinentes; los identificadores pueden servir para conteo distinto, no para sumas monetarias.",
+        "KPIs incluidos y medida asociada: revise Función de negocio e Identificador técnico; seleccione una Medida compatible con la misma función semántica. Un costo no se resuelve asignando una medida de precio de venta.",
+        "Si un KPI figura No disponible porque no hay medida compatible seleccionada, exclúyalo conscientemente o genere una versión que incorpore la medida correcta; no fuerce una asociación por semejanza de nombre.",
+        "Justificación del ajuste: de 10 a 500 caracteres, explique qué cambió, por qué y qué necesidad conserva. Ejemplo: Se retira el máximo de línea porque el liderazgo se evaluará sumando el importe por producto; se conserva el importe aditivo y la dimensión Producto.",
+        "Persistente — Guardar como nueva versión crea otra propuesta y vuelve a validarla. La versión fuente se conserva y la nueva muestra su procedencia.",
+        "Continuar sin cambios pasa a Revisión; Cancelar vuelve a la propuesta sin guardar esos ajustes. En un histórico puede ofrecerse Crear versión corregida desde ésta, que inicia una versión derivada sin reescribir la evidencia anterior."
+      ],
+      "resultado": "Una nueva versión validada o bloqueada con razones explícitas; el historial anterior sigue disponible.",
+      "verificacion": [
+        "Tras guardar, compruebe el nuevo identificador y la validación; no asuma que conservar el mismo título significa conservar la misma versión.",
+        "La selección mantiene al menos una dimensión, medida y KPI y respeta los límites del contrato.",
+        "Cada KPI conserva medida o dependencias compatibles y el ajuste no deja requisitos solicitados sin cobertura.",
+        "El nombre comercial y el identificador técnico se leen por separado."
+      ],
+      "errores": [
+        "Renombrar una suma de precio × cantidad como venta neta cuando no incorpora descuentos demostrados.",
+        "Retirar una medida y olvidar que varios KPI dependían de ella.",
+        "Usar la justificación para pedir al backend que ignore un error estructural.",
+        "Creer que Guardar como nueva versión aprueba o ejecuta automáticamente el diseño."
+      ],
+      "explicacion": [
+        "La personalización opera dentro de un contrato; no permite inventar tablas, columnas, relaciones ni SQL. El backend rechaza o bloquea selecciones incoherentes aunque el formulario permita redactar una explicación convincente.",
+        "Una versión derivada conserva decisiones y procedencia; hace posible comparar alternativas y explicar por qué se abandonó un KPI. Un indicador excluido con evidencia es preferible a un resultado incorrecto presentado como completo."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1380",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:552",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/schemas.py:190",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/service.py"
+      ]
+    },
+    {
+      "titulo": "Diccionario de agregaciones, operaciones por fila y KPI derivados",
+      "objetivo": "Elegir la operación que corresponde al significado de la medida y evitar promedios, conteos o cocientes engañosos.",
+      "rol": "Analista diseñador, aprobador y persona que explica indicadores.",
+      "requisitos": [
+        "Grano y unidades definidos; columna o fórmula con procedencia verificable.",
+        "Cuando se comparan numerador y denominador, ambos deben usar el mismo evento, población y filtros."
+      ],
+      "pasos": [
+        "Suma: acumula importes o cantidades aditivas compatibles. Correcto: suma de unidades vendidas. Error: sumar claves de pedido, precios unitarios como si fueran ingreso, tasas de descuento o monedas incompatibles.",
+        "Conteo: cuenta filas o valores según la regla. Correcto: líneas registradas si el grano es línea. Error: llamarlo número de facturas cuando una factura tiene varias líneas.",
+        "Conteo distinto: cuenta identidades únicas. Correcto: documentos distintos con la clave documental explícita. Compruebe la Regla ejecutable, por ejemplo COUNT(DISTINCT clave_documental). Error: contar distinta la clave del detalle y llamarlo documentos.",
+        "Promedio: media simple de valores de las filas admitidas. Correcto: importe medio de línea si ésa es la población. Error: presentarlo como ticket por pedido o precio ponderado sin la fórmula correspondiente.",
+        "Mínimo y Máximo: extremos de valores individuales dentro del alcance. Correcto: mayor importe de una línea. Error: asumir que identifica al producto de mayores ventas acumuladas.",
+        "Definir cálculo controlado permite una columna derivada por fila. Multiplicar factores usa los componentes seleccionados; Sumar componentes suma por fila; Restar segundo valor al primero respeta el orden; Dividir el primero para el segundo usa división protegida. Usar columna directa retira esa derivación y vuelve a una columna existente.",
+        "Para resta o división elija Primer valor y Segundo valor conscientemente. Para suma o multiplicación revise Factores o componentes, en orden. Las entradas son columnas numéricas existentes, únicas y limitadas por el contrato; el sistema valida cantidad, tipos y trazabilidad.",
+        "Un KPI Agregación resume una medida; Diferencia resta resultados; Razón divide numerador para denominador; Participación expresa una razón porcentual. La tarjeta de ETL muestra Cálculo controlado, Unidad, Período y entradas verificadas.",
+        "Un cociente de agregados —importe total ÷ documentos distintos— debe quedar compilado como tal. No se fabrica eligiendo Dividir sobre dos columnas de una fila."
+      ],
+      "resultado": "Una selección de operaciones coherente con el grano, la unidad y la pregunta comercial, con denominadores explícitos.",
+      "verificacion": [
+        "Ejemplo didáctico: 100 de importe en dos líneas de una factura produce 50 por línea, 100 por factura y, si hay cinco unidades, 20 por unidad. Los tres valores son distintos y pueden ser correctos para preguntas distintas.",
+        "Venta por unidad = importe total ÷ unidades totales. Costo por unidad = costo total ÷ unidades totales. Son promedios ponderados, no medias simples de precios o costos unitarios.",
+        "Margen bruto = venta compatible menos costo compatible; margen % = margen bruto ÷ venta compatible × 100. Debe declararse si el importe de venta es bruto, neto o registrado neutralmente.",
+        "Si el divisor es cero, la razón se informa sin valor. Un resultado nulo o no calculable no debe convertirse en cero para que la tarjeta se vea completa."
+      ],
+      "errores": [
+        "Promediar promedios mensuales sin considerar poblaciones y denominadores.",
+        "Confundir una diferencia con una razón o invertir sus operandos.",
+        "Publicar una tasa de descuento como importe monetario.",
+        "Suponer que una fórmula por fila y una razón de agregados son intercambiables.",
+        "Llamar beneficio contable al margen derivado sin costos históricos, gastos y demás componentes necesarios."
+      ],
+      "explicacion": [
+        "La agregación es parte del significado del indicador. Un mismo campo puede producir suma, media o extremo, pero cada operación responde a otra pregunta y requiere una etiqueta honesta.",
+        "Las dependencias derivadas se resuelven por identificadores compilados y fuentes verificadas; el cálculo no debe depender de que el LLM escriba un nombre exacto ni del orden en que liste los indicadores.",
+        "La corrección automática de recetas inequívocas se registra; no autoriza al usuario a inventar componentes ambiguos. Revise Ajuste de seguridad y Unidad sugerida originalmente cuando difieran de la regla finalmente compilada."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:552",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1447",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/service.py:9",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/materializer.py:1008",
+        "/home/ceo/Proyectos/BI/docs/specs/SPR-05-06-endurecimiento-integral-asistente-bi.md:156"
+      ]
+    },
+    {
+      "titulo": "Corrección guiada opcional: relaciones seguras y multiplicación de filas",
+      "objetivo": "Reconocer cuándo una ruta descriptiva necesita corrección y por qué no se puede unir cualquier tabla con cualquier otra.",
+      "rol": "Analista avanzado o revisor acompañado por responsable del modelo; no es un paso obligatorio para principiantes.",
+      "requisitos": [
+        "Problema concreto: una dimensión apunta al origen equivocado y existe evidencia de qué rol debe representar.",
+        "Instantánea con relaciones declaradas; comprensión de claves, unicidad y cardinalidad."
+      ],
+      "pasos": [
+        "En Personalización abra Resolver una relación con evidencia. Elija Dimensión que desea corregir.",
+        "Examine Ruta de relación comprobada. Una opción no habilitada conserva su explicación; no se puede forzar mediante una justificación.",
+        "Lea cardinalidad, Tipos de origen, Tipos de destino, Destino único y Riesgo de duplicación. Una ruta desde muchas líneas hacia un único producto puede conservar el grano; recorrer al revés hacia varios registros puede multiplicar cada hecho.",
+        "Abra Por qué otras relaciones están bloqueadas si necesita entender el rechazo. Una relación físicamente declarada puede seguir siendo inadecuada para el rol comercial solicitado.",
+        "Escriba Justificación de esta corrección, de 10 a 500 caracteres, identificando concepto y evidencia.",
+        "Persistente — Crear versión con relación corregida crea inmediatamente otra versión y revalida toda la propuesta. Esta acción es independiente de los ajustes generales que aún estén sin guardar en el formulario."
+      ],
+      "resultado": "Una versión derivada con ruta corregida y evidencia, o un bloqueo que evita una unión insegura; las propuestas y ejecuciones históricas se conservan.",
+      "verificacion": [
+        "La ruta conserva el rol cliente, producto o territorio requerido, no sólo tipos de claves compatibles.",
+        "No hay riesgo demostrado de multiplicación del grano y el destino tiene la unicidad necesaria.",
+        "La nueva versión vuelve a mostrar cobertura y validación completas; no hereda aprobación automática."
+      ],
+      "errores": [
+        "Confundir coincidencia de nombres o números de clave con relación comercial válida.",
+        "Usar una relación uno a muchos para enriquecer el hecho y duplicar importes.",
+        "Cambiar una relación para ocultar una diferencia de conciliación sin investigar su causa.",
+        "Creer que una corrección de ruta modifica retrospectivamente los datos del expediente anterior."
+      ],
+      "explicacion": [
+        "Una unión segura debe respetar existencia, tipos, PK/FK, unicidad, cardinalidad, nulabilidad, ruta y significado. La defensa académica debe explicar por qué la línea conserva una sola identidad después del enriquecimiento.",
+        "Ejemplo: una venta con cliente vinculado a una persona o una tienda requiere resolver la identidad descriptiva correcta. Una tabla de personas relacionada con varios roles no se convierte automáticamente en dimensión Cliente."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1391",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/schemas.py:212",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/service.py",
+        "/home/ceo/Proyectos/BI/docs/specs/SPR-05-06-endurecimiento-integral-asistente-bi.md:70"
+      ]
+    },
+    {
+      "titulo": "Asistente, paso 5: verificar evidencia y aprobar con responsabilidad",
+      "objetivo": "Tomar una decisión humana documentada después de comprender estructura, cobertura y límites; separar esta decisión de la futura carga.",
+      "rol": "Persona con permiso de revisión de propuestas; el diseño y la aprobación son acciones distintas.",
+      "requisitos": [
+        "Versión Lista para revisar y sin errores bloqueantes; comprensión de necesidad, fuente, instantánea, grano y resultados comprometidos.",
+        "Lectura individual de las advertencias y evidencia de cualquier corrección relevante."
+      ],
+      "pasos": [
+        "Consulta determinística — Pulse Verificar evidencia en Validación estructural de la propuesta. Examina metadatos, referencias, contrato y reproducción determinística; no llama al LLM, no consulta filas y no ejecuta ETL.",
+        "Lea Cumple, Revisar o Compatibilidad de cada control y compare la huella persistida con la huella realmente reconstruida. El control de reproducción sólo cumple cuando ambas coinciden; la advertencia de compatibilidad del motor se informa por separado y no retira por sí misma una aprobación histórica estructuralmente segura.",
+        "En Revisión supervisada compruebe Necesidad, Dominio, Fuente y Validación. Lea la versión y periodicidad conservadas en el expediente de diseño.",
+        "Comentario de revisión: es opcional al aprobar en el formulario, pero conviene registrar evento, grano, fórmula crítica y límites. Para rechazar es obligatorio un motivo de al menos 10 caracteres; el máximo es 500.",
+        "Si hay advertencias, marque Leí y comprendí las advertencias y las acciones indicadas sólo cuando esa afirmación sea cierta.",
+        "Persistente — Aprobar propuesta exige un borrador compilado con el motor vigente, vuelve a validar el contrato y registra responsable y fecha. Un borrador legado recibe un bloqueo 409 y requiere personalizar una hija o generar otra versión; la original se conserva. Una aprobación histórica ya registrada se mantiene. Aprobar no crea tablas ni ejecuta ETL.",
+        "Persistente — Rechazar propuesta registra el motivo. Personalizar antes de decidir permite corregir el diseño mediante una nueva versión; no es necesario aprobar primero para poder corregirlo."
+      ],
+      "resultado": "Una decisión humana auditable: Aprobada, Rechazada o una versión corregida todavía pendiente de revisión.",
+      "verificacion": [
+        "El comprobante muestra estado, responsable, fecha y comentario, cuando exista.",
+        "Ningún error bloqueante se interpreta como simple advertencia.",
+        "La aprobación conserva el alcance real: no convierte pedidos en facturas, datos registrados en cobros ni costo de referencia en costo histórico.",
+        "Se distingue aprobación humana, validación estructural y conciliación posterior de datos."
+      ],
+      "errores": [
+        "Aprobar para comprobar si luego el ETL detecta el error conocido.",
+        "Leer Aprobada por reglas estructurales como autorización humana ya concedida.",
+        "Retirar una aprobación histórica sólo porque la reproducción muestra una advertencia de compatibilidad sin bloqueo estructural.",
+        "Declarar éxito integral antes de materializar y comprobar el expediente."
+      ],
+      "explicacion": [
+        "Ejemplo de comentario útil: Revisadas fuente y fecha comercial. Se conserva una fila por línea y los documentos se cuentan de forma distinta. El promedio documental usa importe total dividido por documentos distintos. Se aceptan los límites descritos; no se interpreta como cobro.",
+        "La validación tiene un alcance concreto: estructura y contrato. La conciliación futura aportará otra evidencia: correspondencia cuantitativa entre la población extraída y la materializada. La revisión de negocio sigue siendo necesaria aun cuando ambas sean satisfactorias.",
+        "En el corte del 5 de noviembre, las nuevas expansiones usan reglas de compilación 3. La reproducción utiliza las reglas persistidas de cada contrato: 1 cuando falta marcador y 2 en los casos 122/18 y 124/19. No se añade un marcador nuevo a una propuesta aprobada para hacerla parecer actual."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1416",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1421",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/schemas.py:168",
+        "/home/ceo/Proyectos/BI/docs/formacion/02_operacion.tex:194",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/service.py",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/router.py"
+      ]
+    },
+    {
+      "titulo": "Historial de propuestas y estados: consultar, corregir o retirar sin borrar evidencia",
+      "objetivo": "Recuperar trabajo existente sin consumir de nuevo IA y comprender el efecto de cada estado y acción administrativa del diseño.",
+      "rol": "Analista con lectura; generar, revisar, retirar o restaurar requiere los permisos correspondientes.",
+      "requisitos": [
+        "Fuente y dominio seleccionados, y conocimiento del identificador o estado buscado.",
+        "Motivo de negocio o calidad antes de cualquier retiro, descarte o restauración."
+      ],
+      "pasos": [
+        "Consulta — En Versiones generadas use Mostrar: Por revisar, Aprobadas, Rechazadas, Con inconvenientes, Retiradas o descartadas o Todas.",
+        "Consulta — Pulse Abrir resultado. Se conserva necesidad, preguntas, periodicidad, proveedor, modelo y procedencia; abrir no vuelve a ejecutar el LLM.",
+        "Consulta — Las versiones Aprobada, Rechazada, Aprobación retirada o Descartada ofrecen recorrido de sólo lectura por Necesidad, Conceptos, Propuesta, Personalización y Revisión.",
+        "Borrador nuevo — Crear nueva propuesta inicia otra necesidad en el mismo dominio sin eliminar la versión histórica. No hace falta cerrar sesión ni retirar aprobaciones para empezar de nuevo.",
+        "Persistente — Retirar aprobación impide usar una propuesta aprobada para nuevas ejecuciones ETL; no es un botón de regreso ni un borrado de auditoría. Exige Motivo de 10 a 500 caracteres.",
+        "Persistente — Descartar versión la retira de listas operativas y conserva trazabilidad. No elimina las filas de origen.",
+        "Persistente — Restaurar aprobación vuelve a comprobar errores bloqueantes y registra Justificación. Con advertencias se exige su revisión. No se debe usar para saltar una incompatibilidad real."
+      ],
+      "resultado": "Acceso al diseño y a sus decisiones anteriores, con nuevas versiones claramente diferenciadas de la consulta y de las acciones de estado.",
+      "verificacion": [
+        "Generando: intento en curso. Proveedor no disponible: no hubo salida utilizable. Validación fallida: hubo propuesta o contrato que no superó reglas.",
+        "Lista para revisar: puede someterse a decisión humana. Aprobada: decisión humana registrada, sujeta a aptitud vigente para nueva ejecución.",
+        "Rechazada: revisión humana negativa. Aprobación retirada: la aprobación dejó de estar vigente para nuevas ejecuciones. Descartada: versión fuera de listas operativas, preservada para auditoría.",
+        "Una propuesta antigua puede seguir siendo auditable aunque no sea elegible para nueva carga; el estado histórico y la compatibilidad actual no son la misma cosa."
+      ],
+      "errores": [
+        "Cerrar sesión para desbloquear la creación de una nueva necesidad.",
+        "Descartar o retirar aprobación para volver al paso anterior.",
+        "Mostrar un histórico como si acabara de generarse en vivo.",
+        "Confundir la versión recomendada para materializar con la ejecución que alimenta el tablero."
+      ],
+      "explicacion": [
+        "La propuesta describe un diseño; la ejecución concreta puede derivarse de ella y tener otro número. Por ejemplo, una propuesta #114 y una ejecución #15 históricas son tipos distintos de registro. Los números dependen de la instalación y no deben hardcodearse como prerrequisitos del manual.",
+        "Las huellas de entrada y de contrato ayudan a reconocer el contexto que se utilizó. Una nueva fecha de copia de un archivo documental o una nueva apertura del historial no significa que el contenido del modelo haya sido actualizado."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:434",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:458",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1246",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1426",
+        "/home/ceo/Proyectos/BI/docs/specs/SPR-05-06-endurecimiento-integral-asistente-bi.md:174"
+      ]
+    },
+    {
+      "titulo": "Datamart, pasos 1 y 2: elegir contrato e indicadores ejecutables",
+      "objetivo": "Seleccionar la propuesta aprobada que responde a la necesidad y conservar indicadores calculables con cobertura explícita.",
+      "rol": "Analista operador con permisos de lectura y preparación/ejecución ETL; el gerente no necesita operar esta etapa.",
+      "requisitos": [
+        "Propuesta aprobada que conserve su instantánea, supere reglas vigentes y tenga recetas calculables.",
+        "Fuente correcta; si se abre automáticamente un expediente publicado, identificarlo antes de usar Volver a propuestas."
+      ],
+      "pasos": [
+        "Consulta — Abra Datamart de ventas. Identifique los cinco pasos: Elegir propuesta, Revisar indicadores, Confirmar ejecución, Materializar y cargar y Validar resultados.",
+        "Paso 1 — Lea resumen, necesidad, Granularidad, Indicadores, Aprobación y Última ejecución de cada tarjeta. Recomendada significa sugerencia automática por compatibilidad; la persona sigue eligiendo.",
+        "Consulta — Comparar permite contrastar hasta dos versiones, con grano, medidas e indicadores. Cerrar comparación sólo cierra esa presentación.",
+        "Selección de trabajo — Use Seleccionar y Revisar indicadores. Si aparece Ya ejecutada o Este contrato ya fue ejecutado, use Abrir expediente #…; la interfaz evita otra ejecución idéntica del mismo contrato y selección.",
+        "Paso 2 — Revise cada tarjeta: Incluir indicador, tipo Agregación/Diferencia/Razón/Participación, Cálculo controlado, Unidad y Período. Abra Ver trazabilidad técnica para ver entradas y versión de definición.",
+        "Conserve al menos un indicador y sólo los pertinentes. Si retira resultados solicitados, revise que la selección puede quedar identificada como parcial; no la presente como equivalente completa.",
+        "Pulse Revisar transformaciones para ir al paso 3. Volver a propuestas devuelve la selección; no ejecuta nada."
+      ],
+      "resultado": "Una propuesta y selección concreta de KPI para preparar; todavía no hay lectura comercial ni creación física de tablas.",
+      "verificacion": [
+        "La versión elegida tiene el evento y grano esperados; no se elige sólo por su fecha o posición.",
+        "Cada indicador posee receta permitida y fuentes comprobadas. Los ajustados explican el Ajuste de seguridad.",
+        "Los resultados requeridos por la necesidad siguen seleccionados o su omisión se declara como parcial.",
+        "Una versión aprobada pero bloqueada por controles actuales muestra razones. Abrir su expediente histórico sigue siendo consulta, no autorización de nueva carga."
+      ],
+      "errores": [
+        "Aceptar la primera tarjeta sin leer su necesidad.",
+        "Desmarcar margen porque incomoda sin reconocer que la necesidad pedía margen.",
+        "Tomar la unidad originalmente sugerida por IA como unidad comprobada.",
+        "Intentar repetir el ETL para refrescar un expediente que ya conserva la misma selección."
+      ],
+      "explicacion": [
+        "La aprobación estructural y la aptitud de materialización son niveles diferentes. El constructor añade controles de utilidad dimensional, claves inequívocas, atributos descriptivos y posibilidad de reconciliar el grano.",
+        "La compilación admite agregaciones, diferencias, razones y participaciones controladas. La cantidad de indicadores es variable; no hay que obtener el mismo número en AW y WWI para considerar correcto el procedimiento.",
+        "La selección de ETL queda ligada a las huellas de la propuesta y la instantánea; una consulta histórica reconstruye esa selección conservada, no una selección nueva por defecto."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1518",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1750",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/service.py:20",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/service.py:67",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/router.py"
+      ]
+    },
+    {
+      "titulo": "Datamart, paso 3: revisar transformaciones y preparar un expediente",
+      "objetivo": "Entender qué hará el plan controlado y registrar una confirmación informada antes de cualquier carga física.",
+      "rol": "Analista operador autorizado.",
+      "requisitos": [
+        "Propuesta e indicadores seleccionados; al menos un KPI calculable.",
+        "Lectura del grano, dimensiones, medidas y advertencias heredadas."
+      ],
+      "pasos": [
+        "En Confirme el plan de preparación de datos revise Tabla de hechos, Granularidad, Dimensiones y Medidas.",
+        "Lea las operaciones agrupadas bajo Extracción controlada, Limpieza y calidad, Transformación y enriquecimiento, Carga dimensional y Conciliación y evidencia. El número de operaciones depende del contrato.",
+        "En Extracción controlada identifique que se leerán sólo referencias autorizadas; en limpieza, cómo se tratan valores y duplicados; en transformación, fórmulas y etiquetas; en carga, claves y estructuras; en validación, controles cuantitativos.",
+        "Lea Interpretación dinámica en español. Las operaciones Revisar en el paso 5 preparan posibles mapeos; no requieren traducir ni publicar etiquetas en esta pantalla.",
+        "Complete Registro de decisión, de 10 a 500 caracteres, con evidencia de lo revisado y límites relevantes.",
+        "Marque Confirmo el plan de ejecución y comprendo que las etiquetas candidatas se revisarán individualmente después de la carga.",
+        "Persistente — Pulse Preparar materialización. Se crea un expediente de preparación con selección, plan, huellas, responsable y comentario; aún no se consultan ni alteran filas comerciales de la fuente durante esta confirmación."
+      ],
+      "resultado": "Expediente Preparada y trazable, listo para revisar antes de iniciar la materialización; todavía no se cargaron ventas ni se publicaron etiquetas.",
+      "verificacion": [
+        "El comprobante indica ejecución y versión correctas y estado Contrato preparado correctamente.",
+        "La confirmación no se confunde con aprobación del diseño ni con publicación de traducciones.",
+        "Las advertencias heredadas siguen comprendidas y el plan corresponde a la necesidad.",
+        "Su rol tiene permiso para preparar; si sólo permite consulta, la pantalla lo señala."
+      ],
+      "errores": [
+        "Pulsar Preparar materialización creyendo que es un botón de vista previa sin efectos persistentes.",
+        "Dar por ejecutadas todas las operaciones porque se ve un plan con etapas completas.",
+        "Interpretar Revisar en el paso 5 como tarea pendiente que deba resolverse antes de cargar.",
+        "Aceptar una transformación que cambia unidades o significado sin revisar sus componentes."
+      ],
+      "explicacion": [
+        "Extracción obtiene datos del origen; transformación aplica operaciones permitidas; carga construye el destino dimensional. El plan declarativo describe esas intenciones sin exponer SQL libre al usuario.",
+        "Una clave sustituta es una identidad interna del destino dimensional; no sustituye la obligación de conservar la clave de negocio y la procedencia. La dimensión puede deduplicarse sin perder el hecho cuando varias líneas comparten la misma entidad.",
+        "Preparar separa intención confirmada de ejecución física, de modo que pueda auditarse qué se aceptó antes de leer y cargar datos."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1789",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1661",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/schemas.py:50",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/service.py"
+      ]
+    },
+    {
+      "titulo": "Datamart, paso 4: materializar y cargar una sola vez",
+      "objetivo": "Reconocer el punto de ejecución real y comprender sus efectos, estados y recuperación.",
+      "rol": "Analista operador con autorización ETL; responsable técnico para diagnóstico si falla.",
+      "requisitos": [
+        "Expediente preparado y contrato todavía elegible; fuente activa de sólo lectura y referencias compatibles.",
+        "Confirmación del evento, propuesta, selección y necesidad antes de actuar. En una demostración histórica no se debe pulsar este botón."
+      ],
+      "pasos": [
+        "Consulta — Lea Contrato y fuente revalidados y Plan determinístico fijado; compruebe huellas y responsable en Ver trazabilidad técnica.",
+        "Persistente — Materializar y cargar datamart inicia la lectura comercial controlada de SQL Server, transformaciones y creación/carga de dimensiones y hecho en PostgreSQL.",
+        "Pulse una sola vez y espere mientras figure Materializando… o En ejecución. No cierre ni reenvíe repetidamente la operación como método de diagnóstico.",
+        "Al terminar, identifique el estado y pase a Validar resultados. Si la pantalla muestra Materialización ya ejecutada, recorrer esta etapa sólo explica la operación pasada.",
+        "Si falla, conserve expediente, mensaje, hora y contexto; solicite diagnóstico de conexión, contrato y etapa. No borre versiones ni retire aprobaciones para intentar un reinicio improvisado."
+      ],
+      "resultado": "Una ejecución física versionada y su evidencia, o una reversión con estado Fallida; la fuente operativa permanece de sólo lectura.",
+      "verificacion": [
+        "Preparada: expediente creado, carga no iniciada. En ejecución: lectura/carga en curso. Validada: ejecución satisfactoria según controles y estado final. Revisión pendiente: puede haber interpretación pendiente o diferencias que deben distinguirse. Fallida: no se publicaron cambios parciales.",
+        "La materialización utiliza transacción: un fallo bloqueante no debe sustituir el datamart publicado por tablas incompletas.",
+        "El backend vigente conserva esquemas analíticos por ejecución, mart_ventas_e{id}; una carga nueva no debe destruir una versión conciliada que otra persona consulta.",
+        "El hecho conserva etl_execution_id y claves de procedencia. No se mezclan AW y WWI por compartir nombres de dimensiones."
+      ],
+      "errores": [
+        "Confundir la creación del expediente con una carga terminada.",
+        "Repetir por ansiedad mientras el estado sigue en curso.",
+        "Afirmar actualización en tiempo real porque la carga se hizo hoy.",
+        "Pensar que el LLM ejecuta el ETL o que se envía a ejecutar cualquier SQL escrito en su respuesta."
+      ],
+      "explicacion": [
+        "La interfaz conserva alguna descripción general de reemplazo transaccional del esquema de ventas. Para explicar la implementación vigente debe precisarse el destino versionado por ejecución descrito en arquitectura y resuelto por el backend; no prometer sustitución destructiva de todos los datamarts anteriores.",
+        "La ejecución sólo usa el contrato validado y las recetas compiladas. La IA puede participar después en etiquetas categóricas aptas, pero el cálculo físico y los controles numéricos pertenecen al motor determinístico.",
+        "Un historial de ejecución puede seguir siendo auditable aunque sus tablas físicas ya no estén disponibles. Eso no garantiza que Analítica pueda consultarlo; debe comprobarse el destino físico."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1805",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1680",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/router.py:620",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/materializer.py:826",
+        "/home/ceo/Proyectos/BI/docs/architecture.md:161"
+      ]
+    },
+    {
+      "titulo": "Datamart, paso 5: conciliar origen y destino sin sobredimensionar la evidencia",
+      "objetivo": "Determinar si la población cargada y las medidas corresponden al origen, y distinguir esa comprobación de una certificación comercial completa.",
+      "rol": "Analista operador y revisor; usuario gerencial debe saber localizar el comprobante.",
+      "requisitos": [
+        "Ejecución terminada o expediente histórico abierto; fuente y propuesta identificadas.",
+        "Acceso a evidencia detallada para revisar medidas cuando el resumen de pantalla no basta."
+      ],
+      "pasos": [
+        "Consulta — Lea Conciliación OLTP–datamart: Filas de origen, Filas cargadas, Diferencia y Tablas creadas.",
+        "Consulta — Revise Calidad por tabla. Las dimensiones pueden tener menos filas que el hecho porque una fecha, producto o cliente aparece en muchas líneas.",
+        "Consulta — Revise Indicadores calculados, valor, unidad y estado Conciliado o Requiere revisión. Para costo/venta por unidad recuerde el promedio ponderado declarado.",
+        "Consulta — Conserve los totales de medidas de origen y destino y sus diferencias del expediente cuando sea necesario sustentar importes; una tarjeta abreviada no permite comparar centavos.",
+        "Si el resultado dice Revisar diferencias o Carga completada con diferencias, detenga la publicación de conclusiones y examine población, uniones, claves, valores rechazados, precisión y fórmulas.",
+        "Si dice Datamart conciliado; interpretación pendiente, trate la carga numérica y la revisión semántica como estados distintos. No vuelva a materializar para arreglar una etiqueta.",
+        "Antes de ir al tablero, compruebe que la ejecución está disponible con su destino físico y el estado apropiado para consulta."
+      ],
+      "resultado": "Una conciliación cuantitativa identificada con su ejecución, diferencias visibles y límites documentados.",
+      "verificacion": [
+        "El criterio implementado exige cero filas rechazadas, igualdad entre filas leídas y cargadas y diferencias nulas de los totales de medidas reconciliados.",
+        "El expediente conserva source_measure_totals, datamart_measure_totals y measure_differences; la pantalla resume parte de esa evidencia, no toda su estructura interna.",
+        "El conteo de hechos no aumentó por relaciones uno a muchos. Duplicados controlados de una dimensión no equivalen automáticamente a duplicación de ventas.",
+        "Un KPI no calculable queda como incidencia o sin valor; no se considera éxito numérico sólo porque el expediente contiene una tarjeta para él."
+      ],
+      "errores": [
+        "Afirmar calidad total del negocio porque la diferencia de filas es cero.",
+        "Comparar importes de origen sin sus mismos filtros, receta o evento.",
+        "Aceptar una diferencia sin criterio ni registro sólo porque es pequeña.",
+        "Confundir una etiqueta de revisión semántica con un fallo de extracción y repetir la carga."
+      ],
+      "explicacion": [
+        "La conciliación cuantitativa acredita que la extracción y el destino conservan la población y los valores controlados según el contrato. No acredita por sí sola que todos los documentos estén cobrados, que el costo sea histórico, que la moneda sea única o que el importe tenga una composición fiscal determinada.",
+        "El destino se consulta para contrastar conteos y agregados con la evidencia de origen de la misma ejecución. La defensa debe decir qué se comparó y con qué precisión; no limitarse a mostrar una marca verde.",
+        "Si el contrato cuenta documentos distintos pero el detalle tiene varias líneas por documento, ambas cifras pueden ser correctas. La prueba exige conservar esa distinción en pantalla y en el discurso."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1820",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/materializer.py:923",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/materializer.py:1043",
+        "/home/ceo/Proyectos/BI/docs/formacion/02_operacion.tex:227"
+      ]
+    },
+    {
+      "titulo": "Interpretación semántica en español: revisar, corregir y publicar sin repetir ETL",
+      "objetivo": "Conservar identidad y valores originales mientras se añaden etiquetas comprensibles, con decisión humana y trazabilidad.",
+      "rol": "Analista autorizado para revisar y publicar etiquetas de una ejecución conciliada.",
+      "requisitos": [
+        "Datos materializados y conciliados; una ejecución con diferencias no se soluciona traduciendo etiquetas.",
+        "Si se requiere nueva interpretación, proveedor activo disponible y autorización correspondiente. Registrar cualquier reintento y publicación con su ejecución; no ocultarlos como si fueran consultas."
+      ],
+      "pasos": [
+        "Consulta — En Validar resultados localice Interpretación semántica y lea su mensaje y estado.",
+        "Estado pending: falló o quedó pendiente la preparación de etiquetas. Reintentar interpretación sin repetir el ETL puede consultar categorías seguras y llamar al proveedor; es una operación nueva con registro, no una simple apertura del expediente.",
+        "Estado review_required: compare cada original con Etiqueta en español. Mantenga Publicar marcado únicamente para mapeos correctos; corrija la etiqueta o desmarque los que no convengan.",
+        "Complete Comentario de revisión, de 10 a 500 caracteres, y marque Confirmo que revisé los mapeos que se publicarán.",
+        "Persistente — Publicar etiquetas revisadas añade únicamente los mapeos aprobados; el valor original permanece intacto y las etiquetas se registran en columnas adicionales auditables.",
+        "Estado applied: compruebe Revisión publicada, Responsable, Fecha, Comentario del analista y pares original → etiqueta.",
+        "Estado not_required: no hay categorías inglesas aptas para traducción; no hace falta fabricar una revisión ni repetir el ETL para que aparezcan mapeos."
+      ],
+      "resultado": "Presentación en español cuando hay categorías aptas, conservando originales, idioma detectado, versión y aprobación humana; o constancia de que no se requiere interpretación.",
+      "verificacion": [
+        "No se traducen identificadores, nombres de personas, direcciones, texto libre, credenciales ni categorías de alta cardinalidad.",
+        "Lo que ya está en español se conserva sin reinterpretarlo.",
+        "Europe → Europa puede ser una etiqueta válida; conserva el mismo grupo territorial y no añade países, estados ni otra granularidad.",
+        "La publicación semántica no cambia importes, fórmulas ni conciliación y no modifica la fuente operativa."
+      ],
+      "errores": [
+        "Traducir nombres personales o códigos de producto como si fueran categorías.",
+        "Aceptar una etiqueta que cambia identidad o nivel geográfico.",
+        "Tratar interpretación pendiente como pérdida de los datos numéricos ya conciliados.",
+        "Repetir Materializar y cargar datamart para resolver un fallo del proveedor de etiquetas."
+      ],
+      "explicacion": [
+        "La interpretación semántica posterior puede usar valores categóricos aptos de baja cardinalidad para proponer etiquetas. No debe confundirse con la asistencia inicial, donde se envían necesidad y metadatos estructurales, ni con una remisión de filas comerciales completas.",
+        "El modelo propone mapeos; el servidor restringe grupos y originales permitidos y la persona aprueba cada publicación. El comprobante humano permite auditar quién convirtió una etiqueta en presentación oficial.",
+        "El fallo opcional de interpretación no revierte una carga numérica válida. La recuperación está separada para que no sea necesario volver a extraer y cargar ventas por un problema de idioma.",
+        "En Indicadores calculados, un conteo explícito de pedidos o documentos se presenta entero. Las cantidades y razones conservan dos decimales. Una divisa verificada se aplica también a unidades compuestas como moneda de origen por transacción, conservando el denominador; sin evidencia de divisa se mantiene moneda de origen. En pantallas estrechas el valor queda debajo de la etiqueta. Las capturas 126 y 127 muestran esta disposición corregida en las consultas 18 y 19."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1834",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1700",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/router.py:650",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/router.py:750",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/materializer.py:1213"
+      ]
+    },
+    {
+      "titulo": "Costos, descuentos, margen y unidades: revisión financiera mínima antes de aprobar",
+      "objetivo": "Evitar que una fórmula técnicamente calculable se comunique con un significado financiero no demostrado.",
+      "rol": "Analista, responsable de negocio y revisor de indicadores financieros.",
+      "requisitos": [
+        "Fuente de cada componente, unidad y momento temporal identificados.",
+        "Conocimiento de composición del importe, costo y descuento o uso de etiquetas neutrales cuando no exista prueba suficiente."
+      ],
+      "pasos": [
+        "Distinga precio de venta y costo. UnitPrice puede ser precio de venta; no demuestra costo. La plataforma contrasta roles y relaciones, no acepta cualquier columna numérica como dinero.",
+        "Distinga costo estándar o de referencia, último costo disponible y costo histórico de la transacción. Si se usa el costo actual del producto para todas las ventas pasadas, declare una estimación o costo de referencia; no lo presente como costo histórico real.",
+        "Revise la receta de costo total: costo unitario compatible × cantidad, cuando esos componentes y su relación con el hecho estén verificados. Una coincidencia de nombre de costo en una tabla ajena no basta.",
+        "Revise descuento monetario: precio unitario × tasa de descuento × cantidad. Una tasa de 0,10 representa proporción; no es un importe de 0,10 de moneda por documento sin esa fórmula y población.",
+        "Revise si el importe de venta es bruto, neto o simplemente registrado. Precio × cantidad sin descuento demostrado no debe llamarse automáticamente venta neta.",
+        "Revise margen bruto como diferencia compatible y margen porcentual como razón. No sustituya componentes de distinto evento, período o moneda.",
+        "Revise venta por unidad y costo por unidad como totales monetarios divididos por total de unidades vendidas; declare el denominador y el filtro.",
+        "En conciliación, lea Divisa comprobada y su Referencia. Si falta, Comprobar divisa sin repetir el ETL realiza comprobación en origen y registra evidencia; no extrae ni carga de nuevo las ventas.",
+        "Si no se demuestra un código monetario único, conserve moneda de origen. No añada USD, no convierta con una tasa no autorizada y no sume importes de fuentes cuya equivalencia monetaria no se haya probado."
+      ],
+      "resultado": "Indicadores con nombre, unidad, fórmula y límite temporal honestos; los cálculos insuficientemente respaldados se excluyen o se presentan con alcance limitado explícito.",
+      "verificacion": [
+        "Cada componente financiero tiene referencias físicas y rol adecuado; moneda y unidades se corresponden con el resultado.",
+        "Los ajustes automáticos se ven y se explican: receta corregida, etiqueta neutral o normalización de unidad.",
+        "Costos y márgenes no aparecen sólo por mencionarlos en el objetivo; deben cumplir fuentes, derivaciones y cobertura del contrato.",
+        "Moneda pendiente no equivale a importe cero, ni conciliación de importe equivale a moneda comprobada."
+      ],
+      "errores": [
+        "Usar LastCostPrice de WWI como prueba automática de costo histórico de cada factura.",
+        "Sumar tasas de descuento como moneda o confundir porcentaje con proporción sin revisar la receta.",
+        "Llamar beneficio neto contable a venta menos un costo de referencia sin gastos ni otros componentes.",
+        "Comparar AW y WWI como una serie monetaria única porque ambos muestran números de ventas."
+      ],
+      "explicacion": [
+        "La validez financiera requiere más que aritmética correcta. Una diferencia puede conciliar exactamente y seguir respondiendo a una pregunta limitada si usa costo estándar o último costo en lugar de costo histórico.",
+        "La auditoría histórica observó que LastCostPrice en WWI no prueba el costo al momento de facturar. Esa advertencia debe acompañar cualquier propuesta que lo use; no implica que todos los costos de toda fuente sean inválidos.",
+        "La comprobación de divisa es separable de ETL. Verifica evidencia para la unidad y actualiza el expediente sin volver a materializar. Si sigue faltando prueba, la etiqueta moneda de origen comunica incertidumbre de manera más fiel que inventar un símbolo."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/docs/specs/SPR-05-06-endurecimiento-integral-asistente-bi.md:81",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/service.py:171",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/service.py:252",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/materializer.py:625",
+        "/home/ceo/Proyectos/BI/docs/testing/auditoria-operativa-2026-10-03.md:55"
+      ]
+    },
+    {
+      "titulo": "Consulta histórica de ETL: volver a la evidencia sin generar ni cargar otra vez",
+      "objetivo": "Usar una ejecución existente para la demostración o auditoría sin introducir cambios de datos ni consumir IA innecesariamente.",
+      "rol": "Analista con acceso de lectura al datamart y a sus expedientes.",
+      "requisitos": [
+        "Fuente seleccionada y ejecución identificada por su tipo y número.",
+        "Distinguir expediente auditable de destino físicamente consultable en analítica."
+      ],
+      "pasos": [
+        "Consulta — En Datamart de ventas localice Expedientes recientes y lea Ejecución, Propuesta, Estado, Responsable y Fecha.",
+        "Consulta — Use Abrir expediente #… y confirme el mensaje Consulta del expediente #…. Recorra las cinco etapas con sus botones superiores.",
+        "Consulta — En pasos 1 a 3 se conserva el contrato y la selección; en paso 4 se explica la materialización que ocurrió; en paso 5 se muestran conciliación y decisiones semánticas.",
+        "Consulta — Abra Ver trazabilidad técnica para Constructor, Huella de propuesta, Huella de instantánea, responsable y fecha.",
+        "Si el contrato ya no cumple reglas vigentes, lea Expediente histórico conservado o modo histórico de sólo lectura. Esta conservación no habilita repetir el ETL.",
+        "Si no hay propuestas habilitadas para nueva ejecución, lea sus bloqueos y use igualmente el historial disponible; no borre ni regenere evidencia para hacerla aparecer.",
+        "Para una necesidad nueva use Crear nueva propuesta en el Asistente. Para un diseño corregido, genere y apruebe una versión nueva según el procedimiento autorizado; no altere el expediente histórico."
+      ],
+      "resultado": "Consulta reproducible de la carga y sus resultados originales, manteniendo intacto el estado de propuestas y datos.",
+      "verificacion": [
+        "Abrir y recorrer etapas no vuelve a llamar al modelo ni a extraer filas.",
+        "La selección reconstruida coincide con la guardada en la ejecución.",
+        "La propuesta y la ejecución se citan como tipos distintos de registro.",
+        "La demostración se rotula consulta histórica, con fecha real de su evidencia; no se presenta como ejecución nueva."
+      ],
+      "errores": [
+        "Pulsar Preparar materialización, Materializar y cargar datamart o Reintentar interpretación para obtener una captura.",
+        "Suponer que un expediente conservado garantiza tablas físicas presentes o acceso al tablero.",
+        "Forzar restauración de aprobación para leer un resultado anterior.",
+        "Elegir por fecha de archivo una copia de manual como si representara un nuevo resultado experimental."
+      ],
+      "explicacion": [
+        "Consultar la historia y reutilizar un contrato son operaciones diferentes. La primera conserva el valor probatorio de lo que ocurrió; la segunda debe cumplir reglas actuales y necesita autorización para una operación nueva.",
+        "La ejecución publicada en Analítica puede no ser la versión recomendada para una carga futura. Antes de explicar cifras, gobiernan la fuente y el execution_id del resultado consultado, no la tarjeta más reciente del asistente."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1575",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1738",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1805",
+        "/home/ceo/Proyectos/BI/docs/specs/SPR-05-06-endurecimiento-integral-asistente-bi.md:138"
+      ]
+    },
+    {
+      "titulo": "Ejercicio reproducible AW: líneas de venta por producto y mes",
+      "objetivo": "Aplicar el procedimiento a AdventureWorks conservando detalle, documento e interpretación prudente del importe.",
+      "rol": "Analista responsable del recorrido nuevo AW autorizado; el historial se usa como referencia claramente diferenciada de la evidencia nueva.",
+      "requisitos": [
+        "AdventureWorks seleccionada, conexión de sólo lectura, instantánea propia y catálogo propio.",
+        "Registrar versión de programa, perfil, fuente, instantánea, proveedor/modelo si hubo asistencia, texto exacto y si se ejecutó o sólo se consultó historia.",
+        "No fijar en código nombres de tablas, IDs de propuesta ni resultados esperados para forzar una salida. Las referencias físicas deben descubrirse y validarse con la instantánea real."
+      ],
+      "pasos": [
+        "Objetivo de control: Comparar por mes el importe registrado y la cantidad de unidades de las líneas de venta por producto, conservando su identificador de pedido.",
+        "Seleccione Productos con mayor desempeño y, si está disponible y corresponde al alcance, Evolución de ventas en el tiempo. Use Periodicidad: Mensual. Las opciones personalizadas sólo se eligen si sus campos y evidencia lo justifican.",
+        "En la consulta histórica busque el objetivo conservado o una versión de ventas apropiada y abra sus cinco etapas. En una prueba nueva autorizada, revise destino, consienta, valide y registre cada requisito sin predeterminar sus conteos.",
+        "Criterio de diseño: una fila por detalle de venta, clave de detalle conservada, clave de pedido para documentos distintos, fecha comercial coherente, producto con nombre descriptivo y relaciones que no multipliquen líneas.",
+        "Criterio de importe: mantenga importe registrado si no hay prueba suficiente de bruto/neto/impuestos/cobro. Criterio de unidades: use cantidad del evento, no un identificador o inventario disponible.",
+        "Si se incluye promedio por pedido, compruebe importe total ÷ pedidos distintos; no AVG del importe de línea. Si se añaden costos o margen, aplique la revisión temporal y financiera y declare cualquier referencia de costo.",
+        "En el recorrido nuevo autorizado siga aprobación → cinco pasos ETL → conciliación → analítica. Registre fecha, propuesta, ejecución, obtenido y diferencias reales; no sustituya valores por los de una auditoría previa.",
+        "En una sustentación basada en historia muestre la evidencia existente, su fecha y tipo de consulta. En la evidencia nueva, indique cuáles botones se ejecutaron y sus efectos; no presente una pantalla de consulta como ejecución nueva."
+      ],
+      "resultado": "Una ficha reproducible que demuestra razonamiento y trazabilidad en AW, sin depender de IDs ni de una respuesta exacta de un proveedor.",
+      "verificacion": [
+        "El modelo usa el evento pedido/línea de venta que declara; no se presenta como factura cobrada.",
+        "Mensual conserva el año y el detalle trazable.",
+        "El ranking por producto agrega el indicador correcto por producto; un máximo de línea no se disfraza de liderazgo acumulado.",
+        "Los valores históricos de referencia, si se citan, se rotulan como observados el 3 de octubre de 2026 y se verifican contra su propio expediente, no como resultados de esta nueva ficha."
+      ],
+      "errores": [
+        "Tomar una personalización de seis preguntas de aquella instalación como requisito fijo de AW.",
+        "Imponer el número de directos y derivables de una revisión antigua a toda evaluación posterior.",
+        "Usar el costo estándar como costo histórico sin advertencia.",
+        "Afirmar venta neta o cobrada sólo por el nombre comercial de la propuesta."
+      ],
+      "explicacion": [
+        "En la auditoría del 3 de octubre, el objetivo final de control de AW alcanzó viabilidad sin un ETL nuevo para esa revisión; otros expedientes de aquel ensayo sí contenían cargas. El caso detallado del 4–5 de noviembre es distinto: 121→122→18 completó cuatro KPI, conciliación, publicación, chat y exportaciones comprobados. La revisión adicional v6 del mismo objetivo quedó con diez decisiones no aceptadas, sin otra propuesta ni ETL. Cada tramo conserva su evidencia.",
+        "La reproducibilidad consiste en fijar entradas, contexto, criterios y evidencia esperada, y después registrar el resultado observado. No exige que un LLM devuelva el mismo texto o la misma cantidad de KPI en cada ejecución."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/docs/testing/auditoria-operativa-2026-10-03.md:178",
+        "/home/ceo/Proyectos/BI/docs/formacion/03_escenarios.tex",
+        "/home/ceo/Proyectos/BI/docs/formacion/04_demostracion_estudio.tex",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/needs.py",
+        "pruebas_actuales.json",
+        "qa/viabilidad_v6_cierre.json"
+      ]
+    },
+    {
+      "titulo": "Ejercicio reproducible WWI: facturación distinta de pedidos y de cobros",
+      "objetivo": "Demostrar que el mismo proceso se adapta a otro esquema y conserva el significado específico de factura.",
+      "rol": "Analista responsable del recorrido nuevo WWI autorizado; en sustentación puede contrastarlo con el expediente histórico de facturas debidamente identificado.",
+      "requisitos": [
+        "WideWorldImporters seleccionada, instantánea y catálogo propios; no reutilizar revisión ni consentimiento de AW.",
+        "Distinguir pedidos, facturas y cobros. Pedir documento comercial sin mayor precisión deja una ambigüedad de evento que debe resolverse.",
+        "No copiar tablas ni un modelo físico de AW: la fuente debe aportar sus propias claves, medidas y relaciones."
+      ],
+      "pasos": [
+        "Objetivo de control: Analizar mensualmente el importe registrado de las líneas de factura, conservando la trazabilidad con su factura y sin inferir cobros ni composición de impuestos.",
+        "Seleccione Evolución de ventas en el tiempo y Periodicidad: Mensual. Añada producto, cliente o territorio únicamente si son parte de la decisión que documentará y cuentan con respaldo.",
+        "En consulta histórica abra la propuesta y la ejecución de facturas apropiadas. Compruebe el objetivo y evento conservados; no seleccione un expediente de pedidos por tener tarjetas parecidas.",
+        "Criterio de diseño: detalle de factura como hecho, clave de línea conservada, identificador de factura para documentos distintos y fecha de emisión obtenida de la cabecera mediante relación comprobada.",
+        "Compruebe importe registrado y unidades del detalle. Si la composición fiscal no está probada, mantenga etiqueta neutral; no reste ni añada impuestos por intuición.",
+        "Si se propone promedio por factura, compruebe importe total ÷ facturas distintas. Distíngalo de media de línea, media simple del precio unitario e importe por unidad.",
+        "Si aparece LastCostPrice u otro último costo, no lo apruebe como costo histórico de cada factura. Excluya margen histórico o declare una estimación de alcance diferente si el responsable la acepta.",
+        "Revise conciliación y divisa. Si no hay código único demostrado, use moneda de origen. No compare el total con AW como si ambas cifras pertenecieran a la misma moneda y al mismo evento.",
+        "Registre por separado la consulta histórica y el recorrido nuevo autorizado. Este último requiere generación, revisión, aprobación, carga, conciliación y consulta analítica y puede producir límites distintos."
+      ],
+      "resultado": "Una explicación reproducible de facturación WWI con documento, fecha, grano y límites explícitos, sin convertir pedidos o importes registrados en cobros.",
+      "verificacion": [
+        "El hecho proviene del evento factura y conserva la relación con su cabecera; cambiar el título de pedidos a facturas no satisface el criterio.",
+        "El conteo documental usa facturas distintas y el denominador del promedio está declarado.",
+        "El período seleccionado existe en la población de la ejecución; no se elige por costumbre el año actual.",
+        "La moneda, impuestos y costo histórico se afirman únicamente con evidencia; los límites persisten en el informe."
+      ],
+      "errores": [
+        "Aprobar líneas de pedidos para una necesidad explícita de ventas facturadas.",
+        "Afirmar que factura emitida significa dinero cobrado.",
+        "Confundir importe medio por línea con promedio por factura.",
+        "Copiar etiquetas, filtros o respuestas de AW tras Cambiar fuente sin comprobar el contexto nuevo."
+      ],
+      "explicacion": [
+        "La auditoría histórica encontró una propuesta que eligió pedidos ante la expresión ambigua documento comercial y no la aprobó como facturación. El hallazgo demuestra la necesidad de precisar el evento, no que todo pedido sea un dato incorrecto.",
+        "La revisión final WWI del objetivo de control en la auditoría del 3 de octubre llegó a viabilidad y límites aceptados, sin generar; el expediente materializado de aquel ensayo pertenece a otro tramo. El caso completo posterior 123→124→19 sí completó aprobación, cuatro KPI, ETL conciliado, publicación, chat y exportaciones comprobados. La revisión adicional v6 conservó los 693 caracteres y dejó siete decisiones no aceptadas, sin otra propuesta ni ETL. No se funden estos tramos.",
+        "La adaptación a WWI se demuestra porque las fuentes físicas cambian y los mismos controles de estructura, rol, grano, receta y conciliación siguen aplicándose. No se logra hardcodeando una propuesta por nombre de base o proveedor."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/docs/testing/auditoria-operativa-2026-10-03.md:39",
+        "/home/ceo/Proyectos/BI/docs/testing/auditoria-operativa-2026-10-03.md:55",
+        "/home/ceo/Proyectos/BI/docs/testing/auditoria-operativa-2026-10-03.md:182",
+        "/home/ceo/Proyectos/BI/docs/formacion/04_demostracion_estudio.tex",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/needs.py:169",
+        "pruebas_actuales.json",
+        "qa/viabilidad_v6_cierre.json"
+      ]
+    },
+    {
+      "titulo": "Prueba negativa y adaptación dinámica: demostrar límites sin forzar resultados",
+      "objetivo": "Mostrar que un rechazo o alcance parcial puede ser un resultado correcto y que la generalización depende de contratos y evidencia reales.",
+      "rol": "Analista, docente y sustentante; responsable técnico al estudiar límites de compatibilidad.",
+      "requisitos": [
+        "Ficha de prueba con entradas, esperado, contexto y autorización si se realiza una prueba nueva.",
+        "Para el negativo climático, usar la evidencia histórica disponible si no se ha autorizado una prueba negativa adicional. La autorización de los dos recorridos positivos AW/WWI no obliga a repetir todos los ensayos históricos."
+      ],
+      "pasos": [
+        "Objetivo negativo documentado: Analizar las ventas mensuales registradas y explicar cuánto influyó el clima de cada ciudad usando temperaturas externas que no están en esta base de datos.",
+        "Criterio esperado: detectar datos meteorológicos externos ausentes; no sustituirlos por sensores frigoríficos o de vehículos ni inventar temperaturas.",
+        "Si ese dato es central, no acepte alcance parcial ni genere. Registre que el flujo se detuvo en viabilidad y explique por qué esa detención protege la decisión.",
+        "Para adaptar a otra fuente soportada, formule el evento y las decisiones en términos de negocio. Deje que la plataforma descubra tablas y relaciones y contraste roles; no escriba reglas exclusivas por nombre de base o salida textual del proveedor.",
+        "Use el mismo criterio de aceptación entre proveedores: contrato local válido, referencias reales, rol correcto, cobertura y conciliación. Una salida JSON válida por transporte sigue necesitando todos los controles de negocio.",
+        "Registre fallo de cuota, proveedor o contrato como parcial/no ejecutado según el estado real. Una necesidad estructuralmente viable no se vuelve inviable porque el proveedor esté temporalmente indisponible."
+      ],
+      "resultado": "Evidencia de comportamiento seguro, con límites y etapas alcanzadas identificados, sin presentar una simulación o una ficha propuesta como prueba ejecutada.",
+      "verificacion": [
+        "La prueba negativa no produce un datamart afirmado como climático sin fuente meteorológica.",
+        "La evaluación no mezcla contextos al cambiar fuente, objetivo, preguntas, periodicidad o metadatos.",
+        "Los casos AW y WWI acreditan escenarios SQL Server observados; no prueban compatibilidad universal con cualquier motor, esquema, dominio o modelo.",
+        "No se añade una regla ad hoc para que un único ejemplo pase y luego se presenta como generalización."
+      ],
+      "errores": [
+        "Contar todo intento rechazado como fallo del proyecto aunque el resultado esperado sea bloquear.",
+        "Confundir un contrato del LLM bien formado con verdad comercial.",
+        "Declarar éxito nuevo reutilizando cifras de auditoría o capturas antiguas sin fecha.",
+        "Usar un fallback de proveedor o una redacción distinta sin registrarlo y afirmar que se ejecutó exactamente la solicitud original."
+      ],
+      "explicacion": [
+        "La reproducibilidad exige que otra persona pueda conocer entradas, contexto, acciones, criterios y observación. En una tarea asistida por IA no exige identidad literal de la respuesta, sino que las mismas garantías del contrato se apliquen a toda salida aceptada.",
+        "La arquitectura mantiene el alcance deliberadamente acotado al dominio de ventas y SQL Server probado. Nuevos dominios o motores requieren perfiles, conectores y validadores implementados; una opción escrita en un catálogo no los implementa.",
+        "Una limitación aceptada representa una decisión consciente de alcance. No permite afirmar que el requisito original se resolvió si el dato esencial sigue ausente."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/docs/testing/auditoria-operativa-2026-10-03.md:184",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/domains.py:204",
+        "/home/ceo/Proyectos/BI/docs/specs/SPR-05-06-endurecimiento-integral-asistente-bi.md:191",
+        "/home/ceo/Proyectos/BI/docs/scope.md",
+        "/home/ceo/Proyectos/BI/AGENTS.md"
+      ]
+    },
+    {
+      "titulo": "Pantallas y evidencia que deben capturarse para el manual y la sustentación",
+      "objetivo": "Usar un conjunto visual legible que explique criterios y trazabilidad de AW 122/18 y WWI 124/19, diferenciándolos de los antecedentes y de una futura repetición sin duplicar operaciones para fabricar imágenes.",
+      "rol": "Responsable de documentación y demostración con acceso autorizado de consulta.",
+      "requisitos": [
+        "Consultar las capturas de los recorridos comprobados con fecha, fuente, propuesta y ejecución reales. Para documentar una futura repetición, aplicar la misma lista y registrar sus propios identificadores. Si se usa evidencia histórica adicional, identificarla como tal.",
+        "Ocultar credenciales, tokens, correo sensible si corresponde y otros datos ajenos al objetivo de la documentación.",
+        "No recrear interfaces ni presentar imágenes históricas como prueba en vivo. Si un estado no existe para consulta, marcarlo no capturado y usar un recuadro conceptual claramente identificado."
+      ],
+      "pasos": [
+        "C01 — Catálogo AW: cabecera con Fuente en contexto, Dominio habilitado, Cobertura técnica de la fuente y una sección Referencias detectadas abierta. Debe mostrar por qué Verificable no equivale a carga realizada.",
+        "C02 — Catálogo WWI: mismos elementos, evidenciando catálogo y referencias propios. Capturar Preguntas de negocio y Periodicidades con los campos Etiqueta, Explicación e Instrucción funcional para la IA cuando sean visibles en consulta.",
+        "C03 — Asistente, Necesidad: objetivo completo, preguntas, Periodicidad, Destino y autorización antes de enviar. Para un histórico adicional debe verse Consulta de la versión #….",
+        "C04 — Viabilidad nueva: una tarjeta directa, una derivable y una ambigua/no disponible cuando existan, con Ver evidencia técnica abierta. Capturar los límites antes de aceptarlos y la continuación después de una decisión justificada.",
+        "C05 — Conceptos: tarjeta con Incluir, nivel de confianza, estado de evidencia y Ver evidencia y cómo resolver abierto. Debe enseñar la diferencia entre confianza y comprobación.",
+        "C06 — Propuesta: Granularidad y Clave del grano, Hecho y medidas con Origen/Fórmula, Dimensiones y KPIs propuestos. Añadir otra captura para De la necesidad al datamart.",
+        "C07 — Personalización: nombre comercial, Identificador técnico, Agregación, Origen, Regla ejecutable y Medida compatible. Si no requiere cambios, capturar la revisión y continuar sin guardar una versión artificial; si se corrige, registrar motivo y nueva versión.",
+        "C08 — Revisión: necesidad, fuente, reglas y advertencias antes de decidir; comprobante con decisión, responsable, fecha y comentario después de la aprobación autorizada. No retirar, descartar ni restaurar sólo para obtener una imagen.",
+        "C09 — Versiones generadas: Mostrar, número de versión, fuente contextual, proveedor/modelo, estado y procedencia Derivada de #… si existe. Mostrar Crear nueva propuesta sin accionarlo si sólo se documenta consulta.",
+        "C10 — Datamart, paso 1: tarjetas, versión elegida y cinco etapas visibles; mostrar por qué la versión recomendada y la ejecutada son identidades diferentes cuando aplique.",
+        "C11 — Datamart, paso 2: indicador con Cálculo controlado, Unidad, Período y Ver trazabilidad técnica abierto. Priorizar un conteo distinto, razón documental o margen si existe en el expediente real.",
+        "C12 — Datamart, paso 3: Tabla de hechos, Granularidad, transformaciones agrupadas, Registro de decisión y advertencia de revisión semántica posterior; capturar la confirmación preparada.",
+        "C13 — Datamart, paso 4: comprobante Preparada y Ver trazabilidad técnica con huellas antes de ejecutar. Capturar el resultado después de pulsar una sola vez Materializar y cargar datamart; para históricos, conservar el aviso de consulta.",
+        "C14 — AW y WWI, paso 5 por separado: Conciliación OLTP–datamart con origen, cargadas, diferencia, tablas, indicadores y unidad. Debe verse la fuente o asociarse sin ambigüedad con su ejecución.",
+        "C15 — Interpretación semántica: estado real disponible, pares original → español antes de revisar y Revisión publicada con responsable/comentario cuando corresponda a la ejecución autorizada. Registrar reintentos y decisiones reales; no inventar mapeos si no se requieren.",
+        "C16 — Divisa: Divisa comprobada con referencia, o Divisa pendiente de comprobación con moneda de origen según el expediente real. Si se usa Comprobar divisa sin repetir el ETL como parte de la revisión autorizada, conservar resultado y limitación si sigue pendiente.",
+        "C17 — Expedientes recientes: ejecución, propuesta, estado, responsable, fecha y Abrir expediente #…. Mostrar que la historia continúa accesible aun cuando un contrato esté bloqueado para nueva carga.",
+        "Para cada captura registrar archivo, pantalla, fuente, instantánea/propuesta/ejecución aplicable, fecha, estado observado y qué demuestra. No incluir un botón visible como evidencia de que la operación fue ejecutada."
+      ],
+      "resultado": "Un inventario de figuras con finalidad probatoria clara, cobertura de las dos fuentes y protección del estado del entorno.",
+      "verificacion": [
+        "Textos y números se leen a tamaño de página; no recortar fuente, unidad o identidad del expediente cuando son esenciales.",
+        "Cada imagen tiene una leyenda que distingue consulta actual de evidencia histórica y explica lo que no acredita.",
+        "No se capturaron secretos; cada operación persistente y llamada IA corresponde al alcance de los dos recorridos autorizados y se registra de forma diferenciada de las consultas.",
+        "El conjunto cubre los 5 pasos del Asistente y los 5 de Datamart sin asumir que todos los estados estén disponibles en la misma ejecución."
+      ],
+      "errores": [
+        "Capturar sólo un gráfico final y omitir evento, grano y conciliación.",
+        "Aprobar sólo por conseguir una imagen, sin revisión de la propuesta y de sus límites.",
+        "Usar la captura del encabezado de Validar resultados como si mostrara los conteos que quedaron fuera del recorte.",
+        "Mezclar imágenes AW/WWI sin leyendas o usar fechas de archivo como fecha de la operación comercial."
+      ],
+      "explicacion": [
+        "El manual debe mostrar tanto navegación como criterio. Un campo visible enseña dónde introducir información; su leyenda debe enseñar qué significa, cuándo elegirlo y qué error evita.",
+        "Las capturas históricas ya existentes en docs/testing/evidencias/qa-20261003 y docs/formacion/figuras pueden reutilizarse con fecha y procedencia explícitas. No demuestran una ejecución nueva el 4 de noviembre de 2026.",
+        "La evidencia documental completa incluye el texto exacto de la necesidad y sus límites, además de imágenes. Una captura aislada no sustituye la ficha de prueba ni los identificadores de trazabilidad."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx",
+        "/home/ceo/Proyectos/BI/docs/testing/evidencias/qa-20261003",
+        "/home/ceo/Proyectos/BI/docs/formacion/figuras",
+        "/home/ceo/Proyectos/BI/docs/testing/auditoria-operativa-2026-10-03.md:213"
+      ]
+    }
+  ]
+}

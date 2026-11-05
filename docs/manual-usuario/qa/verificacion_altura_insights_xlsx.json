@@ -1,0 +1,38 @@
+{
+  "fecha": "2026-11-05T00:44:04.891253-05:00",
+  "tipo": "Prueba sintética de presentación; no es una ejecución BI nueva ni reemplaza exportaciones descargadas",
+  "archivo": "qa/fixture_altura_insights.xlsx",
+  "sha256": "b5bcb20b3d895e9cf1e91d42bb01c76a7730d44437ace5853753bef5dd046fb6",
+  "contenido": [
+    "Advertencia temporal real completa",
+    "Texto sintético largo con frase final inequívoca",
+    "Fuente de 120 caracteres y base de 128 caracteres",
+    "Importe 21.28 con unidad USD por unidad",
+    "Identificador largo sin espacios"
+  ],
+  "alturas_puntos": {
+    "fecha_fila8": 34,
+    "fuente_base_fila10": 62,
+    "aviso_temporal_fila19": 57,
+    "aviso_sintetico_fila20": 158
+  },
+  "revision_visual": {
+    "ArtifactTool": "Texto temporal y advertencia larga completos; contexto fuente/base envuelto sin recorte.",
+    "LibreOffice_bundled": "Conversión read-only con perfil temporal. Página1 revisada: final «esas condiciones.» y «FIN DEL TEXTO DE PRUEBA.» visibles; fuente/base completas.",
+    "evidencias": [
+      "qa/fixture_altura_insights.png",
+      "qa/fixture_contexto_largo.png",
+      "qa/fixture_altura_insights_libreoffice.png"
+    ]
+  },
+  "pruebas_exportacion": 52,
+  "comprobaciones": [
+    "pytest focal Docker aprobado",
+    "Ruff aprobado",
+    "Formato aprobado",
+    "Mypy aprobado",
+    "git diff --check aprobado"
+  ],
+  "originales_descargados_modificados": false,
+  "estado": "Corrección genérica de altura confirmada con una prueba sintética. Pendientes informes 18 y 19 con sufijo final para su revisión individual."
+}

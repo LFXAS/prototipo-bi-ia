@@ -88,7 +88,7 @@ vinculado al destino LLM actual. La viabilidad combina interpretación IA y regl
 `business_need_reviews` conserva su resultado no ejecutable y huellas de entrada y
 evaluación. La generación exige una evaluación persistida del mismo actor, texto,
 preguntas, período e instantánea. No cambia contratos aprobados ni datamarts anteriores.
-La huella incluye `need-review-2`; el cambio de reglas obliga a revisar nuevamente
+La huella incluye `need-review-6`; el cambio de reglas obliga a revisar nuevamente
 antes de generar y conserva evaluaciones previas como evidencia histórica.
 Esta puerta no reemplaza la validación del modelo dimensional, la decisión humana ni
 la conciliación del ETL; un esquema correcto no acredita datos completos o significado
@@ -120,6 +120,70 @@ explicaciones de requisitos `ai:*` se rotulan como interpretación propuesta por
 no ejecutable. Una reformulación bloqueada puede descartarse conservando el objetivo
 original, que deberá pasar su propia revisión antes de generar.
 
+La revisión posterior al cierre de noviembre separa trazabilidad documental de evento
+de facturación. La trazabilidad se representa mediante la capacidad existente
+`transactions`, de `kind=identifier`, con `identity_references` verificadas; no se
+añade una capacidad al catálogo. `invoice_event` exige intención positiva en la
+solicitud original (objetivo y preguntas, respetando exclusiones) y una cabecera que es el propio hecho, con PK completa declarada y referencias exactas, o una ruta FK
+completa hacia la cabecera de factura, no una coincidencia nominal del ID.
+La aceptación de límites no habilita una
+clasificación persistente incompatible. Las nuevas propuestas declaran
+`sales-bi-v7` y `compilation_rules_version=3`: los identificadores no son operandos
+monetarios, el promedio documental usa razón de agregados y las líneas no se renombran
+silenciosamente como pedidos. El verificador selecciona la versión de expansión del
+documento; ausencia del marcador conserva reglas 1. No se migran ni reescriben 117/120. Los marcadores explícitos 2 conservan expansión y validación 2; ausencia de marcador conserva 1. El check de replay refleja igualdad real de hashes y el aviso de versiones se informa por separado.
+Una aprobación nueva exige prompt y reglas actuales: un borrador anterior recibe
+HTTP 409 y debe generar una versión nueva o una personalización hija. La
+idempotencia de una decisión aprobada histórica conserva su contrato y su evidencia.
+
+La revisión separa además campos de origen y operaciones de la aplicación. El tipo
+`kind=ranking` utiliza las capacidades existentes de producto, cliente o territorio
+y el catálogo cerrado `analytical_operations`; no busca una columna física llamada
+ranking. Primero comprueba medida, dimensión y relaciones que preserven el grano y
+después resuelve la operación, independientemente del orden del JSON. El bloque
+`analytical_operation` se conserva en la propuesta y su cobertura exige ambos
+componentes. Percentiles, ranking predictivo y puntuaciones arbitrarias permanecen
+fuera del contrato. Viabilidad no significa que ya se hayan calculado cifras.
+
+El escáner determinístico distingue menciones positivas de exclusiones o cautelas
+coordinadas en español e inglés. Una frase como «sin asumir moneda, utilidad ni
+composición fiscal» no solicita margen. El mismo criterio se aplica a capacidades,
+derivaciones, instrucciones de preguntas y facturas. Una petición positiva explícita
+en otra pregunta no se borra por una negación posterior: la contradicción requiere
+revisión. Es una corrección acotada del contrato, no comprensión exhaustiva del
+lenguaje natural; la versión 5 exige reevaluar, sin cambiar el prompt de ranking v4.
+
+El copiloto analítico conserva otra frontera: un ranking no demuestra preferencias,
+demanda, eficacia o mercado, y una dirección actual no prueba entregas reales ni
+ubicación histórica. Las instrucciones delimitan el lenguaje; la repetición de la
+misma pregunta y los controles de datos siguen siendo evidencias separadas. El estado
+de esas regresiones se publica en
+[`testing/qa-postcierre-2026-11-04.md`](testing/qa-postcierre-2026-11-04.md).
+Las preguntas sugeridas se construyen en el servidor desde las métricas agrupables
+y las dimensiones de visuales materializados disponibles para esa ejecución. El
+esquema interno del proveedor devuelve respuesta, evidencia y cautela; el campo
+API `suggested_questions` permanece, pero no conserva sugerencias libres que pidan
+margen u otro indicador ausente. La interpretación utiliza el mismo catálogo de ejes.
+
+La serie temporal analítica resuelve la periodicidad efectiva del KPI, con herencia
+de la propuesta cuando la receta declara `inherit`. El catálogo/propuesta emplea
+`day/week/month/quarter/year` y la receta KPI emplea
+`daily/weekly/monthly/quarterly/yearly`; la herencia normaliza ambos vocabularios
+cerrados antes de consultar. Un catálogo cerrado selecciona
+agrupación diaria, semanal, mensual, trimestral o anual y sus etiquetas, incluidas
+semana ISO y trimestre. El lector agrega las mismas filas materializadas; no cambia
+la API ni ejecuta otra carga. La matriz real de 22 lecturas comprueba dos
+configuraciones mensuales persistidas, diez periodicidades KPI explícitas y diez
+casos de herencia del catálogo, sin modificar filas ni ejecutar otro ETL.
+
+La revisión vigente normaliza tildes y puntuación del ranking y distingue exclusiones
+de operaciones: «sin percentiles» no elimina agrupar/ordenar sumas. «No excluir» y
+«do not exclude» conservan petición positiva. Son reglas léxicas acotadas, no una
+garantía de interpretación exhaustiva. La compilación 3 limita Number/Numero como
+señal de identificador a su semántica documental o de entidad y conserva PK/FK
+declaradas; NumberOfUnits/NumeroDeUnidades sin esas claves vuelve a ser una cantidad
+apta para SUM. Los casos 122/124 siguen reglas 2 sin mutación.
+
 ## Contrato de configuración LLM
 
 El módulo `parameters` conserva una única configuración LLM activa con tipo de proveedor, URL base, modelo, nivel de razonamiento controlado, límites y referencia opaca de credencial. La corrección final del Sprint 2 incorpora un almacén cifrado para registrar o reemplazar la clave desde la web. PostgreSQL conserva exclusivamente el valor cifrado; React y auditoría no reciben el secreto. `GEMINI_API_KEY` y `DASHSCOPE_API_KEY` ya no forman parte de la configuración operativa. Un cambio de proveedor, URL, modelo o razonamiento invalida la prueba anterior para impedir que el copiloto use una combinación no verificada.
@@ -140,7 +204,7 @@ La orientación funcional del perfil de ventas se desacopla de sus reglas median
 
 Después, `copilot` recibe una solicitud guiada de negocio y procesa la instantánea en bloques compactos. El LLM interpreta dinámicamente nombres técnicos en inglés u otro idioma, propone conceptos y explicaciones de negocio en español y conserva las referencias originales. En una segunda llamada toma decisiones analíticas compactas —hecho, medidas, dimensiones y KPI— restringidas por un esquema JSON derivado del alcance. FastAPI descarta referencias inexistentes y expande esas decisiones con PK, FK, atributos, reglas de calidad y operaciones ETL determinísticas. Así un modelo local pequeño no debe repetir información mecánica y queda explícita la frontera entre propuesta de IA y control de la aplicación. No se utiliza un glosario codificado exclusivamente para AdventureWorks.
 
-FastAPI valida que todas las tablas, columnas, claves, relaciones y operaciones propuestas existan o pertenezcan a catálogos aprobados. El analista puede derivar una versión ajustando únicamente resumen, granularidad, dimensiones, medidas, agregaciones y KPIs ya verificados; el backend vuelve a validar, conserva el vínculo de origen y audita el cambio. Sólo después un permiso independiente permite aprobar o rechazar el significado de negocio. Una aprobación no genera ni ejecuta SQL: conserva una entrada inmutable para el módulo `etl` de Sprint 4. Ese módulo preseleccionará la propuesta aprobada compatible más reciente, exigirá confirmación explícita, permitirá comparar otras aprobadas y fijará el `proposal_id` en cada ejecución. Después construirá consultas parametrizadas mediante operaciones tipadas y plantillas autorizadas, presentará una vista previa y las ejecutará desde el backend con permisos mínimos. Este límite se detalla en [`decisions/0003-metadatos-y-propuesta-bi-supervisada.md`](decisions/0003-metadatos-y-propuesta-bi-supervisada.md) y [`specs/SPR-04-01-seleccion-propuesta-y-validacion-etl.md`](specs/SPR-04-01-seleccion-propuesta-y-validacion-etl.md).
+FastAPI valida que todas las tablas, columnas, claves, relaciones y operaciones propuestas existan o pertenezcan a catálogos aprobados. El analista puede derivar una versión ajustando únicamente resumen, granularidad, dimensiones, medidas, agregaciones y KPIs ya verificados; el backend vuelve a validar, conserva el vínculo de origen y audita el cambio. Sólo después un permiso independiente permite aprobar o rechazar el significado de negocio. Una aprobación no genera ni ejecuta SQL: conserva una entrada inmutable para el módulo `etl` de Sprint 4. Ese módulo preselecciona la propuesta aprobada compatible más reciente, exige confirmación explícita, permite comparar otras aprobadas y fija el `proposal_id` en cada ejecución. Después construye consultas parametrizadas mediante operaciones tipadas y plantillas autorizadas, presenta una vista previa y las ejecuta desde el backend con permisos mínimos. Este límite se detalla en [`decisions/0003-metadatos-y-propuesta-bi-supervisada.md`](decisions/0003-metadatos-y-propuesta-bi-supervisada.md) y [`specs/SPR-04-01-seleccion-propuesta-y-validacion-etl.md`](specs/SPR-04-01-seleccion-propuesta-y-validacion-etl.md).
 
 Antes de materializar, el módulo `etl` aplica controles de aptitud analítica adicionales a la validación estructural: rechaza dimensiones basadas en tablas puente, claves ambiguas, ausencia de atributos descriptivos y contradicciones entre granularidad y claves del hecho. La capa semántica conserva siempre los nombres y valores originales. Puede agregar etiquetas españolas para metadatos y categorías no sensibles de baja cardinalidad; omite automáticamente identificadores, datos personales, texto libre y valores de alta cardinalidad. Si el contenido ya está en español no lo reinterpreta. Si el proveedor falla, la carga numérica permanece válida y el analista puede reintentar únicamente la interpretación con otro proveedor activo, sin repetir el ETL. Cada mapeo queda versionado y auditado.
 

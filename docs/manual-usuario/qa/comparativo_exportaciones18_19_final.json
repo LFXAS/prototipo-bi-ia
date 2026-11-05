@@ -1,0 +1,63 @@
+{
+  "fecha": "2026-11-05T00:52:31.458124-05:00",
+  "corte": "Informes finales descargados desde la interfaz después de corregir la altura de las advertencias XLSX",
+  "filas": [
+    {
+      "fuente": "AdventureWorks local",
+      "base": "AdventureWorks2022",
+      "ejecucion": "#18",
+      "propuesta": "#122",
+      "filtro": "2013 · Northwest",
+      "moneda": "USD",
+      "importe_sin_redondear": "6015174.735836",
+      "unidades": "17452",
+      "documentos": "2053",
+      "promedio_sin_redondear": "2929.943855740867",
+      "total_mensual_territorio_conforme": true,
+      "denominador_top8": "2192595.016681",
+      "pdf_paginas_revisadas": 5,
+      "aviso_temporal_completo_xlsx": true,
+      "fuente_base_offset_visibles": true,
+      "altura_aviso_pt": "57",
+      "sha256_pdf": "1396980786cb108173e83bc33f17554b54a854ea25c04d60e8e9c6d7d87a2a46",
+      "sha256_xlsx": "afc266e16cb63e759dc45561041913a712e5c2479b5457d4b625a361deb0f6f5"
+    },
+    {
+      "fuente": "WideWorldImporters local",
+      "base": "WideWorldImporters",
+      "ejecucion": "#19",
+      "propuesta": "#124",
+      "filtro": "2015 · California",
+      "moneda": "moneda de origen",
+      "importe_sin_redondear": "1215705.55",
+      "unidades": "57142",
+      "documentos": "481",
+      "promedio_sin_redondear": "2527.454365904366",
+      "total_mensual_territorio_conforme": true,
+      "denominador_top8": "307083.35",
+      "pdf_paginas_revisadas": 5,
+      "aviso_temporal_completo_xlsx": true,
+      "fuente_base_offset_visibles": true,
+      "altura_aviso_pt": "57",
+      "sha256_pdf": "e704a9bf0cada72150fea096f96811c3faa7c2d534f3b6673ab474fa8f2bf8b6",
+      "sha256_xlsx": "7fd923b83d5dabb0065acbd40d9d102eb33a77e41ab4b5844eb91c3a5f8682a0"
+    }
+  ],
+  "resultado": "Ambas fuentes conformes en controles numéricos, contexto, advertencia temporal y revisión visual solicitada. Diez páginas de PDF nativo revisadas, más contexto y hallazgos de los dos XLSX mediante ArtifactTool.",
+  "metodos": [
+    "SHA-256 antes/después de la revisión",
+    "Lectura directa OOXML de valores, formatos, contexto y alturas",
+    "Conciliación Decimal de resumen, doce períodos y territorio",
+    "Revisión de participaciones contra las ocho categorías mostradas",
+    "Render Poppler del PDF nativo: páginas 1–5 de cada informe",
+    "Importación/render readonly de ambos XLSX finales con ArtifactTool"
+  ],
+  "limitacion_motor_adicional": "No se afirma revisión Calc completada de los archivos finales: se suspendió por memoria. La corrección genérica se comprobó antes en una prueba sintética mediante ArtifactTool y Calc.",
+  "referencias": [
+    "qa/verificacion_exportacion18_final.json",
+    "qa/verificacion_exportacion19_final.json",
+    "qa/verificacion_altura_insights_xlsx.json"
+  ],
+  "originales_editados": false,
+  "ambito": "No se suman ni comparan importes entre fuentes: AdventureWorks identifica USD; WideWorldImporters conserva moneda de origen sin divisa única verificada."
+}

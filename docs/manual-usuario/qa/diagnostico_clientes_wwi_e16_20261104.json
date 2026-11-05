@@ -1,0 +1,168 @@
+{
+  "titulo": "Contraste de identidad descriptiva de clientes — WideWorldImporters, ejecución 16",
+  "fecha_local": "2026-11-04",
+  "zona_horaria": "America/Guayaquil",
+  "tipo_evidencia": "Comprobación actual de sólo lectura; no es un ETL nuevo ni una nueva prueba de interfaz",
+  "caso": {
+    "fuente": "WideWorldImporters local",
+    "base": "WideWorldImporters",
+    "instantanea_id": 3,
+    "propuesta_id": 117,
+    "ejecucion_id": 16,
+    "estado_ejecucion_consultado": "succeeded",
+    "esquema_materializado": "mart_ventas_e16",
+    "dimension": "dim_cliente",
+    "filtro_del_ranking": {
+      "anio": 2015,
+      "territorio": "California",
+      "indicador_codigo": "KPI_001",
+      "indicador_nombre": "Total de ventas facturadas"
+    }
+  },
+  "conclusion": {
+    "resultado": "Se descarta que el ranking sustituya CustomerName por el nombre de una persona de contacto.",
+    "fundamento": "La receta persistida selecciona Sales.Customers.CustomerName sin unirse a People. El materializador conserva esa columna y su etiqueta descriptiva. El lector analítico prioriza el atributo declarado. Las 663 etiquetas coinciden con CustomerName del origen después de la limpieza de espacios ya implementada.",
+    "implicacion_para_manual": "Los nombres con apariencia personal deben describirse como nombres de cliente registrados en CustomerName. No deben reemplazarse por empresas inventadas ni clasificarse como personas físicas o contactos sin otra evidencia.",
+    "alcance": "El contraste comprueba identidad y consistencia de etiquetas de esta ejecución. No constituye una clasificación jurídica de clientes ni valida otras fórmulas o rutas territoriales."
+  },
+  "metodo": [
+    "Lectura del contrato de propuesta 117 y de las métricas de ejecución 16 desde PostgreSQL, con transacción SET TRANSACTION READ ONLY y cierre sin modificaciones.",
+    "Inspección de las columnas físicas de mart_ventas_e16.dim_cliente y contraste agregado de customername frente a nombre_invoice_line_fact.",
+    "Compilación en memoria de la consulta dimensional desde el contrato persistido, sin ejecutar materialización ni crear tablas.",
+    "Consulta SELECT al origen SQL Server con la conexión existente de sólo lectura. Las credenciales se usaron internamente y no se imprimieron ni se incluyen en este informe.",
+    "Comparación en memoria de las 663 claves y etiquetas de origen y destino; se publican sólo medidas de diferencia y tres ejemplos del conjunto público que originaron la incidencia.",
+    "Construcción de dashboard y consulta agregada por funciones del servicio, en la misma transacción de lectura: año 2015, territorio California, KPI_001. No se invocó al proveedor LLM ni se usó la interfaz."
+  ],
+  "contrato_persistido": {
+    "source_tables": ["Sales.Customers"],
+    "business_key": "CustomerID",
+    "atributos": ["CustomerName", "BillToCustomerID", "CustomerCategoryID", "BuyingGroupID"],
+    "semantic_role": "invoice_line_fact",
+    "display_label": {
+      "target_name": "nombre_invoice_line_fact",
+      "type_target_name": "tipo_invoice_line_fact",
+      "tipo_variante": "base_entity",
+      "fuente_variante": "Sales.Customers",
+      "columnas_variante": ["CustomerName"],
+      "operacion_variante": "first_non_empty",
+      "respaldo_tecnico": "CustomerID"
+    }
+  },
+  "medidas_observadas": {
+    "clientes_origen": 663,
+    "clientes_materializados": 663,
+    "claves_materializadas_ausentes_en_origen": 0,
+    "etiquetas_customername_distintas_en_destino": 663,
+    "etiquetas_descriptivas_distintas_en_destino": 663,
+    "diferencias_customername_vs_etiqueta_descriptiva_en_destino": 0,
+    "diferencias_literal_origen_vs_customername_destino": 1,
+    "diferencias_literal_resueltas_por_limpieza_de_espacios_existente": 1,
+    "diferencias_origen_limpio_vs_customername_destino": 0,
+    "diferencias_origen_limpio_vs_etiqueta_descriptiva_destino": 0,
+    "cobertura_descriptiva_registrada": 1.0,
+    "etiquetas_sin_resolver_registradas": 0
+  },
+  "ejemplos_publicos_verificados": [
+    {
+      "CustomerID": 906,
+      "CustomerName_origen": "Ajitaab Pakalapati",
+      "customername_destino": "Ajitaab Pakalapati",
+      "etiqueta_descriptiva_destino": "Ajitaab Pakalapati",
+      "categoria_del_cliente_en_origen": "Computer Store",
+      "importe_ranking_2015_California": 140808.36
+    },
+    {
+      "CustomerID": 972,
+      "CustomerName_origen": "Lakshmi Benipal",
+      "customername_destino": "Lakshmi Benipal",
+      "etiqueta_descriptiva_destino": "Lakshmi Benipal",
+      "categoria_del_cliente_en_origen": "Computer Store",
+      "importe_ranking_2015_California": 108756.77
+    },
+    {
+      "CustomerID": 951,
+      "CustomerName_origen": "Eliza Persson",
+      "customername_destino": "Eliza Persson",
+      "etiqueta_descriptiva_destino": "Eliza Persson",
+      "categoria_del_cliente_en_origen": "Supermarket",
+      "importe_ranking_2015_California": 108271.31
+    }
+  ],
+  "procedencia_del_ranking": {
+    "dashboard": "Clientes principales de ejecución 16: primeras tres etiquetas iguales a los ejemplos verificados.",
+    "consulta_agregada_controlada": "Top 3 de clientes, año 2015, California, KPI_001; sin invocar al LLM.",
+    "columna_agrupada": "mart_ventas_e16.dim_cliente.nombre_invoice_line_fact",
+    "medida": "mart_ventas_e16.fact_ventas.importe_de_venta_registrado",
+    "operacion": "sum",
+    "denominador_antes_de_top_n": 1215705.55,
+    "unidad": "moneda de origen",
+    "advertencia": "El denominador del Top N es el total filtrado antes del límite. La participación visible del ranking del dashboard usa su propio subconjunto de categorías. Este informe no los confunde."
+  },
+  "consultas_de_evidencia_sin_credenciales": [
+    {
+      "id": "PG-01",
+      "motor": "PostgreSQL",
+      "proposito": "Verificar las columnas físicas disponibles.",
+      "sql": "SELECT column_name FROM information_schema.columns WHERE table_schema = 'mart_ventas_e16' AND table_name = 'dim_cliente' ORDER BY ordinal_position;",
+      "resultado_relevante": ["customerid", "customername", "nombre_invoice_line_fact", "tipo_invoice_line_fact", "etl_execution_id"]
+    },
+    {
+      "id": "PG-02",
+      "motor": "PostgreSQL",
+      "proposito": "Comparar etiqueta física y etiqueta descriptiva en todas las filas de la ejecución.",
+      "sql": "SELECT COUNT(*) AS filas, COUNT(DISTINCT customername) AS nombres, COUNT(DISTINCT nombre_invoice_line_fact) AS etiquetas, COUNT(*) FILTER (WHERE customername IS DISTINCT FROM nombre_invoice_line_fact) AS diferencias FROM mart_ventas_e16.dim_cliente WHERE etl_execution_id = 16;",
+      "resultado": {"filas": 663, "nombres": 663, "etiquetas": 663, "diferencias": 0}
+    },
+    {
+      "id": "PG-03",
+      "motor": "PostgreSQL",
+      "proposito": "Proveer claves y etiquetas a la comparación local completa; no se publican sus 663 filas.",
+      "sql": "SELECT customerid, customername, nombre_invoice_line_fact FROM mart_ventas_e16.dim_cliente WHERE etl_execution_id = 16;",
+      "resultado_publicado": "663 filas comparadas en memoria con SQL-01, 0 diferencias después de aplicar strip() a CustomerName del origen."
+    },
+    {
+      "id": "SQL-01",
+      "motor": "SQL Server",
+      "proposito": "Contrastar la identidad original de cada clave de cliente.",
+      "sql": "SELECT CustomerID, CustomerName FROM Sales.Customers;",
+      "resultado_publicado": "663 claves de origen; 0 claves de destino ausentes. Una diferencia literal corresponde únicamente a espacios externos eliminados por la limpieza existente."
+    },
+    {
+      "id": "SQL-02",
+      "motor": "SQL Server",
+      "proposito": "Comprobar los tres nombres que motivaron la incidencia y su categoría registrada.",
+      "sql": "SELECT c.CustomerID, c.CustomerName, k.CustomerCategoryName FROM Sales.Customers AS c JOIN Sales.CustomerCategories AS k ON c.CustomerCategoryID = k.CustomerCategoryID WHERE c.CustomerID IN (906, 951, 972);",
+      "resultado_publicado": "Los nombres están en CustomerName y sus categorías registradas son Computer Store, Supermarket y Computer Store. Eso no permite atribuirles un tipo jurídico ni convertirlos en nombres de contacto."
+    }
+  ],
+  "observacion_tecnica_separada": {
+    "hallazgo": "El rol técnico de dim_cliente quedó como invoice_line_fact y produjo los identificadores nombre_invoice_line_fact y tipo_invoice_line_fact.",
+    "causa_en_codigo": "entity_resolution._semantic_role selecciona el primer candidato cuyo technical_refs incluye la primera fuente de la dimensión. Un candidato de hecho que mencione Sales.Customers puede preceder a otro concepto y suministrar un rol inadecuado.",
+    "efecto_confirmado_en_este_caso": "Nombre técnico y rol mal asignados. La receta descriptiva conservó Sales.Customers.CustomerName y no cambió los valores de cliente.",
+    "estado": "Observación registrada, sin arreglo de código por instrucción de la revisión principal.",
+    "razon_para_no_modificar_ahora": "Cambiar la expansión determinística puede modificar la reproducción de propuestas históricas. Debe tratarse en una revisión versionada con pruebas de compatibilidad; no se altera la propuesta 117, su aprobación ni sus tablas durante los recorridos del manual.",
+    "posible_trabajo_futuro": "Resolver rol explícito/canónico de dimensión antes de candidatos solapados, exigir invariancia ante su orden y comprobar que dashboard y copiloto conserven el atributo declarado. No se implementó en esta intervención."
+  },
+  "estado_de_cambios": {
+    "cambios_en_datos": false,
+    "nuevo_ETL": false,
+    "rematerializacion": false,
+    "cambios_en_lector_analitico": false,
+    "cambios_en_materializador": false,
+    "cambios_en_resolucion_de_roles": false,
+    "llamadas_LLM": false,
+    "cambios_en_activacion_LLM": false,
+    "interaccion_UI_por_esta_revision": false,
+    "output_preexistente_modificado": false,
+    "nota": "El árbol conserva únicamente los cuatro archivos modificados por el arreglo anterior de conservación del objetivo y su bitácora; esta revisión añade sólo el presente informe fuera del repositorio."
+  },
+  "fuentes_de_codigo": [
+    "/home/ceo/Proyectos/BI/backend/app/modules/copilot/entity_resolution.py:134",
+    "/home/ceo/Proyectos/BI/backend/app/modules/copilot/entity_resolution.py:183",
+    "/home/ceo/Proyectos/BI/backend/app/modules/etl/materializer.py:205",
+    "/home/ceo/Proyectos/BI/backend/app/modules/etl/materializer.py:523",
+    "/home/ceo/Proyectos/BI/backend/app/modules/analytics/service.py:134",
+    "/home/ceo/Proyectos/BI/backend/app/modules/analytics/service.py:547",
+    "/home/ceo/Proyectos/BI/backend/app/modules/analytics/service.py:927"
+  ]
+}

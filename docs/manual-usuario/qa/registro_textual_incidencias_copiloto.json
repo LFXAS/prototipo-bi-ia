@@ -1,0 +1,31 @@
+{
+  "naturaleza": "Registro textual derivado de observaciones de QA leídas en la interfaz mediante accesibilidad; no es un log nativo exportado de la aplicación ni una reconstrucción visual. Los originales de capturas parciales se conservan.",
+  "fecha_documentacion_utc": "2026-11-05T05:27:16.536785+00:00",
+  "casos": [
+    {
+      "id": "CHAT-18-SUGERENCIA",
+      "ejecucion": 18,
+      "propuesta": 122,
+      "fragmento_observado": "¿Cuál es la rentabilidad (margen) de estos tres productos comparada con otros en el portafolio de Northwest 2013?",
+      "evaluacion": "Pregunta sugerida no sustentada en los cuatro KPI materializados (importe, unidades, pedidos distintos y promedio por pedido). No modifica el cálculo numérico observado.",
+      "correccion": "Las sugerencias se construyen desde el catálogo real de métricas y dimensiones consultables, sin tomar texto libre del proveedor.",
+      "captura_relacionada": "101_aw_copiloto18_resultado",
+      "fecha_captura_utc": "2026-11-05T04:29:05.670Z",
+      "sha256_captura": "7cb7986ab6a4f1ebe407843c7e4ee308e921bd1eebf450f2bab77fbc37c65efe",
+      "limite_visual": "La captura relacionada sólo contiene parte del panel de conversación y no alcanza el fragmento citado. El fragmento se transcribe del estado de accesibilidad leído durante la prueba; no se presenta como una captura de ese tramo ni como una respuesta nueva."
+    },
+    {
+      "id": "CHAT-19-TEMPORALIDAD",
+      "ejecucion": 19,
+      "propuesta": 124,
+      "pregunta_observada": "Para 2015 y California, indica los tres productos con mayor importe registrado, sus importes y participación sobre el total territorial antes del Top 3. Aclara si estos datos demuestran dónde se entregó cada venta en esa fecha.",
+      "fragmento_observado": "La ubicación territorial en el registro corresponde al momento de la transacción documentada, no a la ubicación geográfica de entrega en esa fecha.",
+      "evaluacion": "Atribución temporal no demostrada. La ruta de la dimensión usa el estado leído de Sales.Customers.DeliveryCityID, Application.Cities y Application.StateProvinces durante ETL. La fecha InvoiceDate no prueba vigencia histórica de esos atributos.",
+      "correccion": "Procedencia dimensional estructurada para el contexto LLM y advertencia de plataforma sobre ausencia de vigencia histórica o entrega verificada; se repite la misma pregunta con conversación limpia.",
+      "captura_relacionada": "116_wwi_chat19_temporalidad_incorrecta",
+      "fecha_captura_utc": "2026-11-05T05:00:34.485Z",
+      "sha256_captura": "4a50e722cf4bed665d17c5aca101f1747be9b454b707630bde093ef48169c4e6",
+      "limite_visual": "La captura relacionada sólo contiene parte del panel de conversación y no alcanza el fragmento citado. El fragmento se transcribe del estado de accesibilidad leído durante la prueba; no se presenta como una captura de ese tramo ni como una respuesta nueva."
+    }
+  ]
+}

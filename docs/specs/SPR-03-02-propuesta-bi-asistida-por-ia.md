@@ -137,7 +137,7 @@ huella y documento de evaluación, proveedor/modelo e instante. Es evidencia no
 ejecutable; no reemplaza `bi_proposals` ni altera versiones históricas. La generación
 exige encontrar una evaluación coincidente, no aceptar una huella calculada sólo en
 el navegador o por la comprobación heurística anterior.
-La huella incorpora la versión de reglas `need-review-2`: las evaluaciones anteriores
+La huella incorpora la versión de reglas `need-review-6`: las evaluaciones anteriores
 se conservan para auditoría, pero no autorizan una generación nueva hasta repetir la
 revisión con las reglas vigentes. Esta invalidación de revisión no retira aprobaciones
 ni altera contratos o materializaciones existentes.
@@ -232,6 +232,83 @@ El contrato compacto exige además `semantic_role` en medidas y KPIs. Los identi
 FastAPI amplía las decisiones del LLM con datos comprobables de la instantánea: claves de negocio, atributos descriptivos, uniones FK, reglas de calidad y plan ETL tipado. El documento final conserva `ai_decisions` para distinguir lo propuesto por la IA de lo completado por la aplicación. Después se ejecuta el mismo validador determinístico sobre el contrato expandido.
 
 Los nombres de destino permitidos en el alcance académico son `fact_ventas`, `dim_fecha`, `dim_producto`, `dim_cliente` y `dim_territorio`. Una propuesta puede justificar que una dimensión no aplica, pero no puede inventar otros módulos o ampliar el dominio.
+
+### 4.5.1 Revisión posterior al cierre: identidad documental y reglas de compilación
+
+La revisión del 4 de noviembre de 2026 corrige dos problemas generales observados al
+preparar material formativo: interpretar la trazabilidad de una línea a su pedido como
+una petición de facturación y tratar una clave numérica como operando monetario. No
+añade una API ni un sprint y no cambia los documentos aprobados existentes.
+
+- El requisito de trazabilidad documental se representa mediante la capacidad
+  existente `transactions` con `kind=identifier`; no añade una capacidad al catálogo.
+  Se comprueban referencias identificadoras de la instantánea, ancla del hecho y
+  relación declarada; no se convierte la identidad en una medida de importe.
+- Esa capacidad de transacciones conserva las referencias de
+  identidad verificadas en `identity_references`, sin perderlas al trasladar la
+  evaluación a la cobertura de la propuesta. La existencia de operandos no equivale a
+  haber implementado un resultado calculado.
+- `invoice_event` exige una solicitud positiva de facturación en el objetivo y las
+  preguntas originales, respetando las exclusiones, y una cabecera que es el propio hecho con PK completa declarada y referencias
+  exactas, o evidencia FK completa hacia la cabecera del evento de factura. Un ID, la palabra
+  trazabilidad o una clasificación del LLM no acreditan por sí solos ese evento.
+- Una clasificación de factura incompatible genera feedback para una reparación
+  acotada. Si persiste, no se guarda una evaluación continuable mediante la aceptación
+  de una advertencia: devuelve HTTP 422 sin persistir una revisión continuable.
+  Confirmar límites no cambia pedidos en facturas.
+- `need-review-6` obliga a evaluar otra vez entradas nuevas o revisiones anteriores;
+  conserva para auditoría las evaluaciones `need-review-2`, `need-review-3`, `need-review-4` y `need-review-5` sin
+  alterar propuestas o ETL.
+- Las propuestas nuevas identifican `sales-bi-v7` y
+  `compilation_rules_version=3`. Los documentos con marcador 2 conservan sus reglas y los documentos sin marcador se reproducen con las
+  reglas históricas `1`. No se agrega el marcador retrospectivamente ni se migran
+  huellas, decisiones, aprobaciones o tablas de propuestas como 117 y 120.
+- La reproducción histórica no habilita una aprobación nueva de un borrador legado.
+  Si su prompt o reglas no son vigentes, el backend responde HTTP 409. Regenerar o
+  personalizar crea una versión hija bajo el motor actual, conservando su vínculo
+  `source_proposal_id`; no transforma retroactivamente el documento de origen.
+
+El ranking de agregados es una operación existente de la aplicación, no una columna
+que deba existir en la fuente. La revisión admite `kind=ranking` con una capacidad
+existente de producto, cliente o territorio y contrasta `analytical_operations`,
+catálogo cerrado separado de los metadatos. Primero verifica los requisitos de
+origen; después vincula cada par medida/dimensión y sus relaciones, aunque el ranking
+aparezca antes en el JSON. Exige medida numérica, dimensión y rutas que preserven el
+grano. No declara disponibilidad por una palabra del objetivo ni confunde viabilidad
+con cifras ya calculadas.
+
+El contrato `analytical_operation` pasa al payload de propuesta y a su cobertura;
+deben existir ambos componentes verificados. Una falsa clasificación como no
+disponible produce feedback, una reparación y, si persiste, HTTP 422 sin revisión
+continuable. Dependencias ausentes o no numéricas y percentiles, ranking predictivo
+y puntuaciones arbitrarias permanecen límites válidos. No se añade una capacidad,
+columna física ni operación ETL para resolver este requisito.
+
+La versión 5 corrige además el escáner determinístico de menciones positivas,
+exclusiones y cautelas coordinadas en español e inglés, sin cambiar el prompt de la
+versión 4. «Sin asumir moneda, utilidad ni composición fiscal» no solicita margen.
+El criterio se aplica a capacidades, fórmulas derivadas, instrucciones de preguntas
+y facturación; una dependencia implícita de un código conocido no debe reintroducir
+una capacidad explícitamente excluida. Una pregunta que sí la solicite positivamente
+conserva ese requisito y la contradicción debe resolverse; una cautela sin indicador
+no basta para inventar un objetivo. El corte histórico de v5 comprendió 125 pruebas
+focalizadas de asesor/viabilidad, 26 nuevas, con análisis estático aprobado. No se
+presenta como interpretación exhaustiva de toda negación del lenguaje natural.
+
+Las reglas aritméticas y de conteo de la compilación 2 se especifican en
+[SPR-04-02](SPR-04-02-kpis-controlados-y-calculables.md). La matriz de regresiones y
+el estado de los ensayos están en
+[QA posterior al cierre](../testing/qa-postcierre-2026-11-04.md); los criterios nuevos
+no se dan por probados por el mero hecho de documentarlos.
+
+La precisión vigente need-review-6 normaliza tildes/puntuación y el ámbito de las
+exclusiones del ranking. No exige una columna de ranking por «sin percentiles» y
+conserva como positiva «no excluir/do not exclude». El evento de factura admite
+cabecera como hecho sólo con intención positiva, PK completa declarada y referencias
+exactas, o la FK completa existente; el nombre o una PK parcial no bastan.
+La compilación 3 y su precisión de identificadores se especifican en SPR-04-02.
+La regresión final de los cuatro módulos de necesidad/compilación/aprobación aprobó
+266 pruebas focalizadas (156 + 110); forma parte del integral 454 backend/46 frontend.
 
 ### 4.6 Límite con la generación y ejecución de SQL
 

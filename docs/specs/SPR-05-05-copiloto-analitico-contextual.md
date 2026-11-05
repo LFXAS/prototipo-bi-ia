@@ -41,7 +41,65 @@ La salida utiliza un esquema JSON estricto con:
 - `provider_kind` y `model_id` añadidos por el servidor.
 - `interpreted_query`, cuando fue necesaria una agregación adicional, con alcance, resultados, denominador y procedencia.
 
-La instrucción prohíbe inventar cifras, causas, relaciones, acciones o pronósticos. Una comparación temporal entre extremos visibles no se presenta como causalidad ni como tendencia probada; se advierte que los meses extremos pueden tener cobertura parcial.
+La instrucción prohíbe inventar cifras, causas, relaciones, acciones o pronósticos. Una comparación temporal entre extremos visibles no se presenta como causalidad ni como tendencia probada; se advierte que los períodos extremos pueden tener cobertura parcial.
+
+### 3.1. Precisión de interpretación posterior al cierre
+
+En la revisión del 4–5 de noviembre se precisan las instrucciones de explicación sin
+añadir campos de API ni consultas libres. Un ranking con sumas correctas no demuestra
+preferencias de consumidores, demanda, eficacia de una campaña, penetración o cuota
+de mercado. Se puede describir qué producto acumuló más importe dentro del alcance
+consultado y presentar una acción como hipótesis a investigar, sin afirmar esa causa.
+
+Una provincia derivada de la ciudad de entrega de la ficha actual del cliente es una
+clasificación de esa ficha. No acredita el lugar real de cada entrega ni la ubicación
+histórica de la venta. La respuesta debe cubrir las cautelas pedidas y distinguirlas
+de la cifra, período y denominador comprobados; acertar el Top N no cubre toda una
+pregunta compuesta.
+
+Se conserva el caso que motivó el ajuste y se repite la misma pregunta con conversación
+limpia. Las pruebas automatizadas del prompt no sustituyen esa observación real ni
+prueban todas las futuras respuestas. Véase
+[QA posterior al cierre](../testing/qa-postcierre-2026-11-04.md).
+
+### 3.2. Preguntas sugeridas desde el catálogo de la ejecución
+
+La respuesta API conserva `suggested_questions: list[str]`, pero las preguntas ya
+no proceden de texto libre del proveedor. El esquema interno del LLM solicita sólo
+`answer` y `evidence`; el servidor construye hasta tres sugerencias desde
+`available_metrics`, usando recetas agrupables y dimensiones presentes en los
+visuales materializados y admitidas por el agregador. Prioriza la métrica
+seleccionada. Si no hay un eje apto, ofrece el valor o la evolución visibles.
+
+La interpretación de intención enumera esas mismas dimensiones disponibles. Una
+etiqueta que contenga costo, margen u otra palabra no habilita una receta ausente;
+las etiquetas arbitrarias siguen siendo presentación, no permisos de cálculo.
+No cambian los campos de API, filtros, alcance, permisos ni SQL permitido. El cierre
+de copiloto y servicio analítico aprobó 53 pruebas focalizadas, Ruff, formato y Mypy,
+incluidas las regresiones de sugerencias y procedencia. Son parte del cierre integral
+454 backend/46 frontend, no conteos adicionales.
+
+### 3.3. Procedencia temporal y cautela de plataforma
+
+`caveat` conserva su tipo público de texto, pero se construye íntegramente en el
+servidor. No se acepta, concatena ni trunca una cautela libre del proveedor. El
+contexto registra alcance y procedencia estructurada desde contrato, instantánea,
+fuentes, columnas, claves y la misma ruta FK que utiliza el materializador; distingue
+origen directo mediante `same_source`. Los nombres derivados conservan operación y
+linaje sin transmitir sus valores.
+
+Las fechas reales de la ejecución definen una ventana ETL, no el instante exacto de
+lectura ni la última actualización de una fila fuente. La ficha extraída no demuestra
+vigencia a fecha del hecho ni entrega verificada. Los flags internos conservan ese
+significado; el texto público lo explica sin exigir el acrónimo técnico SCD2. La
+advertencia ocupa el primer hallazgo y queda dentro de los cuatro visibles en modo
+ejecutivo. Incluye los límites de causalidad, preferencias y demanda.
+
+La primera respuesta de WWI 19 acertó cifras pero afirmó historia no acreditada. La
+misma pregunta con conversación limpia, tras el refuerzo, mostró Top 3 y porcentajes
+correctos sobre 1.215.705,55 y explicó ficha durante ETL, historia y entrega no probadas.
+La evidencia 117–119 fue inspeccionada visualmente por la revisión principal. Ello no
+acredita todos los proveedores o todas las futuras respuestas.
 
 ## 4. Experiencia de usuario
 

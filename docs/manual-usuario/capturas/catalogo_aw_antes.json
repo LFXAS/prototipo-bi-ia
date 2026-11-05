@@ -1,0 +1,114 @@
+[
+  {
+    "label": "Etiqueta",
+    "value": "Evolución de ventas en el tiempo"
+  },
+  {
+    "label": "Explicación para el analistaPermite analizar ventas, unidades, costos y márgenes por diferentes períodos de tiempo.",
+    "value": "Permite analizar ventas, unidades, costos y márgenes por diferentes períodos de tiempo."
+  },
+  {
+    "label": "Instrucción funcional para la IAPermitir analizar y comparar ventas, unidades vendidas, costos, descuentos y margen por fecha, mes, trimestre y año. Mantener el detalle original a nivel de línea de venta y utilizar la fecha de la transacción como dimensión temporal. No agregar previamente la información por período.",
+    "value": "Permitir analizar y comparar ventas, unidades vendidas, costos, descuentos y margen por fecha, mes, trimestre y año. Mantener el detalle original a nivel de línea de venta y utilizar la fecha de la transacción como dimensión temporal. No agregar previamente la información por período."
+  },
+  {
+    "label": "Etiqueta",
+    "value": "Desempeño por producto y características"
+  },
+  {
+    "label": "Explicación para el analistaPermite analizar productos considerando sus atributos como categoría, subcategoría y otras características del producto..",
+    "value": "Permite analizar productos considerando sus atributos como categoría, subcategoría y otras características del producto.."
+  },
+  {
+    "label": "Instrucción funcional para la IAPermitir analizar y ordenar productos por unidades vendidas, importe de ventas, costo y margen. Conservar en cada línea de venta el identificador del producto y sus atributos disponibles, incluyendo nombre, categoría, subcategorí y otras características del producto. Permitir segmentar y combinar estos atributos sin perder el nivel de detalle.",
+    "value": "Permitir analizar y ordenar productos por unidades vendidas, importe de ventas, costo y margen. Conservar en cada línea de venta el identificador del producto y sus atributos disponibles, incluyendo nombre, categoría, subcategorí y otras características del producto. Permitir segmentar y combinar estos atributos sin perder el nivel de detalle."
+  },
+  {
+    "label": "Etiqueta",
+    "value": "Desempeño por cliente"
+  },
+  {
+    "label": "Explicación para el analistaPermite analizar las ventas y rentabilidad asociadas a cada cliente.",
+    "value": "Permite analizar las ventas y rentabilidad asociadas a cada cliente."
+  },
+  {
+    "label": "Instrucción funcional para la IAPermitir segmentar las líneas de venta por cliente y calcular unidades vendidas, ventas, descuentos, costos y margen por cliente. Mantener la relación entre cliente, pedido y cada línea individual de venta.",
+    "value": "Permitir segmentar las líneas de venta por cliente y calcular unidades vendidas, ventas, descuentos, costos y margen por cliente. Mantener la relación entre cliente, pedido y cada línea individual de venta."
+  },
+  {
+    "label": "Etiqueta",
+    "value": "Desempeño por territorio"
+  },
+  {
+    "label": "Explicación para el analistaPermite comparar ventas, costos y rentabilidad por territorio comercial.",
+    "value": "Permite comparar ventas, costos y rentabilidad por territorio comercial."
+  },
+  {
+    "label": "Instrucción funcional para la IAPermitir analizar unidades, ventas, costos, descuentos y margen por territorio. Conservar el código y descripción del territorio asociados a cada transacción y permitir combinarlos con producto, atributos del producto, cliente y período.",
+    "value": "Permitir analizar unidades, ventas, costos, descuentos y margen por territorio. Conservar el código y descripción del territorio asociados a cada transacción y permitir combinarlos con producto, atributos del producto, cliente y período."
+  },
+  {
+    "label": "Etiqueta",
+    "value": "Costos y rentabilidad de las ventas"
+  },
+  {
+    "label": "Explicación para el analistaPermite determinar cuánto cuesta lo vendido y qué margen genera cada producto o segmento.",
+    "value": "Permite determinar cuánto cuesta lo vendido y qué margen genera cada producto o segmento."
+  },
+  {
+    "label": "Instrucción funcional para la IAPermitir calcular por cada línea de venta el costo total, costo por unidad, venta bruta, descuento, venta neta, margen bruto y porcentaje de margen. Utilizar el costo unitario o costo estándar disponible en la fuente y la cantidad vendida para obtener el costo correspondiente a cada línea cuando sea necesario. No limitar el análisis únicamente al importe de ventas.",
+    "value": "Permitir calcular por cada línea de venta el costo total, costo por unidad, venta bruta, descuento, venta neta, margen bruto y porcentaje de margen. Utilizar el costo unitario o costo estándar disponible en la fuente y la cantidad vendida para obtener el costo correspondiente a cada línea cuando sea necesario. No limitar el análisis únicamente al importe de ventas."
+  },
+  {
+    "label": "Etiqueta",
+    "value": "Ventas y costos por unidad"
+  },
+  {
+    "label": "Explicación para el analistaPermite analizar el comportamiento económico considerando las unidades físicas vendidas.",
+    "value": "Permite analizar el comportamiento económico considerando las unidades físicas vendidas."
+  },
+  {
+    "label": "Instrucción funcional para la IAConservar obligatoriamente la cantidad de unidades vendidas en cada línea de detalle. Permitir calcular precio promedio por unidad, costo promedio por unidad, ingreso por unidad, margen por unidad y comparar estas métricas entre productos, categorías, tallas, colores, territorios, clientes y períodos.",
+    "value": "Conservar obligatoriamente la cantidad de unidades vendidas en cada línea de detalle. Permitir calcular precio promedio por unidad, costo promedio por unidad, ingreso por unidad, margen por unidad y comparar estas métricas entre productos, categorías, tallas, colores, territorios, clientes y períodos."
+  },
+  {
+    "label": "Etiqueta",
+    "value": "Diaria"
+  },
+  {
+    "label": "ExplicaciónAgrupa resultados por día cuando existe una fecha de venta verificable.",
+    "value": "Agrupa resultados por día cuando existe una fecha de venta verificable."
+  },
+  {
+    "label": "Etiqueta",
+    "value": "Semanal"
+  },
+  {
+    "label": "ExplicaciónAgrupa resultados por semana cuando existe una fecha de venta verificable.",
+    "value": "Agrupa resultados por semana cuando existe una fecha de venta verificable."
+  },
+  {
+    "label": "Etiqueta",
+    "value": "Mensual"
+  },
+  {
+    "label": "ExplicaciónAgrupa resultados por mes cuando existe una fecha de venta verificable.",
+    "value": "Agrupa resultados por mes cuando existe una fecha de venta verificable."
+  },
+  {
+    "label": "Etiqueta",
+    "value": "Trimestral"
+  },
+  {
+    "label": "ExplicaciónAgrupa resultados por trimestre cuando existe una fecha de venta verificable.",
+    "value": "Agrupa resultados por trimestre cuando existe una fecha de venta verificable."
+  },
+  {
+    "label": "Etiqueta",
+    "value": "Anual"
+  },
+  {
+    "label": "ExplicaciónAgrupa resultados por año cuando existe una fecha de venta verificable.",
+    "value": "Agrupa resultados por año cuando existe una fecha de venta verificable."
+  }
+]

@@ -1,0 +1,437 @@
+Browser tab: 1, Title: "BI asistido por IA", URL: "http://localhost:5173/".
+1 AXWebArea BI asistido por IA, URL: localhost:5173/
+	2 container
+		3 text PLATAFORMA BI ASISTIDA POR IA
+		4 text Centro de inteligencia de negocio
+		5 button (collapsed) ☰ Menú, Secondary Actions: Expand
+		6 button Cerrar sesión
+		7 container
+			8 heading Asistente de datamart, Value: 1
+				9 text Asistente de datamart
+			10 container Fuente de datos del espacio de trabajo
+				11 text FUENTE EN CONTEXTO
+				12 text AdventureWorks local
+				13 text SQL Server ·  AdventureWorks2022  ·  metadatos disponibles
+				14 container
+					15 text Cambiar fuente
+					16 pop up button (collapsed, settable) Cambiar fuente, Value: AdventureWorks local · AdventureWorks2022, Secondary Actions: Expand
+						17 menu
+							18 (selected) AdventureWorks local · AdventureWorks2022
+							19 WideWorldImporters local · WideWorldImporters
+			20 text DOMINIO SELECCIONADO Datamart de ventas AdventureWorks local  · instantánea # 2
+			21 button Cambiar tipo de datamart
+			22 text Describa una necesidad comercial. La IA interpretará metadatos, propondrá el modelo y la aplicación comprobará cada referencia antes de su revisión.
+			23 content list Paso 1 de 5
+				24 container
+					25 text 1 Necesidad
+			179 text Revisión de IA y reglas completada: revise los límites antes de continuar.
+			26 container
+				27 text PASO 1
+				28 heading Necesidad de negocio, Value: 2
+					29 text Necesidad de negocio
+				30 text Se enviarán la necesidad y metadatos estructurales; nunca filas ni credenciales. Objetivo del análisis
+				31 text entry area (settable) Objetivo del análisis 532 / 2.000 caracteres Explique qué decisión desea apoyar, qué indicadores espera y cómo necesita compararlos. No escriba SQL., Value: Conservar cada línea de pedido de venta en un datamart. Para priorizar productos y territorios, comparar mensualmente cuatro indicadores: suma del importe registrado de las líneas, suma de unidades, conteo de identificadores de pedido distintos e importe total dividido entre pedidos distintos. Usar fecha y territorio comercial del pedido, producto y cliente con nombre verificable. Los rankings comparan sumas por entidad. Mantener la trazabilidad de cada línea al pedido. La moneda se reportará sólo si se comprueba en la fuente.
+				32 container
+					33 text 532  / 2.000 caracteres
+				34 text Explique qué decisión desea apoyar, qué indicadores espera y cómo necesita compararlos. No escriba SQL.
+				35 container Autorización de asistencia con metadatos
+					36 text La IA recibirá la necesidad y nombres, tipos, claves y relaciones de esta fuente; nunca filas ni credenciales.
+					37 container
+						38 text Destino: anthropic-cloud · claude-haiku-4-5-20251001
+					39 checkbox (settable, integer) Description: Autorizo enviar estos metadatos y la necesidad al proveedor indicado para esta revisión., Value: 1
+				40 button Sugerir necesidades con esta fuente
+				41 button Ayúdame a formular la necesidad
+				42 text La IA propone desde los metadatos de esta fuente; usted decide qué texto utilizar. No se consultan filas.
+				43 container Preguntas de negocio disponibles
+					44 text Preguntas de negocio disponibles
+					45 text Seleccione las preguntas que orientarán a la IA. No fijan tablas, columnas ni dimensiones.
+					46 container La instantánea contiene metadatos compatibles con esta capacidad.
+						47 checkbox (settable, integer) Value: 1, Description: Evolución de ventas en el tiempo Permite comparar importes de venta, unidades y documentos comerciales en distintos períodos.
+						48 text Evolución de ventas en el tiempo
+						49 text Permite comparar importes de venta, unidades y documentos comerciales en distintos períodos.
+					50 container La instantánea contiene metadatos compatibles con esta capacidad.
+						51 checkbox (settable, integer) Value: 1, Description: Desempeño por producto y características Permite comparar importes y unidades por producto y sus atributos verificables.
+						52 text Desempeño por producto y características
+						53 text Permite comparar importes y unidades por producto y sus atributos verificables.
+					54 container La instantánea contiene metadatos compatibles con esta capacidad.
+						55 checkbox (settable, integer) Value: 1, Description: Desempeño por cliente Permite comparar importes, unidades y documentos comerciales por cliente identificado.
+						56 text Desempeño por cliente
+						57 text Permite comparar importes, unidades y documentos comerciales por cliente identificado.
+					58 container La instantánea contiene metadatos compatibles con esta capacidad.
+						59 checkbox (settable, integer) Description: Desempeño por territorio Permite comparar importes y unidades por territorio comercial verificado., Value: 1
+						60 text Desempeño por territorio
+						61 text Permite comparar importes y unidades por territorio comercial verificado.
+					62 container La pregunta personalizada orientará a la IA; su alcance técnico se validará contra los metadatos antes de generar una propuesta.
+						63 checkbox (settable, integer) Value: 0, Description: Costos y rentabilidad de las ventas Permite determinar cuánto cuesta lo vendido y qué margen genera cada producto o segmento.
+						64 text Costos y rentabilidad de las ventas
+						65 text Permite determinar cuánto cuesta lo vendido y qué margen genera cada producto o segmento.
+					66 container La pregunta personalizada orientará a la IA; su alcance técnico se validará contra los metadatos antes de generar una propuesta.
+						67 checkbox (settable, integer) Value: 0, Description: Ventas y costos por unidad Permite analizar el comportamiento económico considerando las unidades físicas vendidas.
+						68 text Ventas y costos por unidad
+						69 text Permite analizar el comportamiento económico considerando las unidades físicas vendidas.
+				70 text La IA propondrá las dimensiones, medidas, granularidad, KPIs y plan ETL a partir del objetivo, las preguntas seleccionadas y los metadatos verificados. Usted podrá revisarlos y personalizarlos sin escribir SQL. Periodicidad
+				71 pop up button (collapsed, settable) Periodicidad, Value: Mensual, Secondary Actions: Expand
+					72 menu
+						73 Diaria
+						74 Semanal
+						75 (selected) Mensual
+						76 Trimestral
+						77 Anual
+				180 container Cobertura de la necesidad
+					181 text COMPROBACIÓN PREVIA
+					182 heading Viabilidad contra los metadatos, Value: 3
+						183 text Viabilidad contra los metadatos
+					184 text 15  directos ·  7  automáticos ·  10  por decidir
+					185 container
+						186 text ¿Qué significa derivable automáticamente? No requiere que seleccione tablas, escriba SQL ni complete fórmulas. Al continuar, la plataforma aplicará únicamente relaciones declaradas y cálculos controlados.
+						187 content list
+							188 container
+								189 text 1
+								190 text La IA propone
+								191 text  usando el mismo contrato para cualquier proveedor.
+							192 container
+								193 text 2
+								194 text La plataforma resuelve
+								195 text  las rutas y fórmulas inequívocas.
+							196 container
+								197 text 3
+								198 text El validador comprueba
+								199 text  cada requisito; si alguno falta, bloquea la aprobación.
+					200 container
+						201 text AUTOMÁTICO · RELACIÓN
+						202 heading Evolución de ventas en el tiempo, Value: 4
+							203 text Evolución de ventas en el tiempo
+						204 text Puede resolverse uniendo únicamente relaciones declaradas y conservando la granularidad. ✓ Se resolverá y volverá a validar al generar la propuesta.
+						205 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							206 text Ver evidencia técnica
+					207 container
+						208 text AUTOMÁTICO · RELACIÓN
+						209 heading Desempeño por producto y características, Value: 4
+							210 text Desempeño por producto y características
+						211 text Puede resolverse uniendo únicamente relaciones declaradas y conservando la granularidad. ✓ Se resolverá y volverá a validar al generar la propuesta.
+						212 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							213 text Ver evidencia técnica
+					214 container
+						215 text AUTOMÁTICO · RELACIÓN
+						216 heading Desempeño por cliente, Value: 4
+							217 text Desempeño por cliente
+						218 text Puede resolverse uniendo únicamente relaciones declaradas y conservando la granularidad. ✓ Se resolverá y volverá a validar al generar la propuesta.
+						219 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							220 text Ver evidencia técnica
+					221 container
+						222 text AUTOMÁTICO · RELACIÓN
+						223 heading Desempeño por territorio, Value: 4
+							224 text Desempeño por territorio
+						225 text Puede resolverse uniendo únicamente relaciones declaradas y conservando la granularidad. ✓ Se resolverá y volverá a validar al generar la propuesta.
+						226 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							227 text Ver evidencia técnica
+					228 container
+						229 text DIRECTO · FUENTE VERIFICADA
+						230 heading Análisis por cliente, Value: 4
+							231 text Análisis por cliente
+						232 text Puede resolverse directamente con la referencia técnica indicada.
+						233 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							234 text Ver evidencia técnica
+					235 container
+						236 text DIRECTO · FUENTE VERIFICADA
+						237 heading Evolución temporal, Value: 4
+							238 text Evolución temporal
+						239 text Puede resolverse directamente con la referencia técnica indicada.
+						240 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							241 text Ver evidencia técnica
+					242 container
+						243 text DIRECTO · FUENTE VERIFICADA
+						244 heading Análisis por producto, Value: 4
+							245 text Análisis por producto
+						246 text Puede resolverse directamente con la referencia técnica indicada.
+						247 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							248 text Ver evidencia técnica
+					249 container
+						250 text DIRECTO · FUENTE VERIFICADA
+						251 heading Unidades vendidas, Value: 4
+							252 text Unidades vendidas
+						253 text Puede resolverse directamente con la referencia técnica indicada.
+						254 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							255 text Ver evidencia técnica
+					256 container
+						257 text DIRECTO · FUENTE VERIFICADA
+						258 heading Ventas o ingresos, Value: 4
+							259 text Ventas o ingresos
+						260 text Puede resolverse directamente con la referencia técnica indicada.
+						261 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							262 text Ver evidencia técnica
+					263 container
+						264 text DIRECTO · FUENTE VERIFICADA
+						265 heading Análisis territorial, Value: 4
+							266 text Análisis territorial
+						267 text Puede resolverse directamente con la referencia técnica indicada.
+						268 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							269 text Ver evidencia técnica
+					270 container
+						271 text DIRECTO · FUENTE VERIFICADA
+						272 heading Número de transacciones o pedidos, Value: 4
+							273 text Número de transacciones o pedidos
+						274 text Puede resolverse directamente con la referencia técnica indicada.
+						275 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							276 text Ver evidencia técnica
+					277 container
+						278 text REFERENCIA ESTRUCTURAL COMPROBADA
+						279 heading Suma del importe registrado de líneas, Value: 4
+							280 text Suma del importe registrado de líneas
+						281 text Interpretación propuesta por IA (no ejecutable):
+						282 text SUM(LineTotal) LineTotal es una columna numérica en SalesOrderDetail que representa el importe de cada línea. No se ha comprobado si incluye o excluye impuestos, descuentos o fletes; se reporta como importe registrado.
+						283 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							284 text Ver evidencia técnica
+					285 container
+						286 text REFERENCIA ESTRUCTURAL COMPROBADA
+						287 heading Suma de unidades, Value: 4
+							288 text Suma de unidades
+						289 text Interpretación propuesta por IA (no ejecutable):
+						290 text SUM(OrderQty) OrderQty es una columna numérica que contiene la cantidad de unidades por línea.
+						291 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							292 text Ver evidencia técnica
+					293 container
+						294 text REFERENCIA ESTRUCTURAL COMPROBADA
+						295 heading Conteo de identificadores de pedido distintos, Value: 4
+							296 text Conteo de identificadores de pedido distintos
+						297 text Interpretación propuesta por IA (no ejecutable):
+						298 text COUNT(DISTINCT SalesOrderID) SalesOrderID es la clave foránea que vincula cada línea a su pedido. El conteo de valores distintos proporciona el número de pedidos únicos.
+						299 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							300 text Ver evidencia técnica
+					301 container
+						302 text DERIVACIÓN CANDIDATA
+						303 heading Importe total dividido entre pedidos distintos, Value: 4
+							304 text Importe total dividido entre pedidos distintos
+						305 text Interpretación propuesta por IA (no ejecutable):
+						306 text SUM(LineTotal) / COUNT(DISTINCT SalesOrderID) Derivación aritmética de dos medidas verificadas: suma de importes entre conteo de pedidos distintos. Representa el importe promedio por pedido. Se validará al preparar la propuesta; esta descripción no se ejecuta.
+						307 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							308 text Ver evidencia técnica
+					309 container
+						310 text REFERENCIA ESTRUCTURAL COMPROBADA
+						311 heading Fecha comercial del pedido, Value: 4
+							312 text Fecha comercial del pedido
+						313 text Interpretación propuesta por IA (no ejecutable):
+						314 text OrderDate OrderDate en SalesOrderHeader es la fecha de registro del pedido. Se accede desde SalesOrderDetail mediante FK SalesOrderID.
+						315 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							316 text Ver evidencia técnica
+					317 container
+						318 text REFERENCIA ESTRUCTURAL COMPROBADA
+						319 heading Territorio comercial del pedido, Value: 4
+							320 text Territorio comercial del pedido
+						321 text Interpretación propuesta por IA (no ejecutable):
+						322 text SalesTerritory.Name SalesOrderHeader contiene TerritoryID, que referencia Sales.SalesTerritory.Name. La ruta es SalesOrderDetail → SalesOrderHeader → SalesTerritory.
+						323 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							324 text Ver evidencia técnica
+					325 container
+						326 text REFERENCIA ESTRUCTURAL COMPROBADA
+						327 heading Producto con nombre verificable, Value: 4
+							328 text Producto con nombre verificable
+						329 text Interpretación propuesta por IA (no ejecutable):
+						330 text Product.Name SalesOrderDetail contiene ProductID que referencia Production.Product.Name. La relación está declarada en los metadatos.
+						331 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							332 text Ver evidencia técnica
+					333 container
+						334 text DECISIÓN DEL ANALISTA
+						335 heading Cliente con nombre verificable, Value: 4
+							336 text Cliente con nombre verificable
+						337 text Interpretación propuesta por IA (no ejecutable):
+						338 text Customer identificado por FK, nombre no directo SalesOrderHeader contiene CustomerID que referencia Sales.Customer. Sin embargo, Sales.Customer no posee una columna Name directa; contiene PersonID (para clientes individuales) o StoreID (para tiendas). El nombre verificable requiere unión adicional a Person.Person o Sales.Store, lo que amplía la ruta. La instrucción pide nombre verificable, pero la estructura requiere puentes no declarados directamente desde SalesOrderDetail.
+						339 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							340 text Ver evidencia técnica
+						341 checkbox (settable, integer) Description: Comprendo esta limitación y acepto continuar sin que el sistema invente una solución., Value: 0
+					342 container
+						343 text REFERENCIA ESTRUCTURAL COMPROBADA
+						344 heading Trazabilidad de línea a pedido, Value: 4
+							345 text Trazabilidad de línea a pedido
+						346 text Interpretación propuesta por IA (no ejecutable):
+						347 text Clave de línea y FK a pedido SalesOrderDetailID es la clave primaria de la línea; SalesOrderID es la FK que vincula cada línea a su pedido. Ambas columnas están presentes en SalesOrderDetail.
+						348 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							349 text Ver evidencia técnica
+					350 container
+						351 text NO DISPONIBLE
+						352 heading Moneda reportada si se comprueba en fuente, Value: 4
+							353 text Moneda reportada si se comprueba en fuente
+						354 text Interpretación propuesta por IA (no ejecutable):
+						355 text No aplicable Los metadatos no contienen una columna de moneda en SalesOrderDetail ni en SalesOrderHeader. Existe CurrencyRateID en SalesOrderHeader que referencia Sales.CurrencyRate, pero no hay evidencia de que la moneda esté registrada en la transacción de venta. La instrucción es una cautela (no reportar si no se comprueba), no una solicitud positiva; se conserva como limitación.
+						356 checkbox (settable, integer) Description: Comprendo esta limitación y acepto continuar sin que el sistema invente una solución., Value: 0
+					357 container
+						358 text REFERENCIA ESTRUCTURAL COMPROBADA
+						359 heading Comparación mensual de indicadores, Value: 4
+							360 text Comparación mensual de indicadores
+						361 text Interpretación propuesta por IA (no ejecutable):
+						362 text MONTH(OrderDate), YEAR(OrderDate) OrderDate permite agrupar por mes. La periodicidad solicitada es mensual.
+						363 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							364 text Ver evidencia técnica
+					365 container
+						366 text DERIVACIÓN CANDIDATA
+						367 heading Ranking por producto, Value: 4
+							368 text Ranking por producto
+						369 text Interpretación propuesta por IA (no ejecutable):
+						370 text GROUP BY Product, ORDER BY SUM(LineTotal) DESC La aplicación admite agrupar y ordenar los agregados; medida, dimensión y rutas se comprobaron por separado. Los valores y el contrato se validan después en ETL. Se validará al preparar la propuesta; esta descripción no se ejecuta.
+						371 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							372 text Ver evidencia técnica
+					373 container
+						374 text DERIVACIÓN CANDIDATA
+						375 heading Ranking por territorio, Value: 4
+							376 text Ranking por territorio
+						377 text Interpretación propuesta por IA (no ejecutable):
+						378 text GROUP BY Territory, ORDER BY SUM(LineTotal) DESC La aplicación admite agrupar y ordenar los agregados; medida, dimensión y rutas se comprobaron por separado. Los valores y el contrato se validan después en ETL. Se validará al preparar la propuesta; esta descripción no se ejecuta.
+						379 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							380 text Ver evidencia técnica
+					381 container
+						382 text DECISIÓN DEL ANALISTA
+						383 heading Ranking por cliente, Value: 4
+							384 text Ranking por cliente
+						385 text Interpretación propuesta por IA (no ejecutable):
+						386 text GROUP BY Customer, ORDER BY SUM(LineTotal) DESC Ranking de clientes por suma de importe. La medida está verificada, pero el nombre del cliente requiere puentes adicionales (Person o Store) no declarados directamente desde SalesOrderDetail. El ranking es estructuralmente posible pero el identificador de cliente con nombre verificable es ambiguo.
+						387 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							388 text Ver evidencia técnica
+						389 checkbox (settable, integer) Description: Comprendo esta limitación y acepto continuar sin que el sistema invente una solución., Value: 0
+					390 container
+						391 text NO DISPONIBLE
+						392 heading Alcance no respaldado completamente, Value: 4
+							393 text Alcance no respaldado completamente
+						394 text La revisión IA declara que parte del objetivo carece de respaldo. Revise los límites antes de continuar.
+						395 checkbox (settable, integer) Description: Comprendo esta limitación y acepto continuar sin que el sistema invente una solución., Value: 0
+					396 container
+						397 text DECISIÓN DEL ANALISTA
+						398 heading Límite de interpretación, Value: 4
+							399 text Límite de interpretación
+						400 text El nombre del cliente no está disponible directamente en SalesOrderDetail ni en SalesOrderHeader; requiere unión a Person.Person (si PersonID) o Sales.Store (si StoreID), lo que amplía la ruta de relaciones declaradas.
+						401 checkbox (settable, integer) Description: Comprendo esta limitación y acepto continuar sin que el sistema invente una solución., Value: 0
+					402 container
+						403 text DECISIÓN DEL ANALISTA
+						404 heading Límite de interpretación, Value: 4
+							405 text Límite de interpretación
+						406 text No se ha comprobado si LineTotal incluye o excluye impuestos, descuentos, fletes u otros conceptos; se reporta como importe registrado y debe validarse en la fuente.
+						407 checkbox (settable, integer) Description: Comprendo esta limitación y acepto continuar sin que el sistema invente una solución., Value: 0
+					408 container
+						409 text DECISIÓN DEL ANALISTA
+						410 heading Límite de interpretación, Value: 4
+							411 text Límite de interpretación
+						412 text No existe evidencia de moneda registrada en la transacción de venta; CurrencyRateID en SalesOrderHeader es opcional (nullable) y no garantiza que la moneda esté comprobada en cada línea.
+						413 checkbox (settable, integer) Description: Comprendo esta limitación y acepto continuar sin que el sistema invente una solución., Value: 0
+					414 container
+						415 text DECISIÓN DEL ANALISTA
+						416 heading Límite de interpretación, Value: 4
+							417 text Límite de interpretación
+						418 text El objetivo solicita territorio comercial del pedido; SalesOrderHeader.TerritoryID puede ser NULL, lo que requiere validación de cobertura de datos.
+						419 checkbox (settable, integer) Description: Comprendo esta limitación y acepto continuar sin que el sistema invente una solución., Value: 0
+					420 container
+						421 text DECISIÓN DEL ANALISTA
+						422 heading Límite de interpretación, Value: 4
+							423 text Límite de interpretación
+						424 text Los rankings por cliente dependen de resolver el nombre verificable del cliente, que actualmente es ambiguo.
+						425 checkbox (settable, integer) Description: Comprendo esta limitación y acepto continuar sin que el sistema invente una solución., Value: 0
+					426 container
+						427 text DECISIÓN DEL ANALISTA
+						428 heading Límite de interpretación, Value: 4
+							429 text Límite de interpretación
+						430 text La periodicidad mensual requiere que OrderDate sea no nula y representativa de la fecha comercial del pedido; debe comprobarse que no hay valores NULL significativos.
+						431 checkbox (settable, integer) Description: Comprendo esta limitación y acepto continuar sin que el sistema invente una solución., Value: 0
+				432 text Respaldo estructural, no garantía de datos: se verifican referencias, tipos y rutas. La interpretación de negocio requiere revisión humana; la cobertura, los valores y la conciliación sólo se comprueban al preparar y ejecutar el ETL.
+				433 text Revisión asistida:  Anthropic Claude  ·  claude-haiku-4-5-20251001
+				434 button (disabled) Generar propuesta y resolver 7 derivables
+				435 button Volver a editar
+			79 heading Versiones generadas, Value: 2
+				80 text Versiones generadas
+			81 text Abra un resultado conservado para revisarlo o aprobarlo sin volver a ejecutar el modelo.
+			82 container
+				83 text Mostrar
+				84 pop up button (collapsed, settable) Mostrar, Value: Por revisar, Secondary Actions: Expand
+					85 menu
+						86 (selected) Por revisar
+						87 Aprobadas
+						88 Rechazadas
+						89 Con inconvenientes
+						90 Retiradas o descartadas
+						91 Todas
+			92 table
+				93 row
+					94 cell
+						95 text VERSIÓN
+					96 cell
+						97 text NECESIDAD
+					98 cell
+						99 text PROVEEDOR Y MODELO
+					100 cell
+						101 text ESTADO
+					102 cell
+						103 text FECHA
+					104 cell
+						105 text RESULTADO
+				106 row
+					107 cell
+						108 text # 121
+					109 cell
+						110 text Conservar cada línea de pedido de venta en un datamart. Para priorizar productos y territorios, comparar mensualmente cuatro indicadores: suma del importe registrado de las líneas, suma de unidades, conteo de identificadores de pedido distintos e importe total dividido entre pedidos distintos. Usar fecha y territorio comercial del pedido, producto y cliente con nombre verificable. Los rankings comparan sumas por entidad. Mantener la trazabilidad de cada línea al pedido. La moneda se reportará sólo si se comprueba en la fuente.
+					111 cell
+						112 text Anthropic Claude  /  claude-haiku-4-5-20251001
+					113 cell
+						114 text Lista para revisar
+					115 cell
+						116 text 4/11/2026, 11:19:45 p. m.
+					117 cell
+						118 button Abrir resultado
+				119 row
+					120 cell
+						121 text # 119
+						122 container
+							123 text Derivada de # 118
+					124 cell
+						125 text Analizar mensualmente el importe de ventas registrado y las unidades vendidas por producto y territorio comercial del pedido. Comparar totales por producto y por territorio para decidir prioridades comerciales. Mantener el nivel de detalle por línea y utilizar nombres descriptivos verificados.
+					126 cell
+						127 text Anthropic Claude  /  claude-haiku-4-5-20251001
+					128 cell
+						129 text Lista para revisar
+					130 cell
+						131 text 4/11/2026, 10:42:13 p. m.
+					132 cell
+						133 button Abrir resultado
+				134 row
+					135 cell
+						136 text # 97
+					137 cell
+						138 text Para decidir qué productos y territorios priorizar, comparar mensualmente unidades y ventas por producto, cliente y territorio, identificar los productos de mayor contribución y el importe promedio por transacción. Conservar la trazabilidad de cada línea con el documento comercial. Mostrar costos o márgenes únicamente si son verificables o derivables de columnas existentes; no inventar descuentos, moneda ni relaciones.
+					139 cell
+						140 text Anthropic Claude  /  claude-haiku-4-5-20251001
+					141 cell
+						142 text Lista para revisar
+					143 cell
+						144 text 3/10/2026, 11:51:35 a. m.
+					145 cell
+						146 button Abrir resultado
+				147 row
+					148 cell
+						149 text # 77
+					150 cell
+						151 text Diseñar un datamart de ventas a nivel de línea de detalle que permita analizar unidades, ventas, descuentos, costos y márgenes por producto y sus atributos (categoría, subcategoría y otras características), cliente, tipo de cliente, territorio y período; debe conservar la trazabilidad con el pedido, identificar nombres descriptivos de clientes mediante relaciones verificadas y permitir comparar ventas y costos por unidad sin inventar fuentes.
+					152 cell
+						153 text Anthropic Claude  /  claude-haiku-4-5-20251001
+					154 cell
+						155 text Lista para revisar
+					156 cell
+						157 text 26/9/2026, 9:31:28 p. m.
+					158 cell
+						159 button Abrir resultado
+				160 row
+					161 cell
+						162 text # 75
+						163 container
+							164 text Derivada de # 74
+					165 cell
+						166 text Diseñar un datamart de ventas a nivel de línea de detalle que permita analizar unidades, ventas, descuentos, costos y márgenes por producto y sus atributos (categoría, subcategoría y otras características), cliente, tipo de cliente, territorio y período; debe conservar la trazabilidad con el pedido, identificar nombres descriptivos de clientes mediante relaciones verificadas y permitir comparar ventas y costos por unidad sin inventar fuentes.
+					167 cell
+						168 text Anthropic Claude  /  claude-haiku-4-5-20251001
+					169 cell
+						170 text Lista para revisar
+					171 cell
+						172 text 26/9/2026, 4:55:49 p. m.
+					173 cell
+						174 button Abrir resultado
+			175 container Paginación
+				176 text Mostrando  1 - 5  de  19  registros
+				177 button (disabled) Anterior
+				178 button Siguiente
+
+The focused UI element is 1 AXWebArea BI asistido por IA, URL: localhost:5173/

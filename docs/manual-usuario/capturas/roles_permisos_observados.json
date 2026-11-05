@@ -1,0 +1,28 @@
+{
+  "fecha": "2026-11-04",
+  "tipo": "Consulta de configuración; no pruebas de sesión por rol",
+  "roles": {
+    "Analista BI": [
+      "Asignar Consultar análisis visual",
+      "Asignar Consultar auditoría",
+      "Asignar Consultar conexiones",
+      "Asignar Consultar catálogo analítico",
+      "Asignar Administrar catálogo analítico",
+      "Asignar Generar propuestas BI",
+      "Asignar Consultar propuestas BI",
+      "Asignar Revisar propuestas BI",
+      "Asignar Consultar materializaciones",
+      "Asignar Preparar materializaciones",
+      "Asignar Consultar metadatos",
+      "Asignar Actualizar metadatos",
+      "Asignar Resolver identidad de dimensiones",
+      "Asignar Revisar identidad de dimensiones",
+      "Asignar Exportar reportes analíticos"
+    ],
+    "Gerente comercial": [
+      "Asignar Consultar análisis visual",
+      "Asignar Consultar conexiones",
+      "Asignar Exportar reportes analíticos"
+    ]
+  }
+}

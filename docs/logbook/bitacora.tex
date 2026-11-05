@@ -67,7 +67,7 @@
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPI, analítica explicable y reportería \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.6.5 \\
+    Versión de la bitácora & 0.6.8 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -1187,6 +1187,342 @@ política de ramas, pruebas de backend y frontend, y compilación de los doce PD
 La revisión formal por pares y la promoción a \file{main} se tramitan mediante
 pull requests separados, conforme a la política de ramas.
 
+\subsection{4 de noviembre de 2026 - Conservación del objetivo en la revisión previa}
+
+Durante la preparación del manual de usuario se reprodujo un bloqueo de la
+viabilidad: Claude reformulaba el objetivo de análisis aun después del intento
+de reparación. El control de conservación lo rechazó y no guardó una revisión
+de otro alcance. La inspección detectó instrucciones contradictorias en
+\file{need\_advisor.py}: analizar exigía copiar el objetivo, mientras la regla
+general de reparación pedía reducir la sugerencia a lo comprobable y otras
+reglas de redacción podían inducir a sustituir términos del texto original.
+
+Se separaron las reglas de analizar, reformular y sugerir. En análisis,
+\file{suggested\_goal} conserva literalmente \file{business\_request.goal},
+incluidos requisitos no factibles y cautelas. Copiar una petición no declara
+comprobados sus supuestos: referencias, incertidumbres y límites se expresan
+en los requisitos y las limitaciones. Reducir una idea no adoptada queda
+limitado al modo de sugerencias; reformular no puede presentar un alcance
+parcial como equivalente. No se modificaron el esquema de salida, la
+comparación del objetivo, el máximo de reintentos ni las validaciones de
+referencias, tipos, roles, relaciones y cobertura. Tampoco se cambiaron
+proveedor activo, credenciales, conexiones ni datos de origen.
+
+Se amplió \file{test\_need\_advisor.py} con una prueba que rechaza reducción de
+alcance después de reparar evidencia estructural y otra que conserva una
+petición no disponible sin sustituir el objetivo. El caso existente de
+reparación también comprueba texto multilínea y cautelas. Pasaron 40 pruebas
+focalizadas, Ruff y formato. El bloque completo de backend en Docker aprobó
+233 pruebas, controles estáticos y tipos. El frontend aprobó 34 pruebas y su
+compilación. La verificación integral \file{make verify} se interrumpió con
+salida 143 durante la generación de fuentes LaTeX de la bitácora, después de
+aprobar Compose, política de ramas y los bloques de código; no se registra
+como verificación integral exitosa. La bitácora se regeneró por separado con
+\file{make logbook} (salida 0) y se inspeccionaron visualmente las páginas
+afectadas, sin recortes. Queda pendiente completar el bloque documental
+integral. Uvicorn
+detectó los cambios mediante recarga de desarrollo y completó el arranque,
+sin reiniciar contenedores ni alterar el despliegue.
+
+La repetición real de WideWorldImporters devolvió HTTP 200 en viabilidad y
+conservó el objetivo de 161 caracteres: 12 requisitos directos, 6 derivables y
+8 límites. No constituye una propuesta, aprobación ni carga nueva. Sigue en
+revisión el objetivo ampliado de 472 caracteres para distinguir grano físico
+de agregación mensual y territorio de entrega vigente de atribución histórica.
+El éxito de respuesta no aprueba esas ambigüedades. La revisión principal
+completará el resultado del recorrido y la verificación integral, sin contar
+expedientes históricos como ejecuciones nuevas.
+
+\subsection{4 de noviembre de 2026 - Identidad documental sin falsa facturación}
+
+El recorrido complejo de pedidos originó la propuesta 118 desde la revisión
+11. El asesor etiquetó la trazabilidad de línea a pedido como
+\file{invoice\_event}, aunque la necesidad original no pedía facturas y las
+referencias eran claves de pedido. La validación previa comprobaba que las
+claves existieran, pero no el evento comercial. Esa clasificación activó las
+guardas posteriores de facturación, que bloquearon correctamente el grano
+de pedido y su fecha: no se aprobó la propuesta fallida ni se la sustituyó por
+un caso sencillo como prueba del mismo alcance.
+
+La revisión nueva \file{need-review-3} distingue una petición positiva de
+facturas de una exclusión en español o inglés. La intención procede del
+objetivo y las preguntas originales, no del texto reformulado por el LLM.
+Un evento facturado declarado como viable exige identidad documental y una FK
+completa hacia una cabecera de facturación comprobada; una clave de línea o
+un nombre de columna parecido no bastan. La trazabilidad genérica usa la
+capacidad existente \file{transactions} y tipo \file{identifier}, conserva
+texto y referencias e incorpora \file{identity\_references}. La cobertura
+comprueba todas esas claves en el hecho o su linaje, no sólo la presencia de
+un KPI de conteo. No se añadió otra capacidad ni se relajaron las guardas
+reales de factura.
+
+La reparación mantiene un único reintento. Si persiste una contradicción
+técnica, la API devuelve 422 sin guardar una evaluación que pudiera continuar
+mediante aceptación de límites. Las ausencias genuinas y la interpretación
+ambigua siguen diferenciadas y supervisables. Cambiar la versión de revisión
+exige reevaluar para generar una propuesta nueva; no reescribe revisiones,
+propuestas aprobadas ni datos materializados anteriores.
+
+Pasaron 82 pruebas focalizadas de asesor y viabilidad, incluidos pedidos y
+facturas con tablas genéricas en español e inglés, exclusiones explícitas,
+claves de línea solas, ausencia de FK, reparación con identidad conservada y
+bloqueo sin persistencia. La regresión conjunta de ese bloque del 4 de noviembre aprobó 281 pruebas
+backend, Mypy en 57 módulos, Ruff y formato de 90 archivos, además de
+\file{git diff --check}. El aviso de deprecación Starlette/AnyIO no causó
+fallos. Los resultados no acreditan por sí solos un nuevo recorrido de
+interfaz, que permanece bajo comprobación de la revisión principal.
+
+El contraste de sólo lectura conserva las huellas de contratos y validaciones
+de 91, 98, 117 y 120. En 98, 117 y 120 la reproducción coincide con el contrato
+guardado; la diferencia de 91 ya existía y permanece igual antes y después.
+Todas conservan \file{approval\_safe=true}. La versión nueva del compilador
+separa sus reglas de las históricas y puede informar compatibilidad de versión
+sin retirar la aprobación. El informe JSON de QA registra por separado
+inmutabilidad del documento, igualdad de reproducción anterior/posterior y
+coincidencia con el contrato guardado, sin credenciales ni operaciones ETL.
+
+\subsection{4 de noviembre de 2026 - Ranking y exclusiones de la necesidad}
+
+La repetición del objetivo detallado de pedidos conservó el texto y dejó de
+inventar un evento de factura, pero el proveedor declaró no disponible el
+ranking de sumas por entidad por no existir una columna de ranking.
+\file{need-review-4} separó origen y catálogo cerrado
+\file{analytical\_operations}: admite \file{kind=ranking} para producto,
+cliente o territorio sólo con una medida numérica, dimensión y rutas que
+preservan el grano. Primero valida las dependencias y después su operación,
+independientemente del orden del JSON. El contrato \file{analytical\_operation}
+se conserva en el payload y la cobertura de la propuesta. No se añadió otra
+capacidad, columna física, fórmula libre ni operación ejecutable.
+
+Una falsa clasificación como campo ausente se devuelve al proveedor para una
+única reparación. Si persiste la contradicción, responde 422 sin guardar una
+revisión continuable. No se promociona localmente una afirmación a viable.
+Dependencias ausentes o ambiguas, percentiles, predicción y puntuaciones
+arbitrarias conservan sus límites. Pasaron 99 pruebas focalizadas de asesor y
+viabilidad, incluidas la propagación y la falta de cada dependencia en cobertura,
+además de Ruff, formato y Mypy del bloque focal.
+
+La revisión posterior de WideWorldImporters añadió otro incidente: la IA no
+pidió margen, pero el scanner determinístico leyó \emph{utilidad} dentro de
+\emph{sin asumir moneda, utilidad ni composición fiscal} como requisito
+positivo. La corrección \file{need-review-5} comparte una política de cláusulas
+positivas y alcance de exclusiones para capacidades, derivados, instrucciones
+seleccionadas y factura. Mantiene coordinadas las listas de cautelas; una
+petición independiente reinicia su alcance. Los códigos de pregunta no
+reintroducen una capacidad explícitamente negada. Una petición positiva en
+otra pregunta se conserva y una cautela sin indicador sigue siendo ambigua.
+Es una guarda léxica acotada en español e inglés, no comprensión exhaustiva
+del lenguaje natural. El prompt de la revisión 4 no cambió; la versión 5 exige
+evaluar nuevamente antes de generar, sin alterar propuestas o ETL históricos.
+
+El bloque ampliado aprobó 125 pruebas focalizadas, 26 nuevas de exclusiones y
+peticiones positivas, incluidas la cautela de los cuatro indicadores originales,
+costos y margen realmente solicitados sin respaldo, instrucciones y lenguaje
+correlativo como \emph{no sólo} y \emph{not only}. Ruff, formato, Mypy en tres
+módulos y \file{git diff --check} pasaron. Las repeticiones reales y la suite
+global posterior se registran separadas en el informe QA; no se atribuyen a
+esta corrección resultados del corte previo de 281 pruebas.
+
+\subsection{4 de noviembre de 2026 - Formularios y selección de versión hija}
+
+Se corrigieron tres discrepancias de seguridad sin cambiar credenciales,
+usuarios o permisos: el correo aparece sólo para lectura al editar con una
+explicación; guardar los datos permitidos de una cuenta protegida omite
+\file{role\_ids}; y fallar la carga de roles o permisos muestra el error real
+y bloquea el formulario hasta recuperar el catálogo mediante un reintento.
+La espera de opciones también impide guardar. No se representa un fallo como
+lista vacía válida ni se cambió el contrato backend de usuarios.
+
+La personalización de 121 creó la hija 122, pero la interfaz observada volvió
+a mostrar la anterior. El código permitía que una recuperación inicial
+pendiente reemplazara la selección posterior y los guardados no adoptaban
+todo el estado de la hija. Personalización y corrección relacional adoptan
+ahora ID local, selección, medidas, advertencias y evidencias del resultado.
+Una generación de selección descarta respuestas anteriores de recuperación,
+verificación, vista semántica y opciones relacionales. No se repararon copias
+persistidas. El análisis identifica una carrera posible; no atribuye causalidad
+exclusiva a la captura de interfaz.
+
+Ocho regresiones nuevas cubren seis casos de formularios y dos recorridos de
+hija: retrasan GET 121 hasta guardar 122 por personalización o relación,
+responden con éxito o error tardío y comprueban selección, exclusión de medida
+y aprobación enviada a 122 con sus advertencias propias. Pasaron las 42
+pruebas frontend completas, TypeScript/Vite y ESLint en Docker. No se amplió
+el alcance a restablecer contraseñas ni a nuevas políticas de cuentas.
+La revisión principal coordina la verificación integral y los PDF finales.
+
+\subsection{4 de noviembre de 2026 - Personalización desde el contrato efectivo}
+
+La propuesta 123 de WideWorldImporters conservaba un conteo distinto correcto
+sobre \file{InvoiceID}, pero la personalización mostraba \file{ExtendedPrice}
+desde la decisión cruda. Además, aparecían seleccionadas medidas que el
+compilador había excluido. Se corrigió la presentación y selección inicial del
+editor mediante la identidad estable de nombre de medida y código de KPI,
+sin reescribir decisiones, huellas ni registros existentes.
+
+Las columnas, roles, agregaciones y recetas visibles proceden del contrato
+compilado; no se mezclan campos crudos que éste reemplazó o eliminó.
+Los títulos muestran el nombre concreto de la medida y su función contractual
+por separado: un precio promedio conserva su significado aunque comparta
+el rol monetario con un importe total. Las exclusiones quedan desmarcadas,
+con su motivo y la indicación de no ejecutables. Reintroducirlas sólo prepara
+un borrador sujeto a nueva validación. La regla actual se distingue de la
+regla que se propone para la versión hija.
+
+El promedio por documento muestra su razón y ambas entradas comprobadas;
+retirar una dependencia desmarca el KPI. La asociación inicial utiliza la
+medida de la fórmula efectiva, no el índice de la respuesta IA. Las salidas
+añadidas por validación que no existen entre las decisiones ajustables se
+consultan como parte del contrato y no se envían como una selección editable.
+El formulario no inventa un reemplazo de columna directa: ese cambio no forma
+parte del contrato de revisión de la API. Al guardar se envían únicamente
+nombres y mapas de las medidas y KPI seleccionados.
+
+Dos pruebas nuevas reproducen una decisión cruda monetaria corregida a una
+clave documental, con distinto orden entre listas cruda y compilada, dos
+exclusiones, el precio promedio adicional y una razón por documento. Comprueban
+origen, agregación, etiquetas, exclusiones, dependencias, payload e inmutabilidad
+del documento original. Pasaron las 44 pruebas frontend completas,
+TypeScript/Vite, ESLint y \file{git diff --check} dentro de Docker. La corrección
+no cambió backend, API, compilación histórica ni datos; la revisión principal
+completa la repetición visual y la creación explícita de la hija.
+
+\subsection{5 de noviembre de 2026 - Conservación de campos al elegir proveedor}
+
+La verificación integral en una imagen frontend fresca falló en el formulario
+de configuración LLM: después de completar el preset Groq, el nombre aparecía
+vacío y la validación nativa impedía el POST. Se reprodujo también el fallo
+con la prueba aislada en desarrollo; no era un timeout de respuesta del
+servidor. La suite integrada fallida no se registra como aprobada.
+
+El formulario genérico inicializaba valores vacíos y después los reiniciaba
+desde un efecto dependiente del objeto de configuración; además, cada cambio
+reemplazaba una copia completa del estado. Se inicializa ahora según la
+identidad de creación o registro seleccionado y sólo se reinicia al cambiar
+esa identidad, antes de permitir interacción. Actualizar opciones o seleccionar
+un preset conserva lo escrito. Los cambios usan el estado vigente y el éxito
+de una creación limpia explícitamente el formulario. Se mantiene el estado de
+error y reintento del catálogo de roles o permisos en la misma instancia.
+
+La regresión Groq comprueba nombre antes y después del preset, su inclusión
+en el POST y limpieza posterior. No se ampliaron tiempos de espera ni se
+cambió configuración LLM real, credencial, proveedor activo o API. Pasaron las
+44 pruebas frontend completas en desarrollo y de nuevo dentro de la imagen
+fresca \file{docker build --target test}; esa construcción aprobó además
+ESLint y TypeScript/Vite. \file{git diff --check} pasó. La revisión principal
+repite después la verificación integral completa y conserva el fallo previo
+como incidencia resuelta, sin atribuir el resultado parcial a todo el sistema.
+
+\subsection{5 de noviembre de 2026 - Cierre correctivo y verificación integral V4}
+
+La revisión iniciada el 4 de noviembre cerró el corte de código con
+\file{make verify} V4, código 0, registro
+\path{/tmp/bi-make-verify-final-v4-20261105.log}: 454 pruebas backend y 46 frontend,
+un aviso Starlette/AnyIO sin fallo, Ruff/formato en 91 archivos y Mypy en 57.
+Pasaron controles de rama, Compose, workflow, lint, construcción y documentos.
+Los cortes anteriores 281, 408/44 y 411/44 son antecedentes; el primer intento
+integral fallido por nombre de preset no se registra como aprobado. Los registros
+locales de ejecución no se agregan a Git ni contienen evidencia publicable de secretos.
+
+El motor vigente identifica \file{need-review-6}, \file{sales-bi-v7} y reglas de
+compilación 3. Conserva «no excluir/do not exclude» como petición positiva,
+normaliza tildes/puntuación del ranking y distingue excluir percentiles de excluir
+el ranking ordinario. Un evento factura admite intención positiva y hecho cabecera
+con PK completa declarada/referencias exactas o FK completa; nombres y PK parciales
+no bastan. \file{NumberOfUnits}/\file{NumeroDeUnidades}, sin claves, son cantidades
+posibles SUM, no IDs sólo por contener Number. Son ajustes determinísticos acotados,
+sin prometer comprensión lingüística exhaustiva ni añadir capacidades ejecutables.
+Las 266 focales combinadas (156 necesidad/advisor y 110 compilación/aprobación)
+incluyen 43 casos nuevos respecto al corte 223 de esos cuatro archivos.
+
+Se mantienen replay/validación explícitos de reglas 1 y 2 y la puerta de aprobación
+nueva exige reglas 3. \file{proposal.replay.passed} refleja igualdad real de hashes;
+compatibilidad de versión es una advertencia separada. Los detalles declaran
+prompt/reglas guardados y actuales o ausencia de decisiones, sin simular replay.
+La auditoría SELECT-only final de 91/98/117/120/122/124 conservó los seis documentos,
+validaciones y \file{approval\_safe} verdadero: cinco hashes coinciden y 91 conserva
+su discrepancia preexistente. 122/124 almacenan reglas 2 y siguen intactas. No se
+inventa un campo histórico de revisión de necesidad que no existe persistido.
+
+La interfaz mantiene contrato efectivo, exclusiones y dependencias por nombre;
+la acción explícita desde aprobada/invalidada abre sólo borrador hijo, con cancelar
+restaurando original y guardar creando hija sin autoaprobar. Las 46 frontend
+cubren estos bordes y los formularios administrativos/preset. La UI real de 124
+habilitó editor/justificación y canceló, sin guardar ni crear hija. Correo protegido
+se confirmó de sólo lectura; el preset Groq conservó nombre sin guardar/activar y
+Claude siguió activo. El límite 100 en selectores persiste y no se probaron sesiones
+de todos los roles ni se modificaron cuentas para esa comprobación.
+
+AW conservó el objetivo 532: 121/122 bajo revisión 4 y reglas 2, cuatro KPI y ETL 18,
+26 operaciones, cinco tablas, 121.317 filas por lado, diferencia cero;
+109.846.381,399888 USD, 274.914 unidades y 31.465 pedidos. WWI conservó 693 caracteres:
+123/124 bajo revisión 5 y reglas 2, cuatro KPI y ETL 19, 26 operaciones, cinco tablas,
+228.265 filas por lado, diferencia cero; 198.043.439,45 de origen, 8.950.628 unidades
+y 70.510 facturas. No se atribuyen estos ensayos a revisión 6/reglas 3 ni se repite
+su ETL para cambiar la historia.
+
+El chat final WWI distinguió ficha extraída durante la ventana ETL de vigencia
+histórica/entrega no probadas y mantuvo Top 3/denominador; el clic real de sugerencia
+de unidades por cliente devolvió cinco clientes. AW final mantuvo cifras y cautelas
+sobre preferencias/causalidad. La plataforma construye cautela íntegra y hasta tres
+sugerencias desde métricas/ejes disponibles; la procedencia conserva fuentes,
+columnas, claves y ruta del materializador, sin confundir ventana con lectura exacta
+o última modificación. El aviso va primero en modo ejecutivo. Las 53 focales
+analíticas y 22 consultas temporales reales de sólo lectura se distinguen de nuevos
+ETL. No se garantiza determinismo del proveedor para preguntas futuras.
+
+El exportador aprobó 52 focales: precisión por unidad, fuente/base/offset, texto
+literal y altura según contenido. QA de finales 18/19 confirmó diez páginas PDF,
+cuatro hojas por XLSX, cifras, razones, sumas, contexto y aviso íntegro en 57 pt con
+ArtifactTool. No se completó Calc sobre finales por memoria. El intermedio
+19-contexto con recorte visual permanece intacto y no recibe ese resultado final.
+Los manifiestos propios conservan SHA-256, originales y método; no se reescriben
+reportes históricos.
+
+Se actualizaron especificaciones, arquitectura, guía de réplica, manual técnico,
+adenda del Sprint 6 y \path{docs/testing/qa-postcierre-2026-11-04.md}. La regeneración
+y revisión visual documental se realizan después del corte de código, sin volver
+a ejecutar la suite. La preparación formativa separa casos de éxito y anexo QA,
+consulta de expedientes sin nueva llamada LLM/ETL y generación con consentimiento.
+El commit de código \file{bf50172} se publicó en la rama correctiva. El
+\href{https://github.com/LFXAS/prototipo-bi-ia/pull/57}{PR 57} hacia \file{develop}
+está abierto como borrador al registrar este hito; fusión y promoción a \file{main}
+no se afirman completadas.
+
+\subsection{5 de noviembre de 2026 - Ajuste adicional de unidad y conciliación legible}
+
+La inspección de la UI actual del expediente 18 encontró una columna de etiqueta
+de unos 50 px frente a un texto de unos 73 px, con superposición sobre el valor del
+promedio. La misma razón conservaba moneda de origen por transacción pese a la
+divisa USD verificada. El defecto está en la presentación; no se modifica la
+evidencia de conciliación ni se repite la comprobación monetaria.
+
+\path{frontend/src/styles.css} permite contraer ambas columnas, envolver etiquetas
+y valores y apilarlos hasta 760 px. El formatter de \path{frontend/src/App.tsx}
+resuelve la unidad completa para cualquier código KPI: sustituye moneda, moneda
+de origen o currency por la divisa verificada y conserva el denominador por, per
+o barra. ISO de tres letras y razones mantienen dos decimales, igual que
+cantidades fraccionarias o unidades desconocidas. Sólo el conjunto cerrado de
+conteos admite enteros. Los alias generales no dependen del nombre/código del KPI;
+se conserva la compatibilidad existente de dos códigos del catálogo cuando el
+expediente anterior omitía por unidad. Las dos regresiones UI parametrizadas de
+\path{frontend/src/App.test.tsx} cubren divisa comprobada y no resuelta, razones,
+cantidades fraccionarias, conteos y compatibilidad anterior.
+
+Se actualizan SPR-04-02, SPR-05-02, acta QA, manual técnico 5.2.1, informe Sprint 6
+1.2.1 y esta bitácora 0.6.8. El corte \file{bf50172} con 454 backend/46 frontend
+precede al ajuste \file{8f1c7d1}. \file{make verify} V6 cerró con salida 0 y
+454 backend/48 frontend, controles de rama, Compose, workflow, calidad, construcción
+y doce documentos, según \path{/tmp/bi-make-verify-final-v6-20261105.log}.
+V5 había terminado pruebas y compilaciones pero su sesión retornó 143; se conserva
+como intento interrumpido, no aprobado. No se cambian backend, API, fórmulas, valores, aprobaciones, contratos,
+metadatos, bases ni ETL y no se llama al LLM. Las capturas y exportaciones anteriores
+permanecen intactas; su aspecto no se corrige retroactivamente. La consulta real de
+18/19 a 574 y 1366 px no mostró solapes: AW mostró USD 3.491,07 por transacción y
+WWI conservó moneda de origen. Las capturas nuevas 126/127 y su registro QA tienen
+corte propio. La compilación Docker de estos tres PDF y su revisión visual se
+realizan después del cierre de fuentes, separadas de la suite de código y sin solaparla.
+
 \section{Matriz de verificación de la fase}
 
 \begin{tabularx}{\textwidth}{@{}p{0.29\textwidth}@{\hspace{0.18in}}p{0.17\textwidth}@{\hspace{0.18in}}X@{}}
@@ -1195,8 +1531,8 @@ pull requests separados, conforme a la política de ramas.
   \midrule
   Compose autocontenido válido & \statusok & \file{docker compose config --quiet} \\
   Compose de imágenes válido & \statusok & \file{docker compose -f compose.release.yaml config --quiet} \\
-  Backend calidad y pruebas & \statusok & Ruff, formato, Mypy y 231 pruebas Pytest dentro de Docker \\
-  Frontend calidad y pruebas & \statusok & ESLint, 34 pruebas Vitest y build de Vite dentro de Docker \\
+  Backend (cierre V6) & \statusok & 454 pruebas Pytest y controles de calidad dentro de Docker; V4 previo registró Ruff/formato (91 archivos) y Mypy (57). \\
+  Frontend (cierre V6) & \statusok & ESLint, 48 pruebas Vitest y build de Vite dentro de Docker; unidad completa y consulta real 18/19 sin solapes. \\
   PostgreSQL disponible & \statusok & Esquemas \file{app} y \file{mart}; endpoint \file{/health/ready} en \file{ok} \\
   AdventureWorks restaurada & \statusok & 71 tablas; \file{bi\_reader}: lectura 1 e inserción 0 \\
   Interfaz disponible & \statusok & Vite saludable en 5173, Nginx opcional en 8080 y API accesible mediante proxy \\
@@ -1308,6 +1644,8 @@ pull requests separados, conforme a la política de ramas.
   0.6.4 & 03-10-2026 & Sugerencias y revisión previa con metadatos, consentimiento por destino, evidencia persistida y regresiones de tipos y relaciones. Ensayo real nuevo pendiente de autorización. \\
   0.6.5 & 03-10-2026 & Ensayo autorizado con Claude, recuperación acotada, cobertura conservada y actualización integral de especificaciones y documentos. \\
   0.6.6 & 05-10-2026 & Entrega consolidada de mejoras BI + IA, guía formativa reproducible y control de doce PDF en CI. \\
+  0.6.7 & 05-11-2026 & Cierre correctivo 4--5 de noviembre: revisión 6/reglas 3, compatibilidad histórica, formularios y editor hijo, analítica/exports con procedencia, 454 backend/46 frontend y casos 122/18 y 124/19. PR 57 abierto en borrador. \\
+  0.6.8 & 05-11-2026 & Ajuste UI adicional \file{8f1c7d1}: unidad completa y conciliación adaptable; V6 con salida 0 y 454/48, UI 18/19 a dos anchos sin solapes. V4 y originales conservados; sin otro ETL ni LLM. \\
   \bottomrule
 \end{longtable}
 
