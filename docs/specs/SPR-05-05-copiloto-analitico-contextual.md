@@ -101,6 +101,39 @@ correctos sobre 1.215.705,55 y explicó ficha durante ETL, historia y entrega no
 La evidencia 117–119 fue inspeccionada visualmente por la revisión principal. Ello no
 acredita todos los proveedores o todas las futuras respuestas.
 
+### 3.4. Reloj de consulta y cobertura histórica
+
+La revisión operativa del 6 de noviembre observó una respuesta que rechazaba el
+pronóstico, pero añadía un año ajeno al contexto pertinente. El contexto de intención
+y de explicación incorpora ahora `calendar_reference`: fecha ISO actual del servidor,
+`timezone=UTC` y significado `request_clock_not_dataset_coverage`. El reloj de la
+consulta se distingue del año filtrado, de la cobertura histórica y de la ventana ETL.
+
+Las instrucciones prohíben introducir fechas, años, períodos o categorías ajenos a la
+pregunta y a la evidencia. Si una consulta relativa, como «próximo año», pide un
+pronóstico no disponible, la explicación utiliza «el período solicitado» sin inventar
+un año de ejemplo. Conocer la fecha actual no añade años al catálogo ni acredita datos
+futuros o un modelo predictivo.
+
+La regresión `test_dashboard_explanation_keeps_calendar_and_data_coverage_separate`
+contrasta un reloj de 2026 con datos disponibles de 2014. Ambos pasos reciben la misma
+referencia, conservan el catálogo histórico y no ejecutan una agregación adicional
+para un resumen del dashboard. Las 26 pruebas focales del copiloto aprobaron junto
+con Ruff y Mypy. Son parte del corte intermedio, no se suman a sus 475 pruebas
+backend. El corte intermedio `make verify` del 6 de noviembre, anterior al ajuste de rutas de reglas 5, concluyó con salida 0, 475 backend
+y 48 frontend; la etapa frontend se reutilizó de caché del mismo árbol de fuentes.
+
+No se modifican SQL, filtros, filas, proveedor ni cuotas y no se reescriben números de
+la respuesta mediante expresiones regulares. Es una reducción de un riesgo narrativo
+observado. La prosa de IA sigue bajo supervisión: una estructura JSON válida y una
+instrucción más precisa no constituyen un validador universal de veracidad ni garantizan
+que todas las respuestas futuras sean correctas. Las reglas 5 verifican además que la procedencia descrita utiliza la misma ruta FK persistida que el materializador; ante evidencia inválida no se reconstruye otra ruta por búsqueda. El integral de esa corrección y la repetición operativa posterior se
+registran por separado en [QA del 6 de noviembre](../testing/qa-postcierre-2026-11-06.md).
+
+La explicación utiliza nombres de negocio y su significado, evitando mostrar claves JSON, estados internos o códigos KPI como si fueran lenguaje para la persona usuaria. Esta precisión de instrucciones no sustituye la revisión humana de la respuesta.
+
+El caso nuevo WWI 131/22 respondió sobre 2015/California con 3.191.769,11 de importe, 142.247 unidades y 1.179 facturas, y distinguió ubicación histórica, entrega no comprobada y moneda no identificada. La concordancia de cifras y cautelas no equivale a precisión perfecta de toda la redacción: se conservan sus límites narrativos y la supervisión humana.
+
 ## 4. Experiencia de usuario
 
 El copiloto se presenta como un espacio ancho y separado del panel de hallazgos. A la izquierda se encuentra la guía de preguntas; a la derecha, el estado vacío, la conversación y el campo de entrada. Esto evita comprimir el texto en una barra lateral y permite leer respuestas, evidencia y límites en orden.

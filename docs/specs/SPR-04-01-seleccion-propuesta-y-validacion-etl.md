@@ -14,7 +14,8 @@ El Sprint 4 no utilizará silenciosamente cualquier propuesta aprobada. La panta
 4. contrato soportado por la versión del ejecutor;
 5. ausencia de una invalidación administrativa posterior.
 6. revalidación semántica vigente de función, columna, agregación y compatibilidad KPI--medida.
-7. para cada KPI, una receta de cálculo admitida por `SPR-04-02`; una etiqueta de negocio no es suficiente para habilitar una ejecución.
+7. para cada KPI, una receta de cálculo admitida por `SPR-04-02`; una etiqueta de negocio no es suficiente para habilitar una ejecución;
+8. para preparar o ejecutar una carga nueva, contrato de reglas 5 o posterior con rutas persistidas verificables.
 
 La versión aprobada más reciente y compatible aparecerá **preseleccionada**, pero el analista BI deberá confirmar explícitamente **Usar como base del ETL**. Esta regla agiliza el caso normal sin ocultar la decisión humana.
 
@@ -52,9 +53,21 @@ La plataforma mantendrá un apartado **Validación del datamart** vinculado a la
 | Sprint 4 | Definiciones y conciliación de los KPI variables sugeridos por IA para la necesidad aprobada. La demostración final evidencia al menos cinco. |
 | Incremento posterior | Contraste secundario con AdventureWorksDW cuando exista correspondencia semántica documentada. |
 | Evaluación final | Rúbrica de juicio de expertos sobre claridad, coherencia y utilidad. |
-| Pronóstico | MAPE y RMSE sobre un conjunto temporal de prueba separado. |
+| Pronóstico | Fuera del alcance por decisión del tutor; no constituye una validación pendiente de este prototipo. |
 
 Cada control mostrará fuente, resultado esperado, resultado obtenido, diferencia absoluta y relativa, tolerancia, fecha y estado. No se marcará como cumplida una validación que todavía no disponga del artefacto necesario.
+
+### 4.1. Correspondencia entre ruta aprobada y ruta ejecutada
+
+Desde reglas 5, `build_materialization_plan` consume la secuencia exacta de FK de `dimensions[].source_resolution.path`. `persisted_relationship_paths` verifica tablas y columnas, FK dirigida hacia PK completa, continuidad, clave de negocio y compatibilidad de prefijos compartidos. Se rechazan rutas inversas, aristas alteradas e identidades dimensionales compuestas no admitidas. No se elige una FK por ser la primera del catálogo.
+
+Las medidas externas utilizan una ruta dimensional ya custodiada o una única ruta dirigida segura compatible con las relaciones controladas. Una ruta ambigua se bloquea antes de extraer; no se completa mediante BFS libre. La procedencia analítica utiliza el mismo comprobador. La implementación histórica para reglas 1–4 permanece intacta y no se reescriben datos conciliados anteriores.
+
+La preparación del expediente explica que se creará un esquema propio de esa ejecución y que los expedientes anteriores se conservarán. No describe una sustitución global de datos analíticos. La confirmación identifica la fuente seleccionada por contexto, sin convertir el nombre de un motor en una etiqueta fija del flujo. Este ajuste de texto no modifica carga, consultas, permisos ni transacciones.
+
+La nueva regresión usa entidades con dos roles de cliente y dos roles de ubicación, varía nombres ES/EN y verifica que SQL y procedencia conserven exactamente la ruta seleccionada. El corte focal del materializador/procedencia aprobó 67 pruebas. La puerta `_candidate` bloquea además nuevas preparaciones y ejecuciones de expedientes preparados con reglas anteriores a 5 antes de insertar o cambiar a running: exige crear y aprobar una versión derivada actual. Conserva GET de historial, consultas, exportes, estados, aprobaciones y huellas anteriores. Las 27 regresiones de esa puerta forman parte de las 530 backend del integral, no otro total.
+
+El cierre definitivo de reglas 5 concluyó con salida 0 y 530 backend/50 frontend. AW 129/21 y WWI 131/22 completaron aprobación, ETL, conciliación, analítica y exportación. La ruta de sus cuatro dimensiones coincide entre contrato, ejecutor y procedencia analítica. Los históricos conservan sus datos y no se utilizan como equivalencia territorial cuando declaraban otro rol.
 
 ## 5. Criterios de aceptación
 

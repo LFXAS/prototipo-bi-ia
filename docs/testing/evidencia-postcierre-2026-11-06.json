@@ -1,0 +1,151 @@
+{
+  "fecha": "2026-11-06",
+  "zona_documental": "America/Guayaquil",
+  "estado": "Código y recorridos operativos verificados; compilación y QA visual final de tresPDF se registra por separado.",
+  "versiones": {
+    "instrucciones": "sales-bi-v8",
+    "compilacion_nueva": 5,
+    "historicas_inmutables": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "manual_tecnico": "5.2.2",
+    "bitacora": "0.6.9",
+    "informe_sprint6": "1.2.2"
+  },
+  "verificacion_definitiva": {
+    "comando": "make verify",
+    "codigo_salida": 0,
+    "backend": 530,
+    "frontend": 50,
+    "archivos_tests_frontend": 3,
+    "ruff_formato_archivos": 93,
+    "mypy_fuentes": 57,
+    "capas_identicas_reutilizadas": true,
+    "registro": {
+      "nombre": "bi-verify-entrega-final-20261106.log",
+      "sha256": "49173b64897b8d0fd1dce87e7235f2d28066eff9c4e9632e90e69473b0c2c1f6",
+      "bytes": 12530
+    },
+    "corte_registro_Guayaquil": "2026-11-06T03:24:58-05:00",
+    "subconjuntos_no_sumar": [
+      {
+        "materializacion_y_procedencia": 67
+      },
+      {
+        "puerta_historica_ETL": 27
+      },
+      {
+        "App_actual": 44
+      },
+      {
+        "copiloto_reloj": 26
+      }
+    ]
+  },
+  "escenarios": [
+    {
+      "base": "AdventureWorks2022",
+      "propuesta": 129,
+      "ejecucion": 21,
+      "reglas": 5,
+      "estado": "approved/succeeded/reconciled",
+      "filas_origen": 121317,
+      "filas_destino": 121317,
+      "diferencia_filas": 0,
+      "tablas": 5,
+      "global": {
+        "importe": "109846381.399888",
+        "moneda": "USD",
+        "unidades": 274914,
+        "pedidos": 31465,
+        "promedio_por_pedido": "3491.065672966407"
+      },
+      "filtro": {
+        "anio": 2013,
+        "territorio": "Northwest",
+        "importe": "6015174.735836",
+        "unidades": 17452,
+        "pedidos": 2053,
+        "promedio_por_pedido": "2929.943855740867"
+      },
+      "fuentes_evidencia": [
+        {
+          "nombre": "campana_lectura_AW21_20_18_20261106.json",
+          "sha256": "ccf7cd28980beff5ef117108fae10ba2254766784c8943c81c185294e115b9b3",
+          "bytes": 202125
+        },
+        {
+          "nombre": "qa_exportacion_ejecucion21_20261106.json",
+          "sha256": "d0e3af80ecda1ebc97c1a98184bc19de9ec3a8360e722edab8c28c09fe8c9877",
+          "bytes": 10941
+        }
+      ]
+    },
+    {
+      "base": "WideWorldImporters",
+      "propuesta": 131,
+      "ejecucion": 22,
+      "reglas": 5,
+      "estado": "approved/succeeded/reconciled",
+      "filas_origen": 228265,
+      "filas_destino": 228265,
+      "diferencia_filas": 0,
+      "tablas": 5,
+      "global": {
+        "importe": "198043439.45",
+        "moneda": "moneda de origen no identificada",
+        "unidades": 8950628,
+        "facturas": 70510,
+        "promedio_por_factura": "2808.7283995177986"
+      },
+      "filtro": {
+        "anio": 2015,
+        "territorio": "California",
+        "filas": 3771,
+        "importe": "3191769.11",
+        "unidades": 142247,
+        "facturas": 1179,
+        "promedio_por_factura": "2707.1832994062765"
+      },
+      "ruta_territorial": [
+        "Sales.InvoiceLines.InvoiceID→Sales.Invoices.InvoiceID",
+        "Sales.Invoices.CustomerID→Sales.Customers.CustomerID",
+        "Sales.Customers.DeliveryCityID→Application.Cities.CityID",
+        "Application.Cities.StateProvinceID→Application.StateProvinces.StateProvinceID"
+      ],
+      "fuentes_evidencia": [
+        {
+          "nombre": "campana_lectura_WWI22_y_historial_20261106.json",
+          "sha256": "0add57e412e205442556e9237f75a89d27fc3e25e0c8838317d2f54205eb313f",
+          "bytes": 279996
+        },
+        {
+          "nombre": "oracle_WWI2015_California_cliente_entrega_20261106.json",
+          "sha256": "de39987a1f68001cbf341265691e6c5f12dd8513a259b17b92b3c64ef0c922fb",
+          "bytes": 1553
+        },
+        {
+          "nombre": "filtro_fisico_WWI22_California_20261106.json",
+          "sha256": "449b444cd4c0b540a55b47b69f700bcb4a446f3f2fadc4cc856d12d803b2dd16",
+          "bytes": 411
+        },
+        {
+          "nombre": "qa_exportacion_ejecucion22_20261106.json",
+          "sha256": "6cdb6a02e6a8e689519dec5c8111d04fba213f836ba75ede54378d4a84fe0a09",
+          "bytes": 7460
+        }
+      ]
+    }
+  ],
+  "limites": [
+    "No se acredita cualquier modelo, motor, idioma o esquema por probar dosfuentes SQLServer.",
+    "Las ubicaciones reflejan ficha leída durante ETL, sin vigencia histórica ni entrega real demostradas.",
+    "WWI19 usa un rol legado distinto; sólo sus4totalesglobales son contraste, no sus filtros territoriales.",
+    "La IA conserva texto libre supervisado y no tiene un validador universal de veracidad.",
+    "La razón monetaria exportada deAW21 conserva etiqueta genérica aunqueUSD esté comprobado; cifra correcta.",
+    "Las pruebas de permisos no equivalen a iniciar sesión manualmente con todos los roles."
+  ]
+}

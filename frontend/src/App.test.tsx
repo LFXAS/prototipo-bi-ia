@@ -329,6 +329,9 @@ describe('App', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Guardar como nueva versión' }))
     } else {
       fireEvent.change(await screen.findByLabelText('Justificación de esta corrección'), { target: { value: 'Usar la relación declarada del producto.' } })
+      expect(screen.getByRole('button', { name: 'Crear versión con relación corregida' })).toBeDisabled()
+      expect(screen.getByLabelText('Ruta de relación comprobada')).toHaveValue('')
+      fireEvent.change(screen.getByLabelText('Ruta de relación comprobada'), { target: { value: 'verified-path' } })
       fireEvent.click(screen.getByRole('button', { name: 'Crear versión con relación corregida' }))
     }
     expect(await screen.findByRole('heading', { name: 'Modelo hijo' })).toBeInTheDocument()
@@ -1183,7 +1186,10 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Personalizar propuesta' }))
     expect(await screen.findByRole('heading', { name: 'Personalizar sin escribir SQL' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Resolver una relación con evidencia' })).toBeInTheDocument()
-    expect(screen.getByText('Relación apta para revalidar')).toBeInTheDocument()
+    expect(screen.getByLabelText('Ruta de relación comprobada')).toHaveValue('')
+    expect(screen.getByRole('button', { name: 'Crear versión con relación corregida' })).toBeDisabled()
+    fireEvent.change(screen.getByLabelText('Ruta de relación comprobada'), { target: { value: 'r'.repeat(64) } })
+    expect(screen.getByText('Relación candidata para comprobar')).toBeInTheDocument()
     expect(screen.getByText('No detectado')).toBeInTheDocument()
     expect(screen.getByText('Columna calculada controlada')).toBeInTheDocument()
     expect(screen.getByText('Sales.SalesOrderDetail.SalesOrderID')).toBeInTheDocument()
@@ -1233,7 +1239,7 @@ describe('App', () => {
     expect(readAssistantDraft()?.proposalId).toBe(11)
   })
 
-  it('guía la preparación ETL con KPI variables e interpretación segura en español', async () => {
+  it.each(['moneda de origen', 'Importe', 'valor'])('guía la preparación ETL con unidad %s e interpretación segura en español', async (moneyUnit) => {
     localStorage.setItem('bi_ia_access_token', 'test-token')
     const candidate = {
       proposal_id: 21, metadata_snapshot_id: 2, business_goal: 'Analizar ventas por producto y período.', periodicity: 'month',
@@ -1262,7 +1268,7 @@ describe('App', () => {
       metrics_document: {
         reconciliation: { passed: true, source_rows: 10, datamart_rows: 10, difference_rows: 0 },
         tables: [{ table: 'fact_ventas', source_rows: 10, loaded_rows: 10, deduplicated_rows: 0 }],
-        kpis: [{ code: 'ventas_netas', name: 'Ventas netas', value: '100', unit: 'moneda de origen', status: 'reconciled' }],
+        kpis: [{ code: 'ventas_netas', name: 'Ventas netas', value: '100', unit: moneyUnit, status: 'reconciled' }],
         semantic_interpretation: { status: 'review_required', message: 'Revise las etiquetas.', mappings: [{ dimension: 'dim_territorio', target_column: 'group', mappings: [{ original: 'Europe', label_es: 'Europa' }] }] },
       },
       created_by_label: 'Analista BI', created_at: '2026-09-22T10:20:00Z', finished_at: '2026-09-22T10:21:00Z',
