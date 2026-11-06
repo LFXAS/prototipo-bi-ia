@@ -1,0 +1,12 @@
+{
+  "fecha": "2026-11-05",
+  "corte_codigo": "8f1c7d1",
+  "comando": "make verify",
+  "resultado": 0,
+  "registro": "/tmp/bi-make-verify-final-v6-20261105.log",
+  "backend": 454,
+  "frontend": 48,
+  "nota": "V5 completó las etapas de pruebas y los doce LaTeX, pero el proceso padre devolvió 143. V6 terminó con salida cero y reutilizó las etapas Docker sin cambios; los contadores se contrastaron con la ejecución de pruebas V5 y la focal de interfaz. No se presenta el cierre interrumpido V5 como éxito global.",
+  "log_v5_sha256": "4e7994453b16026526957053b4eb135ed19af2fac81eab8c8c7beb5a32eb8a68",
+  "log_v6_sha256": "8f9d0e07f96128a2116f859ac422ac8e2866262b571e48dfcfe7cc924fabb496"
+}

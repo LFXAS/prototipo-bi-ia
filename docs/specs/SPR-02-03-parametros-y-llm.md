@@ -50,7 +50,11 @@ La configuración LLM prepara una única integración activa para una fase poste
 | Credencial | Para Gemini, Groq, Anthropic y Qwen permite registrar o reemplazar la API key desde la web. Después de guardar sólo muestra `Credencial configurada`; Ollama local no requiere clave. |
 | Estado y última prueba | Muestra si la configuración está activa, fecha, duración y resultado seguro de la última prueba. |
 
-Los campos se inicializan exclusivamente con una configuración LLM seleccionada; abrir la vista sin registro muestra un estado vacío propio. La clave nunca vuelve al navegador después de enviarse.
+Los campos se inicializan exclusivamente con una configuración LLM seleccionada; abrir la vista sin registro muestra un estado vacío propio. La clave nunca vuelve al navegador después de enviarse. El cierre del 5 de noviembre inicializa por identidad del registro y usa
+actualizaciones funcionales: seleccionar preset o cargar catálogos conserva el nombre
+escrito. El POST lo incluye y sólo el éxito limpia la creación. La regresión se
+repitió en imagen Docker fresca; la consulta UI de nombre/presets no guardó ni activó
+otro proveedor. La configuración activa se mantuvo.
 
 ### 3.2 Prueba de conexión
 

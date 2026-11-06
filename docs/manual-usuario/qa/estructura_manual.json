@@ -1,0 +1,6763 @@
+{
+  "documento": "Manual_de_usuario_Plataforma_BI.docx",
+  "fecha_documental": "5 de noviembre de 2026",
+  "corte_referencia": "8f1c7d1",
+  "capitulos": [
+    {
+      "numero": 1,
+      "titulo": "Propósito del manual y mapa de trabajo"
+    },
+    {
+      "numero": 2,
+      "titulo": "Conceptos para interpretar datos de ventas"
+    },
+    {
+      "numero": 3,
+      "titulo": "Acceso navegación y fuente de trabajo"
+    },
+    {
+      "numero": 4,
+      "titulo": "Usuarios roles permisos menús y auditoría"
+    },
+    {
+      "numero": 5,
+      "titulo": "Parámetros operativos y conexiones de datos"
+    },
+    {
+      "numero": 6,
+      "titulo": "Explorador de metadatos y estructura de las fuentes"
+    },
+    {
+      "numero": 7,
+      "titulo": "Configuración y operación del proveedor de inteligencia artificial"
+    },
+    {
+      "numero": 8,
+      "titulo": "Catálogo analítico y preguntas de negocio"
+    },
+    {
+      "numero": 9,
+      "titulo": "Asistente de datamart y formulación de la necesidad"
+    },
+    {
+      "numero": 10,
+      "titulo": "Conceptos y propuesta del modelo dimensional"
+    },
+    {
+      "numero": 11,
+      "titulo": "Personalización revisión y aprobación de propuestas"
+    },
+    {
+      "numero": 12,
+      "titulo": "Datamart de ventas y ejecución del proceso ETL"
+    },
+    {
+      "numero": 13,
+      "titulo": "Analítica de ventas y lectura gerencial"
+    },
+    {
+      "numero": 14,
+      "titulo": "Copiloto analítico y exportación de informes"
+    },
+    {
+      "numero": 15,
+      "titulo": "Escenarios de AdventureWorks y WideWorldImporters"
+    },
+    {
+      "numero": 16,
+      "titulo": "Incidencias y límites funcionales identificados"
+    },
+    {
+      "numero": 17,
+      "titulo": "Operación técnica y preparación de la sustentación"
+    },
+    {
+      "numero": 18,
+      "titulo": "Glosario referencias y atlas de capturas"
+    }
+  ],
+  "contenido": [
+    {
+      "capitulo": 1,
+      "subseccion": 1,
+      "origen": "formacion",
+      "indice": 0,
+      "titulo": "Ruta de capacitación desde cero y elección del ejemplo de trabajo",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_01_formacion_00"
+    },
+    {
+      "capitulo": 1,
+      "subseccion": 2,
+      "origen": "roles",
+      "indice": 0,
+      "titulo": "Antes de empezar: qué se configura y dónde quedan los datos",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_01_roles_00"
+    },
+    {
+      "capitulo": 1,
+      "subseccion": 3,
+      "origen": "roles",
+      "indice": 3,
+      "titulo": "Preparación inicial desde cero: orden recomendado para una instalación ya iniciada",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_01_roles_03"
+    },
+    {
+      "capitulo": 1,
+      "subseccion": 4,
+      "origen": "asistente",
+      "indice": 0,
+      "titulo": "Del catálogo a un resultado defendible: propósito y responsabilidades",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_01_asistente_00"
+    },
+    {
+      "capitulo": 1,
+      "subseccion": 5,
+      "origen": "nuevo",
+      "indice": 2,
+      "titulo": "Leer los ejemplos y distinguir resultados observados de ejercicios",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_01_nuevo_02"
+    },
+    {
+      "capitulo": 2,
+      "subseccion": 1,
+      "origen": "analitica",
+      "indice": 3,
+      "titulo": "Conceptos de lectura: grano, hecho, dimensión, medida e indicador",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_02_analitica_03"
+    },
+    {
+      "capitulo": 2,
+      "subseccion": 2,
+      "origen": "analitica",
+      "indice": 4,
+      "titulo": "Elegir la agregación correcta: suma, promedio, conteo, distintos, mínimo y máximo",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_02_analitica_04"
+    },
+    {
+      "capitulo": 2,
+      "subseccion": 3,
+      "origen": "analitica",
+      "indice": 5,
+      "titulo": "Razones, promedios ponderados y porcentajes de margen",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_02_analitica_05"
+    },
+    {
+      "capitulo": 2,
+      "subseccion": 4,
+      "origen": "analitica",
+      "indice": 6,
+      "titulo": "Importes comerciales: venta bruta, descuento, neto, impuesto, costo y margen",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_02_analitica_06"
+    },
+    {
+      "capitulo": 2,
+      "subseccion": 5,
+      "origen": "analitica",
+      "indice": 7,
+      "titulo": "Moneda, fecha y coherencia entre pregunta, indicador y vista",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_02_analitica_07"
+    },
+    {
+      "capitulo": 2,
+      "subseccion": 6,
+      "origen": "asistente",
+      "indice": 4,
+      "titulo": "Grano, periodicidad y carga completa: tres decisiones diferentes",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_02_asistente_04"
+    },
+    {
+      "capitulo": 2,
+      "subseccion": 7,
+      "origen": "asistente",
+      "indice": 19,
+      "titulo": "Costos, descuentos, margen y unidades: revisión financiera mínima antes de aprobar",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_02_asistente_19"
+    },
+    {
+      "capitulo": 3,
+      "subseccion": 1,
+      "origen": "nuevo",
+      "indice": 1,
+      "titulo": "Comenzar en la URL y el ambiente correctos",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_03_nuevo_01"
+    },
+    {
+      "capitulo": 3,
+      "subseccion": 2,
+      "origen": "roles",
+      "indice": 1,
+      "titulo": "Ingreso, sesión y salida segura",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_03_roles_01"
+    },
+    {
+      "capitulo": 3,
+      "subseccion": 3,
+      "origen": "roles",
+      "indice": 2,
+      "titulo": "Navegación autorizada y elección de la fuente de trabajo",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_03_roles_02"
+    },
+    {
+      "capitulo": 4,
+      "subseccion": 1,
+      "origen": "roles",
+      "indice": 4,
+      "titulo": "Roles reales, perfiles propuestos y lectura de la matriz de permisos",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_04_roles_04"
+    },
+    {
+      "capitulo": 4,
+      "subseccion": 2,
+      "origen": "roles",
+      "indice": 5,
+      "titulo": "Usuarios: consultar, crear, editar y controlar el acceso de una cuenta",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_04_roles_05"
+    },
+    {
+      "capitulo": 4,
+      "subseccion": 3,
+      "origen": "roles",
+      "indice": 6,
+      "titulo": "Roles: definir responsabilidades mediante permisos existentes",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_04_roles_06"
+    },
+    {
+      "capitulo": 4,
+      "subseccion": 4,
+      "origen": "roles",
+      "indice": 7,
+      "titulo": "Permisos: leer el catálogo técnico sin inventar capacidades",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_04_roles_07"
+    },
+    {
+      "capitulo": 4,
+      "subseccion": 5,
+      "origen": "roles",
+      "indice": 8,
+      "titulo": "Menús: cambiar presentación y visibilidad de pantallas registradas",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_04_roles_08"
+    },
+    {
+      "capitulo": 4,
+      "subseccion": 6,
+      "origen": "roles",
+      "indice": 14,
+      "titulo": "Auditoría: qué evidencia muestra y qué no expone la pantalla",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_04_roles_14"
+    },
+    {
+      "capitulo": 5,
+      "subseccion": 1,
+      "origen": "roles",
+      "indice": 9,
+      "titulo": "Parámetros operativos: significado, rangos y efectos comprobables",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_05_roles_09"
+    },
+    {
+      "capitulo": 5,
+      "subseccion": 2,
+      "origen": "roles",
+      "indice": 12,
+      "titulo": "Conexiones de datos: registrar todos los campos de una fuente SQL Server",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_05_roles_12"
+    },
+    {
+      "capitulo": 5,
+      "subseccion": 3,
+      "origen": "roles",
+      "indice": 13,
+      "titulo": "Conexiones de datos: probar, habilitar, leer estructura y conservar trazabilidad",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_05_roles_13"
+    },
+    {
+      "capitulo": 6,
+      "subseccion": 1,
+      "origen": "nuevo",
+      "indice": 0,
+      "titulo": "Explorador de esquema y significado de sus opciones",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_06_nuevo_00"
+    },
+    {
+      "capitulo": 7,
+      "subseccion": 1,
+      "origen": "roles",
+      "indice": 10,
+      "titulo": "Configuración LLM: todos los campos y criterios de elección",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_07_roles_10"
+    },
+    {
+      "capitulo": 7,
+      "subseccion": 2,
+      "origen": "roles",
+      "indice": 11,
+      "titulo": "Configuración LLM: credencial, prueba, activación y mantenimiento",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_07_roles_11"
+    },
+    {
+      "capitulo": 7,
+      "subseccion": 3,
+      "origen": "analitica",
+      "indice": 17,
+      "titulo": "Alcance universal y límites de proveedores: cómo elegir sin prometer equivalencias",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_07_analitica_17"
+    },
+    {
+      "capitulo": 8,
+      "subseccion": 1,
+      "origen": "asistente",
+      "indice": 1,
+      "titulo": "Catálogo analítico: consultar cobertura antes de diseñar",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_08_asistente_01"
+    },
+    {
+      "capitulo": 8,
+      "subseccion": 2,
+      "origen": "asistente",
+      "indice": 2,
+      "titulo": "Diccionario del catálogo: significado de cada campo y criterio de edición",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_08_asistente_02"
+    },
+    {
+      "capitulo": 8,
+      "subseccion": 3,
+      "origen": "asistente",
+      "indice": 3,
+      "titulo": "Diccionario de preguntas de negocio: cómo elegir y qué no demuestran",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_08_asistente_03"
+    },
+    {
+      "capitulo": 8,
+      "subseccion": 4,
+      "origen": "nuevo",
+      "indice": 5,
+      "titulo": "Precisión del catálogo AdventureWorks y conservación de los intentos de aprendizaje",
+      "campos": [
+        "titulo",
+        "capitulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_08_nuevo_05"
+    },
+    {
+      "capitulo": 9,
+      "subseccion": 1,
+      "origen": "asistente",
+      "indice": 5,
+      "titulo": "Asistente, paso 1: formular la necesidad y elegir un camino de ayuda",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_09_asistente_05"
+    },
+    {
+      "capitulo": 9,
+      "subseccion": 2,
+      "origen": "asistente",
+      "indice": 6,
+      "titulo": "Asistente, paso 1: razonar los estados directo, derivable, ambiguo y no disponible",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_09_asistente_06"
+    },
+    {
+      "capitulo": 10,
+      "subseccion": 1,
+      "origen": "asistente",
+      "indice": 7,
+      "titulo": "Asistente, paso 2: revisar conceptos y resolver inclusiones con criterio",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_10_asistente_07"
+    },
+    {
+      "capitulo": 10,
+      "subseccion": 2,
+      "origen": "asistente",
+      "indice": 8,
+      "titulo": "Asistente, paso 3: leer el modelo dimensional y su cobertura",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_10_asistente_08"
+    },
+    {
+      "capitulo": 11,
+      "subseccion": 1,
+      "origen": "asistente",
+      "indice": 9,
+      "titulo": "Asistente, paso 4: diccionario de personalización y reglas para elegir",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_11_asistente_09"
+    },
+    {
+      "capitulo": 11,
+      "subseccion": 2,
+      "origen": "asistente",
+      "indice": 10,
+      "titulo": "Diccionario de agregaciones, operaciones por fila y KPI derivados",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_11_asistente_10"
+    },
+    {
+      "capitulo": 11,
+      "subseccion": 3,
+      "origen": "asistente",
+      "indice": 11,
+      "titulo": "Corrección guiada opcional: relaciones seguras y multiplicación de filas",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_11_asistente_11"
+    },
+    {
+      "capitulo": 11,
+      "subseccion": 4,
+      "origen": "asistente",
+      "indice": 12,
+      "titulo": "Asistente, paso 5: verificar evidencia y aprobar con responsabilidad",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_11_asistente_12"
+    },
+    {
+      "capitulo": 11,
+      "subseccion": 5,
+      "origen": "asistente",
+      "indice": 13,
+      "titulo": "Historial de propuestas y estados: consultar, corregir o retirar sin borrar evidencia",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_11_asistente_13"
+    },
+    {
+      "capitulo": 11,
+      "subseccion": 6,
+      "origen": "nuevo",
+      "indice": 9,
+      "titulo": "Consultar una propuesta aprobada y preparar explícitamente una hija",
+      "campos": [
+        "titulo",
+        "capitulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_11_nuevo_09"
+    },
+    {
+      "capitulo": 12,
+      "subseccion": 1,
+      "origen": "asistente",
+      "indice": 14,
+      "titulo": "Datamart, pasos 1 y 2: elegir contrato e indicadores ejecutables",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_12_asistente_14"
+    },
+    {
+      "capitulo": 12,
+      "subseccion": 2,
+      "origen": "asistente",
+      "indice": 15,
+      "titulo": "Datamart, paso 3: revisar transformaciones y preparar un expediente",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_12_asistente_15"
+    },
+    {
+      "capitulo": 12,
+      "subseccion": 3,
+      "origen": "asistente",
+      "indice": 16,
+      "titulo": "Datamart, paso 4: materializar y cargar una sola vez",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_12_asistente_16"
+    },
+    {
+      "capitulo": 12,
+      "subseccion": 4,
+      "origen": "asistente",
+      "indice": 17,
+      "titulo": "Datamart, paso 5: conciliar origen y destino sin sobredimensionar la evidencia",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_12_asistente_17"
+    },
+    {
+      "capitulo": 12,
+      "subseccion": 5,
+      "origen": "asistente",
+      "indice": 18,
+      "titulo": "Interpretación semántica en español: revisar, corregir y publicar sin repetir ETL",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_12_asistente_18"
+    },
+    {
+      "capitulo": 12,
+      "subseccion": 6,
+      "origen": "asistente",
+      "indice": 20,
+      "titulo": "Consulta histórica de ETL: volver a la evidencia sin generar ni cargar otra vez",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_12_asistente_20"
+    },
+    {
+      "capitulo": 13,
+      "subseccion": 1,
+      "origen": "analitica",
+      "indice": 0,
+      "titulo": "Analítica de ventas: acceso, responsabilidades y permisos efectivos",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_13_analitica_00"
+    },
+    {
+      "capitulo": 13,
+      "subseccion": 2,
+      "origen": "analitica",
+      "indice": 1,
+      "titulo": "Elegir fuente y ejecución: versión, cobertura y vigencia del resultado",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_13_analitica_01"
+    },
+    {
+      "capitulo": 13,
+      "subseccion": 3,
+      "origen": "analitica",
+      "indice": 2,
+      "titulo": "Vista ejecutiva y vista analítica: cuándo elegir cada una",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_13_analitica_02"
+    },
+    {
+      "capitulo": 13,
+      "subseccion": 4,
+      "origen": "analitica",
+      "indice": 8,
+      "titulo": "Filtros del panel y cambio controlado de población",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_13_analitica_08"
+    },
+    {
+      "capitulo": 13,
+      "subseccion": 5,
+      "origen": "analitica",
+      "indice": 9,
+      "titulo": "Leer gráficos, valores exactos y porcentajes del ranking",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_13_analitica_09"
+    },
+    {
+      "capitulo": 13,
+      "subseccion": 6,
+      "origen": "analitica",
+      "indice": 10,
+      "titulo": "Hallazgos explicables: observación, variación y límites causales",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_13_analitica_10"
+    },
+    {
+      "capitulo": 14,
+      "subseccion": 1,
+      "origen": "analitica",
+      "indice": 11,
+      "titulo": "Copiloto analítico contextual: preguntar y comprobar lo interpretado",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_14_analitica_11"
+    },
+    {
+      "capitulo": 14,
+      "subseccion": 2,
+      "origen": "analitica",
+      "indice": 12,
+      "titulo": "Copiloto, consentimiento y seguridad: qué se envía y qué no se debe suponer",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_14_analitica_12"
+    },
+    {
+      "capitulo": 14,
+      "subseccion": 3,
+      "origen": "nuevo",
+      "indice": 7,
+      "titulo": "Contrato efectivo, sugerencias disponibles y contexto de exportación",
+      "campos": [
+        "titulo",
+        "capitulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_14_nuevo_07"
+    },
+    {
+      "capitulo": 14,
+      "subseccion": 4,
+      "origen": "exportaciones",
+      "indice": 0,
+      "titulo": "Exportar un resultado: elegir PDF o Excel y fijar la selección",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_14_exportaciones_00"
+    },
+    {
+      "capitulo": 14,
+      "subseccion": 5,
+      "origen": "exportaciones",
+      "indice": 1,
+      "titulo": "Leer y comprobar el PDF exportado",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_14_exportaciones_01"
+    },
+    {
+      "capitulo": 14,
+      "subseccion": 6,
+      "origen": "exportaciones",
+      "indice": 2,
+      "titulo": "Leer y comprobar el Excel exportado",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_14_exportaciones_02"
+    },
+    {
+      "capitulo": 14,
+      "subseccion": 7,
+      "origen": "exportaciones",
+      "indice": 3,
+      "titulo": "Qué incluyen y qué excluyen los informes de la plataforma",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_14_exportaciones_03"
+    },
+    {
+      "capitulo": 14,
+      "subseccion": 8,
+      "origen": "exportaciones",
+      "indice": 4,
+      "titulo": "Guardar y organizar descargas sin sobrescribir evidencia",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_14_exportaciones_04"
+    },
+    {
+      "capitulo": 14,
+      "subseccion": 9,
+      "origen": "exportaciones",
+      "indice": 5,
+      "titulo": "Cuándo un informe no es utilizable y cómo recuperarlo",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_14_exportaciones_05"
+    },
+    {
+      "capitulo": 15,
+      "subseccion": 1,
+      "origen": "asistente",
+      "indice": 21,
+      "titulo": "Ejercicio reproducible AW: líneas de venta por producto y mes",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_15_asistente_21"
+    },
+    {
+      "capitulo": 15,
+      "subseccion": 2,
+      "origen": "asistente",
+      "indice": 22,
+      "titulo": "Ejercicio reproducible WWI: facturación distinta de pedidos y de cobros",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_15_asistente_22"
+    },
+    {
+      "capitulo": 15,
+      "subseccion": 3,
+      "origen": "asistente",
+      "indice": 23,
+      "titulo": "Prueba negativa y adaptación dinámica: demostrar límites sin forzar resultados",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_15_asistente_23"
+    },
+    {
+      "capitulo": 15,
+      "subseccion": 4,
+      "origen": "nuevo",
+      "indice": 6,
+      "titulo": "AdventureWorks detallado: cuatro KPI desde el objetivo hasta la ejecución nueva 18",
+      "campos": [
+        "titulo",
+        "capitulo",
+        "seccion_manual",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_15_nuevo_06"
+    },
+    {
+      "capitulo": 15,
+      "subseccion": 5,
+      "origen": "nuevo",
+      "indice": 8,
+      "titulo": "WideWorldImporters detallado: necesidad de 693 caracteres y ejecución nueva 19",
+      "campos": [
+        "titulo",
+        "capitulo",
+        "seccion_manual",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_15_nuevo_08"
+    },
+    {
+      "capitulo": 16,
+      "subseccion": 1,
+      "origen": "analitica",
+      "indice": 13,
+      "titulo": "Resolver incidencias de consulta sin repetir operaciones innecesarias",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_16_analitica_13"
+    },
+    {
+      "capitulo": 16,
+      "subseccion": 2,
+      "origen": "nuevo",
+      "indice": 3,
+      "titulo": "Histórico QA: intervención ante límites de viabilidad en WideWorldImporters",
+      "campos": [
+        "titulo",
+        "capitulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_16_nuevo_03"
+    },
+    {
+      "capitulo": 16,
+      "subseccion": 3,
+      "origen": "nuevo",
+      "indice": 4,
+      "titulo": "Consulta histórica de WWI 117/16: criterios, carga y límites conservados",
+      "campos": [
+        "titulo",
+        "capitulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_16_nuevo_04"
+    },
+    {
+      "capitulo": 17,
+      "subseccion": 1,
+      "origen": "roles",
+      "indice": 15,
+      "titulo": "Responsabilidad de la programadora y límites de la operación cotidiana",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_17_roles_15"
+    },
+    {
+      "capitulo": 17,
+      "subseccion": 2,
+      "origen": "analitica",
+      "indice": 14,
+      "titulo": "Preparar una demostración ante el jurado con evidencia distinguible",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_17_analitica_14"
+    },
+    {
+      "capitulo": 17,
+      "subseccion": 3,
+      "origen": "analitica",
+      "indice": 15,
+      "titulo": "Guion de demostración: del problema comercial a la decisión respaldada",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_17_analitica_15"
+    },
+    {
+      "capitulo": 17,
+      "subseccion": 4,
+      "origen": "analitica",
+      "indice": 16,
+      "titulo": "Preguntas frecuentes del jurado y respuestas defendibles",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_17_analitica_16"
+    },
+    {
+      "capitulo": 18,
+      "subseccion": 1,
+      "origen": "asistente",
+      "indice": 24,
+      "titulo": "Pantallas y evidencia que deben capturarse para el manual y la sustentación",
+      "campos": [
+        "titulo",
+        "objetivo",
+        "rol",
+        "requisitos",
+        "pasos",
+        "resultado",
+        "verificacion",
+        "errores",
+        "explicacion",
+        "fuentes"
+      ],
+      "anchor": "s_18_asistente_24"
+    }
+  ],
+  "capturas": [
+    {
+      "numero": 1,
+      "id": "02_menu",
+      "titulo": "Menú de navegación",
+      "capitulo": 3,
+      "original": "02_menu.jpg",
+      "captured_at": "2026-11-05T02:27:18.267Z",
+      "sha256_original": "39b6119aa9b83e337194472bc50586a03a6bf6aa3212fffc0a2367889a1be6b7",
+      "anchor": "fig_001",
+      "regiones": [
+        {
+          "archivo": "capturas/02_menu.jpg",
+          "titulo": "",
+          "parcial": false,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "numero": 2,
+      "id": "03_inicio_fuente_aw",
+      "titulo": "Inicio y fuente activa",
+      "capitulo": 3,
+      "original": "03_inicio_fuente_aw.jpg",
+      "captured_at": "2026-11-05T02:28:33.410Z",
+      "sha256_original": "7834dfb3de5837daafb61495ef849124d197732c75144c9fb8f9b74db7db7052",
+      "anchor": "fig_002",
+      "regiones": [
+        {
+          "archivo": "capturas/03_inicio_fuente_aw.jpg",
+          "titulo": "",
+          "parcial": false,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "numero": 3,
+      "id": "01_acceso",
+      "titulo": "Acceso con cuenta autorizada",
+      "capitulo": 3,
+      "original": "01_acceso.jpg",
+      "captured_at": "2026-11-05T02:29:24.210Z",
+      "sha256_original": "dec3a9d4ceac96b68b9d5f7aa4a9fd5109469b0c1b8fd6aeeae4110beea88ebd",
+      "anchor": "fig_003",
+      "regiones": [
+        {
+          "archivo": "capturas/01_acceso.jpg",
+          "titulo": "",
+          "parcial": false,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "numero": 4,
+      "id": "03b_inicio_completo",
+      "titulo": "Inicio del administrador",
+      "capitulo": 3,
+      "original": "03b_inicio_completo.jpg",
+      "captured_at": "2026-11-05T02:29:54.778Z",
+      "sha256_original": "319f7513efae1f9d0ec0e1703386f268df0325df54bdbafc2586016eb1423009",
+      "anchor": "fig_004",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/03b_inicio_completo_01.jpg",
+          "titulo": "región del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            150,
+            550,
+            910
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 5,
+      "id": "25_sesion_vencida",
+      "titulo": "Recuperación de sesión vencida",
+      "capitulo": 3,
+      "original": "25_sesion_vencida.jpg",
+      "captured_at": "2026-11-05T03:02:33.673Z",
+      "sha256_original": "19566f22cac4f64143de867992daf601ba4255d2e705ade365db06c343f67a87",
+      "anchor": "fig_005",
+      "regiones": [
+        {
+          "archivo": "capturas/25_sesion_vencida.jpg",
+          "titulo": "",
+          "parcial": false,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "numero": 6,
+      "id": "04_usuarios",
+      "titulo": "Gestión de usuarios",
+      "capitulo": 4,
+      "original": "04_usuarios.jpg",
+      "captured_at": "2026-11-05T02:30:23.644Z",
+      "sha256_original": "c1d0db70611e480a07b574536452948289fa1e4c4ea4d1f31bb9e1c10b39e794",
+      "anchor": "fig_006",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/04_usuarios_01.jpg",
+          "titulo": "región del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            150,
+            550,
+            910
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 7,
+      "id": "05_roles_formulario",
+      "titulo": "Definición de roles",
+      "capitulo": 4,
+      "original": "05_roles_formulario.jpg",
+      "captured_at": "2026-11-05T02:30:52.188Z",
+      "sha256_original": "ae1c6f8a954021d99e4c7b2a1f1b3ea304b23c00d9177f5a4c4a625e808eac67",
+      "anchor": "fig_007",
+      "regiones": [
+        {
+          "archivo": "capturas/05_roles_formulario.jpg",
+          "titulo": "",
+          "parcial": false,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "numero": 8,
+      "id": "05c_roles_completo",
+      "titulo": "Formulario de roles y primeros permisos del catálogo",
+      "capitulo": 4,
+      "original": "05c_roles_completo.jpg",
+      "captured_at": "2026-11-05T02:30:52.823Z",
+      "sha256_original": "ed31d6e2e8d7d6ad8006d09fa47aa069e8c8ea8d8c1314b323da4915454d30fb",
+      "anchor": "fig_008",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/05c_roles_completo_01.jpg",
+          "titulo": "región del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            150,
+            550,
+            910
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 9,
+      "id": "05b_roles_existentes",
+      "titulo": "Roles existentes",
+      "capitulo": 4,
+      "original": "05b_roles_existentes.jpg",
+      "captured_at": "2026-11-05T02:30:58.705Z",
+      "sha256_original": "02bc7c3042a2de1ac905cd612506e9d3549865d2867b3852634f0741a3819c36",
+      "anchor": "fig_009",
+      "regiones": [
+        {
+          "archivo": "capturas/05b_roles_existentes.jpg",
+          "titulo": "",
+          "parcial": false,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "numero": 10,
+      "id": "06_permisos",
+      "titulo": "Catálogo de permisos",
+      "capitulo": 4,
+      "original": "06_permisos.jpg",
+      "captured_at": "2026-11-05T02:31:38.107Z",
+      "sha256_original": "dbcc1280c31dcce6b2a0b4d59292160e91d89c210ce6dbcff2d5a9d0bde4d772",
+      "anchor": "fig_010",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/06_permisos_01.jpg",
+          "titulo": "región del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            150,
+            550,
+            910
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 11,
+      "id": "07_menus",
+      "titulo": "Gestión de menús",
+      "capitulo": 4,
+      "original": "07_menus.jpg",
+      "captured_at": "2026-11-05T02:31:46.510Z",
+      "sha256_original": "ee3a348bb3cca43a567bd63b0907599ae0bb2841b51042388daa63e5d84fc396",
+      "anchor": "fig_011",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/07_menus_01.jpg",
+          "titulo": "región del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            150,
+            550,
+            910
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 12,
+      "id": "08_auditoria",
+      "titulo": "Auditoría de operaciones",
+      "capitulo": 4,
+      "original": "08_auditoria.jpg",
+      "captured_at": "2026-11-05T02:31:55.098Z",
+      "sha256_original": "0d85f7e29e182d0e74aa8eba7950c208e59f05e57af210a5f517fc1e5903fd22",
+      "anchor": "fig_012",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/08_auditoria_01.jpg",
+          "titulo": "región del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            150,
+            550,
+            910
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 13,
+      "id": "05d_rol_analista",
+      "titulo": "Permisos configurados del Analista BI",
+      "capitulo": 4,
+      "original": "05d_rol_analista.jpg",
+      "captured_at": "2026-11-05T02:49:23.619Z",
+      "sha256_original": "f53f429f86d058470cea514746788aefd5776f8109cc1d7b9fb080ad812f37e8",
+      "anchor": "fig_013",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/05d_rol_analista_01.jpg",
+          "titulo": "identidad del rol y primeros permisos",
+          "parcial": true,
+          "bbox": [
+            0,
+            230,
+            550,
+            990
+          ]
+        },
+        {
+          "archivo": "qa/recortes/05d_rol_analista_02.jpg",
+          "titulo": "permisos de metadatos y exportación",
+          "parcial": true,
+          "bbox": [
+            0,
+            1310,
+            550,
+            2070
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 14,
+      "id": "05e_rol_gerente",
+      "titulo": "Configuración histórica del Gerente comercial con tres permisos",
+      "capitulo": 4,
+      "original": "05e_rol_gerente.jpg",
+      "captured_at": "2026-11-05T02:49:50.415Z",
+      "sha256_original": "4a7bd14564fc0a08afb33847bd7f57cb249d3559d1c13585c8c4ed558d3c2199",
+      "anchor": "fig_014",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/05e_rol_gerente_01.jpg",
+          "titulo": "identidad del rol y primeros permisos",
+          "parcial": true,
+          "bbox": [
+            0,
+            230,
+            550,
+            990
+          ]
+        },
+        {
+          "archivo": "qa/recortes/05e_rol_gerente_02.jpg",
+          "titulo": "permisos de metadatos y exportación",
+          "parcial": true,
+          "bbox": [
+            0,
+            1310,
+            550,
+            2070
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 15,
+      "id": "33_gerente_permiso_metadatos",
+      "titulo": "Gerente comercial con consulta de metadatos",
+      "capitulo": 4,
+      "original": "33_gerente_permiso_metadatos.jpg",
+      "captured_at": "2026-11-05T03:10:17.697Z",
+      "sha256_original": "f2f0e981148003a502c2c3e38f3daee7a7607fe18c315208f24be05129b54358",
+      "anchor": "fig_015",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/33_gerente_permiso_metadatos_01.jpg",
+          "titulo": "Perfil Gerente y permisos iniciales",
+          "parcial": true,
+          "bbox": [
+            0,
+            180,
+            1264,
+            1080
+          ]
+        },
+        {
+          "archivo": "qa/recortes/33_gerente_permiso_metadatos_02.jpg",
+          "titulo": "Metadatos y exportación marcados",
+          "parcial": true,
+          "bbox": [
+            0,
+            1020,
+            1264,
+            1920
+          ]
+        },
+        {
+          "archivo": "qa/recortes/33_gerente_permiso_metadatos_03.jpg",
+          "titulo": "Permisos finales y catálogo de roles",
+          "parcial": true,
+          "bbox": [
+            0,
+            1578,
+            1264,
+            2478
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 16,
+      "id": "105_usuario_protegido_campos_consulta",
+      "titulo": "Roles protegidos y contraseña vacía",
+      "capitulo": 4,
+      "original": "105_usuario_protegido_campos_consulta.jpg",
+      "captured_at": "2026-11-05T04:33:31.970Z",
+      "sha256_original": "469bac3ab1d89df56b1e31bd81f17d0e4265211298246ad1a97d1ae2d36be2d7",
+      "anchor": "fig_016",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/105_usuario_protegido_campos_consulta_01.jpg",
+          "titulo": "roles protegidos en consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            550,
+            666
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 17,
+      "id": "123-correo-protegido-consulta",
+      "titulo": "Correo de cuenta protegida sólo de consulta",
+      "capitulo": 4,
+      "original": "123-correo-protegido-consulta.jpg",
+      "captured_at": "2026-11-05T05:49:57.199Z",
+      "sha256_original": "84d660a9a214623a18076c359e2765428f37cc68ec8036146d870f9b552ebb5e",
+      "anchor": "fig_017",
+      "regiones": [
+        {
+          "archivo": "capturas/123-correo-protegido-consulta.jpg",
+          "titulo": "",
+          "parcial": false,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "numero": 18,
+      "id": "09_parametros",
+      "titulo": "Parámetros generales",
+      "capitulo": 5,
+      "original": "09_parametros.jpg",
+      "captured_at": "2026-11-05T02:32:26.066Z",
+      "sha256_original": "07dd68d4e5d785b4be9f16cdd02c7e568956b50f9fbf3b99cd6e3b1e20978bcf",
+      "anchor": "fig_018",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/09_parametros_01.jpg",
+          "titulo": "parámetros de conexión y proveedor",
+          "parcial": true,
+          "bbox": [
+            0,
+            150,
+            550,
+            910
+          ]
+        },
+        {
+          "archivo": "qa/recortes/09_parametros_02.jpg",
+          "titulo": "parámetros de metadatos e interfaz",
+          "parcial": true,
+          "bbox": [
+            0,
+            913,
+            550,
+            1673
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 19,
+      "id": "10_conexiones",
+      "titulo": "Conexiones de datos",
+      "capitulo": 5,
+      "original": "10_conexiones.jpg",
+      "captured_at": "2026-11-05T02:32:33.317Z",
+      "sha256_original": "c05f942cce3581f51320d8bb2480b77b6680198b39116798cacac7a2764806eb",
+      "anchor": "fig_019",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/10_conexiones_01.jpg",
+          "titulo": "campos del registro de conexión",
+          "parcial": true,
+          "bbox": [
+            0,
+            150,
+            550,
+            910
+          ]
+        },
+        {
+          "archivo": "qa/recortes/10_conexiones_02.jpg",
+          "titulo": "controles de transporte y fuentes registradas",
+          "parcial": true,
+          "bbox": [
+            0,
+            900,
+            550,
+            1632
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 20,
+      "id": "10b_conexiones_probadas",
+      "titulo": "Fuentes probadas para el recorrido",
+      "capitulo": 5,
+      "original": "10b_conexiones_probadas.jpg",
+      "captured_at": "2026-11-05T02:33:09.439Z",
+      "sha256_original": "a20cba23431c053ade5e49934c88618b256e321225f8b771a7a9e035910fb815",
+      "anchor": "fig_020",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/10b_conexiones_probadas_01.jpg",
+          "titulo": "resultados de validación de ambas fuentes",
+          "parcial": true,
+          "bbox": [
+            0,
+            950,
+            550,
+            1700
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 21,
+      "id": "12_metadatos_aw",
+      "titulo": "Esquema de AdventureWorks",
+      "capitulo": 6,
+      "original": "12_metadatos_aw.jpg",
+      "captured_at": "2026-11-05T02:34:20.893Z",
+      "sha256_original": "e1cf6e41d54158e9afc919203a6aabfceb0b7a1ef014a3da98b3444f52ca68b4",
+      "anchor": "fig_021",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/12_metadatos_aw_01.jpg",
+          "titulo": "región del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            150,
+            550,
+            910
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 22,
+      "id": "12b_metadatos_aw_detalle",
+      "titulo": "Detalle de columnas y relaciones",
+      "capitulo": 6,
+      "original": "12b_metadatos_aw_detalle.jpg",
+      "captured_at": "2026-11-05T02:34:36.379Z",
+      "sha256_original": "31d57e1dd86094747345894172dd1bf0af49324b8f000f7ee3ad257b15066d90",
+      "anchor": "fig_022",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/12b_metadatos_aw_detalle_01.jpg",
+          "titulo": "columnas y claves de SalesOrderDetail",
+          "parcial": true,
+          "bbox": [
+            0,
+            1400,
+            550,
+            2130
+          ]
+        },
+        {
+          "archivo": "qa/recortes/12b_metadatos_aw_detalle_02.jpg",
+          "titulo": "LineTotal y relaciones declaradas",
+          "parcial": true,
+          "bbox": [
+            0,
+            2130,
+            550,
+            2680
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 23,
+      "id": "13_metadatos_wwi",
+      "titulo": "Esquema de WideWorldImporters",
+      "capitulo": 6,
+      "original": "13_metadatos_wwi.jpg",
+      "captured_at": "2026-11-05T02:34:59.967Z",
+      "sha256_original": "b3aa20705e3e224d03b483e9b0b6f52f127f28850101efb640eab1e46b007189",
+      "anchor": "fig_023",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/13_metadatos_wwi_01.jpg",
+          "titulo": "región del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            150,
+            550,
+            910
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 24,
+      "id": "13b_metadatos_wwi_detalle",
+      "titulo": "Columnas de las líneas de factura",
+      "capitulo": 6,
+      "original": "13b_metadatos_wwi_detalle.jpg",
+      "captured_at": "2026-11-05T02:35:17.906Z",
+      "sha256_original": "980a39815ec4c36f70a84e9eb006ed6af134e1157b5c97f7046d5c399f25c9dc",
+      "anchor": "fig_024",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/13b_metadatos_wwi_detalle_01.jpg",
+          "titulo": "columnas de InvoiceLines",
+          "parcial": true,
+          "bbox": [
+            0,
+            1515,
+            550,
+            2230
+          ]
+        },
+        {
+          "archivo": "qa/recortes/13b_metadatos_wwi_detalle_02.jpg",
+          "titulo": "importes y relaciones de la línea de factura",
+          "parcial": true,
+          "bbox": [
+            0,
+            2210,
+            550,
+            2860
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 25,
+      "id": "11_llm",
+      "titulo": "Configuración de proveedores LLM",
+      "capitulo": 7,
+      "original": "11_llm.jpg",
+      "captured_at": "2026-11-05T02:33:48.916Z",
+      "sha256_original": "e0ace5d498f505a1be22eaa7cf2f5f5482b2492270e514addd8002a0e6674141",
+      "anchor": "fig_025",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/11_llm_01.jpg",
+          "titulo": "región del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            150,
+            550,
+            910
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 26,
+      "id": "11b_llm_formulario",
+      "titulo": "Parámetros de una configuración LLM",
+      "capitulo": 7,
+      "original": "11b_llm_formulario.jpg",
+      "captured_at": "2026-11-05T02:34:14.071Z",
+      "sha256_original": "9d6679b3983e6d727238ef23a154da40750165428a84e4aaa8bd8ecd699035b0",
+      "anchor": "fig_026",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/11b_llm_formulario_01.jpg",
+          "titulo": "región del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            150,
+            550,
+            910
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 27,
+      "id": "11c_llm_alternativa_probada",
+      "titulo": "Prueba de conectividad de Groq",
+      "capitulo": 7,
+      "original": "11c_llm_alternativa_probada.jpg",
+      "captured_at": "2026-11-05T02:49:05.153Z",
+      "sha256_original": "c7985abfd5ff5b219a43d67f5d279803fbc16b14ce5343b04ece213a83375c2f",
+      "anchor": "fig_027",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/11c_llm_alternativa_probada_01.jpg",
+          "titulo": "resultado de conectividad y configuraciones disponibles",
+          "parcial": true,
+          "bbox": [
+            0,
+            845,
+            550,
+            1520
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 28,
+      "id": "32_llm_groq_activo",
+      "titulo": "Groq activado temporalmente",
+      "capitulo": 7,
+      "original": "32_llm_groq_activo.jpg",
+      "captured_at": "2026-11-05T03:09:52.362Z",
+      "sha256_original": "216706021d84a7df2f49188fa2e984647178f48f7cad2cae9a80a25b48fa2a39",
+      "anchor": "fig_028",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/32_llm_groq_activo_01.jpg",
+          "titulo": "Formulario de configuración LLM",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            1264,
+            800
+          ]
+        },
+        {
+          "archivo": "qa/recortes/32_llm_groq_activo_02.jpg",
+          "titulo": "Proveedores y Groq temporal activo",
+          "parcial": true,
+          "bbox": [
+            0,
+            461,
+            1264,
+            1261
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 29,
+      "id": "36_llm_claude_restaurado",
+      "titulo": "Claude restaurado después de la prueba Groq",
+      "capitulo": 7,
+      "original": "36_llm_claude_restaurado.jpg",
+      "captured_at": "2026-11-05T03:13:42.928Z",
+      "sha256_original": "88a68c3245e28a304c0e056dabccf2a07868235627cd77fdc193435e76c79232",
+      "anchor": "fig_029",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/36_llm_claude_restaurado_01.jpg",
+          "titulo": "Configuración LLM restaurada",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            1264,
+            800
+          ]
+        },
+        {
+          "archivo": "qa/recortes/36_llm_claude_restaurado_02.jpg",
+          "titulo": "Claude activo y prueba de conexión",
+          "parcial": true,
+          "bbox": [
+            0,
+            461,
+            1264,
+            1261
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 30,
+      "id": "122-llm-nombre-conservado",
+      "titulo": "El formulario conserva el nombre al elegir proveedor",
+      "capitulo": 7,
+      "original": "122-llm-nombre-conservado.jpg",
+      "captured_at": "2026-11-05T05:48:53.938Z",
+      "sha256_original": "2c83221cacc3db4dac21892d01558acfef0725a3b8140e68456887d34ef540ac",
+      "anchor": "fig_030",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/122_llm_nombre_conservado_01.jpg",
+          "titulo": "región del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            150,
+            574,
+            910
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 31,
+      "id": "14_catalogo_aw",
+      "titulo": "Catálogo de AdventureWorks",
+      "capitulo": 8,
+      "original": "14_catalogo_aw.jpg",
+      "captured_at": "2026-11-05T02:35:47.122Z",
+      "sha256_original": "45b0a27fe4aa10c7529639f282b6abfea7fc9abc91d4c8cdbbe5ba95d31b5ccc",
+      "anchor": "fig_031",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/14_catalogo_aw_01.jpg",
+          "titulo": "pregunta de negocio y sus campos",
+          "parcial": true,
+          "bbox": [
+            0,
+            2085,
+            550,
+            2680
+          ]
+        },
+        {
+          "archivo": "qa/recortes/14_catalogo_aw_02.jpg",
+          "titulo": "criterios de costos y valores por unidad",
+          "parcial": true,
+          "bbox": [
+            0,
+            3920,
+            550,
+            4770
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 32,
+      "id": "14b_catalogo_criterios",
+      "titulo": "Criterios de las preguntas personalizadas",
+      "capitulo": 8,
+      "original": "14b_catalogo_criterios.jpg",
+      "captured_at": "2026-11-05T02:36:45.435Z",
+      "sha256_original": "92e911f952a6d4a86f4112e78d500716bef520d7e9965f59deddf5b68615f76f",
+      "anchor": "fig_032",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/14b_catalogo_criterios_01.jpg",
+          "titulo": "criterio corregido para costos verificables",
+          "parcial": true,
+          "bbox": [
+            0,
+            195,
+            550,
+            610
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 33,
+      "id": "15_catalogo_wwi_antes",
+      "titulo": "Catálogo independiente de WideWorldImporters",
+      "capitulo": 8,
+      "original": "15_catalogo_wwi_antes.jpg",
+      "captured_at": "2026-11-05T02:36:52.757Z",
+      "sha256_original": "eca85c5d06ff1f6d9ec0fa2932014eebaacaf833673d9ff75727fb15974c15f8",
+      "anchor": "fig_033",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/15_catalogo_wwi_antes_01.jpg",
+          "titulo": "región del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            150,
+            550,
+            910
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 34,
+      "id": "15b_catalogo_wwi_guardado",
+      "titulo": "Catálogo de WideWorldImporters configurado",
+      "capitulo": 8,
+      "original": "15b_catalogo_wwi_guardado.jpg",
+      "captured_at": "2026-11-05T02:37:38.713Z",
+      "sha256_original": "76e394ce7a4c5bbaeaa5251d5260832acd22923d7c54115dc45e6d7cae5de5c5",
+      "anchor": "fig_034",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/15b_catalogo_wwi_guardado_01.jpg",
+          "titulo": "confirmación de guardado y primera pregunta",
+          "parcial": true,
+          "bbox": [
+            0,
+            2050,
+            550,
+            2775
+          ]
+        },
+        {
+          "archivo": "qa/recortes/15b_catalogo_wwi_guardado_02.jpg",
+          "titulo": "criterios de costos y razones por unidad",
+          "parcial": true,
+          "bbox": [
+            0,
+            4030,
+            550,
+            4890
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 35,
+      "id": "68_aw_catalogo_precisado",
+      "titulo": "Catálogo AW con seis preguntas conservadas",
+      "capitulo": 8,
+      "original": "68_aw_catalogo_precisado.jpg",
+      "captured_at": "2026-11-05T03:35:37.260Z",
+      "sha256_original": "e63505e9e1acd4715f6a2c98831467ef44d9846b641a647d14377c28adf7363f",
+      "anchor": "fig_035",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/68_aw_catalogo_precisado_01.jpg",
+          "titulo": "Primeras preguntas y sus instrucciones precisadas",
+          "parcial": true,
+          "bbox": [
+            0,
+            1150,
+            1264,
+            2050
+          ]
+        },
+        {
+          "archivo": "qa/recortes/68_aw_catalogo_precisado_02.jpg",
+          "titulo": "Preguntas conservadas de cliente, territorio y finanzas",
+          "parcial": true,
+          "bbox": [
+            0,
+            1720,
+            1264,
+            2620
+          ]
+        },
+        {
+          "archivo": "qa/recortes/68_aw_catalogo_precisado_03.jpg",
+          "titulo": "Cinco periodicidades y guardado del catálogo",
+          "parcial": true,
+          "bbox": [
+            0,
+            2644,
+            1264,
+            3494
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 36,
+      "id": "16_seleccion_dominio",
+      "titulo": "Selección del dominio",
+      "capitulo": 9,
+      "original": "16_seleccion_dominio.jpg",
+      "captured_at": "2026-11-05T02:38:26.613Z",
+      "sha256_original": "068e283c04f0bb3004489212f943c7e41d611d7549ee467f45ca4c11281a8059",
+      "anchor": "fig_036",
+      "regiones": [
+        {
+          "archivo": "capturas/16_seleccion_dominio.jpg",
+          "titulo": "",
+          "parcial": false,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "numero": 37,
+      "id": "17_aw_necesidad_opciones",
+      "titulo": "Necesidad de negocio y selección de opciones",
+      "capitulo": 9,
+      "original": "17_aw_necesidad_opciones.jpg",
+      "captured_at": "2026-11-05T02:39:19.886Z",
+      "sha256_original": "86285aae7a5c96c293556541b37ebf4e3de687b4367889a4e3ed03e97f9b5908",
+      "anchor": "fig_037",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/17_aw_necesidad_opciones_01.jpg",
+          "titulo": "objetivo consentimiento y ayudas",
+          "parcial": true,
+          "bbox": [
+            0,
+            830,
+            550,
+            1685
+          ]
+        },
+        {
+          "archivo": "qa/recortes/17_aw_necesidad_opciones_02.jpg",
+          "titulo": "preguntas periodicidad y validación",
+          "parcial": true,
+          "bbox": [
+            0,
+            1720,
+            550,
+            2520
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 38,
+      "id": "18_aw_necesidad_final",
+      "titulo": "Necesidad concreta para AdventureWorks",
+      "capitulo": 9,
+      "original": "18_aw_necesidad_final.jpg",
+      "captured_at": "2026-11-05T02:42:55.176Z",
+      "sha256_original": "10fc1d0e65a54d2051f094dd5027075aeaed2b266c11793cb2806edd36919458",
+      "anchor": "fig_038",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/18_aw_necesidad_final_01.jpg",
+          "titulo": "objetivo de 531 caracteres y consentimiento",
+          "parcial": true,
+          "bbox": [
+            0,
+            830,
+            550,
+            1685
+          ]
+        },
+        {
+          "archivo": "qa/recortes/18_aw_necesidad_final_02.jpg",
+          "titulo": "cuatro preguntas y periodicidad elegidas",
+          "parcial": true,
+          "bbox": [
+            0,
+            1720,
+            550,
+            2520
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 39,
+      "id": "21h_aw_necesidad_historica",
+      "titulo": "Consulta histórica de la necesidad AW 98",
+      "capitulo": 9,
+      "original": "21h_aw_necesidad_historica.jpg",
+      "captured_at": "2026-11-05T02:59:27.873Z",
+      "sha256_original": "8537709d5568053b267c85e1314d38217cd321dae54eb41e8fe59155a8304df4",
+      "anchor": "fig_039",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/21h_aw_necesidad_historica_01.jpg",
+          "titulo": "región del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            110,
+            895,
+            870
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 40,
+      "id": "34_aw_necesidad_groq",
+      "titulo": "Nueva necesidad AW mensual con Groq",
+      "capitulo": 9,
+      "original": "34_aw_necesidad_groq.jpg",
+      "captured_at": "2026-11-05T03:10:46.928Z",
+      "sha256_original": "28043426daacf64c5781d52185685b156ea49850ae9be322a27c80164666ba88",
+      "anchor": "fig_040",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/34_aw_necesidad_groq_01.jpg",
+          "titulo": "Objetivo AW y consentimiento",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            895,
+            800
+          ]
+        },
+        {
+          "archivo": "qa/recortes/34_aw_necesidad_groq_02.jpg",
+          "titulo": "Preguntas y periodicidad mensual",
+          "parcial": true,
+          "bbox": [
+            0,
+            372,
+            895,
+            1172
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 41,
+      "id": "73_aw_necesidad_basica",
+      "titulo": "Ejemplo básico AW para formación inicial",
+      "capitulo": 9,
+      "original": "73_aw_necesidad_basica.jpg",
+      "captured_at": "2026-11-05T03:40:45.243Z",
+      "sha256_original": "673ba2fa1a36eb6163f89132dad65e90463a10fc25069afc73b7c69ffbbfa332",
+      "anchor": "fig_041",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/73_aw_necesidad_basica_01.jpg",
+          "titulo": "Objetivo básico de dos indicadores y consentimiento",
+          "parcial": true,
+          "bbox": [
+            0,
+            850,
+            550,
+            1750
+          ]
+        },
+        {
+          "archivo": "qa/recortes/73_aw_necesidad_basica_02.jpg",
+          "titulo": "Tres preguntas seleccionadas y periodicidad mensual",
+          "parcial": true,
+          "bbox": [
+            0,
+            1700,
+            550,
+            2600
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 42,
+      "id": "74_aw_viabilidad_basica",
+      "titulo": "Viabilidad del caso básico AW",
+      "capitulo": 9,
+      "original": "74_aw_viabilidad_basica.jpg",
+      "captured_at": "2026-11-05T03:42:13.335Z",
+      "sha256_original": "1b44167e23fc3fcacef5c0fa68d8920062a176272d33a02df4117bc24a391cc5",
+      "anchor": "fig_042",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/74_aw_viabilidad_basica_01.jpg",
+          "titulo": "Dictamen básico y derivaciones candidatas",
+          "parcial": true,
+          "bbox": [
+            0,
+            2500,
+            550,
+            3400
+          ]
+        },
+        {
+          "archivo": "qa/recortes/74_aw_viabilidad_basica_02.jpg",
+          "titulo": "Importe, unidades y fecha de pedido contrastados",
+          "parcial": true,
+          "bbox": [
+            0,
+            4400,
+            550,
+            5300
+          ]
+        },
+        {
+          "archivo": "qa/recortes/74_aw_viabilidad_basica_03.jpg",
+          "titulo": "Límites de interpretación del dictamen histórico",
+          "parcial": true,
+          "bbox": [
+            0,
+            6050,
+            550,
+            6950
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 43,
+      "id": "91_aw_ranking_viable_reglas_v4",
+      "titulo": "Ranking por producto como operación analítica",
+      "capitulo": 9,
+      "original": "91_aw_ranking_viable_reglas_v4.jpg",
+      "captured_at": "2026-11-05T04:19:29.241Z",
+      "sha256_original": "20e7d2bef4e985ad340e294d996f6e48f282ba83b35489132917fe1fb5b56720",
+      "anchor": "fig_043",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/91_aw_ranking_viable_reglas_v4_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            550,
+            666
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 44,
+      "id": "103_wwi_necesidad_exacta_693_v4",
+      "titulo": "Necesidad de facturas de WideWorldImporters",
+      "capitulo": 9,
+      "original": "103_wwi_necesidad_exacta_693_v4.jpg",
+      "captured_at": "2026-11-05T04:31:08.251Z",
+      "sha256_original": "8cc0ce5756e83d025ece944a331ea26b732e1dd96a62007d5c03a5e11f7fe86c",
+      "anchor": "fig_044",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/103_wwi_necesidad_exacta_693_v4_01.jpg",
+          "titulo": "Objetivo íntegro de 693 caracteres y cautelas",
+          "parcial": true,
+          "bbox": [
+            0,
+            850,
+            550,
+            1750
+          ]
+        },
+        {
+          "archivo": "qa/recortes/103_wwi_necesidad_exacta_693_v4_02.jpg",
+          "titulo": "Cuatro preguntas seleccionadas y período mensual",
+          "parcial": true,
+          "bbox": [
+            0,
+            1700,
+            550,
+            2600
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 45,
+      "id": "106_wwi_viabilidad_v5_sin_margen",
+      "titulo": "Viabilidad corregida sin añadir utilidad",
+      "capitulo": 9,
+      "original": "106_wwi_viabilidad_v5_sin_margen.jpg",
+      "captured_at": "2026-11-05T04:38:18.357Z",
+      "sha256_original": "f91c597eb3882b817a21c9128f8eeb5350fb9f8d25bf62ebc7f8da1a6ca7bc3c",
+      "anchor": "fig_045",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/106_wwi_viabilidad_v5_sin_margen_01.jpg",
+          "titulo": "Viabilidad corregida: dieciséis directos y siete derivables",
+          "parcial": true,
+          "bbox": [
+            0,
+            2550,
+            550,
+            3450
+          ]
+        },
+        {
+          "archivo": "qa/recortes/106_wwi_viabilidad_v5_sin_margen_02.jpg",
+          "titulo": "Facturas distintas y promedio documental",
+          "parcial": true,
+          "bbox": [
+            0,
+            5700,
+            550,
+            6600
+          ]
+        },
+        {
+          "archivo": "qa/recortes/106_wwi_viabilidad_v5_sin_margen_03.jpg",
+          "titulo": "Límites reales: fecha, territorio y sólo cuatro indicadores",
+          "parcial": true,
+          "bbox": [
+            0,
+            8400,
+            550,
+            9300
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 46,
+      "id": "22h_aw_conceptos",
+      "titulo": "Conceptos de una propuesta histórica AW 98",
+      "capitulo": 10,
+      "original": "22h_aw_conceptos.jpg",
+      "captured_at": "2026-11-05T03:00:05.788Z",
+      "sha256_original": "531500930c2ca7ee641208594d9ad6d3e1cb45af7a30005dcac5fb4b8d34f85b",
+      "anchor": "fig_046",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/22h_aw_conceptos_01.jpg",
+          "titulo": "región del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            110,
+            895,
+            870
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 47,
+      "id": "22hb_aw_evidencia_concepto",
+      "titulo": "Evidencia de un concepto con clave compuesta",
+      "capitulo": 10,
+      "original": "22hb_aw_evidencia_concepto.jpg",
+      "captured_at": "2026-11-05T03:00:29.329Z",
+      "sha256_original": "76275f9a828b480e05837706d7d32c912e0c7e8454547ab1b78b460760a7cc88",
+      "anchor": "fig_047",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/22hb_aw_evidencia_concepto_01.jpg",
+          "titulo": "región del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            110,
+            895,
+            870
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 48,
+      "id": "23h_aw_propuesta_modelo",
+      "titulo": "Contrato dimensional histórico AW 98",
+      "capitulo": 10,
+      "original": "23h_aw_propuesta_modelo.jpg",
+      "captured_at": "2026-11-05T03:01:38.533Z",
+      "sha256_original": "84c95c49be6984bf9422a62abc139224b1afaafea93022c02e46fad7e3631a1a",
+      "anchor": "fig_048",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/23h_aw_propuesta_modelo_01.jpg",
+          "titulo": "región 1 de 5 del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            110,
+            895,
+            1010
+          ]
+        },
+        {
+          "archivo": "qa/recortes/23h_aw_propuesta_modelo_02.jpg",
+          "titulo": "región 2 de 5 del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            1246,
+            895,
+            2146
+          ]
+        },
+        {
+          "archivo": "qa/recortes/23h_aw_propuesta_modelo_03.jpg",
+          "titulo": "región 3 de 5 del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            2383,
+            895,
+            3283
+          ]
+        },
+        {
+          "archivo": "qa/recortes/23h_aw_propuesta_modelo_04.jpg",
+          "titulo": "región 4 de 5 del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            3520,
+            895,
+            4420
+          ]
+        },
+        {
+          "archivo": "qa/recortes/23h_aw_propuesta_modelo_05.jpg",
+          "titulo": "región 5 de 5 del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            4656,
+            895,
+            5556
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 49,
+      "id": "77_aw_propuesta120_validada",
+      "titulo": "Propuesta AW 120 depurada y validada",
+      "capitulo": 10,
+      "original": "77_aw_propuesta120_validada.jpg",
+      "captured_at": "2026-11-05T03:44:36.636Z",
+      "sha256_original": "64a7d43e3c85834ea8e320a5beebcba56140ac3d24e4f12c05a5c2b2b890d709",
+      "anchor": "fig_049",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/77_aw_propuesta120_validada_01.jpg",
+          "titulo": "Contrato 120: grano por línea y nueve advertencias",
+          "parcial": true,
+          "bbox": [
+            0,
+            1000,
+            550,
+            1900
+          ]
+        },
+        {
+          "archivo": "qa/recortes/77_aw_propuesta120_validada_02.jpg",
+          "titulo": "Dos KPI finales y trazabilidad de la necesidad",
+          "parcial": true,
+          "bbox": [
+            0,
+            2450,
+            550,
+            3350
+          ]
+        },
+        {
+          "archivo": "qa/recortes/77_aw_propuesta120_validada_03.jpg",
+          "titulo": "Cobertura descriptiva comprobada de producto y territorio",
+          "parcial": true,
+          "bbox": [
+            0,
+            7300,
+            550,
+            8200
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 50,
+      "id": "92_aw_conceptos_v7",
+      "titulo": "Conceptos encontrados y exclusión preventiva AW",
+      "capitulo": 10,
+      "original": "92_aw_conceptos_v7.jpg",
+      "captured_at": "2026-11-05T04:20:26.828Z",
+      "sha256_original": "7288001206f7e0ea68aacacbc2fd46e7146877332a31774faefcd866a06414cb",
+      "anchor": "fig_050",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/92_aw_conceptos_v7_01.jpg",
+          "titulo": "Conceptos de hecho y pedido confirmados",
+          "parcial": true,
+          "bbox": [
+            0,
+            1000,
+            550,
+            1900
+          ]
+        },
+        {
+          "archivo": "qa/recortes/92_aw_conceptos_v7_02.jpg",
+          "titulo": "Razón de venta excluida preventivamente",
+          "parcial": true,
+          "bbox": [
+            0,
+            2550,
+            550,
+            3450
+          ]
+        },
+        {
+          "archivo": "qa/recortes/92_aw_conceptos_v7_03.jpg",
+          "titulo": "Evidencia estructural de la exclusión",
+          "parcial": true,
+          "bbox": [
+            0,
+            3250,
+            550,
+            4100
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 51,
+      "id": "20h_aw_revision_historica",
+      "titulo": "Consulta de la revisión histórica AW 98",
+      "capitulo": 11,
+      "original": "20h_aw_revision_historica.jpg",
+      "captured_at": "2026-11-05T02:58:24.006Z",
+      "sha256_original": "14b184676895533d98600fbb77a925485341ea854b86ffacc0da6fc80c9fa864",
+      "anchor": "fig_051",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/20h_aw_revision_historica_01.jpg",
+          "titulo": "región del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            110,
+            1264,
+            870
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 52,
+      "id": "24h_aw_personalizacion",
+      "titulo": "Opciones de personalización de una versión histórica",
+      "capitulo": 11,
+      "original": "24h_aw_personalizacion.jpg",
+      "captured_at": "2026-11-05T03:02:17.298Z",
+      "sha256_original": "d3dc2485346d7e0f2b599ab544c6fd249057203eb3ab29e66ca9658b22545ab2",
+      "anchor": "fig_052",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/24h_aw_personalizacion_01.jpg",
+          "titulo": "región 1 de 4 del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            110,
+            895,
+            1010
+          ]
+        },
+        {
+          "archivo": "qa/recortes/24h_aw_personalizacion_02.jpg",
+          "titulo": "región 2 de 4 del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            1144,
+            895,
+            2044
+          ]
+        },
+        {
+          "archivo": "qa/recortes/24h_aw_personalizacion_03.jpg",
+          "titulo": "región 3 de 4 del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            2177,
+            895,
+            3077
+          ]
+        },
+        {
+          "archivo": "qa/recortes/24h_aw_personalizacion_04.jpg",
+          "titulo": "región 4 de 4 del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            3211,
+            895,
+            4111
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 53,
+      "id": "26h_aw_revision_evidencia",
+      "titulo": "Validación estructural de la versión histórica AW 98",
+      "capitulo": 11,
+      "original": "26h_aw_revision_evidencia.jpg",
+      "captured_at": "2026-11-05T03:03:36.628Z",
+      "sha256_original": "bb79c92631c62da33554017b5f1dd99112805ebaeecaefee17ffa5e8fb785341",
+      "anchor": "fig_053",
+      "regiones": [
+        {
+          "archivo": "capturas/26h_aw_revision_evidencia.jpg",
+          "titulo": "",
+          "parcial": false,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "numero": 54,
+      "id": "76_aw_personalizacion_dos_kpi",
+      "titulo": "Depuración manual AW para dos indicadores",
+      "capitulo": 11,
+      "original": "76_aw_personalizacion_dos_kpi.jpg",
+      "captured_at": "2026-11-05T03:44:25.155Z",
+      "sha256_original": "2b99e6817d00868d6ec91cadd55fe94ce5a8c621794f2d9061a65b5097df1c75",
+      "anchor": "fig_054",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/76_aw_personalizacion_dos_kpi_01.jpg",
+          "titulo": "Resumen, grano y selecciones de la personalización histórica",
+          "parcial": true,
+          "bbox": [
+            0,
+            1000,
+            550,
+            1900
+          ]
+        },
+        {
+          "archivo": "qa/recortes/76_aw_personalizacion_dos_kpi_02.jpg",
+          "titulo": "Identificador de pedido conservado y medidas retiradas",
+          "parcial": true,
+          "bbox": [
+            0,
+            2450,
+            550,
+            3350
+          ]
+        },
+        {
+          "archivo": "qa/recortes/76_aw_personalizacion_dos_kpi_03.jpg",
+          "titulo": "Sólo dos KPI marcados para la nueva versión",
+          "parcial": true,
+          "bbox": [
+            0,
+            4200,
+            550,
+            5100
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 55,
+      "id": "78_aw_revision120",
+      "titulo": "Revisión supervisada AW 120",
+      "capitulo": 11,
+      "original": "78_aw_revision120.jpg",
+      "captured_at": "2026-11-05T03:44:49.633Z",
+      "sha256_original": "9a4aa4bf95e68e86876edbc22d397a3f5708b457fa4c3ea60bd92cb5f251d93c",
+      "anchor": "fig_055",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/78_aw_revision120_01.jpg",
+          "titulo": "Revisión humana, comentario y advertencias",
+          "parcial": true,
+          "bbox": [
+            0,
+            900,
+            550,
+            1800
+          ]
+        },
+        {
+          "archivo": "qa/recortes/78_aw_revision120_02.jpg",
+          "titulo": "Integridad, referencias y consistencia",
+          "parcial": true,
+          "bbox": [
+            0,
+            1800,
+            550,
+            2700
+          ]
+        },
+        {
+          "archivo": "qa/recortes/78_aw_revision120_03.jpg",
+          "titulo": "Reproducción determinística y huellas coincidentes",
+          "parcial": true,
+          "bbox": [
+            0,
+            2450,
+            550,
+            3300
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 56,
+      "id": "79_aw_aprobada120",
+      "titulo": "Propuesta AW 120 aprobada",
+      "capitulo": 11,
+      "original": "79_aw_aprobada120.jpg",
+      "captured_at": "2026-11-05T03:48:52.605Z",
+      "sha256_original": "f60d18905e939935b80aabd6baec865820c14aa69e01a65c5e6350e3ada0bb7c",
+      "anchor": "fig_056",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/79_aw_aprobada120_01.jpg",
+          "titulo": "Versión 120 aprobada sin ejecutar el ETL",
+          "parcial": true,
+          "bbox": [
+            0,
+            800,
+            550,
+            1700
+          ]
+        },
+        {
+          "archivo": "qa/recortes/79_aw_aprobada120_02.jpg",
+          "titulo": "Comprobante humano y alcance registrado de la aprobación",
+          "parcial": true,
+          "bbox": [
+            0,
+            1450,
+            550,
+            2350
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 57,
+      "id": "93_aw_identidad_y_contrato_v7",
+      "titulo": "Cobertura de ranking y trazabilidad de pedido",
+      "capitulo": 11,
+      "original": "93_aw_identidad_y_contrato_v7.jpg",
+      "captured_at": "2026-11-05T04:21:09.535Z",
+      "sha256_original": "cc6a8564a7f0a80e945ca5d3da1be709f6482b614b4f464de868cc0817d7bf07",
+      "anchor": "fig_057",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/93_aw_identidad_y_contrato_v7_01.jpg",
+          "titulo": "Cobertura de ranking y claves de línea a pedido",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            403,
+            850
+          ]
+        },
+        {
+          "archivo": "qa/recortes/93_aw_identidad_y_contrato_v7_02.jpg",
+          "titulo": "Reporte de moneda y límites aceptados",
+          "parcial": true,
+          "bbox": [
+            0,
+            650,
+            403,
+            1500
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 58,
+      "id": "95_aw_122_aprobada",
+      "titulo": "Propuesta 122 aprobada con cuatro indicadores",
+      "capitulo": 11,
+      "original": "95_aw_122_aprobada.jpg",
+      "captured_at": "2026-11-05T04:23:15.315Z",
+      "sha256_original": "55ba72d9a8c3dd4936effec0088f56a05b5274a67a640afef93fc1465e5f28b2",
+      "anchor": "fig_058",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/95_aw_122_aprobada_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            550,
+            666
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 59,
+      "id": "108_wwi_editor_origen_validado",
+      "titulo": "Editor con la regla efectiva de facturas",
+      "capitulo": 11,
+      "original": "108_wwi_editor_origen_validado.jpg",
+      "captured_at": "2026-11-05T04:52:07.755Z",
+      "sha256_original": "dbc2fef66a089af77e679ba3803972533c0a1019e5fb257dc1e708dd27a240e5",
+      "anchor": "fig_059",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/108_wwi_editor_origen_validado_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            574,
+            667
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 60,
+      "id": "109_wwi_personalizacion_4_kpi",
+      "titulo": "Personalización del caso de facturas",
+      "capitulo": 11,
+      "original": "109_wwi_personalizacion_4_kpi.jpg",
+      "captured_at": "2026-11-05T04:52:20.152Z",
+      "sha256_original": "a541f0ff404f6440f891d850f60a725d537c2f5db17f34a84217572ca1cfa626",
+      "anchor": "fig_060",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/109_wwi_personalizacion_4_kpi_01.jpg",
+          "titulo": "Grano físico, resumen mensual y cuatro dimensiones",
+          "parcial": true,
+          "bbox": [
+            0,
+            900,
+            574,
+            1750
+          ]
+        },
+        {
+          "archivo": "qa/recortes/109_wwi_personalizacion_4_kpi_02.jpg",
+          "titulo": "Clave documental efectiva y precio adicional excluido",
+          "parcial": true,
+          "bbox": [
+            0,
+            2400,
+            574,
+            3300
+          ]
+        },
+        {
+          "archivo": "qa/recortes/109_wwi_personalizacion_4_kpi_03.jpg",
+          "titulo": "Promedio por factura como razón de agregados",
+          "parcial": true,
+          "bbox": [
+            0,
+            6400,
+            574,
+            7300
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 61,
+      "id": "110_wwi_124_evidencia",
+      "titulo": "Inicio de evidencia de la propuesta 124",
+      "capitulo": 11,
+      "original": "110_wwi_124_evidencia.jpg",
+      "captured_at": "2026-11-05T04:54:11.245Z",
+      "sha256_original": "639ee770a3941f5879667e7bc1466a8737f35354c0853f4059ef0ebe6560e9c8",
+      "anchor": "fig_061",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/110_wwi_124_evidencia_01.jpg",
+          "titulo": "Acción de verificación y alcance estructural",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            510,
+            850
+          ]
+        },
+        {
+          "archivo": "qa/recortes/110_wwi_124_evidencia_02.jpg",
+          "titulo": "Integridad y comienzo de referencias visibles de 124",
+          "parcial": true,
+          "bbox": [
+            0,
+            243,
+            510,
+            1093
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 62,
+      "id": "111_wwi_124_aprobada",
+      "titulo": "Propuesta 124 aprobada",
+      "capitulo": 11,
+      "original": "111_wwi_124_aprobada.jpg",
+      "captured_at": "2026-11-05T04:54:32.562Z",
+      "sha256_original": "55b3c9adcbfe6f5d47650ec7de7b4d4d303569a24b8c7137a227bceda6b0995d",
+      "anchor": "fig_062",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/111_wwi_124_aprobada_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            574,
+            667
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 63,
+      "id": "124-huellas-contrato-wwi",
+      "titulo": "Huellas coincidentes de la propuesta 124",
+      "capitulo": 11,
+      "original": "124-huellas-contrato-wwi.jpg",
+      "captured_at": "2026-11-05T05:51:33.863Z",
+      "sha256_original": "4f5b440402a924d8fb14b28fc35bc0a2f26cc16da17c03a5ae77d4c1b6e6f404",
+      "anchor": "fig_063",
+      "regiones": [
+        {
+          "archivo": "capturas/124-huellas-contrato-wwi.jpg",
+          "titulo": "",
+          "parcial": false,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "numero": 64,
+      "id": "125-editor-hija-habilitado",
+      "titulo": "Editor de nueva hija habilitado por acción explícita",
+      "capitulo": 11,
+      "original": "125-editor-hija-habilitado.jpg",
+      "captured_at": "2026-11-05T06:01:37.897Z",
+      "sha256_original": "595731be1b95ee208c7ae2103e8b07db446b0a33e5d2dfb1e9fe15e803e7bc23",
+      "anchor": "fig_064",
+      "regiones": [
+        {
+          "archivo": "capturas/125-editor-hija-habilitado.jpg",
+          "titulo": "",
+          "parcial": false,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "numero": 65,
+      "id": "27h_aw_etl_conciliacion",
+      "titulo": "Conciliación histórica AW ejecución 14",
+      "capitulo": 12,
+      "original": "27h_aw_etl_conciliacion.jpg",
+      "captured_at": "2026-11-05T03:04:59.952Z",
+      "sha256_original": "5c1bd17dd92a296668b6ec275bdc629863941ddbd8c38669d4acd31a92e77d40",
+      "anchor": "fig_065",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/27h_aw_etl_conciliacion_01.jpg",
+          "titulo": "región del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            110,
+            846,
+            870
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 66,
+      "id": "28h_aw_etl_elegir",
+      "titulo": "Selección histórica de propuesta AW",
+      "capitulo": 12,
+      "original": "28h_aw_etl_elegir.jpg",
+      "captured_at": "2026-11-05T03:08:57.783Z",
+      "sha256_original": "8e2210d7dc9640d76fd99df7ac879cec3cfd6c5133d909d9548cfbb9d8062ff9",
+      "anchor": "fig_066",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/28h_aw_etl_elegir_01.jpg",
+          "titulo": "región del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            110,
+            895,
+            870
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 67,
+      "id": "29h_aw_etl_indicadores",
+      "titulo": "Revisión histórica de indicadores AW",
+      "capitulo": 12,
+      "original": "29h_aw_etl_indicadores.jpg",
+      "captured_at": "2026-11-05T03:09:10.606Z",
+      "sha256_original": "09be96c8f0ca01afb40156fc99b034b82ce4457a7653b68d46fd0100a7e678d6",
+      "anchor": "fig_067",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/29h_aw_etl_indicadores_01.jpg",
+          "titulo": "región 1 de 3 del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            110,
+            895,
+            1010
+          ]
+        },
+        {
+          "archivo": "qa/recortes/29h_aw_etl_indicadores_02.jpg",
+          "titulo": "región 2 de 3 del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            668,
+            895,
+            1568
+          ]
+        },
+        {
+          "archivo": "qa/recortes/29h_aw_etl_indicadores_03.jpg",
+          "titulo": "región 3 de 3 del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            1225,
+            895,
+            2125
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 68,
+      "id": "30h_aw_etl_plan",
+      "titulo": "Plan ETL histórico AW",
+      "capitulo": 12,
+      "original": "30h_aw_etl_plan.jpg",
+      "captured_at": "2026-11-05T03:09:18.781Z",
+      "sha256_original": "1ec1c4cf96b62f9444b5f6a4d306a0661a8f7964531a6dd5e1afe36234ad6722",
+      "anchor": "fig_068",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/30h_aw_etl_plan_01.jpg",
+          "titulo": "región 1 de 4 del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            110,
+            895,
+            1010
+          ]
+        },
+        {
+          "archivo": "qa/recortes/30h_aw_etl_plan_02.jpg",
+          "titulo": "región 2 de 4 del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            1045,
+            895,
+            1945
+          ]
+        },
+        {
+          "archivo": "qa/recortes/30h_aw_etl_plan_03.jpg",
+          "titulo": "región 3 de 4 del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            1979,
+            895,
+            2879
+          ]
+        },
+        {
+          "archivo": "qa/recortes/30h_aw_etl_plan_04.jpg",
+          "titulo": "región 4 de 4 del contenido",
+          "parcial": true,
+          "bbox": [
+            0,
+            2914,
+            895,
+            3814
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 69,
+      "id": "31h_aw_etl_materializacion",
+      "titulo": "Materialización histórica AW",
+      "capitulo": 12,
+      "original": "31h_aw_etl_materializacion.jpg",
+      "captured_at": "2026-11-05T03:09:25.021Z",
+      "sha256_original": "9b205938dd784b650521589af49b39acdba3e09743adc5ffa65711e342b4228e",
+      "anchor": "fig_069",
+      "regiones": [
+        {
+          "archivo": "capturas/31h_aw_etl_materializacion.jpg",
+          "titulo": "",
+          "parcial": false,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "numero": 70,
+      "id": "80_aw_etl_dos_indicadores",
+      "titulo": "Selección de indicadores del ETL AW",
+      "capitulo": 12,
+      "original": "80_aw_etl_dos_indicadores.jpg",
+      "captured_at": "2026-11-05T03:49:23.803Z",
+      "sha256_original": "293e30f5dc9b077cc1feda403fea2729ed70478e23afb428bca71552d726fa71",
+      "anchor": "fig_070",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/80_aw_etl_dos_indicadores_01.jpg",
+          "titulo": "Dos indicadores seleccionados y sus recetas",
+          "parcial": true,
+          "bbox": [
+            0,
+            1100,
+            550,
+            2000
+          ]
+        },
+        {
+          "archivo": "qa/recortes/80_aw_etl_dos_indicadores_02.jpg",
+          "titulo": "Importe y unidades con período mensual",
+          "parcial": true,
+          "bbox": [
+            0,
+            1450,
+            550,
+            2350
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 71,
+      "id": "81_aw_etl_plan",
+      "titulo": "Plan del ETL básico de AdventureWorks",
+      "capitulo": 12,
+      "original": "81_aw_etl_plan.jpg",
+      "captured_at": "2026-11-05T03:49:35.015Z",
+      "sha256_original": "36b15d862d58239f1da4378c7e02526575c66710e5951fa6c01bc66738905701",
+      "anchor": "fig_071",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/81_aw_etl_plan_01.jpg",
+          "titulo": "Veintidós operaciones, tres dimensiones y tres medidas físicas",
+          "parcial": true,
+          "bbox": [
+            0,
+            1100,
+            550,
+            2000
+          ]
+        },
+        {
+          "archivo": "qa/recortes/81_aw_etl_plan_02.jpg",
+          "titulo": "Preparación de medidas, carga y conciliación",
+          "parcial": true,
+          "bbox": [
+            0,
+            4000,
+            550,
+            4900
+          ]
+        },
+        {
+          "archivo": "qa/recortes/81_aw_etl_plan_03.jpg",
+          "titulo": "Justificación y preparación explícita de la materialización",
+          "parcial": true,
+          "bbox": [
+            0,
+            4900,
+            550,
+            5750
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 72,
+      "id": "82_aw_expediente17_preparado",
+      "titulo": "Expediente AW 17 preparado",
+      "capitulo": 12,
+      "original": "82_aw_expediente17_preparado.jpg",
+      "captured_at": "2026-11-05T03:49:57.051Z",
+      "sha256_original": "bc9b3d01fc6f1207f766c5ccce7f304005904e6c7c6a94beee7d8c63e69c267c",
+      "anchor": "fig_072",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/82_aw_expediente17_preparado_01.jpg",
+          "titulo": "Expediente 17 preparado y trazable",
+          "parcial": true,
+          "bbox": [
+            0,
+            950,
+            550,
+            1850
+          ]
+        },
+        {
+          "archivo": "qa/recortes/82_aw_expediente17_preparado_02.jpg",
+          "titulo": "Materialización todavía pendiente y acción de carga",
+          "parcial": true,
+          "bbox": [
+            0,
+            1550,
+            550,
+            2450
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 73,
+      "id": "83_aw_etl17_conciliado_semantica",
+      "titulo": "ETL AW 17 conciliado y revisión semántica",
+      "capitulo": 12,
+      "original": "83_aw_etl17_conciliado_semantica.jpg",
+      "captured_at": "2026-11-05T03:52:28.025Z",
+      "sha256_original": "d4d8e503476c326b8a61fb6c6ecb04006a43795afa506a61fe57e66d2a80ba33",
+      "anchor": "fig_073",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/83_aw_etl17_conciliado_semantica_01.jpg",
+          "titulo": "Ejecución 17 conciliada con interpretación pendiente",
+          "parcial": true,
+          "bbox": [
+            0,
+            1050,
+            550,
+            1950
+          ]
+        },
+        {
+          "archivo": "qa/recortes/83_aw_etl17_conciliado_semantica_02.jpg",
+          "titulo": "Conciliación de 121317 filas y cuatro tablas",
+          "parcial": true,
+          "bbox": [
+            0,
+            1900,
+            550,
+            2800
+          ]
+        },
+        {
+          "archivo": "qa/recortes/83_aw_etl17_conciliado_semantica_03.jpg",
+          "titulo": "Indicadores calculados y revisión semántica pendiente",
+          "parcial": true,
+          "bbox": [
+            0,
+            2650,
+            550,
+            3550
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 74,
+      "id": "84_aw_semantica_revisada",
+      "titulo": "Revisión de etiquetas AW 17",
+      "capitulo": 12,
+      "original": "84_aw_semantica_revisada.jpg",
+      "captured_at": "2026-11-05T03:52:32.843Z",
+      "sha256_original": "bebbe143ea4a0ba04c388ae5eb9d5df18e6f7c5854d3321f890b8c1be106f6e5",
+      "anchor": "fig_074",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/84_aw_semantica_revisada_01.jpg",
+          "titulo": "Códigos originales excluidos de la publicación",
+          "parcial": true,
+          "bbox": [
+            0,
+            3050,
+            550,
+            3950
+          ]
+        },
+        {
+          "archivo": "qa/recortes/84_aw_semantica_revisada_02.jpg",
+          "titulo": "Etiquetas españolas, comentario y confirmación humana",
+          "parcial": true,
+          "bbox": [
+            0,
+            4050,
+            550,
+            4950
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 75,
+      "id": "85_aw_etl17_publicado",
+      "titulo": "ETL AW 17 validado con etiquetas publicadas",
+      "capitulo": 12,
+      "original": "85_aw_etl17_publicado.jpg",
+      "captured_at": "2026-11-05T03:52:46.030Z",
+      "sha256_original": "c78ba34741151affd0c6dbc5d8ea47ff6ca3682a60f05ced232bd9b1f3a4187f",
+      "anchor": "fig_075",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/85_aw_etl17_publicado_01.jpg",
+          "titulo": "Expediente 17 validado y conciliado",
+          "parcial": true,
+          "bbox": [
+            0,
+            1100,
+            550,
+            2000
+          ]
+        },
+        {
+          "archivo": "qa/recortes/85_aw_etl17_publicado_02.jpg",
+          "titulo": "Dos KPI y publicación de la revisión",
+          "parcial": true,
+          "bbox": [
+            0,
+            2600,
+            550,
+            3500
+          ]
+        },
+        {
+          "archivo": "qa/recortes/85_aw_etl17_publicado_03.jpg",
+          "titulo": "Traducciones publicadas y códigos originales conservados",
+          "parcial": true,
+          "bbox": [
+            0,
+            3250,
+            550,
+            4150
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 76,
+      "id": "96_aw_etl_cuatro_kpi",
+      "titulo": "Cuatro indicadores controlados para el ETL",
+      "capitulo": 12,
+      "original": "96_aw_etl_cuatro_kpi.jpg",
+      "captured_at": "2026-11-05T04:24:15.176Z",
+      "sha256_original": "c529558ade6217148f093e38f52535004a4f3c08fd07b30ab89e5125166b03e7",
+      "anchor": "fig_076",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/96_aw_etl_cuatro_kpi_01.jpg",
+          "titulo": "Cuatro recetas seleccionadas para pedidos",
+          "parcial": true,
+          "bbox": [
+            0,
+            1100,
+            550,
+            2000
+          ]
+        },
+        {
+          "archivo": "qa/recortes/96_aw_etl_cuatro_kpi_02.jpg",
+          "titulo": "Unidades y documentos comerciales distintos",
+          "parcial": true,
+          "bbox": [
+            0,
+            1750,
+            550,
+            2650
+          ]
+        },
+        {
+          "archivo": "qa/recortes/96_aw_etl_cuatro_kpi_03.jpg",
+          "titulo": "Promedio como importe dividido entre pedidos distintos",
+          "parcial": true,
+          "bbox": [
+            0,
+            2300,
+            550,
+            3150
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 77,
+      "id": "97_aw_expediente18_preparado",
+      "titulo": "Pantalla de datamart con fuente AdventureWorks",
+      "capitulo": 12,
+      "original": "97_aw_expediente18_preparado.jpg",
+      "captured_at": "2026-11-05T04:24:31.469Z",
+      "sha256_original": "c7c7c9de61bd84f064003b8e37f4a329cfc7d5a32897ff62a923ccb4c01f7d8d",
+      "anchor": "fig_077",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/97_aw_expediente18_preparado_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            550,
+            666
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 78,
+      "id": "98_aw_etl18_conciliado",
+      "titulo": "ETL 18 conciliado con los cuatro KPI",
+      "capitulo": 12,
+      "original": "98_aw_etl18_conciliado.jpg",
+      "captured_at": "2026-11-05T04:25:43.378Z",
+      "sha256_original": "be720a82e4a67ceb46d7b6b498125da8670e683033fa251ff17002a18d1da408",
+      "anchor": "fig_078",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/98_aw_etl18_conciliado_01.jpg",
+          "titulo": "Ejecución 18 conciliada e interpretación pendiente",
+          "parcial": true,
+          "bbox": [
+            0,
+            1100,
+            550,
+            2000
+          ]
+        },
+        {
+          "archivo": "qa/recortes/98_aw_etl18_conciliado_02.jpg",
+          "titulo": "Conciliación de filas y cinco tablas",
+          "parcial": true,
+          "bbox": [
+            0,
+            1900,
+            550,
+            2800
+          ]
+        },
+        {
+          "archivo": "qa/recortes/98_aw_etl18_conciliado_03.jpg",
+          "titulo": "Cuatro indicadores calculados y control de divisa",
+          "parcial": true,
+          "bbox": [
+            0,
+            2600,
+            550,
+            3500
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 79,
+      "id": "99_aw_etl18_publicado",
+      "titulo": "Expediente 18 validado y publicado",
+      "capitulo": 12,
+      "original": "99_aw_etl18_publicado.jpg",
+      "captured_at": "2026-11-05T04:26:32.201Z",
+      "sha256_original": "65f6ebafb6266db15f69ba40a78e388f7acc39123c4d506b0dc7d123666b7459",
+      "anchor": "fig_079",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/99_aw_etl18_publicado_01.jpg",
+          "titulo": "Estado validado de la ejecución 18",
+          "parcial": true,
+          "bbox": [
+            0,
+            1100,
+            550,
+            2000
+          ]
+        },
+        {
+          "archivo": "qa/recortes/99_aw_etl18_publicado_02.jpg",
+          "titulo": "Conciliación y calidad por tabla",
+          "parcial": true,
+          "bbox": [
+            0,
+            2050,
+            550,
+            2950
+          ]
+        },
+        {
+          "archivo": "qa/recortes/99_aw_etl18_publicado_03.jpg",
+          "titulo": "Indicadores y revisión semántica publicada",
+          "parcial": true,
+          "bbox": [
+            0,
+            3000,
+            550,
+            3900
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 80,
+      "id": "112_wwi_etl_4_indicadores",
+      "titulo": "Cuatro recetas del ETL de facturas",
+      "capitulo": 12,
+      "original": "112_wwi_etl_4_indicadores.jpg",
+      "captured_at": "2026-11-05T04:55:36.394Z",
+      "sha256_original": "e2b06788997949f758896bcbe250a6c42f65fccc4eb50c1e50d43689b49b9c36",
+      "anchor": "fig_080",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/112_wwi_etl_4_indicadores_01.jpg",
+          "titulo": "Selección de cuatro recetas e importe mensual",
+          "parcial": true,
+          "bbox": [
+            0,
+            1050,
+            574,
+            1950
+          ]
+        },
+        {
+          "archivo": "qa/recortes/112_wwi_etl_4_indicadores_02.jpg",
+          "titulo": "Unidades y conteo de facturas distintas",
+          "parcial": true,
+          "bbox": [
+            0,
+            1800,
+            574,
+            2700
+          ]
+        },
+        {
+          "archivo": "qa/recortes/112_wwi_etl_4_indicadores_03.jpg",
+          "titulo": "Razón promedio por factura y moneda de origen",
+          "parcial": true,
+          "bbox": [
+            0,
+            2200,
+            574,
+            3050
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 81,
+      "id": "113_wwi_expediente19_preparado",
+      "titulo": "Pantalla de datamart con fuente WideWorldImporters",
+      "capitulo": 12,
+      "original": "113_wwi_expediente19_preparado.jpg",
+      "captured_at": "2026-11-05T04:55:52.124Z",
+      "sha256_original": "32a0b2d6afa9c7e46f9722f7c428b9f0f564052cf21551c350154193610c9c39",
+      "anchor": "fig_081",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/113_wwi_expediente19_preparado_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            574,
+            667
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 82,
+      "id": "114_wwi_etl19_conciliado",
+      "titulo": "Expediente 19 validado y conciliado",
+      "capitulo": 12,
+      "original": "114_wwi_etl19_conciliado.jpg",
+      "captured_at": "2026-11-05T04:57:34.261Z",
+      "sha256_original": "ec8965e31da8b9606fe001d8b71865943fc7ca5b23d113e1a39580311ea4dae2",
+      "anchor": "fig_082",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/114_wwi_etl19_conciliado_01.jpg",
+          "titulo": "Ejecución 19 validada y límite de divisa",
+          "parcial": true,
+          "bbox": [
+            0,
+            1050,
+            574,
+            1950
+          ]
+        },
+        {
+          "archivo": "qa/recortes/114_wwi_etl19_conciliado_02.jpg",
+          "titulo": "Conciliación de filas y cinco tablas",
+          "parcial": true,
+          "bbox": [
+            0,
+            1800,
+            574,
+            2700
+          ]
+        },
+        {
+          "archivo": "qa/recortes/114_wwi_etl19_conciliado_03.jpg",
+          "titulo": "Cuatro indicadores conciliados en moneda de origen",
+          "parcial": true,
+          "bbox": [
+            0,
+            2550,
+            574,
+            3450
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 83,
+      "id": "126-aw-indicadores-sin-solape",
+      "titulo": "Indicadores conciliados de AdventureWorks con disposición corregida",
+      "capitulo": 12,
+      "original": "126-aw-indicadores-sin-solape.jpg",
+      "captured_at": "2026-11-05T13:36:52.824431+00:00",
+      "sha256_original": "05a3fffe794e18c14f3b402bc689b8a0efcdf9459463f5572476653e871e589c",
+      "anchor": "fig_083",
+      "regiones": [
+        {
+          "archivo": "capturas/126-aw-indicadores-sin-solape.jpg",
+          "titulo": "",
+          "parcial": false,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "numero": 84,
+      "id": "127-wwi-indicadores-sin-solape",
+      "titulo": "Indicadores conciliados de WideWorldImporters con disposición corregida",
+      "capitulo": 12,
+      "original": "127-wwi-indicadores-sin-solape.jpg",
+      "captured_at": "2026-11-05T13:39:34.116393+00:00",
+      "sha256_original": "b3c7f00b78d2750cdd67f685cd4e1a512e34e1ed33f93dbd52b5b7b46443c122",
+      "anchor": "fig_084",
+      "regiones": [
+        {
+          "archivo": "capturas/127-wwi-indicadores-sin-solape.jpg",
+          "titulo": "",
+          "parcial": false,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "numero": 85,
+      "id": "37h_aw_analitica_ejecutiva",
+      "titulo": "Panel ejecutivo histórico de AdventureWorks",
+      "capitulo": 13,
+      "original": "37h_aw_analitica_ejecutiva.jpg",
+      "captured_at": "2026-11-05T03:14:12.837Z",
+      "sha256_original": "0e2a72443174d995ed41993493d1666a37b14e406b6108c0015881db140efecc",
+      "anchor": "fig_085",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/37h_aw_analitica_ejecutiva_01.jpg",
+          "titulo": "Contexto, filtros e indicadores históricos AW",
+          "parcial": true,
+          "bbox": [
+            0,
+            520,
+            1264,
+            1420
+          ]
+        },
+        {
+          "archivo": "qa/recortes/37h_aw_analitica_ejecutiva_02.jpg",
+          "titulo": "Evolución, productos y territorios AW",
+          "parcial": true,
+          "bbox": [
+            0,
+            1400,
+            1264,
+            2300
+          ]
+        },
+        {
+          "archivo": "qa/recortes/37h_aw_analitica_ejecutiva_03.jpg",
+          "titulo": "Consulta contextual y referencia de ejecución histórica",
+          "parcial": true,
+          "bbox": [
+            0,
+            2245,
+            1264,
+            3145
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 86,
+      "id": "38h_aw_filtros_2013_northwest",
+      "titulo": "Filtros AW:2013 y Northwest",
+      "capitulo": 13,
+      "original": "38h_aw_filtros_2013_northwest.jpg",
+      "captured_at": "2026-11-05T03:15:01.516Z",
+      "sha256_original": "faa4574903d42dbf9d15552ccf314e930265ae4461a3fe470f987abff8980ba4",
+      "anchor": "fig_086",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/38h_aw_filtros_2013_northwest_01.jpg",
+          "titulo": "Filtros 2013 y Northwest e indicadores",
+          "parcial": true,
+          "bbox": [
+            0,
+            520,
+            1264,
+            1420
+          ]
+        },
+        {
+          "archivo": "qa/recortes/38h_aw_filtros_2013_northwest_02.jpg",
+          "titulo": "Gráficos e interpretación con los filtros",
+          "parcial": true,
+          "bbox": [
+            0,
+            1400,
+            1264,
+            2300
+          ]
+        },
+        {
+          "archivo": "qa/recortes/38h_aw_filtros_2013_northwest_03.jpg",
+          "titulo": "Consulta y trazabilidad del alcance filtrado",
+          "parcial": true,
+          "bbox": [
+            0,
+            2233,
+            1264,
+            3133
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 87,
+      "id": "39h_aw_detalle_producto",
+      "titulo": "Detalle interactivo de un producto AW",
+      "capitulo": 13,
+      "original": "39h_aw_detalle_producto.jpg",
+      "captured_at": "2026-11-05T03:15:12.044Z",
+      "sha256_original": "bbca194a3ee7a230a587ab41ec36c720bd1391d0d9a8b85e20cf3d8e20e312e0",
+      "anchor": "fig_087",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/39h_aw_detalle_producto_01.jpg",
+          "titulo": "Filtros y productos del alcance",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            495,
+            800
+          ]
+        },
+        {
+          "archivo": "qa/recortes/39h_aw_detalle_producto_02.jpg",
+          "titulo": "Producto seleccionado y participación visible",
+          "parcial": true,
+          "bbox": [
+            0,
+            340,
+            495,
+            1140
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 88,
+      "id": "41h_aw_vista_analitica_unidades",
+      "titulo": "Vista analítica AW con datos del gráfico",
+      "capitulo": 13,
+      "original": "41h_aw_vista_analitica_unidades.jpg",
+      "captured_at": "2026-11-05T03:16:07.645Z",
+      "sha256_original": "40465c7e77520b6de5d17ebe5208970c6870f5ee7d9bdf2ea00617c1a633f439",
+      "anchor": "fig_088",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/41h_aw_vista_analitica_unidades_01.jpg",
+          "titulo": "Indicadores, selección y evolución",
+          "parcial": true,
+          "bbox": [
+            0,
+            780,
+            1264,
+            1680
+          ]
+        },
+        {
+          "archivo": "qa/recortes/41h_aw_vista_analitica_unidades_02.jpg",
+          "titulo": "Datos del gráfico y ranking de productos",
+          "parcial": true,
+          "bbox": [
+            0,
+            1640,
+            1264,
+            2540
+          ]
+        },
+        {
+          "archivo": "qa/recortes/41h_aw_vista_analitica_unidades_03.jpg",
+          "titulo": "Detalle seleccionado y clientes principales",
+          "parcial": true,
+          "bbox": [
+            0,
+            2750,
+            1264,
+            3650
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 89,
+      "id": "42h_wwi_analitica_ejecutiva",
+      "titulo": "Panel ejecutivo histórico de WideWorldImporters",
+      "capitulo": 13,
+      "original": "42h_wwi_analitica_ejecutiva.jpg",
+      "captured_at": "2026-11-05T03:16:22.849Z",
+      "sha256_original": "c925811985cfbd40efef1c3f340dc788336ef03dd751ab5445a6d0e4eac610b1",
+      "anchor": "fig_089",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/42h_wwi_analitica_ejecutiva_01.jpg",
+          "titulo": "Contexto e indicadores históricos WWI",
+          "parcial": true,
+          "bbox": [
+            0,
+            520,
+            1264,
+            1420
+          ]
+        },
+        {
+          "archivo": "qa/recortes/42h_wwi_analitica_ejecutiva_02.jpg",
+          "titulo": "Gráficos y hallazgos del panel WWI",
+          "parcial": true,
+          "bbox": [
+            0,
+            1400,
+            1264,
+            2300
+          ]
+        },
+        {
+          "archivo": "qa/recortes/42h_wwi_analitica_ejecutiva_03.jpg",
+          "titulo": "Consulta contextual del expediente histórico WWI",
+          "parcial": true,
+          "bbox": [
+            0,
+            2194,
+            1264,
+            3094
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 90,
+      "id": "86_aw_analitica17_publicada",
+      "titulo": "Panel nuevo de AdventureWorks17/120",
+      "capitulo": 13,
+      "original": "86_aw_analitica17_publicada.jpg",
+      "captured_at": "2026-11-05T03:53:06.330Z",
+      "sha256_original": "120d274c4efe8186e3e7246b259095ddfdb26c68299ed1ddbd34b57b850abec1",
+      "anchor": "fig_090",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/86_aw_analitica17_publicada_01.jpg",
+          "titulo": "Fuente, propuesta 120 y ejecución 17",
+          "parcial": true,
+          "bbox": [
+            0,
+            260,
+            550,
+            1110
+          ]
+        },
+        {
+          "archivo": "qa/recortes/86_aw_analitica17_publicada_02.jpg",
+          "titulo": "Filtros, exportaciones y dos KPI publicados",
+          "parcial": true,
+          "bbox": [
+            0,
+            1050,
+            550,
+            1950
+          ]
+        },
+        {
+          "archivo": "qa/recortes/86_aw_analitica17_publicada_03.jpg",
+          "titulo": "Productos líderes y distribución territorial",
+          "parcial": true,
+          "bbox": [
+            0,
+            1800,
+            550,
+            2700
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 91,
+      "id": "100_aw_analitica18_publicada",
+      "titulo": "Identidad del panel de AdventureWorks18",
+      "capitulo": 13,
+      "original": "100_aw_analitica18_publicada.jpg",
+      "captured_at": "2026-11-05T04:27:22.499Z",
+      "sha256_original": "d00c5fab71864b529b5fd21ba4606ba0167d27c981f848c2c16cf0db6dec409a",
+      "anchor": "fig_091",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/100_aw_analitica18_publicada_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            550,
+            666
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 92,
+      "id": "102_cambio_fuente_aw18_wwi16",
+      "titulo": "Contexto WideWorldImporters16 tras cambiar fuente",
+      "capitulo": 13,
+      "original": "102_cambio_fuente_aw18_wwi16.jpg",
+      "captured_at": "2026-11-05T04:30:10.031Z",
+      "sha256_original": "30623ff9338ce633b0db16fc0da80f155d3026b61fe547eb95d87f6ca24ca6e7",
+      "anchor": "fig_092",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/102_cambio_fuente_aw18_wwi16_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            550,
+            666
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 93,
+      "id": "115_wwi_analitica19_publicada",
+      "titulo": "Identidad del panel de WideWorldImporters19",
+      "capitulo": 13,
+      "original": "115_wwi_analitica19_publicada.jpg",
+      "captured_at": "2026-11-05T04:59:01.228Z",
+      "sha256_original": "9c0db7382e4d67ebe9935d8b27b320673ed409655d07b198d18fb38860d2c059",
+      "anchor": "fig_093",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/115_wwi_analitica19_publicada_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            574,
+            667
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 94,
+      "id": "117_wwi_aviso_vigencia_dimensional",
+      "titulo": "Aviso determinista de vigencia dimensional",
+      "capitulo": 13,
+      "original": "117_wwi_aviso_vigencia_dimensional.jpg",
+      "captured_at": "2026-11-05T05:28:55.198Z",
+      "sha256_original": "5296085c77301cf7516975a8c2c96e19582eb00a41eeca17dce8f000193a863a",
+      "anchor": "fig_094",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/117_wwi_aviso_vigencia_dimensional_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            574,
+            667
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 95,
+      "id": "40h_aw_copiloto_top3",
+      "titulo": "Copiloto AW:Top 3 con denominador verificable",
+      "capitulo": 14,
+      "original": "40h_aw_copiloto_top3.jpg",
+      "captured_at": "2026-11-05T03:15:47.888Z",
+      "sha256_original": "66ec2cae770adc9fc652916094ac79a5146705133120e507760ada49687ecaf6",
+      "anchor": "fig_095",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/40h_aw_copiloto_top3_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            895,
+            880
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 96,
+      "id": "43h_wwi_copiloto_limites",
+      "titulo": "Copiloto WWI con límites de moneda y utilidad",
+      "capitulo": 14,
+      "original": "43h_wwi_copiloto_limites.jpg",
+      "captured_at": "2026-11-05T03:17:01.354Z",
+      "sha256_original": "9b02ebbe874229585ae31be073277a4b7db8bd4f856d0bb3a5c9f8b7cc6fe6bb",
+      "anchor": "fig_096",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/43h_wwi_copiloto_limites_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            895,
+            880
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 97,
+      "id": "88_aw_copiloto17_revisado",
+      "titulo": "Consulta interpretada del copiloto AW 17",
+      "capitulo": 14,
+      "original": "88_aw_copiloto17_revisado.jpg",
+      "captured_at": "2026-11-05T04:02:19.599Z",
+      "sha256_original": "2e99170b0aa0e75f7bd3ea4123030db5a8f9d8b8f14f85c710e6bdf68dbfc730",
+      "anchor": "fig_097",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/88_aw_copiloto17_revisado_01.jpg",
+          "titulo": "Mismos filtros 2013 y Northwest",
+          "parcial": true,
+          "bbox": [
+            0,
+            1050,
+            550,
+            1950
+          ]
+        },
+        {
+          "archivo": "qa/recortes/88_aw_copiloto17_revisado_02.jpg",
+          "titulo": "Top 3 interpretado y denominador antes del límite",
+          "parcial": true,
+          "bbox": [
+            0,
+            3370,
+            550,
+            4270
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 98,
+      "id": "118_wwi_chat19_respuesta_corregida",
+      "titulo": "Respuesta corregida sobre la vigencia del territorio",
+      "capitulo": 14,
+      "original": "118_wwi_chat19_respuesta_corregida.jpg",
+      "captured_at": "2026-11-05T05:30:45.550Z",
+      "sha256_original": "8f80a34e0fab90afd0cbe27ec2a0ba338153d8446d1cd5491df9541954cc67b4",
+      "anchor": "fig_098",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/118_wwi_chat19_respuesta_corregida_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            574,
+            667
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 99,
+      "id": "119_wwi_chat19_cautela_plataforma",
+      "titulo": "Cautela de plataforma y preguntas disponibles",
+      "capitulo": 14,
+      "original": "119_wwi_chat19_cautela_plataforma.jpg",
+      "captured_at": "2026-11-05T05:31:04.444Z",
+      "sha256_original": "61e6cac1bd2bb6916a60f84ecebd15b5a9baeb793a305b2cdde10b710dd1b69e",
+      "anchor": "fig_099",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/119_wwi_chat19_cautela_plataforma_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            574,
+            667
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 100,
+      "id": "120_wwi_sugerencia_unidades_cliente",
+      "titulo": "Consulta sugerida de unidades por cliente",
+      "capitulo": 14,
+      "original": "120_wwi_sugerencia_unidades_cliente.jpg",
+      "captured_at": "2026-11-05T05:38:33.793Z",
+      "sha256_original": "20926907d7ebe86e97895da9cb8f34bd03f3a243e405c219cd52ac2ad01f22bf",
+      "anchor": "fig_100",
+      "regiones": [
+        {
+          "archivo": "capturas/120_wwi_sugerencia_unidades_cliente.jpg",
+          "titulo": "",
+          "parcial": false,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "numero": 101,
+      "id": "121-copiloto-aw-final",
+      "titulo": "AdventureWorks respuesta final contrastada",
+      "capitulo": 14,
+      "original": "121-copiloto-aw-final.jpg",
+      "captured_at": "2026-11-05T05:46:20.062Z",
+      "sha256_original": "77b689d1bf7d567aba019023b38e73a495190474fae99f48df7bbb2efefcf60a",
+      "anchor": "fig_101",
+      "regiones": [
+        {
+          "archivo": "capturas/121-copiloto-aw-final.jpg",
+          "titulo": "",
+          "parcial": false,
+          "bbox": null
+        }
+      ]
+    },
+    {
+      "numero": 102,
+      "id": "75_aw_contrato119_antes_depuracion",
+      "titulo": "Contrato AW 119 antes de depurar indicadores",
+      "capitulo": 15,
+      "original": "75_aw_contrato119_antes_depuracion.jpg",
+      "captured_at": "2026-11-05T03:43:42.044Z",
+      "sha256_original": "e1bf0fc8f7ef332f6a7f09bafaa6ee55c6e67ba3f4fdc8bd90ffd41136ba6ced",
+      "anchor": "fig_102",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/75_aw_contrato119_antes_depuracion_01.jpg",
+          "titulo": "Contrato 119 antes de depurar: once advertencias",
+          "parcial": true,
+          "bbox": [
+            0,
+            1000,
+            550,
+            1900
+          ]
+        },
+        {
+          "archivo": "qa/recortes/75_aw_contrato119_antes_depuracion_02.jpg",
+          "titulo": "Medidas adicionales y conteo rotulado como líneas",
+          "parcial": true,
+          "bbox": [
+            0,
+            1750,
+            550,
+            2650
+          ]
+        },
+        {
+          "archivo": "qa/recortes/75_aw_contrato119_antes_depuracion_03.jpg",
+          "titulo": "Ajustes históricos que motivan la depuración",
+          "parcial": true,
+          "bbox": [
+            0,
+            8500,
+            550,
+            9400
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 103,
+      "id": "89_aw_repeticion_exacta_postfix",
+      "titulo": "Repetición exacta del escenario AW detallado",
+      "capitulo": 15,
+      "original": "89_aw_repeticion_exacta_postfix.jpg",
+      "captured_at": "2026-11-05T04:03:14.031Z",
+      "sha256_original": "076b4759931b766a142a120782f209e67e858df3aac4a35c1526e3bbcd4d271e",
+      "anchor": "fig_103",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/89_aw_repeticion_exacta_postfix_01.jpg",
+          "titulo": "Objetivo original completo de 532 caracteres",
+          "parcial": true,
+          "bbox": [
+            0,
+            850,
+            550,
+            1750
+          ]
+        },
+        {
+          "archivo": "qa/recortes/89_aw_repeticion_exacta_postfix_02.jpg",
+          "titulo": "Cuatro preguntas y período mensual conservados",
+          "parcial": true,
+          "bbox": [
+            0,
+            1700,
+            550,
+            2600
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 104,
+      "id": "17b_aw_sugerencias_limitadas",
+      "titulo": "Sugerencias de necesidad y controles",
+      "capitulo": 16,
+      "original": "17b_aw_sugerencias_limitadas.jpg",
+      "captured_at": "2026-11-05T02:42:52.144Z",
+      "sha256_original": "6f029094d3097152c59b6bc9024680e8f505f79988f9e4eba86e82ad6ce34891",
+      "anchor": "fig_104",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/17b_aw_sugerencias_limitadas_01.jpg",
+          "titulo": "sugerencia y límites identificados",
+          "parcial": true,
+          "bbox": [
+            0,
+            2000,
+            550,
+            2620
+          ]
+        },
+        {
+          "archivo": "qa/recortes/17b_aw_sugerencias_limitadas_02.jpg",
+          "titulo": "respaldo insuficiente y uso deshabilitado",
+          "parcial": true,
+          "bbox": [
+            0,
+            2590,
+            550,
+            3110
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 105,
+      "id": "19_aw_viabilidad_objetivo_rechazado",
+      "titulo": "Rechazo de una revisión que altera el objetivo",
+      "capitulo": 16,
+      "original": "19_aw_viabilidad_objetivo_rechazado.jpg",
+      "captured_at": "2026-11-05T02:45:49.542Z",
+      "sha256_original": "9ec2aa87dda233326e5dc95ff72f77c47626446c4904ba01f45c59f1670cc3e9",
+      "anchor": "fig_105",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/19_aw_viabilidad_objetivo_rechazado_01.jpg",
+          "titulo": "rechazo y objetivo conservado",
+          "parcial": true,
+          "bbox": [
+            0,
+            780,
+            550,
+            1500
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 106,
+      "id": "35_aw_groq_limite",
+      "titulo": "Revisión nueva bloqueada por límite de Groq",
+      "capitulo": 16,
+      "original": "35_aw_groq_limite.jpg",
+      "captured_at": "2026-11-05T03:13:24.142Z",
+      "sha256_original": "c6f05c931007d75f525bc7756e4f616ac09cbe57ff4162f31f41d6cde0cdf9e9",
+      "anchor": "fig_106",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/35_aw_groq_limite_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            1265,
+            889
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 107,
+      "id": "44_wwi_necesidad_nueva",
+      "titulo": "Nueva necesidad mensual WWI",
+      "capitulo": 16,
+      "original": "44_wwi_necesidad_nueva.jpg",
+      "captured_at": "2026-11-05T03:17:35.854Z",
+      "sha256_original": "d4ebe4df33aa2904859f9dff8db110da89f8149f3a9bf65c6faf47ca1beaac95",
+      "anchor": "fig_107",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/44_wwi_necesidad_nueva_01.jpg",
+          "titulo": "Objetivo inicial WWI y consentimiento",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            895,
+            800
+          ]
+        },
+        {
+          "archivo": "qa/recortes/44_wwi_necesidad_nueva_02.jpg",
+          "titulo": "Preguntas incluidas y período mensual",
+          "parcial": true,
+          "bbox": [
+            0,
+            356,
+            895,
+            1156
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 108,
+      "id": "45_wwi_viabilidad_limites",
+      "titulo": "Viabilidad WWI con decisiones del analista",
+      "capitulo": 16,
+      "original": "45_wwi_viabilidad_limites.jpg",
+      "captured_at": "2026-11-05T03:18:40.573Z",
+      "sha256_original": "60655e964b31bb0d40681b2ae465831432ba59b77dce036fe6fe177e35abcaca",
+      "anchor": "fig_108",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/45_wwi_viabilidad_limites_01.jpg",
+          "titulo": "Referencias para importe, unidades y facturas",
+          "parcial": true,
+          "bbox": [
+            0,
+            1200,
+            812,
+            2100
+          ]
+        },
+        {
+          "archivo": "qa/recortes/45_wwi_viabilidad_limites_02.jpg",
+          "titulo": "Decisiones sobre territorio y granularidad",
+          "parcial": true,
+          "bbox": [
+            0,
+            2100,
+            812,
+            3000
+          ]
+        },
+        {
+          "archivo": "qa/recortes/45_wwi_viabilidad_limites_03.jpg",
+          "titulo": "Límites de interpretación pendientes de aceptación",
+          "parcial": true,
+          "bbox": [
+            0,
+            2513,
+            812,
+            3413
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 109,
+      "id": "46_wwi_necesidad_precisada",
+      "titulo": "Necesidad WWI con grano y territorio explícitos",
+      "capitulo": 16,
+      "original": "46_wwi_necesidad_precisada.jpg",
+      "captured_at": "2026-11-05T03:18:53.291Z",
+      "sha256_original": "b54f4629062da33693558a3a1fb005489315a5c5cfbb86e4e446e3f4059632bd",
+      "anchor": "fig_109",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/46_wwi_necesidad_precisada_01.jpg",
+          "titulo": "Objetivo precisado y alcance territorial",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            895,
+            800
+          ]
+        },
+        {
+          "archivo": "qa/recortes/46_wwi_necesidad_precisada_02.jpg",
+          "titulo": "Preguntas y periodicidad de la necesidad precisada",
+          "parcial": true,
+          "bbox": [
+            0,
+            356,
+            895,
+            1156
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 110,
+      "id": "47_wwi_limites_revisados",
+      "titulo": "Incidencia histórica de falso requisito de margen",
+      "capitulo": 16,
+      "original": "47_wwi_limites_revisados.jpg",
+      "captured_at": "2026-11-05T03:20:19.278Z",
+      "sha256_original": "efbd7f3b949d51aa2b2b7daedd29066be98fbce4621c365f78d495176e6bdac6",
+      "anchor": "fig_110",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/47_wwi_limites_revisados_01.jpg",
+          "titulo": "Falso requisito de margen",
+          "parcial": true,
+          "bbox": [
+            0,
+            1200,
+            812,
+            2100
+          ]
+        },
+        {
+          "archivo": "qa/recortes/47_wwi_limites_revisados_02.jpg",
+          "titulo": "Cliente, territorio actual y decisiones",
+          "parcial": true,
+          "bbox": [
+            0,
+            2100,
+            812,
+            3000
+          ]
+        },
+        {
+          "archivo": "qa/recortes/47_wwi_limites_revisados_03.jpg",
+          "titulo": "Límites aceptados por el analista",
+          "parcial": true,
+          "bbox": [
+            0,
+            2462,
+            812,
+            3362
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 111,
+      "id": "48_wwi_conceptos_nuevos",
+      "titulo": "Conceptos nuevos WWI y exclusión preventiva",
+      "capitulo": 16,
+      "original": "48_wwi_conceptos_nuevos.jpg",
+      "captured_at": "2026-11-05T03:21:35.131Z",
+      "sha256_original": "358924a812b5e12dc098429d30a413fb4b9686f37a6d3272c7bbd0cedb17fe51",
+      "anchor": "fig_111",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/48_wwi_conceptos_nuevos_01.jpg",
+          "titulo": "Conceptos de hecho, importe, unidades y facturas",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            895,
+            900
+          ]
+        },
+        {
+          "archivo": "qa/recortes/48_wwi_conceptos_nuevos_02.jpg",
+          "titulo": "Fecha y exclusión preventiva del territorio",
+          "parcial": true,
+          "bbox": [
+            0,
+            900,
+            895,
+            1800
+          ]
+        },
+        {
+          "archivo": "qa/recortes/48_wwi_conceptos_nuevos_03.jpg",
+          "titulo": "Evidencia y acciones de los conceptos",
+          "parcial": true,
+          "bbox": [
+            0,
+            1357,
+            895,
+            2257
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 112,
+      "id": "49_wwi_propuesta_bloqueada",
+      "titulo": "Propuesta WWI bloqueada por KPI semánticamente incorrecto",
+      "capitulo": 16,
+      "original": "49_wwi_propuesta_bloqueada.jpg",
+      "captured_at": "2026-11-05T03:22:00.637Z",
+      "sha256_original": "63d751b04bc7ad6cbbb99f987f33a2b92f9fe76aa498624db9449e18951c220a",
+      "anchor": "fig_112",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/49_wwi_propuesta_bloqueada_01.jpg",
+          "titulo": "Propuesta histórica bloqueada y modelo",
+          "parcial": true,
+          "bbox": [
+            0,
+            650,
+            1264,
+            1550
+          ]
+        },
+        {
+          "archivo": "qa/recortes/49_wwi_propuesta_bloqueada_02.jpg",
+          "titulo": "Plan y advertencias de la propuesta bloqueada",
+          "parcial": true,
+          "bbox": [
+            0,
+            4750,
+            1264,
+            5650
+          ]
+        },
+        {
+          "archivo": "qa/recortes/49_wwi_propuesta_bloqueada_03.jpg",
+          "titulo": "Decisiones que requieren intervención",
+          "parcial": true,
+          "bbox": [
+            0,
+            6000,
+            1264,
+            6900
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 113,
+      "id": "50_wwi_viabilidad_final",
+      "titulo": "Viabilidad final WWI y límites aceptados",
+      "capitulo": 16,
+      "original": "50_wwi_viabilidad_final.jpg",
+      "captured_at": "2026-11-05T03:23:51.799Z",
+      "sha256_original": "1ec41e0a80dbc08d9cc4dbd5e42398b8080225a030ce93c1c5a7c6d359da7bbc",
+      "anchor": "fig_113",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/50_wwi_viabilidad_final_01.jpg",
+          "titulo": "Fórmula controlada y referencias de medidas",
+          "parcial": true,
+          "bbox": [
+            0,
+            1200,
+            812,
+            2100
+          ]
+        },
+        {
+          "archivo": "qa/recortes/50_wwi_viabilidad_final_02.jpg",
+          "titulo": "Referencias de fecha, producto, cliente y territorio",
+          "parcial": true,
+          "bbox": [
+            0,
+            2100,
+            812,
+            3000
+          ]
+        },
+        {
+          "archivo": "qa/recortes/50_wwi_viabilidad_final_03.jpg",
+          "titulo": "Límites finales aceptados y alcance de la revisión",
+          "parcial": true,
+          "bbox": [
+            0,
+            2880,
+            812,
+            3780
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 114,
+      "id": "51_wwi_identidad_cobertura",
+      "titulo": "Cobertura descriptiva comprobada WWI",
+      "capitulo": 16,
+      "original": "51_wwi_identidad_cobertura.jpg",
+      "captured_at": "2026-11-05T03:25:04.882Z",
+      "sha256_original": "7ac10287ce3e7ff913ea9bc01afaa7ccb8779dfdafd3722f775d9a9a7457db43",
+      "anchor": "fig_114",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/51_wwi_identidad_cobertura_01.jpg",
+          "titulo": "Rutas descriptivas y cobertura aprobada",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            812,
+            850
+          ]
+        },
+        {
+          "archivo": "qa/recortes/51_wwi_identidad_cobertura_02.jpg",
+          "titulo": "Muestra controlada y cobertura por entidad",
+          "parcial": true,
+          "bbox": [
+            0,
+            804,
+            812,
+            1654
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 115,
+      "id": "52_wwi_personalizacion",
+      "titulo": "Personalización nueva WWI antes del ajuste",
+      "capitulo": 16,
+      "original": "52_wwi_personalizacion.jpg",
+      "captured_at": "2026-11-05T03:25:37.098Z",
+      "sha256_original": "406bb5f2d8d835add70d13e6d48c31bddbc35202f4c07bd7e857c145ddc6009b",
+      "anchor": "fig_115",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/52_wwi_personalizacion_01.jpg",
+          "titulo": "Personalización histórica de medidas",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            895,
+            900
+          ]
+        },
+        {
+          "archivo": "qa/recortes/52_wwi_personalizacion_02.jpg",
+          "titulo": "Conteo y promedio antes del ajuste",
+          "parcial": true,
+          "bbox": [
+            0,
+            900,
+            895,
+            1800
+          ]
+        },
+        {
+          "archivo": "qa/recortes/52_wwi_personalizacion_03.jpg",
+          "titulo": "Corrección relacional y justificación del ajuste",
+          "parcial": true,
+          "bbox": [
+            0,
+            3359,
+            895,
+            4259
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 116,
+      "id": "53_wwi_propuesta_validada",
+      "titulo": "Contrato WWI 117 válido tras personalización",
+      "capitulo": 16,
+      "original": "53_wwi_propuesta_validada.jpg",
+      "captured_at": "2026-11-05T03:25:50.861Z",
+      "sha256_original": "79f987fa6008bb9c31ee783eb3cfb3ebe0ec3629f41c95d26cbd1f9c71615772",
+      "anchor": "fig_116",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/53_wwi_propuesta_validada_01.jpg",
+          "titulo": "Contrato 117 validado y medidas",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            895,
+            900
+          ]
+        },
+        {
+          "archivo": "qa/recortes/53_wwi_propuesta_validada_02.jpg",
+          "titulo": "Identidad descriptiva y cobertura 117",
+          "parcial": true,
+          "bbox": [
+            0,
+            4200,
+            895,
+            5100
+          ]
+        },
+        {
+          "archivo": "qa/recortes/53_wwi_propuesta_validada_03.jpg",
+          "titulo": "Plan y ajustes automáticos del contrato 117",
+          "parcial": true,
+          "bbox": [
+            0,
+            5150,
+            895,
+            6050
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 117,
+      "id": "54_wwi_revision_antes_aprobar",
+      "titulo": "Revisión humana WWI 117 y evidencia",
+      "capitulo": 16,
+      "original": "54_wwi_revision_antes_aprobar.jpg",
+      "captured_at": "2026-11-05T03:26:14.153Z",
+      "sha256_original": "51f150a2e5fead428b03310d86fb66a3db0a5cfe1d0c953a7df5bb9a696f314e",
+      "anchor": "fig_117",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/54_wwi_revision_antes_aprobar_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            895,
+            712
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 118,
+      "id": "55_wwi_aprobada117",
+      "titulo": "Aprobación registrada WWI 117",
+      "capitulo": 16,
+      "original": "55_wwi_aprobada117.jpg",
+      "captured_at": "2026-11-05T03:26:36.839Z",
+      "sha256_original": "c0c6bf07873e4989c59a93c4499ebf9840025805cd8a0d2c2e3fc609efc12519",
+      "anchor": "fig_118",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/55_wwi_aprobada117_01.jpg",
+          "titulo": "Aprobación registrada y comentario humano",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            895,
+            760
+          ]
+        },
+        {
+          "archivo": "qa/recortes/55_wwi_aprobada117_02.jpg",
+          "titulo": "Acciones posteriores de la propuesta aprobada",
+          "parcial": true,
+          "bbox": [
+            0,
+            248,
+            895,
+            1008
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 119,
+      "id": "56_wwi_etl_seleccion",
+      "titulo": "Selección del contrato nuevo 117",
+      "capitulo": 16,
+      "original": "56_wwi_etl_seleccion.jpg",
+      "captured_at": "2026-11-05T03:26:54.085Z",
+      "sha256_original": "d5cf8f52e3904ae99d0a717a082b9158b22052390431f45ec1b75e5198c45092",
+      "anchor": "fig_119",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/56_wwi_etl_seleccion_01.jpg",
+          "titulo": "Contrato 117 seleccionado y referencia anterior",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            895,
+            900
+          ]
+        },
+        {
+          "archivo": "qa/recortes/56_wwi_etl_seleccion_02.jpg",
+          "titulo": "Catálogo y selección confirmada 117",
+          "parcial": true,
+          "bbox": [
+            0,
+            836,
+            895,
+            1736
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 120,
+      "id": "57_wwi_etl_indicadores",
+      "titulo": "Indicadores y promedio por factura WWI",
+      "capitulo": 16,
+      "original": "57_wwi_etl_indicadores.jpg",
+      "captured_at": "2026-11-05T03:27:00.530Z",
+      "sha256_original": "c6798d1b86e33fb40341e7157b856bd893e0f2937451a9794bff86a60079d9b1",
+      "anchor": "fig_120",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/57_wwi_etl_indicadores_01.jpg",
+          "titulo": "Selección de indicadores del ETL",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            895,
+            800
+          ]
+        },
+        {
+          "archivo": "qa/recortes/57_wwi_etl_indicadores_02.jpg",
+          "titulo": "Facturas y promedio por transacción",
+          "parcial": true,
+          "bbox": [
+            0,
+            398,
+            895,
+            1198
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 121,
+      "id": "58_wwi_etl_confirmacion",
+      "titulo": "Confirmación justificada del ETL WWI",
+      "capitulo": 16,
+      "original": "58_wwi_etl_confirmacion.jpg",
+      "captured_at": "2026-11-05T03:27:11.684Z",
+      "sha256_original": "9049f7fd7498969eb0db3eb27f998c1d4b47c2ea84dd6e8f4a9bd1431151a118",
+      "anchor": "fig_121",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/58_wwi_etl_confirmacion_01.jpg",
+          "titulo": "Resumen de materialización y extracción",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            895,
+            900
+          ]
+        },
+        {
+          "archivo": "qa/recortes/58_wwi_etl_confirmacion_02.jpg",
+          "titulo": "Limpieza, unicidad y transformación controlada",
+          "parcial": true,
+          "bbox": [
+            0,
+            1200,
+            895,
+            2100
+          ]
+        },
+        {
+          "archivo": "qa/recortes/58_wwi_etl_confirmacion_03.jpg",
+          "titulo": "Carga, conciliación y confirmación humana",
+          "parcial": true,
+          "bbox": [
+            0,
+            2680,
+            895,
+            3580
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 122,
+      "id": "59_wwi_expediente_preparado16",
+      "titulo": "Expediente nuevo 16 preparado",
+      "capitulo": 16,
+      "original": "59_wwi_expediente_preparado16.jpg",
+      "captured_at": "2026-11-05T03:27:26.271Z",
+      "sha256_original": "265970326650ef7a096e6b74344b0f07af3e20769a71163f8323f19e34658507",
+      "anchor": "fig_122",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/59_wwi_expediente_preparado16_01.jpg",
+          "titulo": "Contexto y expediente 16 preparado",
+          "parcial": true,
+          "bbox": [
+            0,
+            180,
+            1264,
+            1080
+          ]
+        },
+        {
+          "archivo": "qa/recortes/59_wwi_expediente_preparado16_02.jpg",
+          "titulo": "Trazabilidad y expediente preparado en el catálogo",
+          "parcial": true,
+          "bbox": [
+            0,
+            1470,
+            1264,
+            2370
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 123,
+      "id": "60_wwi_etl16_conciliado",
+      "titulo": "ETL nuevo WWI 16 conciliado",
+      "capitulo": 16,
+      "original": "60_wwi_etl16_conciliado.jpg",
+      "captured_at": "2026-11-05T03:28:03.195Z",
+      "sha256_original": "8e59fb3a699b560c1af8b69c165eaa1f6d47c19ce89c87bb20c5cb6150b282bc",
+      "anchor": "fig_123",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/60_wwi_etl16_conciliado_01.jpg",
+          "titulo": "Estado materializado y conciliado 16",
+          "parcial": true,
+          "bbox": [
+            0,
+            400,
+            1264,
+            1300
+          ]
+        },
+        {
+          "archivo": "qa/recortes/60_wwi_etl16_conciliado_02.jpg",
+          "titulo": "Conciliación, dimensiones e indicadores calculados",
+          "parcial": true,
+          "bbox": [
+            0,
+            1320,
+            1264,
+            2220
+          ]
+        },
+        {
+          "archivo": "qa/recortes/60_wwi_etl16_conciliado_03.jpg",
+          "titulo": "Trazabilidad y catálogo de expedientes",
+          "parcial": true,
+          "bbox": [
+            0,
+            2136,
+            1264,
+            3036
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 124,
+      "id": "61_wwi_divisa_no_asumida",
+      "titulo": "Comprobación WWI sin divisa única",
+      "capitulo": 16,
+      "original": "61_wwi_divisa_no_asumida.jpg",
+      "captured_at": "2026-11-05T03:28:18.024Z",
+      "sha256_original": "fd450bf3b40129710fd765747526a803d474486ecfbe7bff85b4c31a8b6860fc",
+      "anchor": "fig_124",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/61_wwi_divisa_no_asumida_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            846,
+            851
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 125,
+      "id": "62_wwi_analitica16_publicada",
+      "titulo": "Publicación analítica de la ejecución nueva 16",
+      "capitulo": 16,
+      "original": "62_wwi_analitica16_publicada.jpg",
+      "captured_at": "2026-11-05T03:28:35.105Z",
+      "sha256_original": "d2b64417d1ff6d7cf033c477529bbf7073160b303e2f779a71a393295003f170",
+      "anchor": "fig_125",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/62_wwi_analitica16_publicada_01.jpg",
+          "titulo": "Contexto, indicadores y ejecución 16",
+          "parcial": true,
+          "bbox": [
+            0,
+            520,
+            1264,
+            1420
+          ]
+        },
+        {
+          "archivo": "qa/recortes/62_wwi_analitica16_publicada_02.jpg",
+          "titulo": "Gráficos y hallazgos de la ejecución 16",
+          "parcial": true,
+          "bbox": [
+            0,
+            1400,
+            1264,
+            2300
+          ]
+        },
+        {
+          "archivo": "qa/recortes/62_wwi_analitica16_publicada_03.jpg",
+          "titulo": "Copiloto y referencia al expediente 16",
+          "parcial": true,
+          "bbox": [
+            0,
+            2348,
+            1264,
+            3248
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 126,
+      "id": "63_wwi_copiloto16_top3",
+      "titulo": "Copiloto nuevo WWI 16:Top 3 y denominador",
+      "capitulo": 16,
+      "original": "63_wwi_copiloto16_top3.jpg",
+      "captured_at": "2026-11-05T03:29:29.949Z",
+      "sha256_original": "abfb7cf28667c08b26a6f9253b88e84bc17ded366020a9f55a7a38d564c5815b",
+      "anchor": "fig_126",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/63_wwi_copiloto16_top3_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            895,
+            880
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 127,
+      "id": "65_wwi_clientes_etiqueta_incorrecta",
+      "titulo": "Nombres de clientes WWI contrastados con el origen",
+      "capitulo": 16,
+      "original": "65_wwi_clientes_etiqueta_incorrecta.jpg",
+      "captured_at": "2026-11-05T03:30:56.274Z",
+      "sha256_original": "91752e0b8aa613137014d01c3b97e98b244d5b085a63e67637f591c71b8fa00d",
+      "anchor": "fig_127",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/65_wwi_clientes_etiqueta_incorrecta_01.jpg",
+          "titulo": "Contexto de productos y territorio",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            495,
+            900
+          ]
+        },
+        {
+          "archivo": "qa/recortes/65_wwi_clientes_etiqueta_incorrecta_02.jpg",
+          "titulo": "Clientes principales contrastados con el origen",
+          "parcial": true,
+          "bbox": [
+            0,
+            1039,
+            495,
+            1939
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 128,
+      "id": "66_aw_necesidad_nueva",
+      "titulo": "Nueva necesidad AW con cuatro indicadores",
+      "capitulo": 16,
+      "original": "66_aw_necesidad_nueva.jpg",
+      "captured_at": "2026-11-05T03:31:25.549Z",
+      "sha256_original": "a274c91f17211f0dbc97469ebb68cec01f6f9866798a24cda1024ddbe31b7967",
+      "anchor": "fig_128",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/66_aw_necesidad_nueva_01.jpg",
+          "titulo": "Necesidad AW de cuatro indicadores",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            895,
+            800
+          ]
+        },
+        {
+          "archivo": "qa/recortes/66_aw_necesidad_nueva_02.jpg",
+          "titulo": "Preguntas y periodicidad del escenario AW",
+          "parcial": true,
+          "bbox": [
+            0,
+            372,
+            895,
+            1172
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 129,
+      "id": "67_aw_viabilidad_ambiguedades",
+      "titulo": "Viabilidad AW con ambigüedades del catálogo",
+      "capitulo": 16,
+      "original": "67_aw_viabilidad_ambiguedades.jpg",
+      "captured_at": "2026-11-05T03:34:24.283Z",
+      "sha256_original": "9e538fbff2154110e4480dd73b1184ab5c6e1b2647ce9bca346fce3a34f4f813",
+      "anchor": "fig_129",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/67_aw_viabilidad_ambiguedades_01.jpg",
+          "titulo": "Pedidos distintos y promedio por pedido en revisión",
+          "parcial": true,
+          "bbox": [
+            0,
+            1450,
+            812,
+            2350
+          ]
+        },
+        {
+          "archivo": "qa/recortes/67_aw_viabilidad_ambiguedades_02.jpg",
+          "titulo": "Identificadores, moneda y limitaciones de costo",
+          "parcial": true,
+          "bbox": [
+            0,
+            2730,
+            812,
+            3630
+          ]
+        },
+        {
+          "archivo": "qa/recortes/67_aw_viabilidad_ambiguedades_03.jpg",
+          "titulo": "Límites semánticos pendientes de decisión",
+          "parcial": true,
+          "bbox": [
+            0,
+            4083,
+            812,
+            4983
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 130,
+      "id": "69_aw_necesidad_final",
+      "titulo": "Necesidad AW con catálogo preciso",
+      "capitulo": 16,
+      "original": "69_aw_necesidad_final.jpg",
+      "captured_at": "2026-11-05T03:35:59.617Z",
+      "sha256_original": "20b6fc4a1c692c583ae0ab4aca6126dac0a68e92490d2439bdd5aac5c8d4bb0c",
+      "anchor": "fig_130",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/69_aw_necesidad_final_01.jpg",
+          "titulo": "Objetivo completo y consentimiento de asistencia",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            895,
+            850
+          ]
+        },
+        {
+          "archivo": "qa/recortes/69_aw_necesidad_final_02.jpg",
+          "titulo": "Preguntas del catálogo y período mensual",
+          "parcial": true,
+          "bbox": [
+            0,
+            306,
+            895,
+            1156
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 131,
+      "id": "70_aw_viabilidad_revisada",
+      "titulo": "Viabilidad AW con indicadores respaldados",
+      "capitulo": 16,
+      "original": "70_aw_viabilidad_revisada.jpg",
+      "captured_at": "2026-11-05T03:38:11.354Z",
+      "sha256_original": "464237e47c40412d798947fc31ce09cb9d2f5fa97aa3f69f54747c1c5be3ac9d",
+      "anchor": "fig_131",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/70_aw_viabilidad_revisada_01.jpg",
+          "titulo": "Importe, unidades y documentos de pedido",
+          "parcial": true,
+          "bbox": [
+            0,
+            5100,
+            550,
+            6000
+          ]
+        },
+        {
+          "archivo": "qa/recortes/70_aw_viabilidad_revisada_02.jpg",
+          "titulo": "Identidad de cliente ambigua y claves de trazabilidad",
+          "parcial": true,
+          "bbox": [
+            0,
+            6750,
+            550,
+            7650
+          ]
+        },
+        {
+          "archivo": "qa/recortes/70_aw_viabilidad_revisada_03.jpg",
+          "titulo": "Moneda pendiente y límites del análisis histórico",
+          "parcial": true,
+          "bbox": [
+            0,
+            8050,
+            550,
+            8950
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 132,
+      "id": "71_aw_conceptos_nuevos",
+      "titulo": "Conceptos nuevos AW con decisiones preventivas",
+      "capitulo": 16,
+      "original": "71_aw_conceptos_nuevos.jpg",
+      "captured_at": "2026-11-05T03:39:25.554Z",
+      "sha256_original": "ab70b79e47ad6d016c0b30cfbe3f3ead98c07068f0647f69f1161368d6736039",
+      "anchor": "fig_132",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/71_aw_conceptos_nuevos_01.jpg",
+          "titulo": "Hecho de línea y encabezado de pedido",
+          "parcial": true,
+          "bbox": [
+            0,
+            1000,
+            550,
+            1900
+          ]
+        },
+        {
+          "archivo": "qa/recortes/71_aw_conceptos_nuevos_02.jpg",
+          "titulo": "Tasa de cambio excluida por evidencia insuficiente",
+          "parcial": true,
+          "bbox": [
+            0,
+            2150,
+            550,
+            3050
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 133,
+      "id": "72_aw_propuesta_bloqueada",
+      "titulo": "Contrato AW bloqueado por interpretación de factura",
+      "capitulo": 16,
+      "original": "72_aw_propuesta_bloqueada.jpg",
+      "captured_at": "2026-11-05T03:40:30.992Z",
+      "sha256_original": "3dd1a3eedc8c950b98f501fdee754bff2a0bb4cf54fc6844496fc3b2c0d11759",
+      "anchor": "fig_133",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/72_aw_propuesta_bloqueada_01.jpg",
+          "titulo": "Contrato histórico bloqueado con tres errores",
+          "parcial": true,
+          "bbox": [
+            0,
+            1000,
+            550,
+            1900
+          ]
+        },
+        {
+          "archivo": "qa/recortes/72_aw_propuesta_bloqueada_02.jpg",
+          "titulo": "Trazabilidad de pedido confundida con invoice_event",
+          "parcial": true,
+          "bbox": [
+            0,
+            6350,
+            550,
+            7250
+          ]
+        },
+        {
+          "archivo": "qa/recortes/72_aw_propuesta_bloqueada_03.jpg",
+          "titulo": "Errores de factura y fecha incompatibles con pedidos",
+          "parcial": true,
+          "bbox": [
+            0,
+            10950,
+            550,
+            11850
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 134,
+      "id": "87_aw_copiloto17_primera_respuesta",
+      "titulo": "Primera respuesta del copiloto AW 17",
+      "capitulo": 16,
+      "original": "87_aw_copiloto17_primera_respuesta.jpg",
+      "captured_at": "2026-11-05T03:55:47.948Z",
+      "sha256_original": "e2f9650f61d2a7d036bb2446d0db59849523a5f6032a59483ecfa42ca9d8f439",
+      "anchor": "fig_134",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/87_aw_copiloto17_primera_respuesta_01.jpg",
+          "titulo": "Tarjetas y evolución de la consulta histórica",
+          "parcial": true,
+          "bbox": [
+            0,
+            1050,
+            550,
+            1950
+          ]
+        },
+        {
+          "archivo": "qa/recortes/87_aw_copiloto17_primera_respuesta_02.jpg",
+          "titulo": "Respuesta histórica con inferencia de preferencia no demostrada",
+          "parcial": true,
+          "bbox": [
+            0,
+            3370,
+            550,
+            4270
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 135,
+      "id": "90_aw_postfix_viabilidad_sin_evento_factura",
+      "titulo": "Viabilidad de pedidos sin confusión con facturas",
+      "capitulo": 16,
+      "original": "90_aw_postfix_viabilidad_sin_evento_factura.jpg",
+      "captured_at": "2026-11-05T04:08:48.007Z",
+      "sha256_original": "0a1d4206141fa7aeae669fdcc4f8729850ed4c7acf426eb0dd05727a4ac5fc1a",
+      "anchor": "fig_135",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/90_aw_postfix_viabilidad_sin_evento_factura_01.jpg",
+          "titulo": "Mismo objetivo de pedidos, sin reducción de alcance",
+          "parcial": true,
+          "bbox": [
+            0,
+            950,
+            550,
+            1850
+          ]
+        },
+        {
+          "archivo": "qa/recortes/90_aw_postfix_viabilidad_sin_evento_factura_02.jpg",
+          "titulo": "Identidad de cliente y trazabilidad de línea a pedido",
+          "parcial": true,
+          "bbox": [
+            0,
+            6900,
+            550,
+            7800
+          ]
+        },
+        {
+          "archivo": "qa/recortes/90_aw_postfix_viabilidad_sin_evento_factura_03.jpg",
+          "titulo": "Incidencia histórica: ranking declarado no disponible",
+          "parcial": true,
+          "bbox": [
+            0,
+            8000,
+            550,
+            8900
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 136,
+      "id": "94_aw_personalizacion_cuatro_kpi",
+      "titulo": "Personalización de cuatro KPI sin SQL",
+      "capitulo": 16,
+      "original": "94_aw_personalizacion_cuatro_kpi.jpg",
+      "captured_at": "2026-11-05T04:21:35.770Z",
+      "sha256_original": "dc8fe3a5bfe26e2f31afa1c74e1c8f6728214f6b80b81a70a49b749a27646807",
+      "anchor": "fig_136",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/94_aw_personalizacion_cuatro_kpi_01.jpg",
+          "titulo": "Cuatro dimensiones y medidas de la personalización",
+          "parcial": true,
+          "bbox": [
+            0,
+            1000,
+            550,
+            1900
+          ]
+        },
+        {
+          "archivo": "qa/recortes/94_aw_personalizacion_cuatro_kpi_02.jpg",
+          "titulo": "Pedido distinto conservado y cliente distinto excluido",
+          "parcial": true,
+          "bbox": [
+            0,
+            2150,
+            550,
+            3050
+          ]
+        },
+        {
+          "archivo": "qa/recortes/94_aw_personalizacion_cuatro_kpi_03.jpg",
+          "titulo": "Cuatro KPI seleccionados antes de crear la hija",
+          "parcial": true,
+          "bbox": [
+            0,
+            2900,
+            550,
+            3800
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 137,
+      "id": "101_aw_copiloto18_resultado",
+      "titulo": "Pregunta y primer tramo de respuesta AW 18",
+      "capitulo": 16,
+      "original": "101_aw_copiloto18_resultado.jpg",
+      "captured_at": "2026-11-05T04:29:05.670Z",
+      "sha256_original": "7cb7986ab6a4f1ebe407843c7e4ee308e921bd1eebf450f2bab77fbc37c65efe",
+      "anchor": "fig_137",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/101_aw_copiloto18_resultado_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            486,
+            948
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 138,
+      "id": "104_wwi_exclusion_utilidad_incidencia",
+      "titulo": "Exclusión confundida con una petición de margen",
+      "capitulo": 16,
+      "original": "104_wwi_exclusion_utilidad_incidencia.jpg",
+      "captured_at": "2026-11-05T04:32:28.981Z",
+      "sha256_original": "d74f2bf1025a5fb07a7c906b34a6fef886ffc2502b49b4ec35af1b9f93e60998",
+      "anchor": "fig_138",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/104_wwi_exclusion_utilidad_incidencia_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            550,
+            666
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 139,
+      "id": "107_wwi_editor_origen_crudo",
+      "titulo": "Editor mostrando una decisión previa a la corrección",
+      "capitulo": 16,
+      "original": "107_wwi_editor_origen_crudo.jpg",
+      "captured_at": "2026-11-05T04:42:18.659Z",
+      "sha256_original": "0bf6ff634d4b67708bb68174744769005d5eae1cc950a7e23652885aea156289",
+      "anchor": "fig_139",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/107_wwi_editor_origen_crudo_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            550,
+            666
+          ]
+        }
+      ]
+    },
+    {
+      "numero": 140,
+      "id": "116_wwi_chat19_temporalidad_incorrecta",
+      "titulo": "Pregunta y primeros valores del chat WWI 19",
+      "capitulo": 16,
+      "original": "116_wwi_chat19_temporalidad_incorrecta.jpg",
+      "captured_at": "2026-11-05T05:00:34.485Z",
+      "sha256_original": "4a50e722cf4bed665d17c5aca101f1747be9b454b707630bde093ef48169c4e6",
+      "anchor": "fig_140",
+      "regiones": [
+        {
+          "archivo": "qa/recortes/116_wwi_chat19_temporalidad_incorrecta_01.jpg",
+          "titulo": "área visible de la consulta",
+          "parcial": true,
+          "bbox": [
+            0,
+            0,
+            510,
+            948
+          ]
+        }
+      ]
+    }
+  ],
+  "fuentes": [
+    {
+      "id": "F001",
+      "referencia": "contenido_roles_parametros.json"
+    },
+    {
+      "id": "F002",
+      "referencia": "contenido_asistente_etl.json"
+    },
+    {
+      "id": "F003",
+      "referencia": "contenido_analitica_sustentacion.json"
+    },
+    {
+      "id": "F004",
+      "referencia": "contenido_nuevo.json"
+    },
+    {
+      "id": "F005",
+      "referencia": "pruebas_actuales.json"
+    },
+    {
+      "id": "F006",
+      "referencia": "/home/ceo/Proyectos/BI/docs/testing/qa-postcierre-2026-11-04.md"
+    },
+    {
+      "id": "F007",
+      "referencia": "qa/viabilidad_v6_cierre.json"
+    },
+    {
+      "id": "F008",
+      "referencia": "/home/ceo/Proyectos/BI/docs/architecture.md"
+    },
+    {
+      "id": "F009",
+      "referencia": "/home/ceo/Proyectos/BI/docs/scope.md"
+    },
+    {
+      "id": "F010",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/parameters/connections.py"
+    },
+    {
+      "id": "F011",
+      "referencia": "/home/ceo/Proyectos/BI/frontend/src/App.tsx"
+    },
+    {
+      "id": "F012",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/copilot/router.py"
+    },
+    {
+      "id": "F013",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/parameters/router.py"
+    },
+    {
+      "id": "F014",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/security/service.py"
+    },
+    {
+      "id": "F015",
+      "referencia": "/home/ceo/Proyectos/BI/AGENTS.md"
+    },
+    {
+      "id": "F016",
+      "referencia": "/home/ceo/Proyectos/BI/docs/validation-plan.md"
+    },
+    {
+      "id": "F017",
+      "referencia": "/home/ceo/Proyectos/BI/docs/specs/SPR-04-02-kpis-controlados-y-calculables.md"
+    },
+    {
+      "id": "F018",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/copilot/service.py"
+    },
+    {
+      "id": "F019",
+      "referencia": "/home/ceo/Proyectos/BI/docs/testing/auditoria-operativa-2026-10-03.md"
+    },
+    {
+      "id": "F020",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/analytics/service.py"
+    },
+    {
+      "id": "F021",
+      "referencia": "/home/ceo/Proyectos/BI/docs/specs/SPR-05-06-endurecimiento-integral-asistente-bi.md"
+    },
+    {
+      "id": "F022",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/etl/service.py"
+    },
+    {
+      "id": "F023",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/etl/materializer.py"
+    },
+    {
+      "id": "F024",
+      "referencia": "/home/ceo/Proyectos/BI/frontend/src/AnalyticsPage.tsx"
+    },
+    {
+      "id": "F025",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/analytics/router.py"
+    },
+    {
+      "id": "F026",
+      "referencia": "/home/ceo/Proyectos/BI/docs/formacion/01_fundamentos.tex"
+    },
+    {
+      "id": "F027",
+      "referencia": "/home/ceo/Proyectos/Información adicional proyecto BI/Versiones/2026-11-04_v01/01_Instalacion_y_actualizacion/Traslado_portable_2026-10-29/INFORME_VERIFICACION.txt"
+    },
+    {
+      "id": "F028",
+      "referencia": "/home/ceo/Proyectos/BI/frontend/src/api/security.ts"
+    },
+    {
+      "id": "F029",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/security/router.py"
+    },
+    {
+      "id": "F030",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/core/config.py"
+    },
+    {
+      "id": "F031",
+      "referencia": "/home/ceo/Proyectos/BI/docs/replication-guide.md"
+    },
+    {
+      "id": "F032",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/metadata/router.py"
+    },
+    {
+      "id": "F033",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/roles_permisos_observados.json"
+    },
+    {
+      "id": "F034",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/05d_rol_analista.jpg"
+    },
+    {
+      "id": "F035",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/05e_rol_gerente.jpg"
+    },
+    {
+      "id": "F036",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/33_gerente_permiso_metadatos.jpg"
+    },
+    {
+      "id": "F037",
+      "referencia": "/home/ceo/Proyectos/BI/frontend/src/roleChoices.ts"
+    },
+    {
+      "id": "F038",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/security/schemas.py"
+    },
+    {
+      "id": "F039",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/parameters/service.py"
+    },
+    {
+      "id": "F040",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/parameters/schemas.py"
+    },
+    {
+      "id": "F041",
+      "referencia": "/home/ceo/Proyectos/BI/README.md"
+    },
+    {
+      "id": "F042",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/metadata"
+    },
+    {
+      "id": "F043",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/parameters/providers.py"
+    },
+    {
+      "id": "F044",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/metadata/connectors.py"
+    },
+    {
+      "id": "F045",
+      "referencia": "/home/ceo/Proyectos/BI/docs/experiments/2026-09-27-groq-vs-claude.md"
+    },
+    {
+      "id": "F046",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/copilot/domains.py"
+    },
+    {
+      "id": "F047",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/copilot/schemas.py"
+    },
+    {
+      "id": "F048",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/catalogo_aw_criterios_finales.json"
+    },
+    {
+      "id": "F049",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/68_aw_catalogo_precisado.jpg"
+    },
+    {
+      "id": "F050",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/69_aw_necesidad_final.jpg"
+    },
+    {
+      "id": "F051",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/70_aw_viabilidad_revisada.jpg"
+    },
+    {
+      "id": "F052",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/72_aw_propuesta_bloqueada.jpg"
+    },
+    {
+      "id": "F053",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/73_aw_necesidad_basica.jpg"
+    },
+    {
+      "id": "F054",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/pruebas_actuales.json"
+    },
+    {
+      "id": "F055",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/copilot/needs.py"
+    },
+    {
+      "id": "F056",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/copilot/need_advisor.py"
+    },
+    {
+      "id": "F057",
+      "referencia": "/home/ceo/Proyectos/BI/docs/formacion/02_operacion.tex"
+    },
+    {
+      "id": "F058",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/125-editor-hija-habilitado.jpg"
+    },
+    {
+      "id": "F059",
+      "referencia": "/home/ceo/Proyectos/BI/frontend/src/App.test.tsx"
+    },
+    {
+      "id": "F060",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/etl/router.py"
+    },
+    {
+      "id": "F061",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/modules/etl/schemas.py"
+    },
+    {
+      "id": "F062",
+      "referencia": "/home/ceo/Proyectos/BI/docs/specs/SPR-05-01-dashboard-ejecutivo-explicable.md"
+    },
+    {
+      "id": "F063",
+      "referencia": "/home/ceo/Proyectos/BI/docs/specs/SPR-05-05-copiloto-analitico-contextual.md"
+    },
+    {
+      "id": "F064",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/verificacion_exportacion19.json"
+    },
+    {
+      "id": "F065",
+      "referencia": "/home/ceo/Proyectos/BI/docs/specs/SPR-05-02-reporteria-fiel-pdf-excel.md"
+    },
+    {
+      "id": "F066",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/verificacion_exportacion18.json"
+    },
+    {
+      "id": "F067",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/107_wwi_editor_origen_crudo.jpg"
+    },
+    {
+      "id": "F068",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/verificacion_exportacion18_final.json"
+    },
+    {
+      "id": "F069",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/verificacion_exportacion19_final.json"
+    },
+    {
+      "id": "F070",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/comparativo_exportaciones18_19_final.json"
+    },
+    {
+      "id": "F071",
+      "referencia": "../../../../Proyectos/BI/frontend/src/AnalyticsPage.tsx"
+    },
+    {
+      "id": "F072",
+      "referencia": "../../../../Proyectos/BI/frontend/src/api/security.ts"
+    },
+    {
+      "id": "F073",
+      "referencia": "../../../../Proyectos/BI/backend/app/modules/analytics/router.py"
+    },
+    {
+      "id": "F074",
+      "referencia": "../../../../Proyectos/BI/backend/app/modules/analytics/schemas.py"
+    },
+    {
+      "id": "F075",
+      "referencia": "../../../../Proyectos/BI/backend/app/modules/metadata/router.py"
+    },
+    {
+      "id": "F076",
+      "referencia": "capturas/33_gerente_permiso_metadatos.jpg"
+    },
+    {
+      "id": "F077",
+      "referencia": "qa/verificacion_exportacion18_final.json"
+    },
+    {
+      "id": "F078",
+      "referencia": "qa/verificacion_exportacion19_final.json"
+    },
+    {
+      "id": "F079",
+      "referencia": "../../../../Proyectos/BI/backend/app/modules/reports/analytics_export.py"
+    },
+    {
+      "id": "F080",
+      "referencia": "../../../../Proyectos/BI/backend/app/modules/analytics/service.py"
+    },
+    {
+      "id": "F081",
+      "referencia": "../../../../Proyectos/BI/backend/tests/test_analytics_export.py"
+    },
+    {
+      "id": "F082",
+      "referencia": "evidencias_exportaciones/analitica-ventas-18-executive-final.pdf"
+    },
+    {
+      "id": "F083",
+      "referencia": "evidencias_exportaciones/analitica-ventas-19-executive-final.pdf"
+    },
+    {
+      "id": "F084",
+      "referencia": "qa/comparativo_exportaciones18_19_final.json"
+    },
+    {
+      "id": "F085",
+      "referencia": "qa/verificacion_altura_insights_xlsx.json"
+    },
+    {
+      "id": "F086",
+      "referencia": "evidencias_exportaciones/analitica-ventas-18-executive-final.xlsx"
+    },
+    {
+      "id": "F087",
+      "referencia": "evidencias_exportaciones/analitica-ventas-19-executive-final.xlsx"
+    },
+    {
+      "id": "F088",
+      "referencia": "../../../../Proyectos/BI/docs/specs/SPR-05-02-reporteria-fiel-pdf-excel.md"
+    },
+    {
+      "id": "F089",
+      "referencia": "../AGENTS.md"
+    },
+    {
+      "id": "F090",
+      "referencia": "../../../../Proyectos/Información adicional proyecto BI/AGENTS.md"
+    },
+    {
+      "id": "F091",
+      "referencia": "qa/verificacion_exportacion18.json"
+    },
+    {
+      "id": "F092",
+      "referencia": "qa/verificacion_exportacion19.json"
+    },
+    {
+      "id": "F093",
+      "referencia": "/home/ceo/Proyectos/BI/docs/formacion/03_escenarios.tex"
+    },
+    {
+      "id": "F094",
+      "referencia": "/home/ceo/Proyectos/BI/docs/formacion/04_demostracion_estudio.tex"
+    },
+    {
+      "id": "F095",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/89_aw_repeticion_exacta_postfix.jpg"
+    },
+    {
+      "id": "F096",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/91_aw_ranking_viable_reglas_v4.jpg"
+    },
+    {
+      "id": "F097",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/94_aw_personalizacion_cuatro_kpi.jpg"
+    },
+    {
+      "id": "F098",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/95_aw_122_aprobada.jpg"
+    },
+    {
+      "id": "F099",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/98_aw_etl18_conciliado.jpg"
+    },
+    {
+      "id": "F100",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/99_aw_etl18_publicado.jpg"
+    },
+    {
+      "id": "F101",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/100_aw_analitica18_publicada.jpg"
+    },
+    {
+      "id": "F102",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/101_aw_copiloto18_resultado.jpg"
+    },
+    {
+      "id": "F103",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/121-copiloto-aw-final.jpg"
+    },
+    {
+      "id": "F104",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/viabilidad_v6_cierre.json"
+    },
+    {
+      "id": "F105",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/106_wwi_viabilidad_v5_sin_margen.jpg"
+    },
+    {
+      "id": "F106",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/108_wwi_editor_origen_validado.jpg"
+    },
+    {
+      "id": "F107",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/109_wwi_personalizacion_4_kpi.jpg"
+    },
+    {
+      "id": "F108",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/110_wwi_124_evidencia.jpg"
+    },
+    {
+      "id": "F109",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/111_wwi_124_aprobada.jpg"
+    },
+    {
+      "id": "F110",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/112_wwi_etl_4_indicadores.jpg"
+    },
+    {
+      "id": "F111",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/113_wwi_expediente19_preparado.jpg"
+    },
+    {
+      "id": "F112",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/114_wwi_etl19_conciliado.jpg"
+    },
+    {
+      "id": "F113",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/117_wwi_aviso_vigencia_dimensional.jpg"
+    },
+    {
+      "id": "F114",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/118_wwi_chat19_respuesta_corregida.jpg"
+    },
+    {
+      "id": "F115",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/119_wwi_chat19_cautela_plataforma.jpg"
+    },
+    {
+      "id": "F116",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/120_wwi_sugerencia_unidades_cliente.jpg"
+    },
+    {
+      "id": "F117",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/124-huellas-contrato-wwi.jpg"
+    },
+    {
+      "id": "F118",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/44_wwi_necesidad_nueva.jpg"
+    },
+    {
+      "id": "F119",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/45_wwi_viabilidad_limites.jpg"
+    },
+    {
+      "id": "F120",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/46_wwi_necesidad_precisada.jpg"
+    },
+    {
+      "id": "F121",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/registro.json"
+    },
+    {
+      "id": "F122",
+      "referencia": "Observación de la agente principal del 4 de noviembre de 2026: esta fase de redacción y evaluación inicial precede a la carga nueva 16, registrada después en el escenario operativo de WideWorldImporters."
+    },
+    {
+      "id": "F123",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/49_wwi_propuesta_bloqueada.jpg"
+    },
+    {
+      "id": "F124",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/51_wwi_identidad_cobertura.jpg"
+    },
+    {
+      "id": "F125",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/52_wwi_personalizacion.jpg"
+    },
+    {
+      "id": "F126",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/53_wwi_propuesta_validada.jpg"
+    },
+    {
+      "id": "F127",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/54_wwi_revision_antes_aprobar.jpg"
+    },
+    {
+      "id": "F128",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/55_wwi_aprobada117.jpg"
+    },
+    {
+      "id": "F129",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/56_wwi_etl_seleccion.jpg"
+    },
+    {
+      "id": "F130",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/57_wwi_etl_indicadores.jpg"
+    },
+    {
+      "id": "F131",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/58_wwi_etl_confirmacion.jpg"
+    },
+    {
+      "id": "F132",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/59_wwi_expediente_preparado16.jpg"
+    },
+    {
+      "id": "F133",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/60_wwi_etl16_conciliado.jpg"
+    },
+    {
+      "id": "F134",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/61_wwi_divisa_no_asumida.jpg"
+    },
+    {
+      "id": "F135",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/62_wwi_analitica16_publicada.jpg"
+    },
+    {
+      "id": "F136",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/63_wwi_copiloto16_top3.jpg"
+    },
+    {
+      "id": "F137",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/64_wwi_copiloto16_territorio.jpg"
+    },
+    {
+      "id": "F138",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/65_wwi_clientes_etiqueta_incorrecta.jpg"
+    },
+    {
+      "id": "F139",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/evidencias_exportaciones/ventas-ejecucion-16-executive.pdf"
+    },
+    {
+      "id": "F140",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/evidencias_exportaciones/ventas-ejecucion-16-executive.xlsx"
+    },
+    {
+      "id": "F141",
+      "referencia": "Verificación de solo lectura de CustomerName del origen comunicada por la agente principal el 4 de noviembre de 2026: CustomerID 906, 951 y 972 coinciden con la materialización de la ejecución 16; sin modificación de los datos."
+    },
+    {
+      "id": "F142",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/diagnostico_clientes_wwi_e16_20261104.json"
+    },
+    {
+      "id": "F143",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/evidencias_exportaciones/verificacion_exportaciones.json"
+    },
+    {
+      "id": "F144",
+      "referencia": "qa/verificacion_exportacion19_contexto.json"
+    },
+    {
+      "id": "F145",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/105_usuario_protegido_campos_consulta.jpg"
+    },
+    {
+      "id": "F146",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/123-correo-protegido-consulta.jpg"
+    },
+    {
+      "id": "F147",
+      "referencia": "/home/ceo/Proyectos/BI/docs/logbook/bitacora.tex"
+    },
+    {
+      "id": "F148",
+      "referencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/122-llm-nombre-conservado.jpg"
+    },
+    {
+      "id": "F149",
+      "referencia": "/home/ceo/Proyectos/BI/docs/specs/SPR-06-01-contexto-multifuente-sqlserver.md"
+    },
+    {
+      "id": "F150",
+      "referencia": "/home/ceo/Proyectos/BI/docs/specs/SPR-03-02-propuesta-bi-asistida-por-ia.md"
+    },
+    {
+      "id": "F151",
+      "referencia": "/home/ceo/Proyectos/BI/backend/app/db/seed.py"
+    },
+    {
+      "id": "F152",
+      "referencia": "/home/ceo/Proyectos/BI/docs/manual-tecnico/manual-tecnico.tex"
+    },
+    {
+      "id": "F153",
+      "referencia": "qa/matriz_temporal_solo_lectura.json"
+    },
+    {
+      "id": "F154",
+      "referencia": "qa/diagnostico_clientes_wwi_e16_20261104.json"
+    },
+    {
+      "id": "F155",
+      "referencia": "evidencias_exportaciones/verificacion_exportaciones.json"
+    },
+    {
+      "id": "F156",
+      "referencia": "qa/revision_visual_exportacion17.json"
+    },
+    {
+      "id": "F157",
+      "referencia": "/home/ceo/Proyectos/BI/docs/testing/evidencias/qa-20261003"
+    },
+    {
+      "id": "F158",
+      "referencia": "/home/ceo/Proyectos/BI/docs/formacion/figuras"
+    }
+  ],
+  "advertencias": [],
+  "estado_qa": "Conforme: 464 páginas revisadas; 457 PNG finales idénticos a V2 inspeccionada y 7 páginas finales reinspeccionadas individualmente."
+}

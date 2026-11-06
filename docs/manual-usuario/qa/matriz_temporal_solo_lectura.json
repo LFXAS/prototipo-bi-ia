@@ -1,0 +1,556 @@
+{
+  "tipo": "Consultas reales bajo transacción de sólo lectura; dos configuraciones persistidas intactas y veinte variantes únicamente en copias en memoria. No se crean propuestas, revisiones ni ETL.",
+  "casos": [
+    {
+      "ejecucion": 16,
+      "propuesta": 117,
+      "modo": "persistida",
+      "periodicidad": "month",
+      "numero_periodos": 41,
+      "subtitulo": "Total de ventas facturadas por mes",
+      "primer_periodo": {
+        "key": "2013-01",
+        "label": "Ene 2013",
+        "value": 4335972.97,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2016-05",
+        "label": "May 2016",
+        "value": 5704232.71,
+        "share": null
+      },
+      "total_kpi": 198043439.45,
+      "suma_periodos": 198043439.45,
+      "diferencia": 0.0,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 16,
+      "propuesta": 117,
+      "modo": "KPI",
+      "periodicidad": "daily",
+      "numero_periodos": 1069,
+      "subtitulo": "Total de ventas facturadas por día",
+      "primer_periodo": {
+        "key": "2013-01-01",
+        "label": "01/01/2013",
+        "value": 32746.37,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2016-05-31",
+        "label": "31/05/2016",
+        "value": 267011.44,
+        "share": null
+      },
+      "total_kpi": 198043439.45,
+      "suma_periodos": 198043439.45,
+      "diferencia": 0.0,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 16,
+      "propuesta": 117,
+      "modo": "KPI",
+      "periodicidad": "weekly",
+      "numero_periodos": 179,
+      "subtitulo": "Total de ventas facturadas por semana",
+      "primer_periodo": {
+        "key": "2013-W01",
+        "label": "Sem 01 2013",
+        "value": 576601.69,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2016-W22",
+        "label": "Sem 22 2016",
+        "value": 438233.53,
+        "share": null
+      },
+      "total_kpi": 198043439.45,
+      "suma_periodos": 198043439.45,
+      "diferencia": 0.0,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 16,
+      "propuesta": 117,
+      "modo": "KPI",
+      "periodicidad": "monthly",
+      "numero_periodos": 41,
+      "subtitulo": "Total de ventas facturadas por mes",
+      "primer_periodo": {
+        "key": "2013-01",
+        "label": "Ene 2013",
+        "value": 4335972.97,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2016-05",
+        "label": "May 2016",
+        "value": 5704232.71,
+        "share": null
+      },
+      "total_kpi": 198043439.45,
+      "suma_periodos": 198043439.45,
+      "diferencia": 0.0,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 16,
+      "propuesta": 117,
+      "modo": "KPI",
+      "periodicidad": "quarterly",
+      "numero_periodos": 14,
+      "subtitulo": "Total de ventas facturadas por trimestre",
+      "primer_periodo": {
+        "key": "2013-Q1",
+        "label": "T1 2013",
+        "value": 11980359.19,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2016-Q2",
+        "label": "T2 2016",
+        "value": 10940295.52,
+        "share": null
+      },
+      "total_kpi": 198043439.45,
+      "suma_periodos": 198043439.45,
+      "diferencia": 0.0,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 16,
+      "propuesta": 117,
+      "modo": "KPI",
+      "periodicidad": "yearly",
+      "numero_periodos": 4,
+      "subtitulo": "Total de ventas facturadas por año",
+      "primer_periodo": {
+        "key": "2013",
+        "label": "2013",
+        "value": 52563272.64,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2016",
+        "label": "2016",
+        "value": 25971029.11,
+        "share": null
+      },
+      "total_kpi": 198043439.45,
+      "suma_periodos": 198043439.45,
+      "diferencia": 0.0,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 16,
+      "propuesta": 117,
+      "modo": "catalogo_heredado",
+      "periodicidad": "day",
+      "numero_periodos": 1069,
+      "subtitulo": "Total de ventas facturadas por día",
+      "primer_periodo": {
+        "key": "2013-01-01",
+        "label": "01/01/2013",
+        "value": 32746.37,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2016-05-31",
+        "label": "31/05/2016",
+        "value": 267011.44,
+        "share": null
+      },
+      "total_kpi": 198043439.45,
+      "suma_periodos": 198043439.45,
+      "diferencia": 0.0,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 16,
+      "propuesta": 117,
+      "modo": "catalogo_heredado",
+      "periodicidad": "week",
+      "numero_periodos": 179,
+      "subtitulo": "Total de ventas facturadas por semana",
+      "primer_periodo": {
+        "key": "2013-W01",
+        "label": "Sem 01 2013",
+        "value": 576601.69,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2016-W22",
+        "label": "Sem 22 2016",
+        "value": 438233.53,
+        "share": null
+      },
+      "total_kpi": 198043439.45,
+      "suma_periodos": 198043439.45,
+      "diferencia": 0.0,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 16,
+      "propuesta": 117,
+      "modo": "catalogo_heredado",
+      "periodicidad": "month",
+      "numero_periodos": 41,
+      "subtitulo": "Total de ventas facturadas por mes",
+      "primer_periodo": {
+        "key": "2013-01",
+        "label": "Ene 2013",
+        "value": 4335972.97,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2016-05",
+        "label": "May 2016",
+        "value": 5704232.71,
+        "share": null
+      },
+      "total_kpi": 198043439.45,
+      "suma_periodos": 198043439.45,
+      "diferencia": 0.0,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 16,
+      "propuesta": 117,
+      "modo": "catalogo_heredado",
+      "periodicidad": "quarter",
+      "numero_periodos": 14,
+      "subtitulo": "Total de ventas facturadas por trimestre",
+      "primer_periodo": {
+        "key": "2013-Q1",
+        "label": "T1 2013",
+        "value": 11980359.19,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2016-Q2",
+        "label": "T2 2016",
+        "value": 10940295.52,
+        "share": null
+      },
+      "total_kpi": 198043439.45,
+      "suma_periodos": 198043439.45,
+      "diferencia": 0.0,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 16,
+      "propuesta": 117,
+      "modo": "catalogo_heredado",
+      "periodicidad": "year",
+      "numero_periodos": 4,
+      "subtitulo": "Total de ventas facturadas por año",
+      "primer_periodo": {
+        "key": "2013",
+        "label": "2013",
+        "value": 52563272.64,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2016",
+        "label": "2016",
+        "value": 25971029.11,
+        "share": null
+      },
+      "total_kpi": 198043439.45,
+      "suma_periodos": 198043439.45,
+      "diferencia": 0.0,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 17,
+      "propuesta": 120,
+      "modo": "persistida",
+      "periodicidad": "month",
+      "numero_periodos": 38,
+      "subtitulo": "Total de ventas mensual por mes",
+      "primer_periodo": {
+        "key": "2011-05",
+        "label": "May 2011",
+        "value": 503805.9169,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2014-06",
+        "label": "Jun 2014",
+        "value": 49005.84,
+        "share": null
+      },
+      "total_kpi": 109846381.399888,
+      "suma_periodos": 109846381.399888,
+      "diferencia": 0.0,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 17,
+      "propuesta": 120,
+      "modo": "KPI",
+      "periodicidad": "daily",
+      "numero_periodos": 1124,
+      "subtitulo": "Total de ventas mensual por día",
+      "primer_periodo": {
+        "key": "2011-05-31",
+        "label": "31/05/2011",
+        "value": 503805.9169,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2014-06-30",
+        "label": "30/06/2014",
+        "value": 2643.61,
+        "share": null
+      },
+      "total_kpi": 109846381.399888,
+      "suma_periodos": 109846381.399888,
+      "diferencia": 0.0,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 17,
+      "propuesta": 120,
+      "modo": "KPI",
+      "periodicidad": "weekly",
+      "numero_periodos": 162,
+      "subtitulo": "Total de ventas mensual por semana",
+      "primer_periodo": {
+        "key": "2011-W22",
+        "label": "Sem 22 2011",
+        "value": 569231.4133,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2014-W27",
+        "label": "Sem 27 2014",
+        "value": 2643.61,
+        "share": null
+      },
+      "total_kpi": 109846381.399888,
+      "suma_periodos": 109846381.399888,
+      "diferencia": 0.0,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 17,
+      "propuesta": 120,
+      "modo": "KPI",
+      "periodicidad": "monthly",
+      "numero_periodos": 38,
+      "subtitulo": "Total de ventas mensual por mes",
+      "primer_periodo": {
+        "key": "2011-05",
+        "label": "May 2011",
+        "value": 503805.9169,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2014-06",
+        "label": "Jun 2014",
+        "value": 49005.84,
+        "share": null
+      },
+      "total_kpi": 109846381.399888,
+      "suma_periodos": 109846381.399888,
+      "diferencia": 0.0,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 17,
+      "propuesta": 120,
+      "modo": "KPI",
+      "periodicidad": "quarterly",
+      "numero_periodos": 13,
+      "subtitulo": "Total de ventas mensual por trimestre",
+      "primer_periodo": {
+        "key": "2011-Q2",
+        "label": "T2 2011",
+        "value": 962716.7417,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2014-Q2",
+        "label": "T2 2014",
+        "value": 7212854.732338,
+        "share": null
+      },
+      "total_kpi": 109846381.399888,
+      "suma_periodos": 109846381.39988801,
+      "diferencia": 1.4901161193847656e-08,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 17,
+      "propuesta": 120,
+      "modo": "KPI",
+      "periodicidad": "yearly",
+      "numero_periodos": 4,
+      "subtitulo": "Total de ventas mensual por año",
+      "primer_periodo": {
+        "key": "2011",
+        "label": "2011",
+        "value": 12641672.212954,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2014",
+        "label": "2014",
+        "value": 20057928.810865,
+        "share": null
+      },
+      "total_kpi": 109846381.399888,
+      "suma_periodos": 109846381.399888,
+      "diferencia": 0.0,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 17,
+      "propuesta": 120,
+      "modo": "catalogo_heredado",
+      "periodicidad": "day",
+      "numero_periodos": 1124,
+      "subtitulo": "Total de ventas mensual por día",
+      "primer_periodo": {
+        "key": "2011-05-31",
+        "label": "31/05/2011",
+        "value": 503805.9169,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2014-06-30",
+        "label": "30/06/2014",
+        "value": 2643.61,
+        "share": null
+      },
+      "total_kpi": 109846381.399888,
+      "suma_periodos": 109846381.399888,
+      "diferencia": 0.0,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 17,
+      "propuesta": 120,
+      "modo": "catalogo_heredado",
+      "periodicidad": "week",
+      "numero_periodos": 162,
+      "subtitulo": "Total de ventas mensual por semana",
+      "primer_periodo": {
+        "key": "2011-W22",
+        "label": "Sem 22 2011",
+        "value": 569231.4133,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2014-W27",
+        "label": "Sem 27 2014",
+        "value": 2643.61,
+        "share": null
+      },
+      "total_kpi": 109846381.399888,
+      "suma_periodos": 109846381.399888,
+      "diferencia": 0.0,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 17,
+      "propuesta": 120,
+      "modo": "catalogo_heredado",
+      "periodicidad": "month",
+      "numero_periodos": 38,
+      "subtitulo": "Total de ventas mensual por mes",
+      "primer_periodo": {
+        "key": "2011-05",
+        "label": "May 2011",
+        "value": 503805.9169,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2014-06",
+        "label": "Jun 2014",
+        "value": 49005.84,
+        "share": null
+      },
+      "total_kpi": 109846381.399888,
+      "suma_periodos": 109846381.399888,
+      "diferencia": 0.0,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 17,
+      "propuesta": 120,
+      "modo": "catalogo_heredado",
+      "periodicidad": "quarter",
+      "numero_periodos": 13,
+      "subtitulo": "Total de ventas mensual por trimestre",
+      "primer_periodo": {
+        "key": "2011-Q2",
+        "label": "T2 2011",
+        "value": 962716.7417,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2014-Q2",
+        "label": "T2 2014",
+        "value": 7212854.732338,
+        "share": null
+      },
+      "total_kpi": 109846381.399888,
+      "suma_periodos": 109846381.39988801,
+      "diferencia": 1.4901161193847656e-08,
+      "tolerancia": 1e-06,
+      "cumple": true
+    },
+    {
+      "ejecucion": 17,
+      "propuesta": 120,
+      "modo": "catalogo_heredado",
+      "periodicidad": "year",
+      "numero_periodos": 4,
+      "subtitulo": "Total de ventas mensual por año",
+      "primer_periodo": {
+        "key": "2011",
+        "label": "2011",
+        "value": 12641672.212954,
+        "share": null
+      },
+      "ultimo_periodo": {
+        "key": "2014",
+        "label": "2014",
+        "value": 20057928.810865,
+        "share": null
+      },
+      "total_kpi": 109846381.399888,
+      "suma_periodos": 109846381.399888,
+      "diferencia": 0.0,
+      "tolerancia": 1e-06,
+      "cumple": true
+    }
+  ],
+  "todos_cumplen": true
+}

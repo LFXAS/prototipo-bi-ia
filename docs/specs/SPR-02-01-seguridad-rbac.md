@@ -2,7 +2,7 @@
 
 - Estado: **implementado y verificado localmente; pendiente de revisión colaborativa y cierre mediante PR hacia `develop`**.
 - Pertenece a: [SPR-02-rbac-y-parametros.md](SPR-02-rbac-y-parametros.md).
-- Última revisión funcional: 2026-09-10.
+- Última revisión funcional: 2026-11-04; precisión posterior al cierre sobre los formularios implementados.
 
 ## 1. Objetivo
 
@@ -45,6 +45,24 @@ El modelo interno conserva códigos estables porque los endpoints necesitan una 
 3. Al elegir **Editar** en una fila, sólo se carga esa cuenta. La tabla marca sus roles actuales; la contraseña queda vacía, no es obligatoria y sólo cambia si se escribe una nueva. Si la cuenta conserva un rol que luego fue desactivado, éste se muestra identificado como **inactivo** únicamente para permitir retirarlo; no se ofrece para asignar a cuentas nuevas.
 4. Al desactivar, se muestra confirmación con la consecuencia. Si es una cuenta protegida o deja sin recuperación administrativa, el control explica por qué no está disponible.
 5. Guardar muestra éxito o un error comprensible y devuelve el formulario a un estado limpio. Cambiar de pantalla descarta la edición sin guardar tras pedir confirmación cuando corresponda.
+
+#### 3.1.1 Precisión posterior al cierre de los formularios de seguridad
+
+La revisión del 4 de noviembre alinea la interfaz con los contratos actuales:
+
+- El correo sólo se introduce al crear. En edición se muestra como sólo lectura
+  y se explica que el endpoint no admite modificarlo; no se simula un cambio guardado.
+- La edición de la cuenta protegida conserva los campos permitidos y omite
+  `role_ids` en el payload. No intenta reemplazar sus asociaciones protegidas.
+- La carga de roles o permisos distingue carga en curso, error y catálogo vacío
+  legítimo. Un fallo no se transforma en una lista vacía guardable: el formulario
+  queda bloqueado hasta una recarga satisfactoria.
+
+La suite frontend del corte aprobó 46 pruebas, incluidas regresiones de estos
+formularios, y aprobó ESLint y TypeScript/Vite en Docker. Esta evidencia de interfaz
+no equivale a autenticar todas las cuentas ni a una auditoría universal de permisos.
+El corte integrado posterior se registra en
+[QA del 4 de noviembre](../testing/qa-postcierre-2026-11-04.md).
 
 ### 3.2 Roles y permisos por rol
 

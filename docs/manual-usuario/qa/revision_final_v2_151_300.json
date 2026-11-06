@@ -1,0 +1,2464 @@
+{
+  "fecha_inicio": "2026-11-05T08:53:14-05:00",
+  "fecha_fin": "2026-11-05T09:00:38-05:00",
+  "corte_codigo_informado": "8f1c7d1",
+  "documento": "Manual V2, render final de 464 páginas",
+  "rango_asignado": [
+    151,
+    300
+  ],
+  "metodo": "Inspección visual de cada PNG individual mediante tools.view_image, emitiendo la imagen nativa sin montar ni redimensionar. Se verifican composición, legibilidad, recortes, superposiciones y coherencia textual visible; SHA-256 calculado sobre el PNG revisado. No se modifica ninguna fuente ni se ejecuta un render adicional.",
+  "estado": "revisión completada; sin bloqueantes tras contraste de la observación preliminar195",
+  "paginas": [
+    {
+      "pagina": 151,
+      "archivo": "qa/render_entrega_v2/page-151.png",
+      "sha256": "b9ee1b978459a38d4b41ca4c976b4a148077eedbe4033b9e6e477f78bd8957fc",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:53:36-05:00",
+      "observaciones": [
+        "Figura 49c: captura parcial declarada, leyenda íntegra y pie separado."
+      ],
+      "sha256_comprobado_al_cierre": "b9ee1b978459a38d4b41ca4c976b4a148077eedbe4033b9e6e477f78bd8957fc",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 152,
+      "archivo": "qa/render_entrega_v2/page-152.png",
+      "sha256": "c188a5130b5dd731f8ea4d27ad112af9ae1ae87434714268b9e1570e9b07116d",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:53:36-05:00",
+      "observaciones": [
+        "Figura 50a: cabecera, captura y leyenda legibles."
+      ],
+      "sha256_comprobado_al_cierre": "c188a5130b5dd731f8ea4d27ad112af9ae1ae87434714268b9e1570e9b07116d",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 153,
+      "archivo": "qa/render_entrega_v2/page-153.png",
+      "sha256": "c38da72c727fe87bb6ee592656f269307afcdfc637b68cacd0ce9d681028a2cb",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:53:36-05:00",
+      "observaciones": [
+        "Figura 50b: captura parcial declarada; exclusión y leyenda legibles."
+      ],
+      "sha256_comprobado_al_cierre": "c38da72c727fe87bb6ee592656f269307afcdfc637b68cacd0ce9d681028a2cb",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 154,
+      "archivo": "qa/render_entrega_v2/page-154.png",
+      "sha256": "7915705f76e97570d43b2b4f415874869bff3d323c324a518aae2f87e2421400",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:53:36-05:00",
+      "observaciones": [
+        "Figura 50c: continuación de evidencia; leyenda y márgenes íntegros."
+      ],
+      "sha256_comprobado_al_cierre": "7915705f76e97570d43b2b4f415874869bff3d323c324a518aae2f87e2421400",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 155,
+      "archivo": "qa/render_entrega_v2/page-155.png",
+      "sha256": "2357a711459c80283878969f5af83b7b001c2470eb2a012ba0605fe9b1759c23",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:53:36-05:00",
+      "observaciones": [
+        "Inicio del capítulo 11 y procedimiento: texto legible, sin superposición ni pérdida de líneas."
+      ],
+      "sha256_comprobado_al_cierre": "2357a711459c80283878969f5af83b7b001c2470eb2a012ba0605fe9b1759c23",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 156,
+      "archivo": "qa/render_entrega_v2/page-156.png",
+      "sha256": "c939c302d0b1ebc3b961a53da016a76acc48770dad50680be798f66acc7a00f7",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:53:36-05:00",
+      "observaciones": [
+        "Continuación del procedimiento y sección 11.2: saltos, listas y pie correctos."
+      ],
+      "sha256_comprobado_al_cierre": "c939c302d0b1ebc3b961a53da016a76acc48770dad50680be798f66acc7a00f7",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 157,
+      "archivo": "qa/render_entrega_v2/page-157.png",
+      "sha256": "58a265bd572cd2b11bb429e4e9ebcf139f139a235967277136aa2f9fb7ddd618",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:53:48-05:00",
+      "observaciones": [
+        "Texto, listas, encabezados y pie legibles; sin recortes ni superposición."
+      ],
+      "sha256_comprobado_al_cierre": "58a265bd572cd2b11bb429e4e9ebcf139f139a235967277136aa2f9fb7ddd618",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 158,
+      "archivo": "qa/render_entrega_v2/page-158.png",
+      "sha256": "84055b2f46c1be1ad190383a35434bc3d1e8f9eb2098c201018fc15f6a628bd4",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:53:48-05:00",
+      "observaciones": [
+        "Texto, listas, encabezados y pie legibles; sin recortes ni superposición."
+      ],
+      "sha256_comprobado_al_cierre": "84055b2f46c1be1ad190383a35434bc3d1e8f9eb2098c201018fc15f6a628bd4",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 159,
+      "archivo": "qa/render_entrega_v2/page-159.png",
+      "sha256": "d63cc43175bb4c7a5400a3d376f84d60ff6e9bf1237c7b7f3c06d762d09d2931",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:53:48-05:00",
+      "observaciones": [
+        "Texto, listas, encabezados y pie legibles; sin recortes ni superposición."
+      ],
+      "sha256_comprobado_al_cierre": "d63cc43175bb4c7a5400a3d376f84d60ff6e9bf1237c7b7f3c06d762d09d2931",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 160,
+      "archivo": "qa/render_entrega_v2/page-160.png",
+      "sha256": "71c14cf6df15068a5ce6615db3ca863e893efbbe4e031bac014911c0e4b8c8ad",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:53:48-05:00",
+      "observaciones": [
+        "Texto, listas, encabezados y pie legibles; sin recortes ni superposición."
+      ],
+      "sha256_comprobado_al_cierre": "71c14cf6df15068a5ce6615db3ca863e893efbbe4e031bac014911c0e4b8c8ad",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 161,
+      "archivo": "qa/render_entrega_v2/page-161.png",
+      "sha256": "8d565bc286f0a4ab1c455d23174f1facbbd2128e720009663b42209d777a94a7",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:53:48-05:00",
+      "observaciones": [
+        "Texto, listas, encabezados y pie legibles; sin recortes ni superposición."
+      ],
+      "sha256_comprobado_al_cierre": "8d565bc286f0a4ab1c455d23174f1facbbd2128e720009663b42209d777a94a7",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 162,
+      "archivo": "qa/render_entrega_v2/page-162.png",
+      "sha256": "d36885348f6ee8ca90bb352cce56a63d46a4cf62666da06a02d0cbfe195bea0f",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:53:48-05:00",
+      "observaciones": [
+        "Texto, listas, encabezados y pie legibles; sin recortes ni superposición."
+      ],
+      "sha256_comprobado_al_cierre": "d36885348f6ee8ca90bb352cce56a63d46a4cf62666da06a02d0cbfe195bea0f",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 163,
+      "archivo": "qa/render_entrega_v2/page-163.png",
+      "sha256": "3c5c368d83797d7d592c54d5abdf8d0cce1b03cce7726c165619d617199bfb27",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:53:48-05:00",
+      "observaciones": [
+        "Texto, listas, encabezados y pie legibles; sin recortes ni superposición."
+      ],
+      "sha256_comprobado_al_cierre": "3c5c368d83797d7d592c54d5abdf8d0cce1b03cce7726c165619d617199bfb27",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 164,
+      "archivo": "qa/render_entrega_v2/page-164.png",
+      "sha256": "2286b878e4320f7e33562f77cac4fd97dfdcff2ad7597a6ece4d8f3a31b2f8c1",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:53:48-05:00",
+      "observaciones": [
+        "Figura 51: captura parcial declarada y leyenda completas; consulta histórica identificada."
+      ],
+      "sha256_comprobado_al_cierre": "2286b878e4320f7e33562f77cac4fd97dfdcff2ad7597a6ece4d8f3a31b2f8c1",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 165,
+      "archivo": "qa/render_entrega_v2/page-165.png",
+      "sha256": "ac92e22e30260459e55b979e73849aa6fdfe966b0c4d5dcef7dfd9a62f1de4b6",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:15-05:00",
+      "observaciones": [
+        "Captura histórica/parcial expresamente identificada; figuras, leyendas y pie dentro de márgenes, sin superposición."
+      ],
+      "sha256_comprobado_al_cierre": "ac92e22e30260459e55b979e73849aa6fdfe966b0c4d5dcef7dfd9a62f1de4b6",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 166,
+      "archivo": "qa/render_entrega_v2/page-166.png",
+      "sha256": "96867391c3f7778df97aa400fbafc058d215360b1260f2b478e3147423f505db",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:15-05:00",
+      "observaciones": [
+        "Captura histórica/parcial expresamente identificada; figuras, leyendas y pie dentro de márgenes, sin superposición."
+      ],
+      "sha256_comprobado_al_cierre": "96867391c3f7778df97aa400fbafc058d215360b1260f2b478e3147423f505db",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 167,
+      "archivo": "qa/render_entrega_v2/page-167.png",
+      "sha256": "2420b9a4a49d9307d0e8a15028c9d4323a02d57e60bd7138b289566d16779510",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:15-05:00",
+      "observaciones": [
+        "Captura histórica/parcial expresamente identificada; figuras, leyendas y pie dentro de márgenes, sin superposición."
+      ],
+      "sha256_comprobado_al_cierre": "2420b9a4a49d9307d0e8a15028c9d4323a02d57e60bd7138b289566d16779510",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 168,
+      "archivo": "qa/render_entrega_v2/page-168.png",
+      "sha256": "3d78ce571d1e00df47ef1aad85e633b1b026b1a261805cba8473a49c69a9936d",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:15-05:00",
+      "observaciones": [
+        "Captura histórica/parcial expresamente identificada; figuras, leyendas y pie dentro de márgenes, sin superposición."
+      ],
+      "sha256_comprobado_al_cierre": "3d78ce571d1e00df47ef1aad85e633b1b026b1a261805cba8473a49c69a9936d",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 169,
+      "archivo": "qa/render_entrega_v2/page-169.png",
+      "sha256": "16302394f77afe612934724875f8da1206fd01635935a8483def7e53661049ff",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:15-05:00",
+      "observaciones": [
+        "Captura histórica/parcial expresamente identificada; figuras, leyendas y pie dentro de márgenes, sin superposición."
+      ],
+      "sha256_comprobado_al_cierre": "16302394f77afe612934724875f8da1206fd01635935a8483def7e53661049ff",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 170,
+      "archivo": "qa/render_entrega_v2/page-170.png",
+      "sha256": "d9858aeac8c231a8ac6941690e710bfa395c910a02d7ff2c6b99097a8a4c303f",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:15-05:00",
+      "observaciones": [
+        "Captura histórica/parcial expresamente identificada; figuras, leyendas y pie dentro de márgenes, sin superposición."
+      ],
+      "sha256_comprobado_al_cierre": "d9858aeac8c231a8ac6941690e710bfa395c910a02d7ff2c6b99097a8a4c303f",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 171,
+      "archivo": "qa/render_entrega_v2/page-171.png",
+      "sha256": "dfd8f68e7a795535dade866e6c6fa34036f4f6aa9ec6d59c60c7d9bdb56c40ac",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:15-05:00",
+      "observaciones": [
+        "Captura histórica/parcial expresamente identificada; figuras, leyendas y pie dentro de márgenes, sin superposición."
+      ],
+      "sha256_comprobado_al_cierre": "dfd8f68e7a795535dade866e6c6fa34036f4f6aa9ec6d59c60c7d9bdb56c40ac",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 172,
+      "archivo": "qa/render_entrega_v2/page-172.png",
+      "sha256": "cd88549f5744872cc41ed61a71fb2c15d48b10caabe83f40bc6ab457892db86f",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:15-05:00",
+      "observaciones": [
+        "Captura histórica/parcial expresamente identificada; figuras, leyendas y pie dentro de márgenes, sin superposición."
+      ],
+      "sha256_comprobado_al_cierre": "cd88549f5744872cc41ed61a71fb2c15d48b10caabe83f40bc6ab457892db86f",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 173,
+      "archivo": "qa/render_entrega_v2/page-173.png",
+      "sha256": "097faf6b56d9bdd50d51567e4fe9e27a3f0bacc50bd8cfe69ff41eeedc0bd118",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:15-05:00",
+      "observaciones": [
+        "Captura histórica/parcial expresamente identificada; figuras, leyendas y pie dentro de márgenes, sin superposición."
+      ],
+      "sha256_comprobado_al_cierre": "097faf6b56d9bdd50d51567e4fe9e27a3f0bacc50bd8cfe69ff41eeedc0bd118",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 174,
+      "archivo": "qa/render_entrega_v2/page-174.png",
+      "sha256": "e305d64f4f317f9717112c9bea88640db5d9a8d94be8af085c895fb303f66fbf",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:15-05:00",
+      "observaciones": [
+        "Captura histórica/parcial expresamente identificada; figuras, leyendas y pie dentro de márgenes, sin superposición."
+      ],
+      "sha256_comprobado_al_cierre": "e305d64f4f317f9717112c9bea88640db5d9a8d94be8af085c895fb303f66fbf",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 175,
+      "archivo": "qa/render_entrega_v2/page-175.png",
+      "sha256": "e9f5851af13f0274515429ac1a1d21cf7ea2e1a0e5d869358ff23fc69171d9bb",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:46-05:00",
+      "observaciones": [
+        "Figura parcial declarada; rótulos principales, leyenda y pie legibles, sin recortes de la composición documental."
+      ],
+      "sha256_comprobado_al_cierre": "e9f5851af13f0274515429ac1a1d21cf7ea2e1a0e5d869358ff23fc69171d9bb",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 176,
+      "archivo": "qa/render_entrega_v2/page-176.png",
+      "sha256": "1f097018bf967927c7f07cc3f2148bb176792133785f92af30ba363b3fbdfb6d",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:46-05:00",
+      "observaciones": [
+        "Figura parcial declarada; rótulos principales, leyenda y pie legibles, sin recortes de la composición documental."
+      ],
+      "sha256_comprobado_al_cierre": "1f097018bf967927c7f07cc3f2148bb176792133785f92af30ba363b3fbdfb6d",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 177,
+      "archivo": "qa/render_entrega_v2/page-177.png",
+      "sha256": "e65c18af848673cce63b7e0a101cda6a04c085f6f68515705ee7ba5d794fd367",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:46-05:00",
+      "observaciones": [
+        "Figura parcial declarada; rótulos principales, leyenda y pie legibles, sin recortes de la composición documental."
+      ],
+      "sha256_comprobado_al_cierre": "e65c18af848673cce63b7e0a101cda6a04c085f6f68515705ee7ba5d794fd367",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 178,
+      "archivo": "qa/render_entrega_v2/page-178.png",
+      "sha256": "d71bedee3f30f40490319b402c3009724104f4f2fe64ec4082cf61652cae9eed",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:46-05:00",
+      "observaciones": [
+        "Figura parcial declarada; rótulos principales, leyenda y pie legibles, sin recortes de la composición documental."
+      ],
+      "sha256_comprobado_al_cierre": "d71bedee3f30f40490319b402c3009724104f4f2fe64ec4082cf61652cae9eed",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 179,
+      "archivo": "qa/render_entrega_v2/page-179.png",
+      "sha256": "2ab4916e46db0c08ddc3f71d87fbf471b39d4c310c4cb8b8d512db50f764f927",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:46-05:00",
+      "observaciones": [
+        "Figura parcial declarada; rótulos principales, leyenda y pie legibles, sin recortes de la composición documental."
+      ],
+      "sha256_comprobado_al_cierre": "2ab4916e46db0c08ddc3f71d87fbf471b39d4c310c4cb8b8d512db50f764f927",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 180,
+      "archivo": "qa/render_entrega_v2/page-180.png",
+      "sha256": "105a36d8c84322fb6c529c46ab42f04e0ccc9019b160549e8f2667d5c13706ef",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:46-05:00",
+      "observaciones": [
+        "Figura parcial declarada; rótulos principales, leyenda y pie legibles, sin recortes de la composición documental."
+      ],
+      "sha256_comprobado_al_cierre": "105a36d8c84322fb6c529c46ab42f04e0ccc9019b160549e8f2667d5c13706ef",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 181,
+      "archivo": "qa/render_entrega_v2/page-181.png",
+      "sha256": "8b286b4ccfdfa62f701fa10bfa22b26d326c0a1aae71702696118f0ea7782025",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:46-05:00",
+      "observaciones": [
+        "Figura parcial declarada; rótulos principales, leyenda y pie legibles, sin recortes de la composición documental."
+      ],
+      "sha256_comprobado_al_cierre": "8b286b4ccfdfa62f701fa10bfa22b26d326c0a1aae71702696118f0ea7782025",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 182,
+      "archivo": "qa/render_entrega_v2/page-182.png",
+      "sha256": "5bd48b43c499764023d161f9c3e565ab61495a7f8f8b795f274f6996605ea3e5",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:46-05:00",
+      "observaciones": [
+        "Figura parcial declarada; rótulos principales, leyenda y pie legibles, sin recortes de la composición documental."
+      ],
+      "sha256_comprobado_al_cierre": "5bd48b43c499764023d161f9c3e565ab61495a7f8f8b795f274f6996605ea3e5",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 183,
+      "archivo": "qa/render_entrega_v2/page-183.png",
+      "sha256": "a353c5e9091ffede7cafd345576c056bd1c817d8d841d93fcfd161bf2f4a1232",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:46-05:00",
+      "observaciones": [
+        "Figura parcial declarada; rótulos principales, leyenda y pie legibles, sin recortes de la composición documental."
+      ],
+      "sha256_comprobado_al_cierre": "a353c5e9091ffede7cafd345576c056bd1c817d8d841d93fcfd161bf2f4a1232",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 184,
+      "archivo": "qa/render_entrega_v2/page-184.png",
+      "sha256": "80728559cc294190b077d63c43b31cad632f565e899526c67e80439e32ed2ae3",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:46-05:00",
+      "observaciones": [
+        "Figura parcial declarada; rótulos principales, leyenda y pie legibles, sin recortes de la composición documental."
+      ],
+      "sha256_comprobado_al_cierre": "80728559cc294190b077d63c43b31cad632f565e899526c67e80439e32ed2ae3",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 185,
+      "archivo": "qa/render_entrega_v2/page-185.png",
+      "sha256": "bcad0ec61d68e3f4c884c21728dd21e6530ea43c4e662219ec4dc85d40afb90d",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:59-05:00",
+      "observaciones": [
+        "Capturas parciales con contexto/leyenda íntegros; sin superposición ni salida de márgenes."
+      ],
+      "sha256_comprobado_al_cierre": "bcad0ec61d68e3f4c884c21728dd21e6530ea43c4e662219ec4dc85d40afb90d",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 186,
+      "archivo": "qa/render_entrega_v2/page-186.png",
+      "sha256": "6279f3c673f6ca716100154ea9da66ec7ccef4029272452febf6edfd7269c630",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:59-05:00",
+      "observaciones": [
+        "Capturas parciales con contexto/leyenda íntegros; sin superposición ni salida de márgenes."
+      ],
+      "sha256_comprobado_al_cierre": "6279f3c673f6ca716100154ea9da66ec7ccef4029272452febf6edfd7269c630",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 187,
+      "archivo": "qa/render_entrega_v2/page-187.png",
+      "sha256": "21a1aef7f2d3477572252faddd25f65f07f5cbba9e5a727b8c4f2d241841473c",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:59-05:00",
+      "observaciones": [
+        "Capturas parciales con contexto/leyenda íntegros; sin superposición ni salida de márgenes."
+      ],
+      "sha256_comprobado_al_cierre": "21a1aef7f2d3477572252faddd25f65f07f5cbba9e5a727b8c4f2d241841473c",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 188,
+      "archivo": "qa/render_entrega_v2/page-188.png",
+      "sha256": "27d02463eb1ae9306d53a38a0f5675933c0975079fa04ab9d0ef2d1f4b50e403",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:59-05:00",
+      "observaciones": [
+        "Capturas parciales con contexto/leyenda íntegros; sin superposición ni salida de márgenes."
+      ],
+      "sha256_comprobado_al_cierre": "27d02463eb1ae9306d53a38a0f5675933c0975079fa04ab9d0ef2d1f4b50e403",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 189,
+      "archivo": "qa/render_entrega_v2/page-189.png",
+      "sha256": "0aa8c111fa4a3cbad648c332130fe8b40e8d539545487eecf35ff29e00563d51",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:59-05:00",
+      "observaciones": [
+        "Capturas parciales con contexto/leyenda íntegros; sin superposición ni salida de márgenes."
+      ],
+      "sha256_comprobado_al_cierre": "0aa8c111fa4a3cbad648c332130fe8b40e8d539545487eecf35ff29e00563d51",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 190,
+      "archivo": "qa/render_entrega_v2/page-190.png",
+      "sha256": "80a7520198de5aa2d3ab545fda4148470f66e3dd62a34f6b8b5f7b53009a3f55",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:59-05:00",
+      "observaciones": [
+        "Capítulo 12: texto y listas completos, saltos de página y pie correctos."
+      ],
+      "sha256_comprobado_al_cierre": "80a7520198de5aa2d3ab545fda4148470f66e3dd62a34f6b8b5f7b53009a3f55",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 191,
+      "archivo": "qa/render_entrega_v2/page-191.png",
+      "sha256": "7c3cc2d12ff6822f6becbb51842fa8064b22ba3614eba9399914d8ba593719e3",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:59-05:00",
+      "observaciones": [
+        "Capítulo 12: texto y listas completos, saltos de página y pie correctos."
+      ],
+      "sha256_comprobado_al_cierre": "7c3cc2d12ff6822f6becbb51842fa8064b22ba3614eba9399914d8ba593719e3",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 192,
+      "archivo": "qa/render_entrega_v2/page-192.png",
+      "sha256": "6f9366a93cbf25b2b9625de38e3fd9a1b67d13ffbfeabab9395d808fbf146ec4",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:59-05:00",
+      "observaciones": [
+        "Capítulo 12: texto y listas completos, saltos de página y pie correctos."
+      ],
+      "sha256_comprobado_al_cierre": "6f9366a93cbf25b2b9625de38e3fd9a1b67d13ffbfeabab9395d808fbf146ec4",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 193,
+      "archivo": "qa/render_entrega_v2/page-193.png",
+      "sha256": "75729924d26124dc0481e5f26cc0def34c6454a3a5e86d3760035bcb8e7c2590",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:59-05:00",
+      "observaciones": [
+        "Capítulo 12: texto y listas completos, saltos de página y pie correctos."
+      ],
+      "sha256_comprobado_al_cierre": "75729924d26124dc0481e5f26cc0def34c6454a3a5e86d3760035bcb8e7c2590",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 194,
+      "archivo": "qa/render_entrega_v2/page-194.png",
+      "sha256": "8ac675b9cc7afdf3a2396c49d6134b40b01b2dda20354b5b763dd7967b6a1ba9",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:54:59-05:00",
+      "observaciones": [
+        "Capítulo 12: texto y listas completos, saltos de página y pie correctos."
+      ],
+      "sha256_comprobado_al_cierre": "8ac675b9cc7afdf3a2396c49d6134b40b01b2dda20354b5b763dd7967b6a1ba9",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 195,
+      "archivo": "qa/render_entrega_v2/page-195.png",
+      "sha256": "2468bec18a19a6567a2285ef8002c995066035d14ad321cd7c1d0a00154e5cc9",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:55:32-05:00",
+      "observaciones": [
+        "La frase conserva «no se considera éxito numérico». Reinspección nativa de raíz y extracciónPDF descartan la observación preliminar; composición correcta."
+      ],
+      "sha256_comprobado_al_cierre": "2468bec18a19a6567a2285ef8002c995066035d14ad321cd7c1d0a00154e5cc9",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 196,
+      "archivo": "qa/render_entrega_v2/page-196.png",
+      "sha256": "b3722b9007bfce6974637370477b8db4068c1fd119ba81814d75b414114f7b60",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:55:32-05:00",
+      "observaciones": [
+        "Texto completo; describe divisa verificada, dos decimales para cantidades/razones, entero para conteos explícitos y disposición corregida."
+      ],
+      "sha256_comprobado_al_cierre": "b3722b9007bfce6974637370477b8db4068c1fd119ba81814d75b414114f7b60",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 197,
+      "archivo": "qa/render_entrega_v2/page-197.png",
+      "sha256": "bba2c04a4388baefb97225c6bf335ca8860c8fa937de05739b758d44a73036d5",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:55:32-05:00",
+      "observaciones": [
+        "Texto, listas, capturas y leyendas legibles, sin desbordamientos documentales."
+      ],
+      "sha256_comprobado_al_cierre": "bba2c04a4388baefb97225c6bf335ca8860c8fa937de05739b758d44a73036d5",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 198,
+      "archivo": "qa/render_entrega_v2/page-198.png",
+      "sha256": "044633ac1b4b1c8ce6b6c2724c24179943c5437114f8d2e7679d192e28085d61",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:55:32-05:00",
+      "observaciones": [
+        "Texto, listas, capturas y leyendas legibles, sin desbordamientos documentales."
+      ],
+      "sha256_comprobado_al_cierre": "044633ac1b4b1c8ce6b6c2724c24179943c5437114f8d2e7679d192e28085d61",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 199,
+      "archivo": "qa/render_entrega_v2/page-199.png",
+      "sha256": "f5020ebd4f44044ad0f1256da624f411cbb31b825a3778ec90c824f311800192",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:55:32-05:00",
+      "observaciones": [
+        "Superposición dentro de la captura histórica expresamente declarada en el párrafo anterior; no se atribuye al corte vigente."
+      ],
+      "sha256_comprobado_al_cierre": "f5020ebd4f44044ad0f1256da624f411cbb31b825a3778ec90c824f311800192",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 200,
+      "archivo": "qa/render_entrega_v2/page-200.png",
+      "sha256": "a042386a5b95ee54162782664541156db7cb26c4003a04d76c86d8ff2de4ed11",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:55:32-05:00",
+      "observaciones": [
+        "Texto, listas, capturas y leyendas legibles, sin desbordamientos documentales."
+      ],
+      "sha256_comprobado_al_cierre": "a042386a5b95ee54162782664541156db7cb26c4003a04d76c86d8ff2de4ed11",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 201,
+      "archivo": "qa/render_entrega_v2/page-201.png",
+      "sha256": "f6066a3bb603c67413b71cf07082ee6d8b1a5352cf84698fd7f24d1278dc2e91",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:55:32-05:00",
+      "observaciones": [
+        "Texto, listas, capturas y leyendas legibles, sin desbordamientos documentales."
+      ],
+      "sha256_comprobado_al_cierre": "f6066a3bb603c67413b71cf07082ee6d8b1a5352cf84698fd7f24d1278dc2e91",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 202,
+      "archivo": "qa/render_entrega_v2/page-202.png",
+      "sha256": "4ccd9e0cab16458aede1168498e3646a75df6d76e80421dc420132fcf53a53a7",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:55:32-05:00",
+      "observaciones": [
+        "Texto, listas, capturas y leyendas legibles, sin desbordamientos documentales."
+      ],
+      "sha256_comprobado_al_cierre": "4ccd9e0cab16458aede1168498e3646a75df6d76e80421dc420132fcf53a53a7",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 203,
+      "archivo": "qa/render_entrega_v2/page-203.png",
+      "sha256": "96dc36eb725084ebf316f994fa3d771adfe364f213947234902231fadbe590a5",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:55:32-05:00",
+      "observaciones": [
+        "Texto, listas, capturas y leyendas legibles, sin desbordamientos documentales."
+      ],
+      "sha256_comprobado_al_cierre": "96dc36eb725084ebf316f994fa3d771adfe364f213947234902231fadbe590a5",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 204,
+      "archivo": "qa/render_entrega_v2/page-204.png",
+      "sha256": "453480e1e55d7d474776e9527a484f3714749943bc73c0448c9bca4621b8f347",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:55:32-05:00",
+      "observaciones": [
+        "Texto, listas, capturas y leyendas legibles, sin desbordamientos documentales."
+      ],
+      "sha256_comprobado_al_cierre": "453480e1e55d7d474776e9527a484f3714749943bc73c0448c9bca4621b8f347",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 205,
+      "archivo": "qa/render_entrega_v2/page-205.png",
+      "sha256": "43a3baa8ccd8235626e8f40fae1193a4b09c79ac270f43c5617700a90eb0101a",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:55:51-05:00",
+      "observaciones": [
+        "Figura y leyenda completas dentro de la página; captura parcial/histórica identificada, sin cortes de composición ni superposiciones."
+      ],
+      "sha256_comprobado_al_cierre": "43a3baa8ccd8235626e8f40fae1193a4b09c79ac270f43c5617700a90eb0101a",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 206,
+      "archivo": "qa/render_entrega_v2/page-206.png",
+      "sha256": "01624f6e3c5f7601b18e9b28ffcc59f2c163d3da6ee91c5f9831b3e75fee7dde",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:55:51-05:00",
+      "observaciones": [
+        "Figura y leyenda completas dentro de la página; captura parcial/histórica identificada, sin cortes de composición ni superposiciones."
+      ],
+      "sha256_comprobado_al_cierre": "01624f6e3c5f7601b18e9b28ffcc59f2c163d3da6ee91c5f9831b3e75fee7dde",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 207,
+      "archivo": "qa/render_entrega_v2/page-207.png",
+      "sha256": "f1a2459a490b72ae547164a933764a4a34d85724912d42d9a40bdfdebe54c23c",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:55:51-05:00",
+      "observaciones": [
+        "Figura y leyenda completas dentro de la página; captura parcial/histórica identificada, sin cortes de composición ni superposiciones."
+      ],
+      "sha256_comprobado_al_cierre": "f1a2459a490b72ae547164a933764a4a34d85724912d42d9a40bdfdebe54c23c",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 208,
+      "archivo": "qa/render_entrega_v2/page-208.png",
+      "sha256": "c660eff8ffe8ed956169069f9615b46220f223b1c699662738a4e48676271868",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:55:51-05:00",
+      "observaciones": [
+        "Figura y leyenda completas dentro de la página; captura parcial/histórica identificada, sin cortes de composición ni superposiciones."
+      ],
+      "sha256_comprobado_al_cierre": "c660eff8ffe8ed956169069f9615b46220f223b1c699662738a4e48676271868",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 209,
+      "archivo": "qa/render_entrega_v2/page-209.png",
+      "sha256": "349bc6959423b8674f2f39d269e1b9cdfdae6ef3e505c4aec15425ebadbb34a9",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:55:51-05:00",
+      "observaciones": [
+        "Figura y leyenda completas dentro de la página; captura parcial/histórica identificada, sin cortes de composición ni superposiciones."
+      ],
+      "sha256_comprobado_al_cierre": "349bc6959423b8674f2f39d269e1b9cdfdae6ef3e505c4aec15425ebadbb34a9",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 210,
+      "archivo": "qa/render_entrega_v2/page-210.png",
+      "sha256": "00cf59cc86ba16a6b68187df1eb03b8456aff67f068675888cd5a29f73c21b2e",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:55:51-05:00",
+      "observaciones": [
+        "Figura y leyenda completas dentro de la página; captura parcial/histórica identificada, sin cortes de composición ni superposiciones."
+      ],
+      "sha256_comprobado_al_cierre": "00cf59cc86ba16a6b68187df1eb03b8456aff67f068675888cd5a29f73c21b2e",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 211,
+      "archivo": "qa/render_entrega_v2/page-211.png",
+      "sha256": "f3f9459298ccba531e8c440da90682262d0e93818a3befe86a7127c5b4608328",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:55:51-05:00",
+      "observaciones": [
+        "Figura y leyenda completas dentro de la página; captura parcial/histórica identificada, sin cortes de composición ni superposiciones."
+      ],
+      "sha256_comprobado_al_cierre": "f3f9459298ccba531e8c440da90682262d0e93818a3befe86a7127c5b4608328",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 212,
+      "archivo": "qa/render_entrega_v2/page-212.png",
+      "sha256": "59d701292e4716e91f6063e170a043bea13fe94cc8aa18b988398d458b44500d",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:55:51-05:00",
+      "observaciones": [
+        "Figura y leyenda completas dentro de la página; captura parcial/histórica identificada, sin cortes de composición ni superposiciones."
+      ],
+      "sha256_comprobado_al_cierre": "59d701292e4716e91f6063e170a043bea13fe94cc8aa18b988398d458b44500d",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 213,
+      "archivo": "qa/render_entrega_v2/page-213.png",
+      "sha256": "6ce23feea4c57ff01251a8d91813b3bc646cf8dfc1b1e675f92a417faab22197",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:55:51-05:00",
+      "observaciones": [
+        "Figura y leyenda completas dentro de la página; captura parcial/histórica identificada, sin cortes de composición ni superposiciones."
+      ],
+      "sha256_comprobado_al_cierre": "6ce23feea4c57ff01251a8d91813b3bc646cf8dfc1b1e675f92a417faab22197",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 214,
+      "archivo": "qa/render_entrega_v2/page-214.png",
+      "sha256": "e58b5046dc2fdbe5c9d37b954bc1dc5858f07dd64fabc44a1588517c831d2026",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:55:51-05:00",
+      "observaciones": [
+        "Figura y leyenda completas dentro de la página; captura parcial/histórica identificada, sin cortes de composición ni superposiciones."
+      ],
+      "sha256_comprobado_al_cierre": "e58b5046dc2fdbe5c9d37b954bc1dc5858f07dd64fabc44a1588517c831d2026",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 215,
+      "archivo": "qa/render_entrega_v2/page-215.png",
+      "sha256": "df4675e5a5fd17e8fa831c13127d39fed5ed82df02aa0c06d73bfe1d23f91106",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:09-05:00",
+      "observaciones": [
+        "Captura parcial declarada y leyenda completas; datos y controles visibles legibles, márgenes/pie correctos."
+      ],
+      "sha256_comprobado_al_cierre": "df4675e5a5fd17e8fa831c13127d39fed5ed82df02aa0c06d73bfe1d23f91106",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 216,
+      "archivo": "qa/render_entrega_v2/page-216.png",
+      "sha256": "a7e190ef3df5a192586235222e9c3babc2d3131c66461f162558c3fa22145eb7",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:09-05:00",
+      "observaciones": [
+        "Captura parcial declarada y leyenda completas; datos y controles visibles legibles, márgenes/pie correctos."
+      ],
+      "sha256_comprobado_al_cierre": "a7e190ef3df5a192586235222e9c3babc2d3131c66461f162558c3fa22145eb7",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 217,
+      "archivo": "qa/render_entrega_v2/page-217.png",
+      "sha256": "76d02132cfd41d4b37e9410cb11a91411a5aad3ab07a5a053636e2511afbd6b4",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:09-05:00",
+      "observaciones": [
+        "Captura parcial declarada y leyenda completas; datos y controles visibles legibles, márgenes/pie correctos."
+      ],
+      "sha256_comprobado_al_cierre": "76d02132cfd41d4b37e9410cb11a91411a5aad3ab07a5a053636e2511afbd6b4",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 218,
+      "archivo": "qa/render_entrega_v2/page-218.png",
+      "sha256": "3fb318ac10d935cf141cc176d7af369603219aa477cd22449f3815e69e2799e3",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:09-05:00",
+      "observaciones": [
+        "Captura parcial declarada y leyenda completas; datos y controles visibles legibles, márgenes/pie correctos."
+      ],
+      "sha256_comprobado_al_cierre": "3fb318ac10d935cf141cc176d7af369603219aa477cd22449f3815e69e2799e3",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 219,
+      "archivo": "qa/render_entrega_v2/page-219.png",
+      "sha256": "5f99e80d7d9c93a56b79a76a96b9e8a1e167dfd7f02276cef4680b66adfce9ed",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:09-05:00",
+      "observaciones": [
+        "Captura parcial declarada y leyenda completas; datos y controles visibles legibles, márgenes/pie correctos."
+      ],
+      "sha256_comprobado_al_cierre": "5f99e80d7d9c93a56b79a76a96b9e8a1e167dfd7f02276cef4680b66adfce9ed",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 220,
+      "archivo": "qa/render_entrega_v2/page-220.png",
+      "sha256": "4c8772b2ca6f92cc6c0eb463daa5219402b3df1b2f87c6c407925092421bc31f",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:09-05:00",
+      "observaciones": [
+        "Captura parcial declarada y leyenda completas; datos y controles visibles legibles, márgenes/pie correctos."
+      ],
+      "sha256_comprobado_al_cierre": "4c8772b2ca6f92cc6c0eb463daa5219402b3df1b2f87c6c407925092421bc31f",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 221,
+      "archivo": "qa/render_entrega_v2/page-221.png",
+      "sha256": "e39773a68a2b214d8cbcb428a3a63c9f09d05f882cc272e468ac367d0a4e5db1",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:09-05:00",
+      "observaciones": [
+        "Captura parcial declarada y leyenda completas; datos y controles visibles legibles, márgenes/pie correctos."
+      ],
+      "sha256_comprobado_al_cierre": "e39773a68a2b214d8cbcb428a3a63c9f09d05f882cc272e468ac367d0a4e5db1",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 222,
+      "archivo": "qa/render_entrega_v2/page-222.png",
+      "sha256": "91844e4203bad6ce7694033dfcc0f8a53b944697e4c39b2b0d3daf15874b5b51",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:09-05:00",
+      "observaciones": [
+        "Captura parcial declarada y leyenda completas; datos y controles visibles legibles, márgenes/pie correctos."
+      ],
+      "sha256_comprobado_al_cierre": "91844e4203bad6ce7694033dfcc0f8a53b944697e4c39b2b0d3daf15874b5b51",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 223,
+      "archivo": "qa/render_entrega_v2/page-223.png",
+      "sha256": "14dbc8d24bd87186a4402c0964492c7c2b2caf948abc297c497604cf56dd4c01",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:09-05:00",
+      "observaciones": [
+        "Captura parcial declarada y leyenda completas; datos y controles visibles legibles, márgenes/pie correctos."
+      ],
+      "sha256_comprobado_al_cierre": "14dbc8d24bd87186a4402c0964492c7c2b2caf948abc297c497604cf56dd4c01",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 224,
+      "archivo": "qa/render_entrega_v2/page-224.png",
+      "sha256": "cfefe465aae974e68f4f4e040c23da86535ecd2bbd26eb039f13655730e12151",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:09-05:00",
+      "observaciones": [
+        "Captura parcial declarada y leyenda completas; datos y controles visibles legibles, márgenes/pie correctos."
+      ],
+      "sha256_comprobado_al_cierre": "cfefe465aae974e68f4f4e040c23da86535ecd2bbd26eb039f13655730e12151",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 225,
+      "archivo": "qa/render_entrega_v2/page-225.png",
+      "sha256": "6affe84a1b4a63930d69f164b848625eba5c60aa9e555a475c41f62dd0b97ee3",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:38-05:00",
+      "observaciones": [
+        "Figuras parciales, texto y leyendas legibles; composición dentro de márgenes y pie separado."
+      ],
+      "sha256_comprobado_al_cierre": "6affe84a1b4a63930d69f164b848625eba5c60aa9e555a475c41f62dd0b97ee3",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 226,
+      "archivo": "qa/render_entrega_v2/page-226.png",
+      "sha256": "0c60434b3cd87f9eb9f5710d4be42bb6674e44ec2b39cf4f4898935f3d000b8e",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:38-05:00",
+      "observaciones": [
+        "Figuras parciales, texto y leyendas legibles; composición dentro de márgenes y pie separado."
+      ],
+      "sha256_comprobado_al_cierre": "0c60434b3cd87f9eb9f5710d4be42bb6674e44ec2b39cf4f4898935f3d000b8e",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 227,
+      "archivo": "qa/render_entrega_v2/page-227.png",
+      "sha256": "bc9bb7b7f1855be84234e75d11fb3556f70f82026cd95f4182d8817c6e519a6b",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:38-05:00",
+      "observaciones": [
+        "Figuras parciales, texto y leyendas legibles; composición dentro de márgenes y pie separado."
+      ],
+      "sha256_comprobado_al_cierre": "bc9bb7b7f1855be84234e75d11fb3556f70f82026cd95f4182d8817c6e519a6b",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 228,
+      "archivo": "qa/render_entrega_v2/page-228.png",
+      "sha256": "6e3fe9269a8abc884c6fa02a941ed57fea62b141d4df74c244a94a33cb19db71",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:38-05:00",
+      "observaciones": [
+        "Figuras parciales, texto y leyendas legibles; composición dentro de márgenes y pie separado."
+      ],
+      "sha256_comprobado_al_cierre": "6e3fe9269a8abc884c6fa02a941ed57fea62b141d4df74c244a94a33cb19db71",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 229,
+      "archivo": "qa/render_entrega_v2/page-229.png",
+      "sha256": "974b64cbb6cf0c08e2eb971ca25280e8c3eee73dc7ffd8947ca9f29503cf9dfd",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:38-05:00",
+      "observaciones": [
+        "Figuras parciales, texto y leyendas legibles; composición dentro de márgenes y pie separado."
+      ],
+      "sha256_comprobado_al_cierre": "974b64cbb6cf0c08e2eb971ca25280e8c3eee73dc7ffd8947ca9f29503cf9dfd",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 230,
+      "archivo": "qa/render_entrega_v2/page-230.png",
+      "sha256": "d12f72ee035deec4fe3fadf372d1b67955272689d891d7ea37d7a2a3a2cdc127",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:38-05:00",
+      "observaciones": [
+        "Figuras parciales, texto y leyendas legibles; composición dentro de márgenes y pie separado.",
+        "Observación de identificación histórica: captura anterior con promedio superpuesto y moneda de origen pese a contexto USD; conviene declarar su condición anterior al ajuste en la leyenda. La sección 12.5 sí describe el estado corregido."
+      ],
+      "sha256_comprobado_al_cierre": "d12f72ee035deec4fe3fadf372d1b67955272689d891d7ea37d7a2a3a2cdc127",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 231,
+      "archivo": "qa/render_entrega_v2/page-231.png",
+      "sha256": "f966a5b03cac282c7860c6017b2566b814555e4a6a2ce7e6e38e981a71b352fd",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:38-05:00",
+      "observaciones": [
+        "Figuras parciales, texto y leyendas legibles; composición dentro de márgenes y pie separado."
+      ],
+      "sha256_comprobado_al_cierre": "f966a5b03cac282c7860c6017b2566b814555e4a6a2ce7e6e38e981a71b352fd",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 232,
+      "archivo": "qa/render_entrega_v2/page-232.png",
+      "sha256": "2096c9722e52e0583cc5230d189555bdade92c03cf09e42a071ff8e66e43100c",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:38-05:00",
+      "observaciones": [
+        "Figuras parciales, texto y leyendas legibles; composición dentro de márgenes y pie separado."
+      ],
+      "sha256_comprobado_al_cierre": "2096c9722e52e0583cc5230d189555bdade92c03cf09e42a071ff8e66e43100c",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 233,
+      "archivo": "qa/render_entrega_v2/page-233.png",
+      "sha256": "df9b8ff2d196aa9d571255a78293f81a1d229a7a6c80f79de057b8ef456f7b37",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:38-05:00",
+      "observaciones": [
+        "Figuras parciales, texto y leyendas legibles; composición dentro de márgenes y pie separado.",
+        "Observación de identificación histórica: captura anterior con promedio superpuesto y moneda de origen pese a contexto USD; conviene declarar su condición anterior al ajuste en la leyenda. La sección 12.5 sí describe el estado corregido."
+      ],
+      "sha256_comprobado_al_cierre": "df9b8ff2d196aa9d571255a78293f81a1d229a7a6c80f79de057b8ef456f7b37",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 234,
+      "archivo": "qa/render_entrega_v2/page-234.png",
+      "sha256": "f21280f2c17ffefab1f0e00c51fc0d3e0a8a7a5a015c620be69cf4ad1a248309",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:38-05:00",
+      "observaciones": [
+        "Figuras parciales, texto y leyendas legibles; composición dentro de márgenes y pie separado."
+      ],
+      "sha256_comprobado_al_cierre": "f21280f2c17ffefab1f0e00c51fc0d3e0a8a7a5a015c620be69cf4ad1a248309",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 235,
+      "archivo": "qa/render_entrega_v2/page-235.png",
+      "sha256": "ffc659c12d7c51f6ba771caf918e720da2dfe375688d548bd289ae9d10991b54",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:59-05:00",
+      "observaciones": [
+        "Figuras y texto legibles, márgenes y pie correctos, sin recortes de la composición."
+      ],
+      "sha256_comprobado_al_cierre": "ffc659c12d7c51f6ba771caf918e720da2dfe375688d548bd289ae9d10991b54",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 236,
+      "archivo": "qa/render_entrega_v2/page-236.png",
+      "sha256": "13fea04957d7b0f4f26acd7f0b3444ad044defdb67dfc405438f28048219af0c",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:59-05:00",
+      "observaciones": [
+        "Figuras y texto legibles, márgenes y pie correctos, sin recortes de la composición."
+      ],
+      "sha256_comprobado_al_cierre": "13fea04957d7b0f4f26acd7f0b3444ad044defdb67dfc405438f28048219af0c",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 237,
+      "archivo": "qa/render_entrega_v2/page-237.png",
+      "sha256": "98464aebf9f7d21d948aa20241b35774b9de3a9f3b524c209e8e538acd3e2b39",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:59-05:00",
+      "observaciones": [
+        "Figuras y texto legibles, márgenes y pie correctos, sin recortes de la composición."
+      ],
+      "sha256_comprobado_al_cierre": "98464aebf9f7d21d948aa20241b35774b9de3a9f3b524c209e8e538acd3e2b39",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 238,
+      "archivo": "qa/render_entrega_v2/page-238.png",
+      "sha256": "d3a6235b217e0a220120d0ec7a3b34b7223c4799c7aef8d4b93d286493819f79",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:59-05:00",
+      "observaciones": [
+        "Figuras y texto legibles, márgenes y pie correctos, sin recortes de la composición."
+      ],
+      "sha256_comprobado_al_cierre": "d3a6235b217e0a220120d0ec7a3b34b7223c4799c7aef8d4b93d286493819f79",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 239,
+      "archivo": "qa/render_entrega_v2/page-239.png",
+      "sha256": "5702d964f09d7ac337b50ada7e4afbf2b22adc0357392c91023da21a1fbc982a",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:59-05:00",
+      "observaciones": [
+        "Figuras y texto legibles, márgenes y pie correctos, sin recortes de la composición."
+      ],
+      "sha256_comprobado_al_cierre": "5702d964f09d7ac337b50ada7e4afbf2b22adc0357392c91023da21a1fbc982a",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 240,
+      "archivo": "qa/render_entrega_v2/page-240.png",
+      "sha256": "3fa27127cca4d4fe59bbc0e531aacf59be15077ff93b8a01179a47528730c0ec",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:59-05:00",
+      "observaciones": [
+        "Figuras y texto legibles, márgenes y pie correctos, sin recortes de la composición.",
+        "Captura previa al ajuste de disposición; se conserva moneda de origen correcta para WWI. El estado corregido se ilustra después en la página 242."
+      ],
+      "sha256_comprobado_al_cierre": "3fa27127cca4d4fe59bbc0e531aacf59be15077ff93b8a01179a47528730c0ec",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 241,
+      "archivo": "qa/render_entrega_v2/page-241.png",
+      "sha256": "795d9a5cdeadb270ecff44b60169ce3452f33b6e4c9d2424b9dc651d7ed5f6cf",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:59-05:00",
+      "observaciones": [
+        "Captura corregida y texto explicativo coherentes: valores debajo de etiquetas, cantidades con dos decimales y conteos enteros; AW USD y WWI moneda de origen preservados. Sin solapes."
+      ],
+      "sha256_comprobado_al_cierre": "795d9a5cdeadb270ecff44b60169ce3452f33b6e4c9d2424b9dc651d7ed5f6cf",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 242,
+      "archivo": "qa/render_entrega_v2/page-242.png",
+      "sha256": "619ce98f7b4aeec781e0e04ef6a6f5d5e27b2a35b7269687ef3f2aac0c238186",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:59-05:00",
+      "observaciones": [
+        "Captura corregida y texto explicativo coherentes: valores debajo de etiquetas, cantidades con dos decimales y conteos enteros; AW USD y WWI moneda de origen preservados. Sin solapes."
+      ],
+      "sha256_comprobado_al_cierre": "619ce98f7b4aeec781e0e04ef6a6f5d5e27b2a35b7269687ef3f2aac0c238186",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 243,
+      "archivo": "qa/render_entrega_v2/page-243.png",
+      "sha256": "b59cf963217a307f6b2922c5a3704e99fba4ce64c61e95d1464be3e3496b4eca",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:59-05:00",
+      "observaciones": [
+        "Figuras y texto legibles, márgenes y pie correctos, sin recortes de la composición."
+      ],
+      "sha256_comprobado_al_cierre": "b59cf963217a307f6b2922c5a3704e99fba4ce64c61e95d1464be3e3496b4eca",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 244,
+      "archivo": "qa/render_entrega_v2/page-244.png",
+      "sha256": "28089c052648aeac8846be03f3c69ae68f5bc1ed0c4b8ee0c5de31e769d9b27e",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:56:59-05:00",
+      "observaciones": [
+        "Figuras y texto legibles, márgenes y pie correctos, sin recortes de la composición."
+      ],
+      "sha256_comprobado_al_cierre": "28089c052648aeac8846be03f3c69ae68f5bc1ed0c4b8ee0c5de31e769d9b27e",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 245,
+      "archivo": "qa/render_entrega_v2/page-245.png",
+      "sha256": "b4e1537bc7ba6387577c2f459da1b1a58d919d75ca16c93c9ed2431a67ff4287",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:16-05:00",
+      "observaciones": [
+        "Texto, listas y pies legibles; no hay superposición ni pérdida de líneas."
+      ],
+      "sha256_comprobado_al_cierre": "b4e1537bc7ba6387577c2f459da1b1a58d919d75ca16c93c9ed2431a67ff4287",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 246,
+      "archivo": "qa/render_entrega_v2/page-246.png",
+      "sha256": "33f70e354ba41275dfadcdcf64c244a859a923712a60063e84dc6d2760550bc6",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:16-05:00",
+      "observaciones": [
+        "Texto, listas y pies legibles; no hay superposición ni pérdida de líneas."
+      ],
+      "sha256_comprobado_al_cierre": "33f70e354ba41275dfadcdcf64c244a859a923712a60063e84dc6d2760550bc6",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 247,
+      "archivo": "qa/render_entrega_v2/page-247.png",
+      "sha256": "22b0e7765a30cd95d830e6fd38cd2e0d278682db2270dbafa49203f7b500b359",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:16-05:00",
+      "observaciones": [
+        "Texto, listas y pies legibles; no hay superposición ni pérdida de líneas."
+      ],
+      "sha256_comprobado_al_cierre": "22b0e7765a30cd95d830e6fd38cd2e0d278682db2270dbafa49203f7b500b359",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 248,
+      "archivo": "qa/render_entrega_v2/page-248.png",
+      "sha256": "d542c6c300e167c7a1c491cf2b8f1e1b406eb76a0c5a7a59a7836cbfb092c92a",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:16-05:00",
+      "observaciones": [
+        "Texto, listas y pies legibles; no hay superposición ni pérdida de líneas."
+      ],
+      "sha256_comprobado_al_cierre": "d542c6c300e167c7a1c491cf2b8f1e1b406eb76a0c5a7a59a7836cbfb092c92a",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 249,
+      "archivo": "qa/render_entrega_v2/page-249.png",
+      "sha256": "ab511f7c059a4d78a6d04cb54daf7fa2091f2c8db29efac2bfc28a5f24d8057f",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:16-05:00",
+      "observaciones": [
+        "Texto, listas y pies legibles; no hay superposición ni pérdida de líneas."
+      ],
+      "sha256_comprobado_al_cierre": "ab511f7c059a4d78a6d04cb54daf7fa2091f2c8db29efac2bfc28a5f24d8057f",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 250,
+      "archivo": "qa/render_entrega_v2/page-250.png",
+      "sha256": "626d087d6c822123a725dcdc07952d572c02e0af6ef270083f032fdd8753fd25",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:16-05:00",
+      "observaciones": [
+        "Texto, listas y pies legibles; no hay superposición ni pérdida de líneas."
+      ],
+      "sha256_comprobado_al_cierre": "626d087d6c822123a725dcdc07952d572c02e0af6ef270083f032fdd8753fd25",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 251,
+      "archivo": "qa/render_entrega_v2/page-251.png",
+      "sha256": "ad5310c4e13d62a0624926041dd623a809105c3b0d790a83389a6485b7f49b83",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:16-05:00",
+      "observaciones": [
+        "Texto, listas y pies legibles; no hay superposición ni pérdida de líneas."
+      ],
+      "sha256_comprobado_al_cierre": "ad5310c4e13d62a0624926041dd623a809105c3b0d790a83389a6485b7f49b83",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 252,
+      "archivo": "qa/render_entrega_v2/page-252.png",
+      "sha256": "78fc180a673646fab167b81504b501cbe0a698bdf449fc19ac6f854a2e74d32a",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:16-05:00",
+      "observaciones": [
+        "Panel histórico explícitamente identificado; figura parcial y leyenda íntegros, sin recortes documentales."
+      ],
+      "sha256_comprobado_al_cierre": "78fc180a673646fab167b81504b501cbe0a698bdf449fc19ac6f854a2e74d32a",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 253,
+      "archivo": "qa/render_entrega_v2/page-253.png",
+      "sha256": "fbce7d67a61557e1e7bdc86c355a97eac5854c55820eaefe43912f789fdbc48d",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:16-05:00",
+      "observaciones": [
+        "Panel histórico explícitamente identificado; figura parcial y leyenda íntegros, sin recortes documentales."
+      ],
+      "sha256_comprobado_al_cierre": "fbce7d67a61557e1e7bdc86c355a97eac5854c55820eaefe43912f789fdbc48d",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 254,
+      "archivo": "qa/render_entrega_v2/page-254.png",
+      "sha256": "2b7d234d8602b918c2f1799de8979b43c3bd251bfeb73e9940a3e326b291a837",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:16-05:00",
+      "observaciones": [
+        "Panel histórico explícitamente identificado; figura parcial y leyenda íntegros, sin recortes documentales."
+      ],
+      "sha256_comprobado_al_cierre": "2b7d234d8602b918c2f1799de8979b43c3bd251bfeb73e9940a3e326b291a837",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 255,
+      "archivo": "qa/render_entrega_v2/page-255.png",
+      "sha256": "9e3301234cd8c36bd8c9cb2bee94a9b40e4936758d54a0005f378167e12c0962",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:41-05:00",
+      "observaciones": [
+        "Figura parcial/histórica y leyenda legibles; composición sin cortes externos ni superposición con el pie."
+      ],
+      "sha256_comprobado_al_cierre": "9e3301234cd8c36bd8c9cb2bee94a9b40e4936758d54a0005f378167e12c0962",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 256,
+      "archivo": "qa/render_entrega_v2/page-256.png",
+      "sha256": "729589a17d0592dfdedfe6c3eeccdfcbc36890ba3cb32dfe36de44907d77913d",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:41-05:00",
+      "observaciones": [
+        "Figura parcial/histórica y leyenda legibles; composición sin cortes externos ni superposición con el pie."
+      ],
+      "sha256_comprobado_al_cierre": "729589a17d0592dfdedfe6c3eeccdfcbc36890ba3cb32dfe36de44907d77913d",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 257,
+      "archivo": "qa/render_entrega_v2/page-257.png",
+      "sha256": "9f93d027cbe8d8f0c1be2978c0d62f224414074ed8b0caab98086951b8e06b3f",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:41-05:00",
+      "observaciones": [
+        "Figura parcial/histórica y leyenda legibles; composición sin cortes externos ni superposición con el pie."
+      ],
+      "sha256_comprobado_al_cierre": "9f93d027cbe8d8f0c1be2978c0d62f224414074ed8b0caab98086951b8e06b3f",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 258,
+      "archivo": "qa/render_entrega_v2/page-258.png",
+      "sha256": "6b687498342f33f66c801f6ef11d36deb7c232da2e9780295b7203ec175ca634",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:41-05:00",
+      "observaciones": [
+        "Figura parcial/histórica y leyenda legibles; composición sin cortes externos ni superposición con el pie."
+      ],
+      "sha256_comprobado_al_cierre": "6b687498342f33f66c801f6ef11d36deb7c232da2e9780295b7203ec175ca634",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 259,
+      "archivo": "qa/render_entrega_v2/page-259.png",
+      "sha256": "5b32db512d6c03feb1dcc062e5a63fb117b485aa722a6575772ceca6b6f60027",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:41-05:00",
+      "observaciones": [
+        "Figura parcial/histórica y leyenda legibles; composición sin cortes externos ni superposición con el pie."
+      ],
+      "sha256_comprobado_al_cierre": "5b32db512d6c03feb1dcc062e5a63fb117b485aa722a6575772ceca6b6f60027",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 260,
+      "archivo": "qa/render_entrega_v2/page-260.png",
+      "sha256": "4053743b954d137f2fe7e2c36d4acaeea0e3665e182ffbafafdda072be787c8f",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:41-05:00",
+      "observaciones": [
+        "Figura parcial/histórica y leyenda legibles; composición sin cortes externos ni superposición con el pie."
+      ],
+      "sha256_comprobado_al_cierre": "4053743b954d137f2fe7e2c36d4acaeea0e3665e182ffbafafdda072be787c8f",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 261,
+      "archivo": "qa/render_entrega_v2/page-261.png",
+      "sha256": "bb0c57a6db07a9aeaaff39a0d216aa50fbe52cb4491c93d3f2129b978c6d3389",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:41-05:00",
+      "observaciones": [
+        "Figura parcial/histórica y leyenda legibles; composición sin cortes externos ni superposición con el pie."
+      ],
+      "sha256_comprobado_al_cierre": "bb0c57a6db07a9aeaaff39a0d216aa50fbe52cb4491c93d3f2129b978c6d3389",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 262,
+      "archivo": "qa/render_entrega_v2/page-262.png",
+      "sha256": "a33382536a34ac8156bfe9dcb1ef91058db2b7ec63c5a9c59ff5cf9a98666b01",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:41-05:00",
+      "observaciones": [
+        "Figura parcial/histórica y leyenda legibles; composición sin cortes externos ni superposición con el pie."
+      ],
+      "sha256_comprobado_al_cierre": "a33382536a34ac8156bfe9dcb1ef91058db2b7ec63c5a9c59ff5cf9a98666b01",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 263,
+      "archivo": "qa/render_entrega_v2/page-263.png",
+      "sha256": "dbc614b2240a47eb34ccd85936c9df536760dc2e21351ea5c682211ec5a09f8a",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:41-05:00",
+      "observaciones": [
+        "Figura parcial/histórica y leyenda legibles; composición sin cortes externos ni superposición con el pie."
+      ],
+      "sha256_comprobado_al_cierre": "dbc614b2240a47eb34ccd85936c9df536760dc2e21351ea5c682211ec5a09f8a",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 264,
+      "archivo": "qa/render_entrega_v2/page-264.png",
+      "sha256": "268419085b90db3268a73cf0d11eb7312d22fe1eadb618495e0acf42dc8fb900",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:41-05:00",
+      "observaciones": [
+        "Figura parcial/histórica y leyenda legibles; composición sin cortes externos ni superposición con el pie."
+      ],
+      "sha256_comprobado_al_cierre": "268419085b90db3268a73cf0d11eb7312d22fe1eadb618495e0acf42dc8fb900",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 265,
+      "archivo": "qa/render_entrega_v2/page-265.png",
+      "sha256": "87a8a8ea411b6f65198c306850b924337de72e7827e826ca7782ca1a76b212df",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:58-05:00",
+      "observaciones": [
+        "Figura parcial y leyenda dentro de márgenes; sin superposición con el pie ni texto documental recortado."
+      ],
+      "sha256_comprobado_al_cierre": "87a8a8ea411b6f65198c306850b924337de72e7827e826ca7782ca1a76b212df",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 266,
+      "archivo": "qa/render_entrega_v2/page-266.png",
+      "sha256": "a465b6af7389ab27258cba930f9ba0c5fdd49a9f25a048c49759bca85b899a86",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:58-05:00",
+      "observaciones": [
+        "Figura parcial y leyenda dentro de márgenes; sin superposición con el pie ni texto documental recortado."
+      ],
+      "sha256_comprobado_al_cierre": "a465b6af7389ab27258cba930f9ba0c5fdd49a9f25a048c49759bca85b899a86",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 267,
+      "archivo": "qa/render_entrega_v2/page-267.png",
+      "sha256": "e38aceb541d2b242d5423e97317c38844860f16486fb9f6e89ab0cb6c739840d",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:58-05:00",
+      "observaciones": [
+        "Figura parcial y leyenda dentro de márgenes; sin superposición con el pie ni texto documental recortado."
+      ],
+      "sha256_comprobado_al_cierre": "e38aceb541d2b242d5423e97317c38844860f16486fb9f6e89ab0cb6c739840d",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 268,
+      "archivo": "qa/render_entrega_v2/page-268.png",
+      "sha256": "c553532a56e05a8b392a730416ecf3b6128185aec50f011de06b8600cb68e09a",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:58-05:00",
+      "observaciones": [
+        "Figura parcial y leyenda dentro de márgenes; sin superposición con el pie ni texto documental recortado."
+      ],
+      "sha256_comprobado_al_cierre": "c553532a56e05a8b392a730416ecf3b6128185aec50f011de06b8600cb68e09a",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 269,
+      "archivo": "qa/render_entrega_v2/page-269.png",
+      "sha256": "3611445ad2e1d9540bbc5ff4cde78bdb30aa576feacba1829d843e7fde5d58f1",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:58-05:00",
+      "observaciones": [
+        "Figura parcial y leyenda dentro de márgenes; sin superposición con el pie ni texto documental recortado."
+      ],
+      "sha256_comprobado_al_cierre": "3611445ad2e1d9540bbc5ff4cde78bdb30aa576feacba1829d843e7fde5d58f1",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 270,
+      "archivo": "qa/render_entrega_v2/page-270.png",
+      "sha256": "28a9e41d2da69125da5c43323e54012843534a7cbc84bb8378ede3f87e146b13",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:58-05:00",
+      "observaciones": [
+        "Figura parcial y leyenda dentro de márgenes; sin superposición con el pie ni texto documental recortado."
+      ],
+      "sha256_comprobado_al_cierre": "28a9e41d2da69125da5c43323e54012843534a7cbc84bb8378ede3f87e146b13",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 271,
+      "archivo": "qa/render_entrega_v2/page-271.png",
+      "sha256": "96c7fed22869f0274a67c5e1c3edc2ba7feb71a1645d6473b57937936712210c",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:58-05:00",
+      "observaciones": [
+        "Figura parcial y leyenda dentro de márgenes; sin superposición con el pie ni texto documental recortado."
+      ],
+      "sha256_comprobado_al_cierre": "96c7fed22869f0274a67c5e1c3edc2ba7feb71a1645d6473b57937936712210c",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 272,
+      "archivo": "qa/render_entrega_v2/page-272.png",
+      "sha256": "2213241c8bfd06615feac0a23df4f5f5b4492248dcbc3d2eed818b0eb6192ef2",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:58-05:00",
+      "observaciones": [
+        "Figura parcial y leyenda dentro de márgenes; sin superposición con el pie ni texto documental recortado."
+      ],
+      "sha256_comprobado_al_cierre": "2213241c8bfd06615feac0a23df4f5f5b4492248dcbc3d2eed818b0eb6192ef2",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 273,
+      "archivo": "qa/render_entrega_v2/page-273.png",
+      "sha256": "6b0223df8bfd296243122793e6e18f201245c99481fcf34332b5567373f99e6f",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:58-05:00",
+      "observaciones": [
+        "Capítulo 14 y procedimiento de consulta legibles; advertencia temporal, filtros e interpretación coherentes."
+      ],
+      "sha256_comprobado_al_cierre": "6b0223df8bfd296243122793e6e18f201245c99481fcf34332b5567373f99e6f",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 274,
+      "archivo": "qa/render_entrega_v2/page-274.png",
+      "sha256": "59b5b2b8c1923b4d9f4ef3f95853ff7abe5125bf60ad321c6a232c0113d8cdba",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:57:58-05:00",
+      "observaciones": [
+        "Capítulo 14 y procedimiento de consulta legibles; advertencia temporal, filtros e interpretación coherentes."
+      ],
+      "sha256_comprobado_al_cierre": "59b5b2b8c1923b4d9f4ef3f95853ff7abe5125bf60ad321c6a232c0113d8cdba",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 275,
+      "archivo": "qa/render_entrega_v2/page-275.png",
+      "sha256": "9f30b4ca3474cfc04ec8bf9b0f77d229fd22c806524f90d6c6fe45e80aad32af",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:59:26-05:00",
+      "observaciones": [
+        "Texto y listas legibles; composición sin recortes ni superposiciones."
+      ],
+      "sha256_comprobado_al_cierre": "9f30b4ca3474cfc04ec8bf9b0f77d229fd22c806524f90d6c6fe45e80aad32af",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 276,
+      "archivo": "qa/render_entrega_v2/page-276.png",
+      "sha256": "175860d85badc3aa8118d30abef9b55ff33a7399cd3c3f99541cc0336a2e5464",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:59:26-05:00",
+      "observaciones": [
+        "Texto y listas legibles; composición sin recortes ni superposiciones."
+      ],
+      "sha256_comprobado_al_cierre": "175860d85badc3aa8118d30abef9b55ff33a7399cd3c3f99541cc0336a2e5464",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 277,
+      "archivo": "qa/render_entrega_v2/page-277.png",
+      "sha256": "f41c62849786bd14bba8f74d0ecfdbcf221a6d57d18f06599da0f8abd9e2d7da",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:59:26-05:00",
+      "observaciones": [
+        "Texto y listas legibles; composición sin recortes ni superposiciones.",
+        "Procedimiento de exportación coherente con contexto, zona informada, precisión por unidad completa y alcance comprobado de permisos y sesiones."
+      ],
+      "sha256_comprobado_al_cierre": "f41c62849786bd14bba8f74d0ecfdbcf221a6d57d18f06599da0f8abd9e2d7da",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 278,
+      "archivo": "qa/render_entrega_v2/page-278.png",
+      "sha256": "9ed338d9cac367a56c419ef0202647f3760cefa4e16be00ab829e9ce10d3cd32",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:59:26-05:00",
+      "observaciones": [
+        "Texto y listas legibles; composición sin recortes ni superposiciones.",
+        "Procedimiento de exportación coherente con contexto, zona informada, precisión por unidad completa y alcance comprobado de permisos y sesiones."
+      ],
+      "sha256_comprobado_al_cierre": "9ed338d9cac367a56c419ef0202647f3760cefa4e16be00ab829e9ce10d3cd32",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 279,
+      "archivo": "qa/render_entrega_v2/page-279.png",
+      "sha256": "f3bdc1c202eca15ffe565717c29f8d9f012d937fd82342b5636df311c59c8595",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:59:26-05:00",
+      "observaciones": [
+        "Texto y listas legibles; composición sin recortes ni superposiciones.",
+        "Procedimiento de exportación coherente con contexto, zona informada, precisión por unidad completa y alcance comprobado de permisos y sesiones."
+      ],
+      "sha256_comprobado_al_cierre": "f3bdc1c202eca15ffe565717c29f8d9f012d937fd82342b5636df311c59c8595",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 280,
+      "archivo": "qa/render_entrega_v2/page-280.png",
+      "sha256": "3e53c826a9032f0e8cf8bd1580c7610e4815425b29d607f3227383bfe663f4a8",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:59:44-05:00",
+      "observaciones": [
+        "Texto y listas legibles; composición sin recortes ni superposiciones.",
+        "Exportaciones coherentes con contexto y zona, precisión por unidad completa, cifras de los casos finales y distinción de evidencias históricas."
+      ],
+      "sha256_comprobado_al_cierre": "3e53c826a9032f0e8cf8bd1580c7610e4815425b29d607f3227383bfe663f4a8",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 281,
+      "archivo": "qa/render_entrega_v2/page-281.png",
+      "sha256": "9c810e26fcf9ba0f39d27ccc9099b4dd9a66f4cc3a5d1471e28aada6259d31b5",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:59:44-05:00",
+      "observaciones": [
+        "Texto y listas legibles; composición sin recortes ni superposiciones.",
+        "Exportaciones coherentes con contexto y zona, precisión por unidad completa, cifras de los casos finales y distinción de evidencias históricas."
+      ],
+      "sha256_comprobado_al_cierre": "9c810e26fcf9ba0f39d27ccc9099b4dd9a66f4cc3a5d1471e28aada6259d31b5",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 282,
+      "archivo": "qa/render_entrega_v2/page-282.png",
+      "sha256": "37201d5628a8b58dfdf468fce69656ffeb01a1aa727883b498fba606e69c65d4",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:59:44-05:00",
+      "observaciones": [
+        "Texto y listas legibles; composición sin recortes ni superposiciones.",
+        "Exportaciones coherentes con contexto y zona, precisión por unidad completa, cifras de los casos finales y distinción de evidencias históricas."
+      ],
+      "sha256_comprobado_al_cierre": "37201d5628a8b58dfdf468fce69656ffeb01a1aa727883b498fba606e69c65d4",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 283,
+      "archivo": "qa/render_entrega_v2/page-283.png",
+      "sha256": "041407b062230cd8cafc1d4f781dd2d7a921378adab6dac33980ab898c440ec7",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:59:44-05:00",
+      "observaciones": [
+        "Texto y listas legibles; composición sin recortes ni superposiciones.",
+        "Exportaciones coherentes con contexto y zona, precisión por unidad completa, cifras de los casos finales y distinción de evidencias históricas."
+      ],
+      "sha256_comprobado_al_cierre": "041407b062230cd8cafc1d4f781dd2d7a921378adab6dac33980ab898c440ec7",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 284,
+      "archivo": "qa/render_entrega_v2/page-284.png",
+      "sha256": "32a2623df6925e8a0afb2593dea44eb137b597137a2e3212ab674f4ccbc55fa0",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:59:44-05:00",
+      "observaciones": [
+        "Texto y listas legibles; composición sin recortes ni superposiciones.",
+        "Exportaciones coherentes con contexto y zona, precisión por unidad completa, cifras de los casos finales y distinción de evidencias históricas."
+      ],
+      "sha256_comprobado_al_cierre": "32a2623df6925e8a0afb2593dea44eb137b597137a2e3212ab674f4ccbc55fa0",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 285,
+      "archivo": "qa/render_entrega_v2/page-285.png",
+      "sha256": "25747bd04bcbf8669b5c6c6c2ce037ed2c1e59decede7837087c4af41bfd8f5a",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:59:57-05:00",
+      "observaciones": [
+        "Texto y listas legibles; composición sin recortes ni superposiciones.",
+        "Explicación coherente de límites de exportación, denominadores Top 8 y consulta Top 3, conservación de originales y alcance de verificaciones finales."
+      ],
+      "sha256_comprobado_al_cierre": "25747bd04bcbf8669b5c6c6c2ce037ed2c1e59decede7837087c4af41bfd8f5a",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 286,
+      "archivo": "qa/render_entrega_v2/page-286.png",
+      "sha256": "b4bd2927793fa424b1afe5a7317373e9f38f7248a9e936fb3ecf3b39082dbe8e",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:59:57-05:00",
+      "observaciones": [
+        "Texto y listas legibles; composición sin recortes ni superposiciones.",
+        "Explicación coherente de límites de exportación, denominadores Top 8 y consulta Top 3, conservación de originales y alcance de verificaciones finales."
+      ],
+      "sha256_comprobado_al_cierre": "b4bd2927793fa424b1afe5a7317373e9f38f7248a9e936fb3ecf3b39082dbe8e",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 287,
+      "archivo": "qa/render_entrega_v2/page-287.png",
+      "sha256": "190869a06e5e5a46d6012cd056e3cadf347640a049dc923e59941ba6a78f68b3",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:59:57-05:00",
+      "observaciones": [
+        "Texto y listas legibles; composición sin recortes ni superposiciones.",
+        "Explicación coherente de límites de exportación, denominadores Top 8 y consulta Top 3, conservación de originales y alcance de verificaciones finales."
+      ],
+      "sha256_comprobado_al_cierre": "190869a06e5e5a46d6012cd056e3cadf347640a049dc923e59941ba6a78f68b3",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 288,
+      "archivo": "qa/render_entrega_v2/page-288.png",
+      "sha256": "f27704a60c86cbbf5882ade900cfadafdae9ae6fded65b27e50548700835ffc0",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:59:57-05:00",
+      "observaciones": [
+        "Texto y listas legibles; composición sin recortes ni superposiciones.",
+        "Explicación coherente de límites de exportación, denominadores Top 8 y consulta Top 3, conservación de originales y alcance de verificaciones finales."
+      ],
+      "sha256_comprobado_al_cierre": "f27704a60c86cbbf5882ade900cfadafdae9ae6fded65b27e50548700835ffc0",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 289,
+      "archivo": "qa/render_entrega_v2/page-289.png",
+      "sha256": "a8a4fbb7d44df9124268abfbbdf3ea9dcfa0b82c57be79a0a67e20a91c1353b7",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T08:59:57-05:00",
+      "observaciones": [
+        "Texto y listas legibles; composición sin recortes ni superposiciones.",
+        "Explicación coherente de límites de exportación, denominadores Top 8 y consulta Top 3, conservación de originales y alcance de verificaciones finales."
+      ],
+      "sha256_comprobado_al_cierre": "a8a4fbb7d44df9124268abfbbdf3ea9dcfa0b82c57be79a0a67e20a91c1353b7",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 290,
+      "archivo": "qa/render_entrega_v2/page-290.png",
+      "sha256": "49ec6dcf6b79d83ae111418c1495d149f80542351a6cd2e5303cfbe5ff52a131",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T09:00:11-05:00",
+      "observaciones": [
+        "Composición legible sin superposiciones ni recortes de contenido documental.",
+        "Procedimiento de recuperación y alcance de QA coherentes con los archivos finales y permisos configurados; no atribuye una sesión propia a los roles."
+      ],
+      "sha256_comprobado_al_cierre": "49ec6dcf6b79d83ae111418c1495d149f80542351a6cd2e5303cfbe5ff52a131",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 291,
+      "archivo": "qa/render_entrega_v2/page-291.png",
+      "sha256": "490bf4f0aef8df51a4782210bbc56186f093e6563536ab64a7b0d909fd82aaa2",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T09:00:11-05:00",
+      "observaciones": [
+        "Composición legible sin superposiciones ni recortes de contenido documental.",
+        "Procedimiento de recuperación y alcance de QA coherentes con los archivos finales y permisos configurados; no atribuye una sesión propia a los roles."
+      ],
+      "sha256_comprobado_al_cierre": "490bf4f0aef8df51a4782210bbc56186f093e6563536ab64a7b0d909fd82aaa2",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 292,
+      "archivo": "qa/render_entrega_v2/page-292.png",
+      "sha256": "39efe5df0ae94105f65e07b4c9fb1ac3a6fa0aa98d3f30ba9fe4e9de68389a2f",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T09:00:11-05:00",
+      "observaciones": [
+        "Composición legible sin superposiciones ni recortes de contenido documental.",
+        "Figura con captura parcial expresamente identificada; rótulo y pie completos, separados del pie de página."
+      ],
+      "sha256_comprobado_al_cierre": "39efe5df0ae94105f65e07b4c9fb1ac3a6fa0aa98d3f30ba9fe4e9de68389a2f",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 293,
+      "archivo": "qa/render_entrega_v2/page-293.png",
+      "sha256": "b6532ee01e494184478fd1ef6ec18b30a863ab3b3d19a1defa1788b8a57982f6",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T09:00:11-05:00",
+      "observaciones": [
+        "Composición legible sin superposiciones ni recortes de contenido documental.",
+        "Figura con captura parcial expresamente identificada; rótulo y pie completos, separados del pie de página."
+      ],
+      "sha256_comprobado_al_cierre": "b6532ee01e494184478fd1ef6ec18b30a863ab3b3d19a1defa1788b8a57982f6",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 294,
+      "archivo": "qa/render_entrega_v2/page-294.png",
+      "sha256": "29a986100ce0033a26de70d8834a0ad485ff03cf2cd94c790b8757f4db4b51a7",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T09:00:11-05:00",
+      "observaciones": [
+        "Composición legible sin superposiciones ni recortes de contenido documental.",
+        "Figura con captura parcial expresamente identificada; rótulo y pie completos, separados del pie de página."
+      ],
+      "sha256_comprobado_al_cierre": "29a986100ce0033a26de70d8834a0ad485ff03cf2cd94c790b8757f4db4b51a7",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 295,
+      "archivo": "qa/render_entrega_v2/page-295.png",
+      "sha256": "cad2457d495a1380cc68ba630f37e18a8d58b5ff4a4706e0f0a97d841cdd71a8",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T09:00:22-05:00",
+      "observaciones": [
+        "Figura con captura parcial expresamente identificada; texto visible legible, rótulo y pie completos, sin superposiciones en la composición documental.",
+        "Denominadores, alcance de agregados y cautela sobre vigencia histórica coherentes con la explicación del capítulo."
+      ],
+      "sha256_comprobado_al_cierre": "cad2457d495a1380cc68ba630f37e18a8d58b5ff4a4706e0f0a97d841cdd71a8",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 296,
+      "archivo": "qa/render_entrega_v2/page-296.png",
+      "sha256": "2a28e2c4604fb1716c044b44784b6c5ed1770d62141c3fdc9648c36598ba9fba",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T09:00:22-05:00",
+      "observaciones": [
+        "Figura con captura parcial expresamente identificada; texto visible legible, rótulo y pie completos, sin superposiciones en la composición documental.",
+        "Denominadores, alcance de agregados y cautela sobre vigencia histórica coherentes con la explicación del capítulo."
+      ],
+      "sha256_comprobado_al_cierre": "2a28e2c4604fb1716c044b44784b6c5ed1770d62141c3fdc9648c36598ba9fba",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 297,
+      "archivo": "qa/render_entrega_v2/page-297.png",
+      "sha256": "32074cedb70b3cb56ec80088cfc2c83b2591732baa148ca9d6f7564221f607c8",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T09:00:22-05:00",
+      "observaciones": [
+        "Figura con captura parcial expresamente identificada; texto visible legible, rótulo y pie completos, sin superposiciones en la composición documental.",
+        "Denominadores, alcance de agregados y cautela sobre vigencia histórica coherentes con la explicación del capítulo."
+      ],
+      "sha256_comprobado_al_cierre": "32074cedb70b3cb56ec80088cfc2c83b2591732baa148ca9d6f7564221f607c8",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 298,
+      "archivo": "qa/render_entrega_v2/page-298.png",
+      "sha256": "5a42ae4cbdcaa76ec7270f94e15aaf5b67ad4329431cdb2a4a8d61430fb51331",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T09:00:22-05:00",
+      "observaciones": [
+        "Figura con captura parcial expresamente identificada; texto visible legible, rótulo y pie completos, sin superposiciones en la composición documental.",
+        "Denominadores, alcance de agregados y cautela sobre vigencia histórica coherentes con la explicación del capítulo."
+      ],
+      "sha256_comprobado_al_cierre": "5a42ae4cbdcaa76ec7270f94e15aaf5b67ad4329431cdb2a4a8d61430fb51331",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 299,
+      "archivo": "qa/render_entrega_v2/page-299.png",
+      "sha256": "b5d105f3fbb7fddebf5d70d3895b1f464763681e0f3cbb5acd94ad0ee14815ac",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T09:00:22-05:00",
+      "observaciones": [
+        "Figura con captura parcial expresamente identificada; texto visible legible, rótulo y pie completos, sin superposiciones en la composición documental.",
+        "Denominadores, alcance de agregados y cautela sobre vigencia histórica coherentes con la explicación del capítulo."
+      ],
+      "sha256_comprobado_al_cierre": "b5d105f3fbb7fddebf5d70d3895b1f464763681e0f3cbb5acd94ad0ee14815ac",
+      "integridad_al_cierre": true
+    },
+    {
+      "pagina": 300,
+      "archivo": "qa/render_entrega_v2/page-300.png",
+      "sha256": "d9d904a92a2844fe4d97527bf0c17181712b9e5a8307a606254c15fcbeff24c1",
+      "dimensiones_px": [
+        1547,
+        2002
+      ],
+      "estado": "conforme",
+      "fecha_revision": "2026-11-05T09:00:38-05:00",
+      "observaciones": [
+        "Título, texto y tabla legibles; márgenes y pie separados, sin recortes ni superposiciones.",
+        "Corte de código y pruebas 454/48 coherentes; distingue casos anteriores, revisión vigente y alcance de sesiones autenticadas."
+      ],
+      "sha256_comprobado_al_cierre": "d9d904a92a2844fe4d97527bf0c17181712b9e5a8307a606254c15fcbeff24c1",
+      "integridad_al_cierre": true
+    }
+  ],
+  "bloqueantes": [],
+  "resumen": {
+    "paginas_inspeccionadas_individualmente": 150,
+    "paginas_conformes": 149,
+    "paginas_con_correccion_de_contenido": 1,
+    "bloqueantes": 1,
+    "integridad_png_al_cierre": "150 de 150 SHA-256 coinciden con el inventario inicial",
+    "fuentes_modificadas": false,
+    "render_adicional_ejecutado": false
+  },
+  "observacion_preliminar_195_rectificada": {
+    "observacion": [
+      {
+        "pagina": 195,
+        "tipo": "contenido",
+        "texto_visible": "Un KPI no calculable queda como incidencia o sin valor; se considera éxito numérico sólo porque el expediente contiene una tarjeta para él.",
+        "problema": "Falta la negación «no» antes de «se considera»; la frase enseña una conclusión inversa al procedimiento.",
+        "comunicado_a_root": "2026-11-05T08:55:32-05:00"
+      }
+    ],
+    "dictamen_raiz": "Falso positivo de lectura: la negación no se considera está presente en fuenteJSON, extracciónPDF y PNG195. Reinspección nativa de raíz confirma frase correcta; PNGV2 yV3 idénticos. No se cambió el contenido.",
+    "fecha": "2026-11-05T09:13:11.832753-05:00"
+  }
+}

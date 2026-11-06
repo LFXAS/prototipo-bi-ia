@@ -1,0 +1,2680 @@
+[
+  {
+    "id": "02_menu",
+    "titulo": "Menú de navegación",
+    "detalle": "Grupos funcionales y acceso por permisos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/02_menu.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:27:18.267Z"
+  },
+  {
+    "id": "03_inicio_fuente_aw",
+    "titulo": "Inicio y fuente activa",
+    "detalle": "Estado de la preparación con AdventureWorks",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/03_inicio_fuente_aw.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:28:33.410Z"
+  },
+  {
+    "id": "01_acceso",
+    "titulo": "Acceso con cuenta autorizada",
+    "detalle": "Formulario sin credenciales visibles",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/01_acceso.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:29:24.210Z"
+  },
+  {
+    "id": "03b_inicio_completo",
+    "titulo": "Inicio del administrador",
+    "detalle": "Fuente, metadatos, asistente y condiciones de preparación",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/03b_inicio_completo.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:29:54.778Z",
+    "full_page": true
+  },
+  {
+    "id": "04_usuarios",
+    "titulo": "Gestión de usuarios",
+    "detalle": "Formulario de creación y asignación de roles, sin guardar cambios.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/04_usuarios.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:30:23.644Z",
+    "full_page": true
+  },
+  {
+    "id": "05_roles_formulario",
+    "titulo": "Definición de roles",
+    "detalle": "Nombre, descripción y asignación de permisos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/05_roles_formulario.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:30:52.188Z"
+  },
+  {
+    "id": "05c_roles_completo",
+    "titulo": "Formulario de roles y primeros permisos del catálogo",
+    "detalle": "Captura parcial del formulario y de los primeros permisos; no muestra el catálogo completo.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/05c_roles_completo.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:30:52.823Z",
+    "full_page": true
+  },
+  {
+    "id": "05b_roles_existentes",
+    "titulo": "Roles existentes",
+    "detalle": "Administrador, Operador, Analista BI y Gerente comercial",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/05b_roles_existentes.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:30:58.705Z"
+  },
+  {
+    "id": "06_permisos",
+    "titulo": "Catálogo de permisos",
+    "detalle": "Consulta de privilegios registrados; no creación desde esta pantalla",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/06_permisos.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:31:38.107Z",
+    "full_page": true
+  },
+  {
+    "id": "07_menus",
+    "titulo": "Gestión de menús",
+    "detalle": "Navegación parametrizable según permisos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/07_menus.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:31:46.510Z",
+    "full_page": true
+  },
+  {
+    "id": "08_auditoria",
+    "titulo": "Auditoría de operaciones",
+    "detalle": "Eventos conservados por la plataforma",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/08_auditoria.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:31:55.098Z",
+    "full_page": true
+  },
+  {
+    "id": "09_parametros",
+    "titulo": "Parámetros generales",
+    "detalle": "Rangos, valores y restauración por parámetro",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/09_parametros.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:32:26.066Z",
+    "full_page": true
+  },
+  {
+    "id": "10_conexiones",
+    "titulo": "Conexiones de datos",
+    "detalle": "Campos de registro y fuentes habilitadas de sólo lectura",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/10_conexiones.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:32:33.317Z",
+    "full_page": true
+  },
+  {
+    "id": "10b_conexiones_probadas",
+    "titulo": "Fuentes probadas para el recorrido",
+    "detalle": "Validación actual de las dos cuentas de sólo lectura",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/10b_conexiones_probadas.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:33:09.439Z",
+    "full_page": true
+  },
+  {
+    "id": "11_llm",
+    "titulo": "Configuración de proveedores LLM",
+    "detalle": "Formulario de registro y selección del proveedor.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/11_llm.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:33:48.916Z",
+    "full_page": true
+  },
+  {
+    "id": "11b_llm_formulario",
+    "titulo": "Parámetros de una configuración LLM",
+    "detalle": "Ejemplo de autocompletado sin guardar ni activar",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/11b_llm_formulario.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:34:14.071Z",
+    "full_page": true
+  },
+  {
+    "id": "12_metadatos_aw",
+    "titulo": "Esquema de AdventureWorks",
+    "detalle": "Fuente, instantánea y métricas estructurales de AdventureWorks.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/12_metadatos_aw.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:34:20.893Z",
+    "full_page": true
+  },
+  {
+    "id": "12b_metadatos_aw_detalle",
+    "titulo": "Detalle de columnas y relaciones",
+    "detalle": "Búsqueda de SalesOrderDetail y claves declaradas",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/12b_metadatos_aw_detalle.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:34:36.379Z",
+    "full_page": true
+  },
+  {
+    "id": "13_metadatos_wwi",
+    "titulo": "Esquema de WideWorldImporters",
+    "detalle": "Instantánea independiente y métricas estructurales de WideWorldImporters.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/13_metadatos_wwi.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:34:59.967Z",
+    "full_page": true
+  },
+  {
+    "id": "13b_metadatos_wwi_detalle",
+    "titulo": "Columnas de las líneas de factura",
+    "detalle": "Importes, unidades, impuestos, beneficio y relaciones declaradas",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/13b_metadatos_wwi_detalle.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:35:17.906Z",
+    "full_page": true
+  },
+  {
+    "id": "14_catalogo_aw",
+    "titulo": "Catálogo de AdventureWorks",
+    "detalle": "Preguntas del catálogo y sus campos.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/14_catalogo_aw.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:35:47.122Z",
+    "full_page": true
+  },
+  {
+    "id": "14b_catalogo_criterios",
+    "titulo": "Criterios de las preguntas personalizadas",
+    "detalle": "Criterio corregido para costos con fuentes verificadas.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/14b_catalogo_criterios.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:36:45.435Z"
+  },
+  {
+    "id": "15_catalogo_wwi_antes",
+    "titulo": "Catálogo independiente de WideWorldImporters",
+    "detalle": "Estado anterior a la configuración del escenario",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/15_catalogo_wwi_antes.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:36:52.757Z",
+    "full_page": true
+  },
+  {
+    "id": "15b_catalogo_wwi_guardado",
+    "titulo": "Catálogo de WideWorldImporters configurado",
+    "detalle": "Confirmación de guardado y ejemplos de preguntas.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/15b_catalogo_wwi_guardado.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:37:38.713Z",
+    "full_page": true
+  },
+  {
+    "id": "16_seleccion_dominio",
+    "titulo": "Selección del dominio",
+    "detalle": "Sólo ventas está habilitado en este corte del prototipo",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/16_seleccion_dominio.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:38:26.613Z",
+    "full_page": true
+  },
+  {
+    "id": "17_aw_necesidad_opciones",
+    "titulo": "Necesidad de negocio y selección de opciones",
+    "detalle": "Autorización, preguntas de negocio y periodicidad mensual",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/17_aw_necesidad_opciones.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:39:19.886Z",
+    "full_page": true
+  },
+  {
+    "id": "17b_aw_sugerencias_limitadas",
+    "titulo": "Sugerencias de necesidad y controles",
+    "detalle": "La plataforma impide usar dos sugerencias con evidencia insuficiente",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/17b_aw_sugerencias_limitadas.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:42:52.144Z",
+    "full_page": true,
+    "capitulo": 16
+  },
+  {
+    "id": "18_aw_necesidad_final",
+    "titulo": "Necesidad concreta para AdventureWorks",
+    "detalle": "Cuatro preguntas, grano de línea y análisis mensual con venta por unidad",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/18_aw_necesidad_final.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:42:55.176Z",
+    "full_page": true
+  },
+  {
+    "id": "19_aw_viabilidad_objetivo_rechazado",
+    "titulo": "Rechazo de una revisión que altera el objetivo",
+    "detalle": "No se conserva una evaluación de alcance distinto",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/19_aw_viabilidad_objetivo_rechazado.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:45:49.542Z",
+    "full_page": true,
+    "capitulo": 16
+  },
+  {
+    "id": "11c_llm_alternativa_probada",
+    "titulo": "Prueba de conectividad de Groq",
+    "detalle": "Proveedor existente probado; la activación requiere decisión explícita",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/11c_llm_alternativa_probada.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:49:05.153Z",
+    "full_page": true
+  },
+  {
+    "id": "05d_rol_analista",
+    "titulo": "Permisos configurados del Analista BI",
+    "detalle": "Consulta del formulario sin guardar cambios",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/05d_rol_analista.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:49:23.619Z",
+    "full_page": true
+  },
+  {
+    "id": "05e_rol_gerente",
+    "titulo": "Configuración histórica del Gerente comercial con tres permisos",
+    "detalle": "Consulta anterior al ajuste autorizado de Consultar metadatos. La configuración actual de cuatro permisos se muestra por separado en la captura 33.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/05e_rol_gerente.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:49:50.415Z",
+    "full_page": true
+  },
+  {
+    "id": "20h_aw_revision_historica",
+    "titulo": "Consulta de la revisión histórica AW 98",
+    "detalle": "Ejemplo de navegación; no es una aprobación nueva",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/20h_aw_revision_historica.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:58:24.006Z",
+    "full_page": true
+  },
+  {
+    "id": "21h_aw_necesidad_historica",
+    "titulo": "Consulta histórica de la necesidad AW 98",
+    "detalle": "Campos de necesidad bloqueados; no es una generación nueva",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/21h_aw_necesidad_historica.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T02:59:27.873Z",
+    "partial": true,
+    "clip": {
+      "height": 1077.1624755859375,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 802.0249938964844
+    }
+  },
+  {
+    "id": "22h_aw_conceptos",
+    "titulo": "Conceptos de una propuesta histórica AW 98",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/22h_aw_conceptos.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:00:05.788Z",
+    "partial": true,
+    "clip": {
+      "height": 1280.050048828125,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 802.0249938964844
+    }
+  },
+  {
+    "id": "22hb_aw_evidencia_concepto",
+    "titulo": "Evidencia de un concepto con clave compuesta",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/22hb_aw_evidencia_concepto.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:00:29.329Z",
+    "partial": true,
+    "clip": {
+      "height": 1697.1375732421875,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 802.0249977111816
+    }
+  },
+  {
+    "id": "23h_aw_propuesta_modelo",
+    "titulo": "Contrato dimensional histórico AW 98",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/23h_aw_propuesta_modelo.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:01:38.533Z",
+    "partial": true,
+    "clip": {
+      "height": 5556.4375,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 802.0249938964844
+    }
+  },
+  {
+    "id": "24h_aw_personalizacion",
+    "titulo": "Opciones de personalización de una versión histórica",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/24h_aw_personalizacion.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:02:17.298Z",
+    "partial": true,
+    "clip": {
+      "height": 4110.8251953125,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 802.0249938964844
+    }
+  },
+  {
+    "id": "25_sesion_vencida",
+    "titulo": "Recuperación de sesión vencida",
+    "detalle": "La aplicación pide volver a ingresar y conserva el punto guardado",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/25_sesion_vencida.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:02:33.673Z"
+  },
+  {
+    "id": "26h_aw_revision_evidencia",
+    "titulo": "Validación estructural de la versión histórica AW 98",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/26h_aw_revision_evidencia.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:03:36.628Z",
+    "partial": true,
+    "clip": {
+      "height": 641.2125244140625,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 1802.8500366210935
+    }
+  },
+  {
+    "id": "27h_aw_etl_conciliacion",
+    "titulo": "Conciliación histórica AW ejecución 14",
+    "detalle": "Captura histórica de conciliación. El original conserva una superposición entre la etiqueta del promedio y su cifra; la evidencia numérica se consulta en el expediente y en las tablas verificadas.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/27h_aw_etl_conciliacion.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:04:59.952Z",
+    "partial": true,
+    "clip": {
+      "height": 1431.3250732421875,
+      "width": 845.6000366210938,
+      "x": 341.6000061035156,
+      "y": 1378.800048828125
+    }
+  },
+  {
+    "id": "28h_aw_etl_elegir",
+    "titulo": "Selección histórica de propuesta AW",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/28h_aw_etl_elegir.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:08:57.783Z",
+    "partial": true,
+    "clip": {
+      "height": 3213.800048828125,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 877.0000305175781
+    }
+  },
+  {
+    "id": "29h_aw_etl_indicadores",
+    "titulo": "Revisión histórica de indicadores AW",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/29h_aw_etl_indicadores.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:09:10.606Z",
+    "partial": true,
+    "clip": {
+      "height": 2124.5,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 876.9999771118164
+    }
+  },
+  {
+    "id": "30h_aw_etl_plan",
+    "titulo": "Plan ETL histórico AW",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/30h_aw_etl_plan.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:09:18.781Z",
+    "partial": true,
+    "clip": {
+      "height": 3813.91259765625,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 877.0000305175781
+    }
+  },
+  {
+    "id": "31h_aw_etl_materializacion",
+    "titulo": "Materialización histórica AW",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/31h_aw_etl_materializacion.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:09:25.021Z",
+    "partial": true,
+    "clip": {
+      "height": 795.4000244140625,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 877
+    }
+  },
+  {
+    "id": "32_llm_groq_activo",
+    "titulo": "Groq activado temporalmente",
+    "detalle": "Activación autorizada; se restaurará Claude al terminar.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/32_llm_groq_activo.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:09:52.362Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 800,
+        "titulo": "Formulario de configuración LLM"
+      },
+      {
+        "y": 461,
+        "alto": 800,
+        "titulo": "Proveedores y Groq temporal activo"
+      }
+    ]
+  },
+  {
+    "id": "33_gerente_permiso_metadatos",
+    "titulo": "Gerente comercial con consulta de metadatos",
+    "detalle": "Permiso añadido con autorización; cuatro casillas activas, sin edición ni ETL.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/33_gerente_permiso_metadatos.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:10:17.697Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 180,
+        "alto": 900,
+        "titulo": "Perfil Gerente y permisos iniciales"
+      },
+      {
+        "y": 1020,
+        "alto": 900,
+        "titulo": "Metadatos y exportación marcados"
+      },
+      {
+        "y": 1578,
+        "alto": 900,
+        "titulo": "Permisos finales y catálogo de roles"
+      }
+    ]
+  },
+  {
+    "id": "34_aw_necesidad_groq",
+    "titulo": "Nueva necesidad AW mensual con Groq",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/34_aw_necesidad_groq.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:10:46.928Z",
+    "partial": true,
+    "clip": {
+      "height": 1171.5625,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 634.0250091552734
+    },
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 800,
+        "titulo": "Objetivo AW y consentimiento"
+      },
+      {
+        "y": 372,
+        "alto": 800,
+        "titulo": "Preguntas y periodicidad mensual"
+      }
+    ]
+  },
+  {
+    "id": "35_aw_groq_limite",
+    "titulo": "Revisión nueva bloqueada por límite de Groq",
+    "detalle": "Tres reintentos automáticos del proveedor insuficientes. No se guardó propuesta nueva.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/35_aw_groq_limite.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:13:24.142Z",
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 889,
+        "titulo": "área visible de la consulta"
+      }
+    ]
+  },
+  {
+    "id": "36_llm_claude_restaurado",
+    "titulo": "Claude restaurado después de la prueba Groq",
+    "detalle": "Claude activo y Groq inactivo, con controles de conexión visibles.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/36_llm_claude_restaurado.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:13:42.928Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 800,
+        "titulo": "Configuración LLM restaurada"
+      },
+      {
+        "y": 461,
+        "alto": 800,
+        "titulo": "Claude activo y prueba de conexión"
+      }
+    ]
+  },
+  {
+    "id": "37h_aw_analitica_ejecutiva",
+    "titulo": "Panel ejecutivo histórico de AdventureWorks",
+    "detalle": "Fuente AW; propuesta 98 y ejecución 14 de octubre. Consulta de noviembre sin nueva carga.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/37h_aw_analitica_ejecutiva.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:14:12.837Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 520,
+        "alto": 900,
+        "titulo": "Contexto, filtros e indicadores históricos AW"
+      },
+      {
+        "y": 1400,
+        "alto": 900,
+        "titulo": "Evolución, productos y territorios AW"
+      },
+      {
+        "y": 2245,
+        "alto": 900,
+        "titulo": "Consulta contextual y referencia de ejecución histórica"
+      }
+    ]
+  },
+  {
+    "id": "38h_aw_filtros_2013_northwest",
+    "titulo": "Filtros AW:2013 y Northwest",
+    "detalle": "Recálculo histórico: ventas 6.015.174,74 USD,17.452 unidades y 2.053 pedidos.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/38h_aw_filtros_2013_northwest.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:15:01.516Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 520,
+        "alto": 900,
+        "titulo": "Filtros 2013 y Northwest e indicadores"
+      },
+      {
+        "y": 1400,
+        "alto": 900,
+        "titulo": "Gráficos e interpretación con los filtros"
+      },
+      {
+        "y": 2233,
+        "alto": 900,
+        "titulo": "Consulta y trazabilidad del alcance filtrado"
+      }
+    ]
+  },
+  {
+    "id": "39h_aw_detalle_producto",
+    "titulo": "Detalle interactivo de un producto AW",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/39h_aw_detalle_producto.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:15:12.044Z",
+    "partial": true,
+    "clip": {
+      "height": 1140.175048828125,
+      "width": 495.2000122070313,
+      "x": 316.8000183105469,
+      "y": 1311.6875
+    },
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 800,
+        "titulo": "Filtros y productos del alcance"
+      },
+      {
+        "y": 340,
+        "alto": 800,
+        "titulo": "Producto seleccionado y participación visible"
+      }
+    ]
+  },
+  {
+    "id": "40h_aw_copiloto_top3",
+    "titulo": "Copiloto AW:Top 3 con denominador verificable",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/40h_aw_copiloto_top3.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:15:47.888Z",
+    "partial": true,
+    "clip": {
+      "height": 879.6124877929688,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 2473.46240234375
+    },
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 880,
+        "titulo": "área visible de la consulta"
+      }
+    ]
+  },
+  {
+    "id": "41h_aw_vista_analitica_unidades",
+    "titulo": "Vista analítica AW con datos del gráfico",
+    "detalle": "Indicador unidades; 2013 Northwest. El selector de gráfico no modifica todas las tarjetas KPI.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/41h_aw_vista_analitica_unidades.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:16:07.645Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 780,
+        "alto": 900,
+        "titulo": "Indicadores, selección y evolución"
+      },
+      {
+        "y": 1640,
+        "alto": 900,
+        "titulo": "Datos del gráfico y ranking de productos"
+      },
+      {
+        "y": 2750,
+        "alto": 900,
+        "titulo": "Detalle seleccionado y clientes principales"
+      }
+    ]
+  },
+  {
+    "id": "42h_wwi_analitica_ejecutiva",
+    "titulo": "Panel ejecutivo histórico de WideWorldImporters",
+    "detalle": "Cambio de fuente reinició filtros y mostró ejecución 15/propuesta 114; moneda de origen, sin asumir USD.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/42h_wwi_analitica_ejecutiva.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:16:22.849Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 520,
+        "alto": 900,
+        "titulo": "Contexto e indicadores históricos WWI"
+      },
+      {
+        "y": 1400,
+        "alto": 900,
+        "titulo": "Gráficos y hallazgos del panel WWI"
+      },
+      {
+        "y": 2194,
+        "alto": 900,
+        "titulo": "Consulta contextual del expediente histórico WWI"
+      }
+    ]
+  },
+  {
+    "id": "43h_wwi_copiloto_limites",
+    "titulo": "Copiloto WWI con límites de moneda y utilidad",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/43h_wwi_copiloto_limites.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:17:01.354Z",
+    "partial": true,
+    "clip": {
+      "height": 879.6124877929688,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 2227.0125007629395
+    },
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 880,
+        "titulo": "área visible de la consulta"
+      }
+    ]
+  },
+  {
+    "id": "44_wwi_necesidad_nueva",
+    "titulo": "Nueva necesidad mensual WWI",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/44_wwi_necesidad_nueva.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:17:35.854Z",
+    "partial": true,
+    "clip": {
+      "height": 1155.5625,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 634.0250091552734
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 800,
+        "titulo": "Objetivo inicial WWI y consentimiento"
+      },
+      {
+        "y": 356,
+        "alto": 800,
+        "titulo": "Preguntas incluidas y período mensual"
+      }
+    ]
+  },
+  {
+    "id": "45_wwi_viabilidad_limites",
+    "titulo": "Viabilidad WWI con decisiones del analista",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/45_wwi_viabilidad_limites.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:18:40.573Z",
+    "partial": true,
+    "clip": {
+      "height": 3412.625,
+      "width": 812,
+      "x": 358.3999938964844,
+      "y": 1775.1874752044678
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 1200,
+        "alto": 900,
+        "titulo": "Referencias para importe, unidades y facturas"
+      },
+      {
+        "y": 2100,
+        "alto": 900,
+        "titulo": "Decisiones sobre territorio y granularidad"
+      },
+      {
+        "y": 2513,
+        "alto": 900,
+        "titulo": "Límites de interpretación pendientes de aceptación"
+      }
+    ]
+  },
+  {
+    "id": "46_wwi_necesidad_precisada",
+    "titulo": "Necesidad WWI con grano y territorio explícitos",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/46_wwi_necesidad_precisada.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:18:53.291Z",
+    "partial": true,
+    "clip": {
+      "height": 1155.5625,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 634.0250091552734
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 800,
+        "titulo": "Objetivo precisado y alcance territorial"
+      },
+      {
+        "y": 356,
+        "alto": 800,
+        "titulo": "Preguntas y periodicidad de la necesidad precisada"
+      }
+    ]
+  },
+  {
+    "id": "47_wwi_limites_revisados",
+    "titulo": "Incidencia histórica de falso requisito de margen",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/47_wwi_limites_revisados.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:20:19.278Z",
+    "partial": true,
+    "clip": {
+      "height": 3361.85009765625,
+      "width": 812,
+      "x": 358.3999938964844,
+      "y": 1775.187255859375
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 1200,
+        "alto": 900,
+        "titulo": "Falso requisito de margen"
+      },
+      {
+        "y": 2100,
+        "alto": 900,
+        "titulo": "Cliente, territorio actual y decisiones"
+      },
+      {
+        "y": 2462,
+        "alto": 900,
+        "titulo": "Límites aceptados por el analista"
+      }
+    ]
+  },
+  {
+    "id": "48_wwi_conceptos_nuevos",
+    "titulo": "Conceptos nuevos WWI y exclusión preventiva",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/48_wwi_conceptos_nuevos.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:21:35.131Z",
+    "partial": true,
+    "clip": {
+      "height": 2257.262451171875,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 634.0249938964844
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 900,
+        "titulo": "Conceptos de hecho, importe, unidades y facturas"
+      },
+      {
+        "y": 900,
+        "alto": 900,
+        "titulo": "Fecha y exclusión preventiva del territorio"
+      },
+      {
+        "y": 1357,
+        "alto": 900,
+        "titulo": "Evidencia y acciones de los conceptos"
+      }
+    ]
+  },
+  {
+    "id": "49_wwi_propuesta_bloqueada",
+    "titulo": "Propuesta WWI bloqueada por KPI semánticamente incorrecto",
+    "detalle": "El máximo de una línea no equivale al producto líder. No se aprobó este contrato.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/49_wwi_propuesta_bloqueada.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:22:00.637Z",
+    "full_page": true,
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 650,
+        "alto": 900,
+        "titulo": "Propuesta histórica bloqueada y modelo"
+      },
+      {
+        "y": 4750,
+        "alto": 900,
+        "titulo": "Plan y advertencias de la propuesta bloqueada"
+      },
+      {
+        "y": 6000,
+        "alto": 900,
+        "titulo": "Decisiones que requieren intervención"
+      }
+    ]
+  },
+  {
+    "id": "50_wwi_viabilidad_final",
+    "titulo": "Viabilidad final WWI y límites aceptados",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/50_wwi_viabilidad_final.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:23:51.799Z",
+    "partial": true,
+    "clip": {
+      "height": 3779.574951171875,
+      "width": 812,
+      "x": 358.3999938964844,
+      "y": 1775.187255859375
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 1200,
+        "alto": 900,
+        "titulo": "Fórmula controlada y referencias de medidas"
+      },
+      {
+        "y": 2100,
+        "alto": 900,
+        "titulo": "Referencias de fecha, producto, cliente y territorio"
+      },
+      {
+        "y": 2880,
+        "alto": 900,
+        "titulo": "Límites finales aceptados y alcance de la revisión"
+      }
+    ]
+  },
+  {
+    "id": "51_wwi_identidad_cobertura",
+    "titulo": "Cobertura descriptiva comprobada WWI",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/51_wwi_identidad_cobertura.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:25:04.882Z",
+    "partial": true,
+    "clip": {
+      "height": 1653.875,
+      "width": 812,
+      "x": 358.3999938964844,
+      "y": 4884.824890136719
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 850,
+        "titulo": "Rutas descriptivas y cobertura aprobada"
+      },
+      {
+        "y": 804,
+        "alto": 850,
+        "titulo": "Muestra controlada y cobertura por entidad"
+      }
+    ]
+  },
+  {
+    "id": "52_wwi_personalizacion",
+    "titulo": "Personalización nueva WWI antes del ajuste",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/52_wwi_personalizacion.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:25:37.098Z",
+    "partial": true,
+    "clip": {
+      "height": 4259.14990234375,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 634.02490234375
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 900,
+        "titulo": "Personalización histórica de medidas"
+      },
+      {
+        "y": 900,
+        "alto": 900,
+        "titulo": "Conteo y promedio antes del ajuste"
+      },
+      {
+        "y": 3359,
+        "alto": 900,
+        "titulo": "Corrección relacional y justificación del ajuste"
+      }
+    ]
+  },
+  {
+    "id": "53_wwi_propuesta_validada",
+    "titulo": "Contrato WWI 117 válido tras personalización",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/53_wwi_propuesta_validada.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:25:50.861Z",
+    "partial": true,
+    "clip": {
+      "height": 6051.91259765625,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 702.02490234375
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 900,
+        "titulo": "Contrato 117 validado y medidas"
+      },
+      {
+        "y": 4200,
+        "alto": 900,
+        "titulo": "Identidad descriptiva y cobertura 117"
+      },
+      {
+        "y": 5150,
+        "alto": 900,
+        "titulo": "Plan y ajustes automáticos del contrato 117"
+      }
+    ]
+  },
+  {
+    "id": "54_wwi_revision_antes_aprobar",
+    "titulo": "Revisión humana WWI 117 y evidencia",
+    "detalle": "Original histórico con menor nitidez en el párrafo del objetivo; los controles de aprobación son legibles. Para leer la necesidad completa use su transcripción en el procedimiento WWI, sin reconstruir la imagen.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/54_wwi_revision_antes_aprobar.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:26:14.153Z",
+    "partial": true,
+    "clip": {
+      "height": 711.7999877929688,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 702.0250244140625
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 712,
+        "titulo": "área visible de la consulta"
+      }
+    ]
+  },
+  {
+    "id": "55_wwi_aprobada117",
+    "titulo": "Aprobación registrada WWI 117",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/55_wwi_aprobada117.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:26:36.839Z",
+    "partial": true,
+    "clip": {
+      "height": 1008.0250244140624,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 802.0250244140625
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 760,
+        "titulo": "Aprobación registrada y comentario humano"
+      },
+      {
+        "y": 248,
+        "alto": 760,
+        "titulo": "Acciones posteriores de la propuesta aprobada"
+      }
+    ]
+  },
+  {
+    "id": "56_wwi_etl_seleccion",
+    "titulo": "Selección del contrato nuevo 117",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/56_wwi_etl_seleccion.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:26:54.085Z",
+    "partial": true,
+    "clip": {
+      "height": 1736.2000732421875,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 774.5999755859375
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 900,
+        "titulo": "Contrato 117 seleccionado y referencia anterior"
+      },
+      {
+        "y": 836,
+        "alto": 900,
+        "titulo": "Catálogo y selección confirmada 117"
+      }
+    ]
+  },
+  {
+    "id": "57_wwi_etl_indicadores",
+    "titulo": "Indicadores y promedio por factura WWI",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/57_wwi_etl_indicadores.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:27:00.530Z",
+    "partial": true,
+    "clip": {
+      "height": 1197.5374755859375,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 774.6000366210938
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 800,
+        "titulo": "Selección de indicadores del ETL"
+      },
+      {
+        "y": 398,
+        "alto": 800,
+        "titulo": "Facturas y promedio por transacción"
+      }
+    ]
+  },
+  {
+    "id": "58_wwi_etl_confirmacion",
+    "titulo": "Confirmación justificada del ETL WWI",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/58_wwi_etl_confirmacion.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:27:11.684Z",
+    "partial": true,
+    "clip": {
+      "height": 3580.47509765625,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 774.599853515625
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 900,
+        "titulo": "Resumen de materialización y extracción"
+      },
+      {
+        "y": 1200,
+        "alto": 900,
+        "titulo": "Limpieza, unicidad y transformación controlada"
+      },
+      {
+        "y": 2680,
+        "alto": 900,
+        "titulo": "Carga, conciliación y confirmación humana"
+      }
+    ]
+  },
+  {
+    "id": "59_wwi_expediente_preparado16",
+    "titulo": "Expediente nuevo 16 preparado",
+    "detalle": "La preparación no carga todavía; propuesta 117, cuatro KPI y 27 operaciones.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/59_wwi_expediente_preparado16.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:27:26.271Z",
+    "full_page": true,
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 180,
+        "alto": 900,
+        "titulo": "Contexto y expediente 16 preparado"
+      },
+      {
+        "y": 1470,
+        "alto": 900,
+        "titulo": "Trazabilidad y expediente preparado en el catálogo"
+      }
+    ]
+  },
+  {
+    "id": "60_wwi_etl16_conciliado",
+    "titulo": "ETL nuevo WWI 16 conciliado",
+    "detalle": "Histórico ETL 16: 228265 filas origen y destino, diferencia cero y cuatro KPI. El promedio presenta un solapamiento de interfaz previo a la corrección; las figuras 83 y 84 muestran la disposición corregida.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/60_wwi_etl16_conciliado.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:28:03.195Z",
+    "full_page": true,
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 400,
+        "alto": 900,
+        "titulo": "Estado materializado y conciliado 16"
+      },
+      {
+        "y": 1320,
+        "alto": 900,
+        "titulo": "Conciliación, dimensiones e indicadores calculados"
+      },
+      {
+        "y": 2136,
+        "alto": 900,
+        "titulo": "Trazabilidad y catálogo de expedientes"
+      }
+    ]
+  },
+  {
+    "id": "61_wwi_divisa_no_asumida",
+    "titulo": "Comprobación WWI sin divisa única",
+    "detalle": "Captura parcial histórica del ETL 16, sin divisa asumida. Conserva el solapamiento original del promedio; la figura 84 muestra la interfaz corregida. No se modifican datos ni rótulos de la imagen.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/61_wwi_divisa_no_asumida.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:28:18.024Z",
+    "partial": true,
+    "clip": {
+      "height": 851.1124877929688,
+      "width": 845.6000366210938,
+      "x": 341.6000061035156,
+      "y": 1403.6000061035156
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 851,
+        "titulo": "área visible de la consulta"
+      }
+    ]
+  },
+  {
+    "id": "62_wwi_analitica16_publicada",
+    "titulo": "Publicación analítica de la ejecución nueva 16",
+    "detalle": "La cabecera identifica fuente WWI, ejecución 16 y propuesta 117. Este panel analítico histórico conserva cuatro indicadores y no describe la ejecución final 19, documentada por separado.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/62_wwi_analitica16_publicada.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:28:35.105Z",
+    "full_page": true,
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 520,
+        "alto": 900,
+        "titulo": "Contexto, indicadores y ejecución 16"
+      },
+      {
+        "y": 1400,
+        "alto": 900,
+        "titulo": "Gráficos y hallazgos de la ejecución 16"
+      },
+      {
+        "y": 2348,
+        "alto": 900,
+        "titulo": "Copiloto y referencia al expediente 16"
+      }
+    ]
+  },
+  {
+    "id": "63_wwi_copiloto16_top3",
+    "titulo": "Copiloto nuevo WWI 16:Top 3 y denominador",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/63_wwi_copiloto16_top3.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:29:29.949Z",
+    "partial": true,
+    "clip": {
+      "height": 879.6124877929688,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 2342.2124519348145
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 880,
+        "titulo": "área visible de la consulta"
+      }
+    ]
+  },
+  {
+    "id": "64_wwi_copiloto16_territorio",
+    "titulo": "Fragmento histórico del Top 3 de WWI 16",
+    "detalle": "Original histórico desenfocado que no muestra el tramo temporal señalado inicialmente. Se conserva como recurso de auditoría, pero se excluye de las figuras del manual.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/64_wwi_copiloto16_territorio.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:30:22.502Z",
+    "partial": true,
+    "clip": {
+      "height": 879.6124877929688,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 2342.21240234375
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 880,
+        "titulo": "área visible de la consulta"
+      }
+    ],
+    "incluir": false
+  },
+  {
+    "id": "65_wwi_clientes_etiqueta_incorrecta",
+    "titulo": "Nombres de clientes WWI contrastados con el origen",
+    "detalle": "La sospecha inicial quedó descartada: 663 claves y etiquetas coinciden con Sales.Customers.CustomerName tras la limpieza de espacios documentada. No se sustituyeron nombres por compañías supuestas. El nombre del archivo conserva el identificador histórico de la hipótesis.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/65_wwi_clientes_etiqueta_incorrecta.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:30:56.274Z",
+    "partial": true,
+    "clip": {
+      "height": 1938.7874755859375,
+      "width": 495.2000122070313,
+      "x": 316.8000183105469,
+      "y": 1238
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 900,
+        "titulo": "Contexto de productos y territorio"
+      },
+      {
+        "y": 1039,
+        "alto": 900,
+        "titulo": "Clientes principales contrastados con el origen"
+      }
+    ]
+  },
+  {
+    "id": "66_aw_necesidad_nueva",
+    "titulo": "Nueva necesidad AW con cuatro indicadores",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/66_aw_necesidad_nueva.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:31:25.549Z",
+    "partial": true,
+    "clip": {
+      "height": 1171.5625,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 634.0250091552734
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 800,
+        "titulo": "Necesidad AW de cuatro indicadores"
+      },
+      {
+        "y": 372,
+        "alto": 800,
+        "titulo": "Preguntas y periodicidad del escenario AW"
+      }
+    ]
+  },
+  {
+    "id": "67_aw_viabilidad_ambiguedades",
+    "titulo": "Viabilidad AW con ambigüedades del catálogo",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/67_aw_viabilidad_ambiguedades.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:34:24.283Z",
+    "partial": true,
+    "clip": {
+      "height": 4982.7001953125,
+      "width": 812,
+      "x": 358.3999938964844,
+      "y": 1791.1874752044678
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 1450,
+        "alto": 900,
+        "titulo": "Pedidos distintos y promedio por pedido en revisión"
+      },
+      {
+        "y": 2730,
+        "alto": 900,
+        "titulo": "Identificadores, moneda y limitaciones de costo"
+      },
+      {
+        "y": 4083,
+        "alto": 900,
+        "titulo": "Límites semánticos pendientes de decisión"
+      }
+    ]
+  },
+  {
+    "id": "68_aw_catalogo_precisado",
+    "titulo": "Catálogo AW con seis preguntas conservadas",
+    "detalle": "Se precisó el alcance de las primeras cuatro para no añadir costos y márgenes a toda necesidad.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/68_aw_catalogo_precisado.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:35:37.260Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 1150,
+        "alto": 900,
+        "titulo": "Primeras preguntas y sus instrucciones precisadas"
+      },
+      {
+        "y": 1720,
+        "alto": 900,
+        "titulo": "Preguntas conservadas de cliente, territorio y finanzas"
+      },
+      {
+        "y": 2644,
+        "alto": 850,
+        "titulo": "Cinco periodicidades y guardado del catálogo"
+      }
+    ]
+  },
+  {
+    "id": "69_aw_necesidad_final",
+    "titulo": "Necesidad AW con catálogo preciso",
+    "detalle": "Captura parcial del contenido, sin modificar datos ni rótulos",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/69_aw_necesidad_final.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:35:59.617Z",
+    "partial": true,
+    "clip": {
+      "height": 1155.5625,
+      "width": 895.2000122070312,
+      "x": 316.8000183105469,
+      "y": 702.0250091552734
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 850,
+        "titulo": "Objetivo completo y consentimiento de asistencia"
+      },
+      {
+        "y": 306,
+        "alto": 850,
+        "titulo": "Preguntas del catálogo y período mensual"
+      }
+    ]
+  },
+  {
+    "id": "70_aw_viabilidad_revisada",
+    "titulo": "Viabilidad AW con indicadores respaldados",
+    "detalle": "Se reconoce la ambigüedad de nombre Person/Store y la moneda pendiente; no se solicitan costos ni márgenes.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/70_aw_viabilidad_revisada.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:38:11.354Z",
+    "full_page": true,
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 5100,
+        "alto": 900,
+        "titulo": "Importe, unidades y documentos de pedido"
+      },
+      {
+        "y": 6750,
+        "alto": 900,
+        "titulo": "Identidad de cliente ambigua y claves de trazabilidad"
+      },
+      {
+        "y": 8050,
+        "alto": 900,
+        "titulo": "Moneda pendiente y límites del análisis histórico"
+      }
+    ]
+  },
+  {
+    "id": "71_aw_conceptos_nuevos",
+    "titulo": "Conceptos nuevos AW con decisiones preventivas",
+    "detalle": "La referencia estructural no basta para incluir contexto no solicitado; se revisa el contrato final.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/71_aw_conceptos_nuevos.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:39:25.554Z",
+    "full_page": true,
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 1000,
+        "alto": 900,
+        "titulo": "Hecho de línea y encabezado de pedido"
+      },
+      {
+        "y": 2150,
+        "alto": 900,
+        "titulo": "Tasa de cambio excluida por evidencia insuficiente"
+      }
+    ]
+  },
+  {
+    "id": "72_aw_propuesta_bloqueada",
+    "titulo": "Contrato AW bloqueado por interpretación de factura",
+    "detalle": "No se aprobó: la necesidad pide pedidos, pero un requisito del asesor fue interpretado como evento de factura.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/72_aw_propuesta_bloqueada.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:40:30.992Z",
+    "full_page": true,
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 1000,
+        "alto": 900,
+        "titulo": "Contrato histórico bloqueado con tres errores"
+      },
+      {
+        "y": 6350,
+        "alto": 900,
+        "titulo": "Trazabilidad de pedido confundida con invoice_event"
+      },
+      {
+        "y": 10950,
+        "alto": 900,
+        "titulo": "Errores de factura y fecha incompatibles con pedidos"
+      }
+    ]
+  },
+  {
+    "id": "73_aw_necesidad_basica",
+    "titulo": "Ejemplo básico AW para formación inicial",
+    "detalle": "Dos indicadores y tres preguntas seleccionadas; es un caso nuevo distinto del intento detallado bloqueado.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/73_aw_necesidad_basica.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:40:45.243Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 850,
+        "alto": 900,
+        "titulo": "Objetivo básico de dos indicadores y consentimiento"
+      },
+      {
+        "y": 1700,
+        "alto": 900,
+        "titulo": "Tres preguntas seleccionadas y periodicidad mensual"
+      }
+    ]
+  },
+  {
+    "id": "74_aw_viabilidad_basica",
+    "titulo": "Viabilidad del caso básico AW",
+    "detalle": "Los nombres y el detalle se comprobarán en el contrato y en la cobertura; el dictamen textual de IA no acredita por sí solo la capacidad del software.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/74_aw_viabilidad_basica.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:42:13.335Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 2500,
+        "alto": 900,
+        "titulo": "Dictamen básico y derivaciones candidatas"
+      },
+      {
+        "y": 4400,
+        "alto": 900,
+        "titulo": "Importe, unidades y fecha de pedido contrastados"
+      },
+      {
+        "y": 6050,
+        "alto": 900,
+        "titulo": "Límites de interpretación del dictamen histórico"
+      }
+    ]
+  },
+  {
+    "id": "75_aw_contrato119_antes_depuracion",
+    "titulo": "Contrato AW 119 antes de depurar indicadores",
+    "detalle": "Cero errores, once advertencias; se retirarán métricas ajenas al ejemplo y el conteo de pedidos rotulado como líneas.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/75_aw_contrato119_antes_depuracion.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:43:42.044Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 1000,
+        "alto": 900,
+        "titulo": "Contrato 119 antes de depurar: once advertencias"
+      },
+      {
+        "y": 1750,
+        "alto": 900,
+        "titulo": "Medidas adicionales y conteo rotulado como líneas"
+      },
+      {
+        "y": 8500,
+        "alto": 900,
+        "titulo": "Ajustes históricos que motivan la depuración"
+      }
+    ]
+  },
+  {
+    "id": "76_aw_personalizacion_dos_kpi",
+    "titulo": "Depuración manual AW para dos indicadores",
+    "detalle": "Se retiraron métricas adicionales; se conserva el identificador de pedido para controles.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/76_aw_personalizacion_dos_kpi.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:44:25.155Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 1000,
+        "alto": 900,
+        "titulo": "Resumen, grano y selecciones de la personalización histórica"
+      },
+      {
+        "y": 2450,
+        "alto": 900,
+        "titulo": "Identificador de pedido conservado y medidas retiradas"
+      },
+      {
+        "y": 4200,
+        "alto": 900,
+        "titulo": "Sólo dos KPI marcados para la nueva versión"
+      }
+    ]
+  },
+  {
+    "id": "77_aw_propuesta120_validada",
+    "titulo": "Propuesta AW 120 depurada y validada",
+    "detalle": "Dos KPI, grano por línea y cobertura descriptiva completa; nueve advertencias revisadas.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/77_aw_propuesta120_validada.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:44:36.636Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 1000,
+        "alto": 900,
+        "titulo": "Contrato 120: grano por línea y nueve advertencias"
+      },
+      {
+        "y": 2450,
+        "alto": 900,
+        "titulo": "Dos KPI finales y trazabilidad de la necesidad"
+      },
+      {
+        "y": 7300,
+        "alto": 900,
+        "titulo": "Cobertura descriptiva comprobada de producto y territorio"
+      }
+    ]
+  },
+  {
+    "id": "78_aw_revision120",
+    "titulo": "Revisión supervisada AW 120",
+    "detalle": "Evidencia y alcance revisados antes de aprobar.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/78_aw_revision120.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:44:49.633Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 900,
+        "alto": 900,
+        "titulo": "Revisión humana, comentario y advertencias"
+      },
+      {
+        "y": 1800,
+        "alto": 900,
+        "titulo": "Integridad, referencias y consistencia"
+      },
+      {
+        "y": 2450,
+        "alto": 850,
+        "titulo": "Reproducción determinística y huellas coincidentes"
+      }
+    ]
+  },
+  {
+    "id": "79_aw_aprobada120",
+    "titulo": "Propuesta AW 120 aprobada",
+    "detalle": "Aprobación humana registrada para la propuesta 120 y comentario de alcance. La decisión habilita una ejecución posterior; todavía no materializa datos.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/79_aw_aprobada120.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:48:52.605Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 800,
+        "alto": 900,
+        "titulo": "Versión 120 aprobada sin ejecutar el ETL"
+      },
+      {
+        "y": 1450,
+        "alto": 900,
+        "titulo": "Comprobante humano y alcance registrado de la aprobación"
+      }
+    ]
+  },
+  {
+    "id": "80_aw_etl_dos_indicadores",
+    "titulo": "Selección de indicadores del ETL AW",
+    "detalle": "Sólo importe registrado y unidades, ambos con periodicidad mensual.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/80_aw_etl_dos_indicadores.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:49:23.803Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 1100,
+        "alto": 900,
+        "titulo": "Dos indicadores seleccionados y sus recetas"
+      },
+      {
+        "y": 1450,
+        "alto": 900,
+        "titulo": "Importe y unidades con período mensual"
+      }
+    ]
+  },
+  {
+    "id": "81_aw_etl_plan",
+    "titulo": "Plan del ETL básico de AdventureWorks",
+    "detalle": "Tres dimensiones, tres medidas físicas y dos KPI elegidos.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/81_aw_etl_plan.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:49:35.015Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 1100,
+        "alto": 900,
+        "titulo": "Veintidós operaciones, tres dimensiones y tres medidas físicas"
+      },
+      {
+        "y": 4000,
+        "alto": 900,
+        "titulo": "Preparación de medidas, carga y conciliación"
+      },
+      {
+        "y": 4900,
+        "alto": 850,
+        "titulo": "Justificación y preparación explícita de la materialización"
+      }
+    ]
+  },
+  {
+    "id": "82_aw_expediente17_preparado",
+    "titulo": "Expediente AW 17 preparado",
+    "detalle": "Propuesta 120; la carga física todavía no se ejecutó.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/82_aw_expediente17_preparado.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:49:57.051Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 950,
+        "alto": 900,
+        "titulo": "Expediente 17 preparado y trazable"
+      },
+      {
+        "y": 1550,
+        "alto": 900,
+        "titulo": "Materialización todavía pendiente y acción de carga"
+      }
+    ]
+  },
+  {
+    "id": "83_aw_etl17_conciliado_semantica",
+    "titulo": "ETL AW 17 conciliado y revisión semántica",
+    "detalle": "121317 filas sin diferencias; cuatro tablas y etiquetas candidatas pendientes de revisión humana.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/83_aw_etl17_conciliado_semantica.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:52:28.025Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 1050,
+        "alto": 900,
+        "titulo": "Ejecución 17 conciliada con interpretación pendiente"
+      },
+      {
+        "y": 1900,
+        "alto": 900,
+        "titulo": "Conciliación de 121317 filas y cuatro tablas"
+      },
+      {
+        "y": 2650,
+        "alto": 900,
+        "titulo": "Indicadores calculados y revisión semántica pendiente"
+      }
+    ]
+  },
+  {
+    "id": "84_aw_semantica_revisada",
+    "titulo": "Revisión de etiquetas AW 17",
+    "detalle": "Códigos excluidos; tres grupos revisados para publicación.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/84_aw_semantica_revisada.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:52:32.843Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 3050,
+        "alto": 900,
+        "titulo": "Códigos originales excluidos de la publicación"
+      },
+      {
+        "y": 4050,
+        "alto": 900,
+        "titulo": "Etiquetas españolas, comentario y confirmación humana"
+      }
+    ]
+  },
+  {
+    "id": "85_aw_etl17_publicado",
+    "titulo": "ETL AW 17 validado con etiquetas publicadas",
+    "detalle": "Publicación de tres traducciones de grupos; códigos de país conservados.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/85_aw_etl17_publicado.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:52:46.030Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 1100,
+        "alto": 900,
+        "titulo": "Expediente 17 validado y conciliado"
+      },
+      {
+        "y": 2600,
+        "alto": 900,
+        "titulo": "Dos KPI y publicación de la revisión"
+      },
+      {
+        "y": 3250,
+        "alto": 900,
+        "titulo": "Traducciones publicadas y códigos originales conservados"
+      }
+    ]
+  },
+  {
+    "id": "86_aw_analitica17_publicada",
+    "titulo": "Panel nuevo de AdventureWorks17/120",
+    "detalle": "Dos KPI publicados con procedencia explícita.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/86_aw_analitica17_publicada.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:53:06.330Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 260,
+        "alto": 850,
+        "titulo": "Fuente, propuesta 120 y ejecución 17"
+      },
+      {
+        "y": 1050,
+        "alto": 900,
+        "titulo": "Filtros, exportaciones y dos KPI publicados"
+      },
+      {
+        "y": 1800,
+        "alto": 900,
+        "titulo": "Productos líderes y distribución territorial"
+      }
+    ]
+  },
+  {
+    "id": "87_aw_copiloto17_primera_respuesta",
+    "titulo": "Primera respuesta del copiloto AW 17",
+    "detalle": "Cálculo correcto; se detectó una interpretación de preferencia de mercado no acreditada por ventas.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/87_aw_copiloto17_primera_respuesta.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T03:55:47.948Z",
+    "full_page": true,
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 1050,
+        "alto": 900,
+        "titulo": "Tarjetas y evolución de la consulta histórica"
+      },
+      {
+        "y": 3370,
+        "alto": 900,
+        "titulo": "Respuesta histórica con inferencia de preferencia no demostrada"
+      }
+    ]
+  },
+  {
+    "id": "88_aw_copiloto17_revisado",
+    "titulo": "Consulta interpretada del copiloto AW 17",
+    "detalle": "La captura muestra el Top 3 interpretado para 2013 y Northwest, su orden y el denominador anterior al límite. La evaluación de la respuesta completa se conserva en la evidencia textual de QA.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/88_aw_copiloto17_revisado.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:02:19.599Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 1050,
+        "alto": 900,
+        "titulo": "Mismos filtros 2013 y Northwest"
+      },
+      {
+        "y": 3370,
+        "alto": 900,
+        "titulo": "Top 3 interpretado y denominador antes del límite"
+      }
+    ]
+  },
+  {
+    "id": "89_aw_repeticion_exacta_postfix",
+    "titulo": "Repetición exacta del escenario AW detallado",
+    "detalle": "Mismo texto 532 caracteres que el intento 118, con reglas nuevas y sin cambiar metadatos ni evadir requisitos.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/89_aw_repeticion_exacta_postfix.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:03:14.031Z",
+    "full_page": true,
+    "regiones": [
+      {
+        "y": 850,
+        "alto": 900,
+        "titulo": "Objetivo original completo de 532 caracteres"
+      },
+      {
+        "y": 1700,
+        "alto": 900,
+        "titulo": "Cuatro preguntas y período mensual conservados"
+      }
+    ]
+  },
+  {
+    "id": "90_aw_postfix_viabilidad_sin_evento_factura",
+    "titulo": "Viabilidad de pedidos sin confusión con facturas",
+    "detalle": "Repetición exacta del objetivo de 532 caracteres: la trazabilidad usa pedido. En este corte histórico el ranking agregado todavía se clasificaba incorrectamente.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/90_aw_postfix_viabilidad_sin_evento_factura.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:08:48.007Z",
+    "full_page": true,
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 950,
+        "alto": 900,
+        "titulo": "Mismo objetivo de pedidos, sin reducción de alcance"
+      },
+      {
+        "y": 6900,
+        "alto": 900,
+        "titulo": "Identidad de cliente y trazabilidad de línea a pedido"
+      },
+      {
+        "y": 8000,
+        "alto": 900,
+        "titulo": "Incidencia histórica: ranking declarado no disponible"
+      }
+    ]
+  },
+  {
+    "id": "91_aw_ranking_viable_reglas_v4",
+    "titulo": "Ranking por producto como operación analítica",
+    "detalle": "La tarjeta de ranking por producto admite agrupar y ordenar agregados con medida, dimensión y rutas comprobadas por separado; la definición se volverá a validar al preparar la propuesta.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/91_aw_ranking_viable_reglas_v4.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:19:29.241Z",
+    "capitulo": 9,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 666,
+        "titulo": "área visible de la consulta"
+      }
+    ]
+  },
+  {
+    "id": "92_aw_conceptos_v7",
+    "titulo": "Conceptos encontrados y exclusión preventiva AW",
+    "detalle": "Hecho y cabecera confirmados; razón de venta excluida con evidencia.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/92_aw_conceptos_v7.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:20:26.828Z",
+    "full_page": true,
+    "capitulo": 10,
+    "regiones": [
+      {
+        "y": 1000,
+        "alto": 900,
+        "titulo": "Conceptos de hecho y pedido confirmados"
+      },
+      {
+        "y": 2550,
+        "alto": 900,
+        "titulo": "Razón de venta excluida preventivamente"
+      },
+      {
+        "y": 3250,
+        "alto": 850,
+        "titulo": "Evidencia estructural de la exclusión"
+      }
+    ]
+  },
+  {
+    "id": "93_aw_identidad_y_contrato_v7",
+    "titulo": "Cobertura de ranking y trazabilidad de pedido",
+    "detalle": "La captura muestra cobertura de ranking territorial y trazabilidad de línea a pedido mediante claves conservadas, seguida de límites aceptados sobre moneda y alcance.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/93_aw_identidad_y_contrato_v7.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:21:09.535Z",
+    "partial": true,
+    "clip": {
+      "height": 2058.074951171875,
+      "width": 403.2000122070313,
+      "x": 73.5999984741211,
+      "y": 8341.000244140625
+    },
+    "capitulo": 11,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 850,
+        "titulo": "Cobertura de ranking y claves de línea a pedido"
+      },
+      {
+        "y": 650,
+        "alto": 850,
+        "titulo": "Reporte de moneda y límites aceptados"
+      }
+    ]
+  },
+  {
+    "id": "94_aw_personalizacion_cuatro_kpi",
+    "titulo": "Personalización de cuatro KPI sin SQL",
+    "detalle": "Selección previa a crear una versión hija: cuatro dimensiones, tres medidas marcadas y cuatro KPI solicitados; se retira el conteo adicional de clientes. La receta efectiva del promedio se comprueba después en la selección ETL.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/94_aw_personalizacion_cuatro_kpi.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:21:35.770Z",
+    "full_page": true,
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 1000,
+        "alto": 900,
+        "titulo": "Cuatro dimensiones y medidas de la personalización"
+      },
+      {
+        "y": 2150,
+        "alto": 900,
+        "titulo": "Pedido distinto conservado y cliente distinto excluido"
+      },
+      {
+        "y": 2900,
+        "alto": 900,
+        "titulo": "Cuatro KPI seleccionados antes de crear la hija"
+      }
+    ]
+  },
+  {
+    "id": "95_aw_122_aprobada",
+    "titulo": "Propuesta 122 aprobada con cuatro indicadores",
+    "detalle": "Aprobación humana registrada después de comprobar identidad y huellas. La aprobación todavía no materializa tablas.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/95_aw_122_aprobada.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:23:15.315Z",
+    "capitulo": 11,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 666,
+        "titulo": "área visible de la consulta"
+      }
+    ]
+  },
+  {
+    "id": "96_aw_etl_cuatro_kpi",
+    "titulo": "Cuatro indicadores controlados para el ETL",
+    "detalle": "La razón promedio utiliza importe total dividido entre pedidos distintos. Todos heredan el período mensual y no se ejecuta SQL del LLM.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/96_aw_etl_cuatro_kpi.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:24:15.176Z",
+    "full_page": true,
+    "capitulo": 12,
+    "regiones": [
+      {
+        "y": 1100,
+        "alto": 900,
+        "titulo": "Cuatro recetas seleccionadas para pedidos"
+      },
+      {
+        "y": 1750,
+        "alto": 900,
+        "titulo": "Unidades y documentos comerciales distintos"
+      },
+      {
+        "y": 2300,
+        "alto": 850,
+        "titulo": "Promedio como importe dividido entre pedidos distintos"
+      }
+    ]
+  },
+  {
+    "id": "97_aw_expediente18_preparado",
+    "titulo": "Pantalla de datamart con fuente AdventureWorks",
+    "detalle": "Cabecera del espacio de materialización con AdventureWorks local como fuente en contexto. El estado y los identificadores del expediente se documentan en las capturas siguientes y en el registro de QA.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/97_aw_expediente18_preparado.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:24:31.469Z",
+    "capitulo": 12,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 666,
+        "titulo": "área visible de la consulta"
+      }
+    ]
+  },
+  {
+    "id": "98_aw_etl18_conciliado",
+    "titulo": "ETL 18 conciliado con los cuatro KPI",
+    "detalle": "121317 filas origen y destino, diferencia cero; 109846381.40 USD, 274914 unidades y 31465 pedidos. La semántica está pendiente. La etiqueta del promedio aún usa el formato anterior; véase la figura 83 corregida.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/98_aw_etl18_conciliado.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:25:43.378Z",
+    "full_page": true,
+    "capitulo": 12,
+    "regiones": [
+      {
+        "y": 1100,
+        "alto": 900,
+        "titulo": "Ejecución 18 conciliada e interpretación pendiente"
+      },
+      {
+        "y": 1900,
+        "alto": 900,
+        "titulo": "Conciliación de filas y cinco tablas"
+      },
+      {
+        "y": 2600,
+        "alto": 900,
+        "titulo": "Cuatro indicadores calculados y control de divisa"
+      }
+    ]
+  },
+  {
+    "id": "99_aw_etl18_publicado",
+    "titulo": "Expediente 18 validado y publicado",
+    "detalle": "Conciliación y decisión semántica registradas; cinco tablas y cuatro indicadores. Captura anterior a la corrección de unidad y disposición del promedio; la figura 83 documenta su presentación final.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/99_aw_etl18_publicado.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:26:32.201Z",
+    "full_page": true,
+    "capitulo": 12,
+    "regiones": [
+      {
+        "y": 1100,
+        "alto": 900,
+        "titulo": "Estado validado de la ejecución 18"
+      },
+      {
+        "y": 2050,
+        "alto": 900,
+        "titulo": "Conciliación y calidad por tabla"
+      },
+      {
+        "y": 3000,
+        "alto": 900,
+        "titulo": "Indicadores y revisión semántica publicada"
+      }
+    ]
+  },
+  {
+    "id": "100_aw_analitica18_publicada",
+    "titulo": "Identidad del panel de AdventureWorks18",
+    "detalle": "La cabecera identifica AdventureWorks local, AdventureWorks2022, ejecución 18, propuesta 122 y USD.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/100_aw_analitica18_publicada.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:27:22.499Z",
+    "capitulo": 13,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 666,
+        "titulo": "área visible de la consulta"
+      }
+    ]
+  },
+  {
+    "id": "101_aw_copiloto18_resultado",
+    "titulo": "Pregunta y primer tramo de respuesta AW 18",
+    "detalle": "Se observan la pregunta Top 3 para 2013 y Northwest y el primer tramo de respuesta con importes y participaciones. La evaluación de cautelas y sugerencias completas se conserva como evidencia textual independiente.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/101_aw_copiloto18_resultado.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:29:05.670Z",
+    "partial": true,
+    "clip": {
+      "height": 947.6124877929688,
+      "width": 486.3999938964844,
+      "x": 32,
+      "y": 3454.7250366210938
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 948,
+        "titulo": "área visible de la consulta"
+      }
+    ]
+  },
+  {
+    "id": "102_cambio_fuente_aw18_wwi16",
+    "titulo": "Contexto WideWorldImporters16 tras cambiar fuente",
+    "detalle": "La cabecera presenta WideWorldImporters local, ejecución 16, propuesta 117, moneda de origen y todos los períodos.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/102_cambio_fuente_aw18_wwi16.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:30:10.031Z",
+    "capitulo": 13,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 666,
+        "titulo": "área visible de la consulta"
+      }
+    ]
+  },
+  {
+    "id": "103_wwi_necesidad_exacta_693_v4",
+    "titulo": "Necesidad de facturas de WideWorldImporters",
+    "detalle": "Repetición de 693 caracteres, cuatro preguntas, mensual. La clasificación territorial usa ficha actual del cliente y no se afirma moneda ni utilidad.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/103_wwi_necesidad_exacta_693_v4.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:31:08.251Z",
+    "full_page": true,
+    "capitulo": 9,
+    "regiones": [
+      {
+        "y": 850,
+        "alto": 900,
+        "titulo": "Objetivo íntegro de 693 caracteres y cautelas"
+      },
+      {
+        "y": 1700,
+        "alto": 900,
+        "titulo": "Cuatro preguntas seleccionadas y período mensual"
+      }
+    ]
+  },
+  {
+    "id": "104_wwi_exclusion_utilidad_incidencia",
+    "titulo": "Exclusión confundida con una petición de margen",
+    "detalle": "La necesidad dice sin asumir utilidad y pide sólo cuatro indicadores. La tarjeta determinística de margen no corresponde al objetivo; no se acepta para continuar. Se conserva como incidencia de QA.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/104_wwi_exclusion_utilidad_incidencia.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:32:28.981Z",
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 666,
+        "titulo": "área visible de la consulta"
+      }
+    ]
+  },
+  {
+    "id": "105_usuario_protegido_campos_consulta",
+    "titulo": "Roles protegidos y contraseña vacía",
+    "detalle": "El formulario muestra los roles protegidos deshabilitados, su explicación y el campo de contraseña vacío. Esta captura registra una consulta del formulario.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/105_usuario_protegido_campos_consulta.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:33:31.970Z",
+    "capitulo": 4,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 666,
+        "titulo": "roles protegidos en consulta"
+      }
+    ]
+  },
+  {
+    "id": "106_wwi_viabilidad_v5_sin_margen",
+    "titulo": "Viabilidad corregida sin añadir utilidad",
+    "detalle": "El mismo texto de 693 caracteres ya no produce un requisito de margen. Se conservan siete límites reales de interpretación y las medidas y relaciones verificadas.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/106_wwi_viabilidad_v5_sin_margen.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:38:18.357Z",
+    "full_page": true,
+    "capitulo": 9,
+    "regiones": [
+      {
+        "y": 2550,
+        "alto": 900,
+        "titulo": "Viabilidad corregida: dieciséis directos y siete derivables"
+      },
+      {
+        "y": 5700,
+        "alto": 900,
+        "titulo": "Facturas distintas y promedio documental"
+      },
+      {
+        "y": 8400,
+        "alto": 900,
+        "titulo": "Límites reales: fecha, territorio y sólo cuatro indicadores"
+      }
+    ]
+  },
+  {
+    "id": "107_wwi_editor_origen_crudo",
+    "titulo": "Editor mostrando una decisión previa a la corrección",
+    "detalle": "El contrato validado cuenta InvoiceID, pero el editor mostraba ExtendedPrice de la decisión original del modelo. Se conserva como incidencia: la formación debe mostrar la regla efectiva validada.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/107_wwi_editor_origen_crudo.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:42:18.659Z",
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 666,
+        "titulo": "área visible de la consulta"
+      }
+    ]
+  },
+  {
+    "id": "108_wwi_editor_origen_validado",
+    "titulo": "Editor con la regla efectiva de facturas",
+    "detalle": "El editor muestra Sales.InvoiceLines.InvoiceID y COUNT(DISTINCT InvoiceID), conserva las decisiones originales para auditoría y distingue lo no ejecutable.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/108_wwi_editor_origen_validado.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:52:07.755Z",
+    "capitulo": 11,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 667,
+        "titulo": "área visible de la consulta"
+      }
+    ]
+  },
+  {
+    "id": "109_wwi_personalizacion_4_kpi",
+    "titulo": "Personalización del caso de facturas",
+    "detalle": "Se conserva la línea física, el resumen mensual y sólo los cuatro KPI pedidos. Se excluye el precio promedio por unidad adicional; no se reintroducen tasas ni composición fiscal no verificada.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/109_wwi_personalizacion_4_kpi.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:52:20.152Z",
+    "full_page": true,
+    "capitulo": 11,
+    "regiones": [
+      {
+        "y": 900,
+        "alto": 850,
+        "titulo": "Grano físico, resumen mensual y cuatro dimensiones"
+      },
+      {
+        "y": 2400,
+        "alto": 900,
+        "titulo": "Clave documental efectiva y precio adicional excluido"
+      },
+      {
+        "y": 6400,
+        "alto": 900,
+        "titulo": "Promedio por factura como razón de agregados"
+      }
+    ]
+  },
+  {
+    "id": "110_wwi_124_evidencia",
+    "titulo": "Inicio de evidencia de la propuesta 124",
+    "detalle": "Inicio de la validación estructural de 124: acción Verificar evidencia, control de integridad y comienzo del control de referencias visibles.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/110_wwi_124_evidencia.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:54:11.245Z",
+    "partial": true,
+    "clip": {
+      "height": 1093.425048828125,
+      "width": 510.3999938964844,
+      "x": 32,
+      "y": 10883.499633789062
+    },
+    "capitulo": 11,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 850,
+        "titulo": "Acción de verificación y alcance estructural"
+      },
+      {
+        "y": 243,
+        "alto": 850,
+        "titulo": "Integridad y comienzo de referencias visibles de 124"
+      }
+    ]
+  },
+  {
+    "id": "111_wwi_124_aprobada",
+    "titulo": "Propuesta 124 aprobada",
+    "detalle": "Cuatro KPI y grano por línea física. La fuente es WideWorldImporters y la revisión distingue ubicación actual, moneda no probada y ausencia de evidencia de cobro.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/111_wwi_124_aprobada.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:54:32.562Z",
+    "capitulo": 11,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 667,
+        "titulo": "área visible de la consulta"
+      }
+    ]
+  },
+  {
+    "id": "112_wwi_etl_4_indicadores",
+    "titulo": "Cuatro recetas del ETL de facturas",
+    "detalle": "Importe, unidades, facturas distintas y razón por factura. Se conserva moneda de origen sin asignar un código no comprobado.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/112_wwi_etl_4_indicadores.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:55:36.394Z",
+    "full_page": true,
+    "capitulo": 12,
+    "regiones": [
+      {
+        "y": 1050,
+        "alto": 900,
+        "titulo": "Selección de cuatro recetas e importe mensual"
+      },
+      {
+        "y": 1800,
+        "alto": 900,
+        "titulo": "Unidades y conteo de facturas distintas"
+      },
+      {
+        "y": 2200,
+        "alto": 850,
+        "titulo": "Razón promedio por factura y moneda de origen"
+      }
+    ]
+  },
+  {
+    "id": "113_wwi_expediente19_preparado",
+    "titulo": "Pantalla de datamart con fuente WideWorldImporters",
+    "detalle": "Cabecera del espacio de materialización con WideWorldImporters local como fuente en contexto. El estado y los identificadores del expediente se documentan en las capturas siguientes y en el registro de QA.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/113_wwi_expediente19_preparado.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:55:52.124Z",
+    "capitulo": 12,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 667,
+        "titulo": "área visible de la consulta"
+      }
+    ]
+  },
+  {
+    "id": "114_wwi_etl19_conciliado",
+    "titulo": "Expediente 19 validado y conciliado",
+    "detalle": "228265 filas de origen y destino, diferencia cero, cinco tablas y cuatro KPI. La comprobación no demuestra moneda única y conserva moneda de origen. No fue necesario publicar mapeos categóricos adicionales.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/114_wwi_etl19_conciliado.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:57:34.261Z",
+    "full_page": true,
+    "capitulo": 12,
+    "regiones": [
+      {
+        "y": 1050,
+        "alto": 900,
+        "titulo": "Ejecución 19 validada y límite de divisa"
+      },
+      {
+        "y": 1800,
+        "alto": 900,
+        "titulo": "Conciliación de filas y cinco tablas"
+      },
+      {
+        "y": 2550,
+        "alto": 900,
+        "titulo": "Cuatro indicadores conciliados en moneda de origen"
+      }
+    ]
+  },
+  {
+    "id": "115_wwi_analitica19_publicada",
+    "titulo": "Identidad del panel de WideWorldImporters19",
+    "detalle": "La cabecera identifica WideWorldImporters local, ejecución 19, propuesta 124 y moneda de origen.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/115_wwi_analitica19_publicada.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T04:59:01.228Z",
+    "capitulo": 13,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 667,
+        "titulo": "área visible de la consulta"
+      }
+    ]
+  },
+  {
+    "id": "116_wwi_chat19_temporalidad_incorrecta",
+    "titulo": "Pregunta y primeros valores del chat WWI 19",
+    "detalle": "La captura muestra la pregunta para 2015 y California y el inicio de la respuesta Top 3. La atribución temporal que motivó la corrección se documenta en la evidencia textual independiente.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/116_wwi_chat19_temporalidad_incorrecta.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T05:00:34.485Z",
+    "partial": true,
+    "clip": {
+      "height": 947.6124877929688,
+      "width": 510.3999938964844,
+      "x": 32,
+      "y": 3473.9000854492188
+    },
+    "capitulo": 16,
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 948,
+        "titulo": "área visible de la consulta"
+      }
+    ]
+  },
+  {
+    "id": "117_wwi_aviso_vigencia_dimensional",
+    "titulo": "Aviso determinista de vigencia dimensional",
+    "detalle": "El panel distingue el estado leído durante ETL de la vigencia en la fecha del hecho y de una entrega realizada. Esta advertencia procede de la plataforma.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/117_wwi_aviso_vigencia_dimensional.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T05:28:55.198Z",
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 667,
+        "titulo": "área visible de la consulta"
+      }
+    ],
+    "capitulo": 13
+  },
+  {
+    "id": "118_wwi_chat19_respuesta_corregida",
+    "titulo": "Respuesta corregida sobre la vigencia del territorio",
+    "detalle": "La misma pregunta conserva Top 3 y denominador; distingue ficha del cliente leída durante ETL de ubicación histórica y entrega realizada.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/118_wwi_chat19_respuesta_corregida.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T05:30:45.550Z",
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 667,
+        "titulo": "área visible de la consulta"
+      }
+    ],
+    "capitulo": 14
+  },
+  {
+    "id": "119_wwi_chat19_cautela_plataforma",
+    "titulo": "Cautela de plataforma y preguntas disponibles",
+    "detalle": "El tramo final identifica el expediente 19, limita la vigencia histórica y ofrece únicamente consultas sobre las métricas y dimensiones disponibles.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/119_wwi_chat19_cautela_plataforma.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T05:31:04.444Z",
+    "regiones": [
+      {
+        "y": 0,
+        "alto": 667,
+        "titulo": "área visible de la consulta"
+      }
+    ],
+    "capitulo": 14
+  },
+  {
+    "id": "120_wwi_sugerencia_unidades_cliente",
+    "titulo": "Consulta sugerida de unidades por cliente",
+    "detalle": "La sugerencia ejecuta un Top 5 de unidades con denominador territorial 57142, conservando 2015 y California.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/120_wwi_sugerencia_unidades_cliente.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T05:38:33.793Z",
+    "capitulo": 14
+  },
+  {
+    "id": "121-copiloto-aw-final",
+    "titulo": "AdventureWorks respuesta final contrastada",
+    "detalle": "2013 y Northwest: Top 3 y denominador territorial; la respuesta distingue ranking de preferencias y causas.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/121-copiloto-aw-final.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T05:46:20.062Z",
+    "capitulo": 14
+  },
+  {
+    "id": "122-llm-nombre-conservado",
+    "titulo": "El formulario conserva el nombre al elegir proveedor",
+    "detalle": "Prueba sin guardar: el nombre escrito se conserva al seleccionar Groq; URL, modelo y nivel se completan.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/122-llm-nombre-conservado.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T05:48:53.938Z",
+    "full_page": true,
+    "capitulo": 7
+  },
+  {
+    "id": "123-correo-protegido-consulta",
+    "titulo": "Correo de cuenta protegida sólo de consulta",
+    "detalle": "Inspección sin cambios: el correo identifica la cuenta y no puede editarse; los roles protegidos se conservan. No se guardó ninguna modificación.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/123-correo-protegido-consulta.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T05:49:57.199Z",
+    "capitulo": 4
+  },
+  {
+    "id": "124-huellas-contrato-wwi",
+    "titulo": "Huellas coincidentes de la propuesta 124",
+    "detalle": "La evidencia reconstruida conserva cero errores, siete advertencias y ambas huellas b5872c3bbd6d. Es consulta estructural sin nuevo LLM ni ETL.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/124-huellas-contrato-wwi.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T05:51:33.863Z",
+    "capitulo": 11
+  },
+  {
+    "id": "125-editor-hija-habilitado",
+    "titulo": "Editor de nueva hija habilitado por acción explícita",
+    "detalle": "Consulta autorizada desde la versión 124 aprobada: la justificación es editable y permite preparar otra versión. Esta prueba se cancela sin guardar, sin modificar la aprobada ni ejecutar ETL.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/125-editor-hija-habilitado.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T06:01:37.897Z",
+    "capitulo": 11
+  },
+  {
+    "id": "126-aw-indicadores-sin-solape",
+    "titulo": "Indicadores conciliados de AdventureWorks con disposición corregida",
+    "detalle": "Consulta del expediente 18 conservado: 121.317 líneas cargadas, cuatro indicadores sin solape y USD 3.491,07 por transacción. La divisa proviene de evidencia ya comprobada. El área visible muestra indicadores y parte del resultado; la fuente se identifica por el expediente y el registro de QA asociado, no por una cabecera fuera de imagen.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/126-aw-indicadores-sin-solape.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T13:36:52.824431+00:00",
+    "fecha_origen": "Fecha de guardado del original en la sesión de captura",
+    "capitulo": 12
+  },
+  {
+    "id": "127-wwi-indicadores-sin-solape",
+    "titulo": "Indicadores conciliados de WideWorldImporters con disposición corregida",
+    "detalle": "Consulta del expediente 19 conservado: 228.265 líneas cargadas y cuatro indicadores legibles. El promedio mantiene 2.808,73 moneda de origen por transacción porque no hay prueba de divisa. No se volvió a ejecutar ETL ni se modificó el contrato. El registro de QA vincula esta región al expediente de la fuente.",
+    "file": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/127-wwi-indicadores-sin-solape.jpg",
+    "url": "http://localhost:5173/",
+    "captured_at": "2026-11-05T13:39:34.116393+00:00",
+    "fecha_origen": "Fecha de guardado del original en la sesión de captura",
+    "capitulo": 12
+  }
+]

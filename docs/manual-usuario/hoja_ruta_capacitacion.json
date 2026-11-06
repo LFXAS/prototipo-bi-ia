@@ -1,0 +1,205 @@
+{
+  "fecha_corte": "2026-11-05",
+  "naturaleza": "Guion de formación para integrar al inicio del manual. Los casos de éxito corresponden a operaciones observadas; los intentos bloqueados y las correcciones se presentan en un anexo QA.",
+  "estado": "Los casos AW 122/18 y WWI 124/19 completaron aprobación, ETL conciliado, publicación, conversación final y exportaciones finales comprobadas. Los incidentes y cortes anteriores se conservan en QA. La revisión vigente es need-review-6 y las nuevas expansiones usan reglas 3; las dos revisiones adicionales de viabilidad conservaron los objetivos de 532/693 caracteres y dejaron diez/siete decisiones no aceptadas, sin otra propuesta ni ETL. No se adjudican esas reglas posteriores a los artefactos v4/v5 y reglas 2.",
+  "reglas_editoriales": [
+    "Abrir con el propósito, los conceptos indispensables y la ruta completa desde cero. Mantener las instrucciones de campos junto al formulario correspondiente.",
+    "Presentar en el cuerpo principal el objetivo detallado AdventureWorks de cuatro KPI y el caso completo WideWorldImporters, cuyas etapas ya están comprobadas. Mantener el ejercicio básico AW 120/17 y WWI 117/16 como referencias identificadas, sin atribuirles el motor posterior.",
+    "Conservar los intentos fallidos como evidencia de aprendizaje y regresión en el anexo QA. No intercalarlos como pasos necesarios del caso de éxito ni ocultar su relación con la corrección posterior.",
+    "Distinguir operación observada, ejercicio sugerido y resultado pendiente. Un número de propuesta o de ejecución identifica esta instalación de ensayo; cada lector debe usar los identificadores de su propio ambiente.",
+    "Una configuración de permisos leída en un formulario no equivale a una prueba de sesión del rol. No afirmar que se autenticaron todas las cuentas.",
+    "No convertir el contraste numérico del ETL en una garantía de toda interpretación de la IA. Moneda, población, grano, ubicación y causalidad requieren controles específicos."
+  ],
+  "secciones": [
+    {
+      "titulo": "Ruta de capacitación desde cero y elección del ejemplo de trabajo",
+      "objetivo": "Comprender qué prepara el administrador, qué decide el analista y qué consulta el gerente, y completar el recorrido en el orden que conservan sus dependencias.",
+      "rol": "Administrador para la preparación; Analista BI para el diseño y la publicación; Gerente comercial para la consulta, según los permisos configurados. La programadora mantiene el prototipo bajo el proceso técnico y no constituye un rol sembrado adicional.",
+      "requisitos": [
+        "Usar la URL y el ambiente definidos para la demostración. Contar con una cuenta autorizada; no copiar credenciales al manual ni a capturas.",
+        "Disponer de una fuente SQL Server autorizada para sólo lectura y del destino PostgreSQL administrado por el prototipo. Registrar una conexión de origen no configura el destino.",
+        "Seleccionar una configuración LLM probada. Una prueba mínima de conectividad no certifica la calidad de todas sus respuestas."
+      ],
+      "pasos": [
+        "1. Reconocer el recorrido: fuente OLTP, metadatos de estructura, necesidad y consentimiento, revisión de viabilidad, conceptos, propuesta validada, decisión humana, ETL, calidad semántica, panel, conversación y exportación. Cada etapa responde una pregunta distinta.",
+        "2. Iniciar sesión y comprobar los menús visibles. Explicar que FastAPI aplica los permisos: ver un menú no sustituye la autorización de una acción. La configuración observada del gerente contiene cuatro permisos; su lectura no acredita una sesión propia del gerente.",
+        "3. Preparar usuarios y roles sólo si la instalación lo necesita y existe autorización. Comparar el rol Administrador del sembrado con los roles adicionales observados en esta instalación. Consultar la matriz real antes de aplicar una recomendación formativa.",
+        "4. Revisar Parámetros y comprender la unidad y el alcance de cada entero. No cambiar una opción sólo porque existe: justificar el tiempo de espera o el límite operativo. Consultar las alertas vigentes cuando una opción no tiene efecto visible en el flujo actual.",
+        "5. Registrar o revisar la conexión SQL Server: nombre, motor admitido, servidor, puerto, base, usuario lector, credencial y estado. Probar sólo lectura y comprobar el resultado antes de habilitar la fuente. Habilitar una fuente no la elige automáticamente como contexto ni activa un proveedor LLM.",
+        "6. Registrar o revisar el proveedor LLM: nombre, proveedor, URL permitida, modelo, razonamiento compatible, límites, credencial cuando corresponda y estado. Probar la combinación efectiva y activarla según las reglas del formulario. Un nivel de razonamiento mayor no prueba mejor calidad analítica.",
+        "7. Seleccionar explícitamente la fuente de trabajo. Capturar o actualizar sus metadatos y revisar tablas, columnas, tipos, PK, FK y relaciones. Esta instantánea describe la estructura; no es una muestra de filas, una conciliación de importes ni una prueba de la moneda de cada transacción.",
+        "8. Revisar el catálogo analítico propio de la fuente. Leer códigos, etiquetas, descripciones, instrucciones y periodicidades. Las instrucciones delimitan el análisis; no deben añadir costos, margen, descuentos o utilidades no solicitados. Conservar el contexto de la fuente al guardar.",
+        "9. Trabajar el ejemplo detallado AdventureWorks de cuatro KPI: importe registrado, unidades, pedidos distintos e importe por pedido, con grano de línea, cuatro ejes fecha/producto/cliente/territorio y dos claves de trazabilidad. El ejemplo básico 120/17 de dos KPI puede consultarse como ejercicio complementario; no sustituye el objetivo detallado de 532 caracteres.",
+        "10. Redactar la necesidad, seleccionar preguntas y período, leer el consentimiento y revisar viabilidad. Distinguir dato disponible, significado atribuido y validación ejecutable. Si una advertencia contradice la necesidad o el esquema, volver a editar; aceptarla no la convierte en verdad técnica.",
+        "11. Generar conceptos y propuesta con la revisión vigente. Revisar grano, dimensiones, claves, medidas, uniones, fórmulas, exclusiones y población de cada KPI. Un identificador se conserva como clave; dividir un importe por su valor no calcula un promedio por documento.",
+        "12. Verificar evidencia sin volver a llamar al LLM y leer errores y advertencias. Aprobar sólo el contrato revisado, usando el permiso correspondiente. Consultar una propuesta histórica aprobada no la modifica ni autoriza reescribir sus huellas.",
+        "13. Abrir ETL, seleccionar la propuesta aprobada correcta, revisar la vista previa y la selección de KPI y confirmar la materialización autorizada. Leer filas de origen y destino, diferencias, tablas y controles del expediente. Abrir un expediente terminado no ejecuta otra carga.",
+        "14. Revisar la calidad semántica: identificar valores que son códigos, proponer sólo equivalencias justificadas y conservar originales. Comprobar nombres y cobertura contra el origen si una etiqueta suscita dudas; su apariencia no autoriza reemplazarla.",
+        "15. Abrir Vista analítica y verificar fuente, ejecución, propuesta y filtros. Leer primero KPI, unidad, denominador y período; después rankings y evolución. La agrupación usa la periodicidad efectiva del KPI o la heredada de la propuesta. El caso mensual no demuestra por sí solo las otras cuatro agrupaciones.",
+        "16. Formular al copiloto una pregunta acotada y contrastar las cifras con el panel. Exigir que distinga observación e interpretación: un ranking no demuestra preferencias, demanda, mercado, eficacia ni dominancia, y una ficha actual no prueba ubicación histórica ni entrega real.",
+        "17. Exportar PDF y XLSX para la ejecución y filtros elegidos. Comprobar que procedencia, moneda, cifras y alcance coinciden con el panel. Una descarga terminada no equivale a revisión de contenido; registrar el resultado del contraste.",
+        "18. Estudiar después WideWorldImporters con el objetivo exacto de 693 caracteres y su necesidad completa: línea física, resúmenes mensuales, importe de origen, unidades, facturas distintas y razón por factura. El caso comprobado 123→124→19 usa revisión v5, prompt v7 y reglas 2 y conserva explícitamente los límites de moneda e historia; no sustituye esos controles por los del antecedente 117/16. Una repetición nueva utiliza el motor vigente y requiere sus propias decisiones y resultados.",
+        "19. Revisar el anexo QA al terminar los casos de éxito. Comparar el objetivo original, la evidencia, el error observado, la corrección y la regresión. No reproducir un fallo histórico como requisito para obtener un resultado correcto."
+      ],
+      "resultado": "El participante puede explicar y recorrer la dependencia entre configuración, evidencia estructural, decisión de negocio, ejecución y lectura analítica; utiliza los casos observados como referencia sin confundirlos con resultados nuevos pendientes.",
+      "verificacion": [
+        "Identifica la fuente y el destino y explica por qué los metadatos no contienen las filas del OLTP.",
+        "Distingue proveedor activo, fuente habilitada y fuente seleccionada.",
+        "Explica el grano y la población del numerador y del denominador de cada KPI, con el mismo alcance de filtros.",
+        "Ubica la evidencia de aprobación, conciliación, publicación y exportación sin afirmar que una sola pantalla prueba todo el recorrido.",
+        "Señala qué resultados son observados, cuáles son históricos y cuáles continúan pendientes."
+      ],
+      "errores": [
+        "Aceptar una clasificación falsa de factura para continuar un objetivo de pedidos.",
+        "Interpretar el máximo de una línea como el producto líder agregado.",
+        "Cambiar un ID numérico en cantidad o usarlo como denominador monetario.",
+        "Confundir conteo de líneas con conteo de pedidos, o cambiar la población sin cambiar el significado.",
+        "Atribuir USD, utilidad, preferencias o ubicaciones históricas sin evidencia específica."
+      ],
+      "explicacion": [
+        "El cuerpo principal desarrolla los objetivos completos observados y explica cada decisión. El ejercicio básico de dos KPI es una referencia complementaria; un objetivo reducido no acredita resolver el detallado.",
+        "El anexo conserva los incidentes para enseñar supervisión y trazabilidad, y para que la corrección del prototipo sea revisable.",
+        "Los identificadores 117/16 y 120/17 preceden a need-review-5 y sales-bi-v7. AW 122/18 se produjo bajo need-review-4/v7; v5 es posterior. Cada artefacto conserva su corte, sin reescribir historia."
+      ],
+      "fuentes": [
+        "contenido_roles_parametros.json",
+        "contenido_asistente_etl.json",
+        "contenido_analitica_sustentacion.json",
+        "contenido_nuevo.json",
+        "pruebas_actuales.json",
+        "/home/ceo/Proyectos/BI/docs/testing/qa-postcierre-2026-11-04.md",
+        "qa/viabilidad_v6_cierre.json"
+      ]
+    }
+  ],
+  "casos_cuerpo_principal": [
+    {
+      "orden": 1,
+      "titulo": "AdventureWorks: objetivo detallado de cuatro KPI",
+      "propuesta_observada": 122,
+      "ejecucion_observada": 18,
+      "alcance": "Objetivo exacto de 532 caracteres conservado. Cuatro KPI y cuatro dimensiones: fecha, producto, cliente y territorio. Tres medidas efectivas; SalesOrderID y SalesOrderDetailID para trazabilidad. Personalización de 121 a 122 sin modificar el origen.",
+      "resultado_comprobado": "Cinco tablas, 26 operaciones, 121.317 filas por lado y diferencia cero. Importe 109.846.381,399888 USD, 274.914 unidades, 31.465 pedidos y razón 3.491,065672966407. Para 2013/Northwest: 6.015.174,735836 USD, 17.452 unidades, 2.053 pedidos y razón 2.929,943855740867.",
+      "interpretacion": "La repetición final de la pregunta2013/Northwest confirmó Top 3 y denominador 6.015.174,74 USD, sin preferencias ni causalidad, con tres sugerencias válidas (121).",
+      "limites": "FinalesPDF/XLSX18 comprobados: cinco páginas/cuatro hojas, fuente/base/offset, cifras/razón y advertencia completa. Originales anteriores y sus límites permanecen identificados. No se afirma revisión Calc final no completada ni universalidad del caso.",
+      "capturas": [
+        "89_aw_repeticion_exacta_postfix",
+        "91_aw_ranking_viable_reglas_v4",
+        "94_aw_personalizacion_cuatro_kpi",
+        "95_aw_122_aprobada",
+        "98_aw_etl18_conciliado",
+        "99_aw_etl18_publicado",
+        "100_aw_analitica18_publicada",
+        "101_aw_copiloto18_resultado"
+      ]
+    },
+    {
+      "orden": 2,
+      "titulo": "WideWorldImporters: objetivo completo y cuatro KPI",
+      "propuesta_observada": 124,
+      "ejecucion_observada": 19,
+      "alcance": "Mismos 693 caracteres, cuatro preguntas y Mensual. V5/v7/reglas 2: línea física por InvoiceLineID, facturas distintas por InvoiceID, importe de origen y ficha territorial actual sin presumir historia.",
+      "resultado_comprobado": "26 operaciones, cinco tablas, 228.265 filas por lado y diferencia cero; importe 198.043.439,45, 8.950.628 unidades, 70.510 facturas y promedio 2.808,73. Fecha 1.069 desde 70.510 con 69.441 duplicados controlados; Producto 227, Cliente 663 y Territorio 53 al 100 % descriptivo. Huella b5872c3bbd6d, siete referencias, cero errores, siete advertencias. En 2015/California se comprobaron 1.215.705,55 de origen, 57.142 unidades, 481 facturas y razón 2.527,454365904366; PDF de cinco páginas y XLSX de cuatro hojas y 22 controles conformes con fuente/base/offset.",
+      "interpretacion": "Respuesta final 117–119 correcta en cifras, porcentajes y ficha durante ventana ETL sin historia/entrega probadas. Clic en sugerencia de unidades por cliente devolvió cinco clientes y denominador completo 57.142 para2015/California (120).",
+      "limites": "FinalesPDF/XLSX19 comprobados con fuente/base/offset y aviso completo, cinco páginas/cuatro hojas. El incidente inicial116 y el contexto recortado se conservan; no se afirma Calc final ni todas las respuestas del proveedor.",
+      "capturas": [
+        "108_wwi_editor_origen_validado",
+        "109_wwi_personalizacion_4_kpi",
+        "110_wwi_124_evidencia",
+        "111_wwi_124_aprobada",
+        "112_wwi_etl_4_indicadores",
+        "113_wwi_expediente19_preparado",
+        "114_wwi_etl19_conciliado"
+      ]
+    }
+  ],
+  "anexo_qa": [
+    {
+      "caso": "WWI 115",
+      "leccion": "El máximo de una línea no identifica al producto con mayor importe agregado.",
+      "estado": "Bloqueo correcto; no aprobado."
+    },
+    {
+      "caso": "AW detallado 118",
+      "leccion": "Conservar una clave de pedido no solicita facturación. Preservar el objetivo de 532 caracteres para comparar la nueva revisión.",
+      "estado": "Incidente histórico no aprobado ni ejecutado; corregido mediante objetivo intacto 121→122 y ETL 18, sin reescribir 118."
+    },
+    {
+      "caso": "Aritmética y población",
+      "leccion": "Una PK o FK no es magnitud monetaria; el promedio documental requiere razón de agregados. No renombrar líneas como pedidos.",
+      "estado": "Reglas nuevas versionadas; no reescribir contratos históricos."
+    },
+    {
+      "caso": "WWI CustomerName",
+      "leccion": "Contrastar el origen antes de inferir un defecto a partir del aspecto de un nombre.",
+      "estado": "663 claves y etiquetas coincidentes; sospecha descartada sin cambiar valores."
+    },
+    {
+      "caso": "Chat: evidencia e interpretación",
+      "leccion": "Las cifras correctas no justifican preferencias o entregas históricas. Leer también si la respuesta cubre las cautelas pedidas.",
+      "estado": "Incidentes iniciales conservados; repeticiones finales AW18 y WWI19 conformes para las preguntas ensayadas."
+    },
+    {
+      "caso": "Periodicidad",
+      "leccion": "La lectura debe respetar la periodicidad efectiva y normalizar el vocabulario KPI y el del catálogo. Consultar un datamart con otra agrupación no ejecuta otro ETL.",
+      "estado": "22 lecturas reales de sólo lectura conciliadas: dos configuraciones mensuales persistidas, diez códigos KPI y diez herencias del catálogo, sobre los marts 16/17."
+    }
+  ],
+  "casos_complementarios": [
+    {
+      "orden": 1,
+      "titulo": "AdventureWorks: ejemplo básico de importe y unidades",
+      "propuesta_observada": 120,
+      "ejecucion_observada": 17,
+      "alcance": "Dos KPI, tres dimensiones: fecha, producto y territorio; cliente no seleccionado. Tres medidas, incluido el identificador de pedido para control. No sustituye al objetivo detallado de cuatro indicadores que falló en 118.",
+      "resultado_comprobado": "Cuatro tablas, 22 operaciones, 121.317 filas en origen y destino, diferencia cero; 109.846.381,40 USD acreditados y 274.914 unidades. En 2013/Northwest: 6.015.174,74 USD y 17.452 unidades.",
+      "interpretacion": "Tras precisar las instrucciones y reiniciar la conversación, la misma pregunta conservó las cifras y declaró que el ranking no acredita preferencias, demanda, mercado, eficacia ni dominancia (captura 88).",
+      "limites": "El PDF de cinco páginas y el XLSX de cuatro hojas se revisaron; la suma temporal 6.015.174,735836 coincide con el total territorial, diferencia cero. La revisión visual no detectó recortes; registra espacio de plantilla, una página territorial poco densa y escala vertical limitada en el gráfico. La repetición con el motor nuevo se cerró por separado como 122/18.",
+      "capturas": [
+        "75",
+        "76",
+        "77",
+        "78",
+        "79",
+        "80",
+        "81",
+        "82",
+        "83",
+        "84",
+        "85",
+        "86",
+        "87",
+        "88"
+      ]
+    },
+    {
+      "orden": 2,
+      "titulo": "WideWorldImporters: importe de origen y promedio por factura",
+      "propuesta_observada": 117,
+      "ejecucion_observada": 16,
+      "alcance": "Cuatro KPI con grano de línea física, resúmenes mensuales y nombres descriptivos verificados. El promedio es importe total dividido entre facturas distintas, con el mismo alcance.",
+      "resultado_comprobado": "Cinco tablas, 27 operaciones, 228.265 filas por lado, diferencia cero; importe de origen 198.043.439,45, 8.950.628 unidades, 70.510 facturas distintas y promedio 2.808,73. En 2015/California: 1.215.705,55, 57.142 unidades, 481 facturas y promedio 2.527,45.",
+      "interpretacion": "CustomerName coincide con el origen para las 663 claves tras la limpieza existente; un nombre que parece inusual no autoriza sustituirlo. La información geográfica corresponde a la ficha actual y no prueba entrega real ni ubicación histórica.",
+      "limites": "La fuente no acreditó una moneda única; mantener moneda de origen. Exportaciones PDF y XLSX 16 contrastadas numérica y visualmente. El primer chat tuvo cifras correctas y cobertura parcial; no presentarlo como respuesta completamente satisfactoria.",
+      "capturas": [
+        "51",
+        "52",
+        "53",
+        "54",
+        "55",
+        "56",
+        "57",
+        "58",
+        "59",
+        "60",
+        "61",
+        "62",
+        "63",
+        "64",
+        "65"
+      ],
+      "estado": "Referencia histórica comprobada 117/16; el caso posterior 123→124→19 bajo v5/reglas 2 ya completó aprobación, ETL conciliado, publicación, conversación final y exportaciones comprobadas y figura en el cuerpo principal."
+    }
+  ],
+  "periodo_revision": "4–5 de noviembre de 2026; carpeta de autoría iniciada el día 4."
+}

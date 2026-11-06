@@ -39,6 +39,78 @@ def _compact(value: object) -> str:
     return _plain(value).replace(" ", "")
 
 
+def _request_texts(business_request: dict[str, Any]) -> list[str]:
+    texts = [str(business_request.get("goal", ""))]
+    for question in business_request.get("questions", []):
+        if isinstance(question, dict):
+            texts.extend(
+                str(question.get(key, "")) for key in ("label", "description", "instruction")
+            )
+    return texts
+
+
+def positive_request_clauses(value: object) -> list[str]:
+    """Keep requests before explicit exclusions, including coordinated caution lists.
+
+    This is a bounded lexical guard, not a claim to resolve every natural-language
+    negation. Independent requests restart the scope; conjunctions in an excluded
+    list do not turn its later nouns into positive requirements.
+    """
+    text = unicodedata.normalize("NFKD", str(value)).encode("ascii", "ignore").decode()
+    text = text.casefold()
+    text = re.sub(
+        r"\b(?:no solo|no solamente|not only|no mas de|no menos de|no more than|no less than)\b",
+        "",
+        text,
+    )
+    request_verb = (
+        r"(?:analizar|comparar|calcular|medir|evaluar|mostrar|incluir|obtener|conservar|"
+        r"limitar|sumar|contar|ordenar|agrupar|anal[yz]se|analyze|compare|calculate|"
+        r"measure|evaluate|show|include|report|keep|limit|sum|count|rank|group)"
+    )
+    # A comma may coordinate a negative list ("sin moneda, utilidad ni impuestos").
+    # It starts a fresh scope only when it introduces an independent request.
+    clauses = re.split(
+        rf"[;.!?\n:]|\b(?:pero|sino|but|however|rather|instead)\b|"
+        rf"(?:,\s*|\b(?:y|and)\s+)(?={request_verb}\b)",
+        text,
+    )
+    positive: list[str] = []
+    for clause in clauses:
+        normalized = _plain(clause)
+        inclusions = re.split(
+            r"\b(?:no (?:excluir|omitir|descartar)|sin (?:excluir|omitir|descartar)|"
+            r"(?:do not|don t|dont|not) (?:exclude|omit|discard)|"
+            r"without (?:excluding|omitting|discarding))\b",
+            normalized,
+        )
+        for index, part in enumerate(inclusions):
+            # "No excluir clientes ni productos" requests both, not just the
+            # first entity. A later real exclusion still ends the positive span.
+            if index:
+                part = re.sub(r"\b(?:ni|nor)\b", " ", part)
+            exclusion = re.search(
+                r"\b(?:sin|no|ni|not|nor|neither|without|excluir|excluyendo|exclude|"
+                r"excluding|evitar|avoid|omitir|omit|excepto|except|nunca|never)\b",
+                part,
+            )
+            if exclusion:
+                part = part[: exclusion.start()].strip()
+            if part.strip():
+                positive.append(part.strip())
+    return positive
+
+
+def requests_invoice_event(business_request: dict[str, Any]) -> bool:
+    """Distinguish requested invoicing from explicit exclusions in the original input."""
+    invoice_terms = r"\b(factura(?:s)?|facturad[ao]s?|facturacion|invoice(?:s|d)?|billing)\b"
+    return any(
+        re.search(invoice_terms, clause)
+        for text in _request_texts(business_request)
+        for clause in positive_request_clauses(text)
+    )
+
+
 def _tables(document: dict[str, Any]) -> dict[str, dict[str, Any]]:
     result: dict[str, dict[str, Any]] = {}
     for schema in document.get("schemas", []):
@@ -659,7 +731,8 @@ def assess_business_need(
     }
     index = _column_index(tables)
     graph = _graph(tables)
-    goal = _plain(business_request.get("goal", ""))
+    goal_clauses = positive_request_clauses(business_request.get("goal", ""))
+    goal = " ".join(goal_clauses)
     periodicity = business_request.get("periodicity", {})
     requires_date = isinstance(periodicity, dict) and periodicity.get("code") in {
         "day",
@@ -668,11 +741,7 @@ def assess_business_need(
         "quarter",
         "year",
     }
-    invoice_requested = bool(
-        re.search(
-            r"\b(factura(?:s)?|facturad[ao]s?|facturacion|invoice(?:s|d)?|invoiced|billing)\b", goal
-        )
-    )
+    invoice_requested = requests_invoice_event(business_request)
     if invoice_requested:
         index = _invoice_index(index)
     items: list[dict[str, object]] = []
@@ -683,32 +752,39 @@ def assess_business_need(
         "customer_performance": ["sales_amount", "customer"],
         "territory_performance": ["sales_amount", "territory"],
     }
-    requested_components = [
+    goal_components = [
         capability
         for capability, definition in CAPABILITIES.items()
         if _matches(goal, definition["triggers"])  # type: ignore[arg-type]
     ]
+    requested_components = [*goal_components]
     if requires_date:
         requested_components.append("date")
+    selected_questions: list[tuple[dict[str, Any], str, list[str]]] = []
     for question in business_request.get("questions", []):
         if isinstance(question, dict):
-            requested_components.extend(question_components.get(str(question.get("code")), []))
-    preferred_anchors = _coherent_anchor(index, graph, requested_components)
-    for question in business_request.get("questions", []):
-        if not isinstance(question, dict):
-            continue
-        code = str(question.get("code", "question"))
-        text = " ".join(
-            str(question.get(key, "")) for key in ("label", "description", "instruction")
-        )
-        normalized = _plain(text)
-        components = question_components.get(code)
-        if components is None:
+            text = ". ".join(
+                str(question.get(key, "")) for key in ("label", "description", "instruction")
+            )
+            normalized = " ".join(positive_request_clauses(text))
             components = [
                 capability
                 for capability, definition in CAPABILITIES.items()
                 if _matches(normalized, definition["triggers"])  # type: ignore[arg-type]
             ]
+            defaults = question_components.get(str(question.get("code")), [])
+            # Codes supply implicit dependencies, while an explicit exclusion in
+            # the selected instruction must not become a positive requirement.
+            for capability in defaults:
+                triggers = CAPABILITIES[capability]["triggers"]
+                mentioned = _matches(_plain(text), triggers)  # type: ignore[arg-type]
+                if capability not in components and not mentioned:
+                    components.append(capability)
+            selected_questions.append((question, text, components))
+            requested_components.extend(components)
+    preferred_anchors = _coherent_anchor(index, graph, requested_components)
+    for question, text, components in selected_questions:
+        code = str(question.get("code", "question"))
         if not components:
             items.append(
                 {
@@ -738,11 +814,7 @@ def assess_business_need(
             )
         )
 
-    detected = {
-        capability
-        for capability, definition in CAPABILITIES.items()
-        if _matches(goal, definition["triggers"])  # type: ignore[arg-type]
-    }
+    detected = set(goal_components)
     if requires_date:
         detected.add("date")
     derived: list[tuple[str, str, list[str], str]] = []
@@ -766,16 +838,19 @@ def assess_business_need(
             )
         )
     if any(
-        term in goal
-        for term in (
-            "margen",
-            "rentabilidad",
-            "utilidad",
-            "beneficio",
-            "margin",
-            "profitability",
-            "profit",
+        _matches(
+            clause,
+            (
+                "margen",
+                "rentabilidad",
+                "utilidad",
+                "beneficio",
+                "margin",
+                "profitability",
+                "profit",
+            ),
         )
+        for clause in goal_clauses
     ):
         derived.append(
             (
@@ -785,7 +860,10 @@ def assess_business_need(
                 "ventas netas − (costo unitario × unidades)",
             )
         )
-    if "por unidad" in goal or "unitario" in goal or "unitaria" in goal or "per unit" in goal:
+    if any(
+        _matches(clause, ("por unidad", "unitario", "unitaria", "per unit"))
+        for clause in goal_clauses
+    ):
         if "sales_amount" in detected or "venta" in goal:
             derived.append(
                 (
@@ -804,9 +882,12 @@ def assess_business_need(
                     "costo unitario trazable de la fuente",
                 )
             )
-    if re.search(
-        r"\b(promedio|media|average|avg)\b.*\b(transaccion(?:es)?|pedido(?:s)?|transaction(?:s)?|order(?:s)?|factura(?:s)?|invoice(?:s)?)\b",
-        goal,
+    if any(
+        re.search(
+            r"\b(promedio|media|average|avg)\b.*\b(transaccion(?:es)?|pedido(?:s)?|transaction(?:s)?|order(?:s)?|factura(?:s)?|invoice(?:s)?)\b",
+            clause,
+        )
+        for clause in goal_clauses
     ):
         derived.append(
             (

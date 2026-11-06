@@ -1,0 +1,641 @@
+{
+  "fecha": "4 y 5 de noviembre de 2026",
+  "commit_revisado": "8f1c7d1, incluye bf50172, rama fix/universal-bi-training-20261104 desde develop 6bbc9ab.",
+  "ambiente": "Aplicación local http://localhost:5173/",
+  "actor": "Cuenta Administrador inicial; no se han autenticado todas las sesiones por rol",
+  "estado_global": "Los casos observados AW 122/18 (revisión v4 y reglas 2) y WWI 124/19 (revisión v5 y reglas 2) completaron aprobación, ETL conciliado, publicación, chat final y reportes finales comprobados. El corte bf50172 aprobó 454 pruebas backend y 46 frontend y sus ocho controles CI. El cierre 8f1c7d1 incorpora el formato genérico de unidades y la disposición legible de indicadores; make verify V6 terminó con salida 0, tras las etapas de 454 pruebas backend y 48 frontend. La comprobación visual de los expedientes 18 y 19 en anchos 574 y 1366 no encontró solapamientos. La integración y sus controles remotos posteriores se consultan en el PR correspondiente. La revisión vigente es need-review-6 y las nuevas expansiones usan reglas 3; los contratos aprobados conservan sus reglas y su evidencia histórica. La verificación informa la huella realmente reconstruida y separa coincidencia de reproducción y compatibilidad del motor. Las dos revisiones adicionales v6 conservaron los objetivos de 532/693 caracteres y dejaron diez/siete decisiones no aceptadas, sin otra propuesta ni ETL, según qa/viabilidad_v6_cierre.json. No se atribuyen retrospectivamente generaciones nuevas a los expedientes anteriores ni se probaron todas las sesiones por rol.",
+  "casos": [
+    {
+      "id": "PREP-01",
+      "nombre": "Acceso y consulta administrativa",
+      "estado": "Observado satisfactorio",
+      "observado": "Inicio de sesión y consulta de Usuarios, Roles, Permisos, Menús, Auditoría y Parámetros. No se crearon cuentas. El permiso autorizado del gerente se detalla en ROL-01.",
+      "capturas": [
+        "01_acceso",
+        "04_usuarios",
+        "05b_roles_existentes",
+        "06_permisos",
+        "07_menus",
+        "08_auditoria",
+        "09_parametros"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "PREP-02",
+      "nombre": "Conexiones de ambas fuentes",
+      "estado": "Observado satisfactorio",
+      "observado": "AdventureWorks y WideWorldImporters superaron las pruebas de conexión y de cuenta de sólo lectura.",
+      "capturas": [
+        "10b_conexiones_probadas"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "PREP-03",
+      "nombre": "Relectura de metadatos",
+      "estado": "Observado satisfactorio",
+      "observado": "Ambas lecturas informaron que la estructura no cambió. Se conservaron la instantánea 2 de AW (6/71/482/90) y la instantánea 3 de WWI (4/48/546/98).",
+      "capturas": [
+        "12_metadatos_aw",
+        "13_metadatos_wwi",
+        "12b_metadatos_aw_detalle",
+        "13b_metadatos_wwi_detalle"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "CAT-01",
+      "nombre": "Precisión de criterios del catálogo AW",
+      "estado": "Guardado confirmado",
+      "observado": "En la primera intervención se conservaron seis preguntas y se precisaron las instrucciones de costos y de razones por unidad. Después, la revisión de una necesidad nueva arrastró costos, márgenes y descuentos que no se habían solicitado. Se precisaron entonces las descripciones y las instrucciones de las primeras cuatro preguntas para limitar la orientación a los indicadores pedidos. Al cierre se conservaron las etiquetas y códigos de las seis preguntas y las cinco periodicidades; no sería correcto afirmar que el cambio final afectó únicamente a las dos últimas preguntas. Los criterios finales están en capturas/catalogo_aw_criterios_finales.json.",
+      "capturas": [
+        "14_catalogo_aw",
+        "14b_catalogo_criterios",
+        "68_aw_catalogo_precisado"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "CAT-02",
+      "nombre": "Configuración independiente del catálogo WWI",
+      "estado": "Guardado confirmado",
+      "observado": "Se conservaron cuatro preguntas estándar y se añadieron dos preguntas de costos y valores por unidad, con instrucciones de negocio sin copiar referencias técnicas de AW.",
+      "capturas": [
+        "15_catalogo_wwi_antes",
+        "15b_catalogo_wwi_guardado"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "IA-01",
+      "nombre": "Conectividad de Anthropic y Groq",
+      "estado": "Pruebas mínimas satisfactorias",
+      "observado": "Ambos proveedores configurados respondieron a la prueba mínima sin datos comerciales. Esto no garantiza que completen todos los contratos BI.",
+      "capturas": [
+        "11_llm",
+        "11c_llm_alternativa_probada"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "IA-02",
+      "nombre": "Sugerencias de necesidades con costos",
+      "estado": "Rechazo seguro observado",
+      "observado": "Claude propuso dos necesidades que no se habilitaron por costo ambiguo y una identificación no respaldada suficientemente por las claves declaradas. No se utilizaron como propuestas aprobadas.",
+      "capturas": [
+        "17b_aw_sugerencias_limitadas"
+      ],
+      "seccion_manual": "anexo_qa"
+    },
+    {
+      "id": "IA-03",
+      "nombre": "Conservación del objetivo durante viabilidad",
+      "estado": "Intentos originales rechazados; recuperación documentada en IA-05",
+      "observado": "Claude cambió el objetivo en dos intentos de 531 caracteres y en uno de 128, incluso tras reparación. Se conservaron el texto y los validadores. La corrección común del prompt permitió después revisiones nuevas en WWI, registradas en IA-05. Groq se probó por separado y se restauró Claude, según IA-04.",
+      "capturas": [
+        "18_aw_necesidad_final",
+        "19_aw_viabilidad_objetivo_rechazado"
+      ],
+      "seccion_manual": "anexo_qa"
+    },
+    {
+      "id": "ROL-01",
+      "nombre": "Permisos observados y dependencia del selector",
+      "estado": "Guardado y relectura confirmados",
+      "observado": "Analista BI conserva 15 permisos. Con autorización explícita se añadió únicamente Consultar metadatos al Gerente comercial. Se reabrió la edición y se comprobaron sus cuatro casillas: análisis, conexiones, metadatos y exportación. No se autenticó una cuenta de gerente ni se amplió su acceso a edición o ETL.",
+      "capturas": [
+        "05d_rol_analista",
+        "05e_rol_gerente",
+        "33_gerente_permiso_metadatos"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "HIST-01",
+      "nombre": "Consulta de propuesta y ETL históricos AW",
+      "estado": "Consulta satisfactoria; no carga nueva",
+      "observado": "Se recorrieron las cinco etapas de la propuesta 98 y del expediente 14. Verificar evidencia devolvió cuatro resultados Cumple y huellas idénticas: f910a0ab617b. El expediente 14 conserva 121317 filas de origen y de destino, con una diferencia de 0; registra 5 tablas y 9 KPI. Su fecha de ejecución es el 3 de octubre: no corresponde a una carga nueva de esta revisión.",
+      "capturas": [
+        "26h_aw_revision_evidencia",
+        "27h_aw_etl_conciliacion",
+        "28h_aw_etl_elegir",
+        "29h_aw_etl_indicadores",
+        "30h_aw_etl_plan",
+        "31h_aw_etl_materializacion"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "SES-01",
+      "nombre": "Recuperación tras vencimiento de sesión",
+      "estado": "Recuperación observada",
+      "observado": "Una verificación mostró la sesión caducada. Tras volver a autenticarse se restauró la consulta de la misma propuesta 98 y la comprobación finalizó sin alterar su aprobación.",
+      "capturas": [
+        "25_sesion_vencida",
+        "26h_aw_revision_evidencia"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "IA-04",
+      "nombre": "Límite operativo de Groq",
+      "estado": "Rechazo observado",
+      "observado": "La misma necesidad breve de AW se envió a Groq mientras estaba activo. El proveedor devolvió el código 413 y rate_limit_exceeded en sus 3 reintentos automáticos, con 8000 tokens restantes y un valor retry_after de 47. No se produjo una revisión ni una propuesta. Se restauró Claude y se verificó que quedara activo. Este caso evalúa la cuota disponible; no demuestra una calidad inferior del modelo.",
+      "capturas": [
+        "32_llm_groq_activo",
+        "34_aw_necesidad_groq",
+        "35_aw_groq_limite",
+        "36_llm_claude_restaurado"
+      ],
+      "seccion_manual": "anexo_qa"
+    },
+    {
+      "id": "IA-05",
+      "nombre": "Corrección universal de conservación del objetivo",
+      "estado": "Corrección local y dos viabilidades nuevas satisfactorias",
+      "observado": "Se separaron las instrucciones de analizar de las de sugerir y formular, incluida la reparación. No se modificaron la comparación literal, los validadores ni la autorización. En WWI, las necesidades de 161 y 472 caracteres produjeron revisiones nuevas que preservaron el objetivo original. La corrección no garantiza que todas las respuestas futuras de cualquier LLM sean satisfactorias.",
+      "capturas": [
+        "44_wwi_necesidad_nueva",
+        "45_wwi_viabilidad_limites",
+        "46_wwi_necesidad_precisada"
+      ],
+      "seccion_manual": "anexo_qa"
+    },
+    {
+      "id": "BI-01",
+      "nombre": "Control semántico de KPI líder",
+      "estado": "Bloqueo correcto observado",
+      "observado": "La propuesta nueva 115 de WWI solicitó el máximo de una línea para identificar al producto líder. El validador la bloqueó: debe agregarse por entidad antes de clasificar. La versión 115 no se aprobó ni se materializó. Se solicitó otra versión con sólo los 4 indicadores pertinentes y el criterio de ranking explícito; su continuación se registra por separado para no convertir el rechazo de 115 en una aprobación.",
+      "capturas": [
+        "48_wwi_conceptos_nuevos",
+        "49_wwi_propuesta_bloqueada"
+      ],
+      "seccion_manual": "anexo_qa"
+    },
+    {
+      "id": "ANA-01",
+      "nombre": "Filtros e interacción AW",
+      "estado": "Satisfactorio en consulta histórica",
+      "observado": "En la ejecución 14 y propuesta 98, los filtros de 2013 y Northwest producen 6015174.735836 en ventas, 17452 unidades y 2053 pedidos. La suma mensual en Excel coincide exactamente con el total territorial. El detalle del producto muestra 392175.266425. Cambiar el indicador a unidades actualiza las gráficas y la tabla; el cambio de vista limpió la conversación.",
+      "capturas": [
+        "37h_aw_analitica_ejecutiva",
+        "38h_aw_filtros_2013_northwest",
+        "39h_aw_detalle_producto",
+        "41h_aw_vista_analitica_unidades"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "ANA-02",
+      "nombre": "Cambio de fuente y filtros WWI",
+      "estado": "Satisfactorio en consulta histórica",
+      "observado": "Al pasar de AW, con los filtros de 2013 y Northwest, a WWI, se mostraron sólo las ejecuciones 15/13, se restableció Todos y se indicó moneda de origen. Los filtros de 2015 y California produjeron 1215705.55, 57142 unidades y 481 facturas. La suma mensual en Excel coincide exactamente. No se mezclaron los productos ni los expedientes visibles en este cambio.",
+      "capturas": [
+        "42h_wwi_analitica_ejecutiva"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "CHAT-01",
+      "nombre": "Coherencia del Top 3 de AW",
+      "estado": "Satisfactorio en consulta histórica",
+      "observado": "Claude interpretó producto/2013/Northwest/Top 3. Mostró los importes 392175.27, 338770.42 y 334598.66, con una suma de 1065544.35. Expuso el denominador regional de 6015174.74 antes del Top 3, la procedencia mart_ventas_e14 y la ausencia de causalidad. La participación regional señalada, del 6.52 por ciento, difiere del 17.9 por ciento sobre el Top 8 visible del gráfico; se declararon los distintos denominadores.",
+      "capturas": [
+        "40h_aw_copiloto_top3"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "CHAT-02",
+      "nombre": "Límites comerciales WWI",
+      "estado": "Satisfactorio en consulta histórica",
+      "observado": "Claude interpretó los filtros de 2015 y California y el Top 3. Devolvió 54648, 50715 y 45860.85, con un denominador de 1215705.55. Aclaró que no se puede afirmar que la moneda sea USD ni que el importe represente utilidad: es un importe comercial de línea facturada. La comprobación corresponde a este contexto y no certifica todas las respuestas futuras.",
+      "capturas": [
+        "43h_wwi_copiloto_limites"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "EXP-01",
+      "nombre": "PDF y Excel de ambas fuentes",
+      "estado": "Descarga, lectura y revisión visual satisfactorias con límites",
+      "observado": "Se descargaron 2 archivos PDF de 5 páginas y 2 archivos XLSX de 4 hojas. Los filtros y los indicadores coinciden. Las sumas mensuales igualan exactamente los totales territoriales en ambos XLSX. El PDF redondea los promedios de unidades y de valor por unidad; en WWI muestra 21 frente a 21.28 en pantalla. Las participaciones del Top 8 no equivalen al total regional. La fecha exportada muestra UTC sin indicación de zona, frente a la hora local del panel; debe conservarse ese contexto.",
+      "capturas": [
+        "38h_aw_filtros_2013_northwest",
+        "42h_wwi_analitica_ejecutiva"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "BI-02",
+      "nombre": "Contrato WWI nuevo, personalización y aprobación de 117",
+      "estado": "Versión 117 aprobada; nombres posteriores contrastados con el origen",
+      "observado": "Después del bloqueo de 115 se obtuvo la versión 116, lista para revisar y con 4 KPI. La personalización aclaró el grano físico de una línea de factura y vinculó el KPI de importe promedio por factura al importe total registrado. Guardar una nueva versión produjo 117. La verificación mostró 4 resultados Cumple, 9 referencias, 0 errores, 6 advertencias y la huella a13f1cb198eb. Tras leer las advertencias y registrar la decisión humana, se aprobó 117. Los controles descriptivos previos mostraron Producto 227, Cliente 663 y Territorio 53, todos con cobertura del 100 por ciento y 0 entidades sin nombre. La cobertura no sustituye el contraste semántico: los nombres de clientes que luego parecieron inusuales se compararon con CustomerName del origen y coincidieron, según BI-CLIENTE.",
+      "capturas": [
+        "51_wwi_identidad_cobertura",
+        "52_wwi_personalizacion",
+        "53_wwi_propuesta_validada",
+        "54_wwi_revision_antes_aprobar",
+        "55_wwi_aprobada117"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "ETL-01",
+      "nombre": "Preparación y conciliación numérica de la ejecución nueva WWI 16",
+      "estado": "Carga nueva ejecutada y conciliada numéricamente",
+      "observado": "La propuesta 117 se seleccionó para una materialización nueva con 4 KPI y 27 operaciones controladas. Se registró la confirmación y se preparó el expediente 16 antes de ejecutar. La carga creó 5 tablas y registró 228265 filas de origen y 228265 de destino, con diferencia 0. Fecha cargó 1069 de 70510 registros de entrada y declaró 69441 duplicados controlados; Producto cargó 227 de 227, Cliente 663 de 663, Territorio 53 de 53 y Ventas 228265 de 228265. La deduplicación de una dimensión no significa pérdida de filas del hecho. Se calcularon 198043439.45 de importe total en moneda de origen, 8950628 unidades, 70510 facturas distintas y un importe promedio por factura de 2808.73. Estos resultados acreditan la conciliación numérica de ese expediente; el contraste independiente de nombres está registrado en BI-CLIENTE.",
+      "capturas": [
+        "56_wwi_etl_seleccion",
+        "57_wwi_etl_indicadores",
+        "58_wwi_etl_confirmacion",
+        "59_wwi_expediente_preparado16",
+        "60_wwi_etl16_conciliado"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "DIV-01",
+      "nombre": "Comprobación de divisa sin repetir el ETL de WWI 16",
+      "estado": "Límite de moneda conservado explícitamente",
+      "observado": "Se utilizó Comprobar divisa sin repetir el ETL. La fuente no demostró una divisa única y se mantuvo la presentación como moneda de origen, sin asumir USD. El importe permaneció conciliado; la comprobación de divisa no volvió a ejecutar la materialización ni acreditó utilidad o composición fiscal.",
+      "capturas": [
+        "60_wwi_etl16_conciliado",
+        "61_wwi_divisa_no_asumida"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "ANA-03",
+      "nombre": "Publicación y filtros de la ejecución nueva WWI 16",
+      "estado": "Resultados numéricos visibles y nombres contrastados con el origen",
+      "observado": "El panel nuevo identifica WideWorldImporters, ejecución 16 y propuesta 117. Con los filtros de 2015 y California mostró 1215705.55 en moneda de origen, 57142 unidades, 481 facturas distintas y 2527.45 de importe promedio por factura. Esta consulta usa el expediente nuevo 16 y no los históricos 15/114 o 14/98. Los nombres inusuales de Clientes principales se contrastaron con el origen y coincidieron: su apariencia de nombres de personas no demuestra un error de datos. La revisión no acredita todas las respuestas futuras del copiloto ni sesiones propias de todos los roles.",
+      "capturas": [
+        "62_wwi_analitica16_publicada",
+        "63_wwi_copiloto16_top3",
+        "65_wwi_clientes_etiqueta_incorrecta"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "EXP-02",
+      "nombre": "Descargas del expediente nuevo WWI 16",
+      "estado": "Descarga, contraste numérico y revisión visual comprobados para la ejecución 16",
+      "observado": "Se descargaron ventas-ejecucion-16-executive.pdf y ventas-ejecucion-16-executive.xlsx, conservados en evidencias_exportaciones. La revisión del archivo de la ejecución 16 comprobó que la suma mensual y el total territorial son ambos 1215705.55, con diferencia absoluta 0. El Excel tiene cuatro hojas: Resumen, Evolución en el tiempo, Productos líderes y Distribución territorial. El PDF tiene cinco páginas y su revisión visual fue aprobada por la revisión principal. Estas comprobaciones propias de 16 constan en verificacion_exportaciones.json y se distinguen de las realizadas sobre los históricos 14 y 15.",
+      "capturas": [
+        "62_wwi_analitica16_publicada"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "CHAT-03",
+      "nombre": "Top 3 del copiloto sobre la ejecución nueva WWI 16",
+      "estado": "Cálculo numérico correcto; cobertura parcial de la primera respuesta",
+      "observado": "Con 2015 y California, el copiloto de la ejecución 16 devolvió 54648, 50715 y 45860.85 para el Top 3, con denominador regional 1215705.55 y 481 facturas. Declaró procedencia del expediente 16 y mantuvo moneda de origen, sin afirmar USD ni utilidad. La pregunta también solicitaba el límite de la ubicación histórica; la primera respuesta omitió ese criterio y habló del intervalo de fechas 2013-2016. Por ello se registra exactitud numérica en este contexto y cobertura parcial de la pregunta, no coherencia completa del chat.",
+      "capturas": [
+        "63_wwi_copiloto16_top3"
+      ],
+      "seccion_manual": "anexo_qa"
+    },
+    {
+      "id": "CHAT-04",
+      "nombre": "Aclaración de ubicación actual e histórica en WWI 16",
+      "estado": "Aclaración conceptual parcial; formulación de entrega requiere cautela",
+      "observado": "La respuesta posterior distinguió la ubicación actual de la ficha del cliente de una ubicación histórica. Sin embargo, la expresión donde se entregó resulta demasiado concluyente: la ruta a la provincia de la ciudad de entrega de la ficha actual no prueba dónde ocurrió cada entrega histórica. Se debe comunicar como clasificación de la ficha actual y conservar ese límite; no se certifican todas las frases de la respuesta por acertar la distinción general.",
+      "capturas": [
+        "64_wwi_copiloto16_territorio"
+      ],
+      "seccion_manual": "anexo_qa"
+    },
+    {
+      "id": "BI-CLIENTE",
+      "nombre": "Contraste con origen de los nombres de Clientes principales en WWI 16",
+      "estado": "Valores verificados con el origen; sospecha inicial descartada sin cambiar datos",
+      "observado": "Un contraste actual de solo lectura comparó los 663 clientes de origen con los 663 materializados: no faltan claves y hay 0 diferencias entre CustomerName limpio y la etiqueta descriptiva. Una diferencia literal se explica por espacios externos retirados por la limpieza ya existente; no fue una modificación nueva de datos. CustomerID 906 registra Ajitaab Pakalapati y categoría Computer Store; 972 registra Lakshmi Benipal y Computer Store; 951 registra Eliza Persson y Supermarket. Los valores coinciden con CustomerName y nombre_invoice_line_fact del destino. La consulta compilada usa d0.CustomerName sin unión a People. La sospecha inicial quedó descartada: la apariencia de un nombre no autoriza clasificar al cliente como persona física o contacto, ni inventar una compañía. Separadamente se observó invoice_line_fact como rol técnico de dim_cliente; es una etiqueta inadecuada, no corrupción de estos valores. El informe qa/diagnostico_clientes_wwi_e16_20261104.json registra que no se modificaron lector, materializador, roles, datos ni propuesta y que el ajuste técnico debe tratarse en una revisión versionada futura.",
+      "capturas": [
+        "51_wwi_identidad_cobertura",
+        "65_wwi_clientes_etiqueta_incorrecta"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "AW-01",
+      "nombre": "Precisión del catálogo y nueva necesidad AW de cuatro indicadores",
+      "estado": "Viabilidad revisada; el intento detallado produjo después un contrato bloqueado",
+      "observado": "La revisión anterior acumuló 17 elementos por decidir e incluyó costos, márgenes y descuentos arrastrados por las guías del catálogo. Se precisaron las descripciones e instrucciones de las primeras cuatro preguntas, sin cambiar las seis etiquetas, sus códigos ni las cinco periodicidades. La necesidad final de 532 caracteres conserva cada línea física de pedido y pide cuatro indicadores mensuales: importe total registrado, unidades totales, pedidos distintos e importe total dividido entre pedidos distintos. Precisa fecha y territorio comercial del pedido, nombres de cliente verificables y ranking de sumas por entidad. La moneda sólo se afirmará si se comprueba en la fuente. La revisión posterior mostró 17 directos, 5 automáticos y 10 límites, con los cuatro KPI principales respaldados por referencias directas o razón controlada. Se aceptaron conscientemente los diez límites, incluidos moneda opcional, Person/Store, grano, estado y ubicación sin inventarlos. La generación posterior produjo un contrato bloqueado por una interpretación de factura incompatible con la necesidad de pedidos; se documenta en AW-02. No se aprobó ni ejecutó ese intento.",
+      "capturas": [
+        "66_aw_necesidad_nueva",
+        "67_aw_viabilidad_ambiguedades",
+        "68_aw_catalogo_precisado",
+        "69_aw_necesidad_final",
+        "70_aw_viabilidad_revisada"
+      ],
+      "seccion_manual": "anexo_qa"
+    },
+    {
+      "id": "AW-02",
+      "nombre": "Intento detallado de AW bloqueado por interpretación de factura",
+      "estado": "Incidente histórico conservado; corrección demostrada por nueva generación 121/122",
+      "observado": "La necesidad de 532 caracteres pedía líneas de pedido y cuatro indicadores. La propuesta generada mostró 3 errores: una exigencia de trazabilidad entre línea y pedido fue interpretada como invoice_event, es decir, evento de factura, pese al objetivo de pedidos. No se aprobó ni materializó. No se presenta esta interpretación errónea como un control semántico satisfactorio. El contraste posterior identificó el intento como 118; se conserva sin aprobación ni ETL. La repetición del mismo objetivo produjo 121 y la hija 122, sin borrar el intento. El objetivo detallado fallido se conserva como evidencia y no se sustituye retrospectivamente por el ejercicio básico posterior.",
+      "capturas": [
+        "69_aw_necesidad_final",
+        "70_aw_viabilidad_revisada",
+        "71_aw_conceptos_nuevos",
+        "72_aw_propuesta_bloqueada"
+      ],
+      "seccion_manual": "anexo_qa"
+    },
+    {
+      "id": "AW-03",
+      "nombre": "Variante básica e independiente de formación con AW",
+      "estado": "Caso básico completado: propuesta 120 aprobada y ejecución 17 conciliada",
+      "observado": "Ejemplo distinto del objetivo detallado que falló: objetivo de 294 caracteres, preguntas de tiempo/producto/territorio y periodicidad mensual. La versión 119 se personalizó para excluir KPI no pedidos y conservar dos KPI de importe y unidades; la versión 120 quedó con cero errores y nueve advertencias revisadas. Evidencia estructural: cuatro Cumple y huellas idénticas 1bfe9bb1c761. La ejecución 17 materializó cuatro tablas y 121317 filas de origen y destino, diferencia cero, con 109846381.40 USD y 274914 unidades. Se revisaron y publicaron equivalencias semánticas; los filtros 2013/Northwest dan 6015174.735836 USD y 17452 unidades. PDF/Excel descargados y valores contrastados. Este recorrido es anterior a sales-bi-v7 y no acredita por sí solo la corrección del caso detallado 118.",
+      "capturas": [
+        "73_aw_necesidad_basica",
+        "77_aw_propuesta120_validada",
+        "79_aw_aprobada120",
+        "83_aw_etl17_conciliado_semantica",
+        "85_aw_etl17_publicado",
+        "86_aw_analitica17_publicada"
+      ],
+      "seccion_manual": "exito"
+    },
+    {
+      "id": "AW-04",
+      "nombre": "Objetivo detallado AW 532 repetido y materializado con cuatro KPI",
+      "estado": "Propuesta 122 aprobada y ejecución nueva 18 conciliada",
+      "seccion_manual": "exito",
+      "observado": "Se conservó exactamente el objetivo de 532 caracteres, cuatro preguntas y período mensual. Bajo need-review-4/sales-bi-v7, 121 se personalizó retirando el conteo de clientes y KPI extra, conservando tres medidas y cuatro KPI: importe total, unidades, pedidos distintos y razón importe/pedidos. La hija 122 mantuvo fecha/producto/cliente/territorio y las claves SalesOrderID + SalesOrderDetailID, con cero errores, nueve advertencias, seis referencias y huella 28ac4d6997d8 igual a la reconstrucción. Cobertura descriptiva previa: 504 productos, 19.820 clientes y 10 territorios al 100 %. El ETL 18 completó 26 operaciones y cinco tablas, 121.317 filas por lado y diferencia cero; 109.846.381,399888 USD, 274.914 unidades, 31.465 pedidos y razón 3.491,065672966407. Se publicaron tres equivalencias de grupos y se excluyeron seis códigos, conservando originales. No se adjudica a este ensayo la posterior corrección v5.",
+      "capturas": [
+        "89_aw_repeticion_exacta_postfix",
+        "91_aw_ranking_viable_reglas_v4",
+        "94_aw_personalizacion_cuatro_kpi",
+        "95_aw_122_aprobada",
+        "98_aw_etl18_conciliado",
+        "99_aw_etl18_publicado"
+      ]
+    },
+    {
+      "id": "ANA-04",
+      "nombre": "Analítica del objetivo detallado AW 18/122",
+      "estado": "Filtros e indicadores observados con procedencia propia",
+      "seccion_manual": "exito",
+      "observado": "La cabecera identifica AdventureWorks, ejecución 18 y propuesta 122; la evolución mensual completa contiene 38 períodos. En 2013/Northwest: importe 6.015.174,735836 USD, 17.452 unidades, 2.053 pedidos y razón 2.929,943855740867. No se mezclan con el ejercicio básico 17/120 ni con otra fuente.",
+      "capturas": [
+        "100_aw_analitica18_publicada"
+      ]
+    },
+    {
+      "id": "CHAT-05",
+      "nombre": "Top 3 correcto con una sugerencia no respaldada",
+      "estado": "Cifras y cautelas correctas; sugerencia de margen motivó corrección posterior",
+      "seccion_manual": "anexo_qa",
+      "observado": "Sobre 18/122 y 2013/Northwest, el chat mostró 392.175,27; 338.770,42 y 334.598,66, participación conjunta 17,71 % con denominador territorial 6.015.174,735836 antes del Top 3 y cautelas correctas de preferencias y causalidad. Una sugerencia de margen no disponible en el contrato se conserva como incidente. El servidor ahora deriva sugerencias desde métricas agrupables y ejes materializados; 15 focales, ocho nuevas, aprobaron. La repetición final está cerrada en CHAT-08.",
+      "capturas": [
+        "101_aw_copiloto18_resultado"
+      ]
+    },
+    {
+      "id": "EXP-03",
+      "nombre": "Primera exportación AW 18 comprobada",
+      "estado": "Cinco páginas y cuatro hojas verificadas, con contexto histórico incompleto identificado",
+      "seccion_manual": "exito",
+      "observado": "Los originales ventas-ejecucion-18-executive.pdf y .xlsx no se editaron. Propuesta 122, ejecución 18 y 2013/Northwest coinciden; suma mensual 6.015.174,7358359999 y total territorial/resumen 6.015.174,735836 difieren 0,0000000001 dentro de tolerancia. Unidades 17.452, pedidos 2.053 y razón 2.929,943855740867 concuerdan. Las cinco páginas son legibles, sin recortes ni superposición. Los formatos conservan moneda/promedio con dos decimales y pedidos enteros. En este corte fuente/base y zona horaria no estaban impresas; no se les atribuye el contexto añadido después. Hashes y límites constan en qa/verificacion_exportacion18.json.",
+      "capturas": [],
+      "fuentes": [
+        "qa/verificacion_exportacion18.json"
+      ]
+    },
+    {
+      "id": "EXP-04",
+      "nombre": "Exportaciones nuevas con fuente, base y zona explícita",
+      "estado": "Cortes históricos y corrección de contexto/altura con finales comprobados",
+      "seccion_manual": "anexo_qa",
+      "observado": "Fuente/base, fecha con offset y texto literal se incorporaron al exportador. La descarga 19-contexto conservó el aviso íntegro en el archivo pero fila de 34 pt lo recortaba. Se corrigió altura genérica según texto/ancho; los finales 18/19 muestran la cautela completa en 57 pt, con números/contexto y hashes propios. Los originales anteriores se preservan. La revisión de los finales usó PDF nativo y ArtifactTool; no se afirma Calc final no completado.",
+      "capturas": [],
+      "fuentes": [
+        "qa/verificacion_exportacion19_contexto.json",
+        "qa/comparativo_exportaciones18_19_final.json"
+      ]
+    },
+    {
+      "id": "UI-01",
+      "nombre": "Formularios de seguridad alineados con la API",
+      "estado": "Regresiones frontend aprobadas y consulta visual sin guardar",
+      "seccion_manual": "exito",
+      "observado": "Correo de edición sólo lectura y explicado; edición protegida omite role_ids; carga/error de roles y permisos bloquea el formulario hasta reintento satisfactorio. La captura 105 confirma correo y roles protegidos bloqueados sin guardar cambios. El corte frontend intermedio aprobó 44 pruebas, ESLint y TypeScript/Vite; el cierre posterior bf50172 aprobó 46 pruebas frontend y 454 backend. No se cambiaron cuentas o credenciales ni se probaron todas las sesiones por rol. Permanece el tope de 100 elementos en selectores.",
+      "capturas": [
+        "105_usuario_protegido_campos_consulta"
+      ]
+    },
+    {
+      "id": "UI-02",
+      "nombre": "Editor del contrato efectivo y selección de la hija",
+      "estado": "Incidente previo documentado y corregido; resultado actual en UI-03",
+      "seccion_manual": "anexo_qa",
+      "observado": "El editor enlaza medidas/KPI por nombre/código y muestra source, rol, agregación y receta compilados; las exclusiones están desmarcadas con motivo. La razón conserva sus dos entradas y retirar denominador retira KPI. Salidas sin raw editable son sólo consulta; payload envía selecciones y mapas filtrados. Las regresiones verifican documento/huella sin mutación y selección de hija ante recuperación/evidencias tardías del padre. La captura 107 conserva el estado previo que mostraba ExtendedPrice crudo en un conteo cuyo contrato efectivo usaba InvoiceID. No se borra esa evidencia.",
+      "capturas": [
+        "107_wwi_editor_origen_crudo"
+      ]
+    },
+    {
+      "id": "IA-06",
+      "nombre": "Cautela WWI 693 sin falso margen bajo v5",
+      "estado": "Revisión v5 y posterior cadena 123→124→19 observadas; incidente previo preservado",
+      "seccion_manual": "anexo_qa",
+      "observado": "La cautela sin asumir moneda, utilidad ni composición fiscal añadió antes un falso margen/ACK; no se aceptó para continuar. Need-review-5 corrige el escáner determinístico de menciones positivas y negadas coordinadas ES/EN, incluidas preguntas/derivaciones/facturas, sin ocultar peticiones positivas en otro lugar. Los mismos 693 caracteres, cuatro preguntas y Mensual mostraron 16 directos, siete automáticos y siete límites genuinos, sin tarjeta falsa de margen. Se aceptaron los siete límites de interpretación y se generó 123; la hija 124 y la ejecución 19 posteriores se registran en WWI-04. El bloque asesor/viabilidad aprobó 125 focales, 26 nuevas, sin prometer comprensión exhaustiva de lenguaje natural.",
+      "capturas": [
+        "103_wwi_necesidad_exacta_693_v4",
+        "104_wwi_exclusion_utilidad_incidencia",
+        "106_wwi_viabilidad_v5_sin_margen"
+      ]
+    },
+    {
+      "id": "CTX-01",
+      "nombre": "Cambio de fuente sin arrastre de filtros y conversación",
+      "estado": "Aislamiento observado entre AW 18 y WWI 16",
+      "seccion_manual": "exito",
+      "observado": "Al cambiar de AdventureWorks 18 a WideWorldImporters 16, los filtros volvieron a Todos, se mostró moneda de origen y no se arrastró la conversación. Confirma ese cambio de contexto observado; no equivale a probar todos los filtros, proveedores o sesiones.",
+      "capturas": [
+        "102_cambio_fuente_aw18_wwi16"
+      ]
+    },
+    {
+      "id": "WWI-04",
+      "nombre": "Objetivo WWI 693 con cuatro KPI y ejecución nueva 19",
+      "estado": "Propuesta 124 aprobada y ejecución 19 conciliada y validada",
+      "seccion_manual": "exito",
+      "observado": "Need-review-5 y sales-bi-v7/reglas 2 conservaron el objetivo completo de 693 caracteres, cuatro preguntas y Mensual, sin falso margen/ACK. La nueva 123 se personalizó en 124 con cuatro KPI. Evidencia: siete referencias, cero errores, siete advertencias y huella b5872c3bbd6d reproducida igual. La hija quedó seleccionada automáticamente. ETL 19: 26 operaciones, cinco tablas, 228.265 filas en origen y destino, diferencia cero; importe 198.043.439,45 de moneda de origen, unidades 8.950.628, facturas 70.510 y promedio 2.808,73. Fecha 1.069 desde 70.510 con 69.441 duplicados controlados; Producto 227, Cliente 663 y Territorio 53 al 100 % descriptivo. No se requirieron mapeos adicionales y quedó Validada. Comprobar divisa, sin otro ETL, mantuvo moneda de origen por no demostrar una única. Panel filtrado y exportaciones 19 se comprobaron por separado. El incidente inicial permanece en CHAT-06 y la repetición correcta se documenta en CHAT-07. La captura 110 contiene la parte superior de evidencia; el hash y replay completos proceden de la relectura operativa, no son visibles íntegramente en esa imagen.",
+      "capturas": [
+        "106_wwi_viabilidad_v5_sin_margen",
+        "108_wwi_editor_origen_validado",
+        "109_wwi_personalizacion_4_kpi",
+        "110_wwi_124_evidencia",
+        "111_wwi_124_aprobada",
+        "112_wwi_etl_4_indicadores",
+        "113_wwi_expediente19_preparado",
+        "114_wwi_etl19_conciliado",
+        "124-huellas-contrato-wwi"
+      ]
+    },
+    {
+      "id": "UI-03",
+      "nombre": "Contrato efectivo en editor y selección automática de la hija",
+      "estado": "Presentación observada; 44 pruebas frontend en el corte intermedio y 46 en el cierre",
+      "seccion_manual": "exito",
+      "observado": "La captura 108 muestra COUNT DISTINCT sobre InvoiceID, referencia efectiva del contrato, frente al estado histórico 107. Medidas/KPI se enlazan por nombre/código, las exclusiones se muestran desmarcadas con motivo y la razón conserva fórmula/entradas. Guardar la personalización de 123 a 124 seleccionó la hija automáticamente con sus propios estados. Las dos regresiones nuevas de editor y payload aprobaron en el corte de 44 pruebas frontend, junto con ESLint y TypeScript/Vite; documento y huella originales permanecen sin mutación.",
+      "capturas": [
+        "108_wwi_editor_origen_validado",
+        "109_wwi_personalizacion_4_kpi",
+        "110_wwi_124_evidencia"
+      ]
+    },
+    {
+      "id": "ANA-05",
+      "nombre": "Consulta nueva WWI 19/124 y filtros 2015/California",
+      "estado": "Indicadores filtrados y procedencia comprobados",
+      "seccion_manual": "exito",
+      "observado": "Fuente WideWorldImporters, ejecución 19 y propuesta 124: importe 1.215.705,55 de origen, 57.142 unidades, 481 facturas y promedio 2.527,454365904366, mostrado 2.527,45. Las exportaciones de esa selección coinciden. No se presupone USD ni se reutiliza la QA histórica de 16.",
+      "capturas": [
+        "115_wwi_analitica19_publicada"
+      ]
+    },
+    {
+      "id": "EXP-05",
+      "nombre": "Exportación 19 con fuente, base, offset y números verificados",
+      "estado": "22 controles conformes; cinco páginas y cuatro hojas revisadas",
+      "seccion_manual": "exito",
+      "observado": "qa/verificacion_exportacion19.json conserva SHA256 de los originales, sin modificación. PDF completo y cuatro hojas renderizadas: fuente WideWorldImporters local, base WideWorldImporters, propuesta 124, ejecución 19, 2015/California, moneda de origen y actualización 2026-11-05 04:56+00:00. Importe 1.215.705,55, unidades 57.142, facturas 481 y promedio 2.527,454365904366 correctos; Top 3: 54.648; 50.715 y 45.860,85. Sumatoria mensual y territorio concilian. Hojas sin fórmulas de celda ni hipervínculos; valores numéricos y formatos correctos. Participaciones de productos usan suma de las ocho categorías = 307.083,35, denominada total mostrado; no son porcentajes del denominador territorial.",
+      "capturas": [],
+      "fuentes": [
+        "qa/verificacion_exportacion19.json"
+      ]
+    },
+    {
+      "id": "CHAT-06",
+      "nombre": "Primera respuesta 19 con inferencia histórica no sustentada",
+      "estado": "Cifras y sugerencias correctas; fallo semántico temporal preservado",
+      "seccion_manual": "anexo_qa",
+      "observado": "El Top 3 coincidió y las sugerencias se limitaron al catálogo, pero la lectura operativa de la agente principal registró una atribución de ubicación a fecha de transacción cuando procede de la ficha extraída. La captura 116 sólo muestra pregunta y comienzo de cifras: no alcanza la frase temporal errónea, que se documenta como observación textual, sin fingir que aparece en esa imagen. No se presenta como éxito semántico, prueba de entrega o dimensión histórica.",
+      "capturas": [
+        "116_wwi_chat19_temporalidad_incorrecta"
+      ]
+    },
+    {
+      "id": "CHAT-07",
+      "nombre": "Cautela temporal determinística del copiloto",
+      "estado": "Repetición real y consulta sugerida conformes para el caso",
+      "seccion_manual": "exito",
+      "observado": "Misma pregunta de WWI 19 con conversación limpia: 54.648/50.715/45.860,85 y 4,50/4,17/3,77 % sobre 1.215.705,55. Explica ficha durante ventana ETL, sin vigencia histórica ni entrega probadas. Aviso determinista primero en Vista ejecutiva (117), respuesta completa (118), cautela y tres sugerencias disponibles (119). Se pulsó la sugerencia de unidades por cliente y devolvió cinco clientes con denominador completo 57.142 en 2015/California (120). La revisión principal abrió las imágenes; no se extrapola a toda pregunta o proveedor.",
+      "capturas": [
+        "117_wwi_aviso_vigencia_dimensional",
+        "118_wwi_chat19_respuesta_corregida",
+        "119_wwi_chat19_cautela_plataforma",
+        "120_wwi_sugerencia_unidades_cliente"
+      ]
+    },
+    {
+      "id": "UI-04",
+      "nombre": "Conservar nombre al elegir un preset LLM",
+      "estado": "Regresión corregida y repetida en imagen Docker fresca y runtime",
+      "seccion_manual": "anexo_qa",
+      "observado": "El primer make verify aprobó 407 pruebas backend de su corte y falló con 43/44 pruebas frontend por pérdida del nombre de configuración al seleccionar un preset. Se corrigió inicialización por identidad del registro, actualizaciones funcionales/snapshot de valores y limpieza sólo tras éxito. La prueba Groq comprueba nombre antes/después del preset, POST y reset. Imagen Docker fresca y runtime aprobaron 44 pruebas frontend; ESLint y TypeScript/Vite también pasaron. No se aumentaron timeouts ni se usó un LLM real. Ese corte intermedio no se atribuye al código definitivo: el cierre posterior bf50172 aprobó 454 pruebas backend y 46 frontend.",
+      "capturas": []
+    },
+    {
+      "id": "CHAT-08",
+      "nombre": "Respuesta final de AW 18 con denominador y límites",
+      "estado": "Consulta repetida y tres sugerencias válidas observadas",
+      "seccion_manual": "exito",
+      "observado": "Misma pregunta sobre 2013/Northwest en 18/122: Top 3 de 392.175,27/338.770,42/334.598,66, denominador 6.015.174,74 USD, sin afirmar preferencias ni causalidad y tres sugerencias válidas. Captura 121 leída por la revisión principal. No se declara determinismo universal del LLM.",
+      "capturas": [
+        "121-copiloto-aw-final"
+      ]
+    },
+    {
+      "id": "EXP-06",
+      "nombre": "Finales 18/19 con contexto y advertencia íntegros",
+      "estado": "Dos PDF y dos XLSX finales conformes con límites de motor explícitos",
+      "seccion_manual": "exito",
+      "observado": "Diez páginas de PDF nativo revisadas y ambas hojas Resumen/contexto/hallazgos XLSX renderizadas con ArtifactTool; cuatro hojas por libro. Fuente/base/offset, valores, razones, sumas y participaciones del Top 8 correctos. El aviso temporal está completo y su fila mide 57 pt. Los originales y hashes se preservan en tres informes QA finales. No se completó Calc de estos archivos por memoria; la prueba sintética anterior no se atribuye a ellos.",
+      "capturas": [],
+      "fuentes": [
+        "qa/verificacion_exportacion18_final.json",
+        "qa/verificacion_exportacion19_final.json",
+        "qa/comparativo_exportaciones18_19_final.json"
+      ]
+    },
+    {
+      "id": "UI-05",
+      "nombre": "Consulta de presets y cuenta protegida sin guardar",
+      "estado": "Nombre conservado y campos protegidos observados sin mutaciones",
+      "seccion_manual": "exito",
+      "observado": "En 122 se comprobó nombre de configuración conservado al elegir Groq y sus presets, sin guardar ni activar; Claude continuó activo. En 123 se consultó correo protegido de sólo lectura. No se cambió cuenta, contraseña, rol ni proveedor activo.",
+      "capturas": [
+        "122-llm-nombre-conservado",
+        "123-correo-protegido-consulta"
+      ]
+    },
+    {
+      "id": "QA-BORDES",
+      "nombre": "Criterios genéricos de revisión en bordes semánticos",
+      "estado": "Criterios formativos; verificación de motor posterior en acta técnica",
+      "seccion_manual": "anexo_qa",
+      "observado": "Revisar tildes/puntuación y ámbito de exclusiones: sin percentiles no elimina ranking de sumas; no excluir facturas no equivale a excluirlas. Un ancla que es la propia cabecera se verifica por su identidad y clave; una ruta desde detalle exige FK completa. NumberOfUnits no es identificador sólo por contener Number. Preparar una hija desde una versión aprobada requiere acción explícita y conserva el original en consulta. Estos criterios no atribuyen reglas futuras ni un contador nuevo a 122/124.",
+      "capturas": []
+    },
+    {
+      "id": "UI-06",
+      "nombre": "Desde aprobada: editor de hija explícito y cancelación",
+      "estado": "Operación visual observada sin guardar otra versión",
+      "seccion_manual": "exito",
+      "observado": "La versión 124 aprobada abrió el editor sólo mediante Crear versión corregida desde ésta. Justificación fue editable y Guardar como nueva versión se habilitó al completar sus requisitos. Cancelar restituyó Consulta 124 aprobada, cero errores y siete avisos. No se guardó ni creó hija nueva. Las regresiones de interfaz distinguen consulta, entrada explícita, cancelación y guardado hijo sin mutación del padre; la verificación de código posterior conserva su acta propia.",
+      "capturas": [
+        "125-editor-hija-habilitado"
+      ]
+    },
+    {
+      "id": "UI-07",
+      "nombre": "Indicadores ETL legibles y unidades coherentes con la evidencia",
+      "estado": "Verificación visual y automatizada conforme",
+      "seccion_manual": "exito",
+      "observado": "Consulta de los expedientes existentes AW 18 y WWI 19 en anchos 574 y 1366: cuatro indicadores conciliados por fuente, sin solapamiento. AW muestra USD 3.491,07 por transacción al usar su divisa verificada; WWI conserva 2.808,73 moneda de origen por transacción sin heredar USD. Los conteos explícitos se muestran enteros; cantidades y razones conservan dos decimales. La corrección es genérica por unidad y evidencia, no por base o código de KPI. Se consultaron resultados conservados sin otro ETL, aprobación ni llamada LLM. Dos pruebas de interfaz añadidas cubren divisa resuelta/no resuelta y nueve indicadores de unidades diversas; el corte final tiene 48 pruebas frontend y 454 backend.",
+      "capturas": [
+        "126-aw-indicadores-sin-solape",
+        "127-wwi-indicadores-sin-solape"
+      ],
+      "evidencia": "qa/verificacion_unidades_disposicion_etl_20261105.json"
+    }
+  ],
+  "escenarios": [
+    {
+      "fuente": "AdventureWorks2022",
+      "instantanea": 2,
+      "periodicidad": "Mensual",
+      "objetivo": "Conservar cada línea de pedido de venta en un datamart. Para priorizar productos y territorios, comparar mensualmente cuatro indicadores: suma del importe registrado de las líneas, suma de unidades, conteo de identificadores de pedido distintos e importe total dividido entre pedidos distintos. Usar fecha y territorio comercial del pedido, producto y cliente con nombre verificable. Los rankings comparan sumas por entidad. Mantener la trazabilidad de cada línea al pedido. La moneda se reportará sólo si se comprueba en la fuente.",
+      "estado": "Objetivo detallado de 532 caracteres conservado: 121→122→18, cuatro KPI y diferencia cero. Chat final 121 y exportaciones finales 18 comprobados; históricos 118 y básico 120/17 identificados como casos distintos.",
+      "objetivo_detallado_previo": "Conservar cada línea de pedido de venta en un datamart. Para priorizar productos y territorios, comparar mensualmente cuatro indicadores: suma del importe registrado de las líneas, suma de unidades, conteo de identificadores de pedido distintos e importe total dividido entre pedidos distintos. Usar fecha y territorio comercial del pedido, producto y cliente con nombre verificable. Los rankings comparan sumas por entidad. Mantener la trazabilidad de cada línea al pedido. La moneda se reportará sólo si se comprueba en la fuente.",
+      "estado_intento_detallado_previo": "Incidente histórico 118: tres errores por interpretación falsa de invoice_event; no aprobado ni materializado. Corregido mediante repetición nueva 121/122, sin reescribir 118.",
+      "objetivo_basico_historico": "Analizar mensualmente el importe de ventas registrado y las unidades vendidas por producto y territorio comercial del pedido. Comparar totales por producto y por territorio para decidir prioridades comerciales. Mantener el nivel de detalle por línea y utilizar nombres descriptivos verificados.",
+      "propuesta_aprobada": 122,
+      "ejecucion": 18,
+      "version_revision": "need-review-4",
+      "version_prompt": "sales-bi-v7"
+    },
+    {
+      "fuente": "WideWorldImporters",
+      "instantanea": 3,
+      "periodicidad": "Mensual",
+      "objetivo": "Diseñar un datamart cuyo grano físico sea una línea de factura. Sobre ese detalle, resumir mensualmente el importe registrado de la línea, las unidades y las facturas distintas por producto y cliente. Usar la fecha de emisión. Para el territorio, usar la provincia de la ciudad de entrega registrada en la ficha del cliente y aclarar que no representa necesariamente su ubicación histórica. Conservar el importe de origen sin asumir moneda, utilidad ni composición fiscal. Limitar los indicadores a importe total, unidades totales, facturas distintas e importe promedio por factura. Los rankings deben comparar totales por producto; el máximo de una sola línea no identifica al producto líder.",
+      "estado": "Objetivo de 693 caracteres conservado: 123→124→19 bajo v5/reglas 2, sin falso margen/ACK, cuatro KPI y diferencia cero. Respuesta final 117–119 y consulta sugerida 120 comprobadas; finales PDF/XLSX 19 conformes. El antecedente 117/16 permanece separado.",
+      "propuesta_nueva": 123,
+      "hija_aprobada": 124,
+      "ejecucion_nueva": 19,
+      "version_revision": "need-review-5",
+      "version_prompt": "sales-bi-v7"
+    }
+  ],
+  "periodo_revision": "4–5 de noviembre de 2026",
+  "fecha_cierre_documental": "2026-11-05"
+}

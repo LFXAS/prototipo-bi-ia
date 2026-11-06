@@ -1,0 +1,71 @@
+{
+  "fecha": "2026-11-04T22:21:58.121204-05:00",
+  "alcance": "Revisión visual de las diez páginas renderizadas por Poppler a 120 ppp; sin modificar los PDF exportados.",
+  "archivos": [
+    {
+      "archivo": "evidencias_exportaciones/ventas-ejecucion-14-executive.pdf",
+      "paginas_revisadas": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "sha256": "6001e5496dd2ed3334e54948709b01ed9d511816bd3dba43c9ef5ebfe0aa869a",
+      "estado": "Original conservado sin cambios"
+    },
+    {
+      "archivo": "evidencias_exportaciones/ventas-ejecucion-15-executive.pdf",
+      "paginas_revisadas": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "sha256": "47688529a7dc480088766ce3148cdfaac86c2acb59fdf4f8c0535a1a77f460cb",
+      "estado": "Original conservado sin cambios"
+    }
+  ],
+  "hallazgos": [
+    {
+      "id": "EXP-VIS-01",
+      "tipo": "Presentación",
+      "gravedad": "Menor",
+      "ejecuciones": [
+        14,
+        15
+      ],
+      "paginas": [
+        4
+      ],
+      "observacion": "La distribución territorial contiene una sola categoría y ocupa una página independiente casi vacía. El contenido permanece visible; la plantilla fija de cinco páginas deja espacio superfluo."
+    },
+    {
+      "id": "EXP-VIS-02",
+      "tipo": "Texto incompleto",
+      "gravedad": "Menor",
+      "ejecuciones": [
+        14
+      ],
+      "paginas": [
+        1
+      ],
+      "observacion": "La descripción bajo el título termina en la palabra cortada territori sin puntos suspensivos. No se observaron recortes en los valores de KPI ni en las tablas."
+    },
+    {
+      "id": "EXP-VIS-03",
+      "tipo": "Lectura del gráfico",
+      "gravedad": "Limitación",
+      "ejecuciones": [
+        14,
+        15
+      ],
+      "paginas": [
+        2
+      ],
+      "observacion": "El gráfico conserva cuadrícula y valor exacto del máximo, pero no muestra valores del eje vertical; los demás puntos no tienen importes exactos impresos."
+    }
+  ],
+  "verificacion_general": "Las diez páginas fueron abiertas a resolución individual. No se observaron superposiciones, tablas partidas, valores fuera de las celdas ni imágenes deformadas. Los textos de tablas son legibles a tamaño completo. La precisión reducida de algunos KPI ya está documentada por la revisión numérica de la entrega y no fue corregida en estos originales."
+}

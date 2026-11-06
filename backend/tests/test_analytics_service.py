@@ -1,18 +1,61 @@
+from datetime import UTC, date, datetime
 from types import SimpleNamespace
 
 import pytest
 
 from app.modules.analytics.service import (
+    AnalyticsUnavailableError,
     _derived_recipe_value,
     _display_name_for_recipe,
     _display_unit_for_recipe,
     _order_scope_note,
     _remember_resolved_measure,
     _resolve_kpi_values,
+    _timeline_label,
+    _timeline_period,
     _unique_recipes,
+    dimension_provenance,
+    dimension_provenance_insight,
+    dimension_temporal_caveat,
     execution_has_materialized_data,
     run_safe_aggregate_query,
 )
+
+
+@pytest.mark.parametrize(
+    ("period", "start", "key", "label"),
+    [
+        ("daily", date(2024, 2, 29), "2024-02-29", "29/02/2024"),
+        ("weekly", date(2024, 12, 30), "2025-W01", "Sem 01 2025"),
+        ("monthly", date(2024, 2, 1), "2024-02", "Feb 2024"),
+        ("quarterly", date(2024, 10, 1), "2024-Q4", "T4 2024"),
+        ("yearly", date(2024, 1, 1), "2024", "2024"),
+    ],
+)
+def test_timeline_respects_calendar_period_and_iso_week_year(period, start, key, label):
+    assert _timeline_period({"periodicity": "inherit"}, period) == period
+    assert _timeline_label(period, start) == (key, label)
+
+
+def test_metric_period_overrides_proposal_without_accepting_free_sql():
+    assert _timeline_period({"periodicity": "daily"}, "monthly") == "daily"
+    with pytest.raises(AnalyticsUnavailableError):
+        _timeline_period({"periodicity": "month'); DROP TABLE x; --"}, "monthly")
+
+
+@pytest.mark.parametrize(
+    ("proposal_period", "metric_period"),
+    [
+        ("day", "daily"),
+        ("week", "weekly"),
+        ("month", "monthly"),
+        ("quarter", "quarterly"),
+        ("year", "yearly"),
+    ],
+)
+def test_inherit_resolves_actual_catalog_period_codes(proposal_period, metric_period):
+    assert _timeline_period({"periodicity": "inherit"}, proposal_period) == metric_period
+    assert _timeline_period({}, proposal_period) == metric_period
 
 
 def test_order_based_dashboard_discloses_non_invoiced_scope() -> None:
@@ -24,6 +67,158 @@ def test_order_based_dashboard_discloses_non_invoiced_scope() -> None:
 
     assert "no equivalen" in _order_scope_note(order_proposal, metadata)
     assert _order_scope_note(invoice_proposal, metadata) == ""
+
+
+@pytest.mark.parametrize(
+    "names",
+    [
+        ("Comercial", "Movimientos", "Cuentas", "Ciudades", "Regiones"),
+        ("Commerce", "Entries", "Accounts", "Places", "Areas"),
+    ],
+)
+def test_dimension_provenance_keeps_physical_path_without_inventing_historical_validity(
+    names,
+) -> None:
+    schema, fact, account, place, area = names
+    tables = [
+        {
+            "name": name,
+            "foreign_keys": (
+                [
+                    {
+                        "referenced_schema": schema,
+                        "referenced_table": target,
+                        "columns": [column],
+                        "referenced_columns": ["ID"],
+                    }
+                ]
+                if target
+                else []
+            ),
+        }
+        for name, target, column in (
+            (fact, account, "AccountRef"),
+            (account, place, "PlaceRef"),
+            (place, area, "AreaRef"),
+            (area, None, None),
+        )
+    ]
+    snapshot = SimpleNamespace(schema_document={"schemas": [{"name": schema, "tables": tables}]})
+    proposal = SimpleNamespace(
+        id=42,
+        proposal_document={
+            "fact": {"source_tables": [f"{schema}.{fact}"]},
+            "dimensions": [
+                {
+                    "name": "dim_zeta",
+                    "source_tables": [f"{schema}.{area}"],
+                    "business_key": "ID",
+                    "attributes": ["Label"],
+                    "display_label": {
+                        "target_name": "nombre_zeta",
+                        "fallback_column": "ID",
+                        "variants": [
+                            {
+                                "source_table": f"{schema}.{area}",
+                                "columns": ["Label"],
+                                "operation": "first_non_empty",
+                            },
+                            {
+                                "source_table": f"{schema}.Identities",
+                                "columns": ["GivenName", "FamilyName"],
+                                "operation": "concat_space",
+                                "left_columns": ["IdentityRef"],
+                                "right_columns": ["ID"],
+                            },
+                        ],
+                    },
+                }
+            ],
+        },
+    )
+    execution = SimpleNamespace(
+        id=17,
+        started_at=datetime(2026, 11, 5, 2, 0, tzinfo=UTC),
+        finished_at=datetime(2026, 11, 5, 2, 1, tzinfo=UTC),
+    )
+
+    provenance = dimension_provenance(execution, proposal, snapshot)  # type: ignore[arg-type]
+
+    dimension = provenance["dimensions"][0]
+    assert dimension["source_tables"] == [f"{schema}.{area}"]
+    assert dimension["attributes"] == ["Label"]
+    assert dimension["relationship_path_status"] == "declared_foreign_keys"
+    assert [step["right_table"] for step in dimension["relationship_path"]] == [
+        f"{schema}.{account}",
+        f"{schema}.{place}",
+        f"{schema}.{area}",
+    ]
+    assert dimension["relationship_path"][1]["left_columns"] == ["PlaceRef"]
+    label = dimension["label_provenance"]
+    assert label["target_name"] == "nombre_zeta"
+    assert label["fallback_source_table"] == f"{schema}.{area}"
+    assert label["variants"][0]["relationship"] is None
+    assert label["variants"][1]["columns"] == ["GivenName", "FamilyName"]
+    assert label["variants"][1]["relationship"] == {
+        "left_table": f"{schema}.{area}",
+        "right_table": f"{schema}.Identities",
+        "left_columns": ["IdentityRef"],
+        "right_columns": ["ID"],
+    }
+    assert provenance["etl_finished_at"] == "2026-11-05T02:01:00+00:00"
+    assert provenance["etl_timestamps_semantics"] == "execution_window_not_exact_source_read_time"
+    assert provenance["dimension_value_semantics"] == "source_state_read_during_etl"
+    for flag in (
+        "single_transactional_snapshot_verified",
+        "source_last_updated_at_verified",
+        "scd2_implemented",
+        "historical_effective_dates_verified",
+        "dimension_values_at_fact_time_verified",
+        "delivery_events_verified",
+        "fact_date_establishes_dimension_validity",
+    ):
+        assert provenance[flag] is False
+    insight = dimension_provenance_insight(execution, proposal, snapshot)  # type: ignore[arg-type]
+    assert insight.tone == "attention"
+    assert insight.statement == dimension_temporal_caveat()
+    assert f"{schema}.{area}" in insight.evidence
+    assert "ETL #17" in insight.evidence
+
+
+def test_dimension_provenance_marks_missing_path_without_creating_a_relationship() -> None:
+    execution = SimpleNamespace(id=1, started_at=None, finished_at=None)
+    proposal = SimpleNamespace(
+        id=2,
+        proposal_document={
+            "fact": {"source_tables": ["Origen.A"]},
+            "dimensions": [{"name": "dim_beta", "source_tables": ["Origen.B"]}],
+        },
+    )
+    snapshot = SimpleNamespace(schema_document={"schemas": []})
+
+    provenance = dimension_provenance(execution, proposal, snapshot)  # type: ignore[arg-type]
+
+    assert provenance["dimensions"][0]["relationship_path_status"] == "unavailable"
+    assert provenance["dimensions"][0]["relationship_path"] == []
+    assert provenance["etl_finished_at"] is None
+    assert "fecha del hecho no demuestra" in provenance["caveat"]
+
+
+def test_dimension_on_fact_source_does_not_claim_a_foreign_key_path() -> None:
+    execution = SimpleNamespace(id=1, started_at=None, finished_at=None)
+    proposal = SimpleNamespace(
+        id=2,
+        proposal_document={
+            "fact": {"source_tables": ["Origen.Eventos"]},
+            "dimensions": [{"name": "dim_atributo", "source_tables": ["Origen.Eventos"]}],
+        },
+    )
+    snapshot = SimpleNamespace(schema_document={})
+
+    provenance = dimension_provenance(execution, proposal, snapshot)  # type: ignore[arg-type]
+
+    assert provenance["dimensions"][0]["relationship_path_status"] == "same_source"
+    assert provenance["dimensions"][0]["relationship_path"] == []
 
 
 def test_financial_metrics_resolve_in_order_with_explicit_denominators() -> None:

@@ -1,0 +1,17 @@
+{
+  "fecha": "2026-11-05T03:35:35.664Z",
+  "fuente": "AdventureWorks local",
+  "cambio": "Se precisaron las primeras cuatro preguntas sin eliminar las dos adicionales; no se modificaron referencias técnicas.",
+  "descripciones": [
+    "Permite comparar importes de venta, unidades y documentos comerciales en distintos períodos.",
+    "Permite comparar importes y unidades por producto y sus atributos verificables.",
+    "Permite comparar importes, unidades y documentos comerciales por cliente identificado.",
+    "Permite comparar importes y unidades por territorio comercial verificado."
+  ],
+  "instrucciones": [
+    "Comparar en el tiempo los indicadores solicitados en la necesidad usando una fecha comercial verificable. Conservar el detalle físico de cada línea y agrupar sólo las consultas. No añadir indicadores de costos, descuentos o margen si no fueron solicitados.",
+    "Comparar totales por producto y atributos respaldados por relaciones verificadas. Un ranking clasifica agregados por producto; el máximo de una línea no identifica al producto líder. Mantener el grano del hecho y limitar los indicadores a los solicitados.",
+    "Relacionar cada evento comercial con su cliente y un nombre descriptivo comprobado mediante claves y relaciones declaradas. Comparar únicamente los indicadores pedidos en la necesidad. Distinguir clientes de contactos, vendedores o destinatarios.",
+    "Relacionar el hecho con el territorio comercial registrado en la transacción cuando exista una ruta declarada. Explicar la definición territorial y conservarla al combinar producto, cliente y período. No añadir métricas que la necesidad no solicite."
+  ]
+}

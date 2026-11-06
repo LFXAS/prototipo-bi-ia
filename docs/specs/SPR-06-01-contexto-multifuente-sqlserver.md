@@ -119,7 +119,7 @@ cada conexión parte de la línea base y el analista decide si incorpora orienta
   período e instantánea. Cambiar de fuente o necesidad invalida la revisión y descarta
   respuestas en curso; un borrador restaurado no restaura consentimiento de envío.
 - Una revisión anterior a la versión de reglas vigente no habilita otra generación:
-  `need-review-2` conserva registros históricos, pero exige reevaluar. Las
+  `need-review-6` conserva registros históricos, pero exige reevaluar. Las
   comprobaciones de roles precio/costo/tasa/importe y de agrupación temporal son las
   mismas para ambas fuentes; un nombre nuevo no se considera semánticamente conocido
   sólo por tener un tipo compatible.
@@ -283,6 +283,30 @@ la aceptación funcional supervisada de la puerta previa, no una garantía de
 reformulación exitosa ni otro ciclo completo de BI/ETL.
 
 ## Fuera de alcance
+
+La revisión posterior al cierre de noviembre se documenta en
+[QA posterior al cierre del 4 de noviembre](../testing/qa-postcierre-2026-11-04.md).
+Mantiene el Sprint 6 como incremento ya cerrado: la trazabilidad mediante la capacidad
+existente `transactions`/`identifier`, la exigencia de intención positiva original y
+PK completa declarada/referencias exactas del hecho cabecera o FK completa para
+`invoice_event`, y las reglas aritméticas nuevas son
+correcciones del contrato general, no bifurcaciones por AdventureWorks o WWI.
+`need-review-6` y `compilation_rules_version=3` sólo rigen nuevos procesos y preservan
+la reproducción versionada de los documentos anteriores. Las ejecuciones 16/117 y
+17/120 realizadas antes del ajuste no se presentan como ensayos posteriores de esas
+reglas. El objetivo detallado AW se repitió como 121/122 y ejecución 18 bajo
+`need-review-4`/reglas 2; WWI repitió su necesidad bajo revisión 5/reglas 2 como
+123/124 y ejecución 19. Ambos completaron conciliación, panel, chat y QA de
+exportaciones finales, con métodos y límites propios en el informe QA. No se
+eliminan incidentes históricos ni se atribuyen esos ensayos a revisión 6/reglas 3.
+El ranking se evalúa como operación del catálogo cerrado sobre una medida y una
+dimensión verificadas, con relaciones que preservan el grano, sin exigir una columna
+física de ranking ni introducir capacidades o transformaciones ETL nuevas.
+La misma revisión corrige la serie temporal: usa la periodicidad efectiva de KPI o
+su herencia desde la propuesta y un catálogo cerrado de cinco períodos. La matriz
+de lectura de ambos datamarts, sin cambiar sus filas, debe conservar los resultados
+mensuales y verificar por separado las otras agrupaciones; su estado está en el
+informe QA, no se deduce de haber compilado el servicio.
 
 - Pronósticos o modelos de *forecast*.
 - Unificación de hechos entre bases distintas.

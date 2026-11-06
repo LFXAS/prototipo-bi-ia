@@ -1,0 +1,102 @@
+{
+  "fecha": "2026-11-05T00:42:38.743057-05:00",
+  "corte": "Exportación19-contexto original; anterior al ajuste de altura de las filas de hallazgos XLSX",
+  "originales_editados": false,
+  "archivos": {
+    "pdf": {
+      "archivo": "evidencias_exportaciones/ventas-ejecucion-19-executive-contexto.pdf",
+      "sha256": "27d61a4e1abf005a58ce3f48bd3dd8ecd8585e9006cfcf4c464145575749fe42"
+    },
+    "xlsx": {
+      "archivo": "evidencias_exportaciones/ventas-ejecucion-19-executive-contexto.xlsx",
+      "sha256": "ea91afb13fb4aa76640a734ce6b3c17a95b22e4ade75cfe6fe113571f84c7465"
+    }
+  },
+  "hojas": [
+    "Resumen",
+    "Evolución en el tiempo",
+    "Productos líderes",
+    "Distribución territorial"
+  ],
+  "contexto": {
+    "fuente": "WideWorldImporters local",
+    "base": "WideWorldImporters",
+    "periodo": "2015 · California",
+    "propuesta": "#124",
+    "ejecucion": "#19",
+    "moneda": "moneda de origen",
+    "actualizacion": "2026-11-05 04:56+00:00"
+  },
+  "valores": {
+    "importe": "1215705.55",
+    "suma_mensual": "1215705.55",
+    "territorio": "1215705.55",
+    "unidades": "57142",
+    "documentos": "481",
+    "promedio": "2527.454365904366",
+    "promedio_calculado": "2527.454365904365904365904366"
+  },
+  "participacion_productos": {
+    "categorias": 8,
+    "denominador_top8": "307083.35",
+    "primero_valor": "54648",
+    "primero_fraccion_top8": "0.1779581992967056",
+    "primero_fraccion_total_seleccion": "0.04495167435897615174990358479",
+    "interpretacion": "17.8% usa exclusivamente las ocho categorías mostradas (307083.35); equivale a 4.495167% del importe total del filtro. La consulta Top3 del chat utiliza el total de la selección como denominador."
+  },
+  "controles": {
+    "cuatro_hojas": true,
+    "fuente": true,
+    "base": true,
+    "propuesta124": true,
+    "ejecucion19": true,
+    "periodo2015California": true,
+    "offset_explicito": true,
+    "importe": true,
+    "sumatoria_mensual_territorio": true,
+    "unidades": true,
+    "documentos": true,
+    "promedio_control": true,
+    "promedio_razon": true,
+    "top8_shares_sobre_top8": true,
+    "top8_suma_participaciones": true,
+    "contexto_total_mostrado_en_insight": true,
+    "sin_formulas_hojas": true,
+    "sin_hipervinculos_automaticos": true,
+    "pdf_cinco_paginas": true,
+    "pdf_valores_correctos": true,
+    "pdf_contexto_fuente_base_offset": true,
+    "pdf_advertencia_temporal_completa": true,
+    "excel_dato_advertencia_completo": true,
+    "excel_advertencia_visible_sin_recorte": false
+  },
+  "revision_visual": {
+    "pdf_paginas_revisadas": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "pdf_resultado": "Conforme: contextos, cifras y advertencia temporal completos, sin recorte ni superposición.",
+    "xlsx_motor": [
+      "ArtifactTool import/render readonly",
+      "LibreOffice bundled con perfil temporal, conversión sin editar original"
+    ],
+    "xlsx_rango": "Resumen!B20:D26",
+    "xlsx_resultado": "No conforme visual: C22 guarda el texto íntegro, pero su altura fija de 34 pt recorta el final. Confirmado en ambos motores.",
+    "xlsx_altura_fila22_puntos": "34",
+    "evidencias": [
+      "qa/export19_contexto/page-1.png",
+      "qa/export19_contexto/page-5.png",
+      "qa/export19_contexto_xlsx/resumen-hallazgos.png",
+      "qa/export19_contexto_xlsx/resumen-libreoffice.png"
+    ],
+    "observaciones_menores": [
+      "La página4 contiene una sola categoría y amplio espacio libre.",
+      "Dos celdas vacías en la cuadrícula de4 KPI.",
+      "La tendencia no imprime una escala vertical numérica; el máximo sí se rotula."
+    ]
+  },
+  "estado": "Controles numéricos y PDF conformes; recorte XLSX confirmado en este original. Corrección de altura comprobada por separado en una prueba sintética; pendiente descargar el informe 19-final y revisarlo por separado."
+}

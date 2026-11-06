@@ -122,6 +122,60 @@ El compilador además:
   como completa o parcial sin reutilizar silenciosamente la cobertura anterior a
   la selección.
 
+### 5.2. Reglas versionadas de aritmética e identidad documental
+
+La primera revisión posterior al cierre del 4 de noviembre introdujo
+`compilation_rules_version=2` para propuestas nuevas (`sales-bi-v7`):
+
+1. Un tipo SQL numérico no convierte una PK, FK o identificador documental en una
+   magnitud aritmética. Se rechaza su uso como operando de suma, producto, resta o
+   división de importes/cantidades, incluso si el LLM propone una fórmula válida
+   sintácticamente como `LineTotal / SalesOrderID`.
+2. Un promedio por documento se expresa como razón de agregados compatibles:
+   `SUM(importe) / COUNT(DISTINCT clave_documento)`. Su compilación exige ambas
+   medidas verificadas, el mismo alcance y denominador nulo controlado. No se obtiene
+   dividiendo cada línea entre el valor numérico de su ID.
+3. El conteo de líneas y el conteo de pedidos son poblaciones distintas. Si el
+   proveedor pide `COUNT(líneas)` en un contrato que sólo representa conteos tipados
+   de documentos o clientes, esa decisión se excluye con explicación. No se cambia
+   silenciosamente a pedidos conservando una etiqueta que diga líneas.
+4. Las comprobaciones estrictas nuevas se aplican al marcador 2. La reproducción de
+   documentos persistidos sin marcador usa las reglas 1; no se alteran decisiones,
+   huellas ni aprobaciones históricas para fingir que se generaron con reglas nuevas.
+5. Una aprobación nueva exige el prompt y las reglas de compilación vigentes. Un
+   borrador anterior recibe HTTP 409 y debe regenerarse o personalizarse para crear
+   una versión hija con las reglas actuales y `source_proposal_id` hacia su origen.
+   Consultar o repetir una aprobación ya registrada conserva su idempotencia y no
+   actualiza el contrato aprobado legado.
+
+Esta compatibilidad conserva evidencia, no certifica una fórmula comercial por ser
+histórica. Una corrección de diseño genera y revisa una versión nueva; no reescribe
+117/120 ni rematerializa un expediente durante una consulta. Las regresiones y su
+resultado efectivo se registran en
+[QA posterior al cierre](../testing/qa-postcierre-2026-11-04.md).
+
+### 5.3. Precisión de identificadores y replay con reglas 3
+
+El corte vigente usa compilation_rules_version=3 y mantiene sales-bi-v7. Number o
+Numero no basta por sí solo para excluir una magnitud: la señal nominal exige
+semántica documental o de entidad y se conservan las PK/FK declaradas. NumberOfUnits
+y NumeroDeUnidades sin tales claves son cantidades compatibles con SUM; una PK/FK
+no deja de ser identificador por llamarse unidades.
+
+La expansión y validación explícitas 1 y 2 se mantienen para los contratos históricos.
+Ausencia de marcador reproduce 1; un 2 reproduce 2. El check proposal.replay.passed
+depende de la igualdad real de hashes, aunque las versiones difieran. El detalle
+declara prompt/reglas persistidos y actuales, y compatibility_warning se informa por
+separado. Sin decisiones guardadas se declara que no puede reconstruirse; no se
+simula igualdad. La puerta de aprobación nueva exige las reglas actuales 3.
+
+La lectura de seis aprobadas 91/98/117/120/122/124 conservó documentos, validaciones y
+approval_safe sin mutación. 122/124 mantienen reglas 2 y hash exacto. Cinco replays
+coinciden; 91 conserva la discrepancia preexistente, con check false y aviso separado,
+no una modificación del contrato. La versión histórica de revisión de necesidad no
+se inventa desde el código actual: no existe un campo explícito persistido en esos
+documentos. El expediente externo conserva el informe sanitizado de compatibilidad.
+
 ## 6. Validación y evidencia
 
 Después de materializar el datamart, **Validación del datamart** muestra por cada KPI seleccionado:
@@ -141,6 +195,31 @@ Cada KPI base o derivado se compara mediante la misma receta en ambas fuentes. U
 Una etiqueta como `moneda`, `importe` o `currency` no autoriza a mostrar un símbolo. El ejecutor busca en el alcance relacional de la tabla de hechos una columna verificable de moneda de origen o base, consulta únicamente sus códigos distintos mediante la conexión de sólo lectura y acepta el resultado sólo cuando obtiene un único código ISO de tres letras. La evidencia conserva el código, la tabla, la columna y el mensaje usado para resolver la unidad.
 
 Los KPI monetarios se presentan con ese código ISO —por ejemplo, `USD 109.846.381,40`— y las unidades no monetarias permanecen sin cambios. Si la fuente contiene monedas mezcladas, varios candidatos contradictorios o ninguna evidencia suficiente, el sistema mantiene `moneda de origen`, no inventa un símbolo y explica qué dato falta. Un expediente anterior puede ejecutar esta comprobación y enriquecer sus unidades sin repetir extracción, transformación, carga ni conciliación.
+
+### 6.2. Unidad completa y legibilidad en la consulta web
+
+La inspección adicional del 5 de noviembre encontró en el expediente 18 una razón
+por pedido cuya etiqueta se superponía al valor y conservaba «moneda de origen por
+transacción» aunque el expediente ya acreditaba USD. Es un defecto de presentación;
+no invalida el importe ni exige otra carga o comprobación de divisa.
+
+La interfaz resuelve el prefijo monetario genérico de la unidad completa —`moneda`,
+`moneda de origen` o `currency`— con la divisa verificada y conserva el denominador
+`por…`, `per…` o `/…`, para cualquier código KPI; no sustituye otra divisa explícita.
+Un código ISO monetario de tres letras, solo o compuesto, mantiene dos decimales.
+Los conteos se reconocen por la unidad completa de un conjunto cerrado español/inglés,
+con prioridad sobre el patrón ISO3: `ROW` es un conteo. Cantidades fraccionarias y
+unidades desconocidas conservan dos decimales. El nombre o código de un KPI no decide estos
+alias generales. Sólo se conserva la compatibilidad existente de dos indicadores
+del catálogo que omitían «por unidad» en expedientes anteriores.
+
+La conciliación usa dos columnas que pueden contraerse sin desbordar su contenedor,
+permite que etiquetas y valores largos ocupen varias líneas y pasa a una columna
+en pantallas de hasta 760 px. El cierre `8f1c7d1` aprobó `make verify` V6 con código 0,
+454 backend y 48 frontend; la lectura real de 18/19 a 574/1366 px no mostró solapes.
+Ese resultado se registra separado del corte previo `bf50172` (454/46) en el
+[acta QA](../testing/qa-postcierre-2026-11-04.md). Esta corrección no modifica el
+contrato, valores, aprobaciones, origen, destino ni ETL persistidos.
 
 ## 7. Criterios de aceptación
 

@@ -29,6 +29,58 @@ No se exportan credenciales, filas del OLTP, SQL, datos ocultos por la vista, f�
 6. Si la ejecución dejó de ser válida entre consulta y exportación, la operación falla de forma segura.
 7. Un KPI porcentual ya calculado en escala 0--100 conserva esa escala en Excel; el formato añade el signo sin volver a multiplicar el valor. Las participaciones de gráficos, calculadas como fracción, sí usan formato porcentual convencional.
 
+### 3.1. Precisión de unidades posterior al cierre
+
+La revisión del 4–5 de noviembre corrige la pérdida de decimales cuando una unidad
+compuesta, como moneda por unidad o moneda por pedido, se confundía con un conteo.
+El formato utiliza la unidad del contrato, sin deducirla del nombre o la descripción
+del KPI. Importes, razones y cantidades fraccionarias conservan dos decimales por
+defecto; la etiqueta genérica unidades no acredita que la cantidad sea entera.
+Los conteos explícitos de pedidos, clientes, filas o facturas, incluidos sus
+equivalentes admitidos en inglés, se presentan sin decimales. El resumen Excel
+recibe exclusivamente `metric.unit` para esta decisión.
+
+La corrección afecta las exportaciones nuevas; los PDF y libros históricos se
+conservan como evidencia de su corte y no se reescriben. Las 52 pruebas focalizadas
+de `backend/tests/test_analytics_export.py`, Ruff, formato y Mypy del bloque están
+aprobados. La suite integrada y la inspección de exportaciones nuevas se registran
+por separado en [QA posterior al cierre](../testing/qa-postcierre-2026-11-04.md).
+
+Ambos reportes imprimen `source_name`, `database_name` y actualización en formato
+ISO con el offset recibido. Si la fecha no incluye zona, se indica que no está
+informada; no se inventa una conversión local. XLSX conserva cadenas como texto
+literal y deshabilita su conversión automática en fórmulas o hipervínculos.
+
+La primera exportación 18, sin el contexto nuevo, se conserva revisada con esa
+limitación. La exportación 19 inicial se contrastó en cinco páginas y cuatro hojas:
+22 controles conformes, números/razón/totales, fuente/base/offset y sin fórmulas de
+celda ni hipervínculos automáticos. Cada descarga posterior de contexto requiere
+su propio hash y revisión; no se le transfiere la QA del original anterior.
+
+La descarga intermedia 19-contexto conservaba el aviso completo pero lo recortaba
+visualmente en una fila de 34 pt. La altura se calcula ahora según texto, palabras,
+saltos, identificadores, fuente y ancho real/fusionado, también para fuente/base/fecha.
+Los finales 18 y 19 mostraron aviso íntegro en 57 pt: diez páginas PDF y ambos XLSX
+revisados con ArtifactTool, cifras/razones/sumas/Top 8/contexto conformes y SHA propios.
+No se afirma una inspección Calc final que no se completó por memoria; la prueba
+sintética previa pertenece a otro artefacto. Los originales intermedios se conservan.
+
+### 3.2. Correspondencia con la presentación web posterior
+
+La revisión adicional de la interfaz del 5 de noviembre aplica también la unidad
+completa a la lectura web: ISO monetario y denominador conservan dos decimales,
+cantidades fraccionarias mantienen su precisión y sólo un conteo explícito del
+conjunto cerrado usa formato entero. La divisa verificada sustituye el prefijo
+genérico monetario sin borrar «por transacción» u otro denominador contractual.
+La presentación de conciliación admite saltos de línea y apila sus columnas en
+pantallas estrechas; véase [SPR-04-02](SPR-04-02-kpis-controlados-y-calculables.md).
+
+El ajuste de frontend `8f1c7d1`, verificado por V6 (454 backend/48 frontend), es
+posterior al corte `bf50172`; no constituye una regeneración de
+los PDF/XLSX anteriores. Sus capturas originales y sus hashes conservan el aspecto
+observado en su fecha. La revisión visual de una pantalla nueva sobre 18/19 se
+identifica por separado y no se transfiere retroactivamente a esas evidencias.
+
 ## 4. Contrato
 
 - `GET /api/v1/analytics/reports/pdf`

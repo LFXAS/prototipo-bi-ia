@@ -1,0 +1,111 @@
+{
+  "fecha": "2026-11-05T00:50:25.733912-05:00",
+  "corte": "Descarga final posterior a fuente/base/offset, cautela temporal determinista y ajuste genérico de altura XLSX",
+  "originales_editados": false,
+  "archivos": {
+    "pdf": {
+      "archivo": "evidencias_exportaciones/analitica-ventas-19-executive-final.pdf",
+      "sha256": "e704a9bf0cada72150fea096f96811c3faa7c2d534f3b6673ab474fa8f2bf8b6"
+    },
+    "xlsx": {
+      "archivo": "evidencias_exportaciones/analitica-ventas-19-executive-final.xlsx",
+      "sha256": "7fd923b83d5dabb0065acbd40d9d102eb33a77e41ab4b5844eb91c3a5f8682a0"
+    }
+  },
+  "hojas": [
+    "Resumen",
+    "Evolución en el tiempo",
+    "Productos líderes",
+    "Distribución territorial"
+  ],
+  "contexto": {
+    "fuente": "WideWorldImporters local",
+    "base": "WideWorldImporters",
+    "periodo": "2015 · California",
+    "propuesta": "#124",
+    "ejecucion": "#19",
+    "moneda": "moneda de origen",
+    "actualizacion": "2026-11-05 04:56+00:00"
+  },
+  "valores": {
+    "importe": "1215705.55",
+    "suma_mensual": "1215705.55",
+    "territorio": "1215705.55",
+    "unidades": "57142",
+    "documentos": "481",
+    "promedio": "2527.454365904366",
+    "promedio_calculado": "2527.454365904365904365904366"
+  },
+  "participacion_productos": {
+    "categorias": 8,
+    "denominador_top8": "307083.35",
+    "primeros_tres_valores": [
+      "54648",
+      "50715",
+      "45860.85"
+    ],
+    "primero_fraccion_top8": "0.1779581992967056",
+    "primero_fraccion_total_seleccion": "0.04495167435897615174990358479",
+    "criterio": "Las participaciones del reporte suman 100% entre las 8 categorías mostradas; la consulta Top3 del chat usa el total del filtro. No son el mismo denominador."
+  },
+  "formatos_excel": {
+    "B14": "#,##0.00",
+    "E14": "#,##0.00",
+    "H14": "#,##0",
+    "B17": "#,##0.00"
+  },
+  "alturas_filas_excel_puntos": {
+    "8": "34",
+    "10": "20",
+    "22": "57",
+    "23": "44",
+    "24": "34",
+    "25": "34",
+    "26": "34"
+  },
+  "controles": {
+    "cuatro_hojas": true,
+    "fuente_y_base": true,
+    "propuesta_ejecucion": true,
+    "filtros_periodo": true,
+    "moneda": true,
+    "fecha_offset_explicito": true,
+    "importe": true,
+    "mensual_territorio_total": true,
+    "unidades": true,
+    "documentos": true,
+    "promedio": true,
+    "promedio_razon_totales": true,
+    "porcentajes_top8": true,
+    "suma_porcentajes_top8": true,
+    "denominador_insight_explica_total_mostrado": true,
+    "sin_formulas_hojas": true,
+    "sin_hipervinculos_automaticos": true,
+    "pdf_cinco_paginas": true,
+    "pdf_contexto": true,
+    "pdf_indicadores": true,
+    "pdf_advertencia_temporal_completa": true,
+    "xlsx_advertencia_temporal_completa_guardada": true,
+    "xlsx_altura_temporal_suficiente": true,
+    "xlsx_aviso_visible_completo_ArtifactTool": true
+  },
+  "revision_visual": {
+    "pdf_paginas_revisadas": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "pdf_resultado": "Conforme. Contexto, cifras, tabla y advertencia completos; sin recorte ni superposición.",
+    "xlsx_ArtifactTool": "Resumen!B7:I17 y B20:D26 revisados desde el XLSX final: contexto y advertencia completos sin recorte.",
+    "xlsx_LibreOffice": "No se completó una revisión Calc de este archivo final: se suspendió el intento adicional por consumo de memoria. La prueba sintética anterior sí se revisó visualmente con Calc; no se atribuye su resultado a este archivo.",
+    "observaciones_menores": [
+      "Página 4 con una sola categoría y amplio espacio libre.",
+      "Cuadrícula de cuatro KPI conserva dos celdas vacías.",
+      "El gráfico de tendencia no imprime escala vertical numérica; el máximo sí se rotula."
+    ]
+  },
+  "estado": "Conforme en todos los controles solicitados: números, contexto, cinco páginas PDF y visualización XLSX mediante ArtifactTool. Calc del archivo final no se presenta como prueba completada.",
+  "integridad_final_verificada": true
+}

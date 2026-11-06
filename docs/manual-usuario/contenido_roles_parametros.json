@@ -1,0 +1,1300 @@
+{
+  "fecha_auditoria": "2026-11-05",
+  "base": "/home/ceo/Proyectos/BI",
+  "alcance": "Contenido contrastado con el código 8f1c7d1, que incorpora bf50172 y la documentación del proyecto al 5 de noviembre, junto con las observaciones de interfaz del 4–5 de noviembre registradas por separado. Las etiquetas y validaciones se sustentan en código; las configuraciones leídas se distinguen de las operaciones realizadas. Se observaron cuatro roles y dos cuentas y se operó con Administrador; observar un nombre de rol o una cuenta no acredita su recorrido autenticado ni todos sus permisos. No se incluyen secretos.",
+  "observacion_interfaz_comunicada": {
+    "fecha": "2026-11-04",
+    "procedencia": "Consulta inicial sin guardar; posterior adición de Consultar metadatos al gerente expresamente autorizada por el usuario y relectura de cuatro casillas. No se crearon cuentas ni roles.",
+    "roles_visibles": [
+      "Administrador",
+      "Operador",
+      "Analista BI",
+      "Gerente comercial"
+    ],
+    "cuentas_visibles": [
+      {
+        "nombre": "Administrador inicial",
+        "correo": "admin@bi.local"
+      },
+      {
+        "nombre": "Analista de BI",
+        "correo": "operador@bi.local"
+      }
+    ],
+    "permisos_configurados": "Actual: Analista BI conserva quince permisos; Gerente comercial tiene cuatro, reabiertos en captura 33: Consultar análisis visual, Consultar conexiones, Consultar metadatos y Exportar reportes analíticos. Los tres del gerente en captura 05e son históricos, anteriores al ajuste autorizado.",
+    "evidencias": [
+      "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/roles_permisos_observados.json",
+      "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/05d_rol_analista.jpg",
+      "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/05e_rol_gerente.jpg",
+      "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/33_gerente_permiso_metadatos.jpg"
+    ],
+    "limite": "No se infieren roles asignados a una cuenta por su nombre o correo. Leer casillas configuradas no acredita el resultado de una operación autenticada con cada perfil. El código seed solo garantiza Administrador. No se han autenticado las cuentas de Analista BI y Gerente comercial para validar sus recorridos y esta revisión no creó ni asignó roles.",
+    "ajuste_gerente": "Con autorización del usuario se agregó únicamente metadata.read al gerente y se reabrió el formulario, verificando exactamente cuatro casillas. No se agregaron otros permisos ni se probó una sesión de Gerente."
+  },
+  "secciones": [
+    {
+      "titulo": "Antes de empezar: qué se configura y dónde quedan los datos",
+      "objetivo": "Distinguir la fuente transaccional, la aplicación BI, el proveedor de IA y el destino analítico antes de llenar formularios.",
+      "rol": "Toda persona que participa en la demostración; la administración configura y el analista opera el proceso BI.",
+      "requisitos": [
+        "Disponer de una cuenta autorizada y de la dirección de la instalación que se va a demostrar.",
+        "La persona responsable del despliegue debe haber iniciado la aplicación. Este capítulo no arranca, reinicia ni cambia contenedores.",
+        "Identificar el ambiente: desarrollo y entrega completa tienen bases y puertos independientes; una pantalla parecida no acredita que sea el mismo ambiente."
+      ],
+      "pasos": [
+        "Identifique la fuente: SQL Server contiene la base transaccional u OLTP. AdventureWorks y WideWorldImporters son fuentes de ejemplo contempladas en el proyecto. Una conexión de datos indica cómo leer una de esas bases; no crea el datamart.",
+        "Identifique el destino: PostgreSQL guarda la configuración de la aplicación, usuarios, roles, auditoría, instantáneas, propuestas y expedientes en el esquema app; el esquema mart contiene la materialización analítica. No se registra PostgreSQL como fuente mediante el formulario SQL Server.",
+        "Distinga los metadatos de las filas: una instantánea describe esquemas, tablas, columnas, tipos, claves y relaciones. Leer metadatos no equivale a copiar todas las ventas ni a calcular KPI. La copia controlada de datos corresponde a la materialización posterior.",
+        "Distinga el proveedor LLM: interpreta y propone dentro de contratos; no es la base de datos ni una cuenta de usuario. Seleccionar un modelo no ejecuta SQL ni sustituye la validación determinística y la aprobación humana.",
+        "Distinga tres estados: guardar una conexión crea su registro; habilitar una fuente la ofrece como contexto de trabajo; activar una configuración LLM la selecciona como proveedor global del asistente. Pueden coexistir varias fuentes habilitadas, pero solo una configuración LLM activa.",
+        "En la sustentación explique la secuencia: fuente de solo lectura → instantánea de estructura → necesidad comercial → propuesta y revisión → materialización en PostgreSQL → conciliación → analítica y reportes."
+      ],
+      "resultado": "La persona entiende qué componente cambia con cada acción y evita confundir una prueba técnica con un resultado analítico.",
+      "verificacion": [
+        "Puede señalar cuál es la base fuente y cuál es el destino del datamart.",
+        "Puede explicar por qué probar la conexión, leer metadatos, aprobar una propuesta y ejecutar ETL son acciones distintas."
+      ],
+      "errores": [
+        "No presentar una fuente habilitada como datamart ya construido.",
+        "No afirmar que la estructura válida demuestra calidad histórica, integridad financiera o completitud de las filas.",
+        "No describir al LLM como autoridad que aprueba sus propias propuestas."
+      ],
+      "explicacion": [
+        "RBAC significa autorización mediante roles: una cuenta recibe uno o varios roles y estos agrupan permisos. FastAPI comprueba los permisos en cada operación; ocultar un menú es una representación visual de ese control.",
+        "Los términos analista BI, gerente comercial y programadora describen responsabilidades. Solo la existencia de un rol y sus asignaciones persistidas convierte un nombre en autorización efectiva.",
+        "La arquitectura restringe la fuente a lectura. La transformación y publicación ocurren mediante el motor de la aplicación; no se pide al gerente ni al analista escribir consultas por cada solicitud."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/docs/architecture.md:3",
+        "/home/ceo/Proyectos/BI/docs/architecture.md:49",
+        "/home/ceo/Proyectos/BI/docs/architecture.md:80",
+        "/home/ceo/Proyectos/BI/docs/scope.md:15",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/connections.py:29"
+      ]
+    },
+    {
+      "titulo": "Ingreso, sesión y salida segura",
+      "objetivo": "Entrar con una cuenta autorizada, reconocer la sesión activa y terminarla en un equipo compartido.",
+      "rol": "Cualquier cuenta activa; los módulos posteriores dependen de sus permisos efectivos.",
+      "requisitos": [
+        "Dirección del ambiente facilitada por la responsable del despliegue. La documentación del proyecto usa http://localhost:5173 para desarrollo y http://localhost:8080 para vista Nginx o entrega; la instalación concreta puede variar.",
+        "Correo y contraseña propios recibidos por un canal autorizado. Este manual no entrega contraseñas ni las solicita para documentación.",
+        "En equipos compartidos, use su propia sesión de navegador y compruebe el nombre de la cuenta antes de actuar."
+      ],
+      "pasos": [
+        "Abra la dirección de la aplicación y reconozca la pantalla «BI asistido por IA», con la indicación «Ingrese con una cuenta autorizada».",
+        "Campo «Correo»: escriba la dirección registrada de su cuenta. El texto inicial del campo no prueba qué cuenta existe en la instalación. La API compara el correo en minúsculas y valida formato de dirección.",
+        "Campo «Contraseña»: introduzca su clave de acceso de manera privada. El campo oculta los caracteres. Para iniciar sesión la API admite de 8 a 128 caracteres; para crear o cambiar una cuenta exige de 12 a 128.",
+        "Pulse «Iniciar sesión». Espere a ver el encabezado «Sesión activa» y su nombre completo. Los menús se calculan a partir de roles y permisos activos.",
+        "Si la sesión caduca, vuelva a identificarse. La interfaz intenta restaurar el módulo guardado si sigue autorizado y el avance local del asistente. La duración predeterminada en código es 30 minutos; no es un ajuste de la pantalla Parámetros y puede depender de la instalación.",
+        "Al terminar pulse «Cerrar sesión». La interfaz elimina el token, el punto de recuperación y el borrador local del asistente y vuelve al ingreso. No use este botón para conservar un borrador no guardado de una demostración.",
+        "Para verificar la salida, compruebe que vuelve a mostrarse el formulario de acceso y que ya no aparece su nombre como sesión activa."
+      ],
+      "resultado": "Sesión iniciada con la cuenta correcta o sesión local cerrada de forma explícita.",
+      "verificacion": [
+        "El encabezado contiene el nombre completo esperado.",
+        "La navegación muestra solo opciones autorizadas por la sesión.",
+        "Después de cerrar sesión no se permanece dentro de un módulo administrativo."
+      ],
+      "errores": [
+        "Una cuenta inactiva o inexistente no puede autenticarse aunque alguien conozca una contraseña anterior.",
+        "El frontend convierte cualquier respuesta 401 en un aviso de sesión vencida, incluso un ingreso inicial con credenciales incorrectas. Si aparece «Su sesión venció…» al primer intento, revise correo y contraseña; no concluye por sí solo que había una sesión previa.",
+        "No existe en esta pantalla una recuperación de contraseña por correo, cambio de clave personal ni doble factor implementados; no se deben prometer esos botones.",
+        "Un error 403 significa falta de permiso: repetir el ingreso con la misma asignación no concede acceso."
+      ],
+      "explicacion": [
+        "La contraseña se verifica contra un hash; la respuesta de usuarios no devuelve la contraseña original.",
+        "El navegador guarda el token de acceso en su almacenamiento local. El token tiene vencimiento; el backend vuelve a comprobar que la cuenta exista, esté activa y conserve permisos en roles activos.",
+        "El cierre de sesión observado es limpieza local: no hay endpoint de logout ni lista de revocación de tokens en el código auditado. No debe describirse como invalidación universal inmediata de todas las sesiones."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:175",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:276",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:308",
+        "/home/ceo/Proyectos/BI/frontend/src/api/security.ts:341",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/router.py:85",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/service.py:211",
+        "/home/ceo/Proyectos/BI/backend/app/core/config.py:26",
+        "/home/ceo/Proyectos/BI/docs/replication-guide.md:65"
+      ]
+    },
+    {
+      "titulo": "Navegación autorizada y elección de la fuente de trabajo",
+      "objetivo": "Ubicar los módulos y comprobar el contexto antes de consultar, diseñar o materializar.",
+      "rol": "Cada persona según sus permisos; la elección de fuente exige metadata.read en la implementación actual.",
+      "requisitos": [
+        "Haber iniciado sesión.",
+        "Para elegir fuente, al menos una conexión SQL Server debe estar habilitada por administración.",
+        "El menú visible no concede una autorización adicional: la API evalúa el permiso de cada acción."
+      ],
+      "pasos": [
+        "Pulse «Inicio» para volver al punto de entrada. En una pantalla estrecha abra «☰ Menú»; en escritorio puede usar «Ocultar navegación lateral» o «Mostrar navegación lateral».",
+        "Abra «Preparación del entorno» para «Conexiones de datos», «Explorador de esquema», «Configuración LLM» y «Parámetros».",
+        "Abra «Diseño y transformación BI» para «Catálogo analítico», «Asistente de datamart» y «Datamart de ventas».",
+        "Abra «Análisis y decisiones» para «Analítica de ventas».",
+        "Abra «Administración y seguridad» para «Usuarios», «Roles», «Permisos», «Menús» y «Auditoría». Si una opción no aparece, confirme sus permisos con la administración.",
+        "En los módulos que usan datos revise el bloque «Fuente en contexto». El campo «Cambiar fuente» muestra nombre de conexión y base de datos. Elija conscientemente la fuente requerida; el cambio se conserva en el navegador y reinicia el contexto de las pantallas dependientes.",
+        "Interprete el estado bajo la fuente: «metadatos disponibles» indica instantánea disponible, «requiere instantánea» indica que falta leer estructura y «requiere prueba de conexión» indica validación técnica pendiente.",
+        "En los listados paginados use «Anterior» y «Siguiente» y la leyenda «Mostrando … de … registros». La vista actual usa páginas de diez registros."
+      ],
+      "resultado": "Módulo y fuente explícitamente seleccionados, con contexto coherente para el análisis.",
+      "verificacion": [
+        "El nombre y la base en «Fuente en contexto» corresponden al caso de negocio.",
+        "El título de la pantalla coincide con el módulo que se desea demostrar.",
+        "Después de cambiar fuente se revisa nuevamente la propuesta o ejecución correspondiente; no se asume que un expediente pertenece a la nueva fuente."
+      ],
+      "errores": [
+        "Un selector vacío puede significar que no hay fuentes habilitadas o que la cuenta no tiene metadata.read. En el segundo caso el frontend oculta el fallo de carga y deja la lista vacía; no demuestra que no exista ninguna fuente.",
+        "Cambiar fuente no cambia el proveedor LLM activo ni vuelve a ejecutar un ETL.",
+        "El orden y la etiqueta de las opciones pueden ser personalizados por administración; los grupos de navegación descritos proceden del código actual."
+      ],
+      "explicacion": [
+        "La sesión incluye menús activos. Un menú sin permisos asociados es visible para toda persona autenticada; si tiene varios, basta cualquiera de ellos para visualizarlo. Es una condición OR, no una exigencia de reunir todos.",
+        "Los permisos de los endpoints siguen vigentes aunque un menú se haga visible para más personas.",
+        "El gestor conserva la fuente en contexto en almacenamiento local del navegador. Varias fuentes habilitadas no significan una combinación automática de sus datos."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:127",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:226",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:268",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:386",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:2320",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/router.py:107",
+        "/home/ceo/Proyectos/BI/backend/app/modules/metadata/router.py:99"
+      ]
+    },
+    {
+      "titulo": "Preparación inicial desde cero: orden recomendado para una instalación ya iniciada",
+      "objetivo": "Completar los prerrequisitos sin confundir guardar, probar, habilitar, seleccionar y leer estructura.",
+      "rol": "Administrador para configuración; analista con permisos pertinentes para capturar estructura y diseñar; gerente para formular la necesidad y consumir resultados.",
+      "requisitos": [
+        "Aplicación operativa y cuenta administrativa autorizada.",
+        "Datos técnicos de una fuente SQL Server de solo lectura y, si se elige IA cloud, una credencial autorizada del proveedor.",
+        "No registrar datos sensibles ni claves dentro de nombres, descripciones, objetivos de negocio o Parámetros."
+      ],
+      "pasos": [
+        "Entre en «Administración y seguridad > Roles» y confirme los roles que realmente existen. El catálogo base solo crea «Administrador»; no dé por creados «Analista BI» ni «Gerente comercial». Definir o asignar perfiles es una decisión administrativa separada, descrita en este manual sin ejecutarla.",
+        "Abra «Preparación del entorno > Parámetros» y revise los cuatro parámetros aprobados. Conserve los predeterminados si no hay una razón comprobable para cambiarlos. Ninguno es un campo para claves ni contraseñas.",
+        "Abra «Configuración LLM», complete el formulario y pulse «Crear registro». El registro nace inactivo. Si es cloud, use «Registrar credencial» y «Guardar credencial» de forma privada. Pulse «Probar conexión»; solo después de un resultado satisfactorio pulse «Activar».",
+        "Abra «Conexiones de datos». Registre una fuente SQL Server con usuario de solo lectura. Pulse «Probar conexión» y espere «Sólo lectura validada». Pulse «Habilitar». Guardar por sí solo no habilita la fuente.",
+        "En «Inicio» o «Explorador de esquema» use «Cambiar fuente» y confirme el nombre y base deseados. Capture la estructura mediante «Leer metadatos» en la conexión habilitada o mediante el control de actualización del Explorador.",
+        "Vuelva a «Inicio». Si su cuenta tiene copilot.proposals.read y una fuente en contexto, revise las tarjetas «Fuente de ventas», «Metadatos» y «Asistente de IA»; el conjunto debe quedar preparado.",
+        "Puede abrir «Completar configuración inicial» o «Revisar configuración». El asistente muestra cinco pasos: «Bienvenida y comprobación», «Proveedor de IA», «Fuente de ventas», «Activación y metadatos» y «Resumen». «Atrás» y «Continuar» recorren la ayuda; no guardan ni prueban configuraciones automáticamente.",
+        "Cuando «Todo está listo» aparezca, continúe hacia la necesidad y propuesta. El gerente aporta el objetivo y el analista lo registra y revisa. Aprobar no crea las tablas; la materialización es un recorrido posterior con confirmaciones propias."
+      ],
+      "resultado": "Fuente probada y habilitada, instantánea de metadatos disponible y configuración LLM probada y activa.",
+      "verificacion": [
+        "La conexión muestra «Sólo lectura validada» y «Habilitada».",
+        "«Fuente en contexto» identifica la base correcta y declara metadatos disponibles.",
+        "La tarjeta «Asistente de IA» identifica la configuración y el modelo esperado.",
+        "No se ha ejecutado ETL solo por completar la preparación."
+      ],
+      "errores": [
+        "«Activar» LLM puede aceptar una configuración con credencial presente aunque todavía no tenga prueba satisfactoria; el control de preparación sí exige prueba exitosa. Por eso se mantiene el orden probar → activar y se revisa Inicio.",
+        "Una fuente puede estar habilitada y después fallar una nueva prueba: revise el estado técnico antes de continuar.",
+        "No cambie de ambiente o de base a mitad de la sustentación sin volver a comprobar fuente, instantánea, propuesta y ejecución."
+      ],
+      "explicacion": [
+        "El orden recomendado hace visibles los resultados de cada formulario antes de usarlos como requisito del siguiente módulo.",
+        "La preparación guiada informa y navega; no sustituye las validaciones del backend ni la asignación de permisos."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:392",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:416",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/router.py:199",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/router.py:195",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/router.py:584",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/service.py:319"
+      ]
+    },
+    {
+      "titulo": "Roles reales, perfiles propuestos y lectura de la matriz de permisos",
+      "objetivo": "Explicar quién debería hacer cada trabajo sin presentar una propuesta de separación como configuración ya existente.",
+      "rol": "Administración y personas que sustentan el diseño de seguridad.",
+      "requisitos": [
+        "Consultar «Roles» con security.roles.read para conocer el catálogo de la instalación.",
+        "Distinguir tres evidencias: catálogo base comprobado en código, registros observados en la interfaz y permisos/operación efectiva comprobados con una cuenta."
+      ],
+      "pasos": [
+        "Registre la configuración observada por la agente principal el 4 de noviembre: la interfaz muestra los roles «Administrador», «Operador», «Analista BI» y «Gerente comercial». También muestra las cuentas «Administrador inicial» (admin@bi.local) y «Analista de BI» (operador@bi.local). Esto acredita registros visibles, no sus asignaciones por el nombre.",
+        "La tabla de configuración al cierre muestra Analista BI con quince permisos (05d) y Gerente comercial con cuatro (33). Los tres permisos del gerente en 05e y roles_permisos_observados.json son históricos previos al ajuste autorizado. No se probaron sesiones propias.",
+        "Reconozca el único rol garantizado por el seed: código administrator, nombre «Administrador», protegido y con todo el catálogo de permisos cargado por el seed. La cuenta inicial protegida recibe este rol. Los demás roles observados son configuración existente de esa instalación; una instalación vacía no los obtiene de ese seed.",
+        "Trate «Analista BI» como rol observado y perfil operativo documentado: registra necesidades, revisa conceptos y propuestas, prepara y valida materializaciones y consulta evidencia. Su configuración observada también incluye administración de catálogo, consulta de auditoría y consulta de conexiones, capacidades más amplias que la recomendación mínima adjunta; no se han retirado ni modificado.",
+        "Gerente comercial aporta preguntas y consume KPI y reportes. Sus cuatro permisos configurados actuales son Consultar análisis visual, Consultar conexiones, Consultar metadatos y Exportar reportes analíticos. Consultar metadatos fue el único permiso agregado con autorización del usuario; satisface la dependencia del selector de fuentes y también permite el Explorador. Se releyó la configuración en 33; no se probó una sesión del gerente.",
+        "Trate «programadora» como responsabilidad del equipo de desarrollo que mantiene el motor, plantillas, pruebas y despliegue; no existe un rol técnico precreado con ese nombre ni se comunicó uno entre los roles observados. Su título laboral no concede permisos en la aplicación.",
+        "Lea por separado la matriz de recomendación: «Sí, seed» describe al Administrador base; «Propuesto» y «No propuesto» son criterios de mínimo acceso para revisar asignaciones, sin aplicarlos; «Según rol asignado» significa que una programadora solo puede hacer lo que permita la cuenta con la que ingrese. La recomendación no sustituye la tabla de configuración observada.",
+        "Para demostrar separación por roles aún se requieren recorridos autenticados con cuentas propias. La relectura de casillas no los sustituye. El único ajuste autorizado y realizado agregó Consultar metadatos al gerente; la captura 33 conserva su configuración final de cuatro permisos."
+      ],
+      "resultado": "Responsabilidades y permisos diferenciados con honestidad sobre su nivel de evidencia.",
+      "verificacion": [
+        "La sustentación no afirma que Analista BI o Gerente comercial vengan creados de fábrica.",
+        "La matriz incluye todos los 29 códigos del catálogo y distingue permiso, actividad y propuesta de perfil.",
+        "No se usa «Vista ejecutiva» o «Vista analítica» como prueba de separación RBAC: ambas son modos visuales disponibles con analytics.dashboard.read."
+      ],
+      "errores": [
+        "No conceder administración a una cuenta solo porque su nombre completo diga «Administradora».",
+        "metadata.read faltaba al gerente histórico de 05e y se agregó con autorización, con relectura final en 33. También permite el Explorador porque no existe un permiso más estrecho sólo para elegir fuente. No interpretar la configuración corregida como prueba autenticada del gerente.",
+        "metadata.semantic_resolution.manage está marcado para el Analista BI observado (captura 05d), pero no se encontró aplicado en rutas ni controles de interfaz actuales; no describir una acción eficaz exclusiva que dependa de este permiso.",
+        "Los códigos son autorización técnica estable; cambiar el nombre de un rol no cambia automáticamente sus permisos."
+      ],
+      "explicacion": [
+        "La matriz es un diseño documental propuesto a partir de actividades existentes, no una certificación de permisos actuales por persona.",
+        "En el perfil propuesto del analista se reserva catálogo.write a administración; puede leer el catálogo y seleccionar preguntas al operar sin modificar las guías de todos los análisis.",
+        "La consulta de expedientes del gerente se propone como lectura opcional para revisar respaldo. No habilita preparación ni ejecución ETL.",
+        "El Administrador protegido conserva al menos security.users.write, security.roles.write, security.permissions.write y security.menus.write para recuperación administrativa. El seed devuelve todos los permisos al rol base cuando se ejecuta; no debe diseñarse un aislamiento de producción basándose solo en renombrarlo."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/service.py:21",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/service.py:319",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/router.py:338",
+        "/home/ceo/Proyectos/BI/docs/scope.md:15",
+        "/home/ceo/Proyectos/BI/docs/scope.md:58",
+        "/home/ceo/Proyectos/BI/docs/architecture.md:80",
+        "/home/ceo/Proyectos/BI/backend/app/modules/metadata/router.py:99",
+        "/home/ceo/Proyectos/BI/frontend/src/AnalyticsPage.tsx:361",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/roles_permisos_observados.json",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/05d_rol_analista.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/05e_rol_gerente.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/33_gerente_permiso_metadatos.jpg"
+      ]
+    },
+    {
+      "titulo": "Usuarios: consultar, crear, editar y controlar el acceso de una cuenta",
+      "objetivo": "Operar todos los campos del formulario de usuarios y comprender los efectos de cambiar roles, contraseña y estado.",
+      "rol": "security.users.read para consultar; security.users.write para cambios; security.roles.read para poblar el selector de roles.",
+      "requisitos": [
+        "Abrir «Administración y seguridad > Usuarios».",
+        "Conocer la identidad de la persona y los roles aprobados que se le deben asignar.",
+        "Las instrucciones de creación y cambios describen la operación; esta auditoría no crea cuentas ni asigna permisos."
+      ],
+      "pasos": [
+        "Revise la tabla «Elemento / Detalle / Estado». En Usuarios, Elemento muestra el nombre completo; Detalle muestra el correo; Estado representa true o false, es decir, activo o inactivo. «Protegido» identifica la cuenta inicial de recuperación.",
+        "Para crear, use «Crear usuario». Campo «Correo»: dirección de acceso única y válida; se guarda en minúsculas. Campo «Nombre completo»: identificación legible de 3 a 160 caracteres; se muestra en la sesión y trazabilidad. Campo «Contraseña»: clave de 12 a 128 caracteres, nunca visible después de guardar; no la capture ni la copie al manual.",
+        "En «Roles asignados», revise la tabla «Asignar / Nombre / Descripción». Marque uno o varios roles activos aprobados. No se escriben IDs ni códigos a mano. Varios roles acumulan permisos; no hay una regla de denegación que quite lo permitido por otro rol.",
+        "Pulse «Crear registro» solo al ejecutar una alta autorizada. La cuenta nueva se crea activa. Puede existir sin roles porque la API permite la lista vacía, pero no tendrá permisos operativos; esto no es una configuración útil por defecto para un operador.",
+        "Para una cuenta ordinaria pulse «Editar». «Nombre completo» cambia el nombre. «Contraseña» vacía conserva la actual; al escribir una nueva se reemplaza el hash al guardar. «Roles asignados» reemplaza la lista de roles por las casillas seleccionadas. Cambiar roles no modifica por sí mismo la contraseña.",
+        "En edición, «Correo» aparece como sólo lectura con una explicación: el endpoint de actualización no admite cambiarlo. El estado anterior permitía escribir sin guardar el cambio; la corrección de interfaz evita esa falsa expectativa. La captura 123-correo-protegido-consulta confirmó la presentación sin guardar ninguna modificación.",
+        "Los roles inactivos ya asignados aparecen con «(inactivo)» para poder retirarlos; no conceden permisos. Si se dejan seleccionados al guardar, el backend rechaza la actualización porque solo acepta asignaciones activas. Retírelos de la cuenta cuando se haga la modificación autorizada.",
+        "Pulse «Guardar cambios» para aplicar o «Cancelar» para salir de la edición sin enviar ese formulario.",
+        "En cuentas no protegidas, «Desactivar» impide el siguiente acceso y el backend rechaza también operaciones con un token anterior cuando comprueba la cuenta; «Activar» permite volver a autenticarse. La interfaz no permite desactivar la cuenta protegida.",
+        "«Eliminar» exige confirmación de eliminación definitiva y que el usuario no conserve asignaciones de roles. Considere la desactivación para suspender acceso; la eliminación borra la cuenta y conserva el rótulo histórico del actor en auditoría. No se elimina nada como parte de este manual."
+      ],
+      "resultado": "Cuenta autorizada con identidad, clave y roles revisados, o consulta realizada sin cambios.",
+      "verificacion": [
+        "El registro aparece con nombre y correo correctos y el estado esperado.",
+        "La operación queda registrada en Auditoría cuando corresponde.",
+        "La persona prueba sus propios módulos en un ingreso posterior autorizado; el nombre del rol por sí solo no acredita un recorrido operativo completo."
+      ],
+      "errores": [
+        "«El correo ya está registrado.»: no cree una segunda cuenta para resolver una duplicación.",
+        "«Uno o más roles no existen.»: un rol pudo desaparecer o estar inactivo; recargue y revise las casillas.",
+        "La cuenta protegida rechaza cualquier petición que incluya role_ids. El formulario corregido omite esa lista y mantiene los campos permitidos; sus roles se presentan bloqueados. La regresión automatizada comprueba el envío, pero no se cambió una cuenta ni una credencial real para este manual.",
+        "Si falla la lectura de roles o permisos, el formulario corregido muestra el estado de carga o error y bloquea el guardado hasta una recarga satisfactoria. No se reemplaza el fallo por una lista vacía guardable. Los permisos de lectura del catálogo siguen siendo una dependencia de la interfaz.",
+        "La eliminación con roles asignados devuelve un conflicto; no se debe interpretar como fallo de contraseña ni borrar relaciones sin una decisión administrativa."
+      ],
+      "explicacion": [
+        "La cuenta es la identidad de ingreso; el rol es un grupo de permisos. Un correo, un nombre y una contraseña válidos no implican capacidad de crear datamarts.",
+        "El botón de estado y el formulario de edición son acciones diferentes. La interfaz omite Activar/Desactivar y Eliminar en registros protegidos, y la API también bloquea los cambios críticos.",
+        "El formulario lista hasta los primeros cien roles al cargar. Una instalación con más roles requiere revisar esta limitación antes de usarlo como catálogo completo."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:2327",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:2407",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1877",
+        "/home/ceo/Proyectos/BI/frontend/src/roleChoices.ts:5",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/schemas.py:80",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/router.py:150",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/router.py:202",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/router.py:258"
+      ]
+    },
+    {
+      "titulo": "Roles: definir responsabilidades mediante permisos existentes",
+      "objetivo": "Comprender cada campo y el efecto de crear, editar, activar o retirar un rol, sin crear roles durante esta revisión.",
+      "rol": "security.roles.read para consultar; security.roles.write para administrar; security.permissions.read para cargar las casillas.",
+      "requisitos": [
+        "Abrir «Administración y seguridad > Roles».",
+        "Contar con un diseño de responsabilidades aprobado y revisar la matriz documental antes de marcar permisos.",
+        "Comprobar que cargó la tabla de permisos; una tabla vacía por falta de lectura no significa que el catálogo no exista."
+      ],
+      "pasos": [
+        "En «Crear rol», campo «Nombre»: denominación humana de 3 a 120 caracteres; explique el trabajo que representa. La plataforma genera su código interno automáticamente; no pide inventar un identificador técnico.",
+        "Campo «Descripción»: texto opcional de hasta 1000 caracteres para aclarar finalidad y límites del rol. No incluya secretos ni instrucciones que intenten sustituir permisos.",
+        "Campo «Permisos otorgados»: tabla de casillas «Asignar / Nombre / Descripción». Cada casilla seleccionada agrega una capacidad al rol; retirar una casilla la quita a ese rol al guardar. Se muestran permisos activos y se guardan referencias internas, no nombres libres.",
+        "En una operación autorizada, «Crear registro» crea el rol activo y con las casillas seleccionadas. Crear un rol no lo asigna a ninguna cuenta; esa segunda acción se hace en Usuarios.",
+        "Para revisar uno existente pulse «Editar». Compruebe el nombre, descripción y todas las casillas. «Guardar cambios» actualiza nombre/descripción y después reemplaza los permisos; «Cancelar» cierra la edición.",
+        "En un rol no protegido, «Desactivar» conserva asignaciones pero hace que sus permisos dejen de contar. «Activar» vuelve a considerar sus permisos activos. No confunda conservar una asignación con conservar autorización efectiva.",
+        "«Eliminar» exige confirmación y que el rol no tenga usuarios ni permisos asignados. La API bloquea la eliminación del rol protegido. Este manual no indica quitar dependencias solo para forzar una eliminación.",
+        "Después de una modificación, compruebe el acceso con una cuenta de prueba autorizada y una tarea representativa. Mantenga la vía administrativa protegida."
+      ],
+      "resultado": "Responsabilidad expresada con permisos del catálogo y efectos conocidos para las cuentas asignadas.",
+      "verificacion": [
+        "La lista de casillas coincide con las actividades aprobadas.",
+        "Los cuatro permisos de recuperación permanecen en el rol protegido.",
+        "Una cuenta con varios roles conserva la unión de permisos de todos los roles activos; retirar un permiso de un rol no lo quita si otro todavía lo concede."
+      ],
+      "errores": [
+        "El rol protegido no se puede desactivar ni eliminar.",
+        "La API rechaza que se retiren del rol protegido los permisos de recuperación administrativa.",
+        "El formulario de edición usa dos solicitudes: puede guardar nombre/descripción y luego fallar al cambiar permisos. Un mensaje de error no garantiza que nada se haya guardado; vuelva a consultar ambos resultados.",
+        "La API permite roles sin permisos. Un nombre como «Gerente comercial» sin asignaciones no habilita analítica.",
+        "Las opciones de permisos se cargan con un límite de cien; no se debe asumir cobertura de un catálogo futuro mayor."
+      ],
+      "explicacion": [
+        "Los nombres legibles ayudan a administrar; los códigos estables son los que comprueba el backend.",
+        "Un rol nuevo con el mismo nombre de otro no garantiza el mismo código ni los mismos privilegios. El generador evita colisiones del código agregando un sufijo.",
+        "Los permisos de sistema se implementan en módulos aprobados; crear un rol no implementa una pantalla nueva."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:2414",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:2327",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/schemas.py:55",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/router.py:309",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/router.py:356",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/router.py:405",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/service.py:252"
+      ]
+    },
+    {
+      "titulo": "Permisos: leer el catálogo técnico sin inventar capacidades",
+      "objetivo": "Relacionar las actividades con códigos implementados y evitar altas manuales de permisos.",
+      "rol": "security.permissions.read para consulta; los permisos de escritura técnicos no significan que exista un formulario libre habilitado.",
+      "requisitos": [
+        "Abrir «Administración y seguridad > Permisos».",
+        "Usar la matriz de códigos de este documento cuando se requiera explicar el contrato técnico."
+      ],
+      "pasos": [
+        "Lea el aviso: «Este catálogo explica los permisos registrados por los módulos del sistema. Los permisos técnicos no se crean desde el navegador».",
+        "Revise «Elemento»: nombre humano del permiso, por ejemplo «Consultar usuarios». «Detalle»: descripción de su actividad. «Estado»: true o false indica si está activo. El código técnico y el ID existen en la API, pero no aparecen como columnas independientes en esta tabla.",
+        "Use «Anterior» y «Siguiente» para recorrer todo el catálogo. Hay 29 códigos en el seed auditado; la instalación puede conservar permisos adicionales previos.",
+        "Para asociar permisos existentes con una responsabilidad, vaya a Roles. Para controlar visibilidad, vaya a Menús. La pantalla Permisos no ofrece un formulario efectivo para crear ni editar permisos.",
+        "Durante la sustentación explique la distinción read/write: un permiso de consulta permite leer el recurso correspondiente; uno de administración habilita acciones específicas, pero sigue sujeto a las validaciones de cada módulo."
+      ],
+      "resultado": "Catálogo comprendido como contrato implementado; ninguna capacidad se inventa desde la interfaz.",
+      "verificacion": [
+        "Puede asociar una actividad de la matriz con su código exacto.",
+        "No se afirma que registrar un nombre de permiso agregue automáticamente una validación backend."
+      ],
+      "errores": [
+        "La API rechaza la creación manual de permisos con 422 y registra el intento; no es una alternativa para añadir una función no implementada.",
+        "Los permisos protegidos no pueden desactivarse por la API.",
+        "La descripción histórica «Permite crear permisos» del catálogo security.permissions.write no significa que el alta manual esté disponible: el comportamiento actual la rechaza.",
+        "metadata.semantic_resolution.manage está catalogado, pero no se halló una operación que lo exija; se señala como discrepancia funcional de catálogo y aplicación."
+      ],
+      "explicacion": [
+        "El código es una clave técnica, el nombre una etiqueta y la descripción una ayuda. La autorización efectiva deriva de la comprobación concreta de FastAPI.",
+        "La lectura y la escritura no se implican automáticamente: un rol que solo recibe un permiso write puede no poder abrir el listado o poblar sus selectores read."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1937",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/router.py:476",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/router.py:499",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/service.py:21",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/service.py:53"
+      ]
+    },
+    {
+      "titulo": "Menús: cambiar presentación y visibilidad de pantallas registradas",
+      "objetivo": "Operar todos los campos editables de Menús y comprender que la visibilidad no sustituye permisos de operación.",
+      "rol": "security.menus.read para consultar; security.menus.write para editar; security.permissions.read para poblar casillas.",
+      "requisitos": [
+        "Abrir «Administración y seguridad > Menús».",
+        "La pantalla debe estar registrada por el sistema; no se crean rutas libres desde el navegador."
+      ],
+      "pasos": [
+        "Lea el aviso que solicita seleccionar «Editar» en un menú registrado. Elija la fila de la pantalla que desea ajustar.",
+        "Campo «Etiqueta visible»: nombre que la persona verá en la navegación; de 2 a 120 caracteres. Cambiarlo no modifica la ruta ni los permisos de FastAPI.",
+        "Campo «Posición»: entero mayor o igual a cero que determina orden. Un número menor se ordena antes dentro de la representación de menús; los grupos principales de la UI tienen un orden definido por código.",
+        "Campo «Permisos requeridos»: tabla «Asignar / Nombre / Descripción». Seleccione permisos activos existentes. La sesión muestra el menú si la persona tiene cualquiera de los permisos elegidos. Si se deja sin casillas, lo verá toda cuenta autenticada.",
+        "Pulse «Guardar cambios» para enviar la etiqueta, posición y lista de permisos; «Cancelar» sale de la edición. La actualización recalcula la sesión de la interfaz.",
+        "Los códigos internos, las rutas, el código y etiqueta del módulo existen en el contrato, pero no son campos del formulario web actual. No se deben pedir al operador ni prometer su edición aquí.",
+        "Los menús base están «Protegidos»: no ofrecen desactivación ni eliminación. Para registros no protegidos que ya existan, el controlador genérico puede mostrar «Desactivar/Activar» y «Eliminar», con bloqueo de dependencias y confirmación de eliminación."
+      ],
+      "resultado": "Pantalla registrada con etiqueta y orden revisados y una condición de visibilidad entendida.",
+      "verificacion": [
+        "La etiqueta visible corresponde al módulo que abre.",
+        "Un acceso visible sin el permiso operativo produce denegación backend, lo que confirma que menú y autorización son controles diferentes.",
+        "El menú Inicio sin permisos permanece disponible a las cuentas autenticadas."
+      ],
+      "errores": [
+        "No interprete «Permisos requeridos» como exigencia de cumplir todas las casillas; el código usa cualquiera de ellas.",
+        "La creación manual de menús es rechazada por la API; no habilita pantallas nuevas.",
+        "No retire todas las casillas para resolver un error 403: haría el menú más visible sin conceder la operación.",
+        "Si falta lectura del catálogo de permisos y se guarda una lista vacía, la visibilidad puede abrirse accidentalmente a toda cuenta autenticada. Detenga esa edición y revise la carga."
+      ],
+      "explicacion": [
+        "La API devuelve únicamente los menús activos que corresponden a la sesión; cada endpoint mantiene sus propios require_permission.",
+        "El sistema siembra menús protegidos de Inicio, Usuarios, Roles, Permisos, Menús, Parámetros, Configuración LLM, Conexiones de datos, Explorador de esquema, Catálogo analítico, Asistente de datamart, Datamart de ventas, Analítica de ventas y Auditoría."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1937",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:2428",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/router.py:107",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/router.py:596",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/schemas.py:112",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/service.py:123"
+      ]
+    },
+    {
+      "titulo": "Parámetros operativos: significado, rangos y efectos comprobables",
+      "objetivo": "Cambiar solo valores aprobados, entender su unidad y verificar el resultado real de cada cambio.",
+      "rol": "parameters.read para consulta; parameters.write para Guardar y Restaurar.",
+      "requisitos": [
+        "Abrir «Preparación del entorno > Parámetros».",
+        "Anotar de forma no sensible el valor anterior y el motivo del cambio si se va a realizar una operación autorizada.",
+        "No usar esta pantalla para contraseñas, claves de IA, direcciones de conexión ni nuevas claves libres."
+      ],
+      "pasos": [
+        "Cada tarjeta muestra el módulo, nombre, descripción, clave técnica, campo «Valor» y leyenda «Rango … · Predeterminado …». Solo Valor es editable; nombre, clave, descripción, rango y predeterminado no lo son.",
+        "«Registros por página» (UI_PAGE_SIZE): entero de 10 a 100, predeterminado 10, unidad registros. Su definición expresa el tamaño de listados; sin embargo App.tsx fija pageSize=10 y no consume este valor. El guardado puede ser exitoso sin cambiar la paginación real. No usarlo como demostración de comportamiento dinámico actual.",
+        "«Tiempo máximo de conexión» (CONNECTION_TIMEOUT_SECONDS): entero de 3 a 30, predeterminado 8, unidad segundos. Lo usan las pruebas de fuente SQL Server y el acceso técnico de metadatos. Aumentarlo tolera mayor espera de conexión; no corrige un usuario equivocado, una base inexistente ni permisos de escritura.",
+        "«Tiempo máximo del asistente» (LLM_TIMEOUT_SECONDS): entero de 10 a 900, predeterminado 600, unidad segundos. Limita solicitudes al proveedor LLM en sus consumidores implementados. Un modelo local por CPU puede necesitar más tiempo; aumentarlo no garantiza cuota cloud, JSON correcto ni mejor exactitud. No cambia el vencimiento de la sesión.",
+        "«Elementos por bloque de metadatos» (METADATA_BLOCK_MAX_ITEMS): entero de 25 a 200, predeterminado 100, unidad elementos estructurales por bloque. Controla la fragmentación del contexto técnico enviado a la generación del copiloto. Menor tamaño implica bloques más pequeños; mayor tamaño implica más contexto por bloque, dentro de los otros límites. No es cantidad de ventas a extraer ni número de KPI.",
+        "Para aplicar un cambio autorizado escriba un entero dentro del rango en la tarjeta correcta y pulse «Guardar» de esa misma tarjeta. Cada tarjeta se guarda por separado; no hay botón general para guardar todas.",
+        "Compruebe el aviso «… fue actualizado» y que el valor persista al recargar el módulo. Para recuperar la configuración aprobada pulse «Restaurar» de esa tarjeta; queda deshabilitado cuando el valor guardado ya coincide con el predeterminado.",
+        "No busque COPILOT_SALES_NEEDS_CATALOG en esta pantalla: es una clave interna excluida del listado público. Las preguntas de negocio y periodicidades se administran mediante «Catálogo analítico»."
+      ],
+      "resultado": "Valor aprobado persistido y efecto reconocido con sus límites, o predeterminado restaurado.",
+      "verificacion": [
+        "El valor permanece al volver a consultar.",
+        "El cambio o restauración genera el evento parameters.update o parameters.reset.",
+        "La comprobación del efecto se hace en su módulo consumidor; un mensaje de guardado no acredita que la UI use un parámetro."
+      ],
+      "errores": [
+        "«El valor debe ser un número entero.»: no usar decimales, unidades escritas ni texto.",
+        "«El valor debe estar entre …»: respete el rango técnico de la tarjeta.",
+        "«No existe un parámetro operativo aprobado para esta clave.»: no se pueden crear claves nuevas libres.",
+        "Guardar un timeout muy breve puede producir fallos de espera; un timeout largo puede prolongar la espera del usuario. Consérvelo justificado por el ambiente de demostración.",
+        "Salir del módulo con ediciones locales no guardadas no garantiza que se conserven."
+      ],
+      "explicacion": [
+        "Una política aprobada acota qué ajustes se pueden modificar sin editar código.",
+        "Los límites son validaciones backend; no dependen solo del control numérico del navegador.",
+        "La restauración usa el predeterminado aprobado del catálogo actual, no recupera arbitrariamente un valor de una fecha anterior."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/service.py:23",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/router.py:44",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/router.py:116",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:2290",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:62",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/router.py:948",
+        "/home/ceo/Proyectos/BI/backend/app/modules/metadata/router.py:67"
+      ]
+    },
+    {
+      "titulo": "Configuración LLM: todos los campos y criterios de elección",
+      "objetivo": "Registrar una configuración de IA entendiendo proveedor, endpoint, modelo y razonamiento antes de activarla.",
+      "rol": "parameters.llm.read para consultar; parameters.llm.write para crear, editar, registrar credencial, probar, activar y eliminar.",
+      "requisitos": [
+        "Abrir «Preparación del entorno > Configuración LLM».",
+        "Elegir un servicio autorizado para recibir el contexto permitido. Los modelos prellenados son valores del código auditado, no una verificación actual de catálogo o disponibilidad externa.",
+        "Para cloud, disponer de una credencial privada del servicio; para Ollama, la responsable técnica debe haber habilitado el servicio y descargado el modelo previamente."
+      ],
+      "pasos": [
+        "Campo «Nombre de configuración»: etiqueta propia de 3 a 120 caracteres para reconocer el ambiente o propósito. No use claves ni contraseñas como nombre. Seleccionar un preset de proveedor conserva este nombre; sólo un guardado exitoso limpia el formulario de creación. La regresión comprueba el nombre antes y después del preset, el envío y la limpieza posterior.",
+        "Campo «Proveedor»: elija una de cinco alternativas. «Anthropic Claude — Haiku, rápido y económico» usa anthropic-cloud; «Groq Cloud — rápido para análisis BI» usa groq-cloud; «Gemini Cloud» usa gemini; «Qwen Cloud» usa qwen-cloud; «Ollama local — no requiere API key» usa ollama-local. Cambiar proveedor prellena URL, modelo y razonamiento y puede sobrescribir ediciones previas de esos campos.",
+        "Campo «URL del servicio»: dirección base del adaptador, no dirección de la aplicación ni de SQL Server. La API permite solo endpoints aprobados sin usuario, contraseña, consulta ni fragmento en la URL. Gemini: https://generativelanguage.googleapis.com; Groq: https://api.groq.com/openai/v1; Anthropic: https://api.anthropic.com; Qwen: https://dashscope-intl.aliyuncs.com o https://dashscope.aliyuncs.com; Ollama: http://ollama:11434. No se agregan rutas finales por iniciativa del operador.",
+        "Campo «Modelo»: identificador del modelo habilitado por ese servicio, de 2 a 160 caracteres. Los prellenados actuales son gemini-3.6-flash, openai/gpt-oss-120b, claude-haiku-4-5-20251001, qwen-plus y qwen2.5:3b, respectivamente. La prueba comprobará compatibilidad y acceso; el prellenado no acredita permisos del proyecto cloud.",
+        "Campo «Nivel de razonamiento»: «Automático del proveedor» deja el control común al proveedor; «Mínimo — demostración rápida» solicita el nivel mínimo soportado; «Bajo — rápido y económico» limita esfuerzo; «Medio — análisis equilibrado» y «Alto — mayor tiempo y consumo» solicitan más esfuerzo donde el adaptador lo admite. Son etiquetas de configuración, no garantías universales de latencia, costo o calidad analítica.",
+        "Anthropic ofrece solo automático, mínimo o bajo en esta modalidad porque el pensamiento extendido no está habilitado. Groq convierte mínimo al nivel low; Gemini y los otros adaptadores tienen tratamientos propios. No compare dos proveedores como si un mismo nombre de nivel representara exactamente el mismo cálculo.",
+        "Para una demostración use el proveedor y modelo que ya superaron pruebas en ese ambiente y un nivel justificado por tiempo disponible; una respuesta más larga o lenta no prueba mayor corrección. La aplicación valida referencias y contratos y exige decisiones humanas independientemente del nivel.",
+        "Pulse «Crear registro». La configuración nueva se guarda inactiva; la API key no forma parte de este formulario. Para edición use «Editar», revise todos los campos y pulse «Guardar cambios» o «Cancelar»."
+      ],
+      "resultado": "Configuración identificable guardada sin activar automáticamente ni exponer secretos.",
+      "verificacion": [
+        "La fila muestra el nombre esperado, proveedor y nivel de razonamiento.",
+        "En cloud, «Credencial pendiente» es normal antes del registro de clave. En Ollama se muestra «No requiere credencial».",
+        "La URL corresponde al proveedor elegido y no contiene secretos."
+      ],
+      "errores": [
+        "Una URL arbitraria o incompatible con el proveedor se rechaza con 422.",
+        "Un modelo inexistente, no descargado en Ollama o no habilitado por el servicio puede fallar aunque la URL sea correcta.",
+        "Cambiar a Anthropic desde otro proveedor restablece el preset; nivel medio o alto es rechazado por backend.",
+        "La velocidad y el costo reales no se auditaron en vivo y no deben afirmarse solo por el texto de una opción."
+      ],
+      "explicacion": [
+        "Cloud requiere conectividad y una cuenta habilitada del proveedor; local requiere recursos y modelo instalado. Ninguna elección sustituye las reglas del motor BI.",
+        "La API limita las URLs para evitar destinos arbitrarios. La credencial se registra separadamente y no debe incluirse en la URL del servicio.",
+        "El consentimiento de envío de metadatos se comprueba en los flujos del asistente y se vincula al proveedor y modelo actuales; configurar cloud no equivale a consentir cada operación posterior."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:2382",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:2435",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/schemas.py:55",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/providers.py:50",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/providers.py:63",
+        "/home/ceo/Proyectos/BI/docs/architecture.md:121"
+      ]
+    },
+    {
+      "titulo": "Configuración LLM: credencial, prueba, activación y mantenimiento",
+      "objetivo": "Completar el ciclo operativo del proveedor y entender qué invalida una prueba previa.",
+      "rol": "parameters.llm.write para todas estas acciones; el permiso de consulta por sí solo no autoriza pruebas ni uso de credenciales.",
+      "requisitos": [
+        "Configuración ya guardada y servicio autorizado.",
+        "Para cloud, acceso privado a la credencial; no copiarla al documento, captura de pantalla, auditoría escrita ni mensaje de soporte."
+      ],
+      "pasos": [
+        "En cloud pulse «Registrar credencial». Campo «API key»: secreto de 8 a 4096 caracteres, oculto y enviado una sola vez; el backend elimina espacios de los extremos y lo cifra. Pulse «Guardar credencial» o «Cancelar». El mensaje esperado es «Credencial protegida correctamente. Ya puede probar la conexión». Ollama no ofrece esta acción porque no necesita clave.",
+        "Si ya existe una clave, use «Reemplazar credencial» con el nuevo valor autorizado. No se muestra el anterior; una sustitución elimina el resultado de la prueba anterior. No se debe suponer que la clave antigua puede recuperarse desde la UI.",
+        "Pulse «Probar conexión». La prueba cloud realiza una generación mínima sin datos de negocio para comprobar acceso al modelo; la local comprueba servicio y modelo descargado. Lea el mensaje de éxito o fallo antes de actuar. Probar no genera una propuesta ni ejecuta ETL.",
+        "Con una prueba satisfactoria pulse «Activar». Activa esta configuración y desactiva las demás: hay un proveedor global activo. La fuente en contexto no cambia.",
+        "Vuelva a «Inicio» y compruebe la tarjeta «Asistente de IA». La tabla LLM actual muestra el estado booleano, el proveedor, el razonamiento y si existe credencial; no presenta fecha ni detalle persistido de la última prueba en columnas. El aviso de la prueba y la preparación de Inicio son las comprobaciones visibles disponibles.",
+        "Para sustituir proveedor de una configuración que está activa, pulse primero «Desactivar», luego «Editar», elija proveedor, revise URL/modelo/razonamiento y guarde. El cambio de proveedor descarta la referencia a la credencial anterior: registre la clave del proveedor nuevo, pruebe y active.",
+        "Cambiar URL, modelo o nivel de razonamiento también invalida la prueba anterior. Aunque se conserve activa, la preparación deja de estar lista hasta probar la combinación nueva. Después de reemplazar una clave se repite igualmente la prueba.",
+        "«Eliminar» exige confirmación y configuración inactiva. La API elimina también su secreto cifrado si existe. Para dejar de usar temporalmente un proveedor basta una desactivación autorizada; no es necesario borrar su historial de configuración."
+      ],
+      "resultado": "Proveedor probado y activo, o configuración desactivada/retirada conscientemente con sus efectos conocidos.",
+      "verificacion": [
+        "El aviso de prueba acredita servicio y modelo en ese momento.",
+        "Inicio no muestra «Falta activar y probar una configuración LLM».",
+        "Al activar otra configuración se entiende que deja de usarse la anterior para nuevas solicitudes.",
+        "Ninguna captura o archivo del manual contiene la API key."
+      ],
+      "errores": [
+        "«Registre y pruebe la credencial antes de activar…»: compruebe si la clave está configurada. La validación de activación comprueba presencia del secreto; la prueba ok se exige para preparación y uso del asistente.",
+        "Fallo de autorización, cuota, saturación, modelo no disponible, red o espera excedida requieren soluciones diferentes. No sustituya una clave ni aumente el timeout sin leer el mensaje seguro.",
+        "Si el almacenamiento cifrado no está disponible, la API informa que no pudo proteger la credencial. No solucione el problema pegándola en Parámetros o descripciones.",
+        "No espere que «Probar conexión» cambie la configuración activa: prueba la fila elegida, esté activa o no."
+      ],
+      "explicacion": [
+        "La credencial configurada es un estado booleano, no una vista del secreto ni una garantía de vigencia.",
+        "La prueba se guarda con estado, mensaje y fecha en backend; proveedor y estado activo son propiedades diferentes.",
+        "Una generación mínima exitosa demuestra acceso técnico en ese momento, no que una propuesta posterior sea correcta ni que no existan límites del proveedor."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1897",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1941",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/router.py:195",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/router.py:344",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/router.py:406",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/providers.py:824",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/router.py:219"
+      ]
+    },
+    {
+      "titulo": "Conexiones de datos: registrar todos los campos de una fuente SQL Server",
+      "objetivo": "Guardar una fuente identificable con credencial protegida y cuenta de solo lectura, sin alterar la base origen.",
+      "rol": "connections.read para listar; connections.write para registrar y editar; connections.test para la prueba posterior.",
+      "requisitos": [
+        "Abrir «Preparación del entorno > Conexiones de datos».",
+        "Disponer del nombre de servidor, puerto, base y cuenta de solo lectura que facilitó la responsable técnica.",
+        "No utilizar una cuenta administradora de SQL Server para superar la prueba; el control la rechazará si detecta permisos de escritura incompatibles."
+      ],
+      "pasos": [
+        "En «Registrar conexión», campo «Nombre visible»: etiqueta de 3 a 120 caracteres para distinguir esta fuente en las listas; no modifica el nombre real de la base.",
+        "Campo «Motor»: SQL Server, deshabilitado para edición. El adaptador actual no permite elegir PostgreSQL, MySQL, archivos Excel ni otro motor en este formulario.",
+        "Campo «Servidor»: nombre de host DNS o dirección admitida por el patrón alfanumérico con punto, guion o guion bajo; no una URL completa ni una cadena de conexión. Para las bases del proyecto dentro de Docker la documentación usa sqlserver, porque la conexión la realiza el backend en esa red.",
+        "Campo «Puerto»: entero entre 1 y 65535; predeterminado 1433. Para el servidor interno del proyecto use el puerto facilitado para esa red. No confunda los puertos publicados del computador con el puerto interno al que se conecta backend.",
+        "Campo «Base de datos»: nombre real de la base fuente, hasta 128 caracteres según el patrón admitido. El ejemplo de la documentación técnica es AdventureWorks2022; la base debe existir y la cuenta debe poder leerla. No escribir aquí un nombre para crear un datamart.",
+        "Campo «Usuario de sólo lectura»: cuenta SQL Server autorizada para leer la fuente, hasta 128 caracteres con el patrón permitido. No es el correo de acceso a BI ni el rol Analista. No se crea esa cuenta en SQL Server desde este formulario.",
+        "Campo «Contraseña»: clave de esa cuenta SQL Server, de 8 a 4096 caracteres en backend. Se cifra, no se devuelve en lecturas y no debe documentarse. En creación es obligatoria; en edición, vacía conserva la existente.",
+        "Casilla «Cifrar transporte»: controla Encrypt de la conexión del controlador SQL Server; marcada solicita transporte cifrado. Se inicia marcada. No es el cifrado del secreto almacenado: la contraseña se protege separadamente.",
+        "Casilla «Confiar en certificado local»: controla TrustServerCertificate. Marcada acepta el certificado sin exigir la validación habitual del servidor; resulta relevante en el entorno local documentado. Se inicia marcada. En un entorno institucional el criterio de certificados debe determinarlo la responsable técnica; no desmarcar por ensayo sin certificado confiable configurado.",
+        "Revise todos los campos y pulse «Registrar conexión». El registro nace deshabilitado y pendiente de prueba. El guardado no verifica todavía accesibilidad ni solo lectura.",
+        "Para editar una fuente existente, primero debe estar deshabilitada. Pulse «Editar», revise los mismos campos, use contraseña vacía solo si conserva la misma y pulse «Guardar cambios» o «Cancelar». Toda edición elimina el resultado de la prueba anterior y exige volver a probar antes de habilitar."
+      ],
+      "resultado": "Conexión guardada con secreto cifrado y todavía pendiente de validación o nueva prueba después de edición.",
+      "verificacion": [
+        "La tabla muestra «Fuente», «Destino», «Validación», «Disponibilidad» y «Acciones».",
+        "Destino contiene servidor:puerto, base y usuario esperados sin contraseña.",
+        "El registro recién creado aparece «Pendiente» y «Deshabilitada»."
+      ],
+      "errores": [
+        "Servidor no admite punto y coma, una URL con barras ni opciones de una cadena ODBC; los campos deben mantenerse separados.",
+        "La base y el usuario también tienen patrones restringidos; no se deben agregar parámetros de conexión dentro de ellos.",
+        "Una conexión activa no se puede editar: la API exige desactivarla primero.",
+        "Un fallo al cifrar la contraseña impide el guardado; no se autoriza guardarla como texto en otro campo.",
+        "El formulario valida una contraseña de al menos ocho caracteres, pero un error de validación de password puede mostrarse con un mensaje genérico de doce por el traductor de errores compartido. El límite real del contrato de conexiones es ocho."
+      ],
+      "explicacion": [
+        "Este registro conserva datos de acceso a una fuente, no ejecuta operaciones de escritura sobre ella.",
+        "El controlador se construye con campos separados, cita la contraseña como un solo valor ODBC y solicita ApplicationIntent=ReadOnly; la prueba añade comprobaciones de permisos. La seguridad no depende solo de esa etiqueta del controlador.",
+        "Los booleanos de cifrado de transporte y confianza de certificado se aplican a la conexión técnica. No cambian permisos de usuarios de la aplicación."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1975",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:2040",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/schemas.py:139",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/router.py:462",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/router.py:504",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/connections.py:23",
+        "/home/ceo/Proyectos/BI/README.md:53"
+      ]
+    },
+    {
+      "titulo": "Conexiones de datos: probar, habilitar, leer estructura y conservar trazabilidad",
+      "objetivo": "Usar las acciones de cada fila en el orden correcto y reconocer el resultado de la prueba de solo lectura.",
+      "rol": "connections.test para Probar conexión; connections.write para Habilitar, Deshabilitar y Eliminar; metadata.refresh para Leer metadatos; metadata.read para seleccionar contexto y consultar estructura.",
+      "requisitos": [
+        "Conexión registrada con datos correctos.",
+        "Disponibilidad del servidor y cuenta fuente con lectura autorizada.",
+        "Antes de deshabilitar o editar una fuente usada en una demostración, revisar las actividades que dependen de ella."
+      ],
+      "pasos": [
+        "Pulse «Probar conexión» en la fila correcta. Se intenta leer una referencia de sys.tables y se comprueba que la cuenta no pertenezca a db_owner ni db_datawriter y no tenga permisos de INSERT, UPDATE, DELETE, CREATE TABLE o CONTROL a nivel de base.",
+        "Si la validación resulta satisfactoria, la columna muestra «Sólo lectura validada» y la fecha/hora de prueba. El mensaje esperado es «Conexión SQL Server y cuenta de solo lectura validadas». «Prueba fallida» o «Pendiente» no permiten habilitar una fuente nueva.",
+        "Pulse «Habilitar» cuando la última prueba sea ok. La fila pasa a «Habilitada» y puede seleccionarse en el espacio de trabajo. Esta acción no deshabilita otras fuentes ni activa un modelo de IA.",
+        "En un módulo con «Fuente en contexto», seleccione esta conexión. A continuación pulse «Leer metadatos» en la conexión habilitada o actualice desde el Explorador. Mientras se captura aparece «Leyendo estructura…». Esta acción genera o comprueba una instantánea, no copia las ventas ni ejecuta materialización.",
+        "Si necesita suspender su uso pulse «Deshabilitar». El registro y su historia se conservan; deja de ofrecerse como fuente activa del espacio de trabajo. Después puede editarse y deberá probarse otra vez.",
+        "Para retirar definitivamente una conexión no activa use «Eliminar» y lea la confirmación. Se borran registro y contraseña cifrada solo si no conserva instantáneas de metadatos. La API bloquea la eliminación con instantáneas para mantener trazabilidad.",
+        "Si existen propuestas o expedientes anteriores, consérvelos como evidencia de su contexto; no los presente como nuevos resultados de una conexión diferente."
+      ],
+      "resultado": "Fuente probada y habilitada con estructura disponible, o suspensión documentada sin pérdida de trazabilidad.",
+      "verificacion": [
+        "La fuente correcta muestra «Sólo lectura validada» y «Habilitada».",
+        "El espacio de trabajo permite elegirla y muestra la base esperada.",
+        "Una instantánea conserva su fuente y huella; no se reutiliza como si procediera de otra base.",
+        "Los eventos connections.test, connections.enable o connections.disable se registran según la acción."
+      ],
+      "errores": [
+        "«La conexión funciona, pero la cuenta posee permisos de escritura incompatibles»: debe usar una cuenta de solo lectura, no desactivar el control.",
+        "«No fue posible validar…»: revisar con soporte servidor, puerto, base, usuario, conectividad y credencial por un canal privado; el mensaje no revela la clave ni diagnóstico técnico crudo.",
+        "«Pruebe correctamente la conexión antes de activarla»: vuelva a ejecutar la prueba después de registrar o editar.",
+        "«No se puede eliminar la conexión porque conserva … instantánea(s)…»: es un bloqueo de trazabilidad esperado, no una invitación a borrar las instantáneas.",
+        "La prueba audita capacidades relevantes del contrato, pero no certifica exhaustivamente toda combinación posible de privilegios personalizados a nivel de objeto. La cuenta fuente debe estar administrada como solo lectura por la responsable de SQL Server."
+      ],
+      "explicacion": [
+        "La prueba técnica se almacena con estado, mensaje y fecha. «Habilitada» es disponibilidad y «Sólo lectura validada» es validación; son conceptos distintos.",
+        "No existe una selección única global de fuente: cada persona elige su contexto entre varias habilitadas; las propuestas y ejecuciones conservan el contexto de conexión.",
+        "Deshabilitar no elimina la base SQL Server ni sus datos. Eliminar una conexión tampoco borra la base fuente."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:2010",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:2061",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/connections.py:40",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/router.py:547",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/router.py:584",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/router.py:618",
+        "/home/ceo/Proyectos/BI/backend/app/modules/metadata/router.py:167"
+      ]
+    },
+    {
+      "titulo": "Auditoría: qué evidencia muestra y qué no expone la pantalla",
+      "objetivo": "Consultar acciones críticas sin prometer filtros, campos o capacidades de edición no implementados.",
+      "rol": "audit.read; acceso normalmente administrativo según la asignación aprobada.",
+      "requisitos": [
+        "Abrir «Administración y seguridad > Auditoría».",
+        "Tener claro el evento que se desea comprobar; la pantalla actual no ofrece búsqueda, filtros ni descarga propia."
+      ],
+      "pasos": [
+        "Revise el aviso «La auditoría es de consulta: registra las acciones críticas, no se modifica desde la interfaz».",
+        "La columna «Elemento» muestra la acción con una traducción legible cuando está definida, por ejemplo «Inicio de sesión», «Creación de usuario» o «Aprobación de propuesta BI». Si no hay traducción, muestra el código técnico de la acción; no es necesariamente un error.",
+        "La columna «Detalle» muestra preferentemente el rótulo del actor preservado (nombre y correo); si falta, usa otros campos disponibles. No muestra el documento JSON detail de la API como un visor detallado.",
+        "La columna «Estado» muestra el tipo de recurso, por ejemplo user o bi_proposal, porque los eventos no tienen is_active. No es una columna universal de éxito/fallo y no permite concluir por sí sola el resultado de la operación.",
+        "Use «Anterior» y «Siguiente». El backend ordena eventos por ID descendente, por lo que los más recientes se consultan primero. No hay botón para crear, editar ni eliminar eventos.",
+        "Para una evidencia académica detallada de fecha, recurso, validaciones y huellas, complemente con el expediente específico del flujo BI que está autorizado a consultar. No atribuya a la tabla de Auditoría campos que no se visualizan."
+      ],
+      "resultado": "Acciones críticas identificadas con su actor cuando esté disponible, preservando la auditoría como consulta.",
+      "verificacion": [
+        "Después de una acción autorizada puede encontrarse su evento al actualizar el listado.",
+        "Un actor eliminado puede conservar su etiqueta histórica aunque su ID de usuario quede nulo.",
+        "Se documenta la diferencia entre campos persistidos y campos visibles."
+      ],
+      "errores": [
+        "La API devuelve id, actor_user_id, actor_label, action, resource_type, resource_id, detail y created_at; la tabla actual no muestra por separado fecha/hora, ID de evento, ID de recurso ni detail. No indique al principiante que busque columnas inexistentes.",
+        "No todas las acciones tienen traducción en la interfaz y no todos los intentos de error generan evento. En particular el login fallido no agrega auth.login, que se registra al ingresar correctamente.",
+        "Cerrar sesión no registra un evento de salida en la implementación auditada.",
+        "La ausencia de un evento en una página de diez filas no prueba que la acción no exista: revise paginación y orden."
+      ],
+      "explicacion": [
+        "La auditoría recoge una evidencia mínima de acciones críticas, no una grabación completa de pantallas ni de toda actividad del usuario.",
+        "Las credenciales no se incluyen en las respuestas de configuración ni en los detalles de eventos de registro de secretos; se registra el proveedor o resultado seguro.",
+        "El chat analítico registra una huella de pregunta y contexto mínimo; la arquitectura no conserva la conversación completa como historial persistido de chat."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:91",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:163",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1958",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/router.py:651",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/schemas.py:133",
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/service.py:289",
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/router.py:492"
+      ]
+    },
+    {
+      "titulo": "Responsabilidad de la programadora y límites de la operación cotidiana",
+      "objetivo": "Separar mantenimiento del producto, administración de la instalación y trabajo comercial sin inventar un rol técnico.",
+      "rol": "Equipo de desarrollo como responsabilidad externa; dentro de la aplicación, los permisos del rol realmente asignado a su cuenta.",
+      "requisitos": [
+        "Distinguir repositorio, despliegue y aplicación web.",
+        "No usar credenciales administrativas compartidas como evidencia de separación de perfiles."
+      ],
+      "pasos": [
+        "Para operar la web, la programadora entra con una cuenta propia autorizada y se rige por los mismos permisos backend que las demás personas. Su cargo no omite RBAC.",
+        "Para dar soporte a una demostración identifica ambiente, módulo, fuente, paso, mensaje seguro y expediente, sin pedir claves ni copiar tokens a documentos.",
+        "El mantenimiento de motor, plantillas, adaptadores, tests, migraciones e infraestructura ocurre mediante el flujo de desarrollo del proyecto, no mediante una pantalla llamada «Programadora».",
+        "La operación habitual del analista usa formularios y decisiones de negocio verificadas; no necesita que una programadora escriba consultas por cada propuesta ni que modifique el motor para cada pregunta.",
+        "La administración técnica configura conexiones y proveedor LLM desde la web con su rol autorizado. Si una programadora asume además esa responsabilidad, se trata de la asignación administrativa explícita de su cuenta, no de un rol técnico implícito."
+      ],
+      "resultado": "Relación clara entre soporte técnico, administración RBAC y usuarios de negocio.",
+      "verificacion": [
+        "La sustentación no enumera «programadora» como rol precargado.",
+        "Se puede demostrar una operación comercial sin tocar código, contenedores ni SQL manual."
+      ],
+      "errores": [
+        "No atribuir a la UI funciones de iniciar contenedores, crear usuarios SQL Server, cambiar redes o puertos del despliegue o recuperar claves cifradas.",
+        "No usar permisos de Administrador para afirmar que un gerente dispone de un recorrido validado con acceso mínimo."
+      ],
+      "explicacion": [
+        "El alcance documentado propone un motor reutilizable y supervisado. La intervención humana del analista valida decisiones, y la programadora mantiene las capacidades generales.",
+        "Las pruebas con cuentas autenticadas y asignaciones específicas de Analista BI y Gerente comercial siguen siendo una validación formal separada de esta auditoría de código."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/docs/scope.md:15",
+        "/home/ceo/Proyectos/BI/docs/scope.md:50",
+        "/home/ceo/Proyectos/BI/docs/scope.md:58",
+        "/home/ceo/Proyectos/BI/docs/architecture.md:80",
+        "/home/ceo/Proyectos/BI/AGENTS.md:14"
+      ]
+    }
+  ],
+  "matriz_configuracion_observada": {
+    "titulo": "Configuración observada al cierre con ajuste autorizado del Gerente comercial",
+    "fecha": "2026-11-04",
+    "criterio": "Marcado indica casilla seleccionada observada; No marcado indica ausencia entre las seleccionadas. Analista BI conserva quince permisos. Gerente tiene cuatro actuales en 33 después de agregar únicamente Consultar metadatos con autorización del usuario. Los tres de 05e son históricos. Son datos de configuración; no se probaron sesiones propias. Administrador y Operador no tienen formularios de permisos inspeccionados en esta evidencia. Programadora no es un rol observado.",
+    "resumen": [
+      {
+        "rol": "Analista BI",
+        "permisos_marcados": 15,
+        "evidencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/05d_rol_analista.jpg",
+        "sesion_propiedad_rol_probada": false
+      },
+      {
+        "rol": "Gerente comercial",
+        "permisos_marcados": 4,
+        "evidencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/33_gerente_permiso_metadatos.jpg",
+        "sesion_propiedad_rol_probada": false
+      }
+    ],
+    "filas": [
+      {
+        "codigo": "analytics.dashboard.read",
+        "nombre": "Consultar análisis visual",
+        "Analista BI": "Marcado",
+        "Gerente comercial": "Marcado"
+      },
+      {
+        "codigo": "audit.read",
+        "nombre": "Consultar auditoría",
+        "Analista BI": "Marcado",
+        "Gerente comercial": "No marcado"
+      },
+      {
+        "codigo": "connections.read",
+        "nombre": "Consultar conexiones",
+        "Analista BI": "Marcado",
+        "Gerente comercial": "Marcado"
+      },
+      {
+        "codigo": "copilot.catalog.read",
+        "nombre": "Consultar catálogo analítico",
+        "Analista BI": "Marcado",
+        "Gerente comercial": "No marcado"
+      },
+      {
+        "codigo": "copilot.catalog.write",
+        "nombre": "Administrar catálogo analítico",
+        "Analista BI": "Marcado",
+        "Gerente comercial": "No marcado"
+      },
+      {
+        "codigo": "copilot.proposals.generate",
+        "nombre": "Generar propuestas BI",
+        "Analista BI": "Marcado",
+        "Gerente comercial": "No marcado"
+      },
+      {
+        "codigo": "copilot.proposals.read",
+        "nombre": "Consultar propuestas BI",
+        "Analista BI": "Marcado",
+        "Gerente comercial": "No marcado"
+      },
+      {
+        "codigo": "copilot.proposals.review",
+        "nombre": "Revisar propuestas BI",
+        "Analista BI": "Marcado",
+        "Gerente comercial": "No marcado"
+      },
+      {
+        "codigo": "etl.executions.read",
+        "nombre": "Consultar materializaciones",
+        "Analista BI": "Marcado",
+        "Gerente comercial": "No marcado"
+      },
+      {
+        "codigo": "etl.executions.write",
+        "nombre": "Preparar materializaciones",
+        "Analista BI": "Marcado",
+        "Gerente comercial": "No marcado"
+      },
+      {
+        "codigo": "metadata.read",
+        "nombre": "Consultar metadatos",
+        "Analista BI": "Marcado",
+        "Gerente comercial": "Marcado; único permiso agregado con autorización y relectura UI"
+      },
+      {
+        "codigo": "metadata.refresh",
+        "nombre": "Actualizar metadatos",
+        "Analista BI": "Marcado",
+        "Gerente comercial": "No marcado"
+      },
+      {
+        "codigo": "metadata.semantic_resolution.manage",
+        "nombre": "Resolver identidad de dimensiones",
+        "Analista BI": "Marcado; código sin control efectivo encontrado",
+        "Gerente comercial": "No marcado"
+      },
+      {
+        "codigo": "metadata.semantic_resolution.read",
+        "nombre": "Revisar identidad de dimensiones",
+        "Analista BI": "Marcado",
+        "Gerente comercial": "No marcado"
+      },
+      {
+        "codigo": "reports.analytics.export",
+        "nombre": "Exportar reportes analíticos",
+        "Analista BI": "Marcado",
+        "Gerente comercial": "Marcado"
+      }
+    ],
+    "codigos_no_marcados_en_ambos": [
+      "security.users.read",
+      "security.users.write",
+      "security.roles.read",
+      "security.roles.write",
+      "security.permissions.read",
+      "security.permissions.write",
+      "security.menus.read",
+      "security.menus.write",
+      "parameters.read",
+      "parameters.write",
+      "parameters.llm.read",
+      "parameters.llm.write",
+      "connections.write",
+      "connections.test"
+    ],
+    "diferencias_con_recomendacion": [
+      "La configuración observada del Analista BI incluye connections.read, copilot.catalog.write y audit.read, que la recomendación mínima no propone. Son permisos existentes; esta revisión no los retira.",
+      "Gerente conserva connections.read y ahora incluye metadata.read, agregado con autorización para /sources. También permite el Explorador. Se releyeron exactamente cuatro casillas; no se probó una sesión propia.",
+      "etl.executions.read se propone opcional en la recomendación; no está en los cuatro permisos actuales del gerente y no se agregó.",
+      "metadata.semantic_resolution.manage está marcado para el analista, pero solo su presencia en catálogo/asignación no implementa un control efectivo que lo utilice."
+    ],
+    "fuentes": [
+      "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/roles_permisos_observados.json",
+      "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/05d_rol_analista.jpg",
+      "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/05e_rol_gerente.jpg",
+      "/home/ceo/Proyectos/BI/backend/app/modules/security/service.py:21",
+      "/home/ceo/Proyectos/BI/backend/app/modules/metadata/router.py:99",
+      "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/33_gerente_permiso_metadatos.jpg"
+    ],
+    "historico_previo_gerente": {
+      "permisos_marcados": 3,
+      "estado": "Histórico previo; no es la configuración final",
+      "permisos": [
+        "analytics.dashboard.read",
+        "connections.read",
+        "reports.analytics.export"
+      ],
+      "evidencia": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/05e_rol_gerente.jpg"
+    }
+  },
+  "matriz_permisos": {
+    "titulo": "Recomendación documental de responsabilidades; no es la configuración observada",
+    "criterio": "Sí, seed = permiso asignado por seed al rol administrator, no lectura de casillas actuales. Los roles Analista BI y Gerente comercial y sus casillas sí se observaron; sus asignaciones se presentan por separado en matriz_configuracion_observada. Las celdas de ESTA tabla expresan una recomendación de actividades para revisar el diseño. Propuesto = actividad recomendada, sin crear ni cambiar asignaciones. No propuesto = no se recomienda para ese perfil en este documento, aunque pueda estar presente en la configuración observada. No operativo = código sin comprobación activa encontrada. La columna Programadora no constituye un rol nuevo.",
+    "filas": [
+      {
+        "codigo": "security.users.read",
+        "actividad": "Consultar cuentas de Usuarios",
+        "Administrador": "Sí, seed",
+        "Analista BI": "No propuesto",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "security.users.write",
+        "actividad": "Crear y actualizar cuentas, asignar roles, activar, desactivar y eliminar con controles",
+        "Administrador": "Sí, seed; recuperación protegida",
+        "Analista BI": "No propuesto",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "security.roles.read",
+        "actividad": "Consultar roles y poblar casillas de asignación de Usuarios",
+        "Administrador": "Sí, seed",
+        "Analista BI": "No propuesto",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "security.roles.write",
+        "actividad": "Administrar roles y sus permisos",
+        "Administrador": "Sí, seed; recuperación protegida",
+        "Analista BI": "No propuesto",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "security.permissions.read",
+        "actividad": "Consultar catálogo de permisos y poblar formularios de Roles y Menús",
+        "Administrador": "Sí, seed",
+        "Analista BI": "No propuesto",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "security.permissions.write",
+        "actividad": "Contrato técnico de actualización de permisos; creación manual rechazada; UI de catálogo sin formulario",
+        "Administrador": "Sí, seed; recuperación protegida",
+        "Analista BI": "No propuesto",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado; no habilita alta manual"
+      },
+      {
+        "codigo": "security.menus.read",
+        "actividad": "Consultar menús registrados",
+        "Administrador": "Sí, seed",
+        "Analista BI": "No propuesto",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "security.menus.write",
+        "actividad": "Editar etiqueta, orden y visibilidad de menús; alta manual rechazada",
+        "Administrador": "Sí, seed; recuperación protegida",
+        "Analista BI": "No propuesto",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "parameters.read",
+        "actividad": "Consultar valores operativos aprobados",
+        "Administrador": "Sí, seed",
+        "Analista BI": "No propuesto; puede reportar incidencias sin administrar parámetros",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "parameters.write",
+        "actividad": "Guardar o restaurar parámetros aprobados",
+        "Administrador": "Sí, seed",
+        "Analista BI": "No propuesto",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "parameters.llm.read",
+        "actividad": "Consultar configuraciones de proveedor sin secretos",
+        "Administrador": "Sí, seed",
+        "Analista BI": "No propuesto; readiness ya informa proveedor útil al flujo",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "parameters.llm.write",
+        "actividad": "Crear/editar proveedor, registrar o reemplazar clave, probar, activar, desactivar y eliminar",
+        "Administrador": "Sí, seed",
+        "Analista BI": "No propuesto",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "connections.read",
+        "actividad": "Consultar registros técnicos de conexión sin contraseña",
+        "Administrador": "Sí, seed",
+        "Analista BI": "No propuesto; selección de contexto usa metadata.read",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "connections.write",
+        "actividad": "Registrar, editar, habilitar, deshabilitar y eliminar conexiones con validaciones",
+        "Administrador": "Sí, seed",
+        "Analista BI": "No propuesto",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "connections.test",
+        "actividad": "Probar acceso y permisos relevantes de solo lectura de una fuente",
+        "Administrador": "Sí, seed",
+        "Analista BI": "No propuesto; responsabilidad de preparación técnica en esta matriz",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "metadata.read",
+        "actividad": "Listar fuentes habilitadas, elegir contexto y consultar instantáneas/esquema",
+        "Administrador": "Sí, seed",
+        "Analista BI": "Propuesto",
+        "Gerente comercial": "Propuesto por dependencia del selector actual; también permite Explorador",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "metadata.refresh",
+        "actividad": "Capturar o comprobar estructura de una fuente habilitada",
+        "Administrador": "Sí, seed",
+        "Analista BI": "Propuesto; lectura de estructura y trazabilidad",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "metadata.semantic_resolution.read",
+        "actividad": "Vista previa de identidad descriptiva con coberturas y muestras controladas",
+        "Administrador": "Sí, seed",
+        "Analista BI": "Propuesto",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "metadata.semantic_resolution.manage",
+        "actividad": "Catalogado para resolver identidad de dimensiones; sin endpoint/control de UI que lo exija en la auditoría",
+        "Administrador": "Sí, seed; no operativo encontrado",
+        "Analista BI": "No operativo; no conceder capacidad supuesta",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado; no atribuir acción adicional"
+      },
+      {
+        "codigo": "copilot.proposals.read",
+        "actividad": "Consultar preparación, catálogo operativo, propuestas y verificación de evidencia",
+        "Administrador": "Sí, seed",
+        "Analista BI": "Propuesto",
+        "Gerente comercial": "No propuesto; aporta necesidad fuera del flujo técnico",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "copilot.proposals.generate",
+        "actividad": "Asesorar necesidad, generar y personalizar propuestas mediante reglas",
+        "Administrador": "Sí, seed",
+        "Analista BI": "Propuesto",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "copilot.proposals.review",
+        "actividad": "Aprobar, rechazar, retirar o restaurar aprobación según estado y controles",
+        "Administrador": "Sí, seed",
+        "Analista BI": "Propuesto; decisión humana responsable",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "copilot.catalog.read",
+        "actividad": "Consultar guías del Catálogo analítico por fuente y dominio",
+        "Administrador": "Sí, seed",
+        "Analista BI": "Propuesto",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "copilot.catalog.write",
+        "actividad": "Guardar o restaurar preguntas y periodicidades del catálogo",
+        "Administrador": "Sí, seed",
+        "Analista BI": "No propuesto; reservar modificación general a administración en esta matriz",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "etl.executions.read",
+        "actividad": "Consultar propuestas elegibles, planes y expedientes de materialización",
+        "Administrador": "Sí, seed",
+        "Analista BI": "Propuesto",
+        "Gerente comercial": "Propuesto opcional para respaldo; no autoriza ejecutar",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "etl.executions.write",
+        "actividad": "Preparar, validar y ejecutar materialización y decisiones controladas según ruta",
+        "Administrador": "Sí, seed",
+        "Analista BI": "Propuesto",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "analytics.dashboard.read",
+        "actividad": "Consultar KPI, vistas ejecutiva/analítica y copiloto contextual sobre resultados autorizados",
+        "Administrador": "Sí, seed",
+        "Analista BI": "Propuesto",
+        "Gerente comercial": "Propuesto; requiere metadata.read en UI para fuente",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "reports.analytics.export",
+        "actividad": "Descargar PDF/Excel reconstruidos en servidor de selección analítica; exige además analytics.dashboard.read",
+        "Administrador": "Sí, seed",
+        "Analista BI": "Propuesto",
+        "Gerente comercial": "Propuesto",
+        "Programadora": "Según rol asignado"
+      },
+      {
+        "codigo": "audit.read",
+        "actividad": "Consultar eventos críticos de auditoría",
+        "Administrador": "Sí, seed",
+        "Analista BI": "No propuesto como acceso general; expediente BI aporta trazabilidad específica",
+        "Gerente comercial": "No propuesto",
+        "Programadora": "Según rol asignado"
+      }
+    ]
+  },
+  "alertas_funcionales": [
+    {
+      "id": "SEG-01",
+      "hallazgo": "Seed solo garantiza Administrador. La UI muestra Administrador, Operador, Analista BI, Gerente comercial y dos cuentas. Analista tiene quince permisos observados (05d); gerente pasó de tres históricos (05e) a cuatro actuales (33) al agregar únicamente Consultar metadatos con autorización del usuario.",
+      "impacto": "Distinguir configuración observada de catálogo reproducible por seed y de validación autenticada: no se iniciaron sesiones de esas cuentas ni se probó su seguridad por rol.",
+      "fuentes": [
+        "backend/app/modules/security/service.py:319",
+        "docs/scope.md:58",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/roles_permisos_observados.json",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/05d_rol_analista.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/05e_rol_gerente.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/33_gerente_permiso_metadatos.jpg"
+      ]
+    },
+    {
+      "id": "SEG-02",
+      "hallazgo": "Observación previa corregida: el correo era editable visualmente aunque UserUpdate no admite cambiarlo. La interfaz actual lo presenta como sólo lectura y explica el límite; la captura 123-correo-protegido-consulta confirmó esa presentación.",
+      "impacto": "Se evita simular un cambio de correo ignorado por la API. La edición de correo sigue fuera del contrato; no se modificaron cuentas para comprobarlo. La suite frontend intermedia aprobó 44 pruebas y el cierre bf50172 aprobó 46.",
+      "fuentes": [
+        "frontend/src/App.tsx",
+        "frontend/src/App.test.tsx",
+        "backend/app/modules/security/schemas.py",
+        "backend/app/modules/security/router.py",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/105_usuario_protegido_campos_consulta.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/123-correo-protegido-consulta.jpg"
+      ]
+    },
+    {
+      "id": "SEG-03",
+      "hallazgo": "Observación previa corregida: el formulario enviaba role_ids incluso al editar una cuenta protegida. Ahora omite esa lista y presenta las asociaciones protegidas bloqueadas; el backend mantiene su restricción.",
+      "impacto": "La regresión automatizada comprueba el payload de campos permitidos. No se cambiaron nombre, contraseña ni roles reales para esta verificación; no se atribuye una prueba autenticada de todos los roles.",
+      "fuentes": [
+        "frontend/src/App.tsx",
+        "frontend/src/App.test.tsx",
+        "backend/app/modules/security/schemas.py",
+        "backend/app/modules/security/router.py",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/105_usuario_protegido_campos_consulta.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/123-correo-protegido-consulta.jpg"
+      ]
+    },
+    {
+      "id": "SEG-04",
+      "hallazgo": "Corrección parcial confirmada: carga y error de roles/permisos bloquean ahora el formulario hasta recarga satisfactoria; ya no se convierten en listas vacías guardables. Permanece el tope de 100 elementos en estas lecturas.",
+      "impacto": "Las regresiones comprueban error, reintento y guardado bloqueado. El límite de cien sigue siendo una precaución para un catálogo futuro mayor; usuarios.write depende además de roles.read para la UI y roles/menus.write de permissions.read. No se amplió la paginación ni se concedieron permisos adicionales.",
+      "fuentes": [
+        "frontend/src/App.tsx",
+        "frontend/src/App.test.tsx",
+        "backend/app/modules/security/schemas.py",
+        "backend/app/modules/security/router.py",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/105_usuario_protegido_campos_consulta.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/123-correo-protegido-consulta.jpg"
+      ]
+    },
+    {
+      "id": "SEG-05",
+      "hallazgo": "Edición de rol envía dos solicitudes independientes: datos y después permisos.",
+      "impacto": "Un error del segundo paso puede dejar el primer cambio guardado; revisar resultado tras cualquier fallo.",
+      "fuentes": [
+        "frontend/src/App.tsx:2419"
+      ]
+    },
+    {
+      "id": "PAR-01",
+      "hallazgo": "UI_PAGE_SIZE se persiste pero App.tsx fija pageSize=10 y no consume la configuración.",
+      "impacto": "No demostrar cambio de tamaño de página como funcional aunque el guardado sea exitoso.",
+      "fuentes": [
+        "frontend/src/App.tsx:62",
+        "backend/app/modules/parameters/service.py:24"
+      ]
+    },
+    {
+      "id": "LLM-01",
+      "hallazgo": "Activar LLM solo comprueba existencia de secreto para cloud; preparación exige configuración activa y last_test_status=ok.",
+      "impacto": "Puede existir proveedor activo que aún no esté listo. El manual impone probar y verificar Inicio después de activar.",
+      "fuentes": [
+        "backend/app/modules/parameters/router.py:216",
+        "backend/app/modules/copilot/router.py:226"
+      ]
+    },
+    {
+      "id": "AUD-01",
+      "hallazgo": "Auditoría UI no muestra fecha, ID, recurso ID ni detail como columnas; Estado muestra tipo de recurso.",
+      "impacto": "No prometer filtros, exportación, visor JSON ni detalle temporal desde esa pantalla.",
+      "fuentes": [
+        "frontend/src/App.tsx:1958",
+        "backend/app/modules/security/schemas.py:133"
+      ]
+    },
+    {
+      "id": "RBAC-01",
+      "hallazgo": "metadata.semantic_resolution.manage figura marcado en el Analista BI observado (captura 05d). Existe en el catálogo, pero no se encontró en require_permission ni UI funcional.",
+      "impacto": "No atribuirle acciones exclusivas en ninguna matriz ni afirmar separación efectiva de esa capacidad por su casilla marcada.",
+      "fuentes": [
+        "backend/app/modules/security/service.py:53",
+        "backend/app/modules/copilot/router.py:1203",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/05d_rol_analista.jpg"
+      ]
+    },
+    {
+      "id": "RBAC-02",
+      "hallazgo": "El gerente histórico carecía de metadata.read (05e), requerido para /sources. Con autorización del usuario se agregó exclusivamente ese permiso. El estado final reabierto (33) contiene analytics.dashboard.read, connections.read, metadata.read y reports.analytics.export.",
+      "impacto": "Ahora la dependencia del selector está configurada y también permite el Explorador. No se concedieron ETL, revisión de propuestas, administración de catálogo ni otros permisos. Falta probar un recorrido autenticado del gerente; releer el formulario no es una prueba de seguridad por rol.",
+      "fuentes": [
+        "backend/app/modules/metadata/router.py:99",
+        "frontend/src/App.tsx:226",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/05e_rol_gerente.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/roles_permisos_observados.json",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/33_gerente_permiso_metadatos.jpg"
+      ]
+    },
+    {
+      "id": "RBAC-03",
+      "hallazgo": "Vista ejecutiva y Vista analítica comparten analytics.dashboard.read; no tienen una barrera de permisos independiente.",
+      "impacto": "Son modos de presentación, no demostración de roles separados ni ocultamiento de evidencia analítica por perfil.",
+      "fuentes": [
+        "frontend/src/AnalyticsPage.tsx:361",
+        "backend/app/modules/analytics/router.py:338"
+      ]
+    },
+    {
+      "id": "AUTH-01",
+      "hallazgo": "El wrapper traduce todos los 401 como sesión vencida, incluido login incorrecto sin token.",
+      "impacto": "El mensaje de primer ingreso puede confundir; orientar a revisar credenciales sin afirmar que había una sesión previa.",
+      "fuentes": [
+        "frontend/src/api/security.ts:350",
+        "backend/app/modules/security/router.py:97"
+      ]
+    },
+    {
+      "id": "AUTH-02",
+      "hallazgo": "Cerrar sesión elimina el token local y borradores; no hay endpoint logout ni revocación global auditados.",
+      "impacto": "No describirlo como invalidación de todos los tokens o de sesiones en otros equipos.",
+      "fuentes": [
+        "frontend/src/App.tsx:288",
+        "backend/app/modules/security/service.py:211"
+      ]
+    },
+    {
+      "id": "UI-01",
+      "hallazgo": "El traductor de errores de password muestra mínimo doce de forma general; conexiones usan mínimo ocho.",
+      "impacto": "Una contraseña de conexión que falle validación puede recibir mensaje de longitud inexacto. Mantener la regla contractual de cada formulario.",
+      "fuentes": [
+        "frontend/src/api/security.ts:336",
+        "backend/app/modules/parameters/schemas.py:142"
+      ]
+    },
+    {
+      "id": "LLM-02",
+      "hallazgo": "Incidente detectado en la verificación integral y corregido: seleccionar un preset podía perder el nombre escrito de la configuración. El formulario actual preserva el nombre al cambiar proveedor o cargar catálogos, lo envía y sólo limpia tras éxito. La consulta visual 122 confirmó nombre y presets sin guardar ni activar; Claude permaneció activo.",
+      "impacto": "Se evita una creación con nombre perdido o una limpieza prematura. La imagen Docker fresca y el runtime aprobaron 44 pruebas frontend en ese corte intermedio, junto con ESLint y TypeScript/Vite; el cierre posterior bf50172 aprobó 46 frontend y 454 backend. No se aumentó un tiempo de espera ni se hizo una llamada LLM real para esta regresión. El primer intento integral fallido se conserva en QA.",
+      "fuentes": [
+        "frontend/src/App.tsx",
+        "frontend/src/App.test.tsx",
+        "docs/logbook/bitacora.tex",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/122-llm-nombre-conservado.jpg"
+      ]
+    }
+  ]
+}

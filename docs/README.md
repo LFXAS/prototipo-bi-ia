@@ -1,11 +1,12 @@
 # Índice de documentación técnica
 
-La documentación forma parte del producto versionado. Las fuentes Markdown y LaTeX se revisan mediante pull request; los doce PDF oficiales se regeneran dentro de Docker y CI comprueba que coincidan con sus fuentes.
+La documentación forma parte del producto versionado. Las fuentes Markdown y LaTeX se revisan mediante pull request; los doce PDF LaTeX se regeneran dentro de Docker y CI comprueba que coincidan con sus fuentes. El manual de usuario en Word y PDF tiene un flujo de composición y revisión visual propio.
 
 ## Entregables oficiales del proyecto
 
-Los diez documentos técnicos conservan el detalle del producto y sus evidencias. El Capítulo III es una versión académica independiente preparada para integrarse en la plantilla general del trabajo de titulación. La guía de formación ofrece el recorrido didáctico para los tres perfiles de uso.
+Los diez documentos técnicos conservan el detalle del producto y sus evidencias. El Capítulo III es una versión académica independiente preparada para integrarse en la plantilla general del trabajo de titulación. El manual de usuario de noviembre amplía el recorrido didáctico desde cero; la guía de formación de octubre se conserva como complemento con su propio corte.
 
+- [`manual-usuario/LEEME_MANUAL.md`](manual-usuario/LEEME_MANUAL.md): manual de usuario y entrenamiento desde cero, Word editable, PDF, 18 capítulos, 76 procedimientos y 140 capturas originales incorporadas en regiones legibles. Incluye conceptos, configuración, catálogo, propuestas, ETL, analítica, copiloto, casos comprobados, incidencias y preparación de la sustentación.
 - [`manual-tecnico/manual-tecnico.pdf`](manual-tecnico/manual-tecnico.pdf): instalación, operación, reconstrucción, uso del asistente y explicación detallada del ciclo Docker, Git y CI/CD.
 - [`sprints/sprint-03-metadatos-y-propuesta-bi.pdf`](sprints/sprint-03-metadatos-y-propuesta-bi.pdf): alcance, arquitectura, revisión previa de necesidades con evidencia estructural y asistente supervisado del Sprint 3.
 - [`sprints/sprint-04-materializacion-etl.pdf`](sprints/sprint-04-materializacion-etl.pdf): materialización controlada, KPI variables, conciliación, interpretación española y evidencia real de la ejecución 6.
@@ -37,6 +38,7 @@ explicación semántica; incidentes y límites se conservan, sin presentar éxit
 - [`validation-plan.md`](validation-plan.md): plan acumulativo de validación técnica, conciliación, calidad semántica, analítica y reportería.
 - [`experiments/2026-09-27-groq-vs-claude.md`](experiments/2026-09-27-groq-vs-claude.md): comparativa integral y decisión de proveedor para la generación de propuestas BI.
 - [`testing/auditoria-operativa-2026-10-03.md`](testing/auditoria-operativa-2026-10-03.md): registro editable de escenarios QA y resultados obtenidos, incluida la revisión previa IA/reglas de necesidades con consentimiento por destino.
+- [`testing/qa-postcierre-2026-11-04.md`](testing/qa-postcierre-2026-11-04.md): revisión del 4–5 de noviembre, incidentes de formación, contratos versionados, 454 pruebas backend/48 frontend y recorridos nuevos 122/18 y 124/19. Conserva las limitaciones y el estado de cada exportación; no constituye un sprint nuevo.
 - [`sdd-workflow.md`](sdd-workflow.md) y [`specs/`](specs/README.md): proceso y contratos SDD desde el Sprint 2.
 
 ## Regeneración y verificación
@@ -47,6 +49,8 @@ Desde la raíz del repositorio:
 make docs
 make verify
 ```
+
+El manual de usuario conserva `crear_manual.py`, contenidos editables, capturas originales y evidencias. Su PDF procede de la composición del Word y de la revisión de todas sus páginas; `make docs` no reconstruye ese Word.
 
 `make docs` compila los doce PDF con la imagen LaTeX del proyecto. `make verify` agrega validación Compose, política de ramas y pruebas de frontend/backend. Un cambio documental no se considera terminado hasta que las fuentes y los PDF estén actualizados y legibles.
 

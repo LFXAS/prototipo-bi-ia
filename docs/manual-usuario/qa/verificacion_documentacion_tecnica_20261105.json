@@ -1,0 +1,475 @@
+{
+  "schema_version": 2,
+  "fecha": "2026-11-05",
+  "fecha_actualizacion": "2026-11-05T09:06:26.867935-05:00",
+  "zona": "America/Guayaquil",
+  "revision_iniciada": "2026-11-04",
+  "naturaleza": "Actualización documental de alcance delta. Conserva la QA previa de 130 páginas como historia y verifica los tres PDF actuales; no representa una nueva inspección visual global de las 132 páginas actuales ni una nueva ejecución de la aplicación.",
+  "corte": {
+    "commit_codigo": "8f1c7d1",
+    "integral": "make verify V6, código 0 confirmado por agente principal; log conservado",
+    "backend": 454,
+    "frontend": 48,
+    "version_necesidad": "need-review-6",
+    "prompt": "sales-bi-v7",
+    "compilacion": 3,
+    "fuente_resultado_integral": "/tmp/bi-make-verify-final-v6-20261105.log",
+    "sha256_log_integral": "8f9d0e07f96128a2116f859ac422ac8e2866262b571e48dfcfe7cc924fabb496",
+    "metodo_resultado_integral": "El registro V6 muestra construcción de los targets test usando capas Docker CACHED y finalización del flujo de verificación/documentos. Los conteos 454/48 corresponden al árbol de código verificado y al acta confirmada por el agente principal; esta QA documental no reejecutó los tests.",
+    "cortes_anteriores": {
+      "V4": {
+        "commit": "bf50172",
+        "backend": 454,
+        "frontend": 46,
+        "exit": 0,
+        "Ruff_formato_archivos": 91,
+        "Mypy_archivos": 57
+      },
+      "V5": {
+        "exit": 143,
+        "estado": "interrumpido; no aprobado"
+      }
+    },
+    "casos_observados": "AW 122/18 revisión 4/reglas 2; WWI 124/19 revisión 5/reglas 2, históricos preservados. Consulta visual posterior de 18/19 no es nuevo ETL ni LLM.",
+    "PR": "https://github.com/LFXAS/prototipo-bi-ia/pull/57",
+    "estado_PR_al_registrar_fuentes": "Abierto en borrador según acta; esta revisión no consultó ni modificó el estado remoto y no afirma fusión/promoción."
+  },
+  "compilacion_delta": {
+    "comando": "make logbook sprint6-report technical-manual",
+    "ejecutor": "/root/manual_contenido_coherente",
+    "sesion": 34535,
+    "exit": 0,
+    "metodo": "Compilación en Docker comunicada por el agente responsable; corroboración de log y hashes actuales, sin recompilar en esta revisión.",
+    "log_local": "/tmp/bi-docs-ui-final-20261105.log",
+    "sha256_log": "fadedaf7f5ce73991050fa8d35982eacd93743a8a0581447124f8c5309645413",
+    "PDF_recompilados": 3,
+    "total_paginas_actuales": 132,
+    "Overfull": 0,
+    "avisos": "El log contiene LaTeX Font Warning por sustitución de tamaños 28 y Underfull hbox. No se ocultan ni se presentan como cero advertencias; el delta nativo resultó legible, sin bloqueo.",
+    "diff_check_fuentes": "Limpio para las seis fuentes según el agente compilador; no se editaron aquí."
+  },
+  "metodo": [
+    "La QA previa se preserva íntegra bajo qa_previa: render de 130 páginas con lado máximo 1000 px, inspección de distribución mediante montajes y detalle individual de las páginas allí enumeradas. Sus hashes y resultados no se atribuyen al PDF recompilado actual.",
+    "El agente manual_contenido_coherente abrió individualmente 18 PNG de las páginas afectadas, renderizados con Poppler a 150 dpi, a resolución nativa. Manual: 1–5,20,21,31,56; bitácora: 1,4,57,58,65; Sprint 6: 1,2,10,11.",
+    "El agente manual_qa_final_v2 volvió a abrir individualmente seis PNG actuales: manual 1 y 56; bitácora 57 y 65; Sprint 6 10 y 11. Comprobó portada, versiones, párrafos finales de cambio, tabla de historial, pies y límites.",
+    "Se extrajo texto de los tres PDF actuales, se corroboraron 56/65/11 páginas, versiones, commit 8f1c7d1 y conteos 454/48, y se recalcularon SHA-256 de PDF, TEX y renders de delta.",
+    "No se recompilaron PDF, no se editaron fuentes y no se ejecutaron pruebas nuevas del software. Renders/logs en/tmp son evidencia interna, no entregables del producto."
+  ],
+  "documentos": [
+    {
+      "archivo": "/home/ceo/Proyectos/BI/docs/manual-tecnico/manual-tecnico.pdf",
+      "fuente": "/home/ceo/Proyectos/BI/docs/manual-tecnico/manual-tecnico.tex",
+      "version": "5.2.1",
+      "paginas": 56,
+      "sha256": "17fdcbc07ede93c04f654d2ea6148e5723796e0bbbae4fb1c04ccd4f2e179e33",
+      "sha256_fuente": "14e51b803dbddff5ca143a8a623f8d9d1f6543ba7b7860cfde66afdd0c5f3515",
+      "texto_extraible": true,
+      "version_en_portada": true,
+      "corte_8f1c7d1_en_texto": true,
+      "corte_454_48_en_texto": true,
+      "revision6_reglas3": "Se conserva revisión vigente need-review-6; los casos históricos no se reetiquetan.",
+      "inspeccion_global_nueva_todas_paginas": false,
+      "paginas_delta_inspeccionadas_nativas": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        20,
+        21,
+        31,
+        56
+      ],
+      "paginas_delta_segunda_inspeccion_nativa": [
+        1,
+        56
+      ],
+      "renders_delta": [
+        {
+          "pagina_fisica": 1,
+          "archivo": "/tmp/bi_docs_ui_final_20261105/manual/pagina-01.png",
+          "sha256": "6a9f839362f29f8079e38acc0dcedea7af54bb588d40b92a4ccd0734cca02b62",
+          "pixeles_nativos": [
+            1275,
+            1650
+          ],
+          "inspeccion_individual_agente_contenido_coherente": true,
+          "segunda_inspeccion_individual_agente_qa_final": true
+        },
+        {
+          "pagina_fisica": 2,
+          "archivo": "/tmp/bi_docs_ui_final_20261105/manual/pagina-02.png",
+          "sha256": "64e322ec933541493c5c2146737b0ca71ec9399bc11e3739e48ff0b6fb268bd3",
+          "pixeles_nativos": [
+            1275,
+            1650
+          ],
+          "inspeccion_individual_agente_contenido_coherente": true,
+          "segunda_inspeccion_individual_agente_qa_final": false
+        },
+        {
+          "pagina_fisica": 3,
+          "archivo": "/tmp/bi_docs_ui_final_20261105/manual/pagina-03.png",
+          "sha256": "85d6988cf6eb1c41b2b7d63b9d76345a9a2a6a3d3df16905d887d09410261fa4",
+          "pixeles_nativos": [
+            1275,
+            1650
+          ],
+          "inspeccion_individual_agente_contenido_coherente": true,
+          "segunda_inspeccion_individual_agente_qa_final": false
+        },
+        {
+          "pagina_fisica": 4,
+          "archivo": "/tmp/bi_docs_ui_final_20261105/manual/pagina-04.png",
+          "sha256": "c54b04b9449ac70bba2b45ab84fc451f0eec94507a267360bbfeffb2dc038ad3",
+          "pixeles_nativos": [
+            1275,
+            1650
+          ],
+          "inspeccion_individual_agente_contenido_coherente": true,
+          "segunda_inspeccion_individual_agente_qa_final": false
+        },
+        {
+          "pagina_fisica": 5,
+          "archivo": "/tmp/bi_docs_ui_final_20261105/manual/pagina-05.png",
+          "sha256": "1176d15dba53a9e388542d8b331ce1dd6b597e8aa41166e6f649dab6d912672c",
+          "pixeles_nativos": [
+            1275,
+            1650
+          ],
+          "inspeccion_individual_agente_contenido_coherente": true,
+          "segunda_inspeccion_individual_agente_qa_final": false
+        },
+        {
+          "pagina_fisica": 20,
+          "archivo": "/tmp/bi_docs_ui_final_20261105/manual/pagina-20.png",
+          "sha256": "4b36e79ed2c57ba4576f950a3a449cbaeb77ba58bc122af4a1e9d253cf0a8b55",
+          "pixeles_nativos": [
+            1275,
+            1650
+          ],
+          "inspeccion_individual_agente_contenido_coherente": true,
+          "segunda_inspeccion_individual_agente_qa_final": false
+        },
+        {
+          "pagina_fisica": 21,
+          "archivo": "/tmp/bi_docs_ui_final_20261105/manual/pagina-21.png",
+          "sha256": "446665b34a283b8e7cb116e0291e772d7f4fc333635b1f55df0bd1328947ea8c",
+          "pixeles_nativos": [
+            1275,
+            1650
+          ],
+          "inspeccion_individual_agente_contenido_coherente": true,
+          "segunda_inspeccion_individual_agente_qa_final": false
+        },
+        {
+          "pagina_fisica": 31,
+          "archivo": "/tmp/bi_docs_ui_final_20261105/manual/pagina-31.png",
+          "sha256": "184a0c24592cb77b930b6e2435cc57b79103b1cfac86e2abff697fd24a48c0b7",
+          "pixeles_nativos": [
+            1275,
+            1650
+          ],
+          "inspeccion_individual_agente_contenido_coherente": true,
+          "segunda_inspeccion_individual_agente_qa_final": false
+        },
+        {
+          "pagina_fisica": 56,
+          "archivo": "/tmp/bi_docs_ui_final_20261105/manual/pagina-56.png",
+          "sha256": "c388f0362e4ec533c1de95def6da82158cc8842265576f7c48a7fe7dca930f14",
+          "pixeles_nativos": [
+            1275,
+            1650
+          ],
+          "inspeccion_individual_agente_contenido_coherente": true,
+          "segunda_inspeccion_individual_agente_qa_final": true
+        }
+      ]
+    },
+    {
+      "archivo": "/home/ceo/Proyectos/BI/docs/logbook/bitacora.pdf",
+      "fuente": "/home/ceo/Proyectos/BI/docs/logbook/bitacora.tex",
+      "version": "0.6.8",
+      "paginas": 65,
+      "sha256": "0d5e198b7dfa9d96b9278ab0b23ad25d4d4f53aef0e6ecc2a2860ec81f3e0c62",
+      "sha256_fuente": "08619c25dfce4fa1c29b1906a796fd24e707da0a0a8e787cc958def2d529a9ab",
+      "texto_extraible": true,
+      "version_en_portada": true,
+      "corte_8f1c7d1_en_texto": true,
+      "corte_454_48_en_texto": true,
+      "revision6_reglas3": "Se conserva revisión vigente need-review-6; los casos históricos no se reetiquetan.",
+      "inspeccion_global_nueva_todas_paginas": false,
+      "paginas_delta_inspeccionadas_nativas": [
+        1,
+        4,
+        57,
+        58,
+        65
+      ],
+      "paginas_delta_segunda_inspeccion_nativa": [
+        57,
+        65
+      ],
+      "renders_delta": [
+        {
+          "pagina_fisica": 1,
+          "archivo": "/tmp/bi_docs_ui_final_20261105/bitacora/pagina-01.png",
+          "sha256": "587287c408076febf2bc8a13bb5f4136087aa4b9a62d62f65d25a9678554a683",
+          "pixeles_nativos": [
+            1275,
+            1650
+          ],
+          "inspeccion_individual_agente_contenido_coherente": true,
+          "segunda_inspeccion_individual_agente_qa_final": false
+        },
+        {
+          "pagina_fisica": 4,
+          "archivo": "/tmp/bi_docs_ui_final_20261105/bitacora/pagina-04.png",
+          "sha256": "32fdf49198a5f9f32ecbeb616853fb55a74d5da039e1c789d06b08154ee2d88c",
+          "pixeles_nativos": [
+            1275,
+            1650
+          ],
+          "inspeccion_individual_agente_contenido_coherente": true,
+          "segunda_inspeccion_individual_agente_qa_final": false
+        },
+        {
+          "pagina_fisica": 57,
+          "archivo": "/tmp/bi_docs_ui_final_20261105/bitacora/pagina-57.png",
+          "sha256": "463c59117523a8538e57a90bf7a497a659f6d8f1e0ec6a7ed23cd9ca804cb493",
+          "pixeles_nativos": [
+            1275,
+            1650
+          ],
+          "inspeccion_individual_agente_contenido_coherente": true,
+          "segunda_inspeccion_individual_agente_qa_final": true
+        },
+        {
+          "pagina_fisica": 58,
+          "archivo": "/tmp/bi_docs_ui_final_20261105/bitacora/pagina-58.png",
+          "sha256": "a432a4cb5edacd368af0c9bb3c4098c3e3ec09c2d22aa6f631bc4e4685bbe9cc",
+          "pixeles_nativos": [
+            1275,
+            1650
+          ],
+          "inspeccion_individual_agente_contenido_coherente": true,
+          "segunda_inspeccion_individual_agente_qa_final": false
+        },
+        {
+          "pagina_fisica": 65,
+          "archivo": "/tmp/bi_docs_ui_final_20261105/bitacora/pagina-65.png",
+          "sha256": "06d084e1a35173734cf00bb67190d12b9313edb85f098d19d6bc4468296fffac",
+          "pixeles_nativos": [
+            1275,
+            1650
+          ],
+          "inspeccion_individual_agente_contenido_coherente": true,
+          "segunda_inspeccion_individual_agente_qa_final": true
+        }
+      ]
+    },
+    {
+      "archivo": "/home/ceo/Proyectos/BI/docs/sprints/sprint-06-multifuente-universal.pdf",
+      "fuente": "/home/ceo/Proyectos/BI/docs/sprints/sprint-06-multifuente-universal.tex",
+      "version": "1.2.1",
+      "paginas": 11,
+      "sha256": "72777b66890df59ca3646e853c7be808c0bcfa579a8a05ffb77efbc42bdfb27e",
+      "sha256_fuente": "a42d5fc9027ec1f11c1b01a3ab4a344f94ed4f2ba7f89aed39b394bcbdefe11f",
+      "texto_extraible": true,
+      "version_en_portada": true,
+      "corte_8f1c7d1_en_texto": true,
+      "corte_454_48_en_texto": true,
+      "revision6_reglas3": "Se conserva revisión vigente need-review-6; los casos históricos no se reetiquetan.",
+      "inspeccion_global_nueva_todas_paginas": false,
+      "paginas_delta_inspeccionadas_nativas": [
+        1,
+        2,
+        10,
+        11
+      ],
+      "paginas_delta_segunda_inspeccion_nativa": [
+        10,
+        11
+      ],
+      "renders_delta": [
+        {
+          "pagina_fisica": 1,
+          "archivo": "/tmp/bi_docs_ui_final_20261105/sprint6/pagina-01.png",
+          "sha256": "f5bdb8f507d7faae4166e142d8e118f79f3dcd3aae22c5656d9a9d993bf4d43d",
+          "pixeles_nativos": [
+            1275,
+            1650
+          ],
+          "inspeccion_individual_agente_contenido_coherente": true,
+          "segunda_inspeccion_individual_agente_qa_final": false
+        },
+        {
+          "pagina_fisica": 2,
+          "archivo": "/tmp/bi_docs_ui_final_20261105/sprint6/pagina-02.png",
+          "sha256": "eae59442307f78eeeda986676f3bd805eb8840bd3015cf89341247b3361849e7",
+          "pixeles_nativos": [
+            1275,
+            1650
+          ],
+          "inspeccion_individual_agente_contenido_coherente": true,
+          "segunda_inspeccion_individual_agente_qa_final": false
+        },
+        {
+          "pagina_fisica": 10,
+          "archivo": "/tmp/bi_docs_ui_final_20261105/sprint6/pagina-10.png",
+          "sha256": "f261f870a6c1688dd1f97999f453fbacdc4e6b8cbd5cc2a2e13ebd077e3aaa7d",
+          "pixeles_nativos": [
+            1275,
+            1650
+          ],
+          "inspeccion_individual_agente_contenido_coherente": true,
+          "segunda_inspeccion_individual_agente_qa_final": true
+        },
+        {
+          "pagina_fisica": 11,
+          "archivo": "/tmp/bi_docs_ui_final_20261105/sprint6/pagina-11.png",
+          "sha256": "739f3b39a3584f0adb43b2b9acdde06b024081d82c1a28082d25ec4307ab1ed8",
+          "pixeles_nativos": [
+            1275,
+            1650
+          ],
+          "inspeccion_individual_agente_contenido_coherente": true,
+          "segunda_inspeccion_individual_agente_qa_final": true
+        }
+      ]
+    }
+  ],
+  "resultado": "Delta documental conforme para el corte 8f1c7d1 / 454 backend / 48 frontend, sin bloqueantes en 18 páginas revisadas por el agente responsable y seis corroboradas de forma independiente. QA global previa preservada, sin afirmar inspección global nueva.",
+  "observaciones": [
+    {
+      "archivo": "docs/logbook/bitacora.pdf",
+      "pagina_fisica": 65,
+      "tipo": "Distribución",
+      "detalle": "La tabla final contiene las entradas 0.6.7/0.6.8 en una página breve, con cabecera y numeración correctas; no es página vacía ni pérdida de contenido.",
+      "bloqueante": false
+    },
+    {
+      "archivo": "/tmp/bi-docs-ui-final-20261105.log",
+      "tipo": "Avisos de compilación",
+      "detalle": "Sustituciones de tamaño de fuente y Underfull; sin Overfull, texto recortado o superposiciones en las páginas de delta observadas.",
+      "bloqueante": false
+    }
+  ],
+  "limites": [
+    "Esta actualización sólo renueva evidencia de los tres hashes actuales y sus páginas de delta; no demuestra que se hayan reabierto las 132 páginas ni los otros nueve PDF oficiales.",
+    "La inspección visual previa completa mediante montajes corresponde a hashes anteriores y queda preservada como historia.",
+    "El resultado de make verify V6 se toma del corte confirmado por el agente principal y del registro; sus targets test reutilizaron caché Docker. No se atribuye a esta revisión una reejecución independiente de 454/48 pruebas.",
+    "La revisión documental no demuestra sesiones de todos los roles ni usabilidad formal. Los casos históricos mantienen su versión y reglas originales.",
+    "Las 266 pruebas focales, 53 analíticas y 52 de exportación son subconjuntos de las 454 globales y no se suman al total.",
+    "La QA de XLSX finales se realizó con ArtifactTool; Calc final no se completó y no se atribuye ese método a los archivos finales."
+  ],
+  "qa_previa": {
+    "fecha": "2026-11-05",
+    "zona": "America/Guayaquil",
+    "revision_iniciada": "2026-11-04",
+    "naturaleza": "QA documental posterior al corte de código verificado; no reejecuta pruebas de aplicación.",
+    "corte": {
+      "commit_codigo": "bf50172",
+      "integral": "make verify V4, código 0",
+      "backend": 454,
+      "frontend": 46,
+      "Ruff_formato_archivos": 91,
+      "Mypy_archivos": 57,
+      "version_necesidad": "need-review-6",
+      "prompt": "sales-bi-v7",
+      "compilacion": 3,
+      "casos_observados": "AW 122/18 revisión 4/reglas 2; WWI 124/19 revisión 5/reglas 2; sin reetiquetar documentos históricos.",
+      "PR": "https://github.com/LFXAS/prototipo-bi-ia/pull/57",
+      "estado_PR_al_redactar": "Abierto en borrador; no se afirma fusión o promoción."
+    },
+    "compilacion": {
+      "make_docs_exit": 0,
+      "log_local": "/tmp/bi-docs-final-20261105.log",
+      "total_PDF_oficiales": 12,
+      "iteracion_layout": "Una frase de bitácora con barras producía Overfull; se cambió a comas y se recompiló únicamente bitácora.",
+      "recompilacion_bitacora_exit": 0,
+      "log_layout": "/tmp/bi-logbook-layout-final-20261105.log",
+      "Overfull_final": 0,
+      "errores_o_referencias_indefinidas": 0,
+      "diff_check": "limpio"
+    },
+    "metodo": [
+      "Poppler generó PNG de cada página de los tres PDF con lado máximo de 1000 px; 130 páginas en total.",
+      "Se inspeccionó visualmente la distribución de todas las páginas mediante montajes numerados; se abrieron de forma individual las páginas de detalle indicadas.",
+      "Se contrastaron portada, cortes de prueba, revisión vigente, casos históricos, historial y extracción de texto.",
+      "Los renders y registros de compilación están en /tmp; son material interno y no se entregan como contenido del proyecto."
+    ],
+    "documentos": [
+      {
+        "archivo": "/home/ceo/Proyectos/BI/docs/manual-tecnico/manual-tecnico.pdf",
+        "fuente": "/home/ceo/Proyectos/BI/docs/manual-tecnico/manual-tecnico.tex",
+        "version": "5.2.0",
+        "paginas": 55,
+        "sha256": "452cd46120de754ce08ca6eafe2453305386b038505e661d7bae350b513a0043",
+        "sha256_fuente": "e9fe194c25adc1313b7637900c0608eb8499f34aac5690a7db66a3a7d148309f",
+        "inspeccion_distribucion_todas_paginas": true,
+        "paginas_inspeccionadas_en_detalle": [
+          18,
+          19,
+          20,
+          26,
+          30,
+          55
+        ],
+        "texto_extraible": true,
+        "corte_454_46_en_texto": true,
+        "revision6_reglas3_en_texto": true
+      },
+      {
+        "archivo": "/home/ceo/Proyectos/BI/docs/sprints/sprint-06-multifuente-universal.pdf",
+        "fuente": "/home/ceo/Proyectos/BI/docs/sprints/sprint-06-multifuente-universal.tex",
+        "version": "1.2.0",
+        "paginas": 11,
+        "sha256": "4b0194a8c46737a79b7fa6030377f354d0c6d10d3ec661f893bd963233fbbd7f",
+        "sha256_fuente": "529e5ad6093dfdf15e3a6ab63a9ea489573bab4a9f88dddce618de6d2adea061",
+        "inspeccion_distribucion_todas_paginas": true,
+        "paginas_inspeccionadas_en_detalle": [
+          8,
+          9,
+          10
+        ],
+        "texto_extraible": true,
+        "corte_454_46_en_texto": true,
+        "revision6_reglas3_en_texto": true
+      },
+      {
+        "archivo": "/home/ceo/Proyectos/BI/docs/logbook/bitacora.pdf",
+        "fuente": "/home/ceo/Proyectos/BI/docs/logbook/bitacora.tex",
+        "version": "0.6.7",
+        "paginas": 64,
+        "sha256": "f7b6b0a9fe42e36f89fc27d2b76b68f3afa686b38aaefcfa281c44476bb4aef4",
+        "sha256_fuente": "feabae955dbdbf327dc8ef3c97ffa59ae7064fe96a0593f04b6a341e2647414e",
+        "inspeccion_distribucion_todas_paginas": true,
+        "paginas_inspeccionadas_en_detalle": [
+          56,
+          57,
+          64
+        ],
+        "texto_extraible": true,
+        "corte_454_46_en_texto": true,
+        "revision6_reglas3_en_texto": true
+      }
+    ],
+    "resultado": "Conforme para entrega documental con observaciones menores, sin recortes ni solapamientos del contenido generado.",
+    "observaciones": [
+      {
+        "archivo": "docs/logbook/bitacora.pdf",
+        "pagina_fisica": 64,
+        "tipo": "Distribución",
+        "detalle": "La última fila del historial ocupa una página final breve; contiene texto y cabecera válidos, no es página vacía ni pérdida de contenido.",
+        "bloqueante": false
+      }
+    ],
+    "limites": [
+      "Esta QA se refiere a estos hashes; cualquier recompilación con contenido distinto requiere comprobar el nuevo artefacto.",
+      "La revisión documental no demuestra sesiones de todos los roles ni usabilidad formal.",
+      "Las 266 pruebas focales, 53 analíticas y 52 de exportación son subconjuntos de las 454 globales.",
+      "La QA de XLSX finales se realizó con ArtifactTool; Calc final no se completó y no se atribuye ese método a los archivos finales."
+    ]
+  }
+}
