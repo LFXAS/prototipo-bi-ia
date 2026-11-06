@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+import re
+import unicodedata
+from datetime import datetime
 from html import escape
 from io import BytesIO
+from math import ceil
 from typing import Literal
 
 import xlsxwriter  # type: ignore[import-untyped]
@@ -26,6 +30,7 @@ from reportlab.platypus import (  # type: ignore[import-untyped]
     TableStyle,
 )
 from reportlab.platypus.doctemplate import BaseDocTemplate  # type: ignore[import-untyped]
+from xlsxwriter.utility import cell_autofit_width  # type: ignore[import-untyped]
 
 from app.modules.analytics.schemas import (
     AnalyticsDashboardRead,
@@ -39,6 +44,95 @@ _TEAL = colors.HexColor("#078B75")
 _MUTED = colors.HexColor("#5C718A")
 _BORDER = colors.HexColor("#D8E2EF")
 _LIGHT = colors.HexColor("#F3F7FC")
+_COUNT_UNITS = frozenset(
+    {
+        "pedido",
+        "pedidos",
+        "cliente",
+        "clientes",
+        "fila",
+        "filas",
+        "factura",
+        "facturas",
+        "transaccion",
+        "transacciones",
+        "documento",
+        "documentos",
+        "registro",
+        "registros",
+        "linea",
+        "lineas",
+        "conteo",
+        "conteos",
+        "order",
+        "orders",
+        "customer",
+        "customers",
+        "row",
+        "rows",
+        "invoice",
+        "invoices",
+        "transaction",
+        "transactions",
+        "document",
+        "documents",
+        "record",
+        "records",
+        "line",
+        "lines",
+        "count",
+        "counts",
+    }
+)
+
+
+def _normalized_unit(unit: str) -> str:
+    normalized = unicodedata.normalize("NFKD", " ".join(unit.casefold().split()))
+    return "".join(character for character in normalized if not unicodedata.combining(character))
+
+
+def _report_timestamp(value: datetime) -> str:
+    rendered = value.isoformat(sep=" ", timespec="minutes")
+    if value.utcoffset() is None:
+        return f"{rendered} (zona no informada)"
+    return rendered
+
+
+def _excel_column_pixels(width: float) -> float:
+    # XlsxWriter/Excel widths use Calibri 11's seven-pixel maximum digit width.
+    return int(width * 7 + 0.5) + 5
+
+
+def _excel_wrapped_height(value: str, width_pixels: float, font_size: float) -> float:
+    """Fit wrapped Calibri text, explicit newlines and long identifiers with padding."""
+    available = max(1.0, width_pixels - 12)
+
+    def text_width(text: str) -> float:
+        return max(0.0, float(cell_autofit_width(text)) - 7) * font_size / 11
+
+    lines = 0
+    for paragraph in value.split("\n"):
+        lines += 1
+        current = ""
+        for token in re.findall(r"\S+|\s+", paragraph):
+            if token.isspace():
+                if current:
+                    current += token
+                continue
+            if text_width(current + token) <= available:
+                current += token
+                continue
+            if current.strip():
+                lines += 1
+                current = ""
+            # Excel wraps a single identifier as well as words separated by spaces.
+            for character in token:
+                if current and text_width(current + character) > available:
+                    lines += 1
+                    current = character
+                else:
+                    current += character
+    return float(ceil(lines * font_size * 1.4 + 6))
 
 
 def _visible_visuals(
@@ -52,11 +146,14 @@ def _visible_visuals(
 def _format_value(value: float | None, unit: str) -> str:
     if value is None:
         return "Sin valor"
-    if len(unit) == 3 and unit.isupper():
-        return f"{value:,.2f} {unit}"
-    if any(item in unit.casefold() for item in ("unidad", "pedido", "cliente", "fila")):
-        return f"{value:,.0f} {unit}"
-    return f"{value:,.2f} {unit}" if unit not in {"valor", "razón"} else f"{value:,.2f}"
+    normalized_unit = _normalized_unit(unit)
+    precision = 0 if normalized_unit in _COUNT_UNITS else 2
+    number = f"{value:,.{precision}f}"
+    return (
+        number
+        if normalized_unit in {"", "valor", "razon", "value", "ratio"}
+        else f"{number} {unit.strip()}"
+    )
 
 
 def _line_drawing(visual: AnalyticsVisualRead, unit: str) -> Drawing:
@@ -233,15 +330,28 @@ def build_analytics_pdf(dashboard: AnalyticsDashboardRead, view: ReportView) -> 
     report_title = "Resumen ejecutivo de ventas" if view == "executive" else dashboard.title
     story.append(Paragraph(report_title, title))
     story.append(Paragraph(escape(dashboard.description), body))
-    context = [
+    context_value_style = ParagraphStyle(
+        "ReportContextValue", parent=body, fontSize=8, leading=10, textColor=_NAVY
+    )
+    context_rows = [
+        ["Fuente", dashboard.source_name, "Base de datos", dashboard.database_name],
         ["Período", dashboard.period_label, "Moneda", dashboard.currency_code],
         ["Propuesta", f"#{dashboard.proposal_id}", "Ejecución", f"#{dashboard.execution_id}"],
         [
             "Actualización",
-            dashboard.refreshed_at.strftime("%d/%m/%Y %H:%M"),
+            _report_timestamp(dashboard.refreshed_at),
             "Vista",
             "Ejecutiva" if view == "executive" else "Analítica",
         ],
+    ]
+    context = [
+        [
+            row[0],
+            Paragraph(escape(str(row[1])), context_value_style),
+            row[2],
+            Paragraph(escape(str(row[3])), context_value_style),
+        ]
+        for row in context_rows
     ]
     context_table = Table(context, colWidths=[25 * mm, 75 * mm, 25 * mm, 70 * mm])
     context_table.setStyle(
@@ -377,15 +487,15 @@ def build_analytics_pdf(dashboard: AnalyticsDashboardRead, view: ReportView) -> 
 
 
 def _excel_number_format(unit: str) -> str:
-    currency = next(
-        (token for token in unit.replace("/", " ").split() if len(token) == 3 and token.isupper()),
-        None,
-    )
+    # Only the declared unit determines precision. Quantity units can contain
+    # fractions; compound units (money per unit, customers per order) are not counts.
+    normalized_unit = _normalized_unit(unit)
+    currency = re.fullmatch(r"([A-Z]{3})(?:\s+(?:por|per)\s+.+|/.+)?", unit.strip())
     if currency is not None:
-        return f'#,##0.00 "{currency}"'
-    if any(item in unit.casefold() for item in ("unidad", "pedido", "cliente", "fila")):
+        return f'#,##0.00 "{currency.group(1)}"'
+    if normalized_unit in _COUNT_UNITS:
         return "#,##0"
-    if "porcentaje" in unit.casefold() or unit == "%":
+    if normalized_unit in {"porcentaje", "porcentajes", "percentage", "percent", "%"}:
         # Dashboard percentage KPIs are already expressed on the 0-100 scale.
         return '0.0"%"'
     return "#,##0.00"
@@ -476,7 +586,10 @@ def _write_visual_sheet(
 
 def build_analytics_xlsx(dashboard: AnalyticsDashboardRead, view: ReportView) -> bytes:
     output = BytesIO()
-    workbook = xlsxwriter.Workbook(output, {"in_memory": True})
+    workbook = xlsxwriter.Workbook(
+        output,
+        {"in_memory": True, "strings_to_formulas": False, "strings_to_urls": False},
+    )
     workbook.set_properties(
         {
             "title": "Resumen ejecutivo de ventas" if view == "executive" else dashboard.title,
@@ -489,14 +602,15 @@ def build_analytics_xlsx(dashboard: AnalyticsDashboardRead, view: ReportView) ->
     summary.hide_gridlines(2)
     summary.set_tab_color("#078B75")
     summary.set_column("A:A", 3)
-    summary.set_column("B:B", 26)
-    summary.set_column("C:C", 19)
-    summary.set_column("D:D", 3)
-    summary.set_column("E:E", 26)
-    summary.set_column("F:F", 19)
-    summary.set_column("G:G", 3)
-    summary.set_column("H:H", 26)
-    summary.set_column("I:I", 19)
+    summary_widths = {1: 28, 2: 48, 3: 48, 4: 26, 5: 19, 6: 3, 7: 26, 8: 19}
+    for column, width in summary_widths.items():
+        summary.set_column(column, column, width)
+
+    def cell_width(first: int, last: int) -> float:
+        return sum(
+            _excel_column_pixels(summary_widths[column]) for column in range(first, last + 1)
+        )
+
     title_format = workbook.add_format(
         {"bold": True, "font_size": 23, "font_color": "#09254D", "valign": "vcenter"}
     )
@@ -509,6 +623,15 @@ def build_analytics_xlsx(dashboard: AnalyticsDashboardRead, view: ReportView) ->
     )
     value_format = workbook.add_format(
         {"font_size": 10, "font_color": "#09254D", "bg_color": "#F3F7FC"}
+    )
+    context_value_format = workbook.add_format(
+        {
+            "font_size": 10,
+            "font_color": "#09254D",
+            "bg_color": "#F3F7FC",
+            "text_wrap": True,
+            "valign": "top",
+        }
     )
     card_label = workbook.add_format(
         {
@@ -537,16 +660,40 @@ def build_analytics_xlsx(dashboard: AnalyticsDashboardRead, view: ReportView) ->
     context = [
         ("Período", dashboard.period_label),
         ("Moneda", dashboard.currency_code),
-        ("Actualización", dashboard.refreshed_at.strftime("%d/%m/%Y %H:%M")),
+        ("Actualización", _report_timestamp(dashboard.refreshed_at)),
         ("Propuesta", f"#{dashboard.proposal_id}"),
         ("Ejecución", f"#{dashboard.execution_id}"),
         ("Vista", "Ejecutiva" if view == "executive" else "Analítica"),
+        ("Fuente", dashboard.source_name),
+        ("Base de datos", dashboard.database_name),
     ]
     for index, (label, value) in enumerate(context):
         row = 7 + index // 3
         column = 1 + (index % 3) * 3
         summary.write(row, column, label, label_format)
-        summary.write(row, column + 1, value, value_format)
+        if index == 2:
+            summary.write(row, column + 1, value, context_value_format)
+        elif index == 6:
+            summary.merge_range(row, column + 1, row, column + 2, value, context_value_format)
+        elif index == 7:
+            summary.merge_range(row, column + 1, row, 8, value, context_value_format)
+        else:
+            summary.write(row, column + 1, value, value_format)
+    summary.set_row(
+        9,
+        max(
+            18,
+            _excel_wrapped_height(dashboard.source_name, cell_width(2, 3), 10),
+            _excel_wrapped_height(dashboard.database_name, cell_width(5, 8), 10),
+        ),
+    )
+    summary.set_row(
+        7,
+        max(
+            18,
+            _excel_wrapped_height(_report_timestamp(dashboard.refreshed_at), cell_width(8, 8), 10),
+        ),
+    )
     summary.merge_range("B11:I11", "Indicadores con los filtros visibles", section_format)
     for index, metric in enumerate(dashboard.kpis):
         row = 12 + (index // 3) * 3
@@ -560,7 +707,7 @@ def build_analytics_xlsx(dashboard: AnalyticsDashboardRead, view: ReportView) ->
                 "bg_color": "#FFFFFF",
                 "border": 1,
                 "border_color": "#D8E2EF",
-                "num_format": _excel_number_format(f"{metric.name} {metric.unit}"),
+                "num_format": _excel_number_format(metric.unit),
             }
         )
         if metric.value is None:
@@ -583,14 +730,22 @@ def build_analytics_xlsx(dashboard: AnalyticsDashboardRead, view: ReportView) ->
         }
     )
     summary.write_row(insight_start + 1, 1, ["Hallazgo", "Lectura", "Evidencia"], insight_header)
-    summary.set_column("B:B", 28)
-    summary.set_column("C:C", 48)
-    summary.set_column("D:D", 48)
     for index, insight in enumerate(dashboard.insights, start=insight_start + 2):
         summary.write(index, 1, insight.title, insight_text)
         summary.write(index, 2, insight.statement, insight_text)
         summary.write(index, 3, insight.evidence, insight_text)
-        summary.set_row(index, 34)
+        summary.set_row(
+            index,
+            max(
+                34,
+                *(
+                    _excel_wrapped_height(value, cell_width(column, column), 9)
+                    for column, value in enumerate(
+                        (insight.title, insight.statement, insight.evidence), start=1
+                    )
+                ),
+            ),
+        )
     summary.freeze_panes(10, 1)
     summary.set_landscape()
     summary.fit_to_pages(1, 0)

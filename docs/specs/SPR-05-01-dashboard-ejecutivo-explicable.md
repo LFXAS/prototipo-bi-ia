@@ -67,6 +67,27 @@ Quedan fuera el pronóstico de ventas, alertas autónomas, edición libre del da
     imposibilidad técnica de comparar años disponibles; diferencia entre lo
     observado en pantalla y lo que exige otra consulta agregada.
 
+### 3.1. Periodicidad efectiva del indicador: corrección posterior al cierre
+
+La serie temporal se agrupa según la periodicidad de la receta KPI seleccionada;
+si declara `inherit`, hereda la de la propuesta. El catálogo cerrado es `daily`,
+`weekly`, `monthly`, `quarterly` y `yearly`. El backend selecciona internamente el
+bucket permitido de `date_trunc`; no acepta expresiones SQL ni períodos arbitrarios.
+
+Las semanas usan año y semana ISO para no mezclar los límites de año; los trimestres
+conservan su año y trimestre. Etiquetas, subtítulo de evolución y hallazgos expresan
+el período aplicado. Un cambio diario, semanal, trimestral o anual no puede seguir
+publicándose como mensual por un valor fijo del lector. La corrección conserva API,
+recetas y filas materializadas: vuelve a agregar las filas de la ejecución elegida,
+sin otro ETL. Los contratos mensuales de los expedientes 16/17 deben mantener sus
+valores y etiquetas mensuales.
+
+La aceptación incluye pruebas focalizadas y una matriz de lectura real de cinco
+periodicidades sobre cada una de las dos materializaciones. Esos diez contrastes
+se registran por separado de la existencia de la implementación y no se consideran
+aprobados antes de obtener su evidencia. Véase
+[QA posterior al cierre](../testing/qa-postcierre-2026-11-04.md).
+
 ## 4. API e interfaz
 
 - `GET /api/v1/analytics/dashboard`

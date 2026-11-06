@@ -1,0 +1,890 @@
+{
+  "titulo": "Revisión visual final V2 del manual de usuario BI: páginas 301 a 380",
+  "fecha_revision": "2026-11-05T09:03:50-05:00",
+  "zona_horaria": "America/Guayaquil",
+  "revisor": "/root/manual_contenido_coherente",
+  "estado": "completa, sin bloqueantes en el alcance revisado",
+  "vinculacion": {
+    "version_render": "v2",
+    "corte_fuente_informado": "8f1c7d1",
+    "directorio_render": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2",
+    "pdf": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/Manual_de_usuario_Plataforma_BI.pdf",
+    "pdf_sha256": "276a1dba1c887833d526054913a33a3d7a2cb0b4a7eec5eee52cd619d1e9d9bf",
+    "numero_paginas_documento": 464,
+    "limite": "Este registro se vincula exclusivamente con los SHA-256 del PDF y de los PNG enumerados; no valida renders posteriores."
+  },
+  "alcance": {
+    "rangos_inclusivos": [
+      [
+        301,
+        380
+      ]
+    ],
+    "paginas_previstas": 80,
+    "paginas_inspeccionadas": 80,
+    "paginas_faltantes": [],
+    "paginas_duplicadas": [],
+    "hojas_de_contacto_como_sustituto": false
+  },
+  "metodo": "Inspección visual individual de cada PNG nativo mediante view_image. Se revisaron cuerpo, títulos, tablas, capturas, pies, márgenes y continuidad de página. Las capturas históricas parciales se evaluaron junto con sus leyendas. Las consultas de texto y los detalles ampliados se usaron sólo como apoyo ante dudas de lectura, sin sustituir ninguna página nativa.",
+  "resultados_generales": {
+    "bloqueantes_maquetacion": 0,
+    "observaciones_informativas": 4,
+    "paginas_sin_bloqueante": 80,
+    "contradicciones_materiales_visibles_detectadas": 0,
+    "cambios_en_fuentes_pdf_o_imagenes": false,
+    "ejecuciones_aplicacion_etl_o_llm": false,
+    "limite_de_verificacion": "Revisión visual documental de este rango; no reproduce sesiones de roles ni recalcula o vuelve a ejecutar los escenarios de la aplicación."
+  },
+  "observaciones": [
+    {
+      "id": "OBS-302",
+      "paginas": [
+        302
+      ],
+      "severidad": "informativa",
+      "tipo": "tabla de continuación",
+      "detalle": "La continuación de la tabla inicia con UI-01 sin repetir la cabecera de columnas. El contenido permanece legible y se interpreta con la página anterior; no se observa recorte ni solapamiento."
+    },
+    {
+      "id": "OBS-325",
+      "paginas": [
+        325
+      ],
+      "severidad": "informativa",
+      "tipo": "distribución de cierre",
+      "detalle": "Cierre de procedimiento con tres viñetas y respaldos en la parte superior; espacio libre antes del bloque de capturas que comienza en 326. Página con contenido, no vacía accidental."
+    },
+    {
+      "id": "OBS-328",
+      "paginas": [
+        328
+      ],
+      "severidad": "informativa",
+      "tipo": "captura histórica parcial",
+      "detalle": "La imagen conserva el recorte horizontal de tarjetas del plan ETL de la captura de origen. El bloque de ajustes relevante se lee y la leyenda identifica una captura parcial histórica; no es un recorte del cuerpo documental."
+    },
+    {
+      "id": "OBS-365-366",
+      "paginas": [
+        365,
+        366
+      ],
+      "severidad": "informativa",
+      "tipo": "contraste del original",
+      "detalle": "Las figuras 111b y 111c conservan el texto gris de un concepto deshabilitado. Los títulos, controles y la explicación de exclusión son legibles; la suavidad y el contraste pertenecen a la captura histórica y no se retocaron."
+    }
+  ],
+  "paginas": [
+    {
+      "pagina": 301,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-301.png",
+      "sha256": "a4636eb9cdcd1298bf1ea37d2a258a9b6a6d9a8aab510f594c47bff4eb29284f",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 302,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-302.png",
+      "sha256": "ad59b2138b1edda3bb669c9e0e9f3f38cf211a1b6f51d065741bd7e3d6f33272",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": [
+        "OBS-302"
+      ]
+    },
+    {
+      "pagina": 303,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-303.png",
+      "sha256": "61b7f000d7f74547f61ac2a5cf056b2cbeb099f06723228b309a2737f1553291",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 304,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-304.png",
+      "sha256": "16e7b94bf494ea9a9e79c22f07fa909c11551a7dafd2984a2b5545c52ce8d4f6",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 305,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-305.png",
+      "sha256": "42b73c1721630ac9d363024f294dfbceb83bee92a812eb52ac33671f8820f578",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 306,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-306.png",
+      "sha256": "2d1e1b24c0f583ccd21ece80eb75b7e35d4ff6864ef770b0bf89743d52fdd5b6",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 307,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-307.png",
+      "sha256": "17d9304b04caa9b4e5ec16f69b7c82aff047853b82fe651e9ea7b38b388479f5",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 308,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-308.png",
+      "sha256": "446d7bd6c1760d5f751469ae820283f17eb47938b697a0c56ee6a39c5b52b2a5",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 309,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-309.png",
+      "sha256": "089ff833597c302d0fee4483eece5a0ab6b65bf3ec40bc02534daac4d36a626f",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 310,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-310.png",
+      "sha256": "a73043bbd1a9d0e27700265eaf0304ccf0de3f75926a3dac72343a76fe70bfd6",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 311,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-311.png",
+      "sha256": "eceed3968f53587578108f3547395006c67f390aa1b565d93f7d3936036530fd",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 312,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-312.png",
+      "sha256": "9e7c3b857e043d754132d590d05cee69581d7f9ead7d9ffd43e9c2b96f0c549c",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 313,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-313.png",
+      "sha256": "d46f8e90e37a3731231191e3c1c2af4657c53625c4ad83013a61d09c81c745ee",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 314,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-314.png",
+      "sha256": "92d2a5628af4506ebef2f35e0f56f985427f9dcf79bc2e4348fcc0bde9b1f7a8",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 315,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-315.png",
+      "sha256": "bd8904a3d7279e153cf78a98b22525f1b3a1298e1ac04a80d952a1fa96c58ca6",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 316,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-316.png",
+      "sha256": "0b2d7c7cc157335cf21530dbed5355cdc9f08afda5dc2c496420afd2fcc4d177",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 317,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-317.png",
+      "sha256": "9ebc303c7ec2bfaf1a44afed0228a9d44504fd725be24b7ee940463ef7b36a39",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 318,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-318.png",
+      "sha256": "070f67b0bae53f0fb8356d2fccb4c7b733ed55f4cff1e0b5680dd5abdf608afa",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 319,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-319.png",
+      "sha256": "282bc696ff18be6fdb6d5137531bca6058d617fa68c1d44969b2327af728aa9d",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 320,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-320.png",
+      "sha256": "71d0d5c690f6df8ddbdb20704925f787fa62327c520a9891820666421bdd5ebf",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 321,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-321.png",
+      "sha256": "d08e8efe5e2ff47c887f47c06734ab47aeb63e0c0db4e165480b30d8d67526ec",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 322,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-322.png",
+      "sha256": "78f97553f098b9438de518b0fd1e305e1f992fdffc17b0683b1790d7d5165292",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 323,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-323.png",
+      "sha256": "43f60553b6aa25b52b57123244083e824a6f797f0778d0c639ba74eb4df7cd36",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 324,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-324.png",
+      "sha256": "7728792ca201cf300f62f36ba5aadf7815c0d30f4ca250f38f4b5540b714ea49",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 325,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-325.png",
+      "sha256": "6f6a02024c3c1fd4e7272b56e456957bcceeb64dc4f36170fb09b6f0e3545feb",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": [
+        "OBS-325"
+      ]
+    },
+    {
+      "pagina": 326,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-326.png",
+      "sha256": "f747bf6f55d8f6f10ae7a9171f796149191c324360556d8bad371ce68d527837",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 327,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-327.png",
+      "sha256": "b935e0548882ece2e9e8f738656278d1276b024667843da4ecf74a8a2ca5f847",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 328,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-328.png",
+      "sha256": "38456fb75b98d7b39c3e709115e1563270c16dd63a9fb5325786d3ea2829b658",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": [
+        "OBS-328"
+      ]
+    },
+    {
+      "pagina": 329,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-329.png",
+      "sha256": "a586a82e822345f39c0600780f03f1a4cd7158c5e8c4dd87efffc9c7066718da",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 330,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-330.png",
+      "sha256": "dcff6f6c78741a7614359f6f6b3d1b1a54b50d6c399596365f33ac62da3ada01",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 331,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-331.png",
+      "sha256": "2cfaaa72e648bda2e5099170f281ed9f48d7d874291dbe134687048e054816e3",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 332,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-332.png",
+      "sha256": "5004930d8acb6e21479170500055af07d25ee601fc6830e71e804da6d1a537c1",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 333,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-333.png",
+      "sha256": "d4418ee722b19cd18900431b1ac45abdbdf69b9bba13a9f73f99def4970183d8",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 334,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-334.png",
+      "sha256": "df6583e09159b5837f53eedc154432ba171611428fd7258f287b4ae286f7b144",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 335,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-335.png",
+      "sha256": "6711ee643d7ffb8d8b74f3c4b7002ce4202a1415aed3733fe1892c5186537f39",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 336,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-336.png",
+      "sha256": "ddc3fbc2550cd0407bfb55a8d75e3c509519fefa097873422e2643d0daf1eda3",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 337,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-337.png",
+      "sha256": "95f37a2c4414d54f49366767a39411a376db5df460c918f4c8f15737434cfaab",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 338,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-338.png",
+      "sha256": "14ad29c3bd572e1949d03650f3fca4d991e3d01497c394a053485a2bbf1c29fc",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 339,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-339.png",
+      "sha256": "53a3e72f1dae78a2de3ca118b103ca11d92ec4375f12f021236d0a690f881211",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 340,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-340.png",
+      "sha256": "4233a086768ad52ec243b98ab328606e241434f3e16ac6b7e171e4a29db6f953",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 341,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-341.png",
+      "sha256": "d35fdd5e6d1b4e75c9a9ab1b67de69c81a93e654bca0c16c5b38d1f8ca69910d",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 342,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-342.png",
+      "sha256": "38b01b7a12aad698112df93c16cc01e16c746528b97c67f1e98d8a9ea4bd479a",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 343,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-343.png",
+      "sha256": "164ebaf2d5f5b5c28d9f0bc0d68cfa9e55aeb49a2bcf5b712406926820849ff6",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 344,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-344.png",
+      "sha256": "a5ab2c08adf51e2ba86af4e66b097ead76dd49af6f58a04e40a8ad698134521c",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 345,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-345.png",
+      "sha256": "b496058f63ecf4263789ce379bbd421f6008523ab31c10c11f853ffc988b803c",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 346,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-346.png",
+      "sha256": "8743b8e1cce98c6310ebac7722f9576a4c59d4a42ba1a3909ad35328c2ea7b71",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 347,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-347.png",
+      "sha256": "d0185813dba05e73aedd77fa742e27e25de9a8f07e269b536c25e9c193fce4d8",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 348,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-348.png",
+      "sha256": "88e7528147ea7e2007dae5a8604b5ba51dbeac5459868fe263df34c2ad0350fb",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 349,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-349.png",
+      "sha256": "3981593d28b2c5b562762e306cf0d07f68ee982b5cfa079dcc0f8ba8acfb3c4e",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 350,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-350.png",
+      "sha256": "312e2de86fe93b30004283e48b388f46279e1c2bcf32e56eb9e376a3e2b8d810",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 351,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-351.png",
+      "sha256": "1e1e22ab0f81319f396da1a9ac1d398f58defa6d6ef4c7e4067edaf4941e2299",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 352,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-352.png",
+      "sha256": "c003d3226e871ca003f2b0c3a9a4f3867c8c40b3307ae6fd38c21f51f0c93052",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 353,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-353.png",
+      "sha256": "7b9b4a23dabd5cf602370e80973322cac98967d9369ac29136d917eccd60e3af",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 354,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-354.png",
+      "sha256": "3914efd5aefd2a8d12650dcb55390c344f62c8be525abd35f3bdf9ee52c35331",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 355,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-355.png",
+      "sha256": "24d6786ee9b8e84a936713d9f50830ef5f0bca7323ef882cd519e1341be2d0f7",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 356,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-356.png",
+      "sha256": "50f7b0cb5a096844bb9107be647a5709af51c1e48794ed92f4d4246307b49bd5",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 357,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-357.png",
+      "sha256": "6823a80857e9904b48e17b3f606b2943138f30576424927ae4f3245b9671a721",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 358,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-358.png",
+      "sha256": "a83e373a9ff890a28c110cad34b18dfa1f13b8280e948e68d5788356088d48ff",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 359,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-359.png",
+      "sha256": "bdd9ba4c2fd6e3e8cb2d50a7c5b068c92fe6d6ce80d2d717145f3f962a47853b",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 360,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-360.png",
+      "sha256": "46871a9377ae7d4d8e97642f5281c666ee3c27dc07f4b0e497de9e9b6e6cc34d",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 361,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-361.png",
+      "sha256": "29a88c021eeeabf96b477048666267e1255c28123cb89929308e5260b571581d",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 362,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-362.png",
+      "sha256": "364ffb1344f4a3172556bb40f6590a901b15f02866f73d5c98090074a3d1e213",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 363,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-363.png",
+      "sha256": "ed3fa1957f81cd9ddba97781a9fb4763d700299576086118db953b166d6d8434",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 364,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-364.png",
+      "sha256": "aadf4652c9a799d2baab58d721bcf4a80daa8d9ea9af623c943317aacbb7a4a6",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 365,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-365.png",
+      "sha256": "94513d69a34cb7fe61efd5a1839f13572a0c6ca825b0ceba2eb41df36f117a2b",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": [
+        "OBS-365-366"
+      ]
+    },
+    {
+      "pagina": 366,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-366.png",
+      "sha256": "c556d87a7fea71c34b403659a633c0b0bcdb70280af1c164b24db844ab3f0b1f",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": [
+        "OBS-365-366"
+      ]
+    },
+    {
+      "pagina": 367,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-367.png",
+      "sha256": "2160cae13bd830b8fa8afa6afc21ad7507dfddb265cd6561e3be22eb14f3dd7b",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 368,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-368.png",
+      "sha256": "7e02f34c3be0d894fb298dc1068372e5509ad3868576e156f3a00bfa0363e825",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 369,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-369.png",
+      "sha256": "836b5079679b02c93ede715276aa600e2c3a0b620f21d663735e38a21c95a854",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 370,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-370.png",
+      "sha256": "8489ce68c14b5c85f5c21d115ffc4863b5fd45c51dec07086521510c729efcfa",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 371,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-371.png",
+      "sha256": "c6e9b2fd9362297cfb5ed9e73d40c18704782e9d5e6b6d6ac172bad3b7c1be4d",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 372,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-372.png",
+      "sha256": "8d0feeba64b91e02b992cf4cc0a530f69e8a634e84d59d487fd8e73f4c4da530",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 373,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-373.png",
+      "sha256": "64ce3f4743614e4ec6df53d1052bc47a98e946eb233107e809ab81f4e5a20bcc",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 374,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-374.png",
+      "sha256": "73224eebbaa841e6d7a714995a5f3d7d3e2631abbf31f3edc120c52e6e7d7492",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 375,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-375.png",
+      "sha256": "345da1cb613f17e871815546332df6b44ab5cdce846eb1db35e9e46477788b09",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 376,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-376.png",
+      "sha256": "f9cd78330522f833b89cf3604e054f089d2bdfed6133264eec851808bc1ffccc",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 377,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-377.png",
+      "sha256": "93d12ffb32ada2ca549af717bc1cb5e5703609b9cf0f0c1111ddd86bd74d89e5",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 378,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-378.png",
+      "sha256": "ef390b211637f8eb0da265d59978e0231db198fe1cf31bed875eba0693fc6e53",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 379,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-379.png",
+      "sha256": "f711584396a144ab4ab2f5633f13a4ba3783541dcb83abc8e29b3fe97066c3a9",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    },
+    {
+      "pagina": 380,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/render_entrega_v2/page-380.png",
+      "sha256": "65ef14517e36da123ba837745c3520c750f7ed8c3e636046441b9148906dbe82",
+      "ancho_px": 1547,
+      "alto_px": 2002,
+      "inspeccion_visual": "realizada individualmente sobre el PNG nativo mediante view_image",
+      "resultado": "sin bloqueante",
+      "observaciones": []
+    }
+  ]
+}

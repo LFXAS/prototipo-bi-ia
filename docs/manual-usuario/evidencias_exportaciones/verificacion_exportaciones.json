@@ -1,0 +1,58 @@
+[
+  {
+    "ejecucion": 14,
+    "mensual_suma": 6015174.735836,
+    "territorio_total": 6015174.735836,
+    "diferencia_absoluta": 0.0,
+    "hojas": [
+      "Resumen",
+      "Evolución en el tiempo",
+      "Productos líderes",
+      "Distribución territorial"
+    ],
+    "fecha_validacion": "2026-11-04",
+    "observacion": "Consulta y exportación actual de materialización histórica; no demuestra nuevo ETL."
+  },
+  {
+    "ejecucion": 15,
+    "mensual_suma": 1215705.55,
+    "territorio_total": 1215705.55,
+    "diferencia_absoluta": 0.0,
+    "hojas": [
+      "Resumen",
+      "Evolución en el tiempo",
+      "Productos líderes",
+      "Distribución territorial"
+    ],
+    "fecha_validacion": "2026-11-04",
+    "observacion": "Consulta y exportación actual de materialización histórica; no demuestra nuevo ETL."
+  },
+  {
+    "ejecucion": 16,
+    "mensual_suma": 1215705.55,
+    "territorio_total": 1215705.55,
+    "diferencia_absoluta": 0.0,
+    "hojas": [
+      "Resumen",
+      "Evolución en el tiempo",
+      "Productos líderes",
+      "Distribución territorial"
+    ],
+    "paginas_pdf": 5,
+    "observacion": "ETL nuevo16/propuesta117:consulta2015California verificada"
+  },
+  {
+    "ejecucion": 17,
+    "mensual_suma": 6015174.735836,
+    "territorio_total": 6015174.735836,
+    "diferencia_absoluta": 0.0,
+    "hojas": [
+      "Resumen",
+      "Evolución en el tiempo",
+      "Productos líderes",
+      "Distribución territorial"
+    ],
+    "paginas_pdf": 5,
+    "observacion": "ETL nuevo17/propuesta120 básico: consulta2013Northwest verificada; PDF pendiente de inspección visual."
+  }
+]

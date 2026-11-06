@@ -91,11 +91,11 @@
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & MAN-TEC-01 \\
-    Versión del manual & 5.1.0 \\
+    Versión del manual & 5.2.1 \\
     Línea base & Ramas \file{develop} y \file{main} \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
     Clasificación & Documentación técnica - repositorio público \\
-    Fecha & 3 de octubre de 2026 \\
+    Fecha & 5 de noviembre de 2026 \\
   \end{tabularx}
 
   \vfill
@@ -390,6 +390,12 @@ Los grupos se ordenan por el flujo de trabajo y se pueden plegar o desplegar, in
 
 La administración no solicita IDs ni códigos técnicos a la persona usuaria. En \textbf{Usuarios}, se registra correo, nombre, contraseña inicial y roles mediante una tabla de casillas con nombre y descripción. Durante una edición, dejar la contraseña vacía mantiene la contraseña existente; escribir una nueva la reemplaza de forma segura.
 
+El correo de una cuenta existente se presenta como sólo lectura, porque su endpoint
+de actualización no admite cambiarlo. Al editar una cuenta protegida, la interfaz
+omite los roles del envío y conserva únicamente los campos permitidos. Si no puede
+cargar roles o permisos, bloquea el formulario hasta una recarga satisfactoria;
+un fallo de consulta no equivale a un catálogo vacío que se pueda guardar.
+
 En \textbf{Roles}, los permisos se asignan o retiran mediante otra tabla de casillas legible. La actualización de asociaciones usa el contrato \file{PUT /roles/\{id\}/permissions}; el código técnico interno del rol no se digita desde la pantalla. Permisos y Menús son catálogos controlados: una pantalla administrativa no puede inventar un permiso, ruta o módulo que no exista en una especificación, migración y endpoint reales.
 
 Las listas administrativas son paginadas desde el servidor. Usuarios, Roles y Menús permiten crear, editar, activar/desactivar y, cuando corresponde, eliminar definitivamente. Las acciones de registros base de recuperación muestran el estado \textbf{Protegido}; FastAPI impide desactivar, eliminar o debilitar la cuenta y rol administrativos iniciales.
@@ -533,6 +539,172 @@ comprobada}, \textbf{Derivación candidata} e \textbf{Interpretación propuesta 
 rotula como fórmula controlada: sólo el contrato validado posterior puede alimentar
 una transformación ejecutable.
 
+\subsection{Corrección posterior al cierre: revisión del 4--5 de noviembre de 2026}
+
+La preparación de la sustentación reprodujo defectos del motor general, sin abrir
+un sprint nuevo. El corte vigente usa \file{need-review-6}, \file{sales-bi-v7} y
+\path{compilation_rules_version=3}. Las pruebas operativas previas conservan sus
+versiones: AW 122/18 se generó con revisión 4 y WWI 124/19 con revisión 5; ambas
+propuestas almacenan reglas 2. No se reetiquetan como ensayos del motor posterior.
+
+\paragraph{Intención y evidencia estructural.}
+La trazabilidad genérica de línea a pedido usa la capacidad existente
+\file{transactions}, \file{kind=identifier} y \file{identity\_references} verificadas.
+No solicita por sí sola una factura. \file{invoice\_event} exige intención positiva
+en objetivo y preguntas originales, respetando exclusiones, y prueba estructural:
+el propio hecho puede ser cabecera de factura con PK completa declarada y
+referencias exactas, o existir una FK completa hacia esa cabecera. Un nombre o
+una PK parcial no bastan. Una contradicción técnica persistente tras una reparación
+produce HTTP 422 sin una revisión continuable por aceptar advertencias.
+
+El ranking de agregados es una operación existente, no una columna física ni una
+capacidad ejecutable nueva. La revisión comprueba primero medida numérica,
+dimensión y ruta compatible con el grano; luego enlaza \file{analytical\_operation},
+aunque los requisitos aparezcan en otro orden. La cobertura exige ambas entradas.
+Las tildes y la puntuación no cambian esa clasificación; excluir percentiles no
+excluye un ranking ordinario de sumas. No se añaden percentiles ni predicción.
+
+El escáner determinístico distingue peticiones positivas de cautelas coordinadas
+ES/EN. «Sin asumir moneda, utilidad ni composición fiscal» no solicita margen;
+«no excluir» conserva intención positiva. Una pregunta positiva no desaparece
+porque otra cláusula la niegue. Se documenta una corrección léxica acotada, sin
+prometer comprensión exhaustiva de negaciones naturales.
+
+\paragraph{Recetas y población.}
+PK, FK e identificadores no son operandos monetarios. El promedio por documento
+se compila como suma del importe dividida entre conteo de documentos distintos,
+con ambas medidas verificadas. No se divide un importe entre el valor numérico
+de un ID ni se sustituye un conteo de líneas por pedidos conservando su rótulo.
+El contrato transaccional excluye explícitamente el conteo de líneas que no modela.
+Reglas 3 restringe la señal nominal \file{Number}/\file{Numero} a semántica de
+entidad o documento y conserva las claves reales: \file{NumberOfUnits} y
+\file{NumeroDeUnidades}, sin PK/FK, pueden ser cantidades SUM.
+
+\paragraph{Versiones, reproducción y aprobación.}
+La expansión y validación reproducen reglas 1 cuando falta marcador, reglas 2
+cuando el documento lo declara y reglas 3 para contratos nuevos. No se migran
+JSON, datos, aprobaciones o huellas históricas. Una aprobación nueva de borrador
+con prompt o reglas anteriores recibe HTTP 409 y requiere regenerar o personalizar
+una hija vigente con \file{source\_proposal\_id}. Un aprobado legado solicitado
+idempotentemente retorna intacto.
+
+La comprobación \file{proposal.replay.passed} informa igualdad real de hashes;
+la diferencia entre versiones es una advertencia separada. El detalle muestra
+prompt y reglas persistidos y actuales; sin decisiones guardadas lo declara.
+La auditoría final de sólo lectura de 91/98/117/120/122/124 preservó documento,
+validación y \file{approval\_safe} verdadero en las seis. Cinco replay coinciden;
+91 conserva su discrepancia preexistente, sin ocultarla. 122/124 siguen reglas 2.
+No existe un campo histórico de revisión de necesidad en esos documentos: las
+revisiones 4/5 se atribuyen por el corte operativo observado, no por una columna inventada.
+
+\paragraph{Editor efectivo y continuidad.}
+El editor enlaza medidas y KPI por nombre/código con el contrato compilado, no
+por índice ni referencia cruda. Muestra origen, función, agregación y fórmula
+efectivos; las exclusiones aparecen desmarcadas con motivo. La razón conserva
+sus dos entradas y retirar el denominador retira su KPI. El envío contiene sólo
+selecciones editables; no modifica el documento original ni su huella.
+Después de guardar se adopta la hija y se ignoran recuperaciones/evidencias tardías
+del padre. Desde una aprobada o invalidada, \textbf{Crear versión corregida desde ésta}
+habilita sólo el borrador de hija del paso 4. Cancelar restituye la consulta y los
+valores originales. Guardar crea y selecciona hija, sin aprobarla ni mutar el padre.
+La prueba UI de 124 habilitó justificación/guardado y canceló sin crear otra hija.
+
+\paragraph{Períodos y alcance interpretativo.}
+El lector agrupa por periodicidad efectiva del KPI o herencia de propuesta.
+Normaliza los códigos de catálogo \file{day}, \file{week}, \file{month},
+\file{quarter}, \file{year} y los códigos KPI \file{daily}, \file{weekly},
+\file{monthly}, \file{quarterly}, \file{yearly}. Las semanas son ISO y los
+subtítulos/etiquetas reflejan el período. Una matriz de 22 consultas reales sobre
+16/17, con configuración copiada en memoria y transacción de sólo lectura,
+comprobó dos configuraciones persistidas, diez códigos KPI y diez herencias.
+No fueron 22 ETL. Las sumas conciliaron con diferencia cero salvo residuo AW
+trimestral de \(1{,}49\times10^{-8}\), menor que tolerancia \(10^{-6}\).
+
+El proveedor del copiloto devuelve sólo respuesta y evidencia. La plataforma
+construye hasta tres sugerencias desde métricas agrupables y dimensiones
+materializadas y usa el mismo catálogo para interpretar intención. La cautela
+pública es determinística, íntegra y visible primero entre los hallazgos ejecutivos.
+Usa procedencia de contrato/instantánea, fuentes, columnas, claves y la misma ruta
+FK del materializador; los nombres derivados conservan operación y linaje sin
+transmitir valores personales. Un origen directo se distingue de una ruta FK.
+La ventana real del ETL no es lectura exacta, última modificación del origen,
+prueba de vigencia a fecha del hecho ni entrega verificada. Un ranking tampoco
+prueba preferencias, demanda, eficacia de campañas, mercado o causalidad.
+
+\paragraph{Recorridos reales conservando la necesidad.}
+AW mantuvo el objetivo detallado de 532 caracteres que había fallado en 118.
+La nueva 121 y su hija 122 aprobaron cuatro KPI, tres medidas, cuatro dimensiones,
+claves de detalle/pedido, seis referencias, cero errores y nueve avisos. La huella
+\file{28ac4d6997d8} coincide con reconstrucción. El ETL 18 completó 26 operaciones,
+cinco tablas y 121.317 filas por lado, diferencia cero; importe
+109.846.381,399888 USD, 274.914 unidades, 31.465 pedidos y razón 3.491,065672966407.
+Se validaron tres equivalencias de grupos y seis códigos excluidos, preservando
+originales. En 2013/Northwest se comprobaron 6.015.174,735836 USD, 17.452 unidades
+y 2.053 pedidos. El chat final conservó Top 3 y denominador, evitó inferencias de
+preferencias/causalidad y presentó tres sugerencias disponibles.
+
+WWI repitió los mismos 693 caracteres, cuatro preguntas y mes. Bajo revisión 5
+no apareció el falso margen ni su ACK. La 123 y su hija 124 aprobaron cuatro KPI,
+siete referencias, cero errores y siete avisos, huella \file{b5872c3bbd6d} igual
+a reconstrucción. El ETL 19 completó 26 operaciones, cinco tablas y 228.265 filas
+por lado, diferencia cero; importe de origen 198.043.439,45, 8.950.628 unidades,
+70.510 facturas y razón 2.808,73. La fuente no acreditó moneda única. En
+2015/California: 1.215.705,55, 57.142 unidades, 481 facturas y razón
+2.527,454365904366. El chat final repitió Top 3 54.648 / 50.715 / 45.860,85 sobre
+el total territorial, distinguió ficha extraída durante ETL de historia/entrega
+no probadas y el clic real de sugerencia devolvió cinco clientes con denominador
+57.142. La sospecha previa sobre nombres se descartó contrastando 663/663 etiquetas
+con \file{CustomerName}, sin diferencias ni cambios por apariencia del nombre.
+
+Los ejemplos previos 117/16 y básico 120/17 se conservan como evidencia anterior;
+el básico de dos KPI no sustituye el objetivo detallado. El intento 118 y la
+primera interpretación temporal errónea del chat 19 permanecen en QA histórica.
+
+\paragraph{Corte de verificación y demostración.}
+\file{make verify} V4 terminó con código 0 el 5 de noviembre: 454 pruebas backend,
+un aviso Starlette/AnyIO sin fallo, 46 frontend, Ruff/formato en 91 archivos y
+Mypy en 57, más controles de rama, Compose, workflow, lint, construcción y documentos.
+Las 266 focales de necesidad/compilación son subconjuntos (156 y 110); también lo
+son las 53 analíticas y 52 de exportación. No se suman al total global.
+El primer fallo integral por nombre perdido en preset LLM se conserva como incidente
+resuelto; no se presenta ese intento como aprobado. Correo de edición es de sólo
+lectura, cuentas protegidas omiten roles y errores/carga de catálogos bloquean
+el guardado. Persiste el límite de 100 elementos de esos selectores. No se probaron
+sesiones de todos los roles ni se cambiaron cuentas para ello.
+
+La demostración puede consultar aprobados, expedientes conciliados y reportes sin
+nueva llamada LLM ni nuevo ETL; una conversación registrada no es una llamada en vivo.
+Generar una necesidad nueva requiere disponibilidad, permisos y consentimiento;
+no se garantiza determinismo del proveedor ante el jurado. Fuentes, estado de cada
+incidencia y métodos de QA constan en
+\path{docs/testing/qa-postcierre-2026-11-04.md}. El código \file{bf50172} se publicó
+en la rama correctiva y el PR 57 hacia \file{develop} se abrió como borrador;
+no se declara fusionado ni promovido a \file{main}.
+
+\paragraph{Ajuste posterior de unidad y legibilidad en conciliación.}
+La inspección adicional del 5 de noviembre reprodujo en el expediente 18 una
+etiqueta de promedio que invadía el valor y una razón rotulada como moneda de
+origen por transacción pese a USD verificado. La corrección del frontend permite
+contraer las dos columnas, envolver etiquetas y valores y apilarlos hasta 760 px.
+El formato interpreta la unidad completa: sustituye el prefijo monetario genérico
+por la divisa comprobada y conserva el denominador por, per o barra. ISO de tres
+letras y razones conservan dos decimales, al igual que cantidades fraccionarias o
+unidades desconocidas; sólo los conteos del conjunto cerrado usan enteros.
+Estos alias no dependen del nombre ni código del KPI. Se mantiene únicamente la
+compatibilidad previa de dos códigos de catálogo que omitían por unidad.
+
+El ajuste afecta \path{frontend/src/App.tsx}, sus pruebas y
+\path{frontend/src/styles.css}; no cambia contrato, fórmulas, valores,
+aprobaciones, backend ni datos. La nueva inspección consulta 18/19 conservados,
+sin otro ETL ni llamada LLM. Las capturas y exportaciones previas conservan su
+aspecto e identidad: no reciben retrospectivamente el resultado de la UI corregida.
+El corte V4 de \file{bf50172} (454/46) precede al ajuste \file{8f1c7d1}.
+\file{make verify} V6 cerró con salida 0, 454 backend y 48 frontend. V5 conserva
+su interrupción 143 y no se presenta como cierre aprobado. La lectura real de 18/19
+a 574 y 1366 px no mostró solapes: AW presentó USD 3.491,07 por transacción y WWI
+conservó 2.808,73 moneda de origen por transacción. Las nuevas capturas 126/127
+tienen evidencia propia; la regeneración y revisión documental se registran aparte.
+
 \subsection{Validación acumulativa visible}
 
 La versión seleccionada incorpora \textbf{Validación estructural de la propuesta - Sprint 3}. La acción \textbf{Verificar evidencia} llama a \file{POST /api/v1/copilot/proposals/\{id\}/verify}; FastAPI no vuelve a consumir el LLM, no ejecuta el ETL y no modifica el estado de la propuesta. Comprueba la huella de los metadatos, referencias técnicas, consistencia del contrato BI y reconstrucción determinística desde \file{ai\_decisions}. Una diferencia entre la propuesta persistida y la reconstruida se presenta como advertencia de compatibilidad, no como prueba de corrupción. La seguridad vigente depende de la integridad de la instantánea, las referencias comprobadas y la ausencia de errores estructurales.
@@ -652,9 +824,29 @@ Los botones \textbf{Exportar PDF} y \textbf{Exportar Excel} vuelven a construir 
 
 Cada descarga registra actor, formato, vista, ejecución, indicador y filtros. Los archivos no contienen macros, vínculos externos, credenciales, filas crudas, SQL ni fórmulas generadas por IA. La evidencia final de la ejecución 12 se revisó página por página y hoja por hoja. El PDF reserva espacio después de cada salto para impedir que un título quede fuera del margen superior; Excel conserva los porcentajes del dashboard en escala 0--100 y aplica el signo sin multiplicarlos nuevamente. El libro analítico contiene resumen, cuatro hojas con gráfico y datos visibles, y trazabilidad con origen, destino y diferencia.
 
+La precisión de las exportaciones nuevas se decide desde la unidad contractual,
+sin inferirla del nombre o descripción del KPI. Moneda por unidad, moneda por
+pedido, razones y cantidades fraccionarias conservan dos decimales; una etiqueta
+genérica de unidades no demuestra que la cantidad sea entera. Sólo los conteos
+explícitos admitidos de documentos, clientes o filas se presentan sin decimales.
+El resumen Excel utiliza \file{metric.unit}. Ambos formatos imprimen fuente,
+base y fecha ISO con el offset recibido; una fecha sin zona lo declara. XLSX
+conserva cadenas literales, sin interpretar fórmulas o hipervínculos automáticos.
+Las alturas se calculan según ancho real, fuente, palabras y saltos, incluidas
+celdas fusionadas de contexto. El bloque aprobó 52 pruebas focales y controles de
+calidad. Los archivos históricos no se reescriben.
+
+Los cuatro artefactos finales 18/19 se comprobaron por hashes propios: diez páginas
+PDF inspeccionadas y cuatro hojas por XLSX; cifras, razones, sumas, fuente/base,
+offset y advertencia temporal completa. La hoja muestra la advertencia en 57 pt.
+La QA XLSX usó ArtifactTool; no se completó Calc sobre estos finales por memoria.
+La descarga intermedia 19-contexto recortaba visualmente el aviso aunque conservaba
+el texto; se preserva como incidencia histórica, sin atribuirle el resultado final.
+Los manifiestos externos identifican originales, SHA-256, controles y método.
+
 \subsection{Configuración LLM cloud y local}
 
-La pantalla Configuración LLM mantiene nombre, proveedor, URL validada, modelo, estado y resultado de prueba. Puede existir una sola configuración activa. Para Gemini, Groq, Anthropic o Qwen Cloud se guarda primero el registro y después se usa \textbf{Registrar credencial}; cuando ya existe, la acción cambia a \textbf{Reemplazar credencial}. La clave se envía una sola vez y nunca vuelve al navegador. La tabla sólo presenta \textbf{Credencial pendiente} o \textbf{Credencial configurada}.
+La pantalla Configuración LLM mantiene nombre, proveedor, URL validada, modelo, estado y resultado de prueba. Elegir un preset conserva el nombre escrito; el formulario se inicializa por identidad del registro y se limpia sólo después de guardar con éxito. Puede existir una sola configuración activa. Para Gemini, Groq, Anthropic o Qwen Cloud se guarda primero el registro y después se usa \textbf{Registrar credencial}; cuando ya existe, la acción cambia a \textbf{Reemplazar credencial}. La clave se envía una sola vez y nunca vuelve al navegador. La tabla sólo presenta \textbf{Credencial pendiente} o \textbf{Credencial configurada}.
 
 El identificador del modelo se parametriza porque el catálogo del proveedor cambia. Gemini se probó con \file{gemini-3.6-flash}. Para baja latencia, Sprint 4 incorporó Groq Cloud con URL restringida \file{https://api.groq.com/openai/v1} y modelo \file{openai/gpt-oss-120b}. La pantalla incorpora \textbf{Nivel de razonamiento}: automático, mínimo, bajo, medio o alto. Para GPT--OSS en Groq, mínimo se traduce a \file{low}; bajo, medio y alto se conservan. La prueba reserva salida según el nivel y usa \file{include\_reasoning: false}; la generación aumenta el presupuesto según el contrato. Así se corrigió la clasificación del error 400 que aparecía cuando el razonamiento consumía la salida antes de completar el JSON. Cambiar URL, modelo o razonamiento invalida la prueba anterior.
 
@@ -781,6 +973,13 @@ make doctor
 
 \subsection{Comprobación completa}
 
+El cierre del ajuste \file{8f1c7d1} del 5 de noviembre de 2026 aprobó
+\file{make verify} V6 con salida 0: 454 pruebas backend y 48 frontend, controles de
+rama, Compose, workflow, calidad, construcción y doce documentos. El corte anterior
+\file{bf50172} aprobó V4 con 454/46, Ruff/formato en 91 archivos y Mypy en 57.
+V5 se conserva como intento interrumpido con 143. Los resultados fechados a
+continuación son antecedentes conservados; el acta QA distingue cada corte.
+
 El corte de regresión del 3 de octubre, posterior al ensayo autorizado del asesor,
 aprobó \file{make test}: 231 pruebas backend y 34 frontend en Docker. También
 aprobaron Ruff, formato, Mypy, ESLint y la compilación estricta TypeScript/Vite.
@@ -792,7 +991,11 @@ en respuestas satisfactorias ni sustituyen la inspección visual documental.
 make verify
 \end{lstlisting}
 
-El control completo valida desarrollo, el perfil de entrega, el perfil local de Ollama y la entrega GHCR; además construye y prueba frontend/backend y regenera los nueve PDF oficiales: ocho documentos técnicos completos y el Capítulo III académico independiente.
+El control completo valida desarrollo, el perfil de entrega, el perfil local de Ollama
+y la entrega GHCR; además construye y prueba frontend/backend y regenera los doce
+PDF oficiales: bitácora, seis informes de sprint, informe multifuente, auditoría QA,
+guía de formación, Capítulo III y manual técnico. El resultado de cada ejecución
+completa se registra por separado de los controles focalizados.
 
 \subsection{Contrato OpenAPI}
 
@@ -1351,6 +1554,8 @@ make verify
   5.0.1 & 01-10-2026 & Verificación histórica de sólo lectura, restauración auditable de las propuestas 86/91 y alineación del expediente publicado entre Datamart y Analítica. \\
   5.0.1 & 01-10-2026 & Prueba integral multifuente, resolución determinística de territorio líder, restauración del catálogo legado y verificación visual de PDF/Excel. \\
   5.1.0 & 03-10-2026 & Necesidades sugeridas y revisadas con metadatos, consentimiento por destino, evaluación persistida; auditoría de pedidos/facturas y promedios por documento, con límites de evidencia explícitos. \\
+  5.2.0 & 05-11-2026 & Revisión posterior al cierre del 4--5 de noviembre: trazabilidad documental, necesidad positiva de factura, compilación versionada para IDs, razones y conteos, periodicidad efectiva y límites de interpretación del chat. Evidencia previa y regresión posterior separadas. \\
+  5.2.1 & 05-11-2026 & Ajuste adicional de presentación: unidad monetaria completa y denominador conservado, precisión de cantidades y conteos, y conciliación sin superposición. Verificación posterior separada del corte V4; originales anteriores intactos. \\
   \bottomrule
 \end{longtable}
 

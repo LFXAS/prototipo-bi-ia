@@ -12,6 +12,8 @@ from app.modules.copilot.domains import (
 from app.modules.copilot.entity_resolution import enrich_dimension_labels
 from app.modules.copilot.need_advisor import combine_assessment
 from app.modules.copilot.service import (
+    COMPILATION_RULES_VERSION,
+    PROMPT_VERSION,
     _discovery_references,
     _semantic_role,
     apply_analyst_adjustments,
@@ -1108,6 +1110,405 @@ def test_sales_amount_never_uses_an_identifier_as_automatic_replacement() -> Non
     assert proposal["fact"]["measures"][0]["source_columns"] == ["LineTotal"]
 
 
+@pytest.mark.parametrize(
+    "identifier",
+    ["OrderID", "ProductID", "opaque_key", "opaque_ref", "InvoiceNumber", "NumeroPedido"],
+)
+def test_new_compilation_rejects_numeric_identifiers_in_row_arithmetic(identifier: str) -> None:
+    document = deepcopy(DOCUMENT)
+    if identifier not in {"OrderID", "ProductID"}:
+        document["schemas"][0]["tables"][0]["columns"].append(
+            {"name": identifier, "data_type": "int", "primary_key": identifier == "opaque_key"}
+        )
+        if identifier == "opaque_ref":
+            document["schemas"][0]["tables"][0]["foreign_keys"].append(
+                {
+                    "name": "FK_opaque",
+                    "columns": [identifier],
+                    "referenced_schema": "Production",
+                    "referenced_table": "Product",
+                    "referenced_columns": ["ProductID"],
+                }
+            )
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], document)
+    scope = derived_scope(document, semantic_map)
+    blueprint = valid_blueprint()
+    blueprint["measures"].append(
+        {
+            "name": "Derived monetary value",
+            "semantic_role": "sales_amount",
+            "source_column": "LineTotal",
+            "aggregation": "sum",
+            "calculation": {"operation": "divide", "inputs": ["LineTotal", identifier]},
+        }
+    )
+
+    proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
+
+    assert proposal["compilation_rules_version"] == COMPILATION_RULES_VERSION
+    assert not any(item.get("calculation") for item in proposal["fact"]["measures"])
+    assert any("identifica registros" in warning for warning in proposal["warnings"])
+    assert validate_proposal(proposal, scope, document)["valid"] is True
+
+
+@pytest.mark.parametrize("quantity_column", ["NumberOfUnits", "NumeroDeUnidades"])
+@pytest.mark.parametrize("candidate_fallback", [False, True])
+def test_number_of_units_is_a_measure_unless_it_is_a_declared_identifier(
+    quantity_column: str, candidate_fallback: bool
+) -> None:
+    document = deepcopy(DOCUMENT)
+    document["schemas"][0]["tables"][0]["columns"].append(
+        {"name": quantity_column, "data_type": "decimal", "primary_key": False}
+    )
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], document)
+    scope = derived_scope(document, semantic_map)
+    blueprint = valid_blueprint()
+    blueprint["measures"].append(
+        {
+            "name": "Unidades",
+            "semantic_role": "quantity",
+            "source_column": "MissingQuantity" if candidate_fallback else quantity_column,
+            "aggregation": "sum",
+        }
+    )
+    proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
+    quantity = next(item for item in proposal["fact"]["measures"] if item["name"] == "Unidades")
+    assert quantity["source_columns"] == [quantity_column]
+    assert quantity["aggregation"] == "sum"
+    assert validate_proposal(proposal, scope, document)["valid"] is True
+
+
+@pytest.mark.parametrize("structural_key", ["primary", "foreign"])
+def test_quantity_like_name_never_overrides_declared_identity(structural_key: str) -> None:
+    document = deepcopy(DOCUMENT)
+    table = document["schemas"][0]["tables"][0]
+    table["columns"].append(
+        {"name": "NumberOfUnits", "data_type": "int", "primary_key": structural_key == "primary"}
+    )
+    if structural_key == "foreign":
+        table["foreign_keys"].append(
+            {
+                "columns": ["NumberOfUnits"],
+                "referenced_schema": "Production",
+                "referenced_table": "Product",
+                "referenced_columns": ["ProductID"],
+            }
+        )
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], document)
+    scope = derived_scope(document, semantic_map)
+    blueprint = valid_blueprint()
+    blueprint["measures"].append(
+        {
+            "name": "Unidades",
+            "semantic_role": "quantity",
+            "source_column": "NumberOfUnits",
+            "aggregation": "sum",
+        }
+    )
+    proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
+    assert not any(item["name"] == "Unidades" for item in proposal["fact"]["measures"])
+    assert validate_proposal(proposal, scope, document)["valid"] is True
+
+
+@pytest.mark.parametrize("rules_version", [1, 2])
+def test_number_precision_is_versioned_and_historical_decisions_replay(rules_version: int) -> None:
+    document = deepcopy(DOCUMENT)
+    document["schemas"][0]["tables"][0]["columns"].append(
+        {"name": "NumberOfUnits", "data_type": "decimal", "primary_key": False}
+    )
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], document)
+    scope = derived_scope(document, semantic_map)
+    blueprint = valid_blueprint()
+    blueprint["measures"].append(
+        {
+            "name": "Unidades",
+            "semantic_role": "quantity",
+            "source_column": "NumberOfUnits",
+            "aggregation": "sum",
+        }
+    )
+    proposal = expand_proposal_blueprint(
+        blueprint, scope, semantic_map, compilation_rules_version=rules_version
+    )
+    assert any(item["name"] == "Unidades" for item in proposal["fact"]["measures"]) is (
+        rules_version == 1
+    )
+    assert proposal.get("compilation_rules_version", 1) == rules_version
+    validation = validate_proposal(proposal, scope, document)
+    evidence = verify_proposal_evidence(
+        proposal,
+        validation,
+        scope,
+        semantic_map,
+        document,
+        canonical_hash(document),
+        PROMPT_VERSION,
+    )
+    assert evidence["replay_hash"] == evidence["proposal_hash"]
+    assert evidence["approval_safe"] is True
+    assert evidence["compatibility_warning"] is True
+    replay_check = next(check for check in evidence["checks"] if check["code"] == "proposal.replay")
+    assert replay_check["passed"] is True
+    assert (
+        f"persistidas: {rules_version}; actuales: {COMPILATION_RULES_VERSION}"
+        in (replay_check["detail"])
+    )
+
+
+@pytest.mark.parametrize("name", ["Importe promedio por pedido", "Average amount per order"])
+@pytest.mark.parametrize("operation", ["average", "sum"])
+def test_row_average_with_identifier_becomes_only_a_verified_aggregate_ratio(
+    name: str, operation: str
+) -> None:
+    document = deepcopy(DOCUMENT)
+    document["schemas"][0]["tables"][0]["name"] = "Movement"
+    semantic_map, _ = validated_semantic_candidates([semantic_response("Sales.Movement")], document)
+    scope = derived_scope(document, semantic_map)
+    blueprint = valid_blueprint()
+    blueprint["fact_source"] = "Sales.Movement"
+    blueprint["grain_description"] = "Un evento comercial por registro."
+    blueprint["measures"].extend(
+        [
+            {
+                "name": "Documents",
+                "source_column": "OrderID",
+                "aggregation": "count_distinct",
+                "semantic_role": "transaction_count",
+            },
+            {
+                "name": name,
+                "source_column": "LineTotal",
+                "aggregation": "sum",
+                "semantic_role": "sales_amount",
+                "calculation": {"operation": "divide", "inputs": ["LineTotal", "OrderID"]},
+            },
+        ]
+    )
+    blueprint["kpis"] = [
+        {
+            "code": "mean_document",
+            "name": name,
+            "measure_index": 2,
+            "operation": operation,
+            "unit": "currency",
+            "semantic_role": "sales_amount",
+        }
+    ]
+
+    proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
+
+    assert len(proposal["fact"]["measures"]) == 2
+    assert all(not measure.get("calculation") for measure in proposal["fact"]["measures"])
+    assert proposal["kpis"][0]["formula_kind"] == "ratio"
+    assert proposal["kpis"][0]["inputs"] == ["importe_venta", "Documents"]
+    assert validate_proposal(proposal, scope, document)["valid"] is True
+
+
+@pytest.mark.parametrize("name", ["Número de líneas de venta", "Sale row count"])
+def test_row_counts_are_not_silently_replaced_with_document_counts(name: str) -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+    blueprint = valid_blueprint()
+    blueprint["measures"].append(
+        {
+            "name": name,
+            "source_column": "ProductID",
+            "aggregation": "count",
+            "semantic_role": "transaction_count",
+        }
+    )
+    blueprint["kpis"].append(
+        {
+            "code": "line_count",
+            "name": name,
+            "measure_index": 1,
+            "operation": "count",
+            "unit": "rows",
+            "semantic_role": "transaction_count",
+        }
+    )
+
+    proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
+
+    assert len(proposal["fact"]["measures"]) == 1
+    assert len(proposal["kpis"]) == 1
+    assert any("no equivale" in warning for warning in proposal["warnings"])
+    assert validate_proposal(proposal, scope, DOCUMENT)["valid"] is True
+
+
+def test_identifier_operand_validation_is_new_contract_only() -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+    proposal = valid_proposal()
+    proposal["fact"]["measures"].append(
+        {
+            "name": "Derived monetary value",
+            "source_columns": ["LineTotal", "OrderID"],
+            "aggregation": "sum",
+            "semantic_role": "sales_amount",
+            "calculation": {"operation": "divide", "inputs": ["LineTotal", "OrderID"]},
+        }
+    )
+    legacy = validate_proposal(proposal, scope, DOCUMENT)
+    proposal["compilation_rules_version"] = 2
+
+    validation = validate_proposal(proposal, scope, DOCUMENT)
+
+    assert "measure.identifier_operand" not in {item["code"] for item in legacy["issues"]}
+    assert "measure.identifier_operand" in {item["code"] for item in validation["issues"]}
+
+
+def test_new_compilation_preserves_price_times_quantity_without_identifiers() -> None:
+    document = deepcopy(DOCUMENT)
+    document["schemas"][0]["tables"][0]["columns"].extend(
+        [
+            {"name": "UnitPrice", "data_type": "money", "primary_key": False},
+            {"name": "Quantity", "data_type": "int", "primary_key": False},
+        ]
+    )
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], document)
+    scope = derived_scope(document, semantic_map)
+    blueprint = valid_blueprint()
+    blueprint["measures"].append(
+        {
+            "name": "Importe derivado",
+            "semantic_role": "sales_amount",
+            "source_column": "UnitPrice",
+            "aggregation": "sum",
+            "calculation": {"operation": "multiply", "inputs": ["UnitPrice", "Quantity"]},
+        }
+    )
+
+    proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
+
+    assert proposal["fact"]["measures"][1]["calculation"]["inputs"] == ["UnitPrice", "Quantity"]
+    assert validate_proposal(proposal, scope, document)["valid"] is True
+
+
+def test_legacy_expansion_replays_without_a_new_compilation_marker() -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+    blueprint = valid_blueprint()
+    blueprint["measures"].append(
+        {
+            "name": "Derived monetary value",
+            "semantic_role": "sales_amount",
+            "source_column": "LineTotal",
+            "aggregation": "sum",
+            "calculation": {"operation": "divide", "inputs": ["LineTotal", "OrderID"]},
+        }
+    )
+
+    legacy = expand_proposal_blueprint(blueprint, scope, semantic_map, compilation_rules_version=1)
+    current = expand_proposal_blueprint(blueprint, scope, semantic_map)
+
+    assert "compilation_rules_version" not in legacy
+    assert legacy["fact"]["measures"][1]["calculation"]["operation"] == "divide"
+    assert len(current["fact"]["measures"]) == 1
+
+
+@pytest.mark.parametrize(
+    "label", ["Trazabilidad del pedido y su línea", "Order and detail traceability"]
+)
+@pytest.mark.parametrize("missing", [None, "OrderID", "ProductID"])
+def test_identity_coverage_requires_every_physical_key(label: str, missing: str | None) -> None:
+    proposal = valid_proposal()
+    proposal["fact"]["business_keys"] = [
+        name for name in ("OrderID", "ProductID") if name != missing
+    ]
+    proposal["fact"]["measures"].append(
+        {
+            "name": "Documents",
+            "source_columns": ["OrderID"],
+            "aggregation": "count_distinct",
+            "semantic_role": "transaction_count",
+        }
+    )
+    if missing == "OrderID":
+        proposal["fact"]["measures"][-1]["source_columns"] = ["OtherDocumentID"]
+    assessment = {
+        "requirements": [
+            {
+                "code": "ai:0",
+                "coverage_code": "goal:transactions",
+                "label": label,
+                "components": ["transactions"],
+                "status": "direct",
+                "identity_references": ["Sales.OrderDetail.OrderID", "Sales.OrderDetail.ProductID"],
+            }
+        ]
+    }
+
+    coverage = build_requirement_coverage(proposal, assessment)[0]
+
+    assert coverage["coverage_status"] == ("covered" if missing is None else "not_covered")
+    if missing is not None:
+        assert f"Sales.OrderDetail.{missing}" in coverage["explanation"]
+
+
+def test_identity_coverage_accepts_declared_key_equivalence_but_not_calculation() -> None:
+    proposal = valid_proposal()
+    proposal["fact"]["business_keys"] = ["ProductID"]
+    requirement = {
+        "code": "ai:0",
+        "label": "Identidad del detalle",
+        "components": ["transactions"],
+        "status": "direct",
+        "identity_references": ["Production.Product.ProductID"],
+    }
+    assessment = {"requirements": [requirement]}
+
+    assert build_requirement_coverage(proposal, assessment)[0]["coverage_status"] == "covered"
+
+    proposal["fact"]["business_keys"] = []
+    proposal["fact"]["measures"] = [
+        {
+            "name": "Derived",
+            "source_columns": ["ProductID", "LineTotal"],
+            "calculation": {"operation": "multiply", "inputs": ["ProductID", "LineTotal"]},
+        }
+    ]
+    assert build_requirement_coverage(proposal, assessment)[0]["coverage_status"] == "not_covered"
+
+
+@pytest.mark.parametrize("missing", [None, "sales_amount", "product"])
+def test_ranking_requirement_uses_existing_measure_and_dimension(missing: str | None) -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+    operation = {
+        "kind": "ranking",
+        "operation": "group_aggregate_order",
+        "measure_requirement": "ai:0",
+        "dimension_requirement": "ai:1",
+    }
+    requirement = {
+        "code": "ai:2",
+        "label": "Clasificar productos por importe",
+        "coverage_code": "goal:product",
+        "status": "direct",
+        "components": ["sales_amount", "product"],
+        "analytical_operation": operation,
+    }
+    assessment = {"requirements": [requirement], "accepted_limitations": []}
+    request = {"goal": "Comparar productos por importe", "viability_assessment": assessment}
+
+    payload = proposal_payload("a" * 64, "sqlserver", request, scope, semantic_map)
+    proposal = expand_proposal_blueprint(valid_blueprint(), scope, semantic_map)
+    if missing == "sales_amount":
+        proposal["fact"]["measures"] = []
+    elif missing == "product":
+        proposal["dimensions"] = []
+    coverage = build_requirement_coverage(proposal, assessment)
+
+    assert payload["business_request"]["requirements"][0]["analytical_operation"] == operation
+    assert coverage[0]["analytical_operation"] == operation
+    assert coverage[0]["coverage_status"] == ("covered" if missing is None else "not_covered")
+    if missing is None:
+        proposal["need_assessment"] = assessment
+        proposal["requirement_coverage"] = coverage
+        assert validate_proposal(proposal, scope, DOCUMENT)["valid"] is True
+
+
 def test_provider_observations_are_trace_only_not_validation_warnings() -> None:
     semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
     scope = derived_scope(DOCUMENT, semantic_map)
@@ -1439,7 +1840,7 @@ def test_financial_enrichment_is_included_in_deterministic_replay() -> None:
         semantic_map,
         document,
         canonical_hash(document),
-        "sales-bi-v6",
+        PROMPT_VERSION,
     )
 
     assert evidence["verified"] is True
@@ -1621,8 +2022,35 @@ def test_previous_engine_version_is_a_non_blocking_compatibility_warning() -> No
     assert evidence["approval_safe"] is True
     assert evidence["compatibility_warning"] is True
     replay_check = next(check for check in evidence["checks"] if check["code"] == "proposal.replay")
+    assert replay_check["passed"] is True
+    assert "exactamente el mismo contrato" in replay_check["detail"]
+    assert f"persistidas: sales-bi-v3; actuales: {PROMPT_VERSION}" in replay_check["detail"]
+
+
+@pytest.mark.parametrize("rules_version", [1, 2])
+def test_old_rules_still_report_a_real_replay_mismatch(rules_version: int) -> None:
+    semantic_map, _ = validated_semantic_candidates([semantic_response()], DOCUMENT)
+    scope = derived_scope(DOCUMENT, semantic_map)
+    proposal = expand_proposal_blueprint(
+        valid_blueprint(), scope, semantic_map, compilation_rules_version=rules_version
+    )
+    validation = validate_proposal(proposal, scope, DOCUMENT)
+    proposal["summary"] = "Diferencia histórica conservada."
+    evidence = verify_proposal_evidence(
+        proposal,
+        validation,
+        scope,
+        semantic_map,
+        DOCUMENT,
+        canonical_hash(DOCUMENT),
+        PROMPT_VERSION,
+    )
+    replay_check = next(check for check in evidence["checks"] if check["code"] == "proposal.replay")
     assert replay_check["passed"] is False
-    assert "no es comparable" in replay_check["detail"]
+    assert "difiere de la huella persistida" in replay_check["detail"]
+    assert evidence["proposal_hash"] != evidence["replay_hash"]
+    assert evidence["approval_safe"] is True
+    assert evidence["compatibility_warning"] is True
 
 
 def test_current_engine_keeps_valid_contract_safe_when_replay_differs() -> None:
@@ -1639,7 +2067,7 @@ def test_current_engine_keeps_valid_contract_safe_when_replay_differs() -> None:
         semantic_map,
         DOCUMENT,
         canonical_hash(DOCUMENT),
-        "sales-bi-v6",
+        PROMPT_VERSION,
     )
 
     assert evidence["approval_safe"] is True

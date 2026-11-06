@@ -1,0 +1,191 @@
+{
+  "fecha_utc": "2026-11-05T13:39:34.121Z",
+  "metodo": "Consulta de expedientes18/19 conservados, lectura de sus indicadores y rectángulos del DOM visible, con inspección de capturas en ancho574 y1366. No se ejecutó ETL ni se llamaron proveedores.",
+  "antes": {
+    "fuente": "AdventureWorks",
+    "etiqueta_ancho": 50,
+    "texto_ancho": 73,
+    "solapamiento_observado": true,
+    "unidad_promedio": "moneda de origen por transacción aun con divisa USD verificada"
+  },
+  "despues": [
+    {
+      "fuente": "AdventureWorks",
+      "ancho": 566,
+      "indicadores": [
+        {
+          "anchoEtiqueta": 390,
+          "anchoTexto": 390,
+          "nombre": "Suma de importe de líneas",
+          "solapamiento": false,
+          "valor": "USD 109.846.381,40"
+        },
+        {
+          "anchoEtiqueta": 390,
+          "anchoTexto": 390,
+          "nombre": "Suma de unidades vendidas",
+          "solapamiento": false,
+          "valor": "274.914,00 Unidades"
+        },
+        {
+          "anchoEtiqueta": 390,
+          "anchoTexto": 390,
+          "nombre": "Conteo de pedidos distintos",
+          "solapamiento": false,
+          "valor": "31.465 Pedidos"
+        },
+        {
+          "anchoEtiqueta": 390,
+          "anchoTexto": 390,
+          "nombre": "Importe promedio por pedido",
+          "solapamiento": false,
+          "valor": "USD 3.491,07 por transacción"
+        }
+      ],
+      "alto": 684
+    },
+    {
+      "fuente": "AdventureWorks",
+      "ancho": 574,
+      "indicadores": [
+        {
+          "anchoEtiqueta": 399,
+          "anchoTexto": 399,
+          "nombre": "Suma de importe de líneas",
+          "solapamiento": false,
+          "valor": "USD 109.846.381,40"
+        },
+        {
+          "anchoEtiqueta": 399,
+          "anchoTexto": 399,
+          "nombre": "Suma de unidades vendidas",
+          "solapamiento": false,
+          "valor": "274.914,00 Unidades"
+        },
+        {
+          "anchoEtiqueta": 399,
+          "anchoTexto": 399,
+          "nombre": "Conteo de pedidos distintos",
+          "solapamiento": false,
+          "valor": "31.465 Pedidos"
+        },
+        {
+          "anchoEtiqueta": 399,
+          "anchoTexto": 399,
+          "nombre": "Importe promedio por pedido",
+          "solapamiento": false,
+          "valor": "USD 3.491,07 por transacción"
+        }
+      ],
+      "alto": 900
+    },
+    {
+      "fuente": "AdventureWorks",
+      "ancho": 1366,
+      "indicadores": [
+        {
+          "anchoEtiqueta": 201,
+          "anchoTexto": 201,
+          "nombre": "Suma de importe de líneas",
+          "solapamiento": false,
+          "valor": "USD 109.846.381,40"
+        },
+        {
+          "anchoEtiqueta": 201,
+          "anchoTexto": 201,
+          "nombre": "Suma de unidades vendidas",
+          "solapamiento": false,
+          "valor": "274.914,00 Unidades"
+        },
+        {
+          "anchoEtiqueta": 201,
+          "anchoTexto": 201,
+          "nombre": "Conteo de pedidos distintos",
+          "solapamiento": false,
+          "valor": "31.465 Pedidos"
+        },
+        {
+          "anchoEtiqueta": 201,
+          "anchoTexto": 201,
+          "nombre": "Importe promedio por pedido",
+          "solapamiento": false,
+          "valor": "USD 3.491,07 por transacción"
+        }
+      ],
+      "alto": 900
+    },
+    {
+      "fuente": "WideWorldImporters",
+      "ancho": 1366,
+      "indicadores": [
+        {
+          "anchoEtiqueta": 201,
+          "anchoTexto": 201,
+          "nombre": "Importe total mensual",
+          "solapamiento": false,
+          "valor": "198.043.439,45 moneda de origen"
+        },
+        {
+          "anchoEtiqueta": 201,
+          "anchoTexto": 201,
+          "nombre": "Unidades vendidas totales",
+          "solapamiento": false,
+          "valor": "8.950.628,00 Unidades"
+        },
+        {
+          "anchoEtiqueta": 201,
+          "anchoTexto": 201,
+          "nombre": "Facturas distintas emitidas",
+          "solapamiento": false,
+          "valor": "70.510 Documentos"
+        },
+        {
+          "anchoEtiqueta": 201,
+          "anchoTexto": 201,
+          "nombre": "Importe promedio por factura",
+          "solapamiento": false,
+          "valor": "2.808,73 moneda de origen por transacción"
+        }
+      ],
+      "alto": 900
+    },
+    {
+      "fuente": "WideWorldImporters",
+      "ancho": 574,
+      "indicadores": [
+        {
+          "anchoEtiqueta": 399,
+          "anchoTexto": 399,
+          "nombre": "Importe total mensual",
+          "solapamiento": false,
+          "valor": "198.043.439,45 moneda de origen"
+        },
+        {
+          "anchoEtiqueta": 399,
+          "anchoTexto": 399,
+          "nombre": "Unidades vendidas totales",
+          "solapamiento": false,
+          "valor": "8.950.628,00 Unidades"
+        },
+        {
+          "anchoEtiqueta": 399,
+          "anchoTexto": 399,
+          "nombre": "Facturas distintas emitidas",
+          "solapamiento": false,
+          "valor": "70.510 Documentos"
+        },
+        {
+          "anchoEtiqueta": 399,
+          "anchoTexto": 399,
+          "nombre": "Importe promedio por factura",
+          "solapamiento": false,
+          "valor": "2.808,73 moneda de origen por transacción"
+        }
+      ],
+      "alto": 900
+    }
+  ],
+  "nuevos_etl": 0,
+  "llm_calls": 0,
+  "datos_modificados": false
+}

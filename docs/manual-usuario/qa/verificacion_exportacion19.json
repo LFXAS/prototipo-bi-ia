@@ -1,0 +1,126 @@
+{
+  "fecha_revision": "2026-11-05T00:07:06.215626-05:00",
+  "corte": "Exportación 19 original descargada desde UI tras precisión, fuente/base, offset y texto literal; antes del posterior refuerzo temporal del chat.",
+  "archivos": {
+    "pdf": {
+      "archivo": "evidencias_exportaciones/ventas-ejecucion-19-executive.pdf",
+      "sha256": "3b39c79e3ef63c052ea1fe6ec777e182e6ac651f71b2f32e320f39f5eed876bf"
+    },
+    "xlsx": {
+      "archivo": "evidencias_exportaciones/ventas-ejecucion-19-executive.xlsx",
+      "sha256": "85470fb9866a3e686660e327b1700fd40b96395544bfd51291edc0bd3714baab"
+    }
+  },
+  "originales_editados": false,
+  "metodo": "Importación de sólo lectura con Artifact Tool, inspección de valores y cuatro renders de hojas; contraste independiente de XML/formatos y cálculos Decimal. PDF Poppler a 120 ppp, cinco páginas abiertas individualmente.",
+  "contexto": {
+    "fuente": "WideWorldImporters local",
+    "base": "WideWorldImporters",
+    "ejecucion": 19,
+    "propuesta": 124,
+    "periodo": "2015 · California",
+    "moneda": "moneda de origen",
+    "actualizacion": "2026-11-05 04:56+00:00",
+    "zona": "Offset +00:00 explícito recibido del backend; no se convierte a una hora local inventada."
+  },
+  "hojas": [
+    "Resumen",
+    "Evolución en el tiempo",
+    "Productos líderes",
+    "Distribución territorial"
+  ],
+  "celdas_clave": {
+    "fuente": "Resumen!C10",
+    "base": "Resumen!F10",
+    "periodo": "Resumen!C8",
+    "moneda": "Resumen!F8",
+    "propuesta": "Resumen!C9",
+    "ejecucion": "Resumen!F9",
+    "actualizacion": "Resumen!I8",
+    "importe": "Resumen!B14",
+    "unidades": "Resumen!E14",
+    "facturas": "Resumen!H14",
+    "promedio": "Resumen!B17"
+  },
+  "valores_sin_redondear": {
+    "importe": "1215705.55",
+    "suma_mensual": "1215705.55",
+    "territorio": "1215705.55",
+    "diferencia_temporal": "0.00",
+    "unidades": "57142",
+    "facturas": "481",
+    "promedio": "2527.454365904366",
+    "promedio_calculado": "2527.454365904365904365904366",
+    "top3": [
+      "54648",
+      "50715",
+      "45860.85"
+    ],
+    "suma_top8": "307083.35",
+    "top3_sobre_total_territorial": "0.1243918397839016199276214541"
+  },
+  "formatos_resumen": {
+    "B14": "#,##0.00",
+    "E14": "#,##0.00",
+    "H14": "#,##0",
+    "B17": "#,##0.00"
+  },
+  "tolerancias": {
+    "importes": "0.000001",
+    "razon_y_participaciones": "0.000000001",
+    "conteos": "Exactos"
+  },
+  "controles": {
+    "cuatro_hojas": true,
+    "fuente_impresa": true,
+    "base_impresa": true,
+    "propuesta_124": true,
+    "ejecucion_19": true,
+    "filtro_2015_California": true,
+    "moneda_origen": true,
+    "actualizacion_con_offset": true,
+    "importe": true,
+    "unidades": true,
+    "facturas": true,
+    "timeline_vs_total": true,
+    "territorio_vs_total": true,
+    "promedio_ratio": true,
+    "top3_valores": true,
+    "participaciones_top8": true,
+    "resumen_numerico": true,
+    "sin_formulas_de_celda_xlsx": true,
+    "sin_hipervinculos_automaticos": true,
+    "pdf_contexto": true,
+    "pdf_cifras": true,
+    "originales_sin_cambios": true
+  },
+  "resultado_numerico": "Conforme",
+  "revision_visual_pdf": {
+    "paginas_revisadas": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "metodo": "Poppler a 120 ppp y apertura individual de todas las páginas",
+    "resultado": "Las cinco páginas son legibles; no se observan cifras cortadas, superposiciones, tablas fuera del margen ni imágenes deformadas. La portada imprime fuente, base, 19/124, 2015/California, moneda de origen y actualización con offset.",
+    "observaciones": [
+      "La cuadrícula de cuatro KPI conserva dos celdas de plantilla vacías.",
+      "La página territorial contiene una sola categoría y amplio espacio en blanco.",
+      "El gráfico PDF etiqueta el máximo exacto y tres períodos; no presenta escala numérica vertical.",
+      "La participación de productos se calcula sobre la suma de las ocho categorías mostradas; el hallazgo aclara total mostrado. No equivale a participación sobre el total territorial."
+    ]
+  },
+  "revision_visual_xlsx": {
+    "hojas_revisadas": [
+      "Resumen",
+      "Evolución en el tiempo",
+      "Productos líderes",
+      "Distribución territorial"
+    ],
+    "resultado": "Cuatro hojas renderizadas: valores y títulos legibles, gráficos presentes y sin errores visibles. El original no fue recalculado, modificado ni reexportado.",
+    "errores_formula_inspector": 0
+  },
+  "limite": "La lectura del reporte no acredita vigencia territorial histórica ni entrega real. Las cifras filtradas y etiquetas de fuente no sustituyen la procedencia temporal de la dimensión; el chat tiene su propia regresión."
+}

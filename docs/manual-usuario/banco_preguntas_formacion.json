@@ -1,0 +1,485 @@
+{
+  "titulo": "Banco razonado de formación BI y sustentación",
+  "fecha_corte": "2026-11-05",
+  "ubicacion_sugerida": "Sección central de aprendizaje y sustentación, después de los recorridos operativos y antes de los anexos QA; puede introducirse desde el capítulo inicial.",
+  "objetivo": "Aprender a justificar cada decisión con conceptos BI, acciones del prototipo y evidencia observable, diferenciando dato, interpretación y validación.",
+  "uso_docente": [
+    "Leer primero la pregunta y pedir una explicación con palabras propias; después contrastar con la respuesta razonada.",
+    "Realizar la comprobación sobre la fuente y el expediente seleccionados. Los identificadores de ejemplo pertenecen a esta instalación y no son requisitos del producto.",
+    "Exigir en cada respuesta tres elementos: qué se decidió, por qué y con qué evidencia se comprobaría. Si falta evidencia, describir el límite en vez de inventar una garantía.",
+    "No usar las respuestas como autorización para cambiar roles, credenciales, conexiones, propuestas aprobadas o datos. Toda acción conserva sus permisos y la aprobación aplicable.",
+    "Los ejemplos 117/16 y 120/17 preceden al ajuste need-review-5 y sales-bi-v7. AW 121/122 se generó y aprobó bajo need-review-4 y WWI 123/124 bajo need-review-5, ambos con reglas de compilación 2. El código vigente usa need-review-6 y reglas 3 para nuevas expansiones; cada repetición conserva sus propios artefactos y corte de evidencia."
+  ],
+  "planes_demostracion": [
+    {
+      "plan": "A",
+      "titulo": "Consultar evidencia ya aprobada sin consumir LLM",
+      "objetivo": "Demostrar el proceso y explicar las decisiones utilizando resultados persistidos, sin depender de cuota o latencia del proveedor durante la sustentación.",
+      "requisitos": [
+        "Acceso autorizado a la instalación y a propuestas, expedientes, analítica y exportaciones correspondientes.",
+        "Identificar antes de la sesión los casos ya revisados y sus fuentes, propuestas, ejecuciones, filtros y archivos de evidencia.",
+        "Conservar disponibles los PDF y XLSX cuya lectura ya se haya verificado; una exportación descargada pero pendiente no se presenta como comprobada."
+      ],
+      "secuencia": [
+        "1. Seleccionar la fuente y explicar su origen OLTP, destino y captura de metadatos. Consultar la estructura persistida sin confundirla con filas del origen.",
+        "2. Abrir en Versiones generadas una propuesta aprobada. Recorrer su necesidad, conceptos, grano, claves, medidas, KPI y decisión humana en modo de consulta.",
+        "3. Usar Verificar evidencia para enseñar integridad, referencias, contrato y reproducción determinística. Esta acción no vuelve a llamar al LLM ni ejecuta ETL.",
+        "4. Abrir el expediente terminado de esa propuesta; leer filas, importes, unidades, documentos y diferencias. No materializar otra vez para enseñar el resultado.",
+        "5. Abrir la analítica de la misma ejecución y aplicar los filtros preparados. Justificar agregación, denominador y unidad y contrastar un valor con su expediente.",
+        "6. Consultar los reportes ya revisados y comparar su procedencia y cifras. Si se genera una exportación nueva, distinguirla del archivo histórico y comprobar su contenido antes de declararla verificada.",
+        "7. Para enseñar conversación sin cuota, mostrar la respuesta y evidencia capturadas previamente, con su corte y límites. No presentar esa captura como una consulta nueva ejecutada ante el jurado."
+      ],
+      "resultado": "El jurado puede seguir una cadena de evidencia ya producida y formular preguntas sobre su significado aunque el proveedor LLM no esté disponible.",
+      "limite": "Este plan comprueba consulta y trazabilidad de artefactos existentes; no demuestra una nueva generación ni una nueva carga. La aplicación y el almacenamiento necesarios deben estar disponibles."
+    },
+    {
+      "plan": "B",
+      "titulo": "Generar un caso nuevo con disponibilidad y consentimiento",
+      "objetivo": "Mostrar la asistencia LLM y la supervisión completa cuando existen condiciones para producir artefactos nuevos, conservando un plan de consulta preparado.",
+      "requisitos": [
+        "Fuente autorizada y metadatos vigentes, proveedor probado y disponible, presupuesto o cuota suficiente y tiempo de demostración compatible con su latencia.",
+        "Permisos para cada etapa que se pretenda realizar y consentimiento para el destino de IA indicado.",
+        "Objetivo, preguntas y periodicidad conservados para poder repetir el mismo caso; no reducir una necesidad únicamente para ocultar un defecto del prototipo."
+      ],
+      "secuencia": [
+        "1. Leer fuente y destino LLM y redactar o recuperar el objetivo exacto. Identificar grano, indicadores, ejes y límites antes de generar.",
+        "2. Revisar viabilidad con las reglas vigentes. Aceptar sólo límites legítimos y comprendidos; si aparece una contradicción técnica, conservar la evidencia y corregir la causa o la necesidad según corresponda, sin aceptar un ACK falso.",
+        "3. Generar conceptos y una propuesta nueva. Explicar que la respuesta puede variar y que debe pasar referencias, reglas y revisión humana; no prometer una salida idéntica del LLM.",
+        "4. Revisar y, si se justifica, personalizar para crear una hija. Verificar evidencia y decidir con los permisos correspondientes. Aprobar no ejecuta ETL.",
+        "5. Si forma parte de la demostración autorizada, revisar vista previa, selección y confirmación de ETL; después leer la conciliación y revisar semántica antes de publicar.",
+        "6. Consultar panel, conversación y exportaciones nuevos con su procedencia. Separar cifras correctas de inferencias no demostradas y registrar qué pasos efectivamente concluyeron.",
+        "7. Si hay cuota, latencia, error o un control bloqueante, explicar el estado y continuar con el plan A. No relabelar un resultado histórico como nuevo ni prometer completar una operación que no terminó."
+      ],
+      "resultado": "Se observa una generación nueva supervisada hasta la etapa efectivamente completada; sus resultados se evalúan con evidencia, no por similitud visual con un ejemplo previo.",
+      "limite": "La generación LLM no es una garantía del 100 % ni una operación universalmente determinista. La reproducción determinística del contrato persistido es una comprobación diferente."
+    }
+  ],
+  "preguntas": [
+    {
+      "id": "FORM-01",
+      "tema": "Origen, destino y sólo lectura",
+      "pregunta": "¿Por qué se registra una conexión SQL Server si el datamart se guarda en PostgreSQL?",
+      "respuesta_razonada": "Son responsabilidades distintas. SQL Server es el origen OLTP: conserva transacciones y relaciones operativas que se consultan con una cuenta lectora. PostgreSQL aloja el prototipo y el datamart resultante del ETL. Registrar una conexión de origen permite identificar y probar qué base se consultará; no cambia el destino. La lectura mínima reduce el impacto sobre el sistema operativo y conserva la frontera de que el prototipo analiza sin actualizar las ventas de origen. La restricción efectiva debe existir en SQL Server, además del control de FastAPI.",
+      "comprobacion": [
+        "Revisar el motor, servidor, puerto y base de la conexión sin mostrar su secreto.",
+        "Consultar el resultado de la prueba de sólo lectura y, después, el origen y destino del expediente ETL."
+      ],
+      "caso_observado": "AdventureWorks y WideWorldImporters se registraron como fuentes independientes. Los casos completos actuales 122/18 y 124/19 materializaron y conciliaron sus resultados en el destino del prototipo; 117/16 y 120/17 conservan sus propios antecedentes.",
+      "limite": "Una prueba de conexión satisfactoria no acredita todas las filas, la semántica comercial ni una conciliación de importes.",
+      "fuentes": [
+        "docs/architecture.md",
+        "docs/replication-guide.md",
+        "contenido_roles_parametros.json"
+      ]
+    },
+    {
+      "id": "FORM-02",
+      "tema": "Estados de fuente y proveedor",
+      "pregunta": "¿Habilitar una fuente, seleccionarla y activar un proveedor LLM significan lo mismo?",
+      "respuesta_razonada": "Habilitar permite que una conexión probada participe en el espacio de trabajo. Seleccionar la fuente establece el contexto de metadatos, catálogo y resultados que se está usando. Activar el proveedor LLM establece a qué configuración de IA se dirige la asistencia; no elige la base de ventas. Antes de actuar se comprueban ambas identidades. Cambiar de fuente o de destino de IA puede invalidar una revisión o un consentimiento anterior porque ya no describen el mismo contexto.",
+      "comprobacion": [
+        "Leer Fuente en contexto y la conexión de la instantánea.",
+        "Leer el destino de IA del consentimiento y el estado de prueba de su configuración.",
+        "Comprobar que no reaparecen resultados de la fuente anterior después de cambiar el contexto."
+      ],
+      "caso_observado": "El catálogo y las capturas de metadatos de AW y WWI son independientes aunque se use la misma aplicación.",
+      "limite": "Que exista una fuente habilitada o un proveedor activo no garantiza que todos los demás prerrequisitos estén completos.",
+      "fuentes": [
+        "docs/specs/SPR-06-01-contexto-multifuente-sqlserver.md",
+        "contenido_roles_parametros.json"
+      ]
+    },
+    {
+      "id": "FORM-03",
+      "tema": "Metadatos y datos",
+      "pregunta": "¿Qué demuestra una instantánea de metadatos y qué no demuestra?",
+      "respuesta_razonada": "Describe la estructura capturada: esquemas, tablas, columnas, tipos, claves y relaciones. Permite verificar que una referencia existe y que una ruta está declarada. No contiene las filas de ventas y no demuestra por sí sola la moneda de todas las operaciones, la integridad de cada etiqueta, el costo histórico ni el significado contable de un importe. Por eso el sistema revisa primero la estructura y concilia cifras después del ETL. Confundir ambas etapas llevaría a llamar exactitud de datos a una simple comprobación de columnas.",
+      "comprobacion": [
+        "Abrir una tabla en Explorador de esquema y reconocer sus columnas, PK y relaciones.",
+        "Buscar después una conciliación de importes en el expediente ETL, no en esa pantalla."
+      ],
+      "caso_observado": "WWI dispuso de referencias válidas para el importe, pero el control de divisa no acreditó una moneda única y se mantuvo moneda de origen.",
+      "limite": "Una instantánea tampoco se actualiza por mirar el explorador; debe corresponder a la captura seleccionada.",
+      "fuentes": [
+        "docs/specs/SPR-03-02-propuesta-bi-asistida-por-ia.md",
+        "docs/architecture.md",
+        "contenido_nuevo.json"
+      ]
+    },
+    {
+      "id": "FORM-04",
+      "tema": "PK, FK e identidad",
+      "pregunta": "¿Para qué sirven la PK y la FK y por qué un identificador numérico no es una medida?",
+      "respuesta_razonada": "La PK identifica una fila y puede estar formada por varias columnas. La FK relaciona columnas de una entidad con una clave de otra y ayuda a justificar la unión. El tipo numérico sólo indica cómo se almacena un ID; no lo convierte en cantidad ni en dinero. La clave de línea mantiene la identidad física y la clave de pedido permite contar pedidos distintos. Dividir un importe entre el valor de ese ID no tiene significado de promedio comercial. Las relaciones deben comprobarse completas, especialmente cuando una clave tiene varias columnas. Tampoco una palabra como Number convierte una magnitud en ID: NumberOfUnits debe contrastarse con claves y función. Para un evento documental, si el propio hecho es cabecera se verifica su ancla; si es detalle se revisa la FK completa hacia la cabecera.",
+      "comprobacion": [
+        "Identificar la PK de detalle y la FK hacia cabecera en el explorador.",
+        "Revisar que el contrato conserve las claves necesarias y que sus fórmulas no usen IDs como operandos monetarios."
+      ],
+      "caso_observado": "El ajuste de compilación excluye aritmética con identificadores; la propuesta AW 122 conservó claves de detalle y pedido y un promedio por razón de agregados.",
+      "limite": "La semejanza de nombres entre dos columnas no sustituye la prueba de su relación ni acredita que representen una factura.",
+      "fuentes": [
+        "docs/specs/SPR-04-02-kpis-controlados-y-calculables.md",
+        "docs/testing/qa-postcierre-2026-11-04.md"
+      ]
+    },
+    {
+      "id": "FORM-05",
+      "tema": "Roles, permisos y responsabilidades",
+      "pregunta": "¿Por qué no basta ocultar un botón y qué roles existen realmente?",
+      "respuesta_razonada": "La interfaz orienta el uso; la autorización efectiva pertenece al backend. Un permiso controla una actividad concreta y un rol agrupa permisos para una responsabilidad. El sembrado garantiza el rol Administrador; en la instalación observada también aparecen Operador, Analista BI y Gerente comercial. La programadora es una responsabilidad de mantenimiento, no un rol técnico adicional que se deba inventar. Una matriz recomendada para formación se distingue de los permisos realmente leídos. Al gerente se le observaron cuatro permisos, incluido Consultar metadatos, necesario para obtener el contexto de fuentes.",
+      "comprobacion": [
+        "Comparar la configuración observada y la matriz de recomendaciones del manual.",
+        "Identificar el permiso requerido por consultar, diseñar, aprobar, ejecutar o exportar, sin concederlo por este ejercicio."
+      ],
+      "caso_observado": "La lectura del formulario confirmó cuatro permisos del gerente; no se autenticaron todas las cuentas de los roles.",
+      "limite": "Leer casillas de un rol no equivale a probar todas sus rutas, sesiones o restricciones de seguridad.",
+      "fuentes": [
+        "backend/app/db/seed.py",
+        "contenido_roles_parametros.json",
+        "docs/architecture.md"
+      ]
+    },
+    {
+      "id": "FORM-06",
+      "tema": "Catálogo y preguntas de negocio",
+      "pregunta": "¿Una pregunta del catálogo es una columna de la base o una dimensión ya impuesta?",
+      "respuesta_razonada": "Es una orientación de negocio: explica qué se quiere comparar y con qué criterio. Su código identifica la opción; la etiqueta facilita reconocerla y sus descripciones e instrucciones delimitan el significado. No garantiza que exista una columna equivalente ni selecciona automáticamente una dimensión. La revisión debe contrastar las referencias reales. En particular, las instrucciones no deben añadir costos, margen o descuentos que el objetivo no pidió. El catálogo pertenece a la fuente seleccionada y una personalización de AW no se copia por ello a WWI.",
+      "comprobacion": [
+        "Leer código, etiqueta, descripción e instrucciones de una pregunta y relacionarlas con el objetivo.",
+        "Comparar el catálogo de las dos fuentes y comprobar su independencia."
+      ],
+      "caso_observado": "En AW se conservaron seis preguntas y cinco periodicidades; se precisaron también descripciones e instrucciones de las primeras cuatro para evitar requisitos no solicitados.",
+      "limite": "Que una opción sea visible no prueba que cualquier necesidad redactada bajo esa opción sea ejecutable.",
+      "fuentes": [
+        "docs/specs/SPR-06-01-contexto-multifuente-sqlserver.md",
+        "contenido_nuevo.json"
+      ]
+    },
+    {
+      "id": "FORM-07",
+      "tema": "Revisión previa y consentimiento",
+      "pregunta": "¿Por qué hay que revisar la necesidad antes de generar y repetir la revisión cuando cambia?",
+      "respuesta_razonada": "La revisión identifica qué se solicita, qué referencias lo respaldan y qué límites deben resolverse antes de invertir en una propuesta. La evaluación está ligada al texto, preguntas, periodicidad, fuente, instantánea y reglas. Si cambian, la evaluación anterior puede describir otra petición. El consentimiento identifica el destino de IA y autoriza el envío del contexto permitido; no autoriza ejecutar ETL ni enviar credenciales o filas. Cada cambio de reglas puede exigir reevaluar antes de generar de nuevo sin borrar registros anteriores. El caso WWI 124/19 se produjo bajo la revisión 5; las precisiones posteriores conservan su propio corte.",
+      "comprobacion": [
+        "Leer el destino indicado junto al consentimiento.",
+        "Modificar una necesidad sólo dentro de un ejercicio autorizado y comprobar que exige revisión vigente antes de generar.",
+        "Revisar la versión de reglas en la evidencia técnica correspondiente."
+      ],
+      "caso_observado": "El objetivo AW detallado se conservó para comparar el intento 118 con la repetición 121 y su hija 122; no se sustituyó por el caso básico para declarar resuelto el mismo objetivo. Las dos revisiones adicionales v6 conservaron los textos de 532 y 693 caracteres, pero dejaron diez y siete decisiones no aceptadas, sin generar otra propuesta ni ETL. Viabilidad observada y recorrido completo son resultados distintos.",
+      "limite": "Consentir asistencia no valida el significado de todas las frases producidas por el LLM.",
+      "fuentes": [
+        "docs/specs/SPR-03-02-propuesta-bi-asistida-por-ia.md",
+        "docs/replication-guide.md",
+        "qa/viabilidad_v6_cierre.json"
+      ]
+    },
+    {
+      "id": "FORM-08",
+      "tema": "Dato directo, derivación y límite",
+      "pregunta": "¿Qué diferencia hay entre referencia directa, requisito derivable y requisito no disponible?",
+      "respuesta_razonada": "Una referencia directa apunta a una entrada estructural comprobada. Un requisito derivable necesita entradas verificadas y una operación que el contrato realmente soporte. No disponible significa que falta una dependencia o una operación admitida; una advertencia puede indicar ambigüedad o un límite de interpretación. Encontrar operandos no prueba que una fórmula ya esté implementada, ni que el resultado sea contablemente correcto. Antes de aceptar una limitación, el analista decide si conserva, precisa o excluye ese requisito. Una clasificación técnicamente falsa exige corrección y no se vuelve verdadera al marcar una casilla. Lea cada exclusión en su ámbito: sin percentiles no elimina un ranking de sumas y no excluir facturas no significa excluirlas. Una redacción ambigua debe revisarse sin reducir una necesidad para ocultar un defecto.",
+      "comprobacion": [
+        "Abrir la evidencia de un requisito y nombrar entradas, operación y límite.",
+        "Separar el texto explicativo de la fórmula que realmente aparece en el contrato ejecutable."
+      ],
+      "caso_observado": "La trazabilidad de pedidos no solicita factura. Se exige intención positiva del evento y evidencia de cabecera verificada, directamente como ancla o mediante su relación completa; las salidas del proveedor se contrastan con esas referencias.",
+      "limite": "Directo no significa que cada fila sea correcta; derivable no significa que la IA pueda inventar cualquier fórmula.",
+      "fuentes": [
+        "docs/specs/SPR-03-02-propuesta-bi-asistida-por-ia.md",
+        "docs/testing/qa-postcierre-2026-11-04.md"
+      ]
+    },
+    {
+      "id": "FORM-09",
+      "tema": "Grano y periodicidad",
+      "pregunta": "¿Una propuesta mensual debe guardar una sola fila por mes?",
+      "respuesta_razonada": "El grano define qué representa una fila del hecho: por ejemplo, una línea física de detalle. La periodicidad define cómo se resumen o comparan esas filas para una lectura. Es posible conservar cada línea y agrupar sus importes por mes. Si se reduce el grano a mes durante el diseño, pueden perderse claves y posibilidades de conciliación o detalle. Por eso conviene declarar ambas decisiones por separado: una línea física por fila, resúmenes mensuales para el objetivo.",
+      "comprobacion": [
+        "Leer la descripción del grano y sus claves en la propuesta.",
+        "Comparar las filas del hecho con el número de períodos del gráfico: son unidades distintas."
+      ],
+      "caso_observado": "WWI 117/16 conservó 228.265 líneas físicas y presentó 41 meses en la consulta temporal completa; no son 41 filas del hecho.",
+      "limite": "Mantener detalle tampoco hace válidas todas las agregaciones: cada KPI debe respetar su población y unidad.",
+      "fuentes": [
+        "docs/manual-tecnico/manual-tecnico.tex",
+        "docs/testing/qa-postcierre-2026-11-04.md"
+      ]
+    },
+    {
+      "id": "FORM-10",
+      "tema": "Dimensiones y uniones",
+      "pregunta": "¿Por qué no se añade una dimensión sólo porque su tabla parece relacionada?",
+      "respuesta_razonada": "Una dimensión aporta un eje descriptivo, como producto, cliente o territorio. Para unirla con el hecho se necesita una ruta verificada y una cardinalidad que no multiplique indebidamente las líneas. Una relación muchos a muchos puede duplicar importes si se trata como muchos a uno. Deben revisarse claves completas, unicidad y función de la entidad. Conservar un nombre descriptivo facilita interpretar el panel, pero no sustituye estas comprobaciones. El diseño se limita a las dimensiones que responden la necesidad y que el contrato puede materializar con evidencia.",
+      "comprobacion": [
+        "Revisar las relaciones y advertencias de duplicación en la propuesta o corrección guiada.",
+        "Contrastar después filas e importes de origen y destino al grano aprobado."
+      ],
+      "caso_observado": "El ejercicio básico AW 120/17 seleccionó fecha, producto y territorio, sin cliente. Esa exclusión pertenece a ese objetivo, no a una incapacidad universal de analizar clientes.",
+      "limite": "Que una dimensión tenga cobertura descriptiva del 100 % no prueba por sí sola que su relación comercial sea la correcta.",
+      "fuentes": [
+        "docs/specs/SPR-03-02-propuesta-bi-asistida-por-ia.md",
+        "contenido_asistente_etl.json"
+      ]
+    },
+    {
+      "id": "FORM-11",
+      "tema": "SUM, AVG, MAX y población",
+      "pregunta": "¿Por qué el máximo de una venta de línea no identifica al producto que más vendió?",
+      "respuesta_razonada": "MAX encuentra el mayor valor entre las filas que recibe. Para comparar ventas acumuladas por producto se agrupan las líneas de cada producto y se suma su importe; después se ordenan esas sumas. Un producto puede liderar por muchas ventas pequeñas sin tener la línea individual más alta. AVG también depende de la población: promediar líneas no calcula automáticamente el promedio por factura o por unidad. La función debe elegirse a partir de la pregunta, el grano y la unidad, no por una etiqueta atractiva.",
+      "comprobacion": [
+        "Explicar verbalmente qué conjunto recibe la función y qué representa una fila.",
+        "Comparar un KPI de máximo con el ranking por importe agregado y verificar que no se presentan como equivalentes."
+      ],
+      "caso_observado": "La propuesta WWI 115 se bloqueó al intentar representar el producto líder mediante el máximo de una línea; no se aprobó ese contrato.",
+      "limite": "El ranking vigente sólo compara la medida y los filtros declarados; no demuestra preferencia o demanda de mercado.",
+      "fuentes": [
+        "docs/specs/SPR-04-02-kpis-controlados-y-calculables.md",
+        "docs/testing/qa-postcierre-2026-11-04.md"
+      ]
+    },
+    {
+      "id": "FORM-12",
+      "tema": "COUNT DISTINCT y documentos",
+      "pregunta": "¿Por qué contar filas no equivale a contar pedidos o facturas?",
+      "respuesta_razonada": "Un documento puede contener muchas líneas. COUNT de filas cuenta esas líneas; COUNT DISTINCT de la clave documental cuenta cada documento una vez dentro del alcance. La clave de línea y la clave de cabecera responden preguntas diferentes y pueden conservarse juntas. Si el contrato sólo representa conteos de documentos y clientes, no debe convertir silenciosamente una petición de contar líneas en pedidos manteniendo el mismo rótulo. La opción no soportada se explica y se excluye o se reformula con criterio de negocio.",
+      "comprobacion": [
+        "Localizar la clave documental que alimenta COUNT DISTINCT.",
+        "Comparar filas conciliadas y documentos distintos del expediente y explicar por qué difieren."
+      ],
+      "caso_observado": "WWI 117/16 concilió 228.265 líneas y 70.510 facturas distintas: ambas cifras son correctas para poblaciones diferentes.",
+      "limite": "La existencia de un ID no prueba que sea una factura. Debe corresponder al evento y a la entidad que el objetivo solicita.",
+      "fuentes": [
+        "docs/specs/SPR-04-02-kpis-controlados-y-calculables.md",
+        "contenido_nuevo.json"
+      ]
+    },
+    {
+      "id": "FORM-13",
+      "tema": "Razón de agregados",
+      "pregunta": "¿Cómo se justifica un promedio de importe por factura?",
+      "respuesta_razonada": "Se divide el importe total del alcance entre el número de facturas distintas del mismo alcance, con control de denominador cero. Es una razón entre agregados: SUM de importe dividido entre COUNT DISTINCT de factura. No equivale a dividir cada línea entre el valor de su ID, ni necesariamente a promediar importes de línea. Numerador, denominador, filtros y período deben referirse a la misma población. Si falta una de las medidas verificadas, no se inventa el resultado.",
+      "comprobacion": [
+        "Leer numerador y denominador de la receta.",
+        "Recalcular el promedio filtrado y comparar el redondeo mostrado."
+      ],
+      "caso_observado": "En WWI 19/124, 2015/California, 1.215.705,55 dividido entre 481 facturas produce 2.527,454365904366 y se muestra 2.527,45. PDF y XLSX 19 conservan esa selección y razón verificadas.",
+      "limite": "Ese promedio es importe por factura del alcance; no es utilidad, precio por unidad ni ticket de una población distinta.",
+      "fuentes": [
+        "docs/specs/SPR-04-02-kpis-controlados-y-calculables.md",
+        "docs/testing/qa-postcierre-2026-11-04.md"
+      ]
+    },
+    {
+      "id": "FORM-14",
+      "tema": "Importe y divisa",
+      "pregunta": "¿Por qué AW muestra USD y WWI conserva moneda de origen?",
+      "respuesta_razonada": "La unidad se debe sostener en la evidencia de la fuente y del contrato, no en la nacionalidad del nombre de la base ni en una suposición del analista. En los casos observados se acreditó USD para AW, mientras WWI no demostró una moneda única. Por eso su importe se conserva como moneda de origen. Tampoco se convierte un campo de importe en utilidad o ingreso fiscal sólo porque su nombre parezca comercial. Antes de comparar fuentes se comprueban divisa, definición y alcance; sumar importes de moneda no acreditada sería una decisión adicional sin sustento.",
+      "comprobacion": [
+        "Abrir el control de divisa y leer su justificación.",
+        "Comparar la unidad del KPI en panel, conversación y exportación."
+      ],
+      "caso_observado": "WWI 16 mostró 198.043.439,45 de importe de origen; AW 17 mostró 109.846.381,40 USD acreditados en su propio contrato.",
+      "limite": "No se demostró equivalencia monetaria entre esas dos cifras y no se presentan como un total conjunto.",
+      "fuentes": [
+        "docs/testing/qa-postcierre-2026-11-04.md",
+        "contenido_nuevo.json"
+      ]
+    },
+    {
+      "id": "FORM-15",
+      "tema": "Costo y utilidad",
+      "pregunta": "¿Puede calcularse margen si existe precio de venta o un costo actual del producto?",
+      "respuesta_razonada": "El precio de venta no es costo. Un costo actual tampoco acredita cuánto costó cada unidad cuando ocurrió una venta histórica. Para un margen histórico se necesita una definición consistente de ingresos y costos con la temporalidad, población y tratamiento comercial correspondientes. Si falta esa evidencia, se conserva la limitación o se plantea un indicador distinto debidamente nombrado; no se presenta utilidad contable por conveniencia. Si el objetivo sólo solicita importe y unidades, añadir margen crea una exigencia que el usuario no pidió.",
+      "comprobacion": [
+        "Identificar la columna que respaldaría el costo y su alcance temporal.",
+        "Revisar las instrucciones del catálogo y comprobar que no arrastran costos o margen al objetivo actual."
+      ],
+      "caso_observado": "El catálogo AW se precisó para que sus preguntas no añadieran costos, margen o descuentos no solicitados; el ejemplo básico 120/17 utiliza dos KPI, no una utilidad inventada.",
+      "limite": "Que una fórmula sea matemáticamente posible no acredita el significado contable de sus entradas.",
+      "fuentes": [
+        "docs/specs/SPR-03-02-propuesta-bi-asistida-por-ia.md",
+        "contenido_nuevo.json"
+      ]
+    },
+    {
+      "id": "FORM-16",
+      "tema": "Aprobación y ETL",
+      "pregunta": "¿Aprobar una propuesta ejecuta inmediatamente las transformaciones?",
+      "respuesta_razonada": "La aprobación registra una decisión humana sobre un contrato revisado. El ETL es una etapa posterior que selecciona una propuesta compatible, muestra un plan y exige la confirmación aplicable para materializar. El backend construye consultas mediante operaciones tipadas y plantillas autorizadas; la IA no ejecuta SQL libre. Esta separación permite revisar el diseño antes de afectar el destino y conservar en cada expediente el proposal_id, selección de KPI y resultados. Abrir un expediente terminado sólo consulta evidencia y no repite su carga.",
+      "comprobacion": [
+        "Distinguir en el historial el estado aprobado de la propuesta y el estado de su ejecución.",
+        "Leer la propuesta seleccionada, vista previa y confirmación antes de materializar."
+      ],
+      "caso_observado": "WWI 117/16 y AW básico 120/17 son antecedentes; los casos nuevos detallados son AW 122/18 y WWI 124/19. Cada expediente conserva su propuesta, selección y procedencia.",
+      "limite": "Una propuesta aprobada no demuestra todavía igualdad de filas ni importes en un destino que no se ha cargado.",
+      "fuentes": [
+        "docs/architecture.md",
+        "contenido_asistente_etl.json"
+      ]
+    },
+    {
+      "id": "FORM-17",
+      "tema": "Conciliación y tolerancia",
+      "pregunta": "¿Qué significa diferencia cero y por qué no garantiza todo el análisis?",
+      "respuesta_razonada": "Significa que los valores comparados coinciden para el control, grano, selección y tolerancia definidos. La conciliación puede comprobar filas, importes, unidades y documentos distintos entre origen y destino. No demuestra por sí sola la semántica de moneda, la relevancia de una dimensión ni que una narración del LLM sea prudente. Se lee cada control con su unidad y alcance. También debe distinguirse una diferencia real de un residuo de coma flotante inferior a la tolerancia acordada, sin usar la tolerancia para ocultar errores materiales.",
+      "comprobacion": [
+        "Leer origen, destino, diferencia y unidad de varios controles del expediente.",
+        "Explicar qué control no se ha realizado si sólo se dispone de validación estructural."
+      ],
+      "caso_observado": "Las ejecuciones 16 y 17 conciliaron filas con diferencia cero. En la matriz temporal posterior, AW trimestral tuvo un residuo aproximado de 1,49 × 10^-8, inferior a 10^-6.",
+      "limite": "No se interpreta el residuo de un control como exactitud universal ni se extrapola su tolerancia a otros indicadores sin justificación.",
+      "fuentes": [
+        "docs/testing/qa-postcierre-2026-11-04.md",
+        "qa/matriz_temporal_solo_lectura.json"
+      ]
+    },
+    {
+      "id": "FORM-18",
+      "tema": "Calidad semántica y nombres",
+      "pregunta": "¿Por qué una cobertura descriptiva del 100 % no autoriza cambiar un nombre que parece extraño?",
+      "respuesta_razonada": "La cobertura indica que existe una etiqueta conforme al control establecido; no permite reemplazarla por una expectativa personal. Primero se comprueba la columna de origen, la clave de entidad y la receta que la transporta. En la revisión WWI, algunos nombres parecían inesperados, pero coincidían con CustomerName de la fuente. Cambiarlos por compañías imaginadas habría introducido un error. Las equivalencias semánticas, como traducciones de regiones, también deben aprobarse conservando el original y excluyendo códigos que no deben traducirse como nombres.",
+      "comprobacion": [
+        "Comparar una clave y etiqueta con su referencia de origen mediante el control autorizado.",
+        "Distinguir etiquetas, identificadores y traducciones propuestas antes de publicar calidad semántica."
+      ],
+      "caso_observado": "El diagnóstico de WWI 16 contrastó 663 claves y etiquetas sin diferencias tras la limpieza de espacios existente. La sospecha se descartó sin modificar valores.",
+      "limite": "El aspecto de CustomerName no demuestra si el cliente es una persona física, un contacto o una categoría jurídica concreta.",
+      "fuentes": [
+        "docs/testing/qa-postcierre-2026-11-04.md",
+        "qa/diagnostico_clientes_wwi_e16_20261104.json"
+      ]
+    },
+    {
+      "id": "FORM-19",
+      "tema": "Períodos y herencia",
+      "pregunta": "¿Cómo se decide si la evolución se agrupa por día, semana, mes, trimestre o año?",
+      "respuesta_razonada": "El lector usa la periodicidad efectiva del KPI. Si la receta indica inherit, utiliza la de la propuesta, normalizando los vocabularios cerrados: el catálogo usa day/week/month/quarter/year y el KPI daily/weekly/monthly/quarterly/yearly. La semana utiliza etiquetas ISO; el trimestre tiene su propia etiqueta. Cambiar la agrupación de una consulta sobre el mismo datamart no ejecuta otro ETL ni cambia sus filas. Se comprueba que las sumas de los períodos conserven el total del KPI y que el subtítulo describa el período real.",
+      "comprobacion": [
+        "Leer la periodicidad de propuesta y receta y resolver la herencia.",
+        "Contrastar etiqueta, subtítulo y suma temporal; no deducirlo sólo del nombre histórico de un KPI."
+      ],
+      "caso_observado": "La matriz real de 22 lecturas comprobó dos configuraciones mensuales persistidas, diez códigos KPI y diez herencias de catálogo en los marts 16/17, bajo sólo lectura.",
+      "limite": "Son 22 consultas, no 22 propuestas ni 22 ETL. No demuestra por sí sola todos los posibles contratos nuevos.",
+      "fuentes": [
+        "docs/specs/SPR-05-01-dashboard-ejecutivo-explicable.md",
+        "qa/matriz_temporal_solo_lectura.json"
+      ]
+    },
+    {
+      "id": "FORM-20",
+      "tema": "Filtros, ranking y denominador",
+      "pregunta": "¿Qué hay que declarar al mostrar un Top 3 y qué decisiones no demuestra?",
+      "respuesta_razonada": "Se declaran la medida, la entidad agrupada, la fuente y ejecución, los filtros y la ventana temporal. Si se presenta participación, se aclara el denominador: el total del alcance puede ser mayor que la suma del Top 3. El ranking describe quién acumuló más valor dentro de esa selección; no prueba preferencias de consumidores, demanda de mercado, eficacia de campañas ni dominancia. Una acción comercial se plantea como hipótesis a investigar y no como conclusión causal de tres cifras.",
+      "comprobacion": [
+        "Comparar las cifras citadas con el ranking visible y el total del panel.",
+        "Leer si la respuesta explica filtros y denominador y si evita afirmaciones causales no sustentadas."
+      ],
+      "caso_observado": "En WWI 16, 2015/California mostró total 1.215.705,55 y 481 facturas. El chat acertó los tres importes 54.648,00; 50.715,00 y 45.860,85, pero la primera respuesta no cubrió toda la cautela solicitada.",
+      "limite": "Acertar los valores del ranking no equivale a responder correctamente cada parte de una pregunta compuesta.",
+      "fuentes": [
+        "docs/specs/SPR-05-05-copiloto-analitico-contextual.md",
+        "pruebas_actuales.json"
+      ]
+    },
+    {
+      "id": "FORM-21",
+      "tema": "Conversación sustentada y ubicación",
+      "pregunta": "¿Qué aporta el copiloto analítico y por qué no puede afirmar dónde ocurrió una entrega histórica?",
+      "respuesta_razonada": "Ayuda a explicar resultados y formular comparaciones dentro del contexto autorizado. Sus cifras deben proceder del panel o de agregaciones tipadas y seguras, y la respuesta debe indicar procedencia y límites. Una provincia obtenida de la ficha actual del cliente clasifica esa ficha; no es una observación independiente de dónde se entregó cada venta ni de cuál era la dirección en una fecha histórica. Para sostener esa afirmación se necesitaría evidencia transaccional y temporal adicional. El lenguaje de la IA se contrasta con los datos que realmente recibió.",
+      "comprobacion": [
+        "Leer Consulta interpretada, evidencia y advertencia cuando estén presentes.",
+        "Preguntar explícitamente si la ubicación corresponde a la ficha actual o a un registro histórico y contrastar su respuesta con el linaje."
+      ],
+      "caso_observado": "La primera respuesta 19 acertó números pero atribuyó historia territorial no probada. Tras el refuerzo, la misma pregunta produjo valores/porcentajes correctos y explicó ficha durante la ventana ETL, sin entrega ni vigencia histórica demostradas. La cautela de plataforma y tres sugerencias válidas, además de un clic real de unidades por cliente con denominador 57.142, quedaron visibles en 117–120.",
+      "limite": "El prototipo no permite SQL libre ni convierte una respuesta conversacional en una modificación del datamart.",
+      "fuentes": [
+        "docs/specs/SPR-05-05-copiloto-analitico-contextual.md",
+        "docs/testing/qa-postcierre-2026-11-04.md"
+      ]
+    },
+    {
+      "id": "FORM-22",
+      "tema": "Proveedor LLM y calidad",
+      "pregunta": "¿Una conexión LLM aprobada o más razonamiento garantizan un mejor diseño BI?",
+      "respuesta_razonada": "La prueba mínima comprueba que la configuración puede responder al contrato de conexión. El razonamiento es una opción compatible con ciertos proveedores y modelos; puede cambiar latencia, presupuesto o comportamiento, pero no certifica calidad comercial ni exactitud de datos. Todos los resultados deben pasar las mismas validaciones y supervisión. El analista elige el proveedor según disponibilidad y condiciones del ensayo, lee el destino del consentimiento y compara evidencia. Las credenciales se registran por el mecanismo protegido y no se incluyen en objetivos, capturas o reportes.",
+      "comprobacion": [
+        "Revisar proveedor, modelo, razonamiento y fecha/estado de prueba.",
+        "Distinguir fallo de transporte, cuota o tiempo de espera de una propuesta semánticamente incorrecta."
+      ],
+      "caso_observado": "Anthropic y Groq superaron la prueba mínima. La solicitud completa a Groq recibió 413 por cuota; se restauró Claude y quedó activo. Los recorridos AW 122/18 y WWI 124/19 se comprobaron con Claude. No se probaron cinco proveedores en vivo ni se presenta una clasificación universal de calidad de los modelos.",
+      "limite": "Cambiar el proveedor no elimina los límites del producto ni sustituye una fórmula o relación que el contrato no admite.",
+      "fuentes": [
+        "docs/architecture.md",
+        "contenido_roles_parametros.json",
+        "pruebas_actuales.json"
+      ]
+    },
+    {
+      "id": "FORM-23",
+      "tema": "Reportería fiel y precisión",
+      "pregunta": "¿Qué se comprueba al exportar y por qué el formato numérico importa?",
+      "respuesta_razonada": "El servidor reconstruye la selección autorizada y el archivo debe conservar fuente, ejecución, filtros, moneda y alcance visibles. Excel mantiene números, no sólo texto o capturas; PDF debe ser legible y mostrar la misma evidencia. La unidad contractual decide la precisión: un importe por unidad o por pedido es una razón y conserva decimales, mientras un conteo explícito se presenta entero. Un porcentaje calculado en escala 0–100 no debe multiplicarse otra vez al formatearlo. La descarga confirma recepción del archivo; revisar su contenido confirma fidelidad.",
+      "comprobacion": [
+        "Comparar KPI y filtros entre panel, PDF y libro.",
+        "Recalcular una suma de la hoja temporal y contrastarla con el total territorial.",
+        "Revisar todas las páginas y hojas y comprobar unidad, decimales y escala porcentual."
+      ],
+      "caso_observado": "Los finales 18/122 y 19/124 se revisaron por separado: diez páginas PDF y cuatro hojas por libro, contexto fuente/base/offset y advertencia completa. Sus sumas, razones y valores coinciden; la altura del aviso se ajustó a 57 pt. El comparativo y los SHA identifican exactamente cada archivo. ArtifactTool completó la revisión XLSX; no se atribuye Calc final no completado.",
+      "limite": "El contexto 19 recortado y los archivos anteriores se preservan como históricos. Una descarga no acredita todo su contenido, y la QA de otro archivo no se transfiere al final por compartir ejecución.",
+      "fuentes": [
+        "docs/specs/SPR-05-02-reporteria-fiel-pdf-excel.md",
+        "evidencias_exportaciones/verificacion_exportaciones.json",
+        "qa/revision_visual_exportacion17.json",
+        "qa/verificacion_exportacion18_final.json",
+        "qa/verificacion_exportacion19_final.json",
+        "qa/comparativo_exportaciones18_19_final.json"
+      ]
+    },
+    {
+      "id": "FORM-24",
+      "tema": "QA, fallos y repetición",
+      "pregunta": "¿Por qué conservar intentos fallidos y repetir el mismo objetivo después de corregir?",
+      "respuesta_razonada": "El fallo preserva el disparador, la evidencia y el comportamiento anterior. Para evaluar una corrección se repite el mismo objetivo y se comprueba el nuevo resultado; si se reduce a otra pregunta más fácil, se demuestra un caso distinto. En AW el objetivo detallado falló por una factura inferida indebidamente y después por un ranking tratado como columna inexistente. La corrección distingue identidad documental y operaciones sobre medida/dimensión verificadas. Una reparación acotada evita continuar una contradicción técnica sólo aceptando un aviso. Se registran también los límites genuinos que deben seguir bloqueando o requiriendo supervisión.",
+      "comprobacion": [
+        "Comparar objetivo, preguntas, fuente y versiones de reglas antes y después.",
+        "Distinguir pruebas automáticas, revisión de evidencia, operación real en UI y pruebas no ejecutadas."
+      ],
+      "caso_observado": "El ejercicio básico 120/17 conserva su éxito de dos KPI. La repetición exacta de 532 caracteres produjo 121 y la hija 122 bajo v4, con cuatro KPI y ETL 18 conciliado. Los mismos 693 caracteres de WWI se revisaron sin falso margen/ACK bajo v5 y produjeron 123, 124 y ETL 19, con cuatro KPI y diferencia cero.",
+      "limite": "Un caso observado no prueba todos los proveedores, fuentes, objetivos o sesiones de roles. Los resultados pendientes deben seguir marcados como pendientes.",
+      "fuentes": [
+        "docs/testing/qa-postcierre-2026-11-04.md",
+        "pruebas_actuales.json"
+      ]
+    },
+    {
+      "id": "FORM-25",
+      "tema": "Versiones, reproducibilidad y aprobación",
+      "pregunta": "¿Por qué no corregir directamente el JSON de una propuesta aprobada o añadirle el marcador nuevo?",
+      "respuesta_razonada": "El documento, su huella, decisiones y ejecución forman una cadena de evidencia. Reescribirlo haría parecer que un resultado se produjo con reglas posteriores. Cada propuesta identifica prompt y reglas de compilación de su corte; ausencia de marcador conserva reproducción histórica 1 y un marcador explícito permite reproducir las reglas correspondientes. Los casos 122/18 y 124/19 fueron compilación 2, con revisiones 4/5 respectivamente; las nuevas expansiones del corte vigente usan reglas 3. La verificación muestra la huella realmente reconstruida: reproducción sólo cumple si coincide con la persistida, mientras la compatibilidad del motor se informa por separado. Para aprobar un borrador legado, el flujo exige una versión con el motor vigente y conserva source_proposal_id. Desde un aprobado, preparar una hija requiere acción explícita y no libera ni modifica el original.",
+      "comprobacion": [
+        "Identificar versión origen e hija y comparar sus estados e identificadores.",
+        "Usar Verificar evidencia para comprobar integridad, referencias, validación y reproducción, sin volver a llamar al LLM ni ejecutar ETL.",
+        "Ante HTTP 409 por borrador anterior, crear la versión vigente mediante el flujo previsto; no editar marcadores o huellas."
+      ],
+      "caso_observado": "Los replays 91/98/117/120 conservaron evidencia sin mutación. Las cadenas 122/18 y 124/19 mantienen sus contratos. La captura 124 muestra ambas huellas b5872c3bbd6d coincidentes para 124; no se exige otra generación LLM para verificar esa reproducción. En 125 se abrió explícitamente el editor desde 124 aprobada, se comprobó Justificación editable y se canceló; volvió la consulta 124 sin guardar ni crear una hija.",
+      "limite": "Reproducir un contrato histórico conserva evidencia; no certifica por sí solo que toda fórmula comercial de ese corte sea correcta.",
+      "fuentes": [
+        "docs/specs/SPR-03-02-propuesta-bi-asistida-por-ia.md",
+        "docs/specs/SPR-04-02-kpis-controlados-y-calculables.md",
+        "docs/replication-guide.md",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/125-editor-hija-habilitado.jpg",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/service.py",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/router.py"
+      ]
+    }
+  ],
+  "criterios_evaluacion": [
+    "Identifica la unidad de observación y distingue línea, documento y período.",
+    "Distingue referencia estructural, interpretación comercial y comprobación cuantitativa.",
+    "Relaciona cada fórmula con sus entradas, población, filtros, denominador y unidad.",
+    "Reconoce dónde termina la evidencia y evita inferencias de moneda, costo, causalidad o historia no demostradas.",
+    "Explica permisos y decisiones humanas sin atribuir a la IA ejecución autónoma.",
+    "Conserva la procedencia, versiones y resultados pendientes de cada caso observado."
+  ],
+  "periodo_revision": "4–5 de noviembre de 2026; carpeta de autoría iniciada el día 4."
+}

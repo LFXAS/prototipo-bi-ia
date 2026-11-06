@@ -1,0 +1,90 @@
+[
+  {
+    "label": "Etiqueta",
+    "value": "Evolución de ventas en el tiempo"
+  },
+  {
+    "label": "Explicación para el analistaPermite observar tendencias y comparar períodos de venta.",
+    "value": "Permite observar tendencias y comparar períodos de venta."
+  },
+  {
+    "label": "Instrucción funcional para la IAPermite observar tendencias y comparar períodos de venta.",
+    "value": "Permite observar tendencias y comparar períodos de venta."
+  },
+  {
+    "label": "Etiqueta",
+    "value": "Productos con mayor desempeño"
+  },
+  {
+    "label": "Explicación para el analistaPermite ordenar productos por importe o unidades vendidas.",
+    "value": "Permite ordenar productos por importe o unidades vendidas."
+  },
+  {
+    "label": "Instrucción funcional para la IAPermite ordenar productos por importe o unidades vendidas.",
+    "value": "Permite ordenar productos por importe o unidades vendidas."
+  },
+  {
+    "label": "Etiqueta",
+    "value": "Desempeño por cliente"
+  },
+  {
+    "label": "Explicación para el analistaPermite segmentar las ventas según el cliente asociado.",
+    "value": "Permite segmentar las ventas según el cliente asociado."
+  },
+  {
+    "label": "Instrucción funcional para la IAPermite segmentar las ventas según el cliente asociado.",
+    "value": "Permite segmentar las ventas según el cliente asociado."
+  },
+  {
+    "label": "Etiqueta",
+    "value": "Desempeño por territorio"
+  },
+  {
+    "label": "Explicación para el analistaPermite comparar resultados comerciales por ubicación o territorio.",
+    "value": "Permite comparar resultados comerciales por ubicación o territorio."
+  },
+  {
+    "label": "Instrucción funcional para la IAPermite comparar resultados comerciales por ubicación o territorio.",
+    "value": "Permite comparar resultados comerciales por ubicación o territorio."
+  },
+  {
+    "label": "Etiqueta",
+    "value": "Diaria"
+  },
+  {
+    "label": "ExplicaciónAgrupa resultados por día cuando existe una fecha de venta verificable.",
+    "value": "Agrupa resultados por día cuando existe una fecha de venta verificable."
+  },
+  {
+    "label": "Etiqueta",
+    "value": "Semanal"
+  },
+  {
+    "label": "ExplicaciónAgrupa resultados por semana cuando existe una fecha de venta verificable.",
+    "value": "Agrupa resultados por semana cuando existe una fecha de venta verificable."
+  },
+  {
+    "label": "Etiqueta",
+    "value": "Mensual"
+  },
+  {
+    "label": "ExplicaciónAgrupa resultados por mes cuando existe una fecha de venta verificable.",
+    "value": "Agrupa resultados por mes cuando existe una fecha de venta verificable."
+  },
+  {
+    "label": "Etiqueta",
+    "value": "Trimestral"
+  },
+  {
+    "label": "ExplicaciónAgrupa resultados por trimestre cuando existe una fecha de venta verificable.",
+    "value": "Agrupa resultados por trimestre cuando existe una fecha de venta verificable."
+  },
+  {
+    "label": "Etiqueta",
+    "value": "Anual"
+  },
+  {
+    "label": "ExplicaciónAgrupa resultados por año cuando existe una fecha de venta verificable.",
+    "value": "Agrupa resultados por año cuando existe una fecha de venta verificable."
+  }
+]

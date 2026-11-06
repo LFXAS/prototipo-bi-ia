@@ -59,9 +59,9 @@ pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}}
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & INF-SPR-06 \\
-    Versión & 1.1.0 \\
+    Versión & 1.2.1 \\
     Fecha de cierre & 1 de octubre de 2026 \\
-    Revisión acumulativa & 3 de octubre de 2026 \\
+    Revisión acumulativa & 5 de noviembre de 2026, posterior al cierre \\
     Rama de trabajo & \file{feature/multi-source-sqlserver} \\
     Estado & Incremento funcional validado localmente \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
@@ -350,6 +350,151 @@ ambas conservaban ejecuciones conciliadas. Datamart de ventas abre por defecto e
 expediente publicado y, en AdventureWorks, coincide con Analítica en la ejecución 12 y la
 propuesta 91.
 
+\section{QA posterior al cierre del 4--5 de noviembre de 2026}
+
+Esta adenda corrige el incremento existente; no crea un Sprint 7 ni convierte los
+hitos de octubre en resultados nuevos. La preparación de la sustentación encontró
+clasificación falsa de factura, fórmulas con IDs, población mal rotulada, falsos
+límites, sugerencias sin soporte y explicaciones más concluyentes que los datos.
+Se conservaron intentos fallidos y objetivos originales para comprobar la raíz.
+
+\subsection{Contrato vigente y compatibilidad}
+
+El corte actual identifica \file{need-review-6}, \file{sales-bi-v7} y
+\path{compilation_rules_version=3}. Trazabilidad genérica usa la capacidad existente
+\file{transactions}, identificadores y referencias verificadas. Un evento de
+factura exige intención positiva original y cabecera con PK completa declarada y
+referencias exactas, o FK completa a la cabecera. No basta un nombre o PK parcial.
+Una contradicción persistente tras una reparación bloquea con HTTP 422; no se
+soluciona aceptando un ACK.
+
+El ranking compara agregados y requiere medida, dimensión y ruta verificadas;
+no es una columna física ni capacidad ejecutable nueva. Se enlaza después de
+resolver sus entradas, con independencia del orden del JSON. Tildes y puntuación
+no alteran el criterio; excluir percentiles no elimina el ranking de sumas.
+El escáner ES/EN conserva peticiones positivas, incluidas «no excluir», y distingue
+cautelas sobre moneda/utilidad de una solicitud de margen. Es un mecanismo léxico
+acotado, sin garantía exhaustiva para lenguaje natural.
+
+Las claves no sirven para aritmética monetaria. El promedio documental requiere
+suma del importe/conteo de documentos distintos; no se convierte conteo de líneas
+en pedidos sin cambiar población. Reglas 3 precisa \file{Number}/\file{Numero}:
+una cantidad como \file{NumberOfUnits} sin claves puede usar SUM, mientras PK/FK
+y semántica documental conservan su protección.
+
+Se reproducen reglas 1 sin marcador y reglas 2/3 explícitas. Una aprobación nueva
+de borrador anterior recibe 409 y exige una hija vigente; un aprobado legado
+retorna intacto. La igualdad real de hashes determina el replay; la advertencia
+de versiones se presenta aparte. La auditoría final SELECT-only de seis aprobadas
+91/98/117/120/122/124 conservó documentos y validaciones, con \file{approval\_safe}
+verdadero en las seis. Cinco replay coinciden y 91 mantiene su discrepancia previa.
+122/124 siguen reglas 2. No se inventa un campo histórico de revisión de necesidad.
+
+\subsection{Repeticiones reales y límites}
+
+AW mantuvo el objetivo detallado de 532 caracteres fallido en 118. La nueva 121 y
+la hija 122 aprobaron bajo revisión 4/reglas 2: cuatro KPI, tres medidas, cuatro
+dimensiones y claves detalle/pedido, cero errores y nueve avisos. La huella
+\file{28ac4d6997d8} coincide. El ETL 18 completó 26 operaciones, cinco tablas,
+121.317 filas por lado y diferencia cero; importe 109.846.381,399888 USD,
+274.914 unidades, 31.465 pedidos y razón 3.491,065672966407. Se validó publicación
+semántica conservando originales. En 2013/Northwest: 6.015.174,735836 USD,
+17.452 unidades y 2.053 pedidos. El chat final mantuvo cifras/denominador, tres
+sugerencias válidas y cautelas sobre preferencias/causalidad.
+
+WWI repitió los mismos 693 caracteres y cuatro preguntas bajo revisión 5/reglas 2,
+sin falso margen ni ACK. La 123 y su hija 124 aprobaron cuatro KPI, siete
+referencias, cero errores, siete avisos y huella \file{b5872c3bbd6d} igual a replay.
+El ETL 19 completó 26 operaciones, cinco tablas y 228.265 filas por lado, diferencia
+cero; importe de origen 198.043.439,45, 8.950.628 unidades y 70.510 facturas.
+La fuente no acreditó moneda única. En 2015/California: 1.215.705,55,
+57.142 unidades, 481 facturas y razón 2.527,454365904366.
+
+El primer chat 19 atribuyó vigencia a fecha del hecho sin evidencia. Se conserva
+como incidencia. La misma pregunta, repetida con conversación limpia, devolvió
+54.648 / 50.715 / 45.860,85 sobre el total territorial y aclaró ficha extraída
+durante ETL, sin prueba de historia o entrega real. El clic de sugerencia por
+cliente devolvió cinco clientes y denominador 57.142. El aviso determinístico de
+plataforma se muestra primero en modo ejecutivo; proveedor devuelve respuesta y
+evidencia, y sugerencias/intención usan sólo métricas y ejes materializados.
+La procedencia conserva fuentes, columnas, claves, operación y ruta del
+materializador. La ventana ETL no acredita lectura exacta ni última actualización.
+
+Los antecedentes 117/16 y básico 120/17 siguen disponibles; dos KPI básicos no
+sustituyen los cuatro del objetivo detallado. La sospecha sobre nombres WWI se
+descartó contrastando 663/663 etiquetas con \file{CustomerName}, cero diferencias,
+sin cambiar datos por el aspecto del nombre.
+
+\subsection{Períodos, formularios y exportaciones}
+
+La periodicidad efectiva usa KPI o herencia de propuesta, con normalización de
+ambos vocabularios cerrados. Las 22 consultas reales de sólo lectura sobre 16/17
+cubrieron configuración persistida, cinco códigos KPI y cinco códigos heredados
+por cada origen; no fueron 22 ETL. Los períodos WWI fueron 1.069/179/41/14/4 y AW
+1.124/162/38/13/4 para día/semana ISO/mes/trimestre/año. Las sumas conciliaron,
+salvo residuo AW trimestral \(1{,}49\times10^{-8}\), menor que \(10^{-6}\).
+
+La interfaz muestra contrato efectivo por nombre/código, exclusiones desmarcadas
+y razones con ambas entradas. Ignora recuperaciones tardías del padre después de
+guardar hija. La acción explícita desde aprobada/invalidada abre sólo borrador
+hijo; cancelar restaura consulta y guardar crea hija sin autoaprobar ni mutar padre.
+La comprobación real en 124 abrió el editor y canceló sin guardar. Correo es de
+sólo lectura; cuenta protegida omite roles; errores/carga de catálogos bloquean
+hasta recarga válida. Persiste el límite de 100 elementos. Un preset LLM conserva
+el nombre escrito y sólo un guardado exitoso limpia el formulario; la prueba UI
+no guardó ni activó otra configuración. No se probaron sesiones de todos los roles.
+
+Las exportaciones usan unidad contractual, fuente/base, fecha ISO con offset,
+texto literal XLSX y altura ajustada al contenido. Las 52 focales de exportación
+cubren precisión, contexto y altura. Los cuatro finales 18/19 tienen QA propia:
+diez páginas PDF y cuatro hojas por XLSX, cifras/razones/sumas/contexto correctos
+y aviso íntegro en 57 pt. Los XLSX finales se revisaron con ArtifactTool; Calc no
+se completó por memoria. La descarga intermedia 19-contexto recortada permanece
+como antecedente y no se sobrescribió.
+
+\subsection{Corte V4 de verificación}
+
+\file{make verify} V4 del 5 de noviembre terminó con código 0: 454 backend,
+46 frontend, un aviso Starlette/AnyIO sin fallo, Ruff/formato en 91 archivos,
+Mypy en 57 y controles de rama, Compose, workflow, lint, construcción y documentos.
+Las 266 focales de necesidad/compilación (156/110), 53 analíticas y 52 de
+exportación son subconjuntos, no se suman al total. El primer fallo de preset y
+los cortes anteriores 408/44 y 411/44 quedan como historia. Este V4 precede al
+ajuste adicional de presentación descrito a continuación.
+El código \file{bf50172} y el PR 57 abierto en borrador permiten seguir integración;
+no se afirma fusión a \file{develop} o promoción a \file{main}.
+
+El expediente ampliado está en \path{docs/testing/qa-postcierre-2026-11-04.md}.
+La formación separa consulta de aprobados/conciliaciones sin nuevo LLM o ETL y
+generación nueva con disponibilidad, consentimiento y permisos. No garantiza
+respuestas deterministas de proveedores ni valida todos los escenarios humanos.
+
+\subsection{Ajuste adicional de presentación sin otra carga}
+
+La revisión de la UI actual del expediente 18 detectó superposición entre etiqueta
+y valor del promedio y una razón que conservaba moneda de origen por transacción
+aunque la divisa USD ya estaba comprobada. El frontend permite contraer las dos
+columnas de conciliación, envolver textos y valores y apilarlos hasta 760 px.
+El formatter usa la unidad completa y sustituye el prefijo monetario genérico por
+la divisa verificada sin borrar el denominador. ISO de tres letras, razones,
+cantidades fraccionarias y unidades desconocidas conservan dos decimales; sólo
+unidades completas del conjunto cerrado de conteos usan enteros. No se decide por
+nombre/código del KPI, salvo la compatibilidad ya existente de dos códigos de
+catálogo que omitían por unidad en expedientes anteriores.
+
+Cambian \path{frontend/src/App.tsx}, sus pruebas y \path{frontend/src/styles.css}.
+No se modifican backend, API, fórmulas, valores, aprobación, contrato ni datos.
+La repetición visual consulta 18/19 conservados, sin nuevo ETL ni LLM. Las capturas
+y exportaciones anteriores mantienen sus hashes y su aspecto original; la UI
+corregida se documenta con evidencia nueva, sin atribuirla a los originales.
+El ajuste \file{8f1c7d1} aprobó \file{make verify} V6 con salida 0: 454 backend
+y 48 frontend, controles de rama, Compose, workflow, calidad, construcción y doce
+documentos. V5 se conserva interrumpido con 143, sin declararlo aprobado.
+La consulta real de 18/19 a 574 y 1366 px no mostró solapes; AW presentó
+USD 3.491,07 por transacción y WWI mantuvo moneda de origen. Las capturas 126/127
+y su registro tienen corte propio. La regeneración y revisión documental final
+se distinguen del resultado anterior 454/46 y de la suite de código.
+
 \section{Revisión y retrospectiva}
 
 El contraste entre dos modelos OLTP demostró que universalidad no significa reconocer
@@ -374,6 +519,7 @@ mantiene el contrato y el analista conserva la decisión de negocio.
   Especificación & \file{SPR-06-01-contexto-multifuente-sqlserver.md} \\
   Evidencia integral & \file{docs/testing/Informe\_pruebas\_integrales\_multifuente.pdf} \\
   Adenda operativa & \path{docs/testing/Auditoria_operativa_2026-10-03.pdf}; casos de pedido/factura y factibilidad previa. \\
+  QA posterior al cierre & \path{docs/testing/qa-postcierre-2026-11-04.md}; correcciones versionadas y estado de regresión sin abrir un sprint nuevo. \\
   Definición de terminado & Código, pruebas, evidencia real y documentación reproducible. \\
   \bottomrule
 \end{tabularx}

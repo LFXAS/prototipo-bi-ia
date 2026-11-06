@@ -4,11 +4,24 @@ Base técnica del proyecto de titulación **“Prueba de concepto de un prototip
 
 La versión seleccionada puede verificarse desde la misma plataforma: se comprueban integridad, referencias, calidad y reproducción determinística sin consumir nuevamente el LLM. Sprint 4 amplió el expediente con conciliación OLTP--datamart y KPI controlados. Sprint 5 añadió calidad semántica, analítica, conversación y reportería. Sprint 6 incorporó contexto multifuente, catálogo independiente por conexión y evidencia técnica automática, sin bifurcaciones por nombre de base. Las propuestas aprobadas y las ejecuciones terminadas conservan sus cinco etapas como pestañas de consulta inmutables. Véanse el [plan acumulativo de validación](docs/validation-plan.md) y la [especificación multifuente](docs/specs/SPR-06-01-contexto-multifuente-sqlserver.md).
 
-La guía operativa para replicar, restaurar, publicar y probar el entorno está en [docs/replication-guide.md](docs/replication-guide.md). Para aprender BI + IA desde cero y preparar una demostración por perfiles, consulte la [guía de formación](docs/formacion/guia_formacion_bi_ia.pdf), con fuentes LaTeX y capturas versionadas junto al PDF.
+La guía operativa para replicar, restaurar, publicar y probar el entorno está en [docs/replication-guide.md](docs/replication-guide.md). Para aprender la operación desde cero y preparar la sustentación, consulte el [manual de usuario y entrenamiento](docs/manual-usuario/LEEME_MANUAL.md), con Word editable, PDF, capturas y casos comprobados en ambas fuentes. La [guía de formación anterior](docs/formacion/guia_formacion_bi_ia.pdf) conserva su corte y sirve como complemento.
+
+La [revisión posterior al cierre del 4–5 de noviembre](docs/testing/qa-postcierre-2026-11-04.md)
+conserva los incidentes detectados durante la preparación formativa: trazabilidad de
+pedido interpretada como factura, IDs numéricos usados en aritmética y conteo de líneas
+confundido con pedidos y ranking descartado por no ser una columna física. El ajuste
+identifica nuevas revisiones como `need-review-6`, que separa peticiones positivas
+de cautelas y exclusiones coordinadas, y nuevas compilaciones como
+`sales-bi-v7`/`compilation_rules_version=3`, con reproducción
+histórica separada. No incorpora una API ni un nuevo sprint, no cambia propuestas o
+datamarts existentes y distingue pruebas automatizadas de repetición real del flujo.
+El cierre integral 8f1c7d1 aprobó 454 pruebas backend y 48 frontend; los recorridos nuevos
+122/18 de AdventureWorks y 124/19 de WideWorldImporters conservan sus propios
+contratos, conciliación y límites de interpretación.
 
 Desde el Sprint 2 el proyecto aplica desarrollo guiado por especificaciones (SDD). Antes de crear una funcionalidad se redacta su especificación, criterios de aceptación, riesgos y evidencia de prueba en [`docs/specs/`](docs/specs/README.md). El flujo completo está en [`docs/sdd-workflow.md`](docs/sdd-workflow.md).
 
-La trazabilidad del trabajo se mantiene en LaTeX y PDF. La bitácora vive en `docs/logbook/`, el informe académico del primer sprint en `docs/sprints/` y el manual técnico detallado en `docs/manual-tecnico/`. El [índice documental](docs/README.md) explica la finalidad y custodia de cada artefacto. Todos se regeneran de forma reproducible con `make docs`.
+La trazabilidad del trabajo se mantiene en LaTeX y PDF. La bitácora vive en `docs/logbook/`, el informe académico del primer sprint en `docs/sprints/` y el manual técnico detallado en `docs/manual-tecnico/`. El [índice documental](docs/README.md) explica la finalidad y custodia de cada artefacto. Los doce PDF LaTeX se regeneran con `make docs`. El nuevo manual de usuario tiene fuentes de composición propias, Word y PDF revisados; su procedimiento está en su LEEME y no forma parte de la recompilación LaTeX.
 
 ## Alcance confirmado
 

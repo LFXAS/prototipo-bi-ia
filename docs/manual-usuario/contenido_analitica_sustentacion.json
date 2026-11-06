@@ -1,0 +1,815 @@
+{
+  "secciones": [
+    {
+      "titulo": "Analítica de ventas: acceso, responsabilidades y permisos efectivos",
+      "objetivo": "Entrar al panel con una cuenta autorizada y distinguir la lectura de resultados de la preparación y aprobación de datos.",
+      "rol": "Gerencia, dirección y analista BI con permisos de consulta; administración para corregir accesos.",
+      "requisitos": [
+        "Sesión iniciada con una cuenta activa. El nombre de un rol no demuestra por sí solo sus permisos efectivos.",
+        "Permiso analytics.dashboard.read para consultar ejecuciones, dashboard y copiloto analítico.",
+        "En la interfaz actual también se necesita metadata.read para que la consulta /sources cargue las fuentes habilitadas y el contexto de conexión. connections.read sirve al catálogo de conexiones, pero no sustituye metadata.read.",
+        "Para descargar informes se necesitan reports.analytics.export y analytics.dashboard.read. Para consultar el expediente técnico se necesita además etl.executions.read.",
+        "Una ejecución exitosa, con conciliación aprobada y datos físicos conservados de la fuente elegida."
+      ],
+      "pasos": [
+        "Inicie sesión y localice Análisis > Analítica de ventas en el menú que la plataforma autoriza a su cuenta.",
+        "Revise Fuente en contexto. Si no aparece una fuente seleccionable, solicite a administración que compruebe metadata.read y la existencia de conexiones habilitadas.",
+        "Abra Analítica de ventas y espere la carga del panel. Anote fuente, base, ejecución y propuesta que aparecen en la cabecera.",
+        "Use las vistas, filtros y gráficos para consultar. Aprobar propuestas, preparar cargas, cambiar conexiones y administrar credenciales son operaciones de otros módulos y requieren permisos distintos.",
+        "Si necesita revisar el respaldo, use Consultar respaldo o Ver expediente técnico. Si su cuenta carece de ese permiso, pida al analista que muestre la evidencia correspondiente."
+      ],
+      "resultado": "El usuario consulta datos conciliados y reconoce qué operaciones dependen de permisos adicionales.",
+      "verificacion": [
+        "La fuente de la cabecera coincide con la fuente en contexto.",
+        "La cuenta de lectura no obtiene por este acceso permiso para ejecutar ETL, aprobar propuestas ni modificar el origen.",
+        "Un botón de exportación ausente puede corresponder a falta de reports.analytics.export; no demuestra pérdida de datos.",
+        "La auditoría documental del 3 de octubre creó roles Analista BI y Gerente comercial sin asignarles cuentas. En el corte del 4–5 de noviembre se observaron cuatro roles, dos cuentas, quince permisos del Analista y cuatro del Gerente después de añadir Consultar metadatos con autorización. El recorrido se operó con Administrador; la prueba autenticada completa de cada perfil sigue pendiente."
+      ],
+      "errores": [
+        "Suponer que un menú visible garantiza todos los permisos del recorrido: el backend comprueba cada operación.",
+        "Asignar sólo analytics.dashboard.read y connections.read y concluir que el selector de fuentes funcionará: la interfaz consulta /sources con metadata.read.",
+        "Copiar literalmente nombres históricos de permisos de un informe. El catálogo vigente usa connections.read y reports.analytics.export; la auditoría contiene denominaciones diferentes.",
+        "Presentar la creación de roles como prueba de segregación efectiva entre cuentas autenticadas."
+      ],
+      "explicacion": [
+        "El usuario final consume información y formula preguntas. El analista BI comprueba significado, granularidad, fórmulas y calidad. Administración configura accesos, fuentes y proveedor. Una misma cuenta de prueba puede reunir permisos, pero esa demostración no acredita por sí sola un ensayo separado de los tres perfiles.",
+        "Las dos vistas del panel son modos de presentación. El código actual permite cambiar entre ellas a quien accede al panel; no representan una autorización distinta por rol ni seguridad granular por fila.",
+        "El permiso metadata.read resuelve una dependencia real del selector actual y permite leer metadatos. Su concesión debe ser explícita al configurar el rol. En esta instalación se añadió con autorización al Gerente y se releyeron sus cuatro casillas; esa configuración observada no demuestra todavía una sesión propia del gerente."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/backend/app/modules/security/service.py:21",
+        "/home/ceo/Proyectos/BI/backend/app/modules/metadata/router.py:104",
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/router.py:271",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:226",
+        "/home/ceo/Proyectos/BI/docs/testing/auditoria-operativa-2026-10-03.md:20",
+        "contenido_roles_parametros.json"
+      ]
+    },
+    {
+      "titulo": "Elegir fuente y ejecución: versión, cobertura y vigencia del resultado",
+      "objetivo": "Seleccionar el datamart adecuado sin mezclar fuentes ni asumir que la ejecución más reciente responde mejor a la necesidad.",
+      "rol": "Todos los usuarios del panel; analista BI para decidir si la cobertura satisface la necesidad.",
+      "requisitos": [
+        "Conocer la pregunta comercial que se quiere responder: pedidos, facturación, unidades, costos u otro resultado disponible.",
+        "Disponer de una o más ejecuciones conciliadas con datos físicos en la fuente elegida.",
+        "Conocer que un expediente histórico puede conservar evidencia aunque sus tablas antiguas ya no sean consultables."
+      ],
+      "pasos": [
+        "En Fuente en contexto, utilice Cambiar fuente y escoja la base requerida. El cambio reinicia selección analítica, filtros y conversación de la fuente anterior.",
+        "Lea en la cabecera el nombre de fuente, base de datos, Ejecución #, Propuesta #, moneda y período.",
+        "Si aparece Datamart analizado, abra la lista y elija la ejecución cuyo alcance y cobertura correspondan a la pregunta. La lista identifica ejecución, propuesta y cobertura completa o parcial.",
+        "Si sólo aparece Datamart activo, lea la nota: únicamente esa ejecución conserva datos físicos consultables. Ver expedientes permite revisar antecedentes con los permisos correspondientes.",
+        "Después de cambiar ejecución, vuelva a establecer indicador, año y territorio. La interfaz restablece esos valores para no reutilizar una selección de otra versión.",
+        "Compruebe la descripción de alcance antes de interpretar cifras. Una ejecución de líneas de pedido no responde automáticamente a una pregunta sobre facturas emitidas.",
+        "Revise Última actualización como fecha de la ejecución publicada. Cambiar un filtro consulta esa materialización; no vuelve a cargar el origen."
+      ],
+      "resultado": "La lectura queda identificada por fuente, ejecución, propuesta, alcance, período y cobertura.",
+      "verificacion": [
+        "No quedan cifras ni conversación de otra fuente después del cambio.",
+        "La ejecución elegida está conciliada y conserva datos físicos; no basta que su expediente diga que terminó históricamente.",
+        "Cobertura completa significa que la selección ejecutable conserva las salidas requeridas por aquella necesidad; no significa que contenga todos los datos de la empresa ni que sirva para cualquier pregunta.",
+        "Cobertura parcial obliga a leer qué salida se excluyó. Una conciliación numérica aprobada puede coexistir con una cobertura comercial parcial."
+      ],
+      "errores": [
+        "Elegir sólo por el número de ejecución o la fecha sin comparar la necesidad y las salidas incluidas.",
+        "Comparar pedidos de una ejecución con facturas de otra como si fueran la misma población.",
+        "Considerar Última actualización como sincronización en tiempo real con SQL Server.",
+        "Suponer que una nueva materialización actualiza automáticamente todos los expedientes anteriores."
+      ],
+      "explicacion": [
+        "El catálogo analítico presenta ejecuciones exitosas cuya conciliación pasó y cuya tabla de hechos conserva filas propias. El servidor verifica la relación entre instantánea y conexión y la interfaz rechaza respuestas que no correspondan a fuente y ejecución seleccionadas.",
+        "Las nuevas cargas se conservan en espacios por ejecución. Parte del historial legado pudo perder tablas al ser sustituido antes de esa mejora; por ello la ausencia de una ejecución en el selector no prueba que se haya borrado su expediente.",
+        "El período visible es una selección sobre el datamart. La cobertura de la necesidad, la cobertura temporal y la existencia física son tres comprobaciones diferentes."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/AnalyticsPage.tsx:200",
+        "/home/ceo/Proyectos/BI/frontend/src/AnalyticsPage.tsx:297",
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/router.py:271",
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/service.py:60",
+        "/home/ceo/Proyectos/BI/docs/specs/SPR-05-06-endurecimiento-integral-asistente-bi.md"
+      ]
+    },
+    {
+      "titulo": "Vista ejecutiva y vista analítica: cuándo elegir cada una",
+      "objetivo": "Adaptar el nivel de detalle al propósito de la consulta y reconocer que ambas vistas comparten los mismos datos.",
+      "rol": "Gerencia y dirección para la lectura ejecutiva; analista BI para ampliar la inspección.",
+      "requisitos": [
+        "Panel cargado para una fuente y ejecución comprobadas.",
+        "Pregunta comercial definida y filtros pertinentes."
+      ],
+      "pasos": [
+        "Comience en Vista ejecutiva, que es la presentación inicial. Lea el contexto, las tarjetas KPI y los hallazgos antes de proponer una decisión.",
+        "Use Año y Territorio para delimitar la pregunta. Observe evolución temporal, productos y distribución territorial cuando esas dimensiones existan.",
+        "Cambie a Vista analítica si necesita elegir el indicador de los gráficos, consultar el ranking de clientes, abrir tablas de respaldo o revisar cantidades de conciliación.",
+        "En Vista analítica, utilice Indicador de los gráficos para seleccionar una receta agregable disponible. Las tarjetas mantienen el conjunto de KPI de la ejecución y se recalculan con los filtros.",
+        "Abra Consultar los datos de este gráfico para leer sus puntos con exactitud. Revise abajo filas de origen, filas cargadas, diferencia y tablas.",
+        "Vuelva a Vista ejecutiva para presentar resultados a dirección. Si cambió antes el indicador en la vista analítica, compruebe el subtítulo de los gráficos: el cambio de vista no restablece ese indicador."
+      ],
+      "resultado": "El usuario obtiene una lectura resumida o una inspección ampliada sin cambiar el datamart ni repetir el ETL.",
+      "verificacion": [
+        "El identificador de ejecución se conserva al cambiar de vista.",
+        "Vista ejecutiva oculta el gráfico de clientes; no significa que sus datos se hayan eliminado.",
+        "Vista analítica amplía evidencia y controles, pero no habilita fórmulas libres ni escritura en la fuente.",
+        "El chat se reinicia al cambiar vista para adaptar audiencia y evitar mezclar contexto."
+      ],
+      "errores": [
+        "Interpretar Vista ejecutiva como sinónimo de ventas monetarias: los gráficos pueden conservar unidades u otro indicador elegido antes.",
+        "Afirmar que el modo analista usa otra base o una carga más reciente.",
+        "Confundir ocultar un gráfico en la presentación con un control de acceso independiente sobre sus datos."
+      ],
+      "explicacion": [
+        "La gerencia necesita conocer magnitud, comparación y límite para decidir. El analista debe además comprobar qué se sumó o contó, qué población se filtró, cómo se obtuvo la etiqueta y qué evidencia respalda el resultado.",
+        "El criterio para elegir vista es el trabajo pendiente: exposición breve y prioridades, ejecutiva; comprobación de método y respaldo, analítica. El permiso de acceso al panel es el mismo."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/AnalyticsPage.tsx:335",
+        "/home/ceo/Proyectos/BI/frontend/src/AnalyticsPage.tsx:360",
+        "/home/ceo/Proyectos/BI/docs/specs/SPR-05-01-dashboard-ejecutivo-explicable.md"
+      ]
+    },
+    {
+      "titulo": "Conceptos de lectura: grano, hecho, dimensión, medida e indicador",
+      "objetivo": "Comprender qué representa una cifra antes de seleccionarla o compararla.",
+      "rol": "Todos los usuarios; el analista valida las definiciones antes de publicar.",
+      "requisitos": [
+        "Propuesta aprobada y expediente accesibles para consultar granularidad, medida y fórmula.",
+        "No equiparar un nombre sugerido por IA con una definición comercial ya verificada."
+      ],
+      "pasos": [
+        "Identifique el evento: pedido registrado, factura emitida u otro hecho expresamente aprobado.",
+        "Lea el grano. Si una fila es una línea de documento, un documento con tres productos ocupa tres filas; no son tres pedidos o facturas diferentes.",
+        "Identifique las dimensiones que responden por quién, qué, dónde y cuándo: cliente, producto, territorio y fecha, según la propuesta.",
+        "Revise la medida física y su procedencia. Una cantidad, un precio, un importe y una clave de documento tienen funciones diferentes aunque todos sean numéricos.",
+        "Lea el KPI como una regla de agregación o derivación sobre medidas aprobadas. Confirme su denominador y unidad.",
+        "Si la etiqueta resulta más amplia que la fórmula, solicite revisión al analista antes de usarla en una conclusión."
+      ],
+      "resultado": "La pregunta se vincula a un evento, una población y una regla verificables.",
+      "verificacion": [
+        "La granularidad elegida permite responder a la pregunta sin duplicar el documento.",
+        "La dimensión cliente representa al comprador y no a un vendedor o empleado con nombre parecido.",
+        "Una clave identifica; no se suma como si fuera un importe.",
+        "La existencia de columnas y relaciones demuestra respaldo estructural; la conciliación posterior comprueba los valores materializados."
+      ],
+      "errores": [
+        "Llamar ventas cobradas a facturas emitidas sin evidencia de pagos.",
+        "Usar COUNT de líneas como cantidad de documentos.",
+        "Sumar precio unitario sin ponderar por cantidad y llamarlo ingreso.",
+        "Suponer que toda relación entre tablas conserva la población: una unión que multiplica líneas altera los indicadores."
+      ],
+      "explicacion": [
+        "Una medida es un dato calculable del hecho, como unidades o importe. Un KPI es una regla con significado de negocio, por ejemplo suma de unidades o importe total dividido entre documentos distintos. La dimensión establece la agrupación y el filtro; no determina por sí misma la fórmula.",
+        "No existe una cantidad fija universal de KPI. El LLM propone según necesidad y metadatos, y la plataforma admite sólo las recetas compatibles, completas y aprobadas. La meta académica de evidenciar al menos cinco no convierte cada propuesta en un catálogo obligatorio de cinco indicadores.",
+        "El panel no permite editar la fórmula libremente. Cambiar su significado requiere revisar el contrato en el flujo supervisado y obtener una versión válida."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/docs/scope.md",
+        "/home/ceo/Proyectos/BI/docs/specs/SPR-04-02-kpis-controlados-y-calculables.md",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/service.py:3405",
+        "/home/ceo/Proyectos/BI/docs/testing/auditoria-operativa-2026-10-03.md:49"
+      ]
+    },
+    {
+      "titulo": "Elegir la agregación correcta: suma, promedio, conteo, distintos, mínimo y máximo",
+      "objetivo": "Relacionar cada operación con la pregunta que realmente responde y evitar rankings o promedios engañosos.",
+      "rol": "Analista BI al revisar KPI; gerencia al interpretar resultados.",
+      "requisitos": [
+        "Conocer la granularidad y la columna que agrega o cuenta la receta.",
+        "Usar únicamente las opciones presentes en Indicador de los gráficos; el panel no crea nuevos KPI al seleccionarlas."
+      ],
+      "pasos": [
+        "Para volumen acumulado, busque una suma de unidades o de importe aprobado. SUM responde cuánto se acumuló en la selección.",
+        "Para importe típico de una línea, revise AVG del importe de línea. AVG suma los valores no nulos y divide por la cantidad de valores considerados; no transforma las líneas en documentos ni en unidades.",
+        "Para número de registros con un valor, revise COUNT de la columna. COUNT(columna) no cuenta nulos. Para documentos o clientes únicos, elija COUNT DISTINCT de la clave pertinente.",
+        "Para un extremo, use MIN o MAX. MAX del importe de línea responde cuál fue el mayor importe de una línea; no identifica por sí solo el producto con mayor venta acumulada.",
+        "Para productos líderes por importe, agrupe por producto y compare SUM(importe). Para más vendidos por volumen, compare SUM(unidades).",
+        "Si la pregunta pide importe promedio por documento, busque un cociente entre importe total y documentos distintos. No acepte AVG(importe de línea) con esa etiqueta.",
+        "Compruebe que tarjeta, subtítulo del gráfico y texto de la conclusión expresen la operación y unidad elegidas."
+      ],
+      "resultado": "Cada cifra o ranking tiene una interpretación compatible con su operación.",
+      "verificacion": [
+        "Ejemplo didáctico sintético: un pedido con líneas de 100 y 200 y otro con una línea de 300 tiene 3 líneas, 2 pedidos distintos, total 600, promedio por línea 200 y promedio por pedido 300.",
+        "El conteo distinto de clientes se vuelve a calcular con el filtro; sumar conteos de meses puede duplicar clientes que compraron en varios meses.",
+        "Mínimo y máximo conservan la unidad de la medida; una suma de importes, una suma de unidades y un conteo de documentos no son intercambiables.",
+        "Las operaciones agregables disponibles en el motor analítico son sum, average, count, count_distinct, min y max, cuando la receta y columna están verificadas."
+      ],
+      "errores": [
+        "Seleccionar ventas monetarias y concluir que son los productos con más unidades vendidas.",
+        "Llamar ticket promedio a AVG del importe de línea.",
+        "Sumar números de pedido o identificadores de cliente.",
+        "Sumar conteos distintos de subgrupos y asumir que equivalen al total distinto de la unión.",
+        "Presentar un máximo de línea como contribución total o rentabilidad de un producto."
+      ],
+      "explicacion": [
+        "La suma es adecuada para medidas aditivas dentro de una población compatible: cantidades e importes de líneas sin duplicación. Un precio unitario o una tasa no es aditivo por esa sola condición de ser numérico.",
+        "El promedio simple da el mismo peso a cada observación del grano. Es correcto si esa observación es la unidad de interés; si la pregunta es por unidad vendida o por documento, se necesita el denominador correspondiente.",
+        "COUNT DISTINCT evita repetir la misma clave dentro del conjunto consultado. Si un pedido contiene varios productos, puede contarse una vez en cada producto; los subtotales por producto no tienen por qué sumar el total de pedidos distintos."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/service.py:166",
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/service.py:713",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/service.py:3322",
+        "/home/ceo/Proyectos/BI/docs/testing/auditoria-operativa-2026-10-03.md:30"
+      ]
+    },
+    {
+      "titulo": "Razones, promedios ponderados y porcentajes de margen",
+      "objetivo": "Interpretar indicadores derivados y calcular el denominador correcto, especialmente al filtrar o consolidar grupos.",
+      "rol": "Analista BI y usuarios que interpretan comparaciones por unidad, por documento o porcentajes.",
+      "requisitos": [
+        "Ventas, costo, unidades y/o clave documental materializados según el KPI solicitado.",
+        "Numerador y denominador pertenecen a la misma ejecución, población, período y filtro.",
+        "Denominador distinto de cero y dependencias completas."
+      ],
+      "pasos": [
+        "Para Venta promedio por unidad vendida, lea SUM(importe de ventas aprobado) / SUM(unidades). Compruebe si ese importe incluye descuento o impuesto antes de llamarlo precio neto.",
+        "Para Costo promedio por unidad vendida, lea SUM(costo total) / SUM(unidades). Revise de qué costo procede el numerador y si representa costo histórico.",
+        "Para Importe promedio por transacción, lea SUM(importe) / COUNT(DISTINCT clave del documento). Identifique si el documento es pedido o factura.",
+        "Para margen porcentual, lea primero la diferencia monetaria y después la razón: margen = ventas aprobadas − costo; margen % = margen / ventas aprobadas × 100.",
+        "Al unir meses o territorios, recalcule desde totales. No promedie directamente los porcentajes ni los promedios de los grupos.",
+        "Aplique Año o Territorio y compruebe que los derivados se recalculan para esa población. Una tarjeta Sin valor o No calculable con esta ejecución requiere revisar dependencias o denominador; no se interpreta como cero."
+      ],
+      "resultado": "Las razones y porcentajes reflejan el peso de sus verdaderos denominadores y permiten comparaciones defendibles.",
+      "verificacion": [
+        "Ejemplo didáctico sintético: una línea vende 1 unidad por 100 y otra 9 unidades por 20 cada una. Ventas = 280, unidades = 10, promedio por unidad = 28. El promedio simple de los precios 100 y 20 es 60 y no representa el promedio de lo vendido.",
+        "Con costos totales de 60 y 162, el margen monetario conjunto es 58 y el margen sobre ventas es 58/280 × 100 = 20,71 %. Los márgenes individuales son 40 % y 10 %; promediarlos daría 25 %, que cambia el significado.",
+        "El margen agregado equivale a ponderar los porcentajes por ventas cuando los componentes son compatibles. El costo o venta por unidad pondera por unidades; el importe promedio por documento pondera por documentos al consolidar conjuntos disjuntos.",
+        "La división por cero no se publica como una cifra correcta. El motor devuelve un valor no calculable cuando no logra resolver un derivado o su denominador es cero."
+      ],
+      "errores": [
+        "Promediar medias mensuales sin conocer cuántas unidades o documentos contiene cada mes.",
+        "Promediar porcentajes de margen sin ponderación.",
+        "Confundir margen sobre ventas con recargo sobre costo: 58/280 y 58/222 son razones distintas.",
+        "Buscar obligatoriamente margen o venta por unidad en el selector de gráficos: los derivados pueden existir como tarjetas y no ser recetas agrupables disponibles en el selector actual.",
+        "Suponer que un nombre en inglés o español cambia el cálculo: lo decisivo es la receta canónica y sus dependencias."
+      ],
+      "explicacion": [
+        "Los KPI derivados admitidos son diferencias, razones y participaciones controladas. La plataforma resuelve primero medidas y agregados verificados y después las dependencias derivadas; no usa una fórmula libre escrita por el LLM.",
+        "Un promedio ponderado no es una alternativa estética al simple: responde una pregunta distinta porque cada observación aporta un número diferente de unidades o importe. El denominador debe explicitarse en el título o en la evidencia.",
+        "Los derivados no necesitan una tarjeta redundante por cada medida base si la medida física está aprobada y disponible. Si falta una dependencia real, la tarjeta debe declarar la incidencia y no presentar una confirmación verde."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/service.py:209",
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/service.py:290",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/service.py:3322",
+        "/home/ceo/Proyectos/BI/docs/specs/SPR-05-06-endurecimiento-integral-asistente-bi.md",
+        "/home/ceo/Proyectos/BI/docs/validation-plan.md"
+      ]
+    },
+    {
+      "titulo": "Importes comerciales: venta bruta, descuento, neto, impuesto, costo y margen",
+      "objetivo": "Evitar que etiquetas amplias oculten diferencias entre importes que responden a preguntas comerciales distintas.",
+      "rol": "Analista BI, gerencia comercial y personas que preparan conclusiones para sustentación.",
+      "requisitos": [
+        "Fórmulas y referencias de origen de la versión publicada disponibles para revisión.",
+        "Definir si se analizan pedidos, facturas o cobros y si se incluye impuesto.",
+        "No inferir un costo histórico sólo porque existe una columna llamada costo."
+      ],
+      "pasos": [
+        "Revise si el importe parte de precio × cantidad, de un importe de línea ya calculado o de otra medida aprobada. El nombre de negocio debe corresponder a esa regla.",
+        "Si hay descuento, distinga tasa e importe. Una tasa de 0,10 representa 10 %; el descuento monetario requiere una base, por ejemplo precio × cantidad × tasa cuando esa receta está comprobada.",
+        "Determine si el importe original ya descuenta el descuento. Sólo calcule neto = bruto − descuento cuando los componentes tengan esa definición; no descuente dos veces.",
+        "Revise por separado impuesto y total. Un importe con impuesto no se convierte en venta neta por llamarlo así.",
+        "Para costo total, compruebe qué costo unitario se multiplica por cantidad y desde qué relación se obtiene. Si es último costo o costo estándar, explique ese alcance; no lo presente automáticamente como costo histórico real de cada operación.",
+        "Para margen, declare la base de ventas utilizada, el costo incorporado y lo que no incluye. El margen calculado de esas medidas no acredita utilidad neta ni rentabilidad económica total.",
+        "Si la pregunta requiere una definición que los datos no prueban, vuelva al analista para reformular o excluir el indicador antes de decidir."
+      ],
+      "resultado": "Los importes y márgenes se comunican con bases y límites expresos, evitando sustituciones semánticas.",
+      "verificacion": [
+        "Ejemplo didáctico sintético: 2 unidades × precio 50 = bruto 100; tasa 10 % produce descuento 10; neto antes de impuesto 90. La tasa 0,10 por sí sola no es un descuento de 0,10 unidades monetarias.",
+        "En el caso histórico WWI #15, la auditoría registró ExtendedPrice total 198.043.439,45 = 172.261.341,20 de precio × cantidad + 25.782.098,25 de impuesto. No se presenta como venta neta sin impuesto.",
+        "WWI #13 representa líneas de pedido. Aunque su conciliación pasó, no es un sustituto de la facturación de #15.",
+        "La auditoría identificó LastCostPrice como último costo, sin prueba de costo histórico por factura. Aceptar o excluir un margen requiere esa precisión."
+      ],
+      "errores": [
+        "Sumar porcentajes de descuento y presentarlos como dinero.",
+        "Restar de nuevo un descuento ya incorporado en LineTotal u otro importe.",
+        "Llamar facturado a pedidos o cobrado a facturación.",
+        "Presentar un margen calculado con costo estándar o último costo como utilidad contable histórica comprobada.",
+        "Comparar importes de dos bases sin comprobar impuesto, moneda, fecha y evento."
+      ],
+      "explicacion": [
+        "La validez matemática y la validez de negocio son distintas. La resta ventas − costo puede estar bien ejecutada y aun requerir una salvedad sobre costo o impuesto. La revisión humana decide si esa definición satisface el uso previsto.",
+        "El contrato controla las recetas y rechaza referencias incompatibles; ello no convierte datos ausentes en disponibles. Si el esquema no demuestra un descuento monetario, una moneda única o un costo histórico, el manual debe conservar ese límite.",
+        "La comparación de versiones sirve para explicar qué cambió de evento o fórmula, no para sumar resultados incompatibles como si fueran un único total."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/service.py:1787",
+        "/home/ceo/Proyectos/BI/backend/app/modules/copilot/service.py:3185",
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/service.py:171",
+        "/home/ceo/Proyectos/BI/docs/testing/auditoria-operativa-2026-10-03.md:40"
+      ]
+    },
+    {
+      "titulo": "Moneda, fecha y coherencia entre pregunta, indicador y vista",
+      "objetivo": "Comprobar que la selección visible responde exactamente a la pregunta y usa una unidad demostrada.",
+      "rol": "Todos los usuarios que interpretan o comunican resultados.",
+      "requisitos": [
+        "Leer cabecera, subtítulo de gráficos, unidad de tarjetas y alcance de la ejecución.",
+        "No asignar dólares u otra divisa por la ubicación del servidor, del usuario o del negocio."
+      ],
+      "pasos": [
+        "Formule la pregunta con indicador, agrupación, período y alcance: por ejemplo, unidades por producto en 2014 para el datamart de pedidos seleccionado.",
+        "Si pide más vendidos, use unidades cuando estén disponibles; si pide mayores ventas monetarias, use importe. Explicite la intención para evitar la ambigüedad de ventas.",
+        "Revise la moneda de la cabecera y las unidades de las tarjetas. Use un código ISO como USD sólo cuando el expediente lo demuestre.",
+        "Si aparece moneda de origen o no existe moneda verificada, mantenga esa denominación al presentar o exportar. La plataforma no convierte automáticamente los importes a otra divisa.",
+        "Confirme qué fecha sustenta el análisis: fecha de pedido para pedidos, fecha de factura para facturación, u otra referencia declarada. No trate una fecha de modificación como fecha comercial por defecto.",
+        "Antes de exponer una comparación, verifique que ambas selecciones comparten evento, fórmula, unidad y cobertura temporal compatibles."
+      ],
+      "resultado": "La conclusión se expresa con una unidad y un universo coherentes con la pregunta.",
+      "verificacion": [
+        "La cifra y su unidad coinciden en tarjeta, gráfico, chat e informe.",
+        "Un valor abreviado como 109,8 M se reconoce como presentación redondeada; se consulta el valor exacto para conciliación.",
+        "En la evidencia histórica, AdventureWorks acreditó USD y WWI #15 conservó moneda sin resolver. Esa diferencia se mantiene al comparar.",
+        "Todos los períodos se refiere a los períodos presentes en aquella materialización, no a una historia comercial ilimitada."
+      ],
+      "errores": [
+        "Añadir el símbolo de dólar a un resultado sin moneda probada.",
+        "Comparar importes con y sin impuesto o con distinto evento usando sólo el nombre ventas.",
+        "Interpretar millones abreviados como la cifra exacta cargada.",
+        "Creer que la vista ejecutiva restablece automáticamente un indicador monetario seleccionado previamente."
+      ],
+      "explicacion": [
+        "La detección de moneda busca evidencia relacional y una única divisa de origen o base. Si no la demuestra, conserva el importe como moneda de origen. Esa etiqueta no es una conversión de cambio ni una garantía sobre toda divisa posible de la empresa.",
+        "La regla práctica para elegir indicador es partir de la decisión: volumen comercial, unidades; facturación, importe y evento de factura; frecuencia de compra, documentos distintos; comparación normalizada, cociente con denominador explícito; rentabilidad, margen con costos apropiados. Sólo se puede elegir aquello que la ejecución realmente contiene."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/backend/app/modules/etl/materializer.py:535",
+        "/home/ceo/Proyectos/BI/frontend/src/AnalyticsPage.tsx:15",
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/router.py:39",
+        "/home/ceo/Proyectos/BI/docs/testing/auditoria-operativa-2026-10-03.md"
+      ]
+    },
+    {
+      "titulo": "Filtros del panel y cambio controlado de población",
+      "objetivo": "Delimitar año y territorio, interpretar el recálculo y restablecer la selección sin alterar los datos.",
+      "rol": "Todos los usuarios del panel.",
+      "requisitos": [
+        "Ejecución conciliada seleccionada.",
+        "Años y territorios ofrecidos por el catálogo real de esa ejecución. No se introducen valores arbitrarios."
+      ],
+      "pasos": [
+        "Elija Año. Todos conserva todos los años presentes; un año concreto limita la población a ese año de la fecha aprobada.",
+        "Elija Territorio. Todos conserva los territorios de la selección; una categoría limita a la etiqueta publicada de esa dimensión.",
+        "Espere el recálculo del servidor y compruebe cabecera, tarjetas, gráficos y hallazgos. Las tarjetas derivadas deben usar los mismos filtros que sus componentes.",
+        "Para filtrar desde el gráfico territorial, seleccione una categoría y pulse Filtrar tablero por el nombre mostrado cuando esa acción esté disponible. Abrir el detalle de una barra o punto no aplica por sí solo un filtro global.",
+        "Use Restablecer filtros para devolver Año y Territorio a Todos. Esa acción no cambia fuente, ejecución ni indicador de gráficos.",
+        "Si compara el antes y el después, registre ambos contextos y sus cifras exactas. No arrastre una conclusión del universo completo a un subconjunto sin revisarla."
+      ],
+      "resultado": "El panel representa una población delimitada y trazable, sin modificar la materialización.",
+      "verificacion": [
+        "La selección visible y el período de la cabecera corresponden a lo solicitado.",
+        "El historial del chat se limpia cuando cambia ejecución, indicador, territorio, año o vista.",
+        "Una categoría territorial sólo ofrece el filtro global si coincide con una opción autorizada de la ejecución.",
+        "Los conteos de filas en la sección de calidad son evidencia de la conciliación de la ejecución completa; no son necesariamente el conteo de líneas del filtro actual."
+      ],
+      "errores": [
+        "Creer que pulsar un producto filtra automáticamente todo el panel: la interacción normal abre un detalle.",
+        "Usar las filas de calidad del expediente como si fueran el tamaño exacto del subconjunto filtrado.",
+        "Suponer que Restablecer filtros cambia de versión o deshace la carga.",
+        "Concluir que un año no existe sólo porque una selección territorial no produjo valores en él."
+      ],
+      "explicacion": [
+        "Los filtros recalculan consultas sobre la ejecución publicada. No actualizan el origen, no materializan tablas nuevas y no modifican la propuesta.",
+        "El filtro territorial puede representar una agrupación semántica, como Europa, y no necesariamente un país o vendedor. Debe leerse con la definición de la dimensión publicada.",
+        "Durante una actualización pueden permanecer momentáneamente resultados previos mientras llega la nueva respuesta. Si aparece un error, no atribuya automáticamente los valores anteriores al filtro recién solicitado; espere una carga correcta o recargue el panel."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/AnalyticsPage.tsx:239",
+        "/home/ceo/Proyectos/BI/frontend/src/AnalyticsPage.tsx:265",
+        "/home/ceo/Proyectos/BI/frontend/src/AnalyticsPage.tsx:365",
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/service.py:778",
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/service.py:1050"
+      ]
+    },
+    {
+      "titulo": "Leer gráficos, valores exactos y porcentajes del ranking",
+      "objetivo": "Explorar evolución y contribuciones sin confundir el subconjunto mostrado con el universo total.",
+      "rol": "Gerencia, dirección y analista BI.",
+      "requisitos": [
+        "Revisar el indicador y unidad que aparecen en el subtítulo de cada gráfico.",
+        "Distinguir los porcentajes del ranking visible de los porcentajes de una consulta adicional del copiloto."
+      ],
+      "pasos": [
+        "En Evolución en el tiempo, seleccione un punto de la periodicidad efectiva para leer su período y valor exacto. Use teclado: Tab para enfocar y Enter o espacio para activar los puntos o barras interactivos.",
+        "En Productos líderes y, en vista analítica, Clientes principales, seleccione una barra para abrir el detalle. El orden corresponde al indicador elegido, no a todos los indicadores simultáneamente.",
+        "En Distribución territorial, seleccione una categoría de la leyenda o una barra. El motor usa anillo cuando las categorías devueltas son hasta ocho y barras en otros casos compatibles.",
+        "Lea Participación visible como el valor de esa categoría dividido entre la suma de los puntos mostrados en ese ranking. El panel limita los rankings a ocho categorías.",
+        "En Vista analítica, abra Consultar los datos de este gráfico para obtener la tabla de puntos que respalda la visualización.",
+        "Cierre el detalle con Cerrar detalle. Para un porcentaje contra toda la población filtrada antes del Top N, formule la consulta al copiloto y revise el denominador de Consulta interpretada."
+      ],
+      "resultado": "El usuario distingue magnitud exacta, posición y proporción de las categorías que realmente está viendo.",
+      "verificacion": [
+        "Si hay más de ocho categorías en la población, la suma del ranking puede ser menor al KPI total de la selección.",
+        "Ejemplo didáctico sintético: total de la población 1.000, ocho productos visibles suman 800 y uno aporta 200. Su participación visible es 25 %, y su contribución al universo completo es 20 %.",
+        "Un gráfico territorial con ocho categorías no demuestra por sí solo que sólo existan ocho territorios. El anillo puede mostrar el Top 8 de una población mayor.",
+        "Cuando el indicador es AVG, MIN, MAX o conteo distinto, sumar puntos de grupos no necesariamente produce el KPI global. La participación visible no debe interpretarse como participación económica aditiva sin revisar la operación."
+      ],
+      "errores": [
+        "Presentar Participación visible como cuota de toda la empresa.",
+        "Afirmar que el total central del anillo siempre equivale al total completo filtrado. El componente suma las categorías devueltas; con más de ocho categorías la etiqueta Total filtrado puede resultar más amplia que ese subconjunto.",
+        "Sumar promedios o conteos distintos de grupos para reconstruir el total.",
+        "Tratar la altura de una barra como valor exacto sin consultar el detalle.",
+        "Confundir un período sin datos con un cero demostrado: la serie devuelve los períodos presentes según la agrupación efectiva de la consulta."
+      ],
+      "explicacion": [
+        "El ranking del tablero calcula las participaciones después de limitar las categorías. La consulta agregada del copiloto calcula su denominador sobre el conjunto filtrado antes de limitar Top N. La diferencia responde al universo de cada porcentaje y debe explicarse al jurado.",
+        "Las etiquetas descriptivas deben relacionarse con claves y rutas verificadas. Si dos entidades comparten la misma etiqueta, el agrupamiento actual por etiqueta puede combinarlas; para una distinción por identidad única se requiere comprobar la definición de la dimensión y su calidad.",
+        "El criterio para elegir una visualización ya ofrecida es la pregunta: línea para localizar evolución por período observada; barras para comparar categorías; distribución territorial para explorar composición del conjunto mostrado. La apariencia no modifica la regla de cálculo."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/AnalyticsPage.tsx:74",
+        "/home/ceo/Proyectos/BI/frontend/src/AnalyticsPage.tsx:126",
+        "/home/ceo/Proyectos/BI/frontend/src/AnalyticsPage.tsx:150",
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/service.py:909",
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/service.py:621"
+      ]
+    },
+    {
+      "titulo": "Hallazgos explicables: observación, variación y límites causales",
+      "objetivo": "Usar las lecturas automáticas como evidencia descriptiva sin convertirlas en explicaciones causales ni pronósticos.",
+      "rol": "Gerencia y dirección para priorizar revisiones; analista BI para comprobar la comparación.",
+      "requisitos": [
+        "Selección visible correctamente cargada y criterio de negocio definido.",
+        "Comprobar si los períodos inicial y final tienen cobertura comparable."
+      ],
+      "pasos": [
+        "Lea Hallazgos explicables junto con la cifra y la evidencia pequeña que acompaña cada afirmación.",
+        "Lea primero la advertencia de procedencia y vigencia. La plataforma la coloca al inicio para que permanezca visible también en los cuatro hallazgos de Vista ejecutiva. La ficha extraída durante la ventana ETL no prueba su validez a la fecha de cada venta ni una entrega real.",
+        "En Variación entre extremos visibles, identifique el primer y el último período presentes. Revise si tienen cobertura completa antes de llamarla crecimiento comparable.",
+        "En Período de mayor valor, interprete el período con mayor resultado para el indicador actual: día, semana ISO, mes, trimestre o año según la periodicidad efectiva. No lo extrapole al período siguiente ni confunda el nombre histórico del KPI con la agrupación realmente aplicada.",
+        "En contribuciones principales, compruebe indicador, categoría y base de participación. La categoría líder en unidades puede ser distinta de la líder monetaria.",
+        "Abra Cómo se generaron para leer la guía de procedencia y cautela.",
+        "Formule una acción humana verificable: revisar qué producto o período concentra un resultado, comprobar cobertura o pedir otro agregado. No atribuya promociones, precios, fallas comerciales u otras causas sin evidencia adicional."
+      ],
+      "resultado": "La lectura automática apoya una revisión informada con cifras y límites explícitos.",
+      "verificacion": [
+        "La variación compara extremos observados y advierte que no demuestra tendencia ni causalidad.",
+        "Los hallazgos se generan por reglas de la aplicación sobre los agregados; el chat generativo es una sección diferente.",
+        "Un cambio de indicador o filtro puede cambiar al líder y el sentido de la variación.",
+        "Un tono positivo o de atención es presentación del hallazgo, no evaluación integral de la salud del negocio."
+      ],
+      "errores": [
+        "Afirmar que la IA descubrió la causa de una caída sólo a partir de una serie mensual.",
+        "Proyectar ventas futuras desde el primer y último punto del gráfico.",
+        "Comparar un período parcial con uno completo sin explicarlo.",
+        "Interpretar un liderazgo por máximo de línea o promedio como liderazgo por contribución total."
+      ],
+      "explicacion": [
+        "Una asociación o comparación describe lo observado. La causalidad requiere evidencia y un diseño de análisis adicionales que este panel no aporta por mostrar una cifra.",
+        "Los hallazgos determinísticos y la conciliación pueden reproducirse sobre la misma materialización. Una respuesta generativa del copiloto puede variar en su redacción y debe contrastarse con esos resultados.",
+        "El pronóstico de ventas se retiró del alcance por decisión académica. No corresponde presentar MAPE o RMSE como pruebas de este módulo ni describirlos como una función pendiente de activar."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/service.py:406",
+        "/home/ceo/Proyectos/BI/frontend/src/AnalyticsPage.tsx:380",
+        "/home/ceo/Proyectos/BI/docs/scope.md",
+        "/home/ceo/Proyectos/BI/docs/specs/SPR-05-01-dashboard-ejecutivo-explicable.md"
+      ]
+    },
+    {
+      "titulo": "Copiloto analítico contextual: preguntar y comprobar lo interpretado",
+      "objetivo": "Pedir una explicación o un agregado permitido y revisar alcance, resultados y denominador antes de usar la respuesta.",
+      "rol": "Usuario con analytics.dashboard.read; administración mantiene el proveedor activo y probado.",
+      "requisitos": [
+        "Dashboard disponible y una configuración LLM activa con prueba correcta.",
+        "Credencial utilizable para proveedores cloud o servicio local configurado en el caso de Ollama.",
+        "Pregunta de 5 a 500 caracteres. No escribir contraseñas, tokens, filas copiadas ni información ajena a la demostración."
+      ],
+      "pasos": [
+        "En Preguntar sobre estos resultados, revise la Guía de preguntas sugeridas o redacte indicador, comparación y ámbito. La plataforma construye hasta tres sugerencias desde métricas agrupables y ejes materializados de la ejecución; una etiqueta no habilita un cálculo ausente.",
+        "Para resumir el panel pida: Resume las unidades de esta selección y señala sus límites. Para un ranking observado puede usar AW 122/18: ¿Cuáles son los tres productos con mayor importe en Northwest en 2013? En WWI 124/19 use California y 2015. Confirme siempre que esos valores estén disponibles en la fuente seleccionada.",
+        "Si quiere quitar un filtro visible, indíquelo expresamente: para todos los años o para todos los territorios. Si quiere conservarlo, diga en la selección actual.",
+        "Pulse Preguntar al copiloto y espere Interpretando la pregunta y consultando agregados permitidos. Las sugerencias son botones que también envían la consulta.",
+        "Lea la respuesta y sus evidencias. Si aparece Consulta interpretada, compruebe indicador, dimensión, año, territorio, orden, Top N y puntos devueltos.",
+        "Lea Denominador y Ver procedencia. El denominador de un Top N se calcula para la selección interpretada antes de reducir la lista a N resultados.",
+        "Lea la salvedad de plataforma y la procedencia además de proveedor y modelo. La ventana temporal del ETL no demuestra vigencia a la fecha del hecho, entrega real ni última modificación del origen. Si la respuesta generada contradice ese límite, no la use como evidencia histórica y conserve la incidencia.",
+        "Use una pregunta de seguimiento sólo dentro del contexto vigente. Al cambiar ejecución, indicador, filtros o vista, la conversación se limpia y debe iniciar una pregunta nueva."
+      ],
+      "resultado": "El usuario recibe una explicación contextual con evidencia y, cuando aplica, una consulta agregada identificable y revisable.",
+      "verificacion": [
+        "Una consulta puede usar un filtro diferente del visible si la pregunta lo solicita y el valor pertenece al catálogo. No se debe atribuir automáticamente el alcance del chat al lienzo.",
+        "El agregador admite rankings controlados por producto, cliente o territorio, ascendente o descendente y Top N entre 1 y 20. El catálogo de intención sólo ofrece los ejes realmente disponibles en los visuales materializados de esa ejecución, sobre recetas agrupables verificadas.",
+        "Una petición de resumen puede no mostrar Consulta interpretada porque se responde con la evidencia del dashboard sin ejecutar un ranking adicional.",
+        "El historial enviado es breve: la interfaz toma hasta seis mensajes anteriores. No constituye memoria permanente ni archivo de la conversación.",
+        "Las razones o márgenes derivados que sólo existen como tarjetas no se convierten automáticamente en indicadores agrupables para un ranking del chat."
+      ],
+      "errores": [
+        "Preguntar cuáles son los mejores sin definir si mejor significa importe, unidades, promedio o margen.",
+        "Aceptar un Top 5 por importe cuando la intención era más unidades.",
+        "Considerar que la ausencia de un año en el filtro visible demuestra que la aplicación no puede consultar ese año disponible.",
+        "Tomar una recomendación textual como una acción ejecutada: el chat no modifica ventas, conexiones ni materializaciones.",
+        "Copiar una participación sin su denominador o sin distinguirla de Participación visible del gráfico."
+      ],
+      "explicacion": [
+        "La aplicación reconstruye el dashboard autorizado. Un primer paso LLM interpreta la pregunta en un contrato cerrado; el código propio ejecuta, si corresponde, una agregación parametrizada sobre la ejecución conciliada. Un segundo paso LLM explica los agregados recibidos.",
+        "El LLM no escribe SQL ejecutable para el motor. El catálogo delimita indicadores, dimensiones, años y territorios. La capa de validación comprueba esos valores y la aplicación conserva el cálculo.",
+        "La instrucción prohíbe inventar cifras, causas y pronósticos, pero la redacción generativa sigue requiriendo juicio humano. Verificar el contrato interpretado y la evidencia numérica es parte del uso correcto.",
+        "El proveedor devuelve respuesta y evidencia. La API conserva caveat, pero la plataforma lo construye desde alcance y procedencia estructurada: contrato, instantánea, fuentes, columnas, claves y ruta FK del materializador, sin valores de personas. Las fechas del ETL definen una ventana, nunca el instante exacto de lectura ni la última actualización de cada fila de origen.",
+        "Un nombre derivado conserva fuentes, columnas, claves y operación de construcción para su linaje; no se transmite por ello el valor de un nombre de persona. Sin SCD2 u otra evidencia temporal suficiente, la ficha extraída durante el ETL no prueba dónde estaba el cliente cuando ocurrió cada venta."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/AnalyticsPage.tsx",
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/router.py",
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/service.py",
+        "/home/ceo/Proyectos/BI/docs/specs/SPR-05-05-copiloto-analitico-contextual.md",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/verificacion_exportacion19.json"
+      ]
+    },
+    {
+      "titulo": "Copiloto, consentimiento y seguridad: qué se envía y qué no se debe suponer",
+      "objetivo": "Distinguir autorizaciones implementadas y el contexto real del envío para operar con información pública y controlada.",
+      "rol": "Todos los usuarios de IA; administración decide configuración y permisos.",
+      "requisitos": [
+        "Usar las bases públicas de demostración y los destinos LLM autorizados para la sesión.",
+        "Conocer que enviar una pregunta al copiloto activo implica enviar su texto y el contexto agregado preparado por la aplicación.",
+        "No incluir secretos ni datos productivos de terceros en preguntas o comentarios."
+      ],
+      "pasos": [
+        "En el Asistente, paso Necesidad, lea Destino y la casilla Autorizo enviar estos metadatos y la necesidad al proveedor indicado para esta revisión antes de usar la ayuda correspondiente.",
+        "Si cambia texto, fuente, preguntas, período o destino, compruebe que la evaluación y el consentimiento se invalidan cuando corresponda y vuelva a revisar antes de generar.",
+        "En el copiloto analítico, lea el aviso de Consulta contextual. Esta pantalla no implementa una casilla adicional equivalente a la del paso Necesidad; no afirme que existe ni que aquella autorización se hereda como permiso permanente para este chat.",
+        "Antes de enviar la pregunta, mantenga el texto dentro del análisis público autorizado. El backend incluye pregunta, historial breve, selección, KPI, puntos de gráficos, hallazgos y calidad, además del agregado adicional cuando se calcula.",
+        "Compruebe proveedor y modelo mostrados en la respuesta. Si hay dudas sobre el destino activo, pida al administrador la revisión de Configuración LLM antes de continuar con datos que requieran otra autorización.",
+        "Para documentar la demostración, conserve identificadores y resultados agregados. No copie credenciales ni trazas internas del proveedor en capturas o anexos."
+      ],
+      "resultado": "El uso de IA mantiene una distinción honesta entre consentimiento de Necesidad, permisos del panel y envío contextual del chat.",
+      "verificacion": [
+        "Los contextos programados no incluyen credenciales, contraseñas ni filas crudas del OLTP.",
+        "Los agregados pueden contener etiquetas descriptivas de producto, cliente o territorio. Agregado no significa anonimizado; no debe prometerse que toda etiqueta es anónima.",
+        "El texto que una persona escribe se transmite como pregunta. La prohibición de enviar filas o secretos en el flujo programado no elimina lo que el usuario pudiera pegar manualmente.",
+        "La auditoría de consultas registra usuario, ejecución, selección, proveedor/modelo, número de turnos y una huella de la pregunta; no guarda allí el texto completo de pregunta ni respuesta.",
+        "El RBAC del prototipo es mínimo. No se afirma aislamiento fino por fila, enmascaramiento universal ni capacidades empresariales de múltiples organizaciones."
+      ],
+      "errores": [
+        "Afirmar que el copiloto no envía ningún dato: sí envía contexto agregado y la pregunta al proveedor configurado.",
+        "Afirmar que no puede transmitirse ningún nombre: las etiquetas descriptivas de agregados pueden incluir nombres de clientes.",
+        "Presentar una casilla de Necesidad como consentimiento universal para todos los módulos futuros.",
+        "Creer que escribir una instrucción de SQL convierte el chat en una consola autorizada.",
+        "Equiparar una instrucción al modelo con garantía matemática de que su texto nunca se equivoca."
+      ],
+      "explicacion": [
+        "Los secretos se guardan cifrados por referencia y el backend los usa para comunicarse con el proveedor; no forman parte del mensaje de negocio. Esa arquitectura se distingue del contenido explícito de las preguntas y etiquetas.",
+        "La protección combina permisos backend, contratos cerrados, validaciones de referencias y cálculo determinístico. La revisión humana sigue siendo necesaria para el significado de negocio y la explicación generativa.",
+        "El manual describe lo observado en el código y en los documentos. No presenta un control de consentimiento adicional que la pantalla analítica aún no ofrece ni realiza llamadas nuevas para comprobar proveedores."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:1256",
+        "/home/ceo/Proyectos/BI/frontend/src/AnalyticsPage.tsx:388",
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/router.py:405",
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/router.py:506",
+        "/home/ceo/Proyectos/BI/docs/validation-plan.md",
+        "/home/ceo/Proyectos/BI/docs/scope.md"
+      ]
+    },
+    {
+      "titulo": "Resolver incidencias de consulta sin repetir operaciones innecesarias",
+      "objetivo": "Identificar la causa probable, preservar el expediente y aplicar la recuperación que corresponde al mensaje.",
+      "rol": "Usuario del panel; analista y administración según el tipo de incidencia.",
+      "requisitos": [
+        "Conservar fuente, ejecución, propuesta, hora y texto del error, sin incluir secretos.",
+        "No interpretar un error de proveedor como evidencia de que falló el datamart."
+      ],
+      "pasos": [
+        "Si la sesión venció o se solicita autenticación, vuelva a iniciar sesión y abra el módulo autorizado. El sistema conserva recuperación del asistente; no prometa recuperar el historial del chat analítico, que reside en la pantalla.",
+        "Si falta el menú o recibe acceso denegado, pida revisar los permisos efectivos. Para el recorrido del panel actual compruebe analytics.dashboard.read y metadata.read; para exportar, añada reports.analytics.export.",
+        "Si no hay fuentes, compruebe que la conexión esté habilitada y la cuenta pueda consultar /sources. No cree una conexión duplicada sólo para hacer aparecer el selector.",
+        "Si no existe una ejecución conciliada con datos físicos, abra Generación de datamart o Ver expedientes y revise estado, conciliación y disponibilidad. Un historial antiguo sin tablas no es un dashboard vigente.",
+        "Si se informa que ejecución y fuente no coinciden, vuelva a seleccionar la fuente y cargue sus ejecuciones. No mezcle manualmente identificadores de otra conexión.",
+        "Si una tarjeta dice No calculable con esta ejecución, revise dependencias, medida y denominador en el expediente. No reemplace Sin valor por cero en la presentación.",
+        "Si el copiloto pide configuración activa y probada o credencial utilizable, administración debe corregir y probar Configuración LLM. El resto del dashboard puede continuar siendo consultable.",
+        "Si el proveedor falla, alcanza cuota o devuelve JSON inválido, lea el mensaje y el tiempo de reintento indicado. Conserve la misma necesidad y los validadores; no acepte salida parcial ni pulse repetidamente durante la espera.",
+        "Si una exportación falla o un filtro produce error, espere una carga correcta antes de atribuir resultados a la nueva selección. Reintente la consulta o descarga, sin repetir el ETL por ese solo motivo.",
+        "Si la interfaz muestra una recuperación inesperada, recargue y consulte el expediente guardado antes de ejecutar cualquier mutación. Una recarga de pantalla no exige volver a materializar."
+      ],
+      "resultado": "La incidencia se atiende en el módulo correcto y se mantiene la trazabilidad de los datos ya conciliados.",
+      "verificacion": [
+        "Un error de autenticación, uno de permiso, uno de fuente, uno de materialización y uno de proveedor se registran como causas diferentes.",
+        "En el backend analítico, falta de ejecución puede producir 404; incongruencia o pérdida del respaldo, 409; configuración o agregado no disponible, 422; fallo de generación del proveedor, 503.",
+        "La prueba de conexión del LLM sólo verifica una operación mínima; no garantiza que una solicitud larga respete cuota, presupuesto y contrato.",
+        "Los datos publicados no se convierten en incorrectos sólo porque un servicio LLM esté temporalmente indisponible."
+      ],
+      "errores": [
+        "Resolver cualquier fallo con una nueva carga completa.",
+        "Cambiar arbitrariamente la necesidad o el proveedor para esconder un error sin documentarlo.",
+        "Aceptar una propuesta incompleta porque la conexión del proveedor salió correcta.",
+        "Registrar el texto de un error junto con tokens o contraseñas visibles.",
+        "Afirmar que un reintento tuvo éxito sin volver a comprobar el resultado y su contexto."
+      ],
+      "explicacion": [
+        "La operación concreta determina la recuperación. Consultar un panel y descargar un informe son lecturas; materializar genera otra ejecución y exige su flujo supervisado.",
+        "La generación probabilística puede fallar aun con datos y credenciales correctos. La aplicación aplica recuperación acotada y validación local; si no obtiene un contrato seguro, bloquea el resultado en lugar de convertirlo en una propuesta utilizable.",
+        "La documentación de incidentes debe decir observado hoy, documentado previamente o pendiente. Esas categorías impiden confundir una referencia histórica con una prueba nueva."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/router.py:204",
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/router.py:379",
+        "/home/ceo/Proyectos/BI/frontend/src/AnalyticsPage.tsx:200",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx:187",
+        "/home/ceo/Proyectos/BI/docs/experiments/2026-09-27-groq-vs-claude.md"
+      ]
+    },
+    {
+      "titulo": "Preparar una demostración ante el jurado con evidencia distinguible",
+      "objetivo": "Tener un recorrido concreto, reproducible y honesto sin depender de generar una respuesta nueva durante toda la exposición.",
+      "rol": "Expositor, analista BI y administración de la demostración.",
+      "requisitos": [
+        "Entorno iniciado, cuenta autorizada y fuente seleccionada antes de exponer.",
+        "Elegir una ejecución ya conciliada y físicamente disponible; confirmar su identidad en la aplicación antes de ensayar.",
+        "Si se planea generar una propuesta o preguntar al copiloto, proveedor y destino autorizados, configuración activa probada y disponibilidad de servicio.",
+        "Expediente, capturas históricas y reportes identificados con fecha y ejecución. Una captura histórica no se presenta como una interacción realizada en vivo.",
+        "No usar como estado actual los identificadores documentados en una auditoría sin comprobar que siguen disponibles."
+      ],
+      "pasos": [
+        "Escriba una frase de objetivo: demostrar construcción supervisada de un datamart y consulta explicable de resultados conciliados, con IA propositiva y cálculo controlado.",
+        "Prepare una necesidad comercial precisa y explique qué cambiaría si se pidieran pedidos, facturas o cobros.",
+        "Seleccione un expediente con propuesta, instantánea, aprobación, plan ETL y conciliación. Si va a mostrar el flujo completo, utilice los modos de consulta para recorrer decisiones ya registradas sin repetir una carga.",
+        "Anote fuente, propuesta y ejecución y los indicadores realmente incluidos: los casos detallados AW 122/18 y WWI 124/19 tienen cuatro KPI. Explique suma, documentos distintos y razón; no invente un quinto para completar una lista de exposición.",
+        "Prepare una comparación Año + Territorio que produzca datos y permita verificar que cifras y hallazgos se recalculan juntos.",
+        "Prepare un ejemplo de ranking por unidades y otro por importe para explicar por qué pueden producir líderes diferentes.",
+        "Prepare una pregunta breve del copiloto con territorio real y Top 5, y una pregunta sobre límites. Sólo envíelas si esa demostración está autorizada; las preguntas generan llamadas al proveedor activo.",
+        "Tenga disponible un informe fiel a la selección y el índice de evidencia. Si falla el proveedor, continúe con expediente, KPI y agregados ya publicados y declare el fallo en vivo con precisión.",
+        "Incluya una diapositiva o nota de pendientes: pruebas autenticadas por roles, evaluación formal de utilidad y generalización fuera de las fuentes ensayadas."
+      ],
+      "resultado": "El recorrido demuestra decisiones, trazabilidad y resultados con límites expresos y un respaldo documental revisable.",
+      "verificacion": [
+        "Los archivos y pantallas elegidos pertenecen al mismo caso cuando se afirma continuidad del flujo.",
+        "Se distingue consulta de un expediente existente, nueva generación LLM y nueva ejecución ETL.",
+        "Se prepara evidencia numérica exacta para conciliar y cifras abreviadas sólo para la lectura visual.",
+        "Se indica qué actividades siguen pendientes; no se reemplaza usabilidad o juicio de expertos por una demostración técnica."
+      ],
+      "errores": [
+        "Ejecutar otro ETL sólo para volver a mostrar una conciliación ya registrada.",
+        "Prometer una respuesta idéntica del LLM en cada repetición.",
+        "Ocultar que una pantalla corresponde a evidencia histórica y no a una carga hecha ante el jurado.",
+        "Planificar comparaciones entre pedido e importe facturado como si sólo hubiera cambiado de proveedor.",
+        "Afirmar que se validaron cuentas gerenciales porque se creó el rol."
+      ],
+      "explicacion": [
+        "La reproducibilidad técnica de la propuesta consiste en reconstruir determinísticamente decisiones persistidas y comparar huellas, no en exigir que otra llamada al LLM produzca el mismo texto.",
+        "Los casos nuevos del 4–5 de noviembre son AW 122/18 y WWI 124/19, con cuatro KPI y expedientes propios. Las referencias del 3 de octubre AW 98/14 y WWI 114/15, además de pedidos 96/13, permanecen como antecedentes históricos identificados; no se presentan como operaciones nuevas.",
+        "El objetivo de una exposición no es ocultar la variabilidad del proveedor. La capacidad de bloquear referencias erróneas y conservar la evidencia de la decisión humana es parte del resultado del prototipo."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/docs/testing/auditoria-operativa-2026-10-03.md",
+        "/home/ceo/Proyectos/BI/docs/validation-plan.md",
+        "/home/ceo/Proyectos/BI/docs/scope.md"
+      ]
+    },
+    {
+      "titulo": "Guion de demostración: del problema comercial a la decisión respaldada",
+      "objetivo": "Ordenar una exposición orientativa de 12 a 15 minutos que conecte necesidad, controles, analítica y límites.",
+      "rol": "Expositor con cuenta de demostración autorizada; analista para la explicación técnica.",
+      "requisitos": [
+        "Preparación previa completada y tiempos ajustados al espacio concedido por el jurado.",
+        "Un expediente completo seleccionado; el guion de consulta no requiere generar ni materializar de nuevo.",
+        "Cada cifra que se menciona coincide con lo visible o se identifica como evidencia histórica."
+      ],
+      "pasos": [
+        "Minutos 0–1. Plantee el problema: un analista recibe una necesidad de ventas y debe construir un datamart sin encargar consultas específicas a un programador por cada análisis. Declare que el sistema propone con IA, valida por reglas y conserva aprobación humana.",
+        "Minutos 1–2. Muestre Fuente en contexto y la instantánea asociada. Explique que AdventureWorks y WideWorldImporters usan SQL Server y el mismo adaptador; cambiar de base no equivale a haber implementado otro motor.",
+        "Minutos 2–4. Abra la necesidad y propuesta histórica del caso. Muestre objetivo, preguntas, periodicidad, grano, medidas con procedencia y cobertura. Explique una ambigüedad resuelta o una fórmula rechazada; diferencie respaldo estructural de comprobación de datos.",
+        "Minutos 4–6. Muestre la aprobación humana y el expediente ETL: versión, plan de operaciones, ejecución y conciliación. Señale que origen y destino se contrastaron al mismo grano y con medidas equivalentes. No vuelva a pulsar materializar para simular consulta.",
+        "Minutos 6–8. Abra Analítica de ventas en Vista ejecutiva e identifique ejecución y alcance. Explique los cuatro KPI del caso detallado: importe, unidades, documentos distintos y razón por documento. Justifique numerador y denominador; no añada un indicador inexistente.",
+        "Minutos 8–10. Cambie a Vista analítica. Elija el indicador de gráficos, aplique año y territorio, abra un valor exacto y una tabla de respaldo. Explique que el gráfico clasifica el indicador elegido y que las participaciones visibles se refieren al ranking mostrado.",
+        "Minutos 10–12. Si está autorizado y disponible, pregunte al copiloto por Top 5 de unidades en un territorio real. Compruebe en voz alta la Consulta interpretada y su denominador antes del Top N. Pregunte por una limitación sin pedir causalidad o predicción.",
+        "Minutos 12–13. Muestre la exportación de la selección o un informe identificado del caso y señale vista, indicador, año y territorio. La cifra debe mantener el mismo contexto de la pantalla.",
+        "Minutos 13–15. Exponga los límites: prueba de concepto con dos fuentes SQL Server, contratos y proveedores acotados, sin pronóstico, sin operación empresarial continua ni evaluación formal completa de usuarios. Termine con una decisión posible y el dato adicional necesario antes de ejecutarla."
+      ],
+      "resultado": "El jurado ve la relación entre necesidad, supervisión, cálculo, conciliación y uso gerencial, sin saltos de evidencia.",
+      "verificacion": [
+        "El expositor puede contestar de dónde proviene una cifra y qué fórmula la produce.",
+        "La comparación por filtros conserva fuente y ejecución.",
+        "La demostración del copiloto comprueba el alcance interpretado; no se limita a leer una respuesta convincente.",
+        "Para el guion principal use AW 122/18 y WWI 124/19. Como contraste histórico opcional, WWI #13 registra pedidos y #15 facturas; explique el evento, la composición del importe y la moneda según la evidencia de cada expediente, sin trasladar esas conclusiones automáticamente al caso actual."
+      ],
+      "errores": [
+        "Dedicar todo el tiempo a configuración y no demostrar la necesidad comercial ni la conciliación.",
+        "Llamar universal a una solución sin describir los adaptadores y fuentes efectivamente ensayados.",
+        "Cambiar de fuente sin volver a mostrar el contexto y continuar citando las cifras anteriores.",
+        "Atribuir a la IA los cálculos determinísticos o presentar la aprobación humana como un paso decorativo."
+      ],
+      "explicacion": [
+        "Frase sugerida al mostrar un KPI: este valor usa esta medida, esta operación y esta población; el expediente conserva el contraste de origen y destino. La IA propuso el artefacto y la aplicación lo calculó con reglas controladas.",
+        "Frase sugerida ante un fallo del proveedor: la consulta generativa no se completó; el datamart conciliado y sus indicadores siguen disponibles. El resultado inválido no se utilizó y la evidencia del incidente se conserva.",
+        "Frase sugerida sobre decisión gerencial: el panel identifica qué revisar y con qué evidencia; no demuestra por sí solo la causa ni ejecuta una acción comercial."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/docs/scope.md",
+        "/home/ceo/Proyectos/BI/docs/validation-plan.md",
+        "/home/ceo/Proyectos/BI/docs/testing/auditoria-operativa-2026-10-03.md",
+        "/home/ceo/Proyectos/BI/docs/specs/SPR-05-05-copiloto-analitico-contextual.md"
+      ]
+    },
+    {
+      "titulo": "Preguntas frecuentes del jurado y respuestas defendibles",
+      "objetivo": "Responder con precisión sobre aporte, exactitud, supervisión, seguridad, portabilidad y validación pendiente.",
+      "rol": "Autores y expositores de la prueba de concepto.",
+      "requisitos": [
+        "Ajustar cada respuesta al caso y evidencia efectivamente mostrados.",
+        "No convertir resultados de una corrida o pruebas simuladas en garantías generales."
+      ],
+      "pasos": [
+        "Responda primero la pregunta concreta y después muestre el artefacto o control que la respalda.",
+        "Para cifras, identifique fuente, ejecución, fórmula, filtros y denominador.",
+        "Para límites, distinga implementado, probado en un caso, cubierto por regresión y pendiente de evaluación formal.",
+        "Si el dato solicitado no está demostrado, indíquelo y precise qué comprobación sería necesaria."
+      ],
+      "resultado": "Las respuestas sostienen el aporte sin ampliar artificialmente la evidencia disponible.",
+      "verificacion": [
+        "Cada afirmación de exactitud remite a referencias verificadas o conciliación.",
+        "No se atribuye al LLM la autoridad de aprobar ni el cálculo final.",
+        "Las preguntas sobre usuarios se contestan con el estado real de validación autenticada."
+      ],
+      "errores": [
+        "Responder que todo está validado porque una carga terminó.",
+        "Afirmar que el proveedor de mayor nivel siempre razona mejor.",
+        "Presentar los adaptadores futuros como motores ya disponibles.",
+        "Prometer que un contexto agregado elimina toda sensibilidad de sus etiquetas."
+      ],
+      "explicacion": [
+        "¿Cuál es el aporte? Un flujo reutilizable que interpreta metadatos y necesidad con IA, genera un contrato BI estructurado, lo valida, permite revisión humana y ejecuta un ETL trazable para publicar resultados conciliados; no una colección de consultas escritas para cada solicitud.",
+        "¿Qué hace la IA? Ayuda a formular e interpretar necesidades, propone artefactos y explica agregados. No administra credenciales, aprueba el negocio ni ejecuta SQL libre.",
+        "¿Quién calcula los KPI? La aplicación, mediante recetas declarativas controladas y medidas materializadas verificadas. El LLM puede sugerir una fórmula, pero sólo se ejecuta si el contrato la admite y supera validación y supervisión.",
+        "¿Cómo evitan alucinaciones? Se comprueban referencias contra una instantánea inmutable, tipos, relaciones, procedencia y cobertura; las salidas inseguras se excluyen o bloquean. La redacción generativa aún requiere revisión y no se promete ausencia absoluta de errores.",
+        "¿Por qué aprobación humana si hay validadores? Las reglas comprueban seguridad y coherencia ejecutable; la persona decide si el significado de negocio, alcance y límites son aceptables para el uso previsto.",
+        "¿Qué demuestra una conciliación? Coincidencia de cantidades e importes con consultas de referencia del mismo evento y población, dentro de tolerancias documentadas. No demuestra por sí sola utilidad gerencial ni convierte pedidos en facturas.",
+        "¿Por qué no basta COUNT de filas para pedidos? Porque el hecho puede estar al grano de línea; varios productos repiten el documento. Se usa COUNT DISTINCT de su clave.",
+        "¿Por qué AVG del importe de línea no es ticket promedio? Su denominador son líneas. El promedio por transacción divide el importe total entre documentos distintos.",
+        "¿Por qué un promedio ponderado? Porque cada precio o costo puede representar cantidades diferentes. La razón de totales conserva el peso de unidades, documentos o ventas según el indicador.",
+        "¿El margen es utilidad neta? No. Es la diferencia y razón respecto de las medidas de ventas y costos aprobadas; deben declararse base, impuesto y tipo de costo. No incorpora automáticamente todos los gastos o efectos económicos.",
+        "¿Pedido, factura y cobro son equivalentes? No. Son eventos distintos. El caso WWI documentó la diferencia y conserva ejecuciones separadas de pedidos y facturas; factura emitida no acredita cobro.",
+        "¿Se puede comparar cualquier fuente? El adaptador funcional es SQL Server. AdventureWorks y WideWorldImporters contrastan estructuras diferentes bajo ese adaptador; otros motores requieren desarrollo y validación de un adaptador futuro.",
+        "¿Universal significa cualquier esquema e idioma? Significa contrato común y reglas reutilizables sin una propuesta codificada para cada base ensayada. La evidencia se limita a los escenarios probados y el reconocimiento semántico puede quedar ambiguo o no disponible.",
+        "¿Se reproducirá la misma respuesta del LLM? Una nueva generación puede variar. La propuesta aprobada conserva decisiones y huellas para reproducción determinística del contrato persistido.",
+        "¿Cambiar de proveedor cambia los validadores? No. Cambia el transporte y capacidades del adaptador; el contrato BI y las reglas comunes se mantienen. Disponibilidad, cuota y salida pueden variar.",
+        "¿Bajo, medio y alto equivalen entre proveedores? No. Groq traduce a reasoning_effort; Gemini depende de familia y capacidad; el adaptador Anthropic actual no habilita pensamiento extendido y rechaza configuraciones nuevas medio/alto. No son una escala comparable de calidad.",
+        "¿Probar conexión garantiza generar? No. Una prueba corta puede pasar y una solicitud completa agotar presupuesto, cuota o fallar el esquema. Sólo un contrato válido y aprobado puede pasar al ETL.",
+        "¿Qué datos ve el copiloto? Pregunta, historial breve y contexto agregado de la ejecución, incluidos puntos y etiquetas descriptivas. No recibe por el flujo programado credenciales ni filas crudas del OLTP; el usuario tampoco debe pegarlas en su pregunta.",
+        "¿El chat ejecuta SQL? No acepta SQL libre del LLM. La IA selecciona parámetros de un catálogo cerrado y el código de la aplicación construye la agregación segura.",
+        "¿Por qué cambia un porcentaje entre gráfico y chat? El ranking del panel usa el total de puntos visibles; el Top N del chat declara el total filtrado antes de limitar N. Debe citarse el denominador de cada uno.",
+        "¿Hay pronósticos? No forman parte del alcance vigente por decisión del tutor. La evaluación se concentra en construcción supervisada, exactitud, reproducibilidad, calidad y utilidad del datamart.",
+        "¿Ya probaron gerentes y analistas con cuentas separadas? Se observaron cuatro roles y dos cuentas, con quince permisos de Analista BI y cuatro de Gerente comercial. El recorrido operativo se realizó con Administrador inicial. No se autenticaron todos los perfiles ni se realizó una evaluación formal de utilidad con participantes; ambas actividades conservan ese límite y no se presentan como completadas.",
+        "¿Puede ponerse directamente en producción empresarial? La entrega es una prueba de concepto académica. No demuestra alta disponibilidad, CDC, cargas incrementales, seguridad granular empresarial ni operación continua con datos productivos de terceros.",
+        "¿Qué falta para afirmar el objetivo totalmente validado? Completar la evidencia técnica aplicable y la evaluación formal de usabilidad y juicio de expertos, diferenciando cada instrumento de la demostración funcional."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/docs/scope.md",
+        "/home/ceo/Proyectos/BI/docs/validation-plan.md",
+        "/home/ceo/Proyectos/BI/docs/testing/auditoria-operativa-2026-10-03.md",
+        "/home/ceo/Proyectos/BI/docs/experiments/2026-09-27-groq-vs-claude.md",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/schemas.py:92",
+        "/home/ceo/Proyectos/BI/backend/app/modules/analytics/router.py:39"
+      ]
+    },
+    {
+      "titulo": "Alcance universal y límites de proveedores: cómo elegir sin prometer equivalencias",
+      "objetivo": "Definir qué partes son comunes, qué capacidades dependen del adaptador y cómo interpretar la evidencia experimental.",
+      "rol": "Administración y analista BI; expositor al explicar arquitectura y generalización.",
+      "requisitos": [
+        "Consultar el código y el expediente de la versión utilizada; las notas históricas no reemplazan el estado vigente.",
+        "No cambiar proveedor, destino ni nivel de configuración durante una demostración sin reconocer que cambia el contexto de envío y la disponibilidad."
+      ],
+      "pasos": [
+        "Distinga motor de origen y proveedor LLM. SQL Server es el adaptador de metadatos implementado; Gemini, Groq, Anthropic, Qwen y Ollama son opciones de proveedor de IA configurables, no motores de base de datos.",
+        "Elija el proveedor operativo por disponibilidad, costo autorizado, latencia y capacidad implementada. Mantenga la misma necesidad y validadores al contrastar resultados.",
+        "Interprete automático como delegar el comportamiento al adaptador o modelo compatible, no como elegir automáticamente al mejor proveedor ni cambiar de proveedor en caso de error.",
+        "En Groq, mínimo se traduce a bajo y los niveles bajo/medio/alto se envían como esfuerzo cuando corresponde al modelo. Considere que el razonamiento puede consumir el presupuesto de finalización y que las cuotas son independientes de la prueba de conexión.",
+        "En Anthropic, use las opciones actuales admitidas por la plataforma: automático, mínimo o bajo. La creación o actualización rechaza medio/alto porque esta modalidad no tiene pensamiento extendido habilitado.",
+        "En Gemini, reconozca que la traducción de nivel depende de la familia del modelo. No extrapole una opción visible a un mecanismo idéntico al de Groq.",
+        "Para Qwen u Ollama, no afirme que el vocabulario común implica una escala equivalente de razonamiento; confirme capacidades implementadas y pruebas de ese caso antes de compararlo.",
+        "Después de elegir proveedor, pruebe conexión y verifique la generación completa, referencias, cobertura y aprobación; una respuesta rápida o un nivel más alto no sustituye ninguna de esas comprobaciones."
+      ],
+      "resultado": "La selección del proveedor se entiende como decisión operativa sujeta a capacidades reales y contrato común.",
+      "verificacion": [
+        "El registro conserva proveedor y modelo de cada propuesta o respuesta; cambiar la configuración activa no reescribe la procedencia histórica.",
+        "Los experimentos de septiembre y la auditoría de octubre contienen resultados distintos; sus recomendaciones se leen con fecha y condiciones de prueba.",
+        "El seguimiento del 29 de septiembre documentó un flujo completo válido con Claude después del endurecimiento. En el corte del 4–5 de noviembre Claude quedó activo y se comprobaron los casos AW 122/18 y WWI 124/19; Anthropic y Groq pasaron la prueba mínima, pero la solicitud completa a Groq recibió 413 por cuota. No se probaron cinco proveedores en vivo ni se presenta una recomendación histórica como conclusión universal.",
+        "El registro CONNECTOR_READERS del código contiene sólo sqlserver. PostgreSQL es destino del datamart y de la aplicación; eso no demuestra un adaptador de origen PostgreSQL implementado."
+      ],
+      "errores": [
+        "Afirmar que la plataforma ya integra cualquier motor porque el contrato es independiente del motor.",
+        "Comparar medio de Claude y medio de Groq como la misma cantidad de razonamiento.",
+        "Interpretar un resultado de cuatro corridas como ranking definitivo de proveedores.",
+        "Confundir recuperación acotada del JSON con permiso para rebajar el contrato o inventar campos.",
+        "Afirmar que todas las opciones de proveedor fueron ensayadas con éxito en ambas fuentes."
+      ],
+      "explicacion": [
+        "La universalidad defendible reside en un contrato común, validación independiente del texto de etiquetas y operaciones reutilizables sobre metadatos comprobados. No equivale a generalización empírica a todo dominio, motor, modelo o idioma.",
+        "El adaptador puede cambiar el protocolo de transporte y aplicar recuperación estructural acotada. La respuesta sigue pasando el validador local común y no adquiere permiso para ejecutar SQL por provenir de un proveedor particular.",
+        "El nivel de razonamiento es un parámetro operativo con semántica dependiente del proveedor. No es un porcentaje de exactitud, una certificación de cobertura ni una obligación de usar el máximo nivel.",
+        "La evaluación formal pendiente y la evidencia física dual señalada en documentos históricos deben contrastarse con auditorías posteriores. Octubre documentó alternancia de WWI #13/#15 y regreso a AW #14; noviembre comprobó los recorridos completos AW 122/18 y WWI 124/19. Las dos revisiones adicionales need-review-6 conservaron los objetivos, pero dejaron diez y siete decisiones no aceptadas, sin otra propuesta ni ETL. No se presenta una etapa histórica como pendiente general ni una revisión nueva como carga terminada."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/backend/app/modules/metadata/connectors.py:10",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/schemas.py:9",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/schemas.py:92",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/providers.py:49",
+        "/home/ceo/Proyectos/BI/backend/app/modules/parameters/providers.py:684",
+        "/home/ceo/Proyectos/BI/docs/experiments/2026-09-27-groq-vs-claude.md",
+        "/home/ceo/Proyectos/BI/docs/testing/auditoria-operativa-2026-10-03.md",
+        "pruebas_actuales.json",
+        "qa/viabilidad_v6_cierre.json"
+      ]
+    }
+  ]
+}

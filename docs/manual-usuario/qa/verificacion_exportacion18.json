@@ -1,0 +1,91 @@
+{
+  "fecha": "2026-11-04T23:41:05.991419-05:00",
+  "corte": "Primera exportación de la ejecución 18, anterior a agregar fuente, base y zona horaria al contexto impreso",
+  "archivos": {
+    "pdf": {
+      "archivo": "evidencias_exportaciones/ventas-ejecucion-18-executive.pdf",
+      "sha256": "4efaeb14ebedc41491e693c954da579e0d7bbde4d23eef5af247c0560dc63a62"
+    },
+    "xlsx": {
+      "archivo": "evidencias_exportaciones/ventas-ejecucion-18-executive.xlsx",
+      "sha256": "12fefc96a38cd9d855e41b54ead12a375141088b56935702b9986570d922fe55"
+    }
+  },
+  "originales_editados": false,
+  "fuente_verificada_por_expediente": {
+    "source_name": "AdventureWorks local",
+    "database_name": "AdventureWorks2022",
+    "data_connection_id": 1,
+    "execution_id": 18,
+    "proposal_id": 122,
+    "metodo": "SELECT de expediente/instantanea/conexion; no figura impresa en estos archivos"
+  },
+  "hojas": [
+    "Resumen",
+    "Evolución en el tiempo",
+    "Productos líderes",
+    "Distribución territorial"
+  ],
+  "contexto_excel": {
+    "celdas": "Resumen!C8,C9,F9",
+    "periodo": "2013 · Northwest",
+    "propuesta": "#122",
+    "ejecucion": "#18",
+    "moneda": "USD",
+    "actualizacion": "05/11/2026 04:24",
+    "zona_horaria_impresa": false
+  },
+  "valores_sin_redondear": {
+    "importe_resumen_B14": "6015174.735836",
+    "suma_mensual_C6_C17": "6015174.7358359999",
+    "territorio_C6": "6015174.735836",
+    "unidades_E14": "17452",
+    "pedidos_H14": "2053",
+    "promedio_B17": "2929.943855740867",
+    "promedio_calculado": "2929.943855740867023867510960"
+  },
+  "formatos_resumen": {
+    "B14": "#,##0.00 \"USD\"",
+    "E14": "#,##0.00",
+    "H14": "#,##0",
+    "B17": "#,##0.00"
+  },
+  "tolerancias": {
+    "importes": "0.000001",
+    "razon": "0.000000001",
+    "conteos": "Exactos"
+  },
+  "controles": {
+    "cuatro_hojas": true,
+    "propuesta_122": true,
+    "ejecucion_18": true,
+    "filtro_2013_Northwest": true,
+    "resumen_total": true,
+    "sumatoria_mensual_vs_territorio": true,
+    "total_territorio_vs_control": true,
+    "unidades_17452": true,
+    "pedidos_2053": true,
+    "promedio_2929_943855740867": true,
+    "promedio_razon_totales": true,
+    "pdf_cinco_paginas": true,
+    "pdf_valores_presentados": true
+  },
+  "resultado_numerico": "Todos los controles solicitados son conformes",
+  "revision_visual_pdf": {
+    "paginas_revisadas": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "resultado": "Legible; sin cifras cortadas, tablas superpuestas ni deformacion. Las cifras monetarias y el promedio se muestran a dos decimales, y pedidos como entero.",
+    "observaciones": [
+      "La página 4 tiene una sola categoría y amplio espacio en blanco.",
+      "La cuadrícula de cuatro KPI conserva dos celdas vacías.",
+      "El gráfico muestra el máximo exacto, sin escala numérica vertical.",
+      "Fuente y base no se imprimen en estos originales; se registran como corte anterior al ajuste de contexto.",
+      "La actualización no etiqueta su zona horaria en este corte."
+    ]
+  }
+}

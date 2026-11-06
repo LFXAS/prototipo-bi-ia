@@ -307,6 +307,16 @@ make release-up
 
 Las migraciones se ejecutan como un paso controlado antes de iniciar una nueva versión del backend. La ampliación de necesidades requiere `20261003_19`, que agrega `app.business_need_reviews` sin cambiar propuestas ni datamarts existentes. Después se ejecuta el servicio `seed`, que actualiza sin duplicar el catálogo protegido de permisos, menús, rol administrador y cuenta inicial. Las cuentas temporales, auditoría, claves, configuraciones cloud y datos de negocio permanecen locales: nunca se copiará un volumen manualmente como mecanismo normal de despliegue.
 
+La corrección posterior al cierre de noviembre no añade migración de tablas ni exige
+reiniciar volúmenes. Despliegue el backend de la versión aprobada por el flujo habitual;
+repita la revisión previa de una necesidad nueva con `need-review-6`. Las evaluaciones
+anteriores se conservan como evidencia pero no autorizan otra generación. Las propuestas
+nuevas declaran `sales-bi-v7` y `compilation_rules_version=3`; las persistidas sin marcador
+se verifican con reglas históricas 1; las que declaran 2 conservan reglas 2. No agregue manualmente el marcador a un documento,
+no cambie su huella ni repita un ETL sólo por actualizar el motor. La verificación y
+repetición de aceptación se registran en
+[QA posterior al cierre](testing/qa-postcierre-2026-11-04.md).
+
 Si se necesita repetir el catálogo sin reiniciar PostgreSQL, desde la raíz del repositorio se puede ejecutar:
 
 ```bash
@@ -336,7 +346,10 @@ docker compose --profile local-llm logs --tail=200 ollama
 - La prueba de Ollama indica que falta el modelo: ejecuta `make ollama-pull` desde la raíz del repositorio y repite la prueba; el valor predeterminado es `qwen2.5:3b`, elegido para una respuesta local ágil. No copies el volumen de otra máquina.
 - La asesoría pide confirmar el proveedor actual: revisa la configuración visible y renueva el consentimiento; no reutilices una autorización de otro destino.
 - La generación pide revisar nuevamente la necesidad: el texto, preguntas, período o instantánea ya no coinciden con la evaluación guardada. Repite la revisión sobre el estado actual; no recuperes una huella antigua.
-- Después de actualizar reglas a `need-review-2`, una evaluación anterior también requiere repetirse. Su registro se conserva, y esta revisión no cambia aprobaciones ni datamarts previos.
+- Después de actualizar reglas a `need-review-6`, una evaluación anterior también requiere repetirse. Su registro se conserva, y esta revisión no cambia aprobaciones ni datamarts previos.
+- Una cautela como «sin asumir moneda, utilidad ni composición fiscal» no solicita margen. Revisa también las preguntas seleccionadas: si una pide positivamente ese indicador, resuelve la contradicción editando la necesidad o desmarcando la pregunta pertinente; no aceptes un requisito falso sólo para continuar.
+- Un ranking de sumas por producto, cliente o territorio es una operación sobre una medida, una dimensión y una ruta verificadas; no necesita una columna llamada ranking. Comprueba esas dependencias y no aceptes como disponible una operación sólo por su etiqueta. Percentiles y puntuaciones arbitrarias siguen fuera del contrato.
+- Al aprobar, HTTP 409 puede indicar que el borrador usa un prompt o reglas anteriores. Regenera o personaliza para obtener una versión hija con las reglas actuales; conserva el original. No añadas un marcador manual ni edites huellas. Consultar una propuesta ya aprobada no exige repetir su ETL.
 - Un requisito usa precio de venta como costo o mezcla fecha e importe en una derivación: no lo aceptes como resuelto. El asesor puede pedir una corrección acotada al mismo proveedor; si no la resuelve, conserva la limitación y modifica o excluye sólo el requisito que no quieras analizar.
 - El paquete de metadatos supera el presupuesto: no se envía un esquema truncado. Ajusta el alcance admitido o documenta la limitación; no presupongas que un proveedor diferente elimina el límite del producto.
 

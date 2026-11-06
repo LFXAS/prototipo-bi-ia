@@ -1,0 +1,704 @@
+{
+  "secciones": [
+    {
+      "titulo": "Explorador de esquema y significado de sus opciones",
+      "objetivo": "Comprobar de qué estructura procede un análisis y aprender a leer tablas, columnas y relaciones sin consultar filas comerciales.",
+      "rol": "Administrador o persona con Consultar metadatos; Actualizar metadatos es un permiso adicional.",
+      "requisitos": [
+        "Una conexión SQL Server probada y habilitada.",
+        "Una URL de la aplicación y una cuenta autorizada. No se requiere escribir SQL para recorrer esta pantalla."
+      ],
+      "pasos": [
+        "Abra Preparación del entorno y seleccione Explorador de esquema. Primero lea Fuente en contexto: nombre visible, motor y base. El nombre visible es una etiqueta de trabajo; el nombre de base identifica el catálogo real de origen.",
+        "En Cambiar fuente elija la base de trabajo. Espere a que terminen de cargar la instantánea y el detalle antes de interpretar resultados. Una misma empresa puede tener más de una conexión; seleccionar otra fuente no fusiona sus ventas.",
+        "Revise el resumen: Esquemas agrupa espacios de nombres; Tablas cuenta estructuras capturadas; Columnas cuenta sus atributos y tipos; Relaciones cuenta claves foráneas declaradas. Estas cifras no son número de ventas, clientes o productos.",
+        "Lea el identificador de Instantánea, fecha y huella. La instantánea es una fotografía estructural persistida. La huella resume su contenido canónico: permite reconocer la misma estructura, no certifica la calidad financiera de sus datos.",
+        "Use Versión de metadatos para consultar una captura anterior. Si existe una sola, el selector permanece visible pero deshabilitado y lo explica. Para iniciar un análisis nuevo debe usarse la instantánea vigente de la fuente elegida.",
+        "En Buscar tabla o columna escriba parte de un nombre y, si procede, acote Esquema. Pulse Buscar. Un nombre técnico inglés no debe sustituirse por una traducción inventada en este filtro; use el identificador que realmente exista.",
+        "Seleccione una tabla. El detalle muestra columna, posición, tipo, nulabilidad y clave. PK identifica una clave primaria; varias columnas marcadas PK pueden formar una clave compuesta. No suponga que la primera columna que termina en ID es suficiente para distinguir una fila.",
+        "Lea Relaciones salientes y Relaciones entrantes. Una relación saliente une una clave foránea de la tabla a la clave de otra; la entrante muestra tablas que referencian a la seleccionada. Una relación compuesta debe conservar todos sus componentes.",
+        "Si tiene permiso y necesita contrastar cambios, pulse Actualizar metadatos. La aplicación lee la estructura del origen. Si informa La estructura no cambió, se mantiene la instantánea vigente: no es un error ni obliga a fabricar otra versión.",
+        "Repita la consulta con la segunda fuente y compruebe su identidad. En este corte, AdventureWorks muestra 6 esquemas, 71 tablas, 482 columnas y 90 relaciones; WideWorldImporters muestra 4, 48, 546 y 98. Son observaciones de estas muestras, no valores que el programa deba imponer a cualquier nueva base."
+      ],
+      "resultado": "Fuente, instantánea y detalle estructural identificados; el analista puede explicar las referencias que usará la propuesta.",
+      "verificacion": [
+        "La fuente del encabezado corresponde al selector.",
+        "La tabla, sus columnas y sus relaciones pertenecen a esa instantánea.",
+        "No se confunde una cantidad de tablas con una cifra comercial.",
+        "El cambio de fuente no conserva el detalle de una tabla inexistente de la base anterior."
+      ],
+      "errores": [
+        "Si no hay instantánea, vuelva a Conexiones, pruebe y habilite la fuente y lea sus metadatos.",
+        "Una columna decimal no demuestra que sea dinero: puede representar precio, tasa, cantidad u otra magnitud. El tipo físico y el significado de negocio se revisan por separado.",
+        "No cambie una base de origen para conseguir que una propuesta de IA incorrecta pase la validación.",
+        "No elimine volúmenes Docker para resolver una selección o búsqueda errónea del explorador."
+      ],
+      "explicacion": [
+        "Una base OLTP organiza operaciones del negocio. Un esquema agrupa tablas; una tabla contiene entidades o eventos y una columna describe un atributo. El datamart reorganiza un alcance analítico aprobado en otro destino; el explorador no lo crea.",
+        "La clave primaria distingue filas. La clave foránea declara una relación. Su existencia permite construir rutas comprobables, pero no demuestra por sí sola que todas las uniones conserven la cantidad de filas o representen el significado comercial pretendido.",
+        "En AdventureWorks, la línea de pedido tiene identificadores de pedido y de detalle. En WideWorldImporters, una línea de factura referencia a una factura y a un artículo. Estos ejemplos ayudan a leer la estructura; el motor del producto no requiere una consulta escrita a mano por ejemplo.",
+        "Una relación uno a muchos puede multiplicar registros si se une sin criterio. El analista debe comprender el grano del hecho antes de evaluar una dimensión. El ETL y la conciliación aportarán una comprobación adicional sobre las filas cargadas."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx",
+        "/home/ceo/Proyectos/BI/backend/app/modules/metadata",
+        "/home/ceo/Proyectos/BI/docs/architecture.md"
+      ]
+    },
+    {
+      "titulo": "Comenzar en la URL y el ambiente correctos",
+      "objetivo": "Acceder a la instalación entregada sin confundir desarrollo, release y las distintas copias del proyecto.",
+      "rol": "Todos los perfiles; la preparación de contenedores corresponde al equipo técnico.",
+      "requisitos": [
+        "La plataforma debe estar iniciada previamente por la responsable del entorno.",
+        "Cada persona debe recibir su URL y sus credenciales mediante un canal privado."
+      ],
+      "pasos": [
+        "Solicite el nombre del ambiente y su URL. En la estación usada para estas capturas, la aplicación está en http://localhost:5173/.",
+        "Si opera el paquete portable del 29 de octubre, sus direcciones son http://localhost:15173 para desarrollo y http://localhost:18088 para release. No son puertos intercambiables ni comparten automáticamente usuarios, configuraciones o datamarts.",
+        "Abra la dirección que corresponda en el navegador. Localhost se refiere al equipo donde está ese navegador. Para acceder desde otro computador se necesita una dirección y un despliegue autorizados; este manual no indica exponer puertos públicamente.",
+        "Si la página no responde, compruebe primero con la responsable qué ambiente está iniciado. En equipos con 8 GB de RAM, utilice un entorno completo a la vez según la guía portable; no inicie además un modelo local sin verificar sus recursos.",
+        "Una vez visible Iniciar sesión, siga el procedimiento de acceso. No copie en el manual, capturas o diapositivas la contraseña inicial proporcionada por la administradora.",
+        "Para instalación o traslado, use la guía de instalación de la entrega documental correspondiente. Este manual enseña la operación de una plataforma disponible; las funciones web no instalan Docker ni restauran bases por sí mismas."
+      ],
+      "resultado": "El usuario reconoce la instalación en la que trabaja y evita buscar resultados de otro ambiente.",
+      "verificacion": [
+        "La URL coincide con el ambiente solicitado.",
+        "La fuente, los usuarios y las versiones visibles corresponden a esa instalación.",
+        "Una instalación limpia puede no tener expedientes: esto no demuestra pérdida de la instalación anterior."
+      ],
+      "errores": [
+        "No mezcle los comandos de la guía histórica de GHCR con los del paquete portable.",
+        "No elimine contenedores o volúmenes de otros proyectos para liberar recursos.",
+        "No use la cuenta administradora de forma compartida como práctica normal de operación."
+      ],
+      "explicacion": [
+        "Desarrollo facilita mantenimiento y recarga de código. Release sirve el artefacto compilado y tiene estado independiente. Una rama Git no es una base de datos ni un servidor.",
+        "Las capturas utilizan el diseño adaptable del navegador. En ventanas estrechas se muestra el botón Menú y los campos se apilan; en escritorio pueden aparecer en columnas. Los rótulos y criterios de operación son los mismos."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/Información adicional proyecto BI/Versiones/2026-11-04_v01/01_Instalacion_y_actualizacion/Traslado_portable_2026-10-29/INFORME_VERIFICACION.txt",
+        "/home/ceo/Proyectos/BI/docs/architecture.md"
+      ]
+    },
+    {
+      "titulo": "Leer los ejemplos y distinguir resultados observados de ejercicios",
+      "objetivo": "Utilizar el manual como material de aprendizaje sin convertir una instrucción o una expectativa en evidencia ya obtenida.",
+      "rol": "Programadoras, analista BI, administradora y estudiantes que preparan la sustentación.",
+      "requisitos": [
+        "Conocer el ambiente y la fuente del ejemplo.",
+        "Conservar la identidad de la propuesta y de la ejecución que se muestran."
+      ],
+      "pasos": [
+        "Lea el objetivo y la persona responsable de cada procedimiento antes de pulsar acciones.",
+        "Complete los requisitos indicados. Si no tiene permiso o falta evidencia, no intente reproducir el resultado con una cuenta compartida o con fuentes ajenas.",
+        "Siga los pasos en orden y compruebe el resultado esperado. Los pasos que guardan, aprueban o ejecutan producen cambios persistentes; consultar un expediente existente no debe repetirlos.",
+        "Use los apartados de conceptos para justificar por qué eligió una opción. El jurado debe poder entender el criterio, no únicamente la secuencia de clics.",
+        "En los escenarios nuevos, lea el estado observado y sus identificadores. Un rechazo correcto es evidencia de un control, no evidencia de que ya exista una carga positiva.",
+        "Para repetir un ejercicio en otra instalación, registre nuevos identificadores y resultados. No copie los números de propuesta, ejecución o importes de este documento como si fueran propios de la nueva prueba."
+      ],
+      "resultado": "Cada afirmación de la demostración puede relacionarse con una acción, una fuente y un resultado comprobable.",
+      "verificacion": [
+        "La explicación distingue captura real, configuración observada, criterio didáctico y prueba todavía pendiente.",
+        "No se afirma satisfacción de usuarios ni mejora causal de productividad a partir de una captura.",
+        "El hecho de operar con Administrador no se presenta como validación de todas las sesiones por rol."
+      ],
+      "errores": [
+        "No denomine simulación a un recorrido real por la interfaz ni presente un ejemplo numérico didáctico como dato de la base.",
+        "No presente una tasa de éxito universal de proveedores a partir de estos recorridos acotados.",
+        "No oculte una limitación comercial cambiando solamente el título de un indicador."
+      ],
+      "explicacion": [
+        "La prueba de concepto demuestra un flujo delimitado. La extensibilidad del contrato y de los adaptadores no equivale a soporte operativo de cualquier motor o de cualquier modelo sin verificación.",
+        "Un resultado comercial requiere definir el evento: pedido, factura y cobro no son sinónimos. La misma palabra ventas puede referirse a importes distintos; la necesidad debe aclararlo."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/docs/scope.md",
+        "/home/ceo/Proyectos/BI/docs/validation-plan.md"
+      ]
+    },
+    {
+      "titulo": "Histórico QA: intervención ante límites de viabilidad en WideWorldImporters",
+      "capitulo": 16,
+      "objetivo": "Revisar con criterio las advertencias del asistente y precisar la necesidad cuando una interpretación mezcla el grano físico, el resumen temporal y el significado comercial de los importes.",
+      "rol": "Analista con Generar propuestas BI para editar la necesidad y solicitar una nueva evaluación. El recorrido observado se realizó en la sesión administrativa disponible; no acredita una sesión propia de Analista BI ni de Gerente comercial.",
+      "requisitos": [
+        "Fuente WideWorldImporters en contexto y su instantánea vigente; en este recorrido corresponde a la instantánea 3.",
+        "Configuración LLM probada y activa y consentimiento vinculado al destino indicado en la pantalla.",
+        "Leer la necesidad original y las advertencias completas; aceptar una limitación debe ser una decisión de negocio comprendida, no una forma de habilitar el siguiente botón.",
+        "Comprender que las capturas 44–46 llegan a una necesidad precisada para volver a evaluar; la aprobación y el ETL posteriores se documentan en sus propios recorridos 117/16 y 124/19."
+      ],
+      "pasos": [
+        "Observe la necesidad inicial de 161 caracteres en la captura 44: analizar mensualmente ventas facturadas, unidades y número de facturas por producto, cliente y territorio, conservando cada línea de factura. La periodicidad seleccionada era Mensual. El texto todavía podía dejar ambiguo qué significa territorio y qué representa el importe.",
+        "Pulse Validar viabilidad en una operación autorizada y lea cada tarjeta de Viabilidad contra los metadatos, no solo los totales de colores. En el caso observado se obtuvo una revisión persistida. Esto guarda una evaluación de la necesidad; no aprueba una propuesta ni materializa datos.",
+        "Abra Ver evidencia técnica cuando necesite relacionar un concepto con su columna, relación o regla. Distinga Directo o Referencia estructural comprobada de una Interpretación propuesta por IA no ejecutable. Que exista ExtendedPrice o una relación con InvoiceLines acredita referencias; no demuestra por sí solo todos sus significados comerciales.",
+        "Revise la advertencia Conservación de granularidad de línea. En este caso, la IA interpretó que conservar líneas y agrupar mensualmente era contradictorio. El analista debe separar dos niveles: el hecho físico puede conservar una fila por línea de factura y una consulta posterior puede resumir esas filas por mes y dimensiones. Pedir un resumen mensual no obliga a reemplazar el detalle físico por una sola fila mensual. No acepte esa contradicción como una verdad universal por aparecer en una tarjeta.",
+        "Revise la advertencia Territorio y los límites de interpretación. Un territorio puede significar provincia de entrega, zona comercial u otra clasificación. Una relación existente con la dirección del cliente no demuestra que represente el territorio histórico de cada venta. Tampoco acepte automáticamente como probada una advertencia sobre múltiples direcciones por cliente: contraste las claves, la unicidad y la ruta real; una posibilidad enunciada por IA no es una propiedad verificada del esquema.",
+        "Revise el significado del importe. ExtendedPrice es la referencia propuesta para el importe registrado de la línea, pero su nombre y tipo decimal no acreditan moneda, venta neta, utilidad ni composición fiscal. Si el objetivo solo necesita conservar y sumar ese importe, puede describirlo de manera neutral y dejar explícitos esos límites. Si la decisión exige utilidad, impuestos o valor neto que no se han probado, solicite evidencia o reduzca el alcance; cambiar la etiqueta no produce el dato faltante.",
+        "Pulse Volver a editar cuando el problema se resuelva precisando la intención. En el caso observado se conservó la fuente y se sustituyó la petición por una necesidad de 472 caracteres, visible en la captura 46. No se marcaron todas las limitaciones únicamente para avanzar.",
+        "Use como ejemplo de redacción del caso: Diseñar un datamart cuyo grano físico sea una línea de factura. Sobre ese detalle, resumir mensualmente el importe registrado de la línea, las unidades y las facturas distintas por producto y cliente. Usar la fecha de emisión. Para el territorio, usar la provincia de la ciudad de entrega registrada en la ficha del cliente y aclarar que no representa necesariamente su ubicación histórica. Conservar el importe de origen sin asumir moneda, utilidad ni composición fiscal.",
+        "Compruebe las decisiones que fija esa redacción: una fila física sigue siendo una línea de factura; Mensual define la agrupación del resumen; número de facturas significa facturas distintas y no conteo de líneas; la fecha de emisión sitúa el evento; el territorio se define con la ficha actual del cliente, sin atribuirle historia que no se ha probado.",
+        "Revise Preguntas de negocio disponibles y Periodicidad. En la captura 46 quedaron seleccionadas evolución temporal, productos, cliente y territorio, con Mensual; costos/rentabilidad y valores por unidad no estaban seleccionados. No añada preguntas que amplíen el caso sin un objetivo y fuentes que las sustenten.",
+        "Compruebe cómo se interpretaron las exclusiones. En una frase como sin asumir utilidad, la palabra utilidad limita lo que se puede afirmar: no solicita un KPI de utilidad. Un detector de capacidades puede reconocer esa palabra y presentarla como un requisito ausente. Compare la tarjeta con la intención completa antes de aceptar una limitación. Si la interpretación impide avanzar o cambia el alcance, precise la redacción y vuelva a evaluar; no afirme que faltaba un resultado que no se había pedido ni que la ausencia desapareció al marcar una casilla.",
+        "Vuelva a comprobar Destino y la casilla Autorizo enviar estos metadatos y la necesidad al proveedor indicado para esta revisión. La captura 46 muestra Anthropic y su modelo como destino y la casilla marcada. Si se modifica el texto, las preguntas, el período, la fuente, la instantánea o el destino, la evaluación anterior no acredita la nueva combinación: revise el consentimiento que corresponda y pulse nuevamente Validar viabilidad.",
+        "Lea la nueva evaluación antes de generar. Si persiste una ambigüedad material, vuelva a precisar o acepte únicamente un límite compatible con la decisión. Si se habilita Generar propuesta, ese botón inicia otro artefacto que debe conservar la cobertura y superar sus propias reglas. Las capturas 44–46 documentan esta preparación inicial; la continuación 117/16 y el caso completo posterior 124/19 tienen evidencia propia y se explican por separado."
+      ],
+      "resultado": "Necesidad comercial más explícita y límites conscientemente definidos, lista para una nueva evaluación. El resultado observado de este ejemplo es la redacción precisada en el formulario; la comprobación posterior debe registrarse por separado.",
+      "verificacion": [
+        "La captura 44 conserva la necesidad inicial de 161 caracteres; la 45 conserva la evaluación y sus advertencias; la 46 conserva la necesidad revisada de 472 caracteres.",
+        "Puede explicar sin escribir SQL la diferencia entre una línea física del hecho y un resumen por mes.",
+        "El número de facturas no se equipara al número de líneas y las unidades no se confunden con importes.",
+        "El criterio territorial identifica la provincia de la ciudad de entrega de la ficha actual del cliente y declara el límite histórico.",
+        "No se afirma que las advertencias de IA sean ciertas solo por estar persistidas ni que una respuesta técnica exitosa sea validación financiera.",
+        "Las palabras usadas para excluir una capacidad no se aceptan ciegamente como requisitos positivos. En el contrato final se comprueba que los KPI, las fórmulas y sus límites correspondan a la necesidad actual, sin agregar utilidad, moneda o composición fiscal por una mención negativa.",
+        "Después de cualquier modificación se pide una evaluación para la combinación actual antes de generar; una captura con el botón disponible no acredita una ejecución ETL."
+      ],
+      "errores": [
+        "Marcar Comprendo esta limitación en todas las tarjetas sin leerlas. La aceptación no crea columnas, no corrige una relación y no vuelve verdadero un significado supuesto.",
+        "Confundir grano físico con agrupación temporal: un datamart de líneas puede alimentar un informe mensual sin perder por ello el detalle almacenado.",
+        "Convertir ExtendedPrice en venta neta o utilidad únicamente mediante una etiqueta; las comprobaciones estructurales no documentan por sí mismas su composición.",
+        "Atribuir a las facturas históricas la provincia actual del cliente sin declarar ese límite.",
+        "Reutilizar una evaluación anterior después de editar la necesidad o cambiar destino/proveedor; la evidencia debe corresponder a la versión que se va a generar.",
+        "Presentar la revisión guardada con respuesta 200 como aprobación del diseño, conciliación o prueba positiva de materialización."
+      ],
+      "explicacion": [
+        "Dato, semántica y validación responden preguntas distintas. El dato y su tipo identifican qué se puede leer; la semántica explica qué representa; la validación comprueba reglas y referencias del alcance concreto. Un decimal legible puede ser calculable y seguir sin una interpretación fiscal o monetaria acreditada.",
+        "La supervisión del analista incluye cuestionar una advertencia mal formulada. Se mantiene el control del programa y se precisa la intención de negocio; no se desactivan reglas ni se acepta una relación arbitraria para satisfacer al modelo.",
+        "En este recorrido la revisión inicial pudo guardarse con una respuesta técnica 200 tras resolver una incidencia del prompt. Ese hecho acredita la persistencia de esa evaluación, no la corrección de todas sus frases ni la existencia de un datamart. La lectura de las capturas conserva las ambigüedades que motivaron Volver a editar.",
+        "Precisar provincia de entrega de la ficha actual establece una decisión operativa consciente. Una pregunta sobre ubicación histórica requeriría evidencia adicional de vigencia temporal; no se deduce de la ruta actual por el solo hecho de que sea válida.",
+        "La revalidación posterior, el contrato propuesto, la decisión humana, la ejecución y la conciliación son puertas distintas. El estado de una puerta no se traslada como éxito a las siguientes.",
+        "Una mención negativa puede activar la detección de una capacidad: sin asumir utilidad contiene el mismo término que una solicitud de utilidad. Es un riesgo de interpretación del texto, no evidencia de que el usuario haya pedido ese cálculo. El analista revisa el contrato final y verifica que los resultados implementados respeten lo solicitado y lo excluido. Esta revisión no autoriza saltar un bloqueo real ni declarar resuelta una carencia de datos."
+      ],
+      "fuentes": [
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/44_wwi_necesidad_nueva.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/45_wwi_viabilidad_limites.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/46_wwi_necesidad_precisada.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/registro.json",
+        "/home/ceo/Proyectos/BI/docs/architecture.md",
+        "Observación de la agente principal del 4 de noviembre de 2026: esta fase de redacción y evaluación inicial precede a la carga nueva 16, registrada después en el escenario operativo de WideWorldImporters."
+      ]
+    },
+    {
+      "titulo": "Consulta histórica de WWI 117/16: criterios, carga y límites conservados",
+      "capitulo": 16,
+      "objetivo": "Reproducir con criterio el recorrido de facturación, distinguir una propuesta bloqueada de su versión corregida y explicar qué demuestran la aprobación, la carga, los indicadores y las comprobaciones posteriores.",
+      "rol": "Analista con los permisos de generación, revisión y materialización; consulta y exportación requieren los permisos correspondientes. El recorrido observado se realizó con Administrador inicial. No constituye una prueba autenticada de todas las cuentas o roles.",
+      "requisitos": [
+        "Aplicación iniciada, una cuenta autorizada y fuente WideWorldImporters probada, habilitada y seleccionada. En este recorrido se usó la instantánea 3.",
+        "Proveedor LLM probado y activo y consentimiento para enviar la necesidad y los metadatos al destino indicado.",
+        "Catálogo propio de la fuente revisado y una decisión de negocio definida. La demostración usa facturas y no equipara factura, pedido y cobro.",
+        "Autorización operativa para una materialización nueva. Consultar un expediente ya ejecutado no requiere repetir la carga.",
+        "Tratar 115, 116, 117 y 16 como identificadores de esta instalación y este recorrido; en otra instalación se deben registrar sus nuevos identificadores y resultados."
+      ],
+      "pasos": [
+        "Ingrese y confirme el nombre de la sesión. Abra Preparación del entorno y compruebe Conexiones de datos, Explorador de esquema y Configuración LLM. Guardar, probar y habilitar una fuente son acciones distintas. Antes de diseñar, revise que Fuente en contexto identifique WideWorldImporters y que los metadatos estén disponibles.",
+        "Consulte Catálogo analítico para esa fuente. Elija las preguntas que necesita el caso: evolución temporal, producto, cliente y territorio. Las guías de costos no obligan a pedir utilidad; en este recorrido se limitó el alcance a importes registrados, unidades y facturas. No copie instrucciones técnicas de AdventureWorks ni cambie la fuente para adaptar una propuesta de IA.",
+        "Abra Asistente de datamart, elija Datamart de ventas y comience una necesidad nueva. Precise una línea física de factura como grano, la fecha de emisión para el resumen mensual, producto y cliente como perspectivas y la provincia de la ciudad de entrega de la ficha actual del cliente como clasificación territorial. Declare que esa ficha no prueba la ubicación histórica de cada venta.",
+        "En Objetivo del análisis conserve el importe registrado de origen, sin afirmar moneda, utilidad ni composición fiscal. Limite los indicadores a importe total, unidades totales, facturas distintas e importe promedio por factura. Si se pide un ranking de productos, establezca que debe comparar sus importes agregados: el máximo de una línea no identifica al producto líder.",
+        "Revise Periodicidad y seleccione Mensual. Compruebe el destino y el consentimiento y pulse Validar viabilidad. Lea las tarjetas y su evidencia. Si la IA confunde grano físico con resumen mensual o interpreta una exclusión como una capacidad solicitada, use Volver a editar y revalide la nueva combinación; no marque todas las limitaciones solo para continuar.",
+        "En Conceptos encontrados revise los eventos y perspectivas incluidos. La existencia de una tabla no basta para atribuirle el papel de cliente, territorio o factura. Conserve solo conceptos que respondan a la necesidad y tengan una ruta respaldada. Continúe a la propuesta y revise grano, medidas, KPI y cobertura.",
+        "Reconozca el rechazo útil de la propuesta 115: el diseño utilizó el máximo de una sola línea como producto líder. El validador la bloqueó porque primero se debe agregar por producto y después ordenar. No se aprobó ni materializó 115 y no se eliminó el control para obtener un resultado positivo.",
+        "Solicite una versión que respete la necesidad y los cuatro indicadores pertinentes. En el recorrido se obtuvo 116, lista para revisar. No considere la versión válida solo por ser posterior: vuelva a leer la correspondencia entre objetivo, medidas, fórmulas y resultados solicitados.",
+        "En Personalización precise el grano físico como una línea de factura identificada por InvoiceLineID y aclare que la agrupación mensual corresponde a consultas y gráficos posteriores. Revise la medida compatible del KPI de importe promedio por factura: debe usar el importe total registrado y el conteo de facturas distintas, no el precio de una línea ni un promedio de promedios.",
+        "Escriba una justificación que explique esos cambios y use Guardar como nueva versión. Se conservó la versión fuente y se creó 117. Una nueva versión no se aprueba ni se ejecuta automáticamente. Compruebe que los cuatro KPI permanezcan y que no se hayan agregado utilidad, moneda o composición fiscal por una mención negativa del objetivo.",
+        "Revise Nombres reconocibles antes de materializar y la cobertura descriptiva. En este caso se mostraron 227 productos, 663 clientes y 53 territorios, con cobertura del 100 por ciento y 0 entidades sin nombre. Abra una muestra controlada si necesita contrastar etiquetas; esa muestra permanece en la plataforma. Cobertura de nombres significa disponibilidad descriptiva, no certificación automática de todo el significado comercial.",
+        "Pulse Verificar evidencia y lea cada resultado. La versión 117 mostró 4 resultados Cumple, 9 referencias, 0 errores, 6 advertencias y huella a13f1cb198eb. Una advertencia no es un error bloqueante, pero requiere comprensión. La ausencia de errores estructurales no demuestra que ya se hayan comparado filas de origen y destino.",
+        "En Revisión supervisada lea Necesidad, Dominio, Fuente y Validación. Registre un Comentario de revisión que explique el grano, la razón por factura y los límites aceptados. Marque Leí y comprendí las advertencias y las acciones indicadas únicamente después de leerlas y pulse Aprobar propuesta. La aprobación registrada de 117 habilitó su selección para materializar; no creó tablas en ese paso.",
+        "Abra Datamart de ventas y, en Elegir propuesta, seleccione la versión 117 correspondiente a WideWorldImporters. Confirme la fuente y la necesidad. Una tarjeta recomendada no sustituye la decisión humana; si el contrato ya tiene una ejecución idéntica, abra su expediente en lugar de intentar repetirlo.",
+        "En Revisar indicadores lea los cuatro incluidos: Total de ventas facturadas, Unidades totales vendidas, Número de facturas distintas e Importe promedio por factura. El importe total suma el importe registrado; las unidades suman cantidades; las facturas se cuentan de forma distinta. El promedio es importe total dividido entre facturas distintas y, si el divisor es cero, se informa sin valor. Conserve los cuatro únicamente porque corresponden a la necesidad de este caso.",
+        "Use Revisar transformaciones y lea Confirmar ejecución. El plan del caso contiene 27 operaciones controladas y cinco tablas: Fecha, Producto, Cliente, Territorio y el hecho de Ventas. Comprenda extracción, limpieza, normalización, deduplicación de dimensiones, claves sustitutas, carga y conciliación. No escriba SQL ni transforme manualmente la base fuente.",
+        "En Registro de decisión escriba por qué ese contrato y sus límites son adecuados para la prueba. Lea la confirmación sobre revisar las etiquetas candidatas individualmente después de la carga y marque la casilla correspondiente cuando haya comprendido su alcance. Pulse Preparar materialización. Se creó el expediente 16 en estado Preparada: quedaron persistidos contrato, indicadores y operaciones, pero aún no había carga física.",
+        "En Materializar y cargar revise de nuevo el comprobante del expediente, sus huellas y el aviso de reemplazo transaccional del destino analítico. Para ejecutar el caso autorizado pulse Materializar y cargar datamart. Esa acción lee las columnas aprobadas del origen y carga el destino; no equivale a volver a aprobar la propuesta ni a editar SQL Server.",
+        "En Validar resultados compruebe el expediente 16 y su estado. La materialización nueva registró 228265 filas de origen y 228265 de destino, diferencia 0 y 5 tablas creadas. En Calidad por tabla, Fecha muestra 1069 cargadas de 70510 y 69441 duplicados controlados; Producto 227 de 227, Cliente 663 de 663, Territorio 53 de 53 y Ventas 228265 de 228265. Las fechas repetidas se consolidan en su dimensión; esto no significa que se hayan perdido líneas de factura del hecho.",
+        "Lea los cuatro resultados calculados del expediente: 198043439.45 de importe total en moneda de origen, 8950628 unidades, 70510 facturas distintas y 2808.73 de importe promedio por factura. Son valores de la ejecución 16 y su alcance. No se deben copiar como valores esperados universales de otra base o de una nueva carga.",
+        "Pulse Comprobar divisa sin repetir el ETL si corresponde comprobar ese límite. En este caso la fuente no demostró una divisa única y se conservó moneda de origen. El total está conciliado, pero eso no lo convierte en USD, utilidad ni importe fiscal documentado. Esta comprobación no requiere volver a materializar.",
+        "Abra Analítica de ventas y confirme WideWorldImporters, ejecución 16 y propuesta 117 en la cabecera. Elija Año 2015 y Territorio California. La consulta mostró 1215705.55 en moneda de origen, 57142 unidades, 481 facturas distintas y 2527.45 de importe promedio por factura. Es una consulta del expediente nuevo, no una copia del histórico 15/114.",
+        "Revise gráficos y nombres con evidencia, sin clasificarlos por su apariencia. El contraste de solo lectura comparó los 663 clientes de origen con los 663 materializados: 0 claves ausentes y 0 diferencias después de la limpieza de espacios ya existente. CustomerID 906 registra CustomerName Ajitaab Pakalapati y categoría Computer Store; 972 registra Lakshmi Benipal y Computer Store; 951 registra Eliza Persson y Supermarket. Los nombres coinciden con el destino de la ejecución 16 y no se cambiaron. Las categorías son datos del origen; ni ellas ni la apariencia del nombre autorizan a clasificar jurídicamente a esos clientes como personas físicas, contactos o compañías.",
+        "Si usa Preguntar al copiloto, pida indicador, filtros, número de posiciones y denominador explícitos. Para el Top 3 de 2015 y California respondió 54648, 50715 y 45860.85, con denominador 1215705.55 y 481 facturas y procedencia de la ejecución 16. Esos cálculos fueron correctos en el contexto observado. La primera respuesta no cubrió la ubicación histórica solicitada y mencionó el intervalo 2013-2016: la exactitud numérica no acredita que haya respondido toda la pregunta.",
+        "Si necesita la distinción territorial, haga una pregunta concreta y contraste el lenguaje. La respuesta posterior distinguió ficha actual e historia, pero decir donde se entregó resulta demasiado concluyente: la clasificación proviene de la ficha actual y no prueba cada entrega histórica. Mantenga esa limitación al comunicar el resultado; no convierta una explicación del copiloto en evidencia de un evento no registrado.",
+        "Con la ejecución y filtros correctos use Exportar PDF y Exportar Excel. Se descargaron ventas-ejecucion-16-executive.pdf y ventas-ejecucion-16-executive.xlsx y se verificaron sus propios resultados: suma mensual y total territorial 1215705.55, diferencia absoluta 0, cuatro hojas de Excel y cinco páginas del PDF revisadas visualmente. No transfiera a otra descarga las comprobaciones de un archivo anterior. Conserve el expediente y su registro y no repita el ETL para volver a consultar o descargar."
+      ],
+      "resultado": "La versión 117 quedó aprobada y se materializó realmente en el expediente nuevo 16, con cuatro KPI y conciliación numérica sin diferencias. La analítica y las descargas de ese expediente se observaron. Los nombres que parecieron inusuales se verificaron contra CustomerName del origen y no requirieron cambiar datos. Permanecen los límites de moneda, territorio histórico y cobertura verbal del chat; esta prueba acotada no acredita todos los roles y pertenece a un corte anterior a los casos actuales. Este recorrido precede a need-review-5 y sales-bi-v7; el caso nuevo se identifica por separado.",
+      "verificacion": [
+        "La cadena del caso distingue 115 bloqueada y no aprobada, 116 lista para revisión y 117 personalizada y aprobada; una propuesta no se confunde con el expediente 16.",
+        "La evidencia de 117 conserva 4 resultados Cumple, 9 referencias, 0 errores, 6 advertencias y la huella a13f1cb198eb.",
+        "Preparada y Validada son momentos distintos: el expediente 16 pasó a la carga y conciliación solo después de la acción de materialización.",
+        "Origen y destino tienen 228265 filas; la diferencia del hecho es 0 y se crearon 5 tablas. La consolidación de fechas se interpreta dentro de su dimensión.",
+        "Importe, unidades, facturas distintas y promedio por factura mantienen fórmulas y poblaciones compatibles; el promedio no se obtiene promediando los promedios mensuales.",
+        "La cabecera de analítica identifica 16/117 y los filtros 2015/California producen los valores registrados. Los 663 clientes de origen y destino coinciden después de la limpieza de espacios existente, con 0 diferencias; los tres ejemplos y sus categorías constan en el informe de contraste.",
+        "La respuesta del copiloto se evalúa por números y por cobertura de cada pregunta. Un Top 3 correcto no resuelve por sí mismo la cuestión territorial histórica.",
+        "Las exportaciones de 16 tienen verificación propia: cuatro hojas del Excel, cinco páginas de PDF y diferencia absoluta 0 entre suma mensual y total territorial. No se declara un ensayo de todas las sesiones por rol."
+      ],
+      "errores": [
+        "Aprobar 115 para forzar una demostración: el máximo de una línea no corresponde al producto líder agregado.",
+        "Confundir una versión nueva de propuesta con una nueva ejecución, o confundir Preparada con carga física terminada.",
+        "Interpretar los 69441 duplicados controlados de Fecha como pérdida del mismo número de líneas de factura del hecho.",
+        "Llamar USD a moneda de origen o utilidad a importe registrado porque una suma está conciliada.",
+        "Declarar incorrecto o clasificar jurídicamente un cliente por la apariencia de su nombre. El contraste de CustomerName del origen descartó la sospecha sobre esos valores y conservó sus categorías registradas.",
+        "Confundir una etiqueta técnica de rol con los valores materializados. Se detectó invoice_line_fact como rol técnico de dim_cliente, pero la receta conservó CustomerName y sus 663 valores. El informe registra una observación para revisión versionada futura, sin arreglo de código, rematerialización ni modificación de propuesta o datos en esta comprobación.",
+        "Presentar una respuesta parcialmente cubierta por el chat como totalmente coherente, o afirmar ubicación histórica a partir de la ficha actual.",
+        "Repetir materialización al reabrir el expediente o exportar: la consulta del caso ejecutado conserva la evidencia sin una nueva carga."
+      ],
+      "explicacion": [
+        "Texto exacto probado en la propuesta 117 (693 caracteres): «Diseñar un datamart cuyo grano físico sea una línea de factura. Sobre ese detalle, resumir mensualmente el importe registrado de la línea, las unidades y las facturas distintas por producto y cliente. Usar la fecha de emisión. Para el territorio, usar la provincia de la ciudad de entrega registrada en la ficha del cliente y aclarar que no representa necesariamente su ubicación histórica. Conservar el importe de origen sin asumir moneda, utilidad ni composición fiscal. Limitar los indicadores a importe total, unidades totales, facturas distintas e importe promedio por factura. Los rankings deben comparar totales por producto; el máximo de una sola línea no identifica al producto líder.».",
+        "El rechazo inicial y la ejecución posterior son evidencia complementaria: el control impidió una receta semánticamente incorrecta y la revisión humana produjo otra versión sin desactivar la regla.",
+        "Conservar el grano físico de línea permite trazabilidad al documento. Las consultas mensuales agregan ese detalle con sus filtros; no cambian retroactivamente el significado de una fila almacenada.",
+        "La conciliación cuantitativa contrasta poblaciones y cálculos para ese contrato. La cobertura de nombres comprueba disponibilidad descriptiva. El contraste semántico revisa qué entidad representan y la comparación con origen puede confirmar un valor que parecía extraño. Son verificaciones distintas.",
+        "El informe de solo lectura comprobó 663 clientes de origen y 663 de destino, sin claves ausentes ni diferencias después de limpiar espacios externos. Existía una diferencia literal debida únicamente a esos espacios, ya tratados por la limpieza implementada. No se alteraron nombres para hacerlos coincidir. Las categorías Computer Store y Supermarket se leyeron del origen; no permiten imponer una clasificación jurídica por apariencia del nombre.",
+        "La receta persistida y la consulta compilada usan Sales.Customers.CustomerName, sin una unión a People. El rol técnico invoice_line_fact asignado a dim_cliente merece revisión, pero no cambió la columna descriptiva seleccionada. La comprobación no modificó resolución de roles, lector, materializador, tablas ni aprobación y no ejecutó otro ETL.",
+        "La precisión del lenguaje importa: provincia de la ficha actual no equivale a provincia histórica de cada entrega. Del mismo modo, un importe conciliado no acredita moneda única, utilidad ni composición fiscal.",
+        "Esta sección conserva la materialización 117/16 observada en el primer tramo del 4 de noviembre, mientras que las capturas 44–46 documentan su preparación previa. El caso WWI 123→124→19 posterior y el recorrido de AW conservan estados propios y no deben mezclarse con el resultado de WWI 16."
+      ],
+      "fuentes": [
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/pruebas_actuales.json",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/49_wwi_propuesta_bloqueada.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/51_wwi_identidad_cobertura.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/52_wwi_personalizacion.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/53_wwi_propuesta_validada.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/54_wwi_revision_antes_aprobar.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/55_wwi_aprobada117.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/56_wwi_etl_seleccion.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/57_wwi_etl_indicadores.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/58_wwi_etl_confirmacion.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/59_wwi_expediente_preparado16.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/60_wwi_etl16_conciliado.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/61_wwi_divisa_no_asumida.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/62_wwi_analitica16_publicada.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/63_wwi_copiloto16_top3.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/64_wwi_copiloto16_territorio.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/65_wwi_clientes_etiqueta_incorrecta.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/evidencias_exportaciones/ventas-ejecucion-16-executive.pdf",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/evidencias_exportaciones/ventas-ejecucion-16-executive.xlsx",
+        "Verificación de solo lectura de CustomerName del origen comunicada por la agente principal el 4 de noviembre de 2026: CustomerID 906, 951 y 972 coinciden con la materialización de la ejecución 16; sin modificación de los datos.",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/diagnostico_clientes_wwi_e16_20261104.json",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/evidencias_exportaciones/verificacion_exportaciones.json"
+      ]
+    },
+    {
+      "titulo": "Precisión del catálogo AdventureWorks y conservación de los intentos de aprendizaje",
+      "capitulo": 8,
+      "objetivo": "Ajustar la orientación de las preguntas a lo solicitado, sin añadir métricas no pedidas ni presentar una variante simplificada como éxito de un objetivo previo bloqueado.",
+      "rol": "Persona con Administrar catálogo analítico para guardar las guías; el analista consulta la fuente y genera cada necesidad con sus permisos. El recorrido observado usa la sesión administrativa.",
+      "requisitos": [
+        "AdventureWorks seleccionada y catálogo propio de esa fuente; no editar el catálogo de WWI por error.",
+        "Conservar las definiciones anteriores y distinguir el objetivo detallado del ejercicio básico posterior."
+      ],
+      "pasos": [
+        "Abra Catálogo analítico de AdventureWorks y lea las preguntas seleccionables. La primera revisión de una necesidad nueva arrastró costos, márgenes y descuentos que no formaban parte del objetivo; no basta con que las guías tengan nombres generales.",
+        "Revise por separado Etiqueta, Explicación para el analista e Instrucción funcional para la IA. Una etiqueta general puede conservar instrucciones que amplíen el alcance. En la intervención final se precisaron las descripciones e instrucciones de las primeras cuatro preguntas, sin cambiar sus etiquetas ni códigos.",
+        "Para evolución temporal, oriente la comparación a los indicadores solicitados y una fecha comercial verificada. Para producto, compare sumas por entidad y atributos respaldados; el máximo de una línea no representa al producto líder. Conserve el grano físico y limite las métricas a la necesidad.",
+        "Para cliente, exija identidad descriptiva mediante claves y relaciones declaradas y distinga su papel del de un contacto, vendedor o destinatario por evidencia del esquema, no por el aspecto del nombre. Para territorio, use la definición comercial registrada que tenga una ruta verificada y explíquela.",
+        "Pulse Guardar catálogo solo en una operación autorizada. Al cierre de esta intervención se conservaron las seis preguntas, sus etiquetas y códigos y las cinco periodicidades. Se mantuvieron las dos preguntas adicionales; no se retiraron para obtener una validación favorable. Los criterios finales constan en catalogo_aw_criterios_finales.json y la captura 68.",
+        "Vuelva a una necesidad nueva o actualizada y revalide su combinación de texto, preguntas, periodicidad, fuente y destino. La necesidad detallada de 532 caracteres pedía cuatro indicadores sobre líneas de pedido. Su revisión mostró 17 directos, 5 automáticos y 10 límites; la generación posterior produjo un contrato con 3 errores por interpretar una exigencia de trazabilidad como evento de factura. No se aprobó ni materializó ese contrato y no se atribuye al bloqueo una interpretación comercial correcta.",
+        "Conserve el intento detallado y su evidencia. El ejercicio básico posterior de 294 caracteres es otro caso: pide importe registrado y unidades por producto y territorio comercial del pedido, con detalle de línea. Se seleccionaron tiempo, producto y territorio, se desmarcó cliente y se mantuvo Mensual. Reducir el objetivo de una variante no demuestra que se haya resuelto el objetivo detallado anterior.",
+        "Registre los resultados de cada variante por etapa. En aquel punto del recorrido el ejercicio básico aún estaba en revisión; después se confirmó con la propuesta 120 y el ETL 17. El objetivo detallado se resolvió por separado en la propuesta 122 y el ETL 18, explicados en su caso de éxito. Una generación o una viabilidad aislada no equivalen a una carga ya conciliada."
+      ],
+      "resultado": "Catálogo final con alcance explícito y preguntas conservadas; intentos detallado y básico identificados por separado. La precisión de guías no acredita por sí sola una propuesta aprobada ni un ETL nuevo.",
+      "verificacion": [
+        "Las seis etiquetas y sus códigos y las cinco periodicidades se conservan. El ajuste final afectó a las descripciones e instrucciones de las primeras cuatro preguntas, además de la precisión anterior de costos y razones por unidad.",
+        "La guía no añade costos, descuentos o márgenes cuando la necesidad no los solicita.",
+        "El objetivo de 532 caracteres y su bloqueo permanecen en el registro; el de 294 caracteres es una variante independiente.",
+        "Los identificadores se leen del expediente y no se deducen del orden de la lista. Los casos posteriores 122/18 y 124/19 sí completaron sus recorridos; cada resultado conserva su evidencia propia."
+      ],
+      "errores": [
+        "Afirmar que al cierre solo cambiaron las dos últimas preguntas: omitiría la precisión posterior de las primeras cuatro.",
+        "Eliminar preguntas o alterar metadatos para hacer pasar un contrato equivocado.",
+        "Confundir pedido y factura porque una tarjeta del asesor haya clasificado erróneamente la trazabilidad solicitada.",
+        "Presentar una variante de dos KPI como aprobación del intento anterior de cuatro KPI."
+      ],
+      "explicacion": [
+        "El catálogo orienta la interpretación, pero no fija un conjunto obligatorio de métricas para cualquier necesidad. Cada solicitud debe conservar su alcance y contrastarse con el contrato resultante.",
+        "Guardar una guía y validar una necesidad son operaciones distintas. La nueva guía no convierte retrospectivamente en correctas las interpretaciones, propuestas o evaluaciones anteriores."
+      ],
+      "fuentes": [
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/catalogo_aw_criterios_finales.json",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/68_aw_catalogo_precisado.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/69_aw_necesidad_final.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/70_aw_viabilidad_revisada.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/72_aw_propuesta_bloqueada.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/73_aw_necesidad_basica.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/pruebas_actuales.json"
+      ]
+    },
+    {
+      "titulo": "AdventureWorks detallado: cuatro KPI desde el objetivo hasta la ejecución nueva 18",
+      "capitulo": 15,
+      "seccion_manual": "exito",
+      "objetivo": "Reproducir el objetivo detallado de pedidos sin reducirlo: conservar líneas físicas, sumar importe y unidades, contar pedidos distintos y calcular importe por pedido como razón de agregados.",
+      "rol": "Analista con los permisos de su etapa. La operación observada usó Administrador inicial y no acredita sesiones de todos los roles.",
+      "requisitos": [
+        "AdventureWorks local / AdventureWorks2022 seleccionada, probada y habilitada, con instantánea 2.",
+        "Catálogo de la fuente revisado; preguntas de tiempo, producto, cliente y territorio; periodicidad Mensual.",
+        "Plan B: proveedor disponible y probado y consentimiento vigente. Plan A: consultar 122/18 no consume LLM ni repite ETL.",
+        "La propuesta 122 se aprobó bajo need-review-4 y sales-bi-v7/reglas 2. Las revisiones v5/v6 son posteriores y no se atribuyen a ese ensayo. Una generación nueva utiliza la revisión y las reglas vigentes, no reproduce automáticamente aquella aprobación."
+      ],
+      "pasos": [
+        "Inicie sesión y compruebe Fuente en contexto: AdventureWorks local, base AdventureWorks2022 e instantánea 2. La fuente y el proveedor LLM son selecciones independientes.",
+        "Revise Catálogo analítico. Se conservaron seis etiquetas/códigos y cinco periodicidades, pero se precisaron descripciones e instrucciones, incluidas las primeras cuatro preguntas, para no añadir costos, margen o descuentos no solicitados.",
+        "Abra Asistente de datamart y Datamart de ventas. En el plan B inicie una propuesta nueva; en el plan A abra la versión 122 para consultar sus cinco etapas bloqueadas.",
+        "Introduzca en Objetivo del análisis el texto exacto de 532 caracteres transcrito en Explicación. Seleccione tiempo, producto, cliente y territorio y Periodicidad Mensual. Lea destino y consentimiento antes de Validar viabilidad.",
+        "Lea requisitos directos, derivaciones y límites. La trazabilidad al pedido no solicita facturación. El ranking de sumas requiere medida, dimensión y ruta verificadas; no una columna llamada ranking. Acepte sólo límites genuinos. Si cambia texto, pregunta, período, fuente o reglas, revalide.",
+        "Genere y lea Conceptos encontrados. La nueva propuesta 121 conservó el objetivo detallado. No sustituya este recorrido de cuatro KPI por el ejercicio básico 120/17 para afirmar que resolvió el mismo caso.",
+        "Abra Personalizar propuesta. En Resumen de negocio describa el análisis de pedidos; en Granularidad propuesta conserve una línea de detalle con SalesOrderID y SalesOrderDetailID. La agrupación mensual corresponde a consultas, no cambia el significado de cada fila.",
+        "En Dimensiones incluidas conserve dim_fecha, dim_producto, dim_cliente y dim_territorio. Cada eje debe responder a la necesidad y tener una ruta segura. No aplique otra unión sólo porque aparezca como elegible.",
+        "En Medidas, agregaciones y cálculos controlados conserve Importe total de líneas como Suma de LineTotal; Cantidad de unidades como Suma de OrderQty; y Pedidos distintos como Conteo distinto de SalesOrderID. Retire Clientes distintos: cliente es una dimensión solicitada, pero su conteo no es uno de los cuatro KPI.",
+        "En KPIs incluidos y medida asociada conserve Suma de importe de líneas, Suma de unidades vendidas, Conteo de pedidos distintos e Importe promedio por pedido. Desmarque indicadores extra por eje y el conteo de clientes. Los rankings no requieren duplicar recetas equivalentes.",
+        "Revise la fórmula del promedio y sus dos entradas. El importe total es el numerador y los pedidos distintos son el denominador, bajo los mismos filtros. No defina LineTotal dividido entre el valor de SalesOrderID ni un promedio de promedios.",
+        "Resolver una relación con evidencia es una corrección independiente: dimensión, ruta y justificación sólo se usan ante un problema real de origen. Para los cambios generales escriba Justificación del ajuste: retirar conteo de clientes no solicitado y conservar cuatro KPI, claves y grano.",
+        "Pulse Guardar como nueva versión y compruebe el ID de la hija seleccionada. Se creó 122 sin modificar 121. Una nueva versión no queda aprobada ni materializada automáticamente.",
+        "En Nombres reconocibles antes de materializar se comprobaron producto 504/504, cliente 19.820/19.820 y territorio 10/10 al 100 %. Es cobertura descriptiva, no una certificación de moneda, historia o igualdad de importes.",
+        "Pulse Verificar evidencia: 122 mostró cuatro Cumple, seis referencias, cero errores, nueve advertencias y huella 28ac4d6997d8 igual a la reconstrucción. No vuelve a llamar al LLM ni ejecuta ETL.",
+        "En Revisión supervisada confirme necesidad, fuente, versión y validación. Lea advertencias, registre el comentario pertinente y confirme su comprensión antes de Aprobar propuesta. La aprobación sólo habilita el siguiente flujo.",
+        "Abra Datamart de ventas, seleccione 122 y revise sus cuatro indicadores, fórmulas y límites. En Revisar transformaciones lea 26 operaciones y cinco tablas: Fecha, Producto, Cliente, Territorio y hecho de ventas.",
+        "En Confirmar ejecución escriba el registro de decisión y la confirmación aplicable y pulse Preparar materialización. El expediente 18 quedó Preparado; confirme propuesta, fuente, selección y huellas antes de Materializar y cargar datamart.",
+        "Ejecute sólo la materialización autorizada. En Validar resultados, 18 registró 121.317 filas de origen y destino, diferencia cero y cinco tablas. Preparado y Validado son estados distintos; lea también controles de tablas e indicadores.",
+        "Contraste los resultados de 18: 109.846.381,399888 USD, 274.914 unidades, 31.465 pedidos y promedio 3.491,065672966407. Las cifras subyacentes no se confunden con el redondeo monetario visual.",
+        "Revise y publique semántica con criterio. Se aprobaron tres equivalencias de grupos y se excluyeron seis códigos, conservando originales. Un código de país no se traduce por parecer texto. La ejecución quedó validada y publicada.",
+        "Abra Analítica de ventas y confirme 18/122. La evolución mensual completa mostró 38 períodos. Año 2013 / Territorio Northwest mostró 6.015.174,735836 USD, 17.452 unidades, 2.053 pedidos y promedio 2.929,943855740867.",
+        "Pregunte al copiloto por el Top 3 y exija denominador territorial anterior al Top 3. La repetición final de la misma pregunta en 18/122 y 2013/Northwest mostró 392.175,27; 338.770,42; 334.598,66 sobre 6.015.174,74 USD, sin afirmar preferencias ni causalidad y con tres sugerencias válidas. La captura 121 muestra la respuesta final.",
+        "Use Exportar PDF y Exportar Excel con filtros y procedencia correctos. Los finales analitica-ventas-18-executive-final.pdf y .xlsx tienen cinco páginas y cuatro hojas revisadas. Importe 6.015.174,735836 USD, unidades 17.452, pedidos 2.053 y razón 2.929,943855740867 coinciden. La suma mensual 6.015.174,7358359999 difiere 10^-10 del total territorial, dentro de tolerancia.",
+        "Lea fuente AdventureWorks local, base AdventureWorks2022, 2013/Northwest, 18/122 y actualización 2026-11-05 04:24+00:00. La advertencia temporal está completa en PDF y en el XLSX, cuya altura se adapta al contenido. La primera exportación 18 y el posterior archivo de contexto recortado permanecen como referencias históricas; no son los finales comprobados.",
+        "Conserve el expediente, las exportaciones y el anexo QA. El éxito 122/18 no borra el incidente 118. Consultar, verificar evidencia o exportar un expediente no requiere repetir su ETL."
+      ],
+      "resultado": "El objetivo detallado de 532 caracteres produjo 121, la hija 122 aprobada y la ejecución 18 conciliada con cuatro KPI. Consulta filtrada, conversación final y PDF/XLSX finales se comprobaron con procedencia propia. Los incidentes anteriores permanecen en el anexo QA; las reglas posteriores no se atribuyen retrospectivamente al ensayo v4/reglas 2. La revisión adicional v6 conservó el mismo objetivo y dejó diez decisiones no aceptadas, sin otra propuesta ni ETL.",
+      "verificacion": [
+        "Objetivo de 532 caracteres intacto, cuatro preguntas, período mensual, cuatro dimensiones y claves SalesOrderID + SalesOrderDetailID.",
+        "Tres medidas y cuatro KPI: SUM importe, SUM unidades, COUNT DISTINCT pedidos y razón importe/pedidos.",
+        "Hija 122 de 121; cero errores, nueve advertencias, seis referencias y huella 28ac4d6997d8 reproducida igual.",
+        "Ejecución 18: 26 operaciones, cinco tablas, 121.317 filas por lado, diferencia cero y totales propios.",
+        "Panel 18/122 y filtros 2013/Northwest; denominador antes del Top 3 y unidad acreditada.",
+        "Finales 18: cinco páginas PDF y cuatro hojas XLSX con fuente/base/offset, números/razón correctos y advertencia completa. Revisión visual de los finales con Poppler y ArtifactTool; no se afirma una revisión Calc final no completada."
+      ],
+      "errores": [
+        "Reducir el objetivo o usar 120/17 para declarar resuelto el caso detallado.",
+        "Confundir pedidos con facturas, líneas con documentos distintos o ID numérico con magnitud.",
+        "Promediar promedios o dividir importe por el valor de un identificador.",
+        "Aplicar una relación por disponibilidad o aprobar sin comprobar la hija seleccionada.",
+        "Suponer que una sugerencia libre habilita margen inexistente.",
+        "Transferir un resultado de QA o hash entre descargas distintas."
+      ],
+      "explicacion": [
+        "Objetivo exacto de 532 caracteres: «Conservar cada línea de pedido de venta en un datamart. Para priorizar productos y territorios, comparar mensualmente cuatro indicadores: suma del importe registrado de las líneas, suma de unidades, conteo de identificadores de pedido distintos e importe total dividido entre pedidos distintos. Usar fecha y territorio comercial del pedido, producto y cliente con nombre verificable. Los rankings comparan sumas por entidad. Mantener la trazabilidad de cada línea al pedido. La moneda se reportará sólo si se comprueba en la fuente.».",
+        "Cuatro KPI no implican cuatro medidas físicas: la razón reutiliza importe total y conteo documental. Cliente puede ser dimensión sin exigir un conteo de clientes.",
+        "La línea es la unidad física y el pedido distinto es la unidad del denominador; conservar ambas claves permite explicar esas dos poblaciones.",
+        "La propuesta 122 pertenece a need-review-4 y sales-bi-v7/reglas 2. Need-review-5 es posterior y no reescribe ese contrato.",
+        "La cifra subyacente, unidad y formato se leen por separado; la presentación no cambia la población ni el cálculo.",
+        "Los errores históricos se conservan en el anexo QA para enseñar supervisión y comparación con la corrección."
+      ],
+      "fuentes": [
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/pruebas_actuales.json",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/verificacion_exportacion18.json",
+        "/home/ceo/Proyectos/BI/docs/testing/qa-postcierre-2026-11-04.md",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/89_aw_repeticion_exacta_postfix.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/91_aw_ranking_viable_reglas_v4.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/94_aw_personalizacion_cuatro_kpi.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/95_aw_122_aprobada.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/98_aw_etl18_conciliado.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/99_aw_etl18_publicado.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/100_aw_analitica18_publicada.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/101_aw_copiloto18_resultado.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/121-copiloto-aw-final.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/verificacion_exportacion18_final.json",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/comparativo_exportaciones18_19_final.json",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/viabilidad_v6_cierre.json"
+      ]
+    },
+    {
+      "titulo": "Contrato efectivo, sugerencias disponibles y contexto de exportación",
+      "capitulo": 14,
+      "objetivo": "Distinguir lo propuesto originalmente por el LLM de lo validado, seleccionable y realmente ejecutable.",
+      "rol": "Analista y perfiles de consulta con los permisos de su etapa.",
+      "requisitos": [
+        "Propuesta persistida y ejecución seleccionada. Consulta histórica es plan A; una pregunta nueva al LLM requiere disponibilidad y consentimiento."
+      ],
+      "pasos": [
+        "Distinga ai_decisions original del proveedor y contrato expandido/validado. La plataforma puede corregir referencias y excluir fórmulas conservando íntegra la respuesta original.",
+        "Al personalizar lea nombre y código junto con origen, rol, agregación y regla ejecutable efectivos. El editor corregido enlaza por nombre/código, no por posición; las exclusiones parten desmarcadas y explicadas. Reintroducirlas crea un borrador sujeto a reglas nuevas.",
+        "Un conteo de documentos debe mostrar COUNT DISTINCT sobre la clave documental, aunque la propuesta original indicara un importe. No explique el source_column crudo como la receta que ejecutará ETL.",
+        "Una razón muestra sus dos entradas. Retirar el denominador retira el KPI dependiente; no lo convierte en AVG de línea. Las salidas efectivas añadidas sin una decisión original editable se muestran para consulta.",
+        "El servidor construye hasta tres sugerencias desde métricas agrupables y ejes materializados disponibles, priorizando el indicador seleccionado. La intención usa el mismo catálogo. Palabras como margen en una etiqueta no habilitan una receta ausente.",
+        "Contraste cifras, filtros, denominador y límites. El proveedor devuelve respuesta y evidencia; la plataforma arma la cautela desde alcance y procedencia estructurada. La ventana ETL no es hora exacta de lectura ni última modificación del origen, y no prueba SCD2, vigencia a fecha del hecho ni entrega real. Lea esa advertencia aunque el texto generado parezca concluyente. La advertencia de procedencia ocupa el primer hallazgo para permanecer visible en Vista ejecutiva; no usa un acrónimo técnico como requisito de comprensión.",
+        "Antes de exportar confirme fuente, base, ejecución, propuesta y filtros. La nueva exportación imprime contexto y actualización ISO con el offset recibido; una fecha sin zona se identifica como zona no informada.",
+        "Compruebe unidad y precisión: importes, razones y cantidades fraccionarias conservan dos decimales; sólo conteos explícitos son enteros. Excel mantiene números y texto literal, sin convertir cadenas en fórmulas o hipervínculos automáticos.",
+        "Conserve cada archivo y hash. El primer 18 carecía de contexto;19-contexto conservó un aviso escrito pero recortado visualmente. Los finales 18/19 corrigen altura y muestran la advertencia completa. El comparativo y las dos verificaciones finales identifican esos archivos; un resultado previo no se transfiere a otro hash."
+      ],
+      "resultado": "La persona explica qué contrato se ejecuta, qué consulta está disponible y qué evidencia pertenece realmente a cada archivo.",
+      "verificacion": [
+        "Editor con medidas/KPI efectivos, sin modificar documento o huella de origen.",
+        "Razón y dependencias coherentes, exclusiones visibles y sólo selecciones enviadas.",
+        "Sugerencias dentro de métricas y dimensiones disponibles.",
+        "Archivo con procedencia y formato propios, sin extrapolar QA de una descarga anterior."
+      ],
+      "errores": [
+        "Confundir decisión cruda y contrato compilado.",
+        "Marcar una exclusión sólo porque aparece en el texto original de la IA.",
+        "Suponer que una sugerencia libre habilita margen.",
+        "Inventar zona horaria o considerar entero todo valor llamado unidades."
+      ],
+      "explicacion": [
+        "El editor aprobó dos regresiones nuevas en el corte intermedio de 44 pruebas frontend: arrays en orden distinto, referencia corregida, exclusiones, razón, payload seleccionado e inmutabilidad. El cierre posterior bf50172 aprobó 46 pruebas frontend y 454 backend.",
+        "El catálogo de sugerencias aprobó 15 focales, ocho nuevas. El bloque de precisión, contexto y texto literal de exportación aprobó 49 focales; revisar cada descarga sigue siendo una prueba distinta.",
+        "El refuerzo definitivo aprobó 53 pruebas focalizadas combinadas de copiloto y servicio analítico, con Mypy/Ruff/formato del bloque. La procedencia sigue contrato, instantánea y ruta FK del materializador, conserva linaje de nombres derivados sin sus valores y distingue un origen directo sin FK. Las fechas del ETL son una ventana. La cautela no se concatena con texto libre del proveedor ni se trunca; la repetición real del chat se registra aparte.",
+        "Regla de lectura para casos nuevos: evalúe la intención positiva y el alcance de cada exclusión. Sin percentiles no elimina un ranking de sumas; no excluir facturas no significa excluirlas. Si la cabecera documental es el propio hecho, se comprueba su ancla y clave; si se llega desde un detalle, la FK completa. Un nombre como NumberOfUnits no prueba que sea un ID: contraste PK/FK, función y valores estructurales antes de clasificar la magnitud. Son criterios de supervisión; las verificaciones del motor quedan en su acta técnica.",
+        "El cierre 8f1c7d1 aprobó la comprobación integral con 454 pruebas backend y 48 frontend e incorpora unidades genéricas y una disposición legible de los indicadores ETL. Las capturas 126 y 127 corresponden a consultas de los expedientes conservados, sin nuevas cargas."
+      ],
+      "fuentes": [
+        "/home/ceo/Proyectos/BI/docs/specs/SPR-05-05-copiloto-analitico-contextual.md",
+        "/home/ceo/Proyectos/BI/docs/specs/SPR-05-02-reporteria-fiel-pdf-excel.md",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/verificacion_exportacion18.json",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/107_wwi_editor_origen_crudo.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/verificacion_exportacion18_final.json",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/verificacion_exportacion19_final.json",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/comparativo_exportaciones18_19_final.json"
+      ]
+    },
+    {
+      "titulo": "WideWorldImporters detallado: necesidad de 693 caracteres y ejecución nueva 19",
+      "capitulo": 15,
+      "seccion_manual": "exito",
+      "objetivo": "Operar el caso nuevo de facturas con el mismo objetivo completo, conservar el grano físico y justificar sus cuatro KPI y límites sin asumir moneda, utilidad ni historia territorial.",
+      "rol": "Analista con permisos de generación, revisión, materialización, semántica, consulta y exportación según la etapa. Se observó con Administrador inicial; no acredita todas las sesiones por rol.",
+      "requisitos": [
+        "WideWorldImporters seleccionada, probada y habilitada; instantánea 3 y catálogo propio de la fuente disponibles.",
+        "Preguntas de tiempo, producto, cliente y territorio y periodicidad Mensual.",
+        "Plan B: proveedor probado y disponible y consentimiento vigente. Plan A: consultar una propuesta/expediente ya aprobado y terminado no requiere nueva generación.",
+        "Need-review-5 y sales-bi-v7/reglas 2 identifican este caso observado; 117/16 permanece como antecedente distinto. Una generación nueva utiliza la revisión y las reglas vigentes y conserva su propia evidencia."
+      ],
+      "pasos": [
+        "Confirme la sesión y cambie Fuente en contexto a WideWorldImporters. Compruebe conexión, base e instantánea antes de diseñar. El cambio desde AW debe reiniciar filtros y conversación, no transferir importes o moneda.",
+        "Revise Catálogo analítico de WWI y seleccione las cuatro preguntas de tiempo, producto, cliente y territorio. No copie las instrucciones de otra fuente ni añada costos/utilidad si la necesidad los excluye.",
+        "Abra Asistente de datamart, Datamart de ventas y una necesidad nueva para el plan B. Pegue exactamente los 693 caracteres de Explicación; el objetivo conserva línea física, fecha de emisión, resúmenes mensuales, cuatro KPI y límite de la ficha territorial actual.",
+        "Seleccione Periodicidad Mensual, lea el destino y confirme el consentimiento aplicable antes de Validar viabilidad. Para generar de nuevo se exige la revisión vigente: need-review-6 en el corte del 5 de noviembre. La revisión v5 conservada demuestra el caso 123/124 y no sustituye esa reevaluación.",
+        "La repetición v5 mostró 16 requisitos directos, siete automáticos y siete límites reales, sin tarjeta falsa de margen ni su ACK. La cautela sin asumir moneda, utilidad ni composición fiscal no solicita utilidad. Si aparece una contradicción, conserve la necesidad y evidencia, sin reducir el objetivo ni aceptar una condición falsa.",
+        "Lea los siete límites legítimos y sus referencias y acepte sólo los comprendidos. Una ficha actual no prueba cada entrega histórica; un importe de origen no prueba moneda única ni composición fiscal. Estos límites no impiden por sí solos conservar el detalle y resumirlo mensualmente.",
+        "Genere conceptos y propuesta. Se obtuvo la nueva 123. Lea grano, claves, dimensiones, medidas, cuatro KPI, exclusiones y cobertura; una versión posterior no se considera válida sólo por su número.",
+        "Abra Personalizar propuesta y lea Resumen de negocio y Granularidad propuesta. Precise una línea física identificada por InvoiceLineID; conserve InvoiceID para contar facturas distintas y relacionar el detalle con su documento. La agregación mensual pertenece a las consultas.",
+        "Conserve las dimensiones Fecha, Producto, Cliente y Territorio con sus rutas verificadas. El nombre descriptivo del cliente debe proceder de CustomerName, no de una expectativa acerca del aspecto del nombre. La provincia corresponde a la ciudad de entrega de la ficha actual.",
+        "En Medidas, agregaciones y cálculos controlados lea el contrato efectivo. Para importe, suma del importe registrado de línea; para unidades, suma de cantidad; para facturas, COUNT DISTINCT de InvoiceID. El editor corregido muestra InvoiceID efectivo aunque el proveedor hubiera propuesto ExtendedPrice para ese conteo.",
+        "Revise las exclusiones desmarcadas y su motivo. Retire medidas e indicadores extra no pedidos. Una exclusión visible no debe quedar seleccionada por arrastre de la decisión cruda; reintroducirla crearía un borrador que debe validarse otra vez.",
+        "En KPIs incluidos y medida asociada conserve exactamente importe total, unidades totales, facturas distintas e importe promedio por factura. El promedio usa razón entre importe agregado y facturas distintas; no se obtiene por AVG de líneas, suma de promedios ni división por el valor de un ID.",
+        "Si retira el denominador del promedio, retire también su KPI dependiente. No use Resolver una relación con evidencia si no existe un problema real de origen de dimensión; esa acción independiente requiere ruta segura y justificación propia.",
+        "Escriba Justificación del ajuste explicando grano físico, cuatro KPI, claves y límites. Pulse Guardar como nueva versión. La hija 124 quedó seleccionada automáticamente con sus propios estados; no se restauró la fuente 123 por una respuesta tardía.",
+        "Revise Nombres reconocibles antes de materializar: Producto 227/227, Cliente 663/663 y Territorio 53/53 al 100 %. Esta disponibilidad descriptiva no acredita ubicación histórica ni moneda.",
+        "Pulse Verificar evidencia: 124 mostró siete referencias, cero errores, siete advertencias y huella b5872c3bbd6d coincidente con reconstrucción. La captura 124 muestra ambas huellas. Esta comprobación estructural no consume LLM ni reemplaza conciliar cifras después de ejecutar.",
+        "En Revisión supervisada confirme fuente, necesidad, versión y validación. Registre comentario, lea las advertencias y confirme su comprensión antes de Aprobar propuesta. La aprobación de 124 no ejecutó ETL automáticamente.",
+        "Abra Datamart de ventas y seleccione 124 de WWI. En Revisar indicadores confirme los cuatro KPI y sus entradas. Mantenga moneda de origen y no agregue margen, utilidad o un conteo de líneas disfrazado de facturas.",
+        "En Revisar transformaciones lea 26 operaciones y cinco tablas: Fecha, Producto, Cliente, Territorio y hecho. Explique extracción, limpieza, claves, consolidación de dimensiones y conciliación; el origen SQL Server permanece sólo lectura.",
+        "En Confirmar ejecución registre su decisión y confirmación y pulse Preparar materialización. El nuevo expediente 19 quedó Preparado. Revise propuesta, fuente, KPI y huellas antes de ejecutar Materializar y cargar datamart.",
+        "Después de la carga, Validar resultados mostró 228.265 filas de origen y destino, diferencia cero y cinco tablas. Fecha cargó 1.069 valores desde 70.510 entradas con 69.441 duplicados controlados; Producto 227, Cliente 663 y Territorio 53 conservan su cobertura. No confunda consolidación de Fecha con pérdida de líneas del hecho.",
+        "Contraste el resultado de 19: importe de origen 198.043.439,45, 8.950.628 unidades, 70.510 facturas distintas y promedio aproximado 2.808,7284, mostrado como 2.808,73. El numerador y denominador pertenecen al mismo alcance.",
+        "Revise interpretación semántica: no se requirieron mapeos adicionales en este recorrido y quedó Validada. No fuerce traducciones o sustituciones sólo para presentar una lista de cambios.",
+        "Use Comprobar divisa sin otro ETL. La fuente no demostró una moneda única y el panel conserva moneda de origen. La conciliación no lo transforma en USD, utilidad ni un importe fiscal documentado.",
+        "Abra Analítica de ventas y confirme ejecución 19/propuesta 124. Con Año 2015 y Territorio California se comprobó importe 1.215.705,55 de moneda de origen, 57.142 unidades, 481 facturas y promedio 2.527,454365904366, presentado como 2.527,45. Son valores de 19 con filtros propios, comprobados también en su exportación; no se atribuye a la nueva ejecución la QA de 16.",
+        "Pregunte por Top 3, porcentajes y procedencia de 2015/California. La respuesta final mostró 54.648; 50.715; 45.860,85 y 4,50/4,17/3,77 % sobre 1.215.705,55. Explicó ficha extraída durante la ventana ETL, sin vigencia histórica ni entrega probadas; la cautela de plataforma y tres sugerencias sólo de capacidades disponibles están visibles en 117–119. Después se pulsó la sugerencia de unidades por cliente: devolvió cinco clientes con denominador completo 57.142 para la misma selección (120).",
+        "Descargue los finales analitica-ventas-19-executive-final.pdf y .xlsx para 19/124 y 2015/California. Se revisaron cinco páginas PDF y cuatro hojas XLSX sin editar originales: fuente WideWorldImporters local, base WideWorldImporters, moneda de origen y actualización 2026-11-05 04:56+00:00. Importe 1.215.705,55, unidades 57.142, facturas 481 y razón 2.527,454365904366 coinciden. La cautela temporal completa se ve en ambos formatos y su fila XLSX se ajustó a 57 pt."
+      ],
+      "resultado": "La cadena 123→124→19 completó aprobación, ETL, publicación, consulta filtrada, respuesta final y consulta sugerida bajo v5/reglas 2. Los finales PDF/XLSX se comprobaron por sus propios valores, contexto, hashes y visualización. La primera respuesta incorrecta y la exportación de contexto con recorte permanecen identificadas como historia QA. La revisión adicional v6 conservó el mismo objetivo y dejó siete decisiones no aceptadas, sin otra propuesta ni ETL. El caso demuestra este recorrido, no todas las futuras salidas o cuentas.",
+      "verificacion": [
+        "Objetivo intacto de 693 caracteres, cuatro preguntas y Mensual; sin falso margen/ACK en v5.",
+        "Grano físico InvoiceLineID, InvoiceID para documento distinto y cuatro ejes con nombres y rutas verificadas.",
+        "Hija 124 seleccionada, siete referencias, cero errores, siete advertencias y huella b5872c3bbd6d reproducida igual.",
+        "19 con 26 operaciones, cinco tablas, 228.265 filas por lado y diferencia cero.",
+        "Importe 198.043.439,45, unidades 8.950.628, facturas 70.510 y promedio 2.808,73 sin asumir moneda única.",
+        "La deduplicación de fechas se explica en su dimensión; no altera el número de líneas físicas.",
+        "Finales 19/124 de 2015/California verificados: 1.215.705,55 de origen, 57.142 unidades, 481 facturas y razón 2.527,454365904366. Fuente/base/offset y advertencia completos; cinco páginas PDF y cuatro hojas XLSX revisadas con Poppler/ArtifactTool. No se atribuye una revisión Calc final no completada."
+      ],
+      "errores": [
+        "Aceptar margen por una cautela que excluye asumir utilidad.",
+        "Reducir la necesidad para evitar un defecto del prototipo.",
+        "Leer la referencia cruda del proveedor como si fuera el contrato compilado.",
+        "Conservar medidas excluidas o retirar un denominador sin retirar su KPI.",
+        "Cambiar CustomerName por apariencia o afirmar entrega histórica desde ficha actual.",
+        "Llamar USD al importe de origen o reutilizar hashes/resultados de otra descarga."
+      ],
+      "explicacion": [
+        "Objetivo exacto de 693 caracteres: «Diseñar un datamart cuyo grano físico sea una línea de factura. Sobre ese detalle, resumir mensualmente el importe registrado de la línea, las unidades y las facturas distintas por producto y cliente. Usar la fecha de emisión. Para el territorio, usar la provincia de la ciudad de entrega registrada en la ficha del cliente y aclarar que no representa necesariamente su ubicación histórica. Conservar el importe de origen sin asumir moneda, utilidad ni composición fiscal. Limitar los indicadores a importe total, unidades totales, facturas distintas e importe promedio por factura. Los rankings deben comparar totales por producto; el máximo de una sola línea no identifica al producto líder.».",
+        "Need-review-5 corrige un escáner determinístico acotado ES/EN; no promete comprensión exhaustiva de lenguaje natural. Una petición positiva de otra pregunta no se oculta por una negación posterior.",
+        "El contrato efectivo y ai_decisions original son capas distintas. La corrección conserva la respuesta original y muestra qué referencia y receta se ejecutarán realmente.",
+        "El promedio por factura es una razón de agregados con el mismo alcance, mientras el grano físico sigue siendo una línea.",
+        "Cobertura descriptiva, validación estructural, conciliación y prudencia verbal son comprobaciones diferentes. El caso nuevo no borra el historial 117/16.",
+        "En la tabla Productos líderes, la participación se calcula sobre las ocho categorías mostradas, cuya suma es 307.083,35. No se confunde con participación sobre el total territorial 1.215.705,55. La explicación del reporte aclara total mostrado; al preguntar por un Top N se debe pedir su denominador explícito.",
+        "La captura 110 es una vista parcial histórica de evidencia. La captura 124 muestra ya ambas huellas b5872c3bbd6d, sin atribuir a la primera imagen contenido que no contiene."
+      ],
+      "fuentes": [
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/pruebas_actuales.json",
+        "/home/ceo/Proyectos/BI/docs/testing/qa-postcierre-2026-11-04.md",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/106_wwi_viabilidad_v5_sin_margen.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/108_wwi_editor_origen_validado.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/109_wwi_personalizacion_4_kpi.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/110_wwi_124_evidencia.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/111_wwi_124_aprobada.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/112_wwi_etl_4_indicadores.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/113_wwi_expediente19_preparado.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/114_wwi_etl19_conciliado.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/verificacion_exportacion19.json",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/117_wwi_aviso_vigencia_dimensional.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/118_wwi_chat19_respuesta_corregida.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/119_wwi_chat19_cautela_plataforma.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/120_wwi_sugerencia_unidades_cliente.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/124-huellas-contrato-wwi.jpg",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/verificacion_exportacion19_final.json",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/comparativo_exportaciones18_19_final.json",
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/qa/viabilidad_v6_cierre.json"
+      ]
+    },
+    {
+      "titulo": "Consultar una propuesta aprobada y preparar explícitamente una hija",
+      "capitulo": 11,
+      "objetivo": "Distinguir consulta inmutable, borrador de corrección y guardado de una versión nueva sin liberar el contrato original.",
+      "rol": "Cuenta con lectura de propuestas y permiso de generación para preparar revisiones.",
+      "requisitos": [
+        "Propuesta aprobada o invalidada con decisiones ajustables; en la prueba se consultó 124 aprobada.",
+        "Una corrección debe tener justificación de negocio; navegar por una consulta no autoriza editar el original."
+      ],
+      "pasos": [
+        "Abra la propuesta aprobada y reconozca Consulta de la versión: sus cinco etapas permiten leer y sus campos permanecen bloqueados.",
+        "Use la acción explícita Crear versión corregida desde ésta. Sólo el editor de Personalización se habilita para preparar un borrador hijo; el original sigue siendo un contrato conservado.",
+        "Revise resumen, grano, dimensiones, medidas, KPI y sus dependencias. Escriba Justificación del ajuste de 10 a 500 caracteres; con los demás requisitos válidos se habilita Guardar como nueva versión.",
+        "Para consultar sin guardar pulse Cancelar. El ensayo volvió a Consulta 124 aprobada, con cero errores y siete advertencias, conservando los campos originales.",
+        "En una revisión autorizada, Guardar como nueva versión crea una hija mediante la ruta de revisiones y selecciona su respuesta; no aprueba automáticamente, no ejecuta ETL ni modifica la propuesta padre. Compruebe ID, validación y decisiones de la hija antes de continuar."
+      ],
+      "resultado": "La prueba visual comprobó entrada explícita al editor, justificación editable y botón habilitado, y Cancelar restituyó la consulta 124 aprobada. La prueba no guardó ni creó otra hija.",
+      "verificacion": [
+        "La navegación normal mantiene sólo lectura; la acción explícita habilita únicamente el editor del borrador.",
+        "Cancelar devuelve la consulta y valores del original.",
+        "Cualquier guardado autorizado debe mostrar una nueva identidad y requerir revisión propia."
+      ],
+      "errores": [
+        "Confundir habilitar un borrador con editar una propuesta aprobada.",
+        "Suponer que preparar una hija equivale a aprobarla o cargar datos.",
+        "Atribuir al ensayo una hija nueva cuando se canceló."
+      ],
+      "explicacion": [
+        "El objetivo es conservar una cadena auditable: la corrección es otra versión y el original mantiene estado y evidencia. Las reglas técnicas del motor de la entrega se consultan en su acta, sin adjudicarlas a artefactos históricos."
+      ],
+      "fuentes": [
+        "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manual-usuario-sustentacion-20261104/capturas/125-editor-hija-habilitado.jpg",
+        "/home/ceo/Proyectos/BI/frontend/src/App.tsx",
+        "/home/ceo/Proyectos/BI/frontend/src/App.test.tsx"
+      ]
+    }
+  ],
+  "glosario": [
+    [
+      "BI",
+      "Inteligencia de negocios: organización y análisis de datos para responder preguntas y apoyar decisiones."
+    ],
+    [
+      "IA",
+      "Inteligencia artificial: técnicas que permiten proponer o interpretar información. En este prototipo sus salidas requieren comprobación y supervisión."
+    ],
+    [
+      "LLM",
+      "Modelo de lenguaje que interpreta el texto y propone artefactos. Un proveedor ofrece acceso al modelo; no es el motor de la base de datos."
+    ],
+    [
+      "OLTP",
+      "Sistema de origen orientado a operaciones o transacciones. Se consulta en sólo lectura."
+    ],
+    [
+      "Datamart",
+      "Conjunto analítico de un dominio, construido a partir de un alcance aprobado. En este proyecto el dominio habilitado es ventas."
+    ],
+    [
+      "Grano o granularidad",
+      "Significado de una fila del hecho; por ejemplo, una línea de pedido. No es la periodicidad ni la frecuencia de ejecución."
+    ],
+    [
+      "Hecho",
+      "Estructura central de eventos medibles del datamart, conservada al grano definido."
+    ],
+    [
+      "Dimensión",
+      "Perspectiva descriptiva para agrupar o filtrar hechos, como producto, cliente, territorio o fecha."
+    ],
+    [
+      "Atributo",
+      "Característica de una dimensión, como categoría o color. No exige crear una dimensión independiente por cada columna."
+    ],
+    [
+      "Medida",
+      "Magnitud del hecho, con unidad y significado, que puede servir de entrada a un cálculo."
+    ],
+    [
+      "KPI o indicador",
+      "Resultado calculable con una receta definida. Su nombre debe corresponder a su fórmula, unidad y población."
+    ],
+    [
+      "Agregación",
+      "Regla para resumir registros: suma, promedio, conteo, distintos, mínimo o máximo. No todas las reglas tienen significado para toda medida."
+    ],
+    [
+      "Metadatos",
+      "Descripción de tablas, columnas, tipos, claves y relaciones. No son las filas comerciales."
+    ],
+    [
+      "Instantánea",
+      "Versión persistida e inmutable de la estructura capturada de una fuente."
+    ],
+    [
+      "Contrato BI",
+      "Representación estructurada del modelo, medidas, KPI, reglas y trazabilidad que la plataforma comprueba antes de aprobar y ejecutar."
+    ],
+    [
+      "JSON",
+      "Formato estructurado de intercambio de datos. Que una respuesta sea JSON no garantiza que cumpla el contrato ni que sea correcta comercialmente."
+    ],
+    [
+      "Validación determinística",
+      "Comprobación realizada por reglas del programa sobre referencias, tipos, relaciones y operaciones admitidas; no por la autoridad del modelo."
+    ],
+    [
+      "ETL",
+      "Extracción, transformación y carga. Lee el alcance autorizado, aplica operaciones controladas y carga un destino analítico."
+    ],
+    [
+      "Conciliación",
+      "Contraste entre origen y destino para una ejecución y sus mismas reglas. Diferencia cero no demuestra por sí sola calidad total del negocio."
+    ],
+    [
+      "Cobertura",
+      "Correspondencia entre lo solicitado y lo realmente calculable o publicado. Una selección parcial debe quedar explícita."
+    ],
+    [
+      "RBAC",
+      "Control de acceso basado en roles. Los permisos efectivos los verifica la API; el menú sólo refleja parte de la autorización."
+    ],
+    [
+      "API",
+      "Interfaz del backend que recibe y autoriza operaciones. Una restricción visual del navegador no reemplaza sus controles."
+    ],
+    [
+      "Huella o hash",
+      "Resumen calculado de un contenido canónico. Sirve para integridad y reproducción del artefacto, no para hacer determinístico al LLM."
+    ],
+    [
+      "Sólo lectura",
+      "Condición de la cuenta de origen que impide escribir o alterar sus datos. La aplicación sí persiste configuración y resultados en su propio destino."
+    ],
+    [
+      "Copiloto contextual",
+      "Asistente que trabaja sobre la ejecución y el contexto analítico autorizado. Sus explicaciones deben contrastarse con filtros, indicadores y resultados."
+    ],
+    [
+      "Pronóstico",
+      "Estimación de valores futuros. No forma parte del alcance operativo de este prototipo."
+    ],
+    [
+      "Contrato efectivo",
+      "Modelo expandido y validado que determina qué referencias, medidas, fórmulas y operaciones son ejecutables. La decisión original del LLM se conserva como evidencia y puede contener propuestas corregidas o excluidas."
+    ],
+    [
+      "Ventana ETL",
+      "Intervalo entre inicio y fin de una ejecución de extracción, transformación y carga. No identifica por sí solo el instante exacto en que se leyó una fila ni cuándo se modificó en el origen."
+    ],
+    [
+      "SCD tipo 2 (SCD2)",
+      "Técnica de dimensiones históricas que conserva versiones con intervalos de validez. Mencionar una ficha actual o consultar sus datos durante el ETL no demuestra que se haya aplicado esta técnica ni que se conozca su vigencia a la fecha de cada venta."
+    ],
+    [
+      "Procedencia temporal",
+      "Evidencia que permite distinguir la fecha del hecho, la ventana de extracción y la validez de una descripción. Una provincia de la ficha actual no acredita automáticamente la ubicación histórica ni una entrega real."
+    ]
+  ]
+}

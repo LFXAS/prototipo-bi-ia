@@ -1,0 +1,423 @@
+Browser tab: 1, Title: "BI asistido por IA", URL: "http://localhost:5173/".
+1 AXWebArea BI asistido por IA, URL: localhost:5173/
+	2 container
+		3 text PLATAFORMA BI ASISTIDA POR IA
+		4 text Centro de inteligencia de negocio
+		5 button (collapsed) ☰ Menú, Secondary Actions: Expand
+		6 button Cerrar sesión
+		7 container
+			8 heading Asistente de datamart, Value: 1
+				9 text Asistente de datamart
+			10 container Fuente de datos del espacio de trabajo
+				11 text FUENTE EN CONTEXTO
+				12 text WideWorldImporters local
+				13 text SQL Server ·  WideWorldImporters  ·  metadatos disponibles
+				14 container
+					15 text Cambiar fuente
+					16 pop up button (collapsed, settable) Cambiar fuente, Value: WideWorldImporters local · WideWorldImporters, Secondary Actions: Expand
+						17 menu
+							18 AdventureWorks local · AdventureWorks2022
+							19 (selected) WideWorldImporters local · WideWorldImporters
+			20 text DOMINIO SELECCIONADO Datamart de ventas WideWorldImporters local  · instantánea # 3
+			21 button Cambiar tipo de datamart
+			22 text Describa una necesidad comercial. La IA interpretará metadatos, propondrá el modelo y la aplicación comprobará cada referencia antes de su revisión.
+			23 content list Paso 1 de 5
+				24 container
+					25 text 1 Necesidad
+			183 text Revisión de IA y reglas completada: revise los límites antes de continuar.
+			26 container
+				27 text PASO 1
+				28 heading Necesidad de negocio, Value: 2
+					29 text Necesidad de negocio
+				30 text Se enviarán la necesidad y metadatos estructurales; nunca filas ni credenciales. Objetivo del análisis
+				31 text entry area (settable) Objetivo del análisis 693 / 2.000 caracteres Explique qué decisión desea apoyar, qué indicadores espera y cómo necesita compararlos. No escriba SQL., Value: Diseñar un datamart cuyo grano físico sea una línea de factura. Sobre ese detalle, resumir mensualmente el importe registrado de la línea, las unidades y las facturas distintas por producto y cliente. Usar la fecha de emisión. Para el territorio, usar la provincia de la ciudad de entrega registrada en la ficha del cliente y aclarar que no representa necesariamente su ubicación histórica. Conservar el importe de origen sin asumir moneda, utilidad ni composición fiscal. Limitar los indicadores a importe total, unidades totales, facturas distintas e importe promedio por factura. Los rankings deben comparar totales por producto; el máximo de una sola línea no identifica al producto líder.
+				32 container
+					33 text 693  / 2.000 caracteres
+				34 text Explique qué decisión desea apoyar, qué indicadores espera y cómo necesita compararlos. No escriba SQL.
+				35 container Autorización de asistencia con metadatos
+					36 text La IA recibirá la necesidad y nombres, tipos, claves y relaciones de esta fuente; nunca filas ni credenciales.
+					37 container
+						38 text Destino: anthropic-cloud · claude-haiku-4-5-20251001
+					39 checkbox (settable, integer) Description: Autorizo enviar estos metadatos y la necesidad al proveedor indicado para esta revisión., Value: 1
+				40 button Sugerir necesidades con esta fuente
+				41 button Ayúdame a formular la necesidad
+				42 text La IA propone desde los metadatos de esta fuente; usted decide qué texto utilizar. No se consultan filas.
+				43 container Preguntas de negocio disponibles
+					44 text Preguntas de negocio disponibles
+					45 text Seleccione las preguntas que orientarán a la IA. No fijan tablas, columnas ni dimensiones.
+					46 container La instantánea contiene metadatos compatibles con esta capacidad.
+						47 checkbox (settable, integer) Description: Evolución de ventas en el tiempo Permite observar tendencias y comparar períodos de venta., Value: 1
+						48 text Evolución de ventas en el tiempo
+						49 text Permite observar tendencias y comparar períodos de venta.
+					50 container La instantánea contiene metadatos compatibles con esta capacidad.
+						51 checkbox (settable, integer) Description: Productos con mayor desempeño Permite ordenar productos por importe o unidades vendidas., Value: 1
+						52 text Productos con mayor desempeño
+						53 text Permite ordenar productos por importe o unidades vendidas.
+					54 container La instantánea contiene metadatos compatibles con esta capacidad.
+						55 checkbox (settable, integer) Description: Desempeño por cliente Permite segmentar las ventas según el cliente asociado., Value: 1
+						56 text Desempeño por cliente
+						57 text Permite segmentar las ventas según el cliente asociado.
+					58 container La instantánea contiene metadatos compatibles con esta capacidad.
+						59 checkbox (settable, integer) Description: Desempeño por territorio Permite comparar resultados comerciales por ubicación o territorio., Value: 1
+						60 text Desempeño por territorio
+						61 text Permite comparar resultados comerciales por ubicación o territorio.
+					62 container La pregunta personalizada orientará a la IA; su alcance técnico se validará contra los metadatos antes de generar una propuesta.
+						63 checkbox (settable, integer) Value: 0, Description: Costos y rentabilidad de las ventas Permite evaluar ventas, costos y márgenes únicamente cuando existan fuentes y relaciones verificables.
+						64 text Costos y rentabilidad de las ventas
+						65 text Permite evaluar ventas, costos y márgenes únicamente cuando existan fuentes y relaciones verificables.
+					66 container La pregunta personalizada orientará a la IA; su alcance técnico se validará contra los metadatos antes de generar una propuesta.
+						67 checkbox (settable, integer) Value: 0, Description: Ventas y costos por unidad Permite comparar ingresos y costos por unidad con una base de cálculo consistente.
+						68 text Ventas y costos por unidad
+						69 text Permite comparar ingresos y costos por unidad con una base de cálculo consistente.
+				70 text La IA propondrá las dimensiones, medidas, granularidad, KPIs y plan ETL a partir del objetivo, las preguntas seleccionadas y los metadatos verificados. Usted podrá revisarlos y personalizarlos sin escribir SQL. Periodicidad
+				71 pop up button (collapsed, settable) Periodicidad, Value: Mensual, Secondary Actions: Expand
+					72 menu
+						73 Diaria
+						74 Semanal
+						75 (selected) Mensual
+						76 Trimestral
+						77 Anual
+				184 container Cobertura de la necesidad
+					185 text COMPROBACIÓN PREVIA
+					186 heading Viabilidad contra los metadatos, Value: 3
+						187 text Viabilidad contra los metadatos
+					188 text 16  directos ·  7  automáticos ·  7  por decidir
+					189 container
+						190 text ¿Qué significa derivable automáticamente? No requiere que seleccione tablas, escriba SQL ni complete fórmulas. Al continuar, la plataforma aplicará únicamente relaciones declaradas y cálculos controlados.
+						191 content list
+							192 container
+								193 text 1
+								194 text La IA propone
+								195 text  usando el mismo contrato para cualquier proveedor.
+							196 container
+								197 text 2
+								198 text La plataforma resuelve
+								199 text  las rutas y fórmulas inequívocas.
+							200 container
+								201 text 3
+								202 text El validador comprueba
+								203 text  cada requisito; si alguno falta, bloquea la aprobación.
+					204 container
+						205 text AUTOMÁTICO · RELACIÓN
+						206 heading Evolución de ventas en el tiempo, Value: 4
+							207 text Evolución de ventas en el tiempo
+						208 text Puede resolverse uniendo únicamente relaciones declaradas y conservando la granularidad. ✓ Se resolverá y volverá a validar al generar la propuesta.
+						209 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							210 text Ver evidencia técnica
+					211 container
+						212 text AUTOMÁTICO · RELACIÓN
+						213 heading Productos con mayor desempeño, Value: 4
+							214 text Productos con mayor desempeño
+						215 text Puede resolverse uniendo únicamente relaciones declaradas y conservando la granularidad. ✓ Se resolverá y volverá a validar al generar la propuesta.
+						216 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							217 text Ver evidencia técnica
+					218 container
+						219 text AUTOMÁTICO · RELACIÓN
+						220 heading Desempeño por cliente, Value: 4
+							221 text Desempeño por cliente
+						222 text Puede resolverse uniendo únicamente relaciones declaradas y conservando la granularidad. ✓ Se resolverá y volverá a validar al generar la propuesta.
+						223 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							224 text Ver evidencia técnica
+					225 container
+						226 text AUTOMÁTICO · RELACIÓN
+						227 heading Desempeño por territorio, Value: 4
+							228 text Desempeño por territorio
+						229 text Puede resolverse uniendo únicamente relaciones declaradas y conservando la granularidad. ✓ Se resolverá y volverá a validar al generar la propuesta.
+						230 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							231 text Ver evidencia técnica
+					232 container
+						233 text AUTOMÁTICO · RELACIÓN
+						234 heading Ventas facturadas, Value: 4
+							235 text Ventas facturadas
+						236 text Puede resolverse uniendo únicamente relaciones declaradas y conservando la granularidad. Los pedidos por sí solos no prueban una venta facturada. ✓ Se resolverá y volverá a validar al generar la propuesta.
+						237 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							238 text Ver evidencia técnica
+					239 container
+						240 text DIRECTO · FUENTE VERIFICADA
+						241 heading Análisis por cliente, Value: 4
+							242 text Análisis por cliente
+						243 text Puede resolverse directamente con la referencia técnica indicada.
+						244 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							245 text Ver evidencia técnica
+					246 container
+						247 text DIRECTO · FUENTE VERIFICADA
+						248 heading Evolución temporal, Value: 4
+							249 text Evolución temporal
+						250 text Puede resolverse directamente con la referencia técnica indicada.
+						251 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							252 text Ver evidencia técnica
+					253 container
+						254 text DIRECTO · FUENTE VERIFICADA
+						255 heading Análisis por producto, Value: 4
+							256 text Análisis por producto
+						257 text Puede resolverse directamente con la referencia técnica indicada.
+						258 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							259 text Ver evidencia técnica
+					260 container
+						261 text DIRECTO · FUENTE VERIFICADA
+						262 heading Unidades vendidas, Value: 4
+							263 text Unidades vendidas
+						264 text Puede resolverse directamente con la referencia técnica indicada.
+						265 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							266 text Ver evidencia técnica
+					267 container
+						268 text DIRECTO · FUENTE VERIFICADA
+						269 heading Ventas o ingresos, Value: 4
+							270 text Ventas o ingresos
+						271 text Puede resolverse directamente con la referencia técnica indicada.
+						272 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							273 text Ver evidencia técnica
+					274 container
+						275 text DIRECTO · FUENTE VERIFICADA
+						276 heading Análisis territorial, Value: 4
+							277 text Análisis territorial
+						278 text Puede resolverse directamente con la referencia técnica indicada.
+						279 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							280 text Ver evidencia técnica
+					281 container
+						282 text DIRECTO · FUENTE VERIFICADA
+						283 heading Número de transacciones o pedidos, Value: 4
+							284 text Número de transacciones o pedidos
+						285 text Puede resolverse directamente con la referencia técnica indicada.
+						286 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							287 text Ver evidencia técnica
+					288 container
+						289 text AUTOMÁTICO · FÓRMULA
+						290 heading Importe promedio por transacción, Value: 4
+							291 text Importe promedio por transacción
+						292 text Fórmula controlada:
+						293 text ventas totales ÷ documentos comerciales distintos Puede calcularse de forma controlada como ventas totales ÷ documentos comerciales distintos. ✓ Se resolverá y volverá a validar al generar la propuesta.
+						294 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							295 text Ver evidencia técnica
+					296 container
+						297 text REFERENCIA ESTRUCTURAL COMPROBADA
+						298 heading Importe registrado de la línea, Value: 4
+							299 text Importe registrado de la línea
+						300 text Interpretación propuesta por IA (no ejecutable):
+						301 text SUM(ExtendedPrice) agrupado por mes, producto y cliente ExtendedPrice es el importe registrado en la línea de factura. No se asume su composición (neto, bruto, con/sin impuestos) ni moneda; el analista debe confirmar su significado.
+						302 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							303 text Ver evidencia técnica
+					304 container
+						305 text REFERENCIA ESTRUCTURAL COMPROBADA
+						306 heading Unidades totales, Value: 4
+							307 text Unidades totales
+						308 text Interpretación propuesta por IA (no ejecutable):
+						309 text SUM(Quantity) agrupado por mes, producto y cliente Quantity es la cantidad de unidades en la línea de factura.
+						310 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							311 text Ver evidencia técnica
+					312 container
+						313 text REFERENCIA ESTRUCTURAL COMPROBADA
+						314 heading Facturas distintas, Value: 4
+							315 text Facturas distintas
+						316 text Interpretación propuesta por IA (no ejecutable):
+						317 text COUNT(DISTINCT InvoiceID) agrupado por mes, producto y cliente InvoiceID identifica la factura; contar valores distintos proporciona el número de facturas únicas por período, producto y cliente.
+						318 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							319 text Ver evidencia técnica
+					320 container
+						321 text DERIVACIÓN CANDIDATA
+						322 heading Importe promedio por factura, Value: 4
+							323 text Importe promedio por factura
+						324 text Interpretación propuesta por IA (no ejecutable):
+						325 text SUM(ExtendedPrice) / COUNT(DISTINCT InvoiceID) agrupado por mes, producto y cliente Se deriva dividiendo el importe total entre el número de facturas distintas. Ambos operandos están disponibles en la línea de factura. Se validará al preparar la propuesta; esta descripción no se ejecuta.
+						326 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							327 text Ver evidencia técnica
+					328 container
+						329 text REFERENCIA ESTRUCTURAL COMPROBADA
+						330 heading Fecha de emisión, Value: 4
+							331 text Fecha de emisión
+						332 text Interpretación propuesta por IA (no ejecutable):
+						333 text Agrupar por YEAR(InvoiceDate) y MONTH(InvoiceDate) InvoiceDate en Sales.Invoices es la fecha de emisión de la factura. Se accede desde InvoiceLines mediante FK InvoiceID.
+						334 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							335 text Ver evidencia técnica
+					336 container
+						337 text REFERENCIA ESTRUCTURAL COMPROBADA
+						338 heading Producto, Value: 4
+							339 text Producto
+						340 text Interpretación propuesta por IA (no ejecutable):
+						341 text GROUP BY StockItemID, StockItemName StockItemID en InvoiceLines identifica el producto; se relaciona con Warehouse.StockItems para obtener el nombre.
+						342 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							343 text Ver evidencia técnica
+					344 container
+						345 text REFERENCIA ESTRUCTURAL COMPROBADA
+						346 heading Cliente, Value: 4
+							347 text Cliente
+						348 text Interpretación propuesta por IA (no ejecutable):
+						349 text GROUP BY CustomerID, CustomerName CustomerID en Invoices identifica el cliente; se relaciona con Sales.Customers para obtener el nombre.
+						350 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							351 text Ver evidencia técnica
+					352 container
+						353 text REFERENCIA ESTRUCTURAL COMPROBADA
+						354 heading Territorio (provincia de ciudad de entrega), Value: 4
+							355 text Territorio (provincia de ciudad de entrega)
+						356 text Interpretación propuesta por IA (no ejecutable):
+						357 text GROUP BY StateProvinceName desde la ruta Customers.DeliveryCityID → Cities.CityID → Cities.StateProvinceID → StateProvinces.StateProvinceID La ciudad de entrega del cliente (DeliveryCityID) se relaciona con Cities, que contiene StateProvinceID. StateProvinces proporciona el nombre de la provincia. Esta es la ubicación de entrega registrada en la ficha del cliente, no su ubicación histórica.
+						358 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							359 text Ver evidencia técnica
+					360 container
+						361 text REFERENCIA ESTRUCTURAL COMPROBADA
+						362 heading Ranking de productos por importe total, Value: 4
+							363 text Ranking de productos por importe total
+						364 text Interpretación propuesta por IA (no ejecutable):
+						365 text GROUP BY StockItemID, StockItemName; ORDER BY SUM(ExtendedPrice) DESC La aplicación admite agrupar y ordenar los agregados; medida, dimensión y rutas se comprobaron por separado. Los valores y el contrato se validan después en ETL.
+						366 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							367 text Ver evidencia técnica
+					368 container
+						369 text REFERENCIA ESTRUCTURAL COMPROBADA
+						370 heading Ranking de productos por unidades totales, Value: 4
+							371 text Ranking de productos por unidades totales
+						372 text Interpretación propuesta por IA (no ejecutable):
+						373 text GROUP BY StockItemID, StockItemName; ORDER BY SUM(Quantity) DESC La aplicación admite agrupar y ordenar los agregados; medida, dimensión y rutas se comprobaron por separado. Los valores y el contrato se validan después en ETL.
+						374 button (collapsed) Ver evidencia técnica, Secondary Actions: Expand
+							375 text Ver evidencia técnica
+					376 container
+						377 text DECISIÓN DEL ANALISTA
+						378 heading Límite de interpretación, Value: 4
+							379 text Límite de interpretación
+						380 text El importe registrado (ExtendedPrice) se conserva sin asumir su composición fiscal, inclusión de descuentos, flete o moneda; el analista debe confirmar estos aspectos.
+						381 checkbox (settable, integer) Description: Comprendo esta limitación y acepto continuar sin que el sistema invente una solución., Value: 0
+					382 container
+						383 text DECISIÓN DEL ANALISTA
+						384 heading Límite de interpretación, Value: 4
+							385 text Límite de interpretación
+						386 text La fecha de emisión (InvoiceDate) es la fecha de la factura registrada, no necesariamente la fecha de pago, entrega o reconocimiento contable.
+						387 checkbox (settable, integer) Description: Comprendo esta limitación y acepto continuar sin que el sistema invente una solución., Value: 0
+					388 container
+						389 text DECISIÓN DEL ANALISTA
+						390 heading Límite de interpretación, Value: 4
+							391 text Límite de interpretación
+						392 text El territorio se obtiene de la ciudad de entrega registrada en la ficha del cliente (DeliveryCityID); no representa necesariamente la ubicación histórica del cliente ni cambios posteriores en su domicilio.
+						393 checkbox (settable, integer) Description: Comprendo esta limitación y acepto continuar sin que el sistema invente una solución., Value: 0
+					394 container
+						395 text DECISIÓN DEL ANALISTA
+						396 heading Límite de interpretación, Value: 4
+							397 text Límite de interpretación
+						398 text Los indicadores se limitan a: importe total, unidades totales, facturas distintas e importe promedio por factura. No se incluyen márgenes, costos, descuentos adicionales ni análisis predictivo.
+						399 checkbox (settable, integer) Description: Comprendo esta limitación y acepto continuar sin que el sistema invente una solución., Value: 0
+					400 container
+						401 text DECISIÓN DEL ANALISTA
+						402 heading Límite de interpretación, Value: 4
+							403 text Límite de interpretación
+						404 text El ranking de productos compara totales acumulados por período y segmentación; el máximo de una sola línea no identifica al producto líder.
+						405 checkbox (settable, integer) Description: Comprendo esta limitación y acepto continuar sin que el sistema invente una solución., Value: 0
+					406 container
+						407 text DECISIÓN DEL ANALISTA
+						408 heading Límite de interpretación, Value: 4
+							409 text Límite de interpretación
+						410 text No se asume que las facturas registradas implican cobro, entrega confirmada ni estado de pago; la existencia de InvoiceID no prueba su estado de finalización.
+						411 checkbox (settable, integer) Description: Comprendo esta limitación y acepto continuar sin que el sistema invente una solución., Value: 0
+					412 container
+						413 text DECISIÓN DEL ANALISTA
+						414 heading Límite de interpretación, Value: 4
+							415 text Límite de interpretación
+						416 text La granularidad física es la línea de factura (InvoiceLineID); las agregaciones mensuales, por producto y cliente son operaciones analíticas posteriores que no alteran el grano del datamart.
+						417 checkbox (settable, integer) Description: Comprendo esta limitación y acepto continuar sin que el sistema invente una solución., Value: 0
+				418 text Respaldo estructural, no garantía de datos: se verifican referencias, tipos y rutas. La interpretación de negocio requiere revisión humana; la cobertura, los valores y la conciliación sólo se comprueban al preparar y ejecutar el ETL.
+				419 text Revisión asistida:  Anthropic Claude  ·  claude-haiku-4-5-20251001
+				420 button (disabled) Generar propuesta y resolver 7 derivables
+				421 button Volver a editar
+			79 heading Versiones generadas, Value: 2
+				80 text Versiones generadas
+			81 text Abra un resultado conservado para revisarlo o aprobarlo sin volver a ejecutar el modelo.
+			82 container
+				83 text Mostrar
+				84 pop up button (collapsed, settable) Mostrar, Value: Por revisar, Secondary Actions: Expand
+					85 menu
+						86 (selected) Por revisar
+						87 Aprobadas
+						88 Rechazadas
+						89 Con inconvenientes
+						90 Retiradas o descartadas
+						91 Todas
+			92 table
+				93 row
+					94 cell
+						95 text VERSIÓN
+					96 cell
+						97 text NECESIDAD
+					98 cell
+						99 text PROVEEDOR Y MODELO
+					100 cell
+						101 text ESTADO
+					102 cell
+						103 text FECHA
+					104 cell
+						105 text RESULTADO
+				106 row
+					107 cell
+						108 text # 123
+					109 cell
+						110 text Diseñar un datamart cuyo grano físico sea una línea de factura. Sobre ese detalle, resumir mensualmente el importe registrado de la línea, las unidades y las facturas distintas por producto y cliente. Usar la fecha de emisión. Para el territorio, usar la provincia de la ciudad de entrega registrada en la ficha del cliente y aclarar que no representa necesariamente su ubicación histórica. Conservar el importe de origen sin asumir moneda, utilidad ni composición fiscal. Limitar los indicadores a importe total, unidades totales, facturas distintas e importe promedio por factura. Los rankings deben comparar totales por producto; el máximo de una sola línea no identifica al producto líder.
+					111 cell
+						112 text Anthropic Claude  /  claude-haiku-4-5-20251001
+					113 cell
+						114 text Lista para revisar
+					115 cell
+						116 text 4/11/2026, 11:38:21 p. m.
+					117 cell
+						118 button Abrir resultado
+				119 row
+					120 cell
+						121 text # 116
+						122 container
+							123 text Derivada de # 115
+					124 cell
+						125 text Diseñar un datamart cuyo grano físico sea una línea de factura. Sobre ese detalle, resumir mensualmente el importe registrado de la línea, las unidades y las facturas distintas por producto y cliente. Usar la fecha de emisión. Para el territorio, usar la provincia de la ciudad de entrega registrada en la ficha del cliente y aclarar que no representa necesariamente su ubicación histórica. Conservar el importe de origen sin asumir moneda, utilidad ni composición fiscal. Limitar los indicadores a importe total, unidades totales, facturas distintas e importe promedio por factura. Los rankings deben comparar totales por producto; el máximo de una sola línea no identifica al producto líder.
+					126 cell
+						127 text Anthropic Claude  /  claude-haiku-4-5-20251001
+					128 cell
+						129 text Lista para revisar
+					130 cell
+						131 text 4/11/2026, 10:23:52 p. m.
+					132 cell
+						133 button Abrir resultado
+				134 row
+					135 cell
+						136 text # 113
+						137 container
+							138 text Derivada de # 112
+					139 cell
+						140 text Para priorizar productos y territorios, analizar mensualmente ventas efectivamente facturadas a nivel de línea de factura. El importe comercial es el total de la línea de factura con impuesto tal como consta en la fuente, no el precio unitario por cantidad antes de impuesto. Comparar ese importe y las unidades por producto, cliente y territorio; contar facturas distintas y calcular importe promedio por factura como total facturado dividido para facturas distintas. Usar la fecha de emisión de la factura, conservar el identificador de línea y factura y el pedido de origen cuando la relación esté verificada. Sólo usar atributos y relaciones comprobados.
+					141 cell
+						142 text Anthropic Claude  /  claude-haiku-4-5-20251001
+					143 cell
+						144 text Lista para revisar
+					145 cell
+						146 text 3/10/2026, 1:37:17 p. m.
+					147 cell
+						148 button Abrir resultado
+				149 row
+					150 cell
+						151 text # 112
+						152 container
+							153 text Derivada de # 111
+					154 cell
+						155 text Para priorizar productos y territorios, analizar mensualmente ventas efectivamente facturadas a nivel de línea de factura. El importe comercial es el total de la línea de factura con impuesto tal como consta en la fuente, no el precio unitario por cantidad antes de impuesto. Comparar ese importe y las unidades por producto, cliente y territorio; contar facturas distintas y calcular importe promedio por factura como total facturado dividido para facturas distintas. Usar la fecha de emisión de la factura, conservar el identificador de línea y factura y el pedido de origen cuando la relación esté verificada. Sólo usar atributos y relaciones comprobados.
+					156 cell
+						157 text Anthropic Claude  /  claude-haiku-4-5-20251001
+					158 cell
+						159 text Lista para revisar
+					160 cell
+						161 text 3/10/2026, 1:31:34 p. m.
+					162 cell
+						163 button Abrir resultado
+				164 row
+					165 cell
+						166 text # 111
+						167 container
+							168 text Derivada de # 110
+					169 cell
+						170 text Para decidir qué productos y territorios priorizar, analizar ventas efectivamente facturadas, no pedidos solamente registrados. Comparar mensualmente unidades e importe de líneas de factura por producto, cliente y territorio, identificar productos de mayor contribución y el importe promedio por factura distinta. Conservar el identificador de la factura y, si la relación está declarada, su pedido de origen. La evolución debe usar fecha de factura. Mostrar costos o márgenes sólo si son verificables o derivables de columnas existentes y aclarar si representan costo histórico o estimado. No inventar descuentos, moneda ni relaciones.
+					171 cell
+						172 text Anthropic Claude  /  claude-haiku-4-5-20251001
+					173 cell
+						174 text Lista para revisar
+					175 cell
+						176 text 3/10/2026, 1:25:19 p. m.
+					177 cell
+						178 button Abrir resultado
+			179 container Paginación
+				180 text Mostrando  1 - 5  de  9  registros
+				181 button (disabled) Anterior
+				182 button Siguiente
+
+The focused UI element is 1 AXWebArea BI asistido por IA, URL: localhost:5173/

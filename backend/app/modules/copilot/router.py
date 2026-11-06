@@ -27,6 +27,7 @@ from app.modules.copilot.models import (
     SemanticAdvice,
 )
 from app.modules.copilot.need_advisor import (
+    ANALYTICAL_OPERATIONS,
     DRAFT_SCHEMA,
     REVIEW_NOTICE,
     SUGGESTION_SCHEMA,
@@ -66,6 +67,7 @@ from app.modules.copilot.schemas import (
     SemanticPreviewRead,
 )
 from app.modules.copilot.service import (
+    COMPILATION_RULES_VERSION,
     CONTRACT_VERSION,
     PROMPT_VERSION,
     PROPOSAL_BLUEPRINT_SYSTEM_INSTRUCTION,
@@ -563,6 +565,7 @@ async def _generate_need_advice(
                     "business_request": request_document,
                     "metadata_snapshot_hash": snapshot.content_hash,
                     "metadata": context,
+                    "analytical_operations": ANALYTICAL_OPERATIONS,
                     **({"validation_feedback": validation_feedback} if validation_feedback else {}),
                 },
                 credential=credential,
@@ -586,7 +589,11 @@ async def _generate_need_advice(
                 ]
                 continue
             checked = [
-                validate_draft(snapshot.schema_document, item)
+                validate_draft(
+                    snapshot.schema_document,
+                    item,
+                    business_request=request_document if mode == "analyze" else None,
+                )
                 for item in (
                     cast(list[dict[str, object]], result["suggestions"])
                     if mode == "suggest"
@@ -602,6 +609,23 @@ async def _generate_need_advice(
                 if mode == "analyze"
                 else not any(suggestion["usable"] for suggestion in checked)
             )
+            if needs_repair and attempt == 1 and mode == "analyze":
+                reasons = " ".join(
+                    dict.fromkeys(
+                        str(item["resolution"])
+                        for suggestion in checked
+                        for item in suggestion["requirements"]
+                        if item.get("validation_errors")
+                    )
+                )
+                raise HTTPException(
+                    status_code=422,
+                    detail=(
+                        "La revisión conserva contradicciones técnicas tras una reparación. "
+                        "No se guardó una evaluación continuable ni se redujo su necesidad. "
+                        + reasons[:1500]
+                    ),
+                )
             if not needs_repair or attempt == 1:
                 result["_advice_attempts"] = attempt + 1
                 return result, configuration
@@ -701,7 +725,7 @@ async def formulate_business_need(
     result, configuration = await _generate_need_advice(
         snapshot, request_document, "formulate", payload.metadata_consent_target, session
     )
-    checked = validate_draft(snapshot.schema_document, result)
+    checked = validate_draft(snapshot.schema_document, result, business_request=request_document)
     await add_audit_event(
         session,
         actor.id,
@@ -747,7 +771,7 @@ async def validate_business_need_viability(
     result, configuration = await _generate_need_advice(
         snapshot, request_document, "analyze", payload.metadata_consent_target, session
     )
-    checked = validate_draft(snapshot.schema_document, result)
+    checked = validate_draft(snapshot.schema_document, result, business_request=request_document)
     input_hash = review_input_hash(snapshot.id, snapshot.content_hash, request_document)
     assessment = combine_assessment(structural, checked, input_hash)
     assessment.update(
@@ -1572,7 +1596,7 @@ async def revise_controlled_relation(
         semantic_map_document=semantic_map,
         status="ready_for_review" if validation["valid"] else "validation_failed",
         input_hash=revision_hash,
-        prompt_version=source.prompt_version,
+        prompt_version=PROMPT_VERSION,
         contract_version=source.contract_version,
         provider_kind=source.provider_kind,
         model_id=source.model_id,
@@ -1686,7 +1710,7 @@ async def revise_proposal(
         semantic_map_document=semantic_map,
         status="ready_for_review" if validation["valid"] else "validation_failed",
         input_hash=revision_hash,
-        prompt_version=source.prompt_version,
+        prompt_version=PROMPT_VERSION,
         contract_version=source.contract_version,
         provider_kind=source.provider_kind,
         model_id=source.model_id,
@@ -1909,6 +1933,19 @@ async def approve_proposal(
     proposal = await _proposal_or_404(proposal_id, session)
     if proposal.status == "approved":
         return proposal
+    if proposal.status in {"ready_for_review", "validation_failed"} and (
+        proposal.prompt_version != PROMPT_VERSION
+        or proposal.proposal_document.get("compilation_rules_version") != COMPILATION_RULES_VERSION
+    ):
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "Esta propuesta pendiente fue compilada con reglas anteriores. "
+                "Personalícela para crear una versión con las reglas actuales o genere "
+                "una nueva propuesta antes de aprobar. La versión original se conserva "
+                "como evidencia; actualizar el programa no la corrige automáticamente."
+            ),
+        )
     if proposal.status != "ready_for_review":
         raise HTTPException(
             status_code=409,
