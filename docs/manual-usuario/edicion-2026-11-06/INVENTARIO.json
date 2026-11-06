@@ -1,0 +1,864 @@
+{
+  "fecha": "2026-11-06",
+  "estado": "Edición final verificada",
+  "archivos": [
+    {
+      "archivo": "Manual_de_formacion_BI_IA.docx",
+      "sha256": "8a0492cb2d0551722cbbbbaf73074383538e771716d2ff9f86aefffaac0187d0",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/output/Manual_de_formacion_BI_IA.docx",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "Manual_de_formacion_BI_IA.pdf",
+      "sha256": "ef66703b26de3accde56180e0198e3973afd789daa244dc1549258e7e436f1af",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/output/Manual_de_formacion_BI_IA.pdf",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "Manual_de_usuario_universidad.docx",
+      "sha256": "cf405dfdb343b172565daa0164d3c9e7a67f6aebee82ff9c433e69b4b10407f5",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/output/Manual_de_usuario_universidad.docx",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "Manual_de_usuario_universidad.pdf",
+      "sha256": "e2440981c34d8af47fcbeee464cb4e9bc7acd619b05d7662518b3a6d3b683699",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/output/Manual_de_usuario_universidad.pdf",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "crear_manuales.py",
+      "sha256": "1a752d1e3a871b0e51657fd1e20bdca4be962e07b095b5efa6a45b302855ead2",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/crear_manuales.py",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "contenido_formacion.json",
+      "sha256": "89a60cdae4cc6ab6c5640f67fe9aca48ce7f2a25979016e3cdd2367b75bddd03",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/contenido_formacion.json",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "contenido_universidad.json",
+      "sha256": "9dc77b05550e324ae3dea2e841cf5ea2bb360f1e3fee62c18a974a3d26d3d74c",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/contenido_universidad.json",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "mapeo_capturas.json",
+      "sha256": "a180daf66278c4f0b7149c835feb85c218d4da33f0f699eb459dd6998ff1d6c3",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/mapeo_capturas.json",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas_requeridas_formacion.json",
+      "sha256": "09d1e120df303edbcbaf5e88822db409097f43e5f330d4a99af72e89e1ed5660",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas_requeridas_formacion.json",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "revision_contenido_formacion.json",
+      "sha256": "1239bdf660fc08b185bc8595875a96d0079b40263769c0f600a68aa7e1eeb7d5",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/revision_contenido_formacion.json",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "ejemplos_exportaciones.json",
+      "sha256": "b3ece06cf3095584001c597cb3eb88f1274a93070304b14755a7ab2d130ae832",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/ejemplos_exportaciones.json",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/inicio_wwi.jpg",
+      "sha256": "a1d2e44c6d79821fbb40a0c2587f4d8ccca2a03e408708efd931bad4ca91ff1c",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/inicio_wwi.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/login.jpg",
+      "sha256": "d93be5728ec5b7cff59c73054f11ee23b99a924846af3bf3d6bcdc594bfa8c13",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/login.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/inicio_aw.jpg",
+      "sha256": "c67753d959974a27797fb40aa2a0639388c0895db1445d3cfa4dd4064c3a3c29",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/inicio_aw.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/conexiones_formulario.jpg",
+      "sha256": "5b834a7e08d803f1caf5ac3f201b77b1d69cb2476211658af16a9dd48f7d6766",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/conexiones_formulario.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/conexiones_listado.jpg",
+      "sha256": "64e1665fce1c79650c2763a2755edb90a9e6ae756c249ba684656a853992f8ce",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/conexiones_listado.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/conexiones_validacion.jpg",
+      "sha256": "0c45425dd9dc0a62159d6279c1183d08b8e5f334e073c998cf51879c9bffff7f",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/conexiones_validacion.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/esquema_aw.jpg",
+      "sha256": "7958eecb4f467f2408561c756d9be34e31f9128ac1a670404234b8252ad92384",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/esquema_aw.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/esquema_aw_columnas.jpg",
+      "sha256": "5152bc3c0452c43a3d9477ae9a8113706261180e8eb78e2f76933285ec6c249e",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/esquema_aw_columnas.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/esquema_aw_relaciones.jpg",
+      "sha256": "ce2bd9739870277e7a0da990a74588c00c238d5dc5858433ff746c393332dcab",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/esquema_aw_relaciones.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/esquema_wwi.jpg",
+      "sha256": "b8ede44a7af38d73deab6b4ef41b2baa300900d0e83b04474053c3de4a81673c",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/esquema_wwi.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/esquema_wwi_columnas.jpg",
+      "sha256": "c7e255d65f3385ccca9c12aafd852164e795ce0f3abfa96f3c65a4c3d593f9b6",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/esquema_wwi_columnas.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/esquema_wwi_relaciones.jpg",
+      "sha256": "dd49549eb407a06d3670b37f687d016d5731e2140afdc1eb5bc809591740626f",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/esquema_wwi_relaciones.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/parametros_superior.jpg",
+      "sha256": "56d03f2c41b4be6560d7c80f3a304b88a68e09b53198bae432f5f84eb060c298",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/parametros_superior.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/parametros_inferior.jpg",
+      "sha256": "e32426f85fff32a3f929b6e1a39565943703b3cffa852561c603939acca4f91e",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/parametros_inferior.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/llm_formulario.jpg",
+      "sha256": "f2a8800fb88c5bd4c4bb7158ad6e543177c39de3a3eaeac30e2009bd4fb1ad1b",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/llm_formulario.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/llm_configuraciones.jpg",
+      "sha256": "7a84eb71c2729cb7a192eedd0ce023b0d5eb188632def9092b4b6a8dd7641650",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/llm_configuraciones.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/llm_prueba.jpg",
+      "sha256": "751e6f76c7b46e2e146a8a3f128529636dbe1168d0475d22a2c19ef833c89fb1",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/llm_prueba.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/catalogo_cobertura_wwi.jpg",
+      "sha256": "c6c0b3ba15983d5a7ca019443d6c5256fc473887175d2acaff9f64cb37d2a83f",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/catalogo_cobertura_wwi.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/catalogo_preguntas.jpg",
+      "sha256": "86acaa5780b8758b5f17b30b5cd0ae3df6d1ab0b1d75d0e5772c37cae5a1f2e1",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/catalogo_preguntas.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/catalogo_instrucciones.jpg",
+      "sha256": "98e8b470ba24b65a06456441ad7f731eb3ec21b5a1810bb4fd1397d43a64ae46",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/catalogo_instrucciones.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/catalogo_preguntas_adicionales.jpg",
+      "sha256": "8be35fcf61f42b2c58a104a3e8b85de7a5262085318db7c220c8a297d573d2e5",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/catalogo_preguntas_adicionales.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/catalogo_periodicidades.jpg",
+      "sha256": "8be35fcf61f42b2c58a104a3e8b85de7a5262085318db7c220c8a297d573d2e5",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/catalogo_periodicidades.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/catalogo_cobertura_aw.jpg",
+      "sha256": "9fa36d01f6a878d5f4026151dbde2bae5cc972dd1701b932a2f00544f27c22a2",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/catalogo_cobertura_aw.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_dominio.jpg",
+      "sha256": "0c7a7415277319310d6a15ddc7fe0f05602604f1eb08978fd9d73b777d7577cb",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_dominio.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_contexto.jpg",
+      "sha256": "a82802fe7b3f755696c2c894c27b85a436398109b3095e919421d2e7da9bcf06",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_contexto.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_necesidad.jpg",
+      "sha256": "c0bee6b76a97b9769501bb4e6a3c4a2fd9212c6832be6e06bf961172ddb81b34",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_necesidad.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_preguntas_periodicidad.jpg",
+      "sha256": "b47ef2e12ce40d5d26c21ce7663955b545a555a4cb24384008e74266a5dd7bbd",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_preguntas_periodicidad.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_viabilidad.jpg",
+      "sha256": "59e4b36a97df479432dc8e4d48d3706fa3d90597d29e46fdb8243cc1ae39252f",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_viabilidad.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_viabilidad_evidencia.jpg",
+      "sha256": "0bdc7069d7a223605aee5b149b3ae8a1d359cfa6eb2612aede95158eae27c2af",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_viabilidad_evidencia.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_limites.jpg",
+      "sha256": "85848e35175d7dd3ca69fb6a6596e3c174748916cfeeb123cbea16cd56feed4e",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_limites.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_conceptos.jpg",
+      "sha256": "6eefd53c8a6872c9d1c59b74dff0055601713e1994085be984410d5f29ea9240",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_conceptos.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/conceptos_evidencia.jpg",
+      "sha256": "b15049684e71d29ff66e1d52049332e67ccd50a5bf93f74727719c596fee683f",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/conceptos_evidencia.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/conceptos_limites.jpg",
+      "sha256": "94e84866119703384e9f1f9c97c20ba4db281088576f338ee44d91a96551a835",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/conceptos_limites.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/incidencia125_modelo.jpg",
+      "sha256": "f0014ed8befce34370cf1090e0cf82feb0cb9fcc9431980dcac92e001e3f4022",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/incidencia125_modelo.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/usuarios_formulario.jpg",
+      "sha256": "0f480cf64a6ce0467bd7be306c2ffad1a07601b30a6141ce8207af1f00d3e7d6",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/usuarios_formulario.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/usuarios_listado.jpg",
+      "sha256": "4a47292526e9523553f558a4ef903d0cf3e46d50d34b3ed20709927782063413",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/usuarios_listado.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/roles_formulario.jpg",
+      "sha256": "0ad2557eba57adbf76f7efa5f06a89e31366d7336fd802f66ddc7cfb70c4462b",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/roles_formulario.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/roles_analista.jpg",
+      "sha256": "3aa9fd71184b16c6cab820262f6dacd33cc56380f87d3611cafc0c67069f6cd6",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/roles_analista.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/roles_analista_permisos.jpg",
+      "sha256": "4fc5364eb3fc3805d9d17248d777c914a434bd396288f9fa24ed4dcff56f9aed",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/roles_analista_permisos.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/roles_listado.jpg",
+      "sha256": "c8d57afacdad19faa5509393b44f756708863ebf9f7013be4efb4e01a967c3fd",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/roles_listado.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/roles_gerente.jpg",
+      "sha256": "c71b9d67fa3f27cecfe660f83f5a47d4ebfb5c472d311afe2354c664a27ecb99",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/roles_gerente.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/roles_gerente_permisos.jpg",
+      "sha256": "95e518803f0409d9f7551b7160348359958d6892ea88881ff7b136a55e40c56a",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/roles_gerente_permisos.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/sesion_vencida.jpg",
+      "sha256": "87fa7306b10ca5c4ff771169f548bee59732e4f995479a83497050965670eef2",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/sesion_vencida.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/permisos_catalogo.jpg",
+      "sha256": "641a1f99afb5556aa6c8a63b6bf8f40b1b4d5da755763148ac40aa6845f0777d",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/permisos_catalogo.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/permisos_catalogo_segunda.jpg",
+      "sha256": "e1b785ebea7580241c00352548da4580e93e96fceefe5ac0b8d0f089c099958d",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/permisos_catalogo_segunda.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/menus_listado.jpg",
+      "sha256": "ce55589f6d24a58b2d2e64b9194f391a17381f4c4f99a16a539037969d30c03f",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/menus_listado.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/menus_edicion.jpg",
+      "sha256": "cb52c778e3936ff50dd035555de87bce457366def746700c00b3bf92e7b94bc4",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/menus_edicion.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/auditoria_listado.jpg",
+      "sha256": "d374740aea10423b36baac7fd991053f8a40b4f43f52cd4ebc07dec366bbae3a",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/auditoria_listado.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/caso_aw_expediente18.jpg",
+      "sha256": "d7e3ee900cb8c90c87727bc8e3875e83d40dabe6d4eb23de5515efd8a9b94357",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_aw_expediente18.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/caso_aw_conciliacion18.jpg",
+      "sha256": "fd173e971a1701b0109b52600cdd44a9cbbe8efa180cdf2de29d2747fdd56cfc",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_aw_conciliacion18.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/caso_aw_semantica18.jpg",
+      "sha256": "cdb0c0d08b7a823f5d0b891da495968725425a381bfd65aafb3f44924c4575d8",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_aw_semantica18.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/etl_elegir_propuesta.jpg",
+      "sha256": "61052db1493a97fdeaee9b4fca2b99a230875a7664b8f34ae91130b000a03e25",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_elegir_propuesta.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/etl_indicadores.jpg",
+      "sha256": "f460b098b2172dab3fc32dd8dc4d5c0e620ae4519f941178a45f5be852dbe347",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_indicadores.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/etl_confirmacion.jpg",
+      "sha256": "9aea2efefab8ecf9d3d28752a3db184eb0cc207402e95371e253c3df7570bb1c",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_confirmacion.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/etl_materializacion.jpg",
+      "sha256": "6fe6c6109763f12836747b51faca50652762cccd24f399634c7812ccc896fd3a",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_materializacion.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_justificacion.jpg",
+      "sha256": "94452b218a2301b89f94c7f45eefda9556007eb63b0cbb7a8b84a2a182675d50",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_justificacion.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_personalizacion.jpg",
+      "sha256": "666a50ea170c470bf9e973dff9c67701864b33193b43ab72d2f694656e0bdfef",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_personalizacion.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_calculo_controlado.jpg",
+      "sha256": "0898ae73e423de0339067742b2ee0bd20e017e3c4c33f48b6128a42486489703",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_calculo_controlado.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_aprobada.jpg",
+      "sha256": "8e0c315c05e65f86d661c5c24774dba4f51dd02c5f6cf8e43bfcbbe661ec6da9",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_aprobada.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/etl_indicadores_nueva.jpg",
+      "sha256": "caeb56f0fd001906785ca897fc7993e909740ba7a0f3caab4ebe43ea7a30d0ab",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_indicadores_nueva.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/etl_confirmacion_nueva.jpg",
+      "sha256": "6045dd9ab3f0fc46d9466c8907773e864eb5eed71285ba0cb51a3f59b118fe1e",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_confirmacion_nueva.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/etl_conciliacion.jpg",
+      "sha256": "ea4b22b91f965e6414c39a1a9b5499f3d938fbd6dd60044ca608e20257603fe0",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_conciliacion.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/etl_semantica_revision.jpg",
+      "sha256": "06dc88092d48b86c7cd247d49fabab1a8e667dc176ceeb6d316d722617e240b3",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_semantica_revision.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/etl_semantica_seleccion.jpg",
+      "sha256": "7bb79efedae0c3265d6514112f8aebbd52e858337be470224c53e865687c8c20",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_semantica_seleccion.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/etl_semantica_publicada.jpg",
+      "sha256": "71c2c4738042f30ce586cdbc4e738656d1593c86657bf9c10761da85791415c7",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_semantica_publicada.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/caso_aw_expediente.jpg",
+      "sha256": "0195b447504eecb431cccd4df0748dbb6f12fce8dc710b4b9f390c2efbcbfdc8",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_aw_expediente.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/analitica_detallada.jpg",
+      "sha256": "c0ad2cdf4e578eb3ec0d6ed8372e67d28a5ee8443cc238ab03d6e6568b6e4689",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/analitica_detallada.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/sesion_recuperada.jpg",
+      "sha256": "9a99ef3ea204e3aef26edf71d7ae5480112df8ca8be2b8bbf3083e786f38f24b",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/sesion_recuperada.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/analitica_indicador.jpg",
+      "sha256": "9000030e9e9e59887832a1d2e821c91c46cc504a5f470c5b4d3d8aab2d86302c",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/analitica_indicador.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/analitica_tabla.jpg",
+      "sha256": "a0c442dc0ffed008018409f1b98789427220305ebfe17196ee6c2400c17d80b9",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/analitica_tabla.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/copiloto_pregunta.jpg",
+      "sha256": "038235afc1ed7b14359dbc5137a006ccd86d2701931c2d87b26fca1d0a55194e",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/copiloto_pregunta.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/copiloto_limite.jpg",
+      "sha256": "448bdd68bf92cebc49219a94675ed0cc11ac4583034eef5923942efe1c7b14a7",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/copiloto_limite.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/exportacion_panel.jpg",
+      "sha256": "00d78559c719fb1b6e4e03367a6ac55f6d5875cbcea568a2154905352c70207f",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/exportacion_panel.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_sugerencias.jpg",
+      "sha256": "69fb5360cd185df90329629df91547257c59a94389a5c2e4acf0d7e8fb1474f9",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_sugerencias.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_formulacion.jpg",
+      "sha256": "a91ee7817ac0038e0560509326d850187d135a6d193d07c17e6a8aebbd1e0b22",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_formulacion.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/caso_wwi_necesidad.jpg",
+      "sha256": "6d54a699226aee82b3d73e8eb4be1948275a456868369d2af5a9b8c71c7ea045",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_wwi_necesidad.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_copiloto_concepto.jpg",
+      "sha256": "99e6cd7152de7bbcc6a2ce9afdf7d84468a99380d69816793b0cfc50cdc6d2de",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_copiloto_concepto.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_cobertura.jpg",
+      "sha256": "8b2c04206e2dfdc78d76e3ea40101829a7ce4f9ce3c0ba7b5e4c8c15783f4d41",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_cobertura.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_identidades.jpg",
+      "sha256": "e4e4d38080a20070fd5f2c15a50dd668c7940aa57542706057025500f66d1779",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_identidades.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_personalizacion_kpis.jpg",
+      "sha256": "ff7c5568ce2ae7ee843c43136b23f96665620fadb7d286452a5b4dff6f8b7fff",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_personalizacion_kpis.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/llm_credencial_vacia.jpg",
+      "sha256": "883ca044351df00d9459595259e11af519492f1317d56e43f84e9cf4f77badb0",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/llm_credencial_vacia.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/etl_comparacion.jpg",
+      "sha256": "d9611295fcdbf6ac787179b483c8e3fcd22a061848b90f8f480f3fc7ea424e00",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_comparacion.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_historial.jpg",
+      "sha256": "0832c34006708e35cc17f9410d7326a728b4b965ab5a430162a573c49d6c3399",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_historial.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/analitica_detalle_punto.jpg",
+      "sha256": "d5f64dfaf50b78c17acb1f3b5b0ea2860403168b4357ae346c3b0ede02010cb0",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/analitica_detalle_punto.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/copiloto_limite_corregido.jpg",
+      "sha256": "6e8829f7ec1818a80909072ecf9db1022e6c4d924de052f1b7d6d29ef2104e8b",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/copiloto_limite_corregido.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/copiloto_consulta_interpretada.jpg",
+      "sha256": "63e6d459f92d8583428d0f5841e60bab55f268129f988f17db4c98961757f18e",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/copiloto_consulta_interpretada.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/copiloto_seguimiento.jpg",
+      "sha256": "218a4ac5b1c96e9116a1b0cb945241126171871781c473e936826c2d43f1c4e2",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/copiloto_seguimiento.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_propuesta.jpg",
+      "sha256": "f305b0424618237a3184805998c36d0f63c42d5ea40e48499f760c05d11195e7",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_propuesta.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_aprobacion.jpg",
+      "sha256": "d722e824913fada2095201c0d1d906d03f17f48c261afac2de08e1ee5601138f",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_aprobacion.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/etl_elegir_propuesta_nueva.jpg",
+      "sha256": "a3825b7f47f21cbd2431a2f99b5d9859b02dc77acebc247f16c2630651029408",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_elegir_propuesta_nueva.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/etl_indicadores_detalle.jpg",
+      "sha256": "3f2f152fea1092c4af6747d62aae7b814d9b667e7686db07486de60ebe251883",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_indicadores_detalle.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/etl_operaciones_plan.jpg",
+      "sha256": "f2b33f8c5dcea71a564683c1dab875903e850a816c3243b94fe15b0f268e8683",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_operaciones_plan.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/etl_preparado.jpg",
+      "sha256": "e00370acc1578a829b7a893b640804f3f495ba95fafe479088bb0090506a6807",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_preparado.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/etl_ejecucion.jpg",
+      "sha256": "446771a425473839687a7a8bcd8aeda6234d7c5b034081ef31bca6f19f939e83",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_ejecucion.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/etl_conciliacion_detalle.jpg",
+      "sha256": "d78d802a80e019c7d502ca752bccec4656d63d1f6537da455eb7a9db279c8783",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_conciliacion_detalle.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/analitica_ejecutiva.jpg",
+      "sha256": "8a0eb402691e0c90af0a2090d202d4f25693e0b3e39b94208214e9287f1d95de",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/analitica_ejecutiva.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/caso_aw_panel_filtrado.jpg",
+      "sha256": "a68cd43b199f73176edef74dabbaa53527278ec14b690a1da266adbbdeaea32e",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_aw_panel_filtrado.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/copiloto_aw.jpg",
+      "sha256": "5e39a12a03c85856210554f06659953717f826ac9775da70b135df888b8ae042",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/copiloto_aw.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/relacion_rol_incorrecto_rechazado.jpg",
+      "sha256": "79fce7313dcc08518271067f834da0cb2eb267e036c12d1f917d6bff2eaeb31f",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/relacion_rol_incorrecto_rechazado.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_relacion_cliente_correcta.jpg",
+      "sha256": "e1600970d2cf8a3074c8a8b4bf2a0c14a6d0d0e4e7c20d08ab86550e0e4c9ee1",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_relacion_cliente_correcta.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_relacion_guiada.jpg",
+      "sha256": "db6926b63a708bd7d3eb42bc26a0dfca25d41ef4a6f536b85c1ea0af252f16d5",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_relacion_guiada.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/caso_wwi_propuesta.jpg",
+      "sha256": "5b1dd73464467d190f678482e59e1963992bef8dc2e12feb73d93f0f83c8c65c",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_wwi_propuesta.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/asistente_validacion.jpg",
+      "sha256": "123ac24fe68a3655da8098e9073b96b4dad611525adf6869241a4b84c35241b8",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_validacion.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/caso_wwi_conciliacion.jpg",
+      "sha256": "02b9c0cc98bba6235d285c6b2ed84962ad58bcc81987373e1eac3d4490b6c7c2",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_wwi_conciliacion.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/caso_wwi_divisa.jpg",
+      "sha256": "8ce3b01a53c3f23cf1b6f67f23ff926191678ff0fb1b259e0049004d96e9d543",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_wwi_divisa.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/analitica_wwi_ejecutiva.jpg",
+      "sha256": "196faf9013a292079c1690c42195bba1c15e8a25e458f121c1038ab44932412b",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/analitica_wwi_ejecutiva.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/caso_wwi_panel_filtrado.jpg",
+      "sha256": "792c64ea2a89d0faf049681964c0380f895516189a59db77cff527c9eeec8c58",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_wwi_panel_filtrado.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/copiloto_wwi.jpg",
+      "sha256": "4760ed5437bab4ea2d7eea6fa9e8a0f13ec1bd1b4c552d450ce4d33f3ed000e3",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/copiloto_wwi.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/cambio_fuente_aw_final.jpg",
+      "sha256": "f1b5d0f4ba8779a325cdb1755feb9d0f1aeeeed44d021d779b1a66c16eabf0ac",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/cambio_fuente_aw_final.jpg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "capturas/manifest.json",
+      "sha256": "d2dd449cc70df40fa0f024479d5a49629a184fb6c9e1c4794a2a7c86707d75ff",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/manifest.json",
+      "tipo": "derivado con rutas relativas; imágenes idénticas"
+    },
+    {
+      "archivo": "control/QA_final_formacion.json",
+      "sha256": "aff09d1aed70e20239e5495ff027b071038676d5771962fb2370d0bd092b0b48",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/QA_final_formacion.json",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "control/QA_final_universidad.json",
+      "sha256": "d43eec882a95a85dc50419ddcbe11599c36d34eacbb47f882b6a3a2f3c87aceb",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/QA_final_universidad.json",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "control/QA_estructura_final_manuales.json",
+      "sha256": "098de94d5c262b0a9ef998165126c77adb57aa53ec747ea5f7813cf98410ff49",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/QA_estructura_final_manuales.json",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "control/QA_tres_PDF_tecnicos_final_20261106.json",
+      "sha256": "33b6491357ae5ac5f76677575eb3fae46690fb7369ba04fabd3711be01c342c5",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/QA_tres_PDF_tecnicos_final_20261106.json",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "control/qa_exportacion_ejecucion21_20261106.json",
+      "sha256": "d0e3af80ecda1ebc97c1a98184bc19de9ec3a8360e722edab8c28c09fe8c9877",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa_exportacion_ejecucion21_20261106.json",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "control/qa_exportacion_ejecucion22_20261106.json",
+      "sha256": "6cdb6a02e6a8e689519dec5c8111d04fba213f836ba75ede54378d4a84fe0a09",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa_exportacion_ejecucion22_20261106.json",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "control/control_final_documentos.json",
+      "sha256": "1161ffd02fead4e293e0edbed9ae6c7f8ddcd3ad057bcddd1a07fc32370860f2",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/control_final_documentos.json",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "arquitectura/figuras.json",
+      "sha256": "8c46915f3cab53b4e2f3f193b543d30458385f74ff3171952b5db85cdde3955b",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/figuras.json",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "arquitectura/renderizar_arquitectura.mjs",
+      "sha256": "ccdd59c8d81f2e066187e54be4545be0360a48b619e65eefcc889217629339f2",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/renderizar_arquitectura.mjs",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "arquitectura/Arquitectura_general_BI_IA.svg",
+      "sha256": "c2aa2a6f99bbc9647aed33aea7db291886fa63292d4ed657734e6d6e7e2e6036",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/Arquitectura_general_BI_IA.svg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "arquitectura/SHA256SUMS.txt",
+      "sha256": "84ef783cdbefa500d4cc3ab4f896719e2de08ea2f6345b4e2c6966519c8a6e0c",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/SHA256SUMS.txt",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "arquitectura/Arquitectura_detallada_BI_IA.svg",
+      "sha256": "e6c612a08e4c229611ccb58badebabeadea92cc82393d95b7a3441fea06b2139",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/Arquitectura_detallada_BI_IA.svg",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "arquitectura/Explicacion_arquitectura.txt",
+      "sha256": "7d746e1b88ac27a4423631e206556c98d152e62d8b2f05fbf74a7dd39752ff75",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/Explicacion_arquitectura.txt",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "arquitectura/Arquitectura_general_BI_IA.png",
+      "sha256": "1a977678363b278dd5b2fa9e7bce8f9a32d0a623faba719166b7e306d1ebbf8f",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/Arquitectura_general_BI_IA.png",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "arquitectura/manifest_arquitectura.json",
+      "sha256": "5c5fc89ab7ef959c2c5147ad4709775b2ec627074b54012ad107830e99a60b6c",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/manifest_arquitectura.json",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "arquitectura/Arquitectura_detallada_BI_IA.png",
+      "sha256": "a0fc5cd6daf65f10760bea9a5cbd13bc9b44a4aeb32821180b03e90de2c5ceeb",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/Arquitectura_detallada_BI_IA.png",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "arquitectura/crear_arquitectura.py",
+      "sha256": "97fdda46358f2840a3535651265a00a1f8c01480c5d33771d769f0bf8ce7deca",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/crear_arquitectura.py",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "arquitectura/verificacion_figuras.json",
+      "sha256": "8bf734832e0bfe895143fe31533330b0dccf7463c6e5bc534b5bc99e8ffc996a",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/verificacion_figuras.json",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "ejemplos_exportados/AdventureWorks2022_ejecucion21_analitica_2013_Northwest.pdf",
+      "sha256": "c5b5f412b852e38b8a57eb21edf162910b7fe50d7f4077635645931b91282a67",
+      "origen": "/home/ceo/Descargas/ventas-ejecucion-21-analyst.pdf",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "ejemplos_exportados/AdventureWorks2022_ejecucion21_analitica_2013_Northwest.xlsx",
+      "sha256": "ece8649c3ea183509cb94799b8ee3dd55e8a57c12bb401e6f60ad58086a748a8",
+      "origen": "/home/ceo/Descargas/ventas-ejecucion-21-analyst.xlsx",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "ejemplos_exportados/WideWorldImporters_ejecucion22_analitica_2015_California.pdf",
+      "sha256": "da15ae4df58c0683a13a9ec2ec08661f018fa0e43cdc6e6a7462b92a68f88192",
+      "origen": "/home/ceo/Descargas/ventas-ejecucion-22-analyst.pdf",
+      "tipo": "copia idéntica"
+    },
+    {
+      "archivo": "ejemplos_exportados/WideWorldImporters_ejecucion22_analitica_2015_California.xlsx",
+      "sha256": "650f9343a000f5d327bc34b54c8fe64dee471abb6edd5b9ade6bc657f3ffd8af",
+      "origen": "/home/ceo/Descargas/ventas-ejecucion-22-analyst.xlsx",
+      "tipo": "copia idéntica"
+    }
+  ]
+}

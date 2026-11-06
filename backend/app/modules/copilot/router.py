@@ -104,6 +104,12 @@ router = APIRouter(tags=["copilot"])
 _secret_cipher = SecretCipher(settings.secrets_key_path)
 
 
+def _reviewed_business_scope(goal: str, assessment: object) -> dict[str, object]:
+    """Bind the compiler to the saved request, never to a model-supplied scope."""
+    requirements = assessment.get("requirements", []) if isinstance(assessment, dict) else []
+    return {"goal": goal, "requirements": deepcopy(requirements)}
+
+
 async def _active_configuration(session: AsyncSession) -> LlmConfiguration | None:
     return (
         await session.execute(
@@ -1113,6 +1119,9 @@ async def create_proposal(
                 response_schema=proposal_blueprint_schema(scope, semantic_map, assessment),
             )
             blueprint["requested_dimensions"] = reviewed_dimensions(assessment)
+            blueprint["business_request_scope"] = _reviewed_business_scope(
+                str(request_document.get("goal", "")), assessment
+            )
             proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
             proposal = apply_financial_requirements(proposal, assessment, scope)
             proposal["need_assessment"] = assessment
@@ -1544,8 +1553,19 @@ async def revise_controlled_relation(
             ),
         )
     try:
+        source_blueprint = deepcopy(source_blueprint)
+        effective_dimensions = source.proposal_document.get("dimensions", [])
+        for dimension in effective_dimensions if isinstance(effective_dimensions, list) else []:
+            if isinstance(dimension, dict):
+                effective_source = next(iter(dimension.get("source_tables", [])), None)
+                for decision in source_blueprint.get("dimensions", []):
+                    if decision.get("name") == dimension.get("name") and effective_source:
+                        decision["source_table"] = effective_source
+        source_blueprint["business_request_scope"] = _reviewed_business_scope(
+            source.business_goal, source.proposal_document.get("need_assessment")
+        )
         revised_blueprint = apply_controlled_relationship(
-            source_blueprint, payload.dimension_name, option
+            source_blueprint, payload.dimension_name, option, source.scope_document
         )
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
@@ -1556,6 +1576,9 @@ async def revise_controlled_relation(
         "option_id": payload.option_id,
         "comment": payload.comment,
     }
+    revised_blueprint["business_request_scope"] = _reviewed_business_scope(
+        source.business_goal, source.proposal_document.get("need_assessment")
+    )
     proposal_document = expand_proposal_blueprint(
         revised_blueprint, source.scope_document, semantic_map
     )
@@ -1672,6 +1695,9 @@ async def revise_proposal(
         "measure_names": payload.measure_names,
         "kpi_codes": payload.kpi_codes,
     }
+    revised_blueprint["business_request_scope"] = _reviewed_business_scope(
+        source.business_goal, source.proposal_document.get("need_assessment")
+    )
     proposal_document = expand_proposal_blueprint(
         revised_blueprint,
         source.scope_document,

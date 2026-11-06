@@ -1,0 +1,54 @@
+@startuml
+skinparam backgroundColor white
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 16
+skinparam ArrowFontSize 15
+skinparam NoteFontSize 14
+skinparam Padding 6
+skinparam nodesep 24
+skinparam ranksep 28
+skinparam dpi 180
+skinparam wrapWidth 220
+skinparam maxMessageSize 190
+skinparam sequenceMessageAlign center
+hide empty members
+hide circle
+skinparam classAttributeIconSize 0
+
+top to bottom direction
+node "Equipo de la demostración" as PC {
+ node "Navegador" as NAV
+ frame "Entorno Docker del proyecto" {
+  node "Contenedor de interfaz" as WEB
+  node "Contenedor del servidor" as BACK
+  node "Contenedor PostgreSQL" as POST {
+   database "Configuración, evidencia\ny datamarts" as PG
+  }
+  node "Contenedor SQL Server" as SQL {
+   database "AdventureWorks" as AW
+   database "WideWorldImporters" as WWI
+  }
+  artifact "Tareas de inicio\nMigraciones y carga básica" as INIT
+ }
+ artifact "Volumen persistente\nde PostgreSQL" as VP
+ artifact "Volumen persistente\nde SQL Server" as VS
+ artifact "Volumen separado\nde clave maestra" as VK
+}
+cloud "Servicio de\ninteligencia artificial" as IA
+NAV --> WEB : acceso local
+WEB --> BACK : servicios de la aplicación
+BACK --> POST : configuración y resultados
+BACK --> SQL : lectura de origen
+BACK --> IA : canal cifrado
+INIT --> POST : preparar estructura
+POST --> VP : persistencia
+SQL --> VS : persistencia
+BACK --> VK : recuperar clave de cifrado
+legend bottom
+Entorno local comprobado con datos persistentes.
+Desarrollo y versión estable mantienen recursos propios.
+endlegend
+
+@enduml

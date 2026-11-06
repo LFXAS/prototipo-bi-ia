@@ -1,0 +1,385 @@
+{
+  "estado": "validado_para_entrega",
+  "fecha": "2026-11-06T03:56:56.225673-05:00",
+  "docx": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/output/Manual_de_usuario_universidad.docx",
+  "pdf": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/output/Manual_de_usuario_universidad.pdf",
+  "docx_sha256": "cf405dfdb343b172565daa0164d3c9e7a67f6aebee82ff9c433e69b4b10407f5",
+  "pdf_sha256": "e2440981c34d8af47fcbeee464cb4e9bc7acd619b05d7662518b3a6d3b683699",
+  "paginas": [
+    {
+      "numero": 1,
+      "sha256": "d7d756c77822882ee4cbe85e9bb391a5be94fa7d2f93736cc66e25be0b698331",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 2,
+      "sha256": "a6f8647a5597811e8b16365275a48db79dcd331d83272c7b6b539ba870e299fd",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 3,
+      "sha256": "ed1dd3e0d5d6849bc02edd1edfc19184455ae06235592444a69a0e0fcd9218a2",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 4,
+      "sha256": "c2e6445b85814074d4db7f7039c77299e32c8485a6b3ecc5b14b2576460a9d89",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 5,
+      "sha256": "15abe527422c411de3a7a60d4a9d2a4651a4c7657d47ddc42a8f5243d61ac913",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 6,
+      "sha256": "d6361bbc7e1db90556eceafd8333f592134ffee8791f358ac0eb16c8042aa4cf",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 7,
+      "sha256": "e37b29950fb9a069443b61a25c7578fb5217c34bd5ebb3e8be2f0c1d23ba688a",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 8,
+      "sha256": "7dcdb6e5a2c8a6b9a163a656cd74428f65f4c472c7424ffffcb4abae675ece84",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 9,
+      "sha256": "cde531ce7183cafc9aeb6e7e137c4992fc432c5befb3d794fd603939c7de6cc4",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 10,
+      "sha256": "31a48ba3297e4869d164777b0d0c07a8ea3797bdd79c5535b984d2a68ebf6b84",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 11,
+      "sha256": "16f6009fd264393dc1496de42f21a57058b74775124b6cf3707b6ef4c234a227",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 12,
+      "sha256": "a011888699477d9c9c904241a42f3a7acc795d7147e8d5c9caf0dcb21d46cab8",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 13,
+      "sha256": "e900298464eaf401bd5bb440ecd0af0a06e2a4b2cf90b98c67305a56ac236ce6",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 14,
+      "sha256": "f3ea3296d3bcdd149ef8850870ce8ea010b83b7e8c1b43f90332def1ffd952e4",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 15,
+      "sha256": "8a04a0aeaf18b150833843cd1f05b752a84e338f65220c15f2dd493d5d227833",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 16,
+      "sha256": "b26b36714554c038c622362e873a519736c6e4c03c08a6e486d7b19a73790eef",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 17,
+      "sha256": "e453ee9eb126cf5df9bc5240138ab5108159f46423850ed344edd101759177da",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 18,
+      "sha256": "b9170be59785b8fbecea3158c8574657c0fd7b96bd141fa8b395aff07ac9ad2e",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 19,
+      "sha256": "8c85be06dcaabf57310801aecde751356261ea297b620653457091eecfd01088",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 20,
+      "sha256": "fe1aaa533c5ef051463ece781830ec5dfdd96e3675962ed283847f5d8f8eec15",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 21,
+      "sha256": "fff5fce1aacb8b7e27201be6351c202f6bb5538ed7e92e90d133a5a84aeb16c2",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 22,
+      "sha256": "3f42e62dabc2af173e66c39b41abf0711d511e4962fd953b68bc3980d729bf39",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 23,
+      "sha256": "3ac1f4591c4fe790b02c4827879b0d3b50b1d09ed75cf619b6f6c31d17b05bf5",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 24,
+      "sha256": "33610c4c70016e35fded571565072afd06d2071ba4b48eb3dafc47226929ea7c",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 25,
+      "sha256": "be437bbdf30df5d7e55116c035c558cb9acbfd3473e388907bd868da9840e608",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 26,
+      "sha256": "fa595003766b7ccbc6c6ff6cb43da8167e763b96ab77988da8b76a52d47b5a6f",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 27,
+      "sha256": "d9ab19251df47513aee561b87d7a5f4ab0b78247d0ba141ce69023c8b3a2ceb3",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 28,
+      "sha256": "533627711bf29443a3ba00afd2197ac9647e1c213f7cc3c8e491f990108606be",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 29,
+      "sha256": "48d24b5739509f455c6ea3b3d3ea29d91cc515c45fa8f146466235bec62037d2",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 30,
+      "sha256": "f7c708374d80eef52442296a5783e741ad8d614cce57c747cf453e41569c2bda",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 31,
+      "sha256": "e22851a5a5ebcac669226b9db33ea07d04af90cbbce58f12da59290d097fc514",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 32,
+      "sha256": "dff118cbd2b344c6bb5f134bcedaf0a02fd103f3111fe4049b7376e76c80f67b",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 33,
+      "sha256": "b49343a8452020293f44c343975984de47c755d4a673e3f5d6add2e216e5852e",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 34,
+      "sha256": "2e3495c8f0a1b9dc9cd202fdad117b57193f9bb5692539b92a2ffc59b7a0062f",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 35,
+      "sha256": "84d51a9c65ce8f199d2c39c562f3b2cb4c0672976f3a45a5d0f6a90fc0458cb7",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 36,
+      "sha256": "6bb3c1ddfe36ee745551588b127025883ff11f7599b6ca55dd996806b8da77d2",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 37,
+      "sha256": "31d87569115e45e2640aebbe14b4b5f47681c4976efab01412abd304e26800c8",
+      "revisada_visualmente": true
+    },
+    {
+      "numero": 38,
+      "sha256": "ecf57359d6e8ba2c3f4f77d7c4c1a44763bd14ff0f48dc0a7942daad253afe36",
+      "revisada_visualmente": true
+    }
+  ],
+  "paginas_inspeccionadas_nativamente_en_este_render": [
+    1,
+    2,
+    5,
+    21,
+    24,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38
+  ],
+  "paginas_reutilizadas_por_identidad_integra": [
+    {
+      "pagina": 3,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-3.png",
+      "sha256": "ed1dd3e0d5d6849bc02edd1edfc19184455ae06235592444a69a0e0fcd9218a2",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-3.png"
+    },
+    {
+      "pagina": 4,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-4.png",
+      "sha256": "c2e6445b85814074d4db7f7039c77299e32c8485a6b3ecc5b14b2576460a9d89",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-4.png"
+    },
+    {
+      "pagina": 6,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-6.png",
+      "sha256": "d6361bbc7e1db90556eceafd8333f592134ffee8791f358ac0eb16c8042aa4cf",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-6.png"
+    },
+    {
+      "pagina": 7,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-7.png",
+      "sha256": "e37b29950fb9a069443b61a25c7578fb5217c34bd5ebb3e8be2f0c1d23ba688a",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-7.png"
+    },
+    {
+      "pagina": 8,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-8.png",
+      "sha256": "7dcdb6e5a2c8a6b9a163a656cd74428f65f4c472c7424ffffcb4abae675ece84",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-8.png"
+    },
+    {
+      "pagina": 9,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-9.png",
+      "sha256": "cde531ce7183cafc9aeb6e7e137c4992fc432c5befb3d794fd603939c7de6cc4",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-9.png"
+    },
+    {
+      "pagina": 10,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-10.png",
+      "sha256": "31a48ba3297e4869d164777b0d0c07a8ea3797bdd79c5535b984d2a68ebf6b84",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-10.png"
+    },
+    {
+      "pagina": 11,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-11.png",
+      "sha256": "16f6009fd264393dc1496de42f21a57058b74775124b6cf3707b6ef4c234a227",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-11.png"
+    },
+    {
+      "pagina": 12,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-12.png",
+      "sha256": "a011888699477d9c9c904241a42f3a7acc795d7147e8d5c9caf0dcb21d46cab8",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-12.png"
+    },
+    {
+      "pagina": 13,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-13.png",
+      "sha256": "e900298464eaf401bd5bb440ecd0af0a06e2a4b2cf90b98c67305a56ac236ce6",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-13.png"
+    },
+    {
+      "pagina": 14,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-14.png",
+      "sha256": "f3ea3296d3bcdd149ef8850870ce8ea010b83b7e8c1b43f90332def1ffd952e4",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-14.png"
+    },
+    {
+      "pagina": 15,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-15.png",
+      "sha256": "8a04a0aeaf18b150833843cd1f05b752a84e338f65220c15f2dd493d5d227833",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-15.png"
+    },
+    {
+      "pagina": 16,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-16.png",
+      "sha256": "b26b36714554c038c622362e873a519736c6e4c03c08a6e486d7b19a73790eef",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-16.png"
+    },
+    {
+      "pagina": 17,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-17.png",
+      "sha256": "e453ee9eb126cf5df9bc5240138ab5108159f46423850ed344edd101759177da",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-17.png"
+    },
+    {
+      "pagina": 18,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-18.png",
+      "sha256": "b9170be59785b8fbecea3158c8574657c0fd7b96bd141fa8b395aff07ac9ad2e",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-18.png"
+    },
+    {
+      "pagina": 19,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-19.png",
+      "sha256": "8c85be06dcaabf57310801aecde751356261ea297b620653457091eecfd01088",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-19.png"
+    },
+    {
+      "pagina": 20,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-20.png",
+      "sha256": "fe1aaa533c5ef051463ece781830ec5dfdd96e3675962ed283847f5d8f8eec15",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-20.png"
+    },
+    {
+      "pagina": 22,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-22.png",
+      "sha256": "3f42e62dabc2af173e66c39b41abf0711d511e4962fd953b68bc3980d729bf39",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-22.png"
+    },
+    {
+      "pagina": 23,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-23.png",
+      "sha256": "3ac1f4591c4fe790b02c4827879b0d3b50b1d09ed75cf619b6f6c31d17b05bf5",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-23.png"
+    },
+    {
+      "pagina": 25,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-25.png",
+      "sha256": "be437bbdf30df5d7e55116c035c558cb9acbfd3473e388907bd868da9840e608",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-25.png"
+    },
+    {
+      "pagina": 26,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-26.png",
+      "sha256": "fa595003766b7ccbc6c6ff6cb43da8167e763b96ab77988da8b76a52d47b5a6f",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-26.png"
+    },
+    {
+      "pagina": 27,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-27.png",
+      "sha256": "d9ab19251df47513aee561b87d7a5f4ab0b78247d0ba141ce69023c8b3a2ceb3",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-27.png"
+    },
+    {
+      "pagina": 28,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-28.png",
+      "sha256": "533627711bf29443a3ba00afd2197ac9647e1c213f7cc3c8e491f990108606be",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-28.png"
+    },
+    {
+      "pagina": 29,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-29.png",
+      "sha256": "48d24b5739509f455c6ea3b3d3ea29d91cc515c45fa8f146466235bec62037d2",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-29.png"
+    },
+    {
+      "pagina": 30,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-30.png",
+      "sha256": "f7c708374d80eef52442296a5783e741ad8d614cce57c747cf453e41569c2bda",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-30.png"
+    },
+    {
+      "pagina": 31,
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render/universidad/page-31.png",
+      "sha256": "e22851a5a5ebcac669226b9db33ea07d04af90cbbce58f12da59290d097fc514",
+      "reutilizada_de": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/render_previo_titulo/universidad/page-31.png"
+    }
+  ],
+  "cobertura": "38/38:26reutilizadas por SHA-256 de página completa previamente abierta y12finales nuevas abiertas una por una.",
+  "hallazgos_bloqueantes": [],
+  "verificaciones": [
+    "Título negro sin bordes decorativos",
+    "Índice paginado verificado y legible",
+    "20figuras de arquitectura y aplicación completas, sin recorte de imagen",
+    "Resultados actuales129/21 y131/22; referencias históricas diferenciadas",
+    "Objetivo WWI completo de693caracteres para réplica",
+    "Números impresos sin espacios en sus decimales",
+    "Ausencia de solapes, tablas o párrafos cortados y páginas vacías",
+    "Cabeceras, pies y numeración continuos"
+  ],
+  "total_paginas": 38
+}

@@ -1,0 +1,298 @@
+{
+  "fecha_revision": "2026-11-06T02:56:21.644488-05:00",
+  "metodo": "Lectura de archivos originales con pypdf/openpyxl del runtime bundled; inspección visual de las seis páginas renderizadas con Poppler. Sin edición de archivos originales, sin ejecución de pruebas de aplicación ni escrituras al repositorio.",
+  "contexto_solicitado": {
+    "fuente": "AdventureWorks local",
+    "base": "AdventureWorks2022",
+    "propuesta": 129,
+    "ejecucion": 21,
+    "anio": 2013,
+    "territorio": "Northwest",
+    "vista": "Analítica",
+    "indicador_visual": "Suma de unidades vendidas",
+    "codigo_indicador_ui_comunicado_por_raiz": "KPI_002",
+    "reglas": "5, corroboradas por la campaña independiente del agente de revisión; no inferidas sólo de exportes"
+  },
+  "archivos": [
+    {
+      "ruta": "/home/ceo/Descargas/ventas-ejecucion-21-analyst.pdf",
+      "bytes": 10587,
+      "sha256": "c5b5f412b852e38b8a57eb21edf162910b7fe50d7f4077635645931b91282a67"
+    },
+    {
+      "ruta": "/home/ceo/Descargas/ventas-ejecucion-21-analyst.xlsx",
+      "bytes": 23219,
+      "sha256": "ece8649c3ea183509cb94799b8ee3dd55e8a57c12bb401e6f60ad58086a748a8"
+    }
+  ],
+  "pdf": {
+    "paginas": 6,
+    "revision_visual_paginas": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "orientacion": "A4 apaisado",
+    "contexto_portada_confirmado": true,
+    "cuatro_kpi_resumen": true,
+    "valores_mostrados": [
+      "6,015,174.74 USD",
+      "17,452.00 Unidades",
+      "2,053 Pedidos",
+      "2,929.94 moneda de origen por transacción"
+    ],
+    "representaciones_visibles": [
+      {
+        "pagina": 2,
+        "tipo": "gráfico de línea",
+        "indicador": "Suma de unidades vendidas por mes",
+        "maximo_junio": 2494
+      },
+      {
+        "pagina": 3,
+        "tipo": "tabla de productos principales",
+        "categorias": 8,
+        "indicador": "Unidades"
+      },
+      {
+        "pagina": 4,
+        "tipo": "tabla territorial",
+        "categorias": 1,
+        "territorio": "Northwest",
+        "unidades": 17452
+      },
+      {
+        "pagina": 5,
+        "tipo": "tabla de clientes principales",
+        "categorias": 8,
+        "indicador": "Unidades"
+      }
+    ],
+    "legibilidad": "Las seis páginas se abrieron y revisaron visualmente: portada, gráfico mensual, tablas de productos/territorio/clientes y hallazgos, sin solapes ni recorte visible. Título Análisis de ventas y descripción breve completa.",
+    "conciliacion_pagina6": {
+      "filas_origen": 121317,
+      "filas_destino": 121317,
+      "diferencia": 0,
+      "tablas": 5
+    },
+    "imagenes_qa": [
+      "/tmp/bi-export21-qa-20261106/pagina-1.png",
+      "/tmp/bi-export21-qa-20261106/pagina-2.png",
+      "/tmp/bi-export21-qa-20261106/pagina-3.png",
+      "/tmp/bi-export21-qa-20261106/pagina-4.png",
+      "/tmp/bi-export21-qa-20261106/pagina-5.png",
+      "/tmp/bi-export21-qa-20261106/pagina-6.png"
+    ],
+    "titulo": "Análisis de ventas",
+    "descripcion": "Ventas mensuales por producto, cliente y territorio comercial con detalle de pedidos"
+  },
+  "xlsx": {
+    "hojas": [
+      "Resumen",
+      "Evolución en el tiempo",
+      "Productos líderes",
+      "Distribución territorial",
+      "Clientes principales",
+      "Trazabilidad"
+    ],
+    "cantidad_hojas": 6,
+    "cantidad_hojas_graficos": 4,
+    "cantidad_graficos": 4,
+    "metricas_resumen": [
+      {
+        "indicador": "importe",
+        "hoja": "Resumen",
+        "celda": "B14",
+        "esperado": "6015174.735836",
+        "obtenido": "6015174.735836",
+        "diferencia_absoluta": "0.000000",
+        "coincide": true,
+        "formato": "#,##0.00 \"USD\"",
+        "tipo_celda": "n"
+      },
+      {
+        "indicador": "unidades",
+        "hoja": "Resumen",
+        "celda": "E14",
+        "esperado": "17452",
+        "obtenido": "17452",
+        "diferencia_absoluta": "0",
+        "coincide": true,
+        "formato": "#,##0.00",
+        "tipo_celda": "n"
+      },
+      {
+        "indicador": "pedidos_distintos",
+        "hoja": "Resumen",
+        "celda": "H14",
+        "esperado": "2053",
+        "obtenido": "2053",
+        "diferencia_absoluta": "0",
+        "coincide": true,
+        "formato": "#,##0",
+        "tipo_celda": "n"
+      },
+      {
+        "indicador": "importe_promedio_por_pedido",
+        "hoja": "Resumen",
+        "celda": "B17",
+        "esperado": "2929.943855740867",
+        "obtenido": "2929.943855740867",
+        "diferencia_absoluta": "0E-12",
+        "coincide": true,
+        "formato": "#,##0.00",
+        "tipo_celda": "n"
+      }
+    ],
+    "graficos": [
+      {
+        "hoja": "Evolución en el tiempo",
+        "cantidad_graficos": 1,
+        "descripcion": "Suma de unidades vendidas por mes",
+        "cantidad_categorias": 12,
+        "suma_valores": "17452",
+        "categoria_inicial": "Ene 2013",
+        "categoria_final": "Dic 2013",
+        "participacion_total": null
+      },
+      {
+        "hoja": "Productos líderes",
+        "cantidad_graficos": 1,
+        "descripcion": "Suma de unidades vendidas; principales 8 categorías",
+        "cantidad_categorias": 8,
+        "suma_valores": "3020",
+        "categoria_inicial": "Water Bottle - 30 oz.",
+        "categoria_final": "Patch Kit/8 Patches",
+        "participacion_total": 0.9999999999999999
+      },
+      {
+        "hoja": "Distribución territorial",
+        "cantidad_graficos": 1,
+        "descripcion": "Suma de unidades vendidas; principales 1 categorías",
+        "cantidad_categorias": 1,
+        "suma_valores": "17452",
+        "categoria_inicial": "Northwest",
+        "categoria_final": "Northwest",
+        "participacion_total": 1
+      },
+      {
+        "hoja": "Clientes principales",
+        "cantidad_graficos": 1,
+        "descripcion": "Suma de unidades vendidas; principales 8 categorías",
+        "cantidad_categorias": 8,
+        "suma_valores": "6508",
+        "categoria_inicial": "Margaret J. Vanderkamp",
+        "categoria_final": "Matthew J. Cavallari",
+        "participacion_total": 1.0
+      }
+    ],
+    "referencias_graficos": [
+      {
+        "archivo_interno": "xl/charts/chart1.xml",
+        "referencias": [
+          "'Evolución en el tiempo'!$B$6:$B$17",
+          "'Evolución en el tiempo'!$C$6:$C$17"
+        ],
+        "tipos": [
+          "lineChart"
+        ]
+      },
+      {
+        "archivo_interno": "xl/charts/chart2.xml",
+        "referencias": [
+          "'Productos líderes'!$B$6:$B$13",
+          "'Productos líderes'!$C$6:$C$13"
+        ],
+        "tipos": [
+          "barChart"
+        ]
+      },
+      {
+        "archivo_interno": "xl/charts/chart3.xml",
+        "referencias": [
+          "'Distribución territorial'!$B$6",
+          "'Distribución territorial'!$C$6"
+        ],
+        "tipos": []
+      },
+      {
+        "archivo_interno": "xl/charts/chart4.xml",
+        "referencias": [
+          "'Clientes principales'!$B$6:$B$13",
+          "'Clientes principales'!$C$6:$C$13"
+        ],
+        "tipos": [
+          "barChart"
+        ]
+      }
+    ],
+    "formulas_error_observadas": [],
+    "conciliacion": {
+      "hoja": "Trazabilidad",
+      "filas_origen_c7": 121317,
+      "filas_destino_c8": 121317,
+      "diferencia_c9": 0,
+      "tablas_c10": 5,
+      "estado_c11": "Aprobada"
+    },
+    "alcance": "En este archivo concreto Resumen contiene los cuatro KPI. Las cuatro hojas de visuales contienen únicamente los datos del indicador seleccionado, unidades. No se afirma que cada hoja incluya todos los KPI ni que esta distribución sea idéntica en cualquier exportación.",
+    "revision_visual_xlsx": "No se abrió en Excel/LibreOffice; se verificaron estructura, valores tipados, formatos y referencias de los cuatro gráficos. No se atribuye inspección visual nativa del libro.",
+    "titulo_b3": "Análisis de ventas",
+    "descripcion_b5": "Ventas mensuales por producto, cliente y territorio comercial con detalle de pedidos"
+  },
+  "controles_numericos": {
+    "suma_meses_unidades": "17452",
+    "territorio_unidades": "17452",
+    "ambas_coinciden_total": true,
+    "razon_calculada_desde_importe_pedidos": "2929.943855740867023867510960",
+    "total_productos_mostrados": "3020",
+    "participacion_producto_lider_denominador": "540 / 3020; corresponde al subconjunto mostrado, no a 17452 unidades globales.",
+    "total_clientes_mostrados": "6508",
+    "conserva_diferencia_subconjunto_total": true
+  },
+  "aislamiento_observable": {
+    "menciones_WideWorldImporters": 0,
+    "fuente_y_cifras_AW_coinciden": true,
+    "limite": "Los archivos exportados no permiten auditar por sí solos todas las consultas de origen. No se observan referencias a la otra base y los totales y procedencia explícita coinciden con el control solicitado."
+  },
+  "observaciones": [
+    {
+      "id": "EXP21-01",
+      "tipo": "coherencia de unidad",
+      "detalle": "El importe promedio por pedido conserva en PDF «moneda de origen por transacción» aunque portada acredita USD. El valor exacto y el denominador son correctos; no se declara corregida la etiqueta monetaria.",
+      "pagina_pdf": 1,
+      "celda_xlsx": "Resumen!B17",
+      "estado": "Observación de presentación conservada e informada a raíz."
+    }
+  ],
+  "conclusion": "Exportes 129/21 conformes al filtro 2013/Northwest: cuatro cifras exactas, contexto, unidades mensuales/territoriales, seis páginas legibles y seis hojas con cuatro gráficos. Título y descripción corregidos; se conserva observación de etiqueta monetaria de la razón. No se afirma resultado de otros filtros o fuentes.",
+  "observaciones_previas_resueltas": [
+    {
+      "origen": "EXP20-02",
+      "evidencia": "Portada PDF y Resumen!B3 ahora muestran Análisis de ventas, compatible con Vista Analítica."
+    },
+    {
+      "origen": "EXP20-03",
+      "evidencia": "Descripción completa y breve en PDF y Resumen!B5, sin terminar en territor."
+    }
+  ],
+  "comparacion_con_exportacion20": {
+    "metodo": "Comparación de las cuatro celdas numéricas Resumen y valores de las cuatro hojas de visuales de los dos XLS, en lectura.",
+    "metricas_iguales": true,
+    "limite": "La igualdad de los cuatro totales del filtro no sustituye la revisión de rutas o de todos los datos.",
+    "visuales_iguales": {
+      "Evolución en el tiempo": true,
+      "Productos líderes": true,
+      "Distribución territorial": true,
+      "Clientes principales": true
+    }
+  },
+  "evidencia_independiente_rutas": {
+    "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/campana_lectura_AW21_20_18_20261106.json",
+    "sha256": "ccf7cd28980beff5ef117108fae10ba2254766784c8943c81c185294e115b9b3",
+    "uso": "Campaña read-only externa al presente control de exportes. La revisión principal confirma correspondencia de ruta persistida, plan y procedencia, y conservación de expedientes20/18. No se atribuye un ETL a esa auditoría de lectura."
+  }
+}

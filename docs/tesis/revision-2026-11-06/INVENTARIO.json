@@ -1,0 +1,362 @@
+{
+  "fecha": "2026-11-06",
+  "estado": "Capítulo revisado, listo para integración en el formato integral de tesis",
+  "encuesta": "Agregados de102 respuestas reales; no incluye datos individuales",
+  "archivos": [
+    {
+      "archivo": "Capitulo_III_Propuesta_tecnologica_revisada.docx",
+      "sha256": "1ad6391ed8cd4c0dae6af50eca5908ccc10eafd1276029132d70e5c666c9c17f",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/output/Capitulo_III_Propuesta_tecnologica_revisada.docx"
+    },
+    {
+      "archivo": "crear_capitulo3.py",
+      "sha256": "f97483bc6cbe312e372b59086ccff10f22ee76405288caded661e7431984d4cc",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/crear_capitulo3.py"
+    },
+    {
+      "archivo": "contenido_capitulo3_revisado.json",
+      "sha256": "a43be6247ffba46c2faaefaa50f12823a7d0dc4cd77631e6d495fb8a76674db8",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/contenido_capitulo3_revisado.json"
+    },
+    {
+      "archivo": "arquitectura/figuras.json",
+      "sha256": "8c46915f3cab53b4e2f3f193b543d30458385f74ff3171952b5db85cdde3955b",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/figuras.json"
+    },
+    {
+      "archivo": "arquitectura/Arquitectura_general_BI_IA.svg",
+      "sha256": "c2aa2a6f99bbc9647aed33aea7db291886fa63292d4ed657734e6d6e7e2e6036",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/Arquitectura_general_BI_IA.svg"
+    },
+    {
+      "archivo": "arquitectura/SHA256SUMS.txt",
+      "sha256": "84ef783cdbefa500d4cc3ab4f896719e2de08ea2f6345b4e2c6966519c8a6e0c",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/SHA256SUMS.txt"
+    },
+    {
+      "archivo": "arquitectura/Arquitectura_detallada_BI_IA.svg",
+      "sha256": "e6c612a08e4c229611ccb58badebabeadea92cc82393d95b7a3441fea06b2139",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/Arquitectura_detallada_BI_IA.svg"
+    },
+    {
+      "archivo": "arquitectura/Explicacion_arquitectura.txt",
+      "sha256": "7d746e1b88ac27a4423631e206556c98d152e62d8b2f05fbf74a7dd39752ff75",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/Explicacion_arquitectura.txt"
+    },
+    {
+      "archivo": "arquitectura/Arquitectura_general_BI_IA.png",
+      "sha256": "1a977678363b278dd5b2fa9e7bce8f9a32d0a623faba719166b7e306d1ebbf8f",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/Arquitectura_general_BI_IA.png"
+    },
+    {
+      "archivo": "arquitectura/manifest_arquitectura.json",
+      "sha256": "5c5fc89ab7ef959c2c5147ad4709775b2ec627074b54012ad107830e99a60b6c",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/manifest_arquitectura.json"
+    },
+    {
+      "archivo": "arquitectura/Arquitectura_detallada_BI_IA.png",
+      "sha256": "a0fc5cd6daf65f10760bea9a5cbd13bc9b44a4aeb32821180b03e90de2c5ceeb",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/Arquitectura_detallada_BI_IA.png"
+    },
+    {
+      "archivo": "arquitectura/crear_arquitectura.py",
+      "sha256": "97fdda46358f2840a3535651265a00a1f8c01480c5d33771d769f0bf8ce7deca",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/crear_arquitectura.py"
+    },
+    {
+      "archivo": "arquitectura/verificacion_figuras.json",
+      "sha256": "8bf734832e0bfe895143fe31533330b0dccf7463c6e5bc534b5bc99e8ffc996a",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/verificacion_figuras.json"
+    },
+    {
+      "archivo": "ingenieria/crear_diagramas_claros.py",
+      "sha256": "e0d7bdd746dd333c57502b9e5bbae9920831d3d3cd259802bc88388d0b0b9bd8",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/crear_diagramas_claros.py"
+    },
+    {
+      "archivo": "ingenieria/aclarar_ingenieria.py",
+      "sha256": "d9c560363195a4527077a3b92320998800d76f92c22a312013473bafb83c9882",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/aclarar_ingenieria.py"
+    },
+    {
+      "archivo": "ingenieria/ingenieria_clara.json",
+      "sha256": "34f09edf2681ee6cecb7c288a9b7ad2ca02e76a94487bf1bdda44d10e98750c4",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/ingenieria_clara.json"
+    },
+    {
+      "archivo": "ingenieria/control_calidad_ingenieria.json",
+      "sha256": "75fd69481d8092c61f7cd42862d45c6f49dfc6e3e06ab68899e49f897881a3d3",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/control_calidad_ingenieria.json"
+    },
+    {
+      "archivo": "ingenieria/ingenieria_actualizada.json",
+      "sha256": "f2b9a85286c9084fb5c91de8d3dd0377c9ea893127f863f4ea24a36fa0623da4",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/ingenieria_actualizada.json"
+    },
+    {
+      "archivo": "ingenieria/diagramas/07_clases_dominio.png",
+      "sha256": "bef4ef0dc12abbb50a00efeaec702b35eafd1b23f7140277821ef6016e9dd7e3",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/07_clases_dominio.png"
+    },
+    {
+      "archivo": "ingenieria/diagramas/02_actividad_supervision.svg",
+      "sha256": "2fe7e2e81e2ebd3e3ea65cdb53df1742e3d4f408bad8c284083768d3c3d5e473",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/02_actividad_supervision.svg"
+    },
+    {
+      "archivo": "ingenieria/diagramas/02_actividad_supervision.png",
+      "sha256": "f00d20e86aa13d303157a92605b04273923d46a87d5fe7fa96b6853d079eb362",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/02_actividad_supervision.png"
+    },
+    {
+      "archivo": "ingenieria/diagramas/04_secuencia_etl.png",
+      "sha256": "604e57d067bd37d6c356fa1ca023c5990bcf2a4137fcdad72c2b76a166d736ed",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/04_secuencia_etl.png"
+    },
+    {
+      "archivo": "ingenieria/diagramas/03_secuencia_propuesta.svg",
+      "sha256": "08267dcbfd6cae6e46619ca48d0fbc9b6d15c66920266b985fed61d3b5c6d522",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/03_secuencia_propuesta.svg"
+    },
+    {
+      "archivo": "ingenieria/diagramas/01_casos_uso.puml",
+      "sha256": "d8dfb4507e4a22e4d64f326504b42138506b48e2b17c288a2abab7a20452d5ae",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/01_casos_uso.puml"
+    },
+    {
+      "archivo": "ingenieria/diagramas/05_componentes.puml",
+      "sha256": "d860f506c6635c3100fe567bbc9808d7f5d5e7169300dcf3cf47cf9671990199",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/05_componentes.puml"
+    },
+    {
+      "archivo": "ingenieria/diagramas/07_clases_dominio.puml",
+      "sha256": "b755e94b1805b2cbc956274a80d8a562ba2edfed6c6d6ad895b6e95013531ead",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/07_clases_dominio.puml"
+    },
+    {
+      "archivo": "ingenieria/diagramas/08_estados_propuesta.puml",
+      "sha256": "2471dad8f3a0ae4a40c4bbd935500fefa2a92fcd76f766b8b02b477324323637",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/08_estados_propuesta.puml"
+    },
+    {
+      "archivo": "ingenieria/diagramas/05_componentes.svg",
+      "sha256": "18a2092b9338d76e588b61baf561f9588400b280fd6e2d451e069b25bac9d181",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/05_componentes.svg"
+    },
+    {
+      "archivo": "ingenieria/diagramas/05_componentes.png",
+      "sha256": "c816f2f19f117453c252f0866bf530bb9d5c1158442d9eb2b625a17e9c4cf84f",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/05_componentes.png"
+    },
+    {
+      "archivo": "ingenieria/diagramas/manifiesto_diagramas.json",
+      "sha256": "54e14e1ba0829ad4da5abf62d591ed7f77380a94caf5a3cffd39bc601469fb9d",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/manifiesto_diagramas.json"
+    },
+    {
+      "archivo": "ingenieria/diagramas/08_estados_propuesta.svg",
+      "sha256": "895a3d381ce8be2018189e81587c8cfb9e2abe1793fe59706c0ce67bef5cb015",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/08_estados_propuesta.svg"
+    },
+    {
+      "archivo": "ingenieria/diagramas/02_actividad_supervision.puml",
+      "sha256": "3c1081099d84f96d8702e4caf747cae00370d1ae33df4a183c3007a7a47ceeb9",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/02_actividad_supervision.puml"
+    },
+    {
+      "archivo": "ingenieria/diagramas/01_casos_uso.svg",
+      "sha256": "7563e8136385ed4553e6aa6c7cdcc6b8c90388c3421ddb88fb7b3f4f59b2576e",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/01_casos_uso.svg"
+    },
+    {
+      "archivo": "ingenieria/diagramas/09_modelo_estrella_logico.png",
+      "sha256": "59be4301e563a19a1a2a545e18fc4a59604cae8636906df934d54de81e6f0695",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/09_modelo_estrella_logico.png"
+    },
+    {
+      "archivo": "ingenieria/diagramas/03_secuencia_propuesta.puml",
+      "sha256": "70ab7e285b50706e9edaa078bb28a91d5c759f1b9921f3e4df2b25a2dbf4da65",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/03_secuencia_propuesta.puml"
+    },
+    {
+      "archivo": "ingenieria/diagramas/09_modelo_estrella_logico.svg",
+      "sha256": "4780da9f1f3ba7b159a27897db8a4c2b2393cd1b76aaff15f6155b75f71de510",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/09_modelo_estrella_logico.svg"
+    },
+    {
+      "archivo": "ingenieria/diagramas/09_modelo_estrella_logico.puml",
+      "sha256": "001ce244cbcb2e11284ffec774b58fbe5d453e666061ff91bd29b82ee4e96b59",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/09_modelo_estrella_logico.puml"
+    },
+    {
+      "archivo": "ingenieria/diagramas/04_secuencia_etl.svg",
+      "sha256": "74a602fa0ba12225fbca736f603c875adf738bd1c0727c3b19871f6fd389608b",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/04_secuencia_etl.svg"
+    },
+    {
+      "archivo": "ingenieria/diagramas/06_despliegue.svg",
+      "sha256": "65ca7273f64a9689811d10742e17bda10d5909d79c782c8f148186c580b50955",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/06_despliegue.svg"
+    },
+    {
+      "archivo": "ingenieria/diagramas/04_secuencia_etl.puml",
+      "sha256": "66257a9169dd087c210c0eaf741347d31c9741fd047a17da082cde4350af6a43",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/04_secuencia_etl.puml"
+    },
+    {
+      "archivo": "ingenieria/diagramas/01_casos_uso.png",
+      "sha256": "edac9ad2e25e6654e60f2b221e61ad3fdf089c44efe47466ad889e370d9b21e2",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/01_casos_uso.png"
+    },
+    {
+      "archivo": "ingenieria/diagramas/06_despliegue.png",
+      "sha256": "4742bc2f1c4fc000f5cb89bd5400baf9650dd6d47f7cf9440a80d05701ea57c2",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/06_despliegue.png"
+    },
+    {
+      "archivo": "ingenieria/diagramas/07_clases_dominio.svg",
+      "sha256": "457fbb8ec06828035ca2b289434e80451d4cadb5ef03ee364bef846dc9e447e5",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/07_clases_dominio.svg"
+    },
+    {
+      "archivo": "ingenieria/diagramas/03_secuencia_propuesta.png",
+      "sha256": "00329849bc38192399a9104fc67569b6ff8d69dfb68fc07cc389795a12653f34",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/03_secuencia_propuesta.png"
+    },
+    {
+      "archivo": "ingenieria/diagramas/08_estados_propuesta.png",
+      "sha256": "671b9ad87b1aa5e9b85066bccb4fccd665e35dcc9f432a28ca46c7edc41d69b4",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/08_estados_propuesta.png"
+    },
+    {
+      "archivo": "ingenieria/diagramas/06_despliegue.puml",
+      "sha256": "575c96c18da844426afa8bb933a104d73f799b228d5be1a5d30eadf8972fd441",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/06_despliegue.puml"
+    },
+    {
+      "archivo": "presupuesto/presupuesto_estimado_4_meses.json",
+      "sha256": "e5e924621299be5d5b571e97cb2950f0990ab67e5d07dba75f1b17984f456245",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/presupuesto/presupuesto_estimado_4_meses.json"
+    },
+    {
+      "archivo": "encuesta/crear_graficos_barras.py",
+      "sha256": "a8c5a0536e8cbbe65adfb9e1b31e7337e6c650c7771c498f749f86765145f544",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/crear_graficos_barras.py"
+    },
+    {
+      "archivo": "encuesta/verificacion_graficos.json",
+      "sha256": "890ba1db54efa4aebf878d1a2e9a5100b0545842ff0636221cb168ae71dc3fcd",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/verificacion_graficos.json"
+    },
+    {
+      "archivo": "encuesta/frecuencias_consolidadas.csv",
+      "sha256": "f92c80182809a6a9b88512490c04b0f9f76e01a08d0fcf2a2ec1b4e201925d41",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/frecuencias_consolidadas.csv"
+    },
+    {
+      "archivo": "encuesta/resultados_encuesta.json",
+      "sha256": "dc81fafff8bc5896f9e9ad5c19c15f6113827c6b2bc3248cd61d7ae8aaeff7ce",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/resultados_encuesta.json"
+    },
+    {
+      "archivo": "encuesta/graficos/pregunta_01.png",
+      "sha256": "178a6ce0cfbc5bc0d941d762bf38a48e2351b42c153883e52ba64ec0c612215d",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_01.png"
+    },
+    {
+      "archivo": "encuesta/graficos/pregunta_05.png",
+      "sha256": "ed311ce40f8a3bd272970987e30c0dfe77a9b87d36714f0c24e00591aab9db25",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_05.png"
+    },
+    {
+      "archivo": "encuesta/graficos/pregunta_09.png",
+      "sha256": "9b30fb877fc5c40c452b5767b9c5efcdae99e7dbb1f5b8a751da4f264e0f0584",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_09.png"
+    },
+    {
+      "archivo": "encuesta/graficos/pregunta_02.png",
+      "sha256": "15476b2adeaace9434e6cdc0a7d6792d68f0c32309275fe22eea5cd1d928e92e",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_02.png"
+    },
+    {
+      "archivo": "encuesta/graficos/pregunta_04.png",
+      "sha256": "482f902da279a468290888eab725ba6ff7bc71d62e4326c985b01a3abc7a8ae8",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_04.png"
+    },
+    {
+      "archivo": "encuesta/graficos/pregunta_08.svg",
+      "sha256": "1ee9bb8458aa816c198dedbded96912e638d6350927ed3e190e77249cac74b9f",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_08.svg"
+    },
+    {
+      "archivo": "encuesta/graficos/pregunta_06.svg",
+      "sha256": "dbc46291398cd7c1d5b4b5d3d8fc4b308d10f6f71497b77a4d28a96c41166096",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_06.svg"
+    },
+    {
+      "archivo": "encuesta/graficos/pregunta_05.svg",
+      "sha256": "1c0681422b5a2b7033e6b24cf8c937ed0331d3066001c5e342608f653f66b874",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_05.svg"
+    },
+    {
+      "archivo": "encuesta/graficos/pregunta_10.svg",
+      "sha256": "918008ffbe7c62eb07c7c68cc63fee08eb179afb22f049349f046b22abc695f6",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_10.svg"
+    },
+    {
+      "archivo": "encuesta/graficos/pregunta_04.svg",
+      "sha256": "8ce190926e954fbd14a0a523a66b46dc2f64892bcb8e68f305dfb47b996a1e7e",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_04.svg"
+    },
+    {
+      "archivo": "encuesta/graficos/pregunta_03.png",
+      "sha256": "2092c10edc46d882e34646d4d49aa7c8fd70657b01fb77cf4ca1410a0df9a41e",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_03.png"
+    },
+    {
+      "archivo": "encuesta/graficos/pregunta_06.png",
+      "sha256": "bb0285e695f8b2fe3d3f7047c92ba8b0be7c6d1bf78b1f5241df183d58e7b094",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_06.png"
+    },
+    {
+      "archivo": "encuesta/graficos/pregunta_10.png",
+      "sha256": "6c8d50058d2f1247b0469cae975ea77b9f56cc2cc484426409b50927e03c0c37",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_10.png"
+    },
+    {
+      "archivo": "encuesta/graficos/pregunta_07.svg",
+      "sha256": "11253611cc1880de2e9362f22bfd4c352d06d5e5724dd490c87a3beb9d33f995",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_07.svg"
+    },
+    {
+      "archivo": "encuesta/graficos/pregunta_02.svg",
+      "sha256": "e8b4fa46d3f6063e68c4b2b7d66ee714c503fb23b9a62c0f3519430ea9fa36fe",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_02.svg"
+    },
+    {
+      "archivo": "encuesta/graficos/pregunta_07.png",
+      "sha256": "f3fe8510fe89b1d4b1f9075e11d8fa4d23165c807137f778f11eb1b44f97f079",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_07.png"
+    },
+    {
+      "archivo": "encuesta/graficos/pregunta_01.svg",
+      "sha256": "c45d2b05b2f31a7ef8c163ec53a6883c22faa302e9ff4536a59f348ae1207a44",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_01.svg"
+    },
+    {
+      "archivo": "encuesta/graficos/pregunta_08.png",
+      "sha256": "3829397ab4214ebaa41de69ce5401c507ce00b1f47b794839e181a69b6be80ac",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_08.png"
+    },
+    {
+      "archivo": "encuesta/graficos/pregunta_03.svg",
+      "sha256": "27fc4d11e9cbdc23e7154df57e7f0f33e1f4432a70a9d11e152b866d56879b73",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_03.svg"
+    },
+    {
+      "archivo": "encuesta/graficos/pregunta_09.svg",
+      "sha256": "18f2213b51f0f97b4e0c70bb3ecf4eeb2106793ca778b179baf717fddc3098d0",
+      "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_09.svg"
+    }
+  ]
+}

@@ -386,12 +386,19 @@ async def test_copilot_replaces_provider_questions_and_passes_only_closed_query_
 
 
 @pytest.mark.asyncio
-async def test_dashboard_only_explanation_receives_provenance_without_running_a_query(
+async def test_dashboard_explanation_keeps_calendar_and_data_coverage_separate(
     monkeypatch,
 ) -> None:
     from app.modules.analytics import router as analytics_router
 
+    class ReferenceClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return cls(2026, 11, 6, 9, 30, tzinfo=UTC)
+
+    monkeypatch.setattr(analytics_router, "datetime", ReferenceClock)
     dashboard = _catalog_dashboard([("metric", "Índice disponible")], ["trend"])
+    dashboard.filters.years = [AnalyticsOptionRead(value="2014", label="2014")]
     monkeypatch.setattr(analytics_router, "_load_dashboard", AsyncMock(return_value=dashboard))
     monkeypatch.setattr(
         analytics_router,
@@ -437,6 +444,20 @@ async def test_dashboard_only_explanation_receives_provenance_without_running_a_
     assert result.caveat == _platform_caveat("")
     assert llm.await_args_list[1].args[2]["data_provenance"]["execution_id"] == 18
     assert llm.await_args_list[1].args[2]["safe_aggregate_result"] is None
+    for call in llm.await_args_list:
+        context = call.args[2]
+        assert context["calendar_reference"]["date"] == "2026-11-06"
+        assert context["calendar_reference"]["timezone"] == "UTC"
+        assert [item["value"] for item in context["available_years"]] == ["2014"]
+    # The reference clock does not turn the current or next calendar year into
+    # a permitted historical filter or change the materialized selection.
+    years = _analytics_intent_schema(dashboard)["properties"]["year"]["enum"]
+    assert "2026" not in years and "2027" not in years
+    assert llm.await_args_list[1].args[2]["selection"]["year"] == 2014
+    explanation_instruction = llm.await_args_list[1].args[1].casefold()
+    assert {"calendar_reference", "fechas", "años", "categorías", "ajenos"} <= set(
+        explanation_instruction.split()
+    ) | {word.strip(",.") for word in explanation_instruction.split()}
 
 
 @pytest.mark.asyncio

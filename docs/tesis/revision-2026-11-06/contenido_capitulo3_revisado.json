@@ -1,0 +1,4162 @@
+{
+  "titulo": "Capítulo III Propuesta tecnológica del sistema inteligente de datamarts de ventas",
+  "tablas": 95,
+  "figuras": 20,
+  "contenido": [
+    {
+      "tipo": "parrafo",
+      "texto": "CAPÍTULO III"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "La propuesta consiste en un sistema inteligente que acompaña la construcción supervisada de datamarts de ventas. Un datamart es una estructura de datos preparada para analizar un área del negocio; en este caso, ventas. El sistema parte de una necesidad escrita por el analista, comprueba su relación con los metadatos disponibles, propone un modelo y permite revisar su aprobación antes de ejecutar la transformación de los datos."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "El capítulo presenta la factibilidad, la investigación y los resultados de la encuesta; después explica la organización del desarrollo con Scrum, los requisitos, el diseño y las pruebas del prototipo. La validación técnica utiliza AdventureWorks2022 y WideWorldImporters, dos bases demostrativas alojadas en SQL Server. Los resultados de opinión y los resultados de funcionamiento se analizan por separado."
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 1,
+      "texto": "Alcance de la propuesta"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "El recorrido comprende preparación de fuentes y permisos, lectura de metadatos, configuración del catálogo de ventas, formulación y revisión de necesidades, generación de propuestas, aprobación humana, carga del datamart y consulta de indicadores. Los metadatos describen tablas, columnas, tipos y relaciones; no son las filas comerciales de la base."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "La inteligencia artificial interpreta, sugiere y explica. La aplicación comprueba las referencias y las operaciones permitidas, mientras que la persona autorizada decide la aprobación y confirma la ejecución. La aprobación del diseño y la ejecución de la carga son decisiones distintas."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "La arquitectura utiliza reglas y contratos comunes, con configuración independiente por fuente. Las dos bases de prueba permiten comprobar la reutilización del procedimiento; otros motores o modelos requieren sus adaptadores y verificaciones. El pronóstico de ventas quedó fuera del alcance aprobado."
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 1,
+      "texto": "Análisis de factibilidad"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "La factibilidad se examina desde la operación, la tecnología, las condiciones de uso y los recursos estimados. El propósito es determinar si la prueba de concepto puede construirse, demostrarse y mantenerse en el entorno académico disponible."
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Factibilidad operacional"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "La plataforma organiza el trabajo por responsabilidades. El administrador prepara las conexiones, las cuentas y el proveedor de inteligencia artificial. El analista expresa la necesidad, revisa las propuestas y ejecuta las operaciones para las que tiene permiso. El gerente comercial consulta los resultados autorizados y sus explicaciones."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "El asistente muestra pasos y comprobaciones antes de aceptar una decisión. Cuando una solicitud no tiene respaldo suficiente, debe explicar la limitación y conservar el trabajo para su revisión. Los manuales y los casos demostrativos facilitan la capacitación, pero su existencia no sustituye una evaluación formal de aprendizaje."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir de las especificaciones y registros del proyecto."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 1,
+      "titulo": "Responsabilidades operativas previstas",
+      "filas": [
+        [
+          "Administrador",
+          "Configurar fuentes, inteligencia artificial y acceso.",
+          "Servicios y permisos preparados para el trabajo."
+        ],
+        [
+          "Analista de inteligencia de negocios",
+          "Definir la necesidad y supervisar diseño, carga y conciliación.",
+          "Datamart con procedencia y resultados revisables."
+        ],
+        [
+          "Gerente comercial",
+          "Consultar indicadores, filtros, explicaciones y reportes permitidos.",
+          "Información comercial que pueda interpretar y contrastar."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Factibilidad técnica"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "El prototipo utiliza una aplicación web, servicios de negocio, dos motores de base de datos y una integración configurable con modelos de lenguaje. Los contenedores permiten reproducir sus servicios sin instalar manualmente todas las bibliotecas en cada computador. El uso académico de ocho gigabytes de memoria exige operar un ambiente a la vez y comprobar la disponibilidad de recursos."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir de las especificaciones y registros del proyecto."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 2,
+      "titulo": "Tecnologías y función en el prototipo",
+      "filas": [
+        [
+          "React y TypeScript",
+          "Presentar formularios, asistente y panel analítico.",
+          "Navegador y conexión con los servicios del sistema."
+        ],
+        [
+          "Python y FastAPI",
+          "Aplicar permisos, comprobar propuestas y coordinar la carga.",
+          "Servicios del servidor disponibles."
+        ],
+        [
+          "PostgreSQL",
+          "Guardar configuración, propuestas, evidencias y datamarts.",
+          "Volúmenes persistentes y migraciones aplicadas."
+        ],
+        [
+          "SQL Server 2022",
+          "Alojar las bases transaccionales de demostración.",
+          "Lectura del origen con credenciales restringidas."
+        ],
+        [
+          "Docker Compose",
+          "Organizar servicios, redes y volúmenes.",
+          "Instalación compatible y recursos locales disponibles."
+        ],
+        [
+          "Modelo de lenguaje configurable",
+          "Interpretar necesidades y producir sugerencias estructuradas.",
+          "Credencial, modelo admitido y cuota del proveedor."
+        ],
+        [
+          "Git y verificaciones automáticas",
+          "Conservar cambios y comprobar el código antes de integrarlo.",
+          "Repositorio y controles vinculados a la versión."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Factibilidad legal y manejo de la información"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Las fuentes utilizadas son bases de demostración y no corresponden a una empresa participante. SQL Server Developer se emplea para desarrollo y pruebas, conforme a su licencia; la denominación release de un ambiente no lo convierte en un servidor autorizado para explotación productiva (Microsoft, s. f.)."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "PostgreSQL permite el uso y distribución bajo su licencia abierta. Docker Desktop establece condiciones específicas para educación y otros tipos de uso; su elegibilidad debe comprobarse en cada instalación. Estas condiciones se consideran parte de la preparación técnica (PostgreSQL Global Development Group, s. f.; Docker, s. f.)."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Las credenciales se almacenan cifradas y no deben aparecer en capturas, reportes o respuestas del asistente. La revisión de necesidades y propuestas utiliza la estructura autorizada de la fuente. El copiloto analítico trabaja con resultados agregados del contexto seleccionado."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "La encuesta recibida es anónima y se presenta mediante frecuencias y porcentajes. Su archivo no contiene nombres ni correos; por ello no se intenta reconstruir la identidad de quienes respondieron."
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Factibilidad económica y presupuesto estimado"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "El presupuesto se estima para cuatro meses y se expresa en dólares de los Estados Unidos. Se distinguen los desembolsos previstos de los aportes de trabajo y de equipos disponibles. Las cantidades son supuestos de planificación académica; no se presentan como facturas o gastos históricos."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Se supone una dedicación de cuarenta horas mensuales por tesista, durante cuatro meses. Las dos integrantes aportarían trescientas veinte horas en conjunto. La valoración de seis dólares por hora permite estimar el recurso humano sin afirmar que se pagó ese salario."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Valores en dólares. Las funciones de análisis, programación, pruebas y documentación son asumidas por las mismas dos tesistas; no se cuentan como contrataciones adicionales."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 3,
+      "titulo": "Presupuesto del trabajo académico",
+      "filas": [
+        [
+          "Lesly Samay Velásquez Anchundia",
+          160,
+          "6,00",
+          "960,00"
+        ],
+        [
+          "Emily Dayan Robles Alvarado",
+          160,
+          "6,00",
+          "960,00"
+        ],
+        [
+          "Total cuantificado",
+          320,
+          "",
+          "1.920,00"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Estimación de dedicación, no registro histórico de las horas de cada iteración."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 4,
+      "titulo": "Distribución estimada del esfuerzo",
+      "filas": [
+        [
+          "Análisis y especificación de necesidades",
+          40
+        ],
+        [
+          "Diseño del sistema y de los datos",
+          30
+        ],
+        [
+          "Construcción e integración",
+          130
+        ],
+        [
+          "Pruebas y correcciones",
+          70
+        ],
+        [
+          "Documentación y preparación de demostración",
+          50
+        ],
+        [
+          "Total",
+          320
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. La valoración de equipos es 2 × 600 ÷ 36 × 4 × 0,50 = 66,67. Los 600 dólares por equipo y los 36 meses de uso son supuestos; no son cotizaciones ni una depreciación contable certificada."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 5,
+      "titulo": "Equipos y licencias considerados",
+      "filas": [
+        [
+          "Dos computadores existentes",
+          "Uso asignado al proyecto durante cuatro meses.",
+          "66,67 de aporte"
+        ],
+        [
+          "PostgreSQL y componentes abiertos",
+          "Sin compra adicional de licencias en este escenario.",
+          "0,00 de licencia"
+        ],
+        [
+          "SQL Server Developer",
+          "Edición para desarrollo y pruebas.",
+          "0,00 de licencia"
+        ],
+        [
+          "Contenedores y repositorio",
+          "Uso académico dentro de las condiciones disponibles.",
+          "0,00 adicional"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Valores estimados para cuatro meses. La reserva del proveedor de inteligencia artificial es un límite de planificación, no consumo ya facturado."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 6,
+      "titulo": "Gastos de operación previstos",
+      "filas": [
+        [
+          "Conectividad compartida",
+          "4 mes × 17,50",
+          "70,00"
+        ],
+        [
+          "Energía eléctrica imputada",
+          "32 kWh × 0,12",
+          "3,84"
+        ],
+        [
+          "Reserva para consultas servicios del servidor de modelos modelo de lenguaje",
+          "4 mes × 10,00",
+          "40,00"
+        ],
+        [
+          "Materiales de demostración y documentación",
+          "4 mes × 5,00",
+          "20,00"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Valores en dólares. Total económico = desembolso previsto + aporte valorizado. La contingencia del 10 % se aplica sólo al efectivo base."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 7,
+      "titulo": "Resumen del presupuesto estimado",
+      "filas": [
+        [
+          "Trabajo académico de las dos tesistas",
+          "0,00",
+          "1.920,00",
+          "1.920,00"
+        ],
+        [
+          "Uso imputado de equipos existentes",
+          "0,00",
+          "66,67",
+          "66,67"
+        ],
+        [
+          "Conectividad, energía, API y materiales",
+          "133,84",
+          "0,00",
+          "133,84"
+        ],
+        [
+          "Licencias adicionales para demostración académica",
+          "0,00",
+          "0,00",
+          "0,00"
+        ],
+        [
+          "Subtotal",
+          "133,84",
+          "1.986,67",
+          "2.120,51"
+        ],
+        [
+          "Contingencia: 10 % del efectivo base",
+          "13,38",
+          "0,00",
+          "13,38"
+        ],
+        [
+          "Total estimado",
+          "147,22",
+          "1.986,67",
+          "2.133,89"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "El escenario cuantificado requiere prever 147,22 dólares de desembolso, incluida una contingencia de 13,38. Los aportes estimados suman 1.986,67 dólares y el costo económico base alcanza 2.133,89. Este cálculo permite planificar recursos; no demuestra ahorro, rentabilidad ni una mejora de productividad frente al procedimiento tradicional."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "La participación del docente como Scrum Master forma parte de la organización del proyecto. Su dedicación y su eventual valoración no se han cuantificado en los antecedentes recibidos; se reservan para completar el presupuesto si la institución exige incluir ese aporte."
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Información presupuestaria por completar"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Los espacios se completarán con información y documentos efectivamente disponibles; no representan resultados obtenidos."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 8,
+      "titulo": "Información presupuestaria por completar",
+      "filas": [
+        [
+          "Horas y criterio de valoración del acompañamiento del Scrum Master, si corresponde.",
+          "[POR COMPLETAR]\n________________________________"
+        ],
+        [
+          "Confirmación de dedicación de las tesistas y respaldo de los valores estimados.",
+          "[POR COMPLETAR]\n________________________________"
+        ],
+        [
+          "Comprobantes de consumos o gastos reales, cuando se desee contrastar la estimación.",
+          "[POR COMPLETAR]\n________________________________"
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 1,
+      "texto": "Metodología de investigación"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "La investigación es aplicada porque desarrolla una solución a un problema concreto: relacionar una necesidad de análisis de ventas con fuentes disponibles y conservar la coherencia de su transformación. Se apoya en ciencia del diseño, que vincula construcción y evaluación de un artefacto con el problema que pretende atender (Hevner y vom Brocke, 2023)."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "El componente descriptivo utiliza un cuestionario de opinión sobre la utilidad potencial de las funciones propuestas. El componente técnico examina el recorrido del software y contrasta resultados de origen y destino. Estas evidencias responden a preguntas diferentes: la encuesta describe percepciones y las pruebas comprueban condiciones de funcionamiento."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir de las especificaciones y registros del proyecto."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 9,
+      "titulo": "Actividades de investigación y evidencia",
+      "filas": [
+        [
+          "Delimitación del problema",
+          "Precisar necesidad, alcance comercial y fuentes.",
+          "Problema, objetivos y requisitos."
+        ],
+        [
+          "Diseño y construcción",
+          "Definir reglas, interfaz, datos y supervisión.",
+          "Especificaciones, código y diagramas."
+        ],
+        [
+          "Demostración",
+          "Recorrer las dos bases de ejemplo.",
+          "Propuestas, ejecuciones y reportes conservados."
+        ],
+        [
+          "Evaluación técnica",
+          "Comparar filas, unidades, importes y contexto.",
+          "Resultados de conciliación y pruebas."
+        ],
+        [
+          "Consulta de opinión",
+          "Describir utilidad potencial percibida.",
+          "Ciento dos cuestionarios anónimos."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Población de referencia y muestra observada"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "La población de interés corresponde a estudiantes de inteligencia de negocios e inteligencia artificial de la carrera de Software de la Universidad de Guayaquil. El enlace del formulario se difundió por correo electrónico y la participación fue voluntaria. Se analizaron las ciento dos respuestas finales entregadas por el responsable del estudio."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "En la planificación se consideró una población aproximada de trescientos treinta y un estudiantes. La fórmula institucional empleada como referencia fue n = N ÷ [e² × (N − 1) + 1]. Con N = 331 y e = 0,05 se obtiene 181,37, redondeado a una meta de 182. La población certificada y el registro de personas invitadas aún deben incorporarse."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "El número efectivamente disponible es 102, no 182. La convocatoria voluntaria no documenta una selección aleatoria; por ello se describe como muestra no probabilística por participación voluntaria. Los porcentajes de este capítulo describen a quienes respondieron y no se presentan como estimaciones representativas de toda la población con un margen de error del cinco por ciento."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. La meta calculada y las respuestas recibidas son cantidades distintas. El archivo anónimo no permite verificar personas únicas ni caracterizar las asignaturas de cada participante."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 10,
+      "titulo": "Población y participación disponibles",
+      "filas": [
+        [
+          "Población de interés",
+          "Estudiantes de inteligencia de negocios e inteligencia artificial."
+        ],
+        [
+          "Población aproximada de planificación",
+          "331; pendiente de respaldo institucional."
+        ],
+        [
+          "Meta de planificación",
+          "182, según el cálculo de referencia."
+        ],
+        [
+          "Respuestas finales analizadas",
+          "102 registros anónimos."
+        ],
+        [
+          "Convocatoria",
+          "Enlace enviado por correo y respuesta voluntaria."
+        ],
+        [
+          "Número efectivo de personas invitadas",
+          "[POR COMPLETAR: listado o constancia de convocatoria]."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Técnica e instrumento de recolección"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Se utilizó una encuesta con diez preguntas cerradas y una escala de cinco opciones de acuerdo. El instrumento consulta si sería útil disponer de un software con determinadas capacidades; no exige haber utilizado previamente el prototipo. Se conserva el enunciado aplicado para evitar cambiar el significado de las respuestas."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Antes de presentar el cuestionario se aclaran sus términos: inteligencia de negocios se refiere al uso de datos para apoyar decisiones; inteligencia artificial es el apoyo del sistema para interpretar y proponer; extracción, transformación y carga es el proceso que prepara datos desde el origen hasta el datamart. Las abreviaturas que aparecen en los enunciados originales mantienen ese significado."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Escala empleada en el formulario realmente aplicado. El valor numérico sólo representa el orden de las opciones."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 11,
+      "titulo": "Opciones de respuesta de la encuesta",
+      "filas": [
+        [
+          1,
+          "Totalmente en desacuerdo"
+        ],
+        [
+          2,
+          "En desacuerdo"
+        ],
+        [
+          3,
+          "Ni de acuerdo ni en desacuerdo"
+        ],
+        [
+          4,
+          "De acuerdo"
+        ],
+        [
+          5,
+          "Totalmente de acuerdo"
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Procesamiento y presentación de los datos"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Se revisaron mil veinte respuestas a preguntas: ciento dos registros por diez preguntas. No se encontraron celdas vacías ni valores fuera de la escala. Las tres columnas adicionales sin preguntas ni respuestas se excluyeron de la tabulación. No se eliminaron patrones de opinión repetidos ni se sustituyeron valores."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Para cada opción se contó la frecuencia y se calculó su porcentaje mediante frecuencia ÷ 102 × 100. Los porcentajes se muestran con dos decimales. El redondeo puede ocasionar una diferencia de una centésima al sumar las opciones. Cada pregunta incluye una tabla, un gráfico de barras horizontales y una interpretación."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Las barras conservan las cinco alternativas, incluso cuando su frecuencia es cero. Utilizan la misma escala de cero a cien por ciento, un único color y etiquetas directas con cantidad y porcentaje. Se evita que la cuadrícula, las líneas decorativas o las abreviaturas dificulten la lectura."
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 1,
+      "texto": "Tabulación y análisis de la encuesta"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Las tablas y barras siguientes describen la utilidad potencial percibida en las ciento dos respuestas."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "1. ¿Considera útil contar con un software que ayude a formular necesidades de análisis comercial mediante lenguaje natural?"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Encuesta aplicada a estudiantes; ciento dos respuestas válidas para esta pregunta."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 12,
+      "titulo": "Respuestas a la pregunta 1",
+      "filas": [
+        [
+          "Totalmente en desacuerdo",
+          0,
+          "0,00 %"
+        ],
+        [
+          "En desacuerdo",
+          0,
+          "0,00 %"
+        ],
+        [
+          "Ni de acuerdo ni en desacuerdo",
+          4,
+          "3,92 %"
+        ],
+        [
+          "De acuerdo",
+          34,
+          "33,33 %"
+        ],
+        [
+          "Totalmente de acuerdo",
+          64,
+          "62,75 %"
+        ],
+        [
+          "Total",
+          102,
+          "100,00 %"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con las respuestas reales. Cada etiqueta muestra número de respuestas y porcentaje."
+    },
+    {
+      "tipo": "figura",
+      "numero": 1,
+      "titulo": "Distribución de respuestas a la pregunta 1",
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_01.png"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Análisis. La opción Totalmente de acuerdo reúne 64 respuestas (62,75 %) y De acuerdo, 34 (33,33 %). Las cuatro restantes se ubican en la alternativa intermedia. En conjunto, el 96,08 % valora el apoyo para expresar necesidades en lenguaje natural. El resultado orienta una función que ayude a precisar qué se quiere analizar antes de escoger tablas o indicadores."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "2. ¿Considera útil que un software compruebe si una necesidad de análisis tiene respaldo en las tablas, columnas y relaciones disponibles?"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Encuesta aplicada a estudiantes; ciento dos respuestas válidas para esta pregunta."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 13,
+      "titulo": "Respuestas a la pregunta 2",
+      "filas": [
+        [
+          "Totalmente en desacuerdo",
+          0,
+          "0,00 %"
+        ],
+        [
+          "En desacuerdo",
+          0,
+          "0,00 %"
+        ],
+        [
+          "Ni de acuerdo ni en desacuerdo",
+          5,
+          "4,90 %"
+        ],
+        [
+          "De acuerdo",
+          35,
+          "34,31 %"
+        ],
+        [
+          "Totalmente de acuerdo",
+          62,
+          "60,78 %"
+        ],
+        [
+          "Total",
+          102,
+          "100,00 %"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con las respuestas reales. Cada etiqueta muestra número de respuestas y porcentaje."
+    },
+    {
+      "tipo": "figura",
+      "numero": 2,
+      "titulo": "Distribución de respuestas a la pregunta 2",
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_02.png"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Análisis. Se registran 62 respuestas en Totalmente de acuerdo (60,78 %) y 35 en De acuerdo (34,31 %). Cinco personas mantienen una posición intermedia. El 95,10 % de acuerdo conjunto muestra interés en revisar primero si la información existente permite atender la necesidad. Para el sistema, esto implica presentar las fuentes disponibles y comunicar lo que no puede sustentarse."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "3. ¿Le resultaría útil que la inteligencia artificial sugiera un modelo de datamart con hechos, dimensiones y medidas a partir de una necesidad de negocio?"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Encuesta aplicada a estudiantes; ciento dos respuestas válidas para esta pregunta."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 14,
+      "titulo": "Respuestas a la pregunta 3",
+      "filas": [
+        [
+          "Totalmente en desacuerdo",
+          0,
+          "0,00 %"
+        ],
+        [
+          "En desacuerdo",
+          0,
+          "0,00 %"
+        ],
+        [
+          "Ni de acuerdo ni en desacuerdo",
+          8,
+          "7,84 %"
+        ],
+        [
+          "De acuerdo",
+          34,
+          "33,33 %"
+        ],
+        [
+          "Totalmente de acuerdo",
+          60,
+          "58,82 %"
+        ],
+        [
+          "Total",
+          102,
+          "100,00 %"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con las respuestas reales. Cada etiqueta muestra número de respuestas y porcentaje."
+    },
+    {
+      "tipo": "figura",
+      "numero": 3,
+      "titulo": "Distribución de respuestas a la pregunta 3",
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_03.png"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Análisis. Sesenta respuestas corresponden a Totalmente de acuerdo (58,82 %) y 34 a De acuerdo (33,33 %); ocho son intermedias. El acuerdo conjunto alcanza el 92,16 %. La distribución favorece una propuesta inicial que organice hechos, dimensiones y medidas, acompañada de explicaciones que el analista pueda revisar."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "4. ¿Considera útil que el software identifique las fuentes de datos que respaldan cada indicador comercial?"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Encuesta aplicada a estudiantes; ciento dos respuestas válidas para esta pregunta."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 15,
+      "titulo": "Respuestas a la pregunta 4",
+      "filas": [
+        [
+          "Totalmente en desacuerdo",
+          0,
+          "0,00 %"
+        ],
+        [
+          "En desacuerdo",
+          0,
+          "0,00 %"
+        ],
+        [
+          "Ni de acuerdo ni en desacuerdo",
+          5,
+          "4,90 %"
+        ],
+        [
+          "De acuerdo",
+          41,
+          "40,20 %"
+        ],
+        [
+          "Totalmente de acuerdo",
+          56,
+          "54,90 %"
+        ],
+        [
+          "Total",
+          102,
+          "100,00 %"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con las respuestas reales. Cada etiqueta muestra número de respuestas y porcentaje."
+    },
+    {
+      "tipo": "figura",
+      "numero": 4,
+      "titulo": "Distribución de respuestas a la pregunta 4",
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_04.png"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Análisis. Cincuenta y seis personas seleccionan Totalmente de acuerdo (54,90 %) y 41 De acuerdo (40,20 %). Las cinco restantes eligen la opción intermedia. El 95,10 % de acuerdo respalda el interés por conocer de dónde procede un indicador. Esta función se refleja en la identificación de tablas, columnas, relaciones y cálculos del diseño."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "5. ¿Le resultaría útil recibir explicaciones sobre los cálculos utilizados en indicadores como ventas, costos y márgenes?"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Encuesta aplicada a estudiantes; ciento dos respuestas válidas para esta pregunta."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 16,
+      "titulo": "Respuestas a la pregunta 5",
+      "filas": [
+        [
+          "Totalmente en desacuerdo",
+          0,
+          "0,00 %"
+        ],
+        [
+          "En desacuerdo",
+          0,
+          "0,00 %"
+        ],
+        [
+          "Ni de acuerdo ni en desacuerdo",
+          7,
+          "6,86 %"
+        ],
+        [
+          "De acuerdo",
+          35,
+          "34,31 %"
+        ],
+        [
+          "Totalmente de acuerdo",
+          60,
+          "58,82 %"
+        ],
+        [
+          "Total",
+          102,
+          "100,00 %"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con las respuestas reales. Cada etiqueta muestra número de respuestas y porcentaje."
+    },
+    {
+      "tipo": "figura",
+      "numero": 5,
+      "titulo": "Distribución de respuestas a la pregunta 5",
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_05.png"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Análisis. Se obtienen 60 respuestas en Totalmente de acuerdo (58,82 %) y 35 en De acuerdo (34,31 %); siete son intermedias. El acuerdo conjunto es 93,14 %. La explicación de ventas, costos y márgenes resulta relevante para comprender el sentido comercial de una cifra y revisar si su fórmula utiliza los datos apropiados."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "6. ¿Considera útil contar con apoyo inteligente para definir las transformaciones necesarias durante el proceso de extracción, transformación y carga de datos ETL?"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Encuesta aplicada a estudiantes; ciento dos respuestas válidas para esta pregunta."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 17,
+      "titulo": "Respuestas a la pregunta 6",
+      "filas": [
+        [
+          "Totalmente en desacuerdo",
+          0,
+          "0,00 %"
+        ],
+        [
+          "En desacuerdo",
+          0,
+          "0,00 %"
+        ],
+        [
+          "Ni de acuerdo ni en desacuerdo",
+          8,
+          "7,84 %"
+        ],
+        [
+          "De acuerdo",
+          42,
+          "41,18 %"
+        ],
+        [
+          "Totalmente de acuerdo",
+          52,
+          "50,98 %"
+        ],
+        [
+          "Total",
+          102,
+          "100,00 %"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con las respuestas reales. Cada etiqueta muestra número de respuestas y porcentaje."
+    },
+    {
+      "tipo": "figura",
+      "numero": 6,
+      "titulo": "Distribución de respuestas a la pregunta 6",
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_06.png"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Análisis. La alternativa Totalmente de acuerdo recibe 52 respuestas (50,98 %) y De acuerdo, 42 (41,18 %). Ocho personas se ubican en la categoría intermedia. El 92,16 % de acuerdo conjunto orienta un apoyo para preparar transformaciones, con reglas visibles y confirmación antes de cargar el datamart."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "7. ¿Considera útil que el software permita revisar y aprobar las propuestas generadas por la IA antes de ejecutarlas?"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Encuesta aplicada a estudiantes; ciento dos respuestas válidas para esta pregunta."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 18,
+      "titulo": "Respuestas a la pregunta 7",
+      "filas": [
+        [
+          "Totalmente en desacuerdo",
+          0,
+          "0,00 %"
+        ],
+        [
+          "En desacuerdo",
+          0,
+          "0,00 %"
+        ],
+        [
+          "Ni de acuerdo ni en desacuerdo",
+          6,
+          "5,88 %"
+        ],
+        [
+          "De acuerdo",
+          34,
+          "33,33 %"
+        ],
+        [
+          "Totalmente de acuerdo",
+          62,
+          "60,78 %"
+        ],
+        [
+          "Total",
+          102,
+          "100,00 %"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con las respuestas reales. Cada etiqueta muestra número de respuestas y porcentaje."
+    },
+    {
+      "tipo": "figura",
+      "numero": 7,
+      "titulo": "Distribución de respuestas a la pregunta 7",
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_07.png"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Análisis. Sesenta y dos respuestas se sitúan en Totalmente de acuerdo (60,78 %) y 34 en De acuerdo (33,33 %); seis permanecen intermedias. El acuerdo conjunto alcanza el 94,12 %. La supervisión humana es parte de la utilidad esperada: el analista necesita revisar la propuesta y decidir su aprobación antes de autorizar cambios."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "8. ¿Considera útil que un software facilite la presentación de los datos procesados mediante gráficos e indicadores comerciales?"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Encuesta aplicada a estudiantes; ciento dos respuestas válidas para esta pregunta."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 19,
+      "titulo": "Respuestas a la pregunta 8",
+      "filas": [
+        [
+          "Totalmente en desacuerdo",
+          0,
+          "0,00 %"
+        ],
+        [
+          "En desacuerdo",
+          0,
+          "0,00 %"
+        ],
+        [
+          "Ni de acuerdo ni en desacuerdo",
+          4,
+          "3,92 %"
+        ],
+        [
+          "De acuerdo",
+          38,
+          "37,25 %"
+        ],
+        [
+          "Totalmente de acuerdo",
+          60,
+          "58,82 %"
+        ],
+        [
+          "Total",
+          102,
+          "100,00 %"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con las respuestas reales. Cada etiqueta muestra número de respuestas y porcentaje."
+    },
+    {
+      "tipo": "figura",
+      "numero": 8,
+      "titulo": "Distribución de respuestas a la pregunta 8",
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_08.png"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Análisis. La presentación gráfica reúne 60 respuestas en Totalmente de acuerdo (58,82 %) y 38 en De acuerdo (37,25 %); cuatro son intermedias. El acuerdo conjunto es 96,08 %. El resultado apoya una interfaz que comunique indicadores y comparaciones de forma comprensible, conservando filtros y unidades a la vista."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "9. ¿Le resultaría útil formular preguntas en lenguaje natural a un asistente de IA para comprender los resultados de un análisis comercial?"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Encuesta aplicada a estudiantes; ciento dos respuestas válidas para esta pregunta."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 20,
+      "titulo": "Respuestas a la pregunta 9",
+      "filas": [
+        [
+          "Totalmente en desacuerdo",
+          0,
+          "0,00 %"
+        ],
+        [
+          "En desacuerdo",
+          0,
+          "0,00 %"
+        ],
+        [
+          "Ni de acuerdo ni en desacuerdo",
+          6,
+          "5,88 %"
+        ],
+        [
+          "De acuerdo",
+          35,
+          "34,31 %"
+        ],
+        [
+          "Totalmente de acuerdo",
+          61,
+          "59,80 %"
+        ],
+        [
+          "Total",
+          102,
+          "100,00 %"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con las respuestas reales. Cada etiqueta muestra número de respuestas y porcentaje."
+    },
+    {
+      "tipo": "figura",
+      "numero": 9,
+      "titulo": "Distribución de respuestas a la pregunta 9",
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_09.png"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Análisis. Sesenta y una personas seleccionan Totalmente de acuerdo (59,80 %) y 35 De acuerdo (34,31 %). Seis eligen la alternativa intermedia. El acuerdo conjunto de 94,12 % señala interés por conversar sobre un análisis. El copiloto debe explicar con base en el resultado seleccionado y reconocer las preguntas que sus datos no permiten responder."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "10. ¿Considera útil trabajar con distintas bases de datos desde una misma herramienta, manteniendo separados sus procesos y resultados?"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Encuesta aplicada a estudiantes; ciento dos respuestas válidas para esta pregunta."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 21,
+      "titulo": "Respuestas a la pregunta 10",
+      "filas": [
+        [
+          "Totalmente en desacuerdo",
+          0,
+          "0,00 %"
+        ],
+        [
+          "En desacuerdo",
+          0,
+          "0,00 %"
+        ],
+        [
+          "Ni de acuerdo ni en desacuerdo",
+          8,
+          "7,84 %"
+        ],
+        [
+          "De acuerdo",
+          35,
+          "34,31 %"
+        ],
+        [
+          "Totalmente de acuerdo",
+          59,
+          "57,84 %"
+        ],
+        [
+          "Total",
+          102,
+          "100,00 %"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con las respuestas reales. Cada etiqueta muestra número de respuestas y porcentaje."
+    },
+    {
+      "tipo": "figura",
+      "numero": 10,
+      "titulo": "Distribución de respuestas a la pregunta 10",
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/encuesta/graficos/pregunta_10.png"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Análisis. Cincuenta y nueve respuestas corresponden a Totalmente de acuerdo (57,84 %) y 35 a De acuerdo (34,31 %); ocho son intermedias. El acuerdo conjunto alcanza el 92,16 %. La utilidad esperada incluye trabajar con varias fuentes y conservar separados sus modelos, procesos y resultados. Esa separación se comprueba después mediante pruebas del sistema."
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Interpretación general de la encuesta"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "El acuerdo conjunto varía entre 92,16 % y 96,08 % según la pregunta. Las mayores frecuencias favorables corresponden a la formulación de necesidades y a la presentación visual, con noventa y ocho respuestas cada una. Las diferencias entre funciones son pequeñas y se interpretan de forma descriptiva, sin establecer una clasificación estadística de prioridades."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Los resultados muestran una valoración favorable de la idea de un sistema inteligente de apoyo al análisis. La identificación de fuentes, las explicaciones de cálculos y la supervisión humana forman parte de esa valoración. La encuesta aporta evidencia de interés y utilidad esperada; las pruebas técnicas siguientes sustentan las afirmaciones sobre el funcionamiento del prototipo."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "La convocatoria voluntaria, la ausencia de datos de caracterización y el sentido favorable de los enunciados limitan la generalización. No se dispone de una validación formal del instrumento por especialistas ni de una medición antes y después del uso."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Se suman De acuerdo y Totalmente de acuerdo. No se agregan las diez preguntas como si fueran diez veces más participantes."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 22,
+      "titulo": "Síntesis por función consultada",
+      "filas": [
+        [
+          "Formulación de necesidades mediante lenguaje natural",
+          98,
+          "96,08 %"
+        ],
+        [
+          "Comprobación del respaldo de la necesidad en los metadatos",
+          97,
+          "95,10 %"
+        ],
+        [
+          "Sugerencia del modelo dimensional mediante IA",
+          94,
+          "92,16 %"
+        ],
+        [
+          "Identificación de fuentes de los indicadores",
+          97,
+          "95,10 %"
+        ],
+        [
+          "Explicación de los cálculos comerciales",
+          95,
+          "93,14 %"
+        ],
+        [
+          "Apoyo inteligente en las transformaciones ETL",
+          94,
+          "92,16 %"
+        ],
+        [
+          "Revisión y aprobación humana de propuestas",
+          96,
+          "94,12 %"
+        ],
+        [
+          "Presentación mediante gráficos e indicadores",
+          98,
+          "96,08 %"
+        ],
+        [
+          "Consultas en lenguaje natural al asistente de IA",
+          96,
+          "94,12 %"
+        ],
+        [
+          "Trabajo con distintas bases y separación de resultados",
+          94,
+          "92,16 %"
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Respaldo metodológico por completar"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Los espacios se completarán con información y documentos efectivamente disponibles; no representan resultados obtenidos."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 23,
+      "titulo": "Respaldo metodológico por completar",
+      "filas": [
+        [
+          "Constancia institucional de la población aproximada de 331 estudiantes.",
+          "[POR COMPLETAR]\n________________________________"
+        ],
+        [
+          "Número efectivo de estudiantes que recibieron la invitación.",
+          "[POR COMPLETAR]\n________________________________"
+        ],
+        [
+          "Ficha de revisión del cuestionario por especialistas, si se incorpora esa validación.",
+          "[POR COMPLETAR]\n________________________________"
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 1,
+      "texto": "Metodología de desarrollo"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "El trabajo se organizó mediante Scrum, un marco de colaboración que estructura el desarrollo en iteraciones llamadas sprints. Se utilizó para ordenar necesidades, revisar avances y priorizar correcciones. La documentación conserva seis incrementos del producto y una etapa posterior de refinamiento. La colaboración y la revisión del trabajo son condiciones centrales de su aplicación (Verwijs y Russo, 2023)."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Las especificaciones del proyecto se conservaron en archivos Markdown, un formato de texto legible. En ellas se describen el problema, el alcance, las reglas, la interacción y los criterios de aceptación. Esta práctica de desarrollo guiado por especificaciones permite relacionar el comportamiento esperado con el código y las pruebas. La organización de requisitos, diseño, construcción y verificación se apoya también en la guía de conocimientos de ingeniería de software de IEEE Computer Society (2024)."
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Equipo y responsabilidades de Scrum"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "El Ing. Francisco Xavier Álvarez Solís, docente tutor del proyecto, asume el rol de Scrum Master. Las tesistas Lesly Samay Velásquez Anchundia y Emily Dayan Robles Alvarado integran el equipo de desarrollo. La función de responsable del producto se deja por confirmar para evitar asignar una responsabilidad sin respaldo documental."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. El rol del docente como Scrum Master responde a la confirmación del responsable académico. Los roles del equipo de proyecto son diferentes de los permisos de usuarios de la aplicación."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 24,
+      "titulo": "Roles de organización del proyecto",
+      "filas": [
+        [
+          "Scrum Master",
+          "Ing. Francisco Xavier Álvarez Solís",
+          "Facilitar el marco de trabajo, acompañar la organización del equipo y ayudar a resolver impedimentos."
+        ],
+        [
+          "Equipo de desarrollo",
+          "Lesly Samay Velásquez Anchundia y Emily Dayan Robles Alvarado",
+          "Analizar, diseñar, construir, probar y documentar los incrementos."
+        ],
+        [
+          "Responsable del producto",
+          "[POR COMPLETAR: nombre y designación]",
+          "Priorizar las necesidades y acordar los criterios de aceptación del producto."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Se explican las prácticas del marco de trabajo sin inventar actas, reuniones diarias, velocidades o puntos de esfuerzo que no constan en los registros."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 25,
+      "titulo": "Prácticas de organización y registros necesarios",
+      "filas": [
+        [
+          "Lista priorizada del producto",
+          "Ordenar funciones y cambios por valor y dependencia.",
+          "Requisitos e historias; priorización histórica por completar."
+        ],
+        [
+          "Planificación de la iteración",
+          "Precisar el objetivo y el trabajo seleccionado.",
+          "Informe de la iteración y acuerdos disponibles."
+        ],
+        [
+          "Seguimiento del trabajo",
+          "Identificar avance, impedimentos y ajustes.",
+          "Bitácora; actas periódicas por completar."
+        ],
+        [
+          "Revisión del incremento",
+          "Mostrar lo construido y contrastar aceptación.",
+          "Pruebas, capturas y revisión del cambio."
+        ],
+        [
+          "Retrospectiva",
+          "Proponer mejoras en la forma de trabajar.",
+          "Registro de acuerdos de mejora por completar."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Iteraciones e incrementos documentados"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Los seis sprints se presentan a partir de sus informes y especificaciones. Las fechas que siguen corresponden a períodos documentados y pueden incluir revisiones acumulativas; no se reinterpretan como un calendario uniforme de reuniones. Las correcciones de noviembre se registran aparte del sexto sprint."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir del informe de la iteración. Las precisiones del criterio delimitan el resultado acreditado."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 26,
+      "titulo": "Sprint 1 Establecer entorno reproducible y flujo de entrega",
+      "filas": [
+        [
+          "Objetivo",
+          "Establecer entorno reproducible y flujo de entrega"
+        ],
+        [
+          "Período registrado",
+          "24 de agosto al 2 de septiembre de 2026"
+        ],
+        [
+          "Trabajo construido",
+          "Docker, red y volúmenes aislados; PostgreSQL y SQL Server; salud, repositorio, integración y entrega continuas y cinco imágenes."
+        ],
+        [
+          "Criterio de cierre",
+          "No incorpora todavía módulos inteligencia de negocios; Azure no se presenta como desplegado."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir del informe de la iteración. Las precisiones del criterio delimitan el resultado acreditado."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 27,
+      "titulo": "Sprint 2 Controlar acceso y configuración",
+      "filas": [
+        [
+          "Objetivo",
+          "Controlar acceso y configuración"
+        ],
+        [
+          "Período registrado",
+          "4 al 11 de septiembre de 2026; adendas posteriores"
+        ],
+        [
+          "Trabajo construido",
+          "token de sesión firmado, Argon2, usuarios, roles, permisos, menús, auditoría, parámetros y credenciales modelo de lenguaje cifradas."
+        ],
+        [
+          "Criterio de cierre",
+          "control de acceso por roles y permisos mínimo; las sesiones de todos los perfiles no se acreditan por la matriz de permisos."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir del informe de la iteración. Las precisiones del criterio delimitan el resultado acreditado."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 28,
+      "titulo": "Sprint 3 Convertir una necesidad en una propuesta supervisada",
+      "filas": [
+        [
+          "Objetivo",
+          "Convertir una necesidad en una propuesta supervisada"
+        ],
+        [
+          "Período registrado",
+          "14 al 20 de septiembre de 2026; revisión acumulativa 3 de octubre"
+        ],
+        [
+          "Trabajo construido",
+          "Conexión, instantáneas, explorador, catálogo, asesoría/revisión de necesidad, conceptos, contrato inteligencia de negocios y aprobación versionada."
+        ],
+        [
+          "Criterio de cierre",
+          "Aprobación estructural no demuestra importes ni ejecuta el carga de datos."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir del informe de la iteración. Las precisiones del criterio delimitan el resultado acreditado."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 29,
+      "titulo": "Sprint 4 Materializar y conciliar el datamart",
+      "filas": [
+        [
+          "Objetivo",
+          "Materializar y conciliar el datamart"
+        ],
+        [
+          "Período registrado",
+          "21 al 24 de septiembre de 2026"
+        ],
+        [
+          "Trabajo construido",
+          "Elegibilidad, selección indicadores, motor carga de datos tipado, destinos por ejecución, calidad, moneda y etiquetas supervisadas."
+        ],
+        [
+          "Criterio de cierre",
+          "Carga completa; sin captura automática de cambios ni dimensiones lentamente cambiantes complejas."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir del informe de la iteración. Las precisiones del criterio delimitan el resultado acreditado."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 30,
+      "titulo": "Sprint 5 Publicar analítica explicable y reportes",
+      "filas": [
+        [
+          "Objetivo",
+          "Publicar analítica explicable y reportes"
+        ],
+        [
+          "Período registrado",
+          "24 de septiembre al 3 de octubre de 2026"
+        ],
+        [
+          "Trabajo construido",
+          "Identidad descriptiva, vistas ejecutiva/analítica, filtros, visuales, hallazgos, copiloto agregado, PDF/Excel y endurecimiento."
+        ],
+        [
+          "Criterio de cierre",
+          "No incluye pronósticos; sin causalidad ni resultados de usabilidad formal."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir del informe de la iteración. Las precisiones del criterio delimitan el resultado acreditado."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 31,
+      "titulo": "Sprint 6 Aislar el ciclo inteligencia de negocios por fuente y contrastar otra estructura",
+      "filas": [
+        [
+          "Objetivo",
+          "Aislar el ciclo inteligencia de negocios por fuente y contrastar otra estructura"
+        ],
+        [
+          "Período registrado",
+          "Cierre 1 de octubre de 2026; revisión acumulativa 5 de noviembre"
+        ],
+        [
+          "Trabajo construido",
+          "identificación de la fuente explícito, catálogo por conexión/dominio, versión de metadatos propio, esquema analítico por ejecución y validación AdventureWorks/WideWorldImporters."
+        ],
+        [
+          "Criterio de cierre",
+          "Dos esquemas del mismo adaptador SQL Server; no compatibilidad empírica con todos los motores."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Después del cierre se corrigieron situaciones observadas en la revisión de necesidades, el tratamiento de versiones, la periodicidad, los indicadores y las exportaciones. Este refinamiento conserva los seis incrementos y no se presenta como un sprint adicional no planificado."
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Historias de usuario y lista priorizada del producto"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Las historias expresan la función esperada desde el punto de vista de quien la necesita. Se presentan con su prioridad, su relación con las iteraciones y condiciones de aceptación. Las siguientes fichas organizan el alcance implementado; los puntos y las horas reales deberán añadirse sólo cuando existan sus registros."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 32,
+      "titulo": "Historia de usuario 1 Iniciar una sesión con mis permisos efectivos",
+      "filas": [
+        [
+          "Historia",
+          "Como usuario autorizado, quiero iniciar una sesión con mis permisos efectivos, para acceder únicamente a las capacidades que me corresponden."
+        ],
+        [
+          "Prioridad y sprint",
+          "Esencial; Sprint 2. Reconstrucción documental."
+        ],
+        [
+          "Criterios de aceptación",
+          "1. Dado una cuenta activa y contraseña válida; cuando presento mis credenciales; entonces el servidor autentica y entrega una sesión de vida limitada.\n2. Dado una sesión sin el permiso de una operación; cuando invoco su operación del servidor directamente; entonces FastAPI deniega aunque la interfaz haya sido manipulada."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 33,
+      "titulo": "Historia de usuario 2 Gestionar cuentas, roles y permisos por nombres legibles",
+      "filas": [
+        [
+          "Historia",
+          "Como administrador, quiero gestionar cuentas, roles y permisos por nombres legibles, para mantener acceso controlado sin perder la recuperación administrativa."
+        ],
+        [
+          "Prioridad y sprint",
+          "Esencial; Sprint 2. Reconstrucción documental."
+        ],
+        [
+          "Criterios de aceptación",
+          "1. Dado un registro no protegido; cuando modifico asociaciones válidas; entonces el cambio se valida y audita sin secretos.\n2. Dado la cuenta o rol protegido de recuperación; cuando intento desactivar la vía administrativa; entonces la acción se rechaza sin cambio funcional.\n3. Dado eventos históricos; cuando consulto auditoría; entonces se muestran sin opción de editar o borrarlos."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 34,
+      "titulo": "Historia de usuario 3 Registrar y probar un proveedor modelo de lenguaje desde la web",
+      "filas": [
+        [
+          "Historia",
+          "Como administrador, quiero registrar y probar un proveedor modelo de lenguaje desde la web, para cambiar una integración admitida sin exponer su clave."
+        ],
+        [
+          "Prioridad y sprint",
+          "Esencial; Sprint 2; Sprint 5. Reconstrucción documental."
+        ],
+        [
+          "Criterios de aceptación",
+          "1. Dado proveedor y dirección permitida del servicio del proveedors; cuando registro la clave; entonces se cifra y no vuelve a una lectura de servidor.\n2. Dado configuración probada; cuando cambio modelo o nivel; entonces la prueba anterior ya no autoriza el uso.\n3. Dado otra configuración activa; cuando activo una nueva validada; entonces permanece una sola activa y se conserva auditoría."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 35,
+      "titulo": "Historia de usuario 4 Registrar conexiones SQL Server independientes de sólo lectura",
+      "filas": [
+        [
+          "Historia",
+          "Como administrador, quiero registrar conexiones SQL Server independientes de sólo lectura, para preparar distintas fuentes sin modificar archivos de operación."
+        ],
+        [
+          "Prioridad y sprint",
+          "Esencial; Sprint 3; Sprint 6. Reconstrucción documental."
+        ],
+        [
+          "Criterios de aceptación",
+          "1. Dado una conexión con privilegios de escritura; cuando solicito probar y habilitar; entonces el sistema rechaza su aptitud.\n2. Dado dos conexiones probadas; cuando habilito la segunda; entonces no se deshabilita la primera.\n3. Dado una conexión utilizada por una instantánea; cuando solicito eliminarla; entonces la dependencia impide una pérdida de trazabilidad."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 36,
+      "titulo": "Historia de usuario 5 Seleccionar mi fuente de trabajo",
+      "filas": [
+        [
+          "Historia",
+          "Como analista inteligencia de negocios, quiero seleccionar mi fuente de trabajo, para mantener separado el análisis de cada origen."
+        ],
+        [
+          "Prioridad y sprint",
+          "Esencial; Sprint 6. Reconstrucción documental."
+        ],
+        [
+          "Criterios de aceptación",
+          "1. Dado AdventureWorks y WideWorldImporters disponibles; cuando cambio el contexto; entonces se limpian resultados y se solicita la fuente elegida.\n2. Dado una respuesta de AdventureWorks pendiente; cuando la recibo después de elegir WideWorldImporters; entonces se descarta y no reemplaza el tablero de WideWorldImporters.\n3. Dado una ejecución de AdventureWorks; cuando la solicito con conexión WideWorldImporters; entonces el servidor rechaza la combinación."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 37,
+      "titulo": "Historia de usuario 6 Capturar y explorar la estructura versionada de la fuente",
+      "filas": [
+        [
+          "Historia",
+          "Como analista inteligencia de negocios, quiero capturar y explorar la estructura versionada de la fuente, para fundamentar mis decisiones sin suponer relaciones."
+        ],
+        [
+          "Prioridad y sprint",
+          "Esencial; Sprint 3; Sprint 6. Reconstrucción documental."
+        ],
+        [
+          "Criterios de aceptación",
+          "1. Dado la misma estructura en distinto orden; cuando se serializa la instantánea; entonces se obtiene huella estable y no duplicación.\n2. Dado una columna de tipo alias; cuando se introspecta su tipo base; entonces la columna no desaparece.\n3. Dado una captura persistida; cuando busco una tabla; entonces el explorador usa la instantánea y no consulta filas comerciales."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 38,
+      "titulo": "Historia de usuario 7 Configurar preguntas y periodicidades por conexión",
+      "filas": [
+        [
+          "Historia",
+          "Como analista inteligencia de negocios, quiero configurar preguntas y periodicidades por conexión, para orientar el análisis de cada negocio sin imponer su modelo."
+        ],
+        [
+          "Prioridad y sprint",
+          "Esencial; Sprint 3; Sprint 6. Reconstrucción documental."
+        ],
+        [
+          "Criterios de aceptación",
+          "1. Dado un catálogo de AdventureWorks personalizado; cuando guardo una pregunta adicional; entonces WideWorldImporters mantiene su configuración propia.\n2. Dado una pregunta sin respaldo suficiente; cuando se evalúa su evidencia; entonces la etiqueta no se convierte automáticamente en capacidad técnica.\n3. Dado una periodicidad no implementada; cuando intento guardarla; entonces el servidor rechaza el valor."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 39,
+      "titulo": "Historia de usuario 8 Recibir sugerencias o reformulaciones de mi necesidad desde los metadatos",
+      "filas": [
+        [
+          "Historia",
+          "Como analista inteligencia de negocios, quiero recibir sugerencias o reformulaciones de mi necesidad desde los metadatos, para expresar un objetivo dentro de los datos disponibles."
+        ],
+        [
+          "Prioridad y sprint",
+          "Esencial; Sprint 3; Sprint 5; Sprint 6. Reconstrucción documental."
+        ],
+        [
+          "Criterios de aceptación",
+          "1. Dado objetivo vacío y consentimiento válido; cuando solicito sugerencias; entonces se muestran opciones con evidencia y límites.\n2. Dado una sugerencia propuesta; cuando no elijo Usar esta necesidad; entonces mi objetivo no se sustituye.\n3. Dado una reformulación no utilizable; cuando mantengo mi redacción; entonces puedo revisar el original sin aceptar una capacidad no comprobada."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 40,
+      "titulo": "Historia de usuario 9 Revisar la viabilidad antes de generar",
+      "filas": [
+        [
+          "Historia",
+          "Como analista inteligencia de negocios, quiero revisar la viabilidad antes de generar, para conocer datos directos, derivables y límites pendientes."
+        ],
+        [
+          "Prioridad y sprint",
+          "Esencial; Sprint 3; Sprint 5; Sprint 6. Reconstrucción documental."
+        ],
+        [
+          "Criterios de aceptación",
+          "1. Dado una entrada y evaluación coincidentes; cuando confirmo límites admitidos; entonces puede habilitarse generación sin ejecutar carga de datos.\n2. Dado una evaluación persistida; cuando cambio período o fuente; entonces se exige otra revisión.\n3. Dado el destino modelo de lenguaje ha cambiado; cuando intento usar consentimiento anterior; entonces no se realiza la llamada hasta renovar autorización."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 41,
+      "titulo": "Historia de usuario 10 Obtener una propuesta dimensional estructurada y comprobada",
+      "filas": [
+        [
+          "Historia",
+          "Como analista inteligencia de negocios, quiero obtener una propuesta dimensional estructurada y comprobada, para revisar una solución analítica sin redactar SQL."
+        ],
+        [
+          "Prioridad y sprint",
+          "Esencial; Sprint 3; Sprint 5. Reconstrucción documental."
+        ],
+        [
+          "Criterios de aceptación",
+          "1. Dado necesidad revisada y alcance válido; cuando solicito generar; entonces se conserva proveedor, modelo, contrato y validación.\n2. Dado una tabla inventada o SQL en la respuesta; cuando se valida el contrato; entonces la propuesta queda bloqueada.\n3. Dado una solicitud de facturación; cuando el modelo elige líneas de pedido; entonces la validación no la acepta como equivalente."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 42,
+      "titulo": "Historia de usuario 11 Personalizar sólo decisiones y recetas verificadas",
+      "filas": [
+        [
+          "Historia",
+          "Como analista inteligencia de negocios, quiero personalizar sólo decisiones y recetas verificadas, para ajustar relevancia sin perder reproducibilidad."
+        ],
+        [
+          "Prioridad y sprint",
+          "Esencial; Sprint 3; Sprint 4; Sprint 5. Reconstrucción documental."
+        ],
+        [
+          "Criterios de aceptación",
+          "1. Dado una medida y indicadores compatibles; cuando reasigno el indicadores y confirmo la revisión; entonces se crea una versión enlazada y validada.\n2. Dado una tasa propuesta como dinero; cuando hay precio y cantidad inequívocos; entonces la corrección controlada se explica con sus referencias.\n3. Dado operandos faltantes o ambiguos; cuando intento aprobar una derivación; entonces se bloquea sin inventar componentes."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 43,
+      "titulo": "Historia de usuario 12 Decidir y volver a consultar versiones sin alterarlas",
+      "filas": [
+        [
+          "Historia",
+          "Como analista inteligencia de negocios autorizado, quiero decidir y volver a consultar versiones sin alterarlas, para conservar las decisiones y continuar un análisis nuevo."
+        ],
+        [
+          "Prioridad y sprint",
+          "Esencial; Sprint 3; Sprint 5; Sprint 6. Reconstrucción documental."
+        ],
+        [
+          "Criterios de aceptación",
+          "1. Dado versión lista sin errores y advertencias confirmadas; cuando apruebo; entonces se guarda la decisión sin ejecutar carga.\n2. Dado una propuesta histórica aprobada; cuando verifico evidencia; entonces su estado funcional permanece intacto.\n3. Dado la consulta histórica está abierta; cuando elijo Crear nueva propuesta; entonces comienza un borrador nuevo sin cerrar sesión."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 44,
+      "titulo": "Historia de usuario 13 Confirmar un contrato y indicadores antes de materializar",
+      "filas": [
+        [
+          "Historia",
+          "Como analista inteligencia de negocios, quiero confirmar un contrato y indicadores antes de materializar, para construir un destino analítico desde referencias verificables."
+        ],
+        [
+          "Prioridad y sprint",
+          "Esencial; Sprint 4; Sprint 6. Reconstrucción documental."
+        ],
+        [
+          "Criterios de aceptación",
+          "1. Dado propuesta elegible; cuando selecciono indicadores y reviso transformaciones; entonces se recalculan dependencias y cobertura.\n2. Dado selección parcial de salidas solicitadas; cuando preparo la ejecución; entonces se identifica cobertura parcial.\n3. Dado ejecución confirmada; cuando el motor carga el datamart; entonces usa destino por ejecución y no escribe sobre la fuente."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 45,
+      "titulo": "Historia de usuario 14 Recuperar un expediente existente ante repetición o fallo",
+      "filas": [
+        [
+          "Historia",
+          "Como analista inteligencia de negocios, quiero recuperar un expediente existente ante repetición o fallo, para evitar cargas duplicadas accidentales."
+        ],
+        [
+          "Prioridad y sprint",
+          "Esencial; Sprint 4; Sprint 5. Reconstrucción documental."
+        ],
+        [
+          "Criterios de aceptación",
+          "1. Dado mismo contrato y indicadores ya preparados; cuando repito la solicitud; entonces se abre el expediente o se devuelve conflicto.\n2. Dado carga conciliada e interpretación fallida; cuando reintento la interpretación; entonces no se repite el carga de datos.\n3. Dado sesión vencida; cuando vuelvo a autenticar; entonces se recupera por lectura autorizada el contexto mínimo, sin repetir mutaciones inciertas."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 46,
+      "titulo": "Historia de usuario 15 Examinar conciliación, identidad y límites de las unidades",
+      "filas": [
+        [
+          "Historia",
+          "Como analista inteligencia de negocios, quiero examinar conciliación, identidad y límites de las unidades, para publicar resultados con significado y procedencia explícitos."
+        ],
+        [
+          "Prioridad y sprint",
+          "Esencial; Sprint 4; Sprint 5. Reconstrucción documental."
+        ],
+        [
+          "Criterios de aceptación",
+          "1. Dado referencia y destino del mismo alcance; cuando contrasto filas e importes; entonces se muestran diferencia y tolerancia.\n2. Dado moneda ambigua; cuando compruebo divisa; entonces se conserva moneda de origen, sin símbolo inventado.\n3. Dado etiquetas españolas propuestas; cuando confirmo o excluyo mapeos; entonces el dato original y mi decisión permanecen auditables."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 47,
+      "titulo": "Historia de usuario 16 Consultar y filtrar un panel explicable",
+      "filas": [
+        [
+          "Historia",
+          "Como gerente comercial autorizado, quiero consultar y filtrar un panel explicable, para interpretar ventas de una ejecución identificada."
+        ],
+        [
+          "Prioridad y sprint",
+          "Esencial; Sprint 5; Sprint 6. Reconstrucción documental."
+        ],
+        [
+          "Criterios de aceptación",
+          "1. Dado ejecución conciliada con tablas; cuando abro el panel; entonces se identifica fuente, propuesta, ejecución y evento.\n2. Dado un filtro válido; cuando lo aplico; entonces cambian conjuntamente indicadores, gráficos y hallazgos.\n3. Dado una barra o categoría; cuando la activo con teclado o ratón; entonces se presenta detalle sin aplicar filtros por sorpresa."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 48,
+      "titulo": "Historia de usuario 17 Preguntar sobre agregados de la ejecución",
+      "filas": [
+        [
+          "Historia",
+          "Como usuario analítico autorizado, quiero preguntar sobre agregados de la ejecución, para entender comparaciones y límites del resultado."
+        ],
+        [
+          "Prioridad y sprint",
+          "Esencial; Sprint 5; Sprint 6. Reconstrucción documental."
+        ],
+        [
+          "Criterios de aceptación",
+          "1. Dado un catálogo autorizado; cuando solicito un Top 5 con territorio permitido; entonces el motor valida el contrato y calcula agregados.\n2. Dado ranking limitado; cuando se muestra participación; entonces su denominador corresponde al universo filtrado antes del ranking de las primeras categorías.\n3. Dado comparación temporal; cuando la inteligencia artificial explica; entonces la respuesta distingue evidencia de una causa o pronóstico no acreditados."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 49,
+      "titulo": "Historia de usuario 18 Descargar PDF o Excel de mi selección",
+      "filas": [
+        [
+          "Historia",
+          "Como usuario con acceso al panel y exportación, quiero descargar PDF o Excel de mi selección, para compartir resultados fieles y verificables."
+        ],
+        [
+          "Prioridad y sprint",
+          "Esencial; Sprint 5; Sprint 6. Reconstrucción documental."
+        ],
+        [
+          "Criterios de aceptación",
+          "1. Dado vista y filtros autorizados; cuando exporto; entonces el servidor reconstruye esa selección y su procedencia.\n2. Dado un porcentaje en escala 0–100; cuando se escribe en Excel; entonces no se multiplica nuevamente por 100.\n3. Dado falta uno de los dos permisos; cuando invoco exportación; entonces se deniega y no se genera el archivo."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Criterio de trabajo terminado"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Un incremento se considera terminado cuando cumple su comportamiento acordado, conserva las reglas de datos y permisos, supera las pruebas aplicables y dispone de documentación para su revisión. La integración del cambio registra qué versión fue aceptada; publicar imágenes del sistema no sustituye la aceptación funcional."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir de las especificaciones y registros del proyecto."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 50,
+      "titulo": "Riesgos y respuesta prevista",
+      "filas": [
+        [
+          "Necesidad sin fuente suficiente",
+          "Propuesta comercial no sustentada.",
+          "Revisar viabilidad y comunicar exclusiones."
+        ],
+        [
+          "Respuesta inválida del proveedor",
+          "Interrupción de la generación.",
+          "Conservar solicitud, validar formato y permitir recuperación controlada."
+        ],
+        [
+          "Mezcla de fuentes o versiones",
+          "Indicadores atribuidos al origen incorrecto.",
+          "Asociar conexión, metadatos, propuesta y ejecución."
+        ],
+        [
+          "Cálculo comercial ambiguo",
+          "Razón o importe con interpretación incorrecta.",
+          "Revisar fórmula, unidad, denominador y trazabilidad."
+        ],
+        [
+          "Recursos o cuota insuficientes",
+          "Fallo de demostración o espera.",
+          "Comprobar salud y proveedor; disponer de resultados conservados."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Registros de gestión por completar"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Los espacios se completarán con información y documentos efectivamente disponibles; no representan resultados obtenidos."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 51,
+      "titulo": "Registros de gestión por completar",
+      "filas": [
+        [
+          "Designación del responsable del producto.",
+          "[POR COMPLETAR]\n________________________________"
+        ],
+        [
+          "Fechas y acuerdos de planificación, revisión y retrospectiva disponibles.",
+          "[POR COMPLETAR]\n________________________________"
+        ],
+        [
+          "Estimaciones y avance por fecha para un gráfico de trabajo pendiente, si se requiere.",
+          "[POR COMPLETAR]\n________________________________"
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 1,
+      "texto": "Beneficiarios del proyecto"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Las beneficiarias directas son las tesistas y las personas que estudien el recorrido de inteligencia de negocios con fuentes de demostración. El analista dispone de un proceso guiado para relacionar necesidad, datos y modelo; el perfil gerencial puede consultar información y explicaciones con los permisos correspondientes. El aporte formativo requiere actividades de lectura, práctica y comprobación."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir de las especificaciones y registros del proyecto."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 52,
+      "titulo": "Productos entregables",
+      "filas": [
+        [
+          "Prototipo funcional",
+          "Aplicación web, persistencia y proceso supervisado.",
+          "Demostración y experimentación académica."
+        ],
+        [
+          "Especificaciones del sistema",
+          "Reglas, requisitos y criterios de aceptación.",
+          "Revisión y mantenimiento del comportamiento."
+        ],
+        [
+          "Casos y evidencias de prueba",
+          "Propuestas, ejecuciones y conciliaciones de ambas bases.",
+          "Reproducir y contrastar resultados."
+        ],
+        [
+          "Manuales",
+          "Operación, formación y documentación técnica.",
+          "Aprender el uso y mantener el entorno."
+        ],
+        [
+          "Resultados de encuesta",
+          "Tablas, barras y análisis de las 102 respuestas.",
+          "Describir utilidad potencial percibida."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 1,
+      "texto": "Diseño y desarrollo de la propuesta"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "El diseño separa la presentación, los servicios, las reglas de comprobación, la persistencia y los adaptadores de fuentes y de inteligencia artificial. La misma cadena de decisiones se aplica a cada fuente configurada; las bases de ejemplo permiten demostrarla con estructuras comerciales diferentes."
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Requisitos funcionales"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Los requisitos funcionales describen lo que el sistema permite hacer y la condición que debe cumplirse para aceptarlo. La numeración sirve para localizar cada requisito dentro de este capítulo; sus referencias a archivos y pruebas se conservan en la matriz de trabajo del proyecto."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir de las especificaciones y registros del proyecto."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 53,
+      "titulo": "Requisitos funcionales 1 a 4",
+      "filas": [
+        [
+          "1 Autenticar y autorizar operaciones",
+          "Una cuenta activa obtiene una sesión tras verificar la contraseña; cada operación protegida verifica token de sesión firmado, usuario y permiso en el servidor. Credenciales inválidas o permiso ausente no permiten la operación."
+        ],
+        [
+          "2 Administrar acceso y auditoría",
+          "La administración mantiene usuarios, roles y asociaciones mediante catálogos controlados. Se rechazan cambios que eliminen la vía de recuperación; las mutaciones registran auditoría no editable sin secretos.\nEl correo sólo se establece al crear. En edición se presenta en consulta; no se envían identificadores de roles al editar la cuenta protegida. Error de carga de roles/permisos bloquea el guardado hasta recarga válida."
+        ],
+        [
+          "3 Configurar y probar un proveedor modelo de lenguaje",
+          "La web guarda proveedor, dirección permitida del servicio del proveedor, modelo y nivel admitido; cifra la clave y no la devuelve. Sólo una configuración del modelo de lenguaje permanece activa; cambiar su contrato invalida la prueba previa.\nLos presets conservan el nombre escrito. Cambiar contrato de proveedor/modelo/razonamiento invalida la prueba previa; no hay failover silencioso."
+        ],
+        [
+          "4 Registrar y habilitar conexiones SQL Server",
+          "La conexión se registra por campos validados; sólo se habilita tras prueba satisfactoria de lectura y ausencia de privilegios de escritura. Editar sin contraseña nueva conserva el secreto; una dependencia bloquea su eliminación."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir de las especificaciones y registros del proyecto."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 54,
+      "titulo": "Requisitos funcionales 5 a 8",
+      "filas": [
+        [
+          "5 Seleccionar fuente por contexto de sesión",
+          "Varias conexiones probadas pueden coexistir. La selección de una sesión no cambia globalmente la otra; las solicitudes transmiten y verifican identificación de la fuente y descartan respuestas antiguas."
+        ],
+        [
+          "6 Capturar instantáneas estructurales",
+          "La captura obtiene tablas, columnas, tipos base, clave principal y relación entre tablas declaradas; ordena y calcula huella estable. Estructura sin cambios reutiliza la captura; una falla no sustituye la última válida por un documento parcial."
+        ],
+        [
+          "7 Explorar metadatos de la fuente elegida",
+          "La búsqueda y detalle leen la instantánea persistida, no filas sistema transaccional de origen. Muestran versión, fecha, procedencia y columnas; al cambiar fuente reinician búsqueda, tabla, mensajes y respuestas pendientes."
+        ],
+        [
+          "8 Administrar catálogo analítico por fuente",
+          "Preguntas, etiquetas y periodicidades se guardan por conexión/dominio; no fijan dimensiones ni demuestran columnas inexistentes. La edición de una fuente no cambia otra ni reescribe propuestas previas."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir de las especificaciones y registros del proyecto."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 55,
+      "titulo": "Requisitos funcionales 9 a 12",
+      "filas": [
+        [
+          "9 Redactar o adoptar una necesidad asistida",
+          "El analista puede escribir, solicitar sugerencias o reformular. La adopción es explícita; la llamada sólo usa contexto estructural permitido y consentimiento del destino modelo de lenguaje vigente. La sugerencia no crea preguntas del catálogo.\nSugerencia, reformulación y revisión son acciones distintas; el objetivo original sólo se sustituye mediante adopción explícita. No se modifica la necesidad durante la revisión."
+        ],
+        [
+          "10 Persistir y exigir revisión de viabilidad",
+          "La evaluación clasifica respaldo y límites, conserva actor, instantánea, texto, preguntas y período. Generar exige huella persistida coincidente y reglas vigentes; cambiar entrada o contexto obliga a revisar otra vez.\nLa revisión vigente es revisión de necesidad vigente. Se distinguen intención positiva y exclusiones ES/EN, ranking como operación analítica y trazabilidad documental frente a facturación. Una contradicción persistente tras la reparación acotada no se resuelve sólo aceptando un aviso."
+        ],
+        [
+          "11 Generar conceptos y contrato inteligencia de negocios estructurado",
+          "Con prerrequisitos y revisión vigentes se descubren conceptos y se solicita al modelo de lenguaje una decisión compacta. El servidor expande datos mecánicos y persiste contrato, validación, proveedor, modelo y procedencia, o un fallo recuperable.\nLas generaciones actuales utilizan el contrato vigente de propuesta y las reglas actuales de compilación. El servidor desarrolla las decisiones resumidas y evita ejecutar instrucciones de consulta redactadas por el modelo de lenguaje."
+        ],
+        [
+          "12 Validar referencias y significado controlado",
+          "Existencia, tipos, rutas declaradas, grano, roles de medida y cobertura se comprueban antes de aprobar. Una referencia inventada, SQL libre, conteo por detalle como pedido o pedido presentado como factura bloquea la propuesta.\nclaves principales y relaciones declaradas e identificadores no son operandos monetarios. El promedio documental exige razón de agregados; no se convierte silenciosamente un conteo de líneas en pedidos. NumberOfUnits sin semántica de identificador puede ser cantidad."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir de las especificaciones y registros del proyecto."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 56,
+      "titulo": "Requisitos funcionales 13 a 16",
+      "filas": [
+        [
+          "13 Personalizar y normalizar recetas controladas",
+          "Una revisión selecciona objetos y recetas verificadas, nunca expresiones libres. Crea otra versión enlazada, revalida compatibilidad y dependencias; una corrección automática inequívoca conserva explicación y no inventa operandos.\nEl editor parte del contrato efectivo compilado, no de referencias crudas del proveedor. Una hija aprobada queda seleccionada y no es sustituida por una respuesta tardía del padre. Crear versión corregida es una acción explícita."
+        ],
+        [
+          "14 Decidir y verificar sin alterar la historia",
+          "La aprobación exige permiso, ausencia de errores y advertencias confirmadas; rechazo/retirada conservan motivo y auditoría. Verificar evidencia no cambia el estado ni invoca al modelo de lenguaje; una diferencia histórica de reproducción no retira una aprobación por sí sola.\nEl replay informa igualdad real de hashes y separa advertencias de compatibilidad. Una aprobación nueva de borrador antiguo recibe 409 y exige hija actual o regeneración; un aprobado legado conserva idempotencia y sus reglas."
+        ],
+        [
+          "15 Consultar versiones e iniciar un nuevo borrador",
+          "El historial filtra/pagina versiones persistidas y abre sus etapas sin generar otra respuesta. Una versión aprobada es de consulta; Crear nueva propuesta inicia un borrador independiente sin cerrar sesión ni sobrescribir la versión."
+        ],
+        [
+          "16 Seleccionar una propuesta materializable y indicadores",
+          "La selección exige estado aprobado, fuente/instantánea disponibles y validación actual del contrato y recetas. El analista confirma propuesta y indicadores; la cobertura posterior se recalcula y puede quedar parcial sin falsear cumplimiento."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir de las especificaciones y registros del proyecto."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 57,
+      "titulo": "Requisitos funcionales 17 a 20",
+      "filas": [
+        [
+          "17 Materializar una carga completa trazable",
+          "El backend compila consultas desde tablas, columnas, relación entre tablas y recetas verificadas, lee la fuente y carga dimensiones/hecho en destino por ejecución. La falla transaccional conserva evidencia sin escribir en el sistema transaccional de origen."
+        ],
+        [
+          "18 Evitar materializaciones duplicadas accidentales",
+          "Una combinación idéntica de propuesta y selección indicadores preparada o terminada abre el expediente existente o devuelve conflicto. El control transaccional no depende del botón React; no es una tarea de refresco periódico."
+        ],
+        [
+          "19 Conciliar y presentar diferencias de carga",
+          "El expediente contrasta conteos e importes equivalentes entre origen y destino con receta, alcance y tolerancias. Cada indicadores mantiene estado; una condición no calculable se explica y no se presenta como cero válido.\nImportes, razones y cantidades fraccionarias mantienen precisión; sólo conteos explícitos se presentan como enteros. La UI contrae o apila columnas para evitar solapamiento de etiqueta y cifra."
+        ],
+        [
+          "20 Resolver etiquetas y conservar originales",
+          "Las etiquetas descriptivas proceden de rutas verificadas que conservan población y grano. La localización de categorías aptas conserva el original y requiere revisión; moneda sólo usa ISO demostrado. No se traduce PII ni se asume costo histórico."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir de las especificaciones y registros del proyecto."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 58,
+      "titulo": "Requisitos funcionales 21 a 24",
+      "filas": [
+        [
+          "21 Consultar un panel analítico de una ejecución válida",
+          "El panel identifica fuente, propuesta, ejecución y alcance comercial; sólo ofrece ejecuciones conciliadas con datos físicos disponibles de esa conexión. Cambiar fuente limpia resultados y rechaza una pareja fuente–ejecución ajena.\nLa serie temporal usa la periodicidad efectiva del indicadores o hereda la propuesta normalizando day/week/month/quarter/year y daily/weekly/monthly/quarterly/yearly."
+        ],
+        [
+          "22 Filtrar e interactuar con gráficos",
+          "Vista, indicador y filtros actualizan conjuntamente indicadores, gráficos y hallazgos. Puntos/barras/categorías muestran detalle accesible; sólo una categoría territorial autorizada puede aplicarse explícitamente como filtro global."
+        ],
+        [
+          "23 Conversar sobre agregados autorizados",
+          "El copiloto interpreta una pregunta como contrato cerrado, el servidor calcula agregados de la ejecución y el modelo de lenguaje explica evidencia y límites. ranking de las primeras categorías usa denominador previo al recorte; no hay SQL libre, acciones ni pronósticos.\nLa plataforma produce hasta tres preguntas desde el catálogo materializado y una cautela con procedencia. Un ranking no acredita preferencias ni causalidad; la ficha extraída en carga de datos no acredita territorio histórico ni entrega real."
+        ],
+        [
+          "24 Exportar la selección autorizada",
+          "PDF y Excel se reconstruyen en servidor con vista, métrica, filtros y expediente. Exigen conjuntamente los permisos de consulta del panel y de exportación de informes; Excel mantiene números, escala porcentual y hojas acordes con la vista.\nAmbos formatos identifican fuente/base/offset, unidad y filtros. Excel conserva cadenas literales sin fórmulas ni vínculos automáticos; la altura de las celdas muestra el aviso completo."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir de las especificaciones y registros del proyecto."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 59,
+      "titulo": "Requisitos funcionales 25 a 26",
+      "filas": [
+        [
+          "25 Conservar el linaje de los artefactos",
+          "Cada propuesta refiere su instantánea y origen; cada carga de datos refiere propuesta, instantánea y esquema físico; panel, chat y exportación conservan esa identidad. La consulta histórica no sustituye la procedencia por la propuesta más reciente."
+        ],
+        [
+          "26 Recuperar sin duplicar efectos ni aceptar salidas inválidas",
+          "Ante sesión vencida, red, cuota o contrato inválido se conserva el expediente y un borrador mínimo no secreto. Las recuperaciones son acotadas; reabrir una versión o falla de interpretación no repite el carga de datos ni alterna proveedor silenciosamente."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Requisitos no funcionales"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Los requisitos no funcionales precisan condiciones de calidad, como seguridad, conservación del contexto y facilidad de revisión. Se expresan dentro del alcance de la prueba de concepto y no como una certificación general del producto."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir de las especificaciones y registros del proyecto."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 60,
+      "titulo": "Condiciones de calidad 1 a 4",
+      "filas": [
+        [
+          "1 Seguridad y mínimo privilegio",
+          "Todas las operaciones protegidas verifican autorización en el servidor; ocultar un menú no concede ni revoca permisos. Revisión de dependencias FastAPI, pruebas de seguridad y ensayo negativo autenticado pendiente por perfil.",
+          "control de acceso por roles y permisos mínimo, no certificación de seguridad empresarial."
+        ],
+        [
+          "2 Confidencialidad y minimización",
+          "Las claves se cifran y no retornan al navegador; asesoría y propuesta usan estructura permitida. Chat usa agregados y localización sólo categorías aptas no sensibles. Pruebas de cifrado, destino permitido y contenido enviado estructural; inspección de contratos y actas.",
+          "No implica bóveda externa ni rotación de claves implementadas."
+        ],
+        [
+          "3 Integridad del contexto",
+          "Fuente, instantánea, propuesta, ejecución, filtros y reporte mantienen pertenencia común; una combinación cruzada se rechaza. Dobles de respuestas tardías y pruebas de rechazo fuente–ejecución; pruebas de cambio de fuente y rechazo de ejecuciones ajenas.",
+          "Separación por conexión no equivale a certificación multiarrendatario."
+        ],
+        [
+          "4 Confiabilidad y fallo seguro",
+          "Respuesta documentos estructurados inválida, cuota o referencia incorrecta no autoriza una carga ni altera artefactos válidos. Recuperación acotada sin proveedor alterno silencioso. Pruebas negativas de proveedor y validadores; historial de fallos del acta.",
+          "La continuidad y precisión del proveedor externo no están garantizadas."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir de las especificaciones y registros del proyecto."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 61,
+      "titulo": "Condiciones de calidad 5 a 8",
+      "filas": [
+        [
+          "5 Reproducibilidad del artefacto",
+          "La estructura canónica y las decisiones persistidas pueden verificarse con huellas y versiones; se distingue evolución del motor de corrupción de datos. Pruebas de normalización y reproducción; verificación de versiones históricas sólo lectura.",
+          "No se exige igualdad literal entre nuevas respuestas probabilísticas del modelo de lenguaje."
+        ],
+        [
+          "6 Mantenibilidad y desarrollo guiado por especificaciones",
+          "Una capacidad tiene especificación, interfaz modular, pruebas proporcionales y cambio versionado; los módulos no ejecutan SQL libre del modelo. Revisión estática de módulos y trazabilidad especificación–código–pruebas–revisión del código.",
+          "La existencia de una especificación no demuestra por sí sola todo su cumplimiento."
+        ],
+        [
+          "7 Usabilidad y recuperación",
+          "Los flujos muestran carga, vacío, éxito, error y acción de recuperación; consultar historia no obliga a cerrar sesión o repetir carga. Pruebas de componentes y revisión visual documentada.",
+          "Sin resultados de satisfacción ni usabilidad con participantes."
+        ],
+        [
+          "8 Accesibilidad básica",
+          "Campos y gráficos tienen nombres accesibles, foco visible, operación por teclado y mensajes no dependientes sólo del color. Pruebas React y revisión visual de puntos, detalles, formularios y contraste.",
+          "No equivale a una auditoría completa ni certificación WCAG."
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir de las especificaciones y registros del proyecto."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 62,
+      "titulo": "Condiciones de calidad 9 a 12",
+      "filas": [
+        [
+          "9 Explicabilidad y prudencia comercial",
+          "Los indicadores muestran receta, período, denominador y procedencia; se distinguen valor nulo y cero, pedido y factura, observación y causalidad. Pruebas de denominadores, eventos y hallazgos; control de agregados históricos.",
+          "La explicación libre del modelo de lenguaje permanece supervisada; no acredita causalidad."
+        ],
+        [
+          "10 Extensibilidad acotada",
+          "Conectores y adaptadores usan contratos explícitos; AdventureWorks/WideWorldImporters comparten núcleo. Un nombre desconocido no crea una capacidad disponible. Pruebas con nombres ES/EN genéricos y dos fuentes SQL Server; inspección del registro de conectores.",
+          "Sólo SQL Server y ventas están implementados y evaluados; no todos los idiomas o esquemas."
+        ],
+        [
+          "11 Límites de rendimiento",
+          "Listas paginadas, presupuestos de contexto, tiempo máximo y reintentos acotados evitan trabajo ilimitado o truncamiento silencioso. Pruebas de rangos, tamaño de contenido enviado, timeout y recuperación; registro de tiempos históricos.",
+          "No hay SLA ni medición representativa de concurrencia o benchmark controlado."
+        ],
+        [
+          "12 Portabilidad de entrega",
+          "El entorno y la evolución de datos se declaran con Compose, imágenes, Alembic y semillas; no se distribuyen volúmenes ni secretos en Git. Inspección de Compose, migraciones, CI y guía de réplica; evidencia histórica de make verify.",
+          "Despliegue Azure, alta disponibilidad y restauración integral ensayada no se afirman como realizados."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Casos de uso del sistema"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Los casos de uso describen cómo una persona o servicio participa en una función, qué debe estar preparado y qué ocurre cuando la operación termina o se rechaza. Los escenarios alternativos forman parte del diseño: una falta de permiso o una respuesta sin evidencia deben producir una explicación controlada."
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 3,
+      "texto": "Caso de uso 1 Autenticación y administración de acceso"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 63,
+      "titulo": "Descripción del caso de uso 1",
+      "filas": [
+        [
+          "Actor y activación",
+          "Usuario autorizado; administrador en el subflujo de gestión. Inicio de sesión o apertura de una función de seguridad."
+        ],
+        [
+          "Permisos",
+          "Sesión válida y permisos de seguridad correspondientes a la operación: administrar cuentas, roles o permisos, o consultar auditoría."
+        ],
+        [
+          "Precondiciones",
+          "Cuenta habilitada y servicios disponibles. Para administración: sesión válida y permiso del recurso."
+        ],
+        [
+          "Flujo normal",
+          "1. El usuario presenta sus credenciales en el formulario de acceso.\n2. El servidor verifica contraseña y estado; obtiene roles y permisos efectivos.\n3. La aplicación muestra la navegación autorizada sin trasladar la autorización al navegador.\n4. En el subflujo administrativo, la persona selecciona usuarios o roles y modifica datos/asociaciones mediante catálogos por nombre.\n5. El backend valida registros protegidos, dependencias y conservación de recuperación antes de guardar.\n6. La operación admitida se confirma y queda auditada; la auditoría se consulta sin edición."
+        ],
+        [
+          "Flujos alternos",
+          "Paso 2: Credencial incorrecta o cuenta inactiva. Se rechaza el acceso sin exponer contraseña o detalles sensibles.\nPaso 4–5: Permiso ausente o modificación de recuperación protegida. El servidor deniega y no altera el registro; la ocultación del menú no es el control definitivo.\nPaso 5: Eliminación con dependencias. Devuelve conflicto y relaciones por resolver; no ejecuta borrado en cascada silencioso."
+        ],
+        [
+          "Postcondiciones",
+          "Sesión autorizada o rechazo controlado. Una gestión válida conserva vía de recuperación y auditoría; una denegada deja datos funcionales intactos."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 3,
+      "texto": "Caso de uso 2 Configurar fuente y proveedor de inteligencia artificial"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 64,
+      "titulo": "Descripción del caso de uso 2",
+      "filas": [
+        [
+          "Actor y activación",
+          "Administrador de plataforma. Preparación o cambio de una conexión o configuración del modelo de lenguaje."
+        ],
+        [
+          "Permisos",
+          "Consultar, registrar y probar conexiones; consultar y modificar la configuración de inteligencia artificial. La modificación de esta configuración permite también probar el proveedor."
+        ],
+        [
+          "Precondiciones",
+          "Sesión autorizada. Destino accesible y credencial suministrada por su titular; conector o adaptador implementado."
+        ],
+        [
+          "Flujo normal",
+          "1. El administrador abre el catálogo correspondiente, sin reutilizar selecciones de otras pantallas.\n2. Para una fuente, registra campos SQL Server y contraseña; para inteligencia artificial, elige proveedor, dirección permitida del servicio del proveedor, modelo y nivel admitido.\n3. FastAPI valida campos y cifra el secreto; las lecturas posteriores sólo indican que existe una credencial.\n4. Ejecuta la prueba: la fuente debe confirmar lectura y ausencia de escritura; el modelo de lenguaje realiza una solicitud mínima sin contexto comercial.\n5. Si la prueba es satisfactoria, habilita la fuente o activa la configuración del modelo de lenguaje.\n6. Las fuentes se habilitan independientemente; activar un modelo de lenguaje desactiva el anterior. El resultado y actor quedan auditados."
+        ],
+        [
+          "Flujos alternos",
+          "Paso 2–4: Motor no implementado, operación del servidor no permitido, escritor, modelo ausente o credencial inválida. Se rechaza o conserva inactiva la configuración con causa segura.\nPaso 3: Edición sin nueva contraseña de fuente. Se conserva el secreto anterior; no se devuelve su texto.\nPaso 5: Cambio de campos que determinan el destino. La prueba anterior deja de habilitar el uso hasta una nueva comprobación."
+        ],
+        [
+          "Postcondiciones",
+          "Configuración segura preparada o fallo explicable. El cambio no reescribe metadatos, propuestas ni cargas anteriores."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 3,
+      "texto": "Caso de uso 3 Seleccionar contexto de trabajo"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 65,
+      "titulo": "Descripción del caso de uso 3",
+      "filas": [
+        [
+          "Actor y activación",
+          "Analista de inteligencia de negocios; usuario gerencial autorizado en consulta. Selección de otra fuente en el espacio de trabajo."
+        ],
+        [
+          "Permisos",
+          "Consultar el módulo en el que se selecciona la fuente. El cambio de contexto no concede permisos adicionales."
+        ],
+        [
+          "Precondiciones",
+          "Existe al menos una fuente probada y habilitada. La sesión puede consultar los módulos que utilizará."
+        ],
+        [
+          "Flujo normal",
+          "1. El usuario selecciona una fuente disponible.\n2. La interfaz conserva la preferencia de esa sesión y limpia el estado dependiente anterior.\n3. Las solicitudes de preparación y de cada módulo incluyen identificación de la fuente.\n4. FastAPI comprueba disponibilidad de la fuente y pertenencia de instantánea o ejecución solicitada.\n5. Inicio, explorador, catálogo, asistente, carga de datos y panel reflejan la misma conexión.\n6. La nueva respuesta se muestra sólo si corresponde a la solicitud y contexto aún vigentes."
+        ],
+        [
+          "Flujos alternos",
+          "Paso 4: Fuente deshabilitada, inexistente o no probada. Se informa el prerrequisito; no inicia un nuevo proceso.\nPaso 4: Ejecución de otra conexión. Se rechaza la combinación en lugar de recuperar datos ajenos.\nPaso 6: Respuesta tardía del contexto anterior. Se descarta; no sustituye filtros, conversación ni gráficos vigentes."
+        ],
+        [
+          "Postcondiciones",
+          "Contexto coherente en la sesión actual. Las selecciones de otras sesiones y los datos históricos no se modifican."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 3,
+      "texto": "Caso de uso 4 Capturar y explorar metadatos"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 66,
+      "titulo": "Descripción del caso de uso 4",
+      "filas": [
+        [
+          "Actor y activación",
+          "Analista de inteligencia de negocios o administrador con permiso de actualización. Solicitud de actualizar o consultar la estructura."
+        ],
+        [
+          "Permisos",
+          "Consultar metadatos; actualizar metadatos para capturar una nueva versión de la estructura."
+        ],
+        [
+          "Precondiciones",
+          "Fuente SQL Server habilitada y probada. Credencial de sólo lectura recuperable; para exploración histórica, instantánea autorizada disponible."
+        ],
+        [
+          "Flujo normal",
+          "1. La persona elige la fuente y solicita actualizar metadatos.\n2. El conector lee catálogos estructurales; no consulta filas comerciales para esta operación.\n3. El servicio normaliza tipos, orden, claves principales y relaciones declaradas y relaciones declaradas y valida el documento canónico.\n4. Calcula la huella y reutiliza una captura sin cambios o persiste una nueva versión inmutable.\n5. El explorador presenta identidad, fecha, huella y totales; permite buscar y abrir una tabla.\n6. El detalle se obtiene desde PostgreSQL y conserva las referencias técnicas originales."
+        ],
+        [
+          "Flujos alternos",
+          "Paso 2–3: Falla de origen o captura incompleta. Conserva la última instantánea válida y comunica la causa.\nPaso 4: Actualización simultánea. Serializa la captura para evitar duplicados equivalentes.\nPaso 5: Cambio de fuente o tabla ya fuera del contexto. Reinicia selección y descarta detalles atrasados; no arrastra Tabla no encontrada de otra base."
+        ],
+        [
+          "Postcondiciones",
+          "Instantánea íntegra, reutilizada o nueva, con procedencia y auditoría. La búsqueda no cambia la estructura ni demuestra calidad de todas las filas."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 3,
+      "texto": "Caso de uso 5 Administrar catálogo analítico"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 67,
+      "titulo": "Descripción del caso de uso 5",
+      "filas": [
+        [
+          "Actor y activación",
+          "Analista de inteligencia de negocios o administrador autorizado. Creación, modificación o retiro de una pregunta orientadora."
+        ],
+        [
+          "Permisos",
+          "Consultar el catálogo analítico; modificar el catálogo para crear, editar o retirar preguntas y opciones."
+        ],
+        [
+          "Precondiciones",
+          "Conexión elegida y dominio ventas implementado. Sesión con autorización correspondiente."
+        ],
+        [
+          "Flujo normal",
+          "1. El usuario abre el catálogo y confirma la fuente vigente.\n2. Consulta cobertura técnica calculada desde su instantánea y orientación funcional por separado.\n3. Crea o edita una pregunta con etiqueta e instrucción de negocio, o cambia su disponibilidad.\n4. Selecciona periodicidades del catálogo soportado; no define tablas ni dimensiones libres.\n5. FastAPI valida y guarda por conexión/dominio con auditoría.\n6. El asistente utiliza la configuración en solicitudes nuevas; las personalizaciones de otra fuente permanecen intactas."
+        ],
+        [
+          "Flujos alternos",
+          "Paso 3–4: Pregunta personalizada no reconocida semánticamente. Se conserva como orientación; no se presume respaldo técnico.\nPaso 4: Periodicidad no soportada. Se rechaza el cambio y se mantienen los datos anteriores.\nPaso 5: Restaurar catálogo. Recupera la orientación validada de esa fuente, sin copiar evidencia técnica o personalizaciones ajenas."
+        ],
+        [
+          "Postcondiciones",
+          "Catálogo funcional aislado y trazable. No hay propuesta aprobada ni dimensión creada como consecuencia de guardar preguntas."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 3,
+      "texto": "Caso de uso 6 Formular y revisar la viabilidad de una necesidad"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 68,
+      "titulo": "Descripción del caso de uso 6",
+      "filas": [
+        [
+          "Actor y activación",
+          "Analista de inteligencia de negocios. Redacción del objetivo o solicitud de sugerencia/revisión."
+        ],
+        [
+          "Permisos",
+          "Generar propuestas, permiso requerido también para sugerir y revisar necesidades comerciales."
+        ],
+        [
+          "Precondiciones",
+          "Fuente e instantánea vigentes; proveedor activo y probado. Consentimiento coincidente con configuración, proveedor, URL y modelo antes del envío."
+        ],
+        [
+          "Flujo normal",
+          "1. El analista escribe su objetivo o solicita sugerencias desde la instantánea.\n2. La inteligencia artificial propone una redacción con evidencia y límites; sólo se adopta cuando la persona lo decide.\n3. El analista selecciona preguntas y periodicidad habilitadas y solicita la revisión del texto definitivo.\n4. La plataforma comprueba referencias, tipos y rutas y clasifica directos, derivables, ambiguos y no disponibles.\n5. Si la respuesta incumple estructura o altera el objetivo, admite como máximo una corrección acotada al mismo destino, sin relajar validadores.\n6. La revisión persistida conserva actor, entrada, instantánea, proveedor y huellas; el analista confirma límites aceptables o modifica la necesidad.\n7. La puerta de generación sólo queda disponible para la revisión coincidente y reglas vigentes."
+        ],
+        [
+          "Flujos alternos",
+          "Paso 1–3: Destino sin consentimiento o cambiado. No se recupera la credencial ni se llama al proveedor; se solicita renovar autorización.\nPaso 4: Dato ausente, componente desconectado o rol semántico incompatible. No se acredita la necesidad como cubierta; se expone la limitación.\nPaso 5: Reformulación no utilizable tras intento acotado. Permite mantener el texto original y revisarlo; CP11 conserva su límite funcional.\nPaso 6–7: Cambian fuente, texto, preguntas, período o reglas. La revisión histórica permanece guardada, pero no autoriza otra generación."
+        ],
+        [
+          "Postcondiciones",
+          "Necesidad final y evaluación no ejecutable con procedencia, o fallo recuperable. No se crea una propuesta inteligencia de negocios ni se ejecuta carga de datos durante la asesoría."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 3,
+      "texto": "Caso de uso 7 Generar conceptos y propuesta de inteligencia de negocios"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 69,
+      "titulo": "Descripción del caso de uso 7",
+      "filas": [
+        [
+          "Actor y activación",
+          "Analista de inteligencia de negocios. Confirmación de generación para una necesidad revisada."
+        ],
+        [
+          "Permisos",
+          "Generar propuestas de inteligencia de negocios."
+        ],
+        [
+          "Precondiciones",
+          "Revisión persistida del mismo actor y entrada, límites confirmados y consentimiento vigente. Instantánea y configuración del modelo de lenguaje disponibles; alcance no vacío."
+        ],
+        [
+          "Flujo normal",
+          "1. El servidor comprueba la revisión y forma un paquete compacto con estructura permitida.\n2. El modelo de lenguaje identifica conceptos con referencias y explicaciones; la aplicación descarta referencias ajenas y determina alcance conectado.\n3. El analista revisa los conceptos y excluye los no pertinentes mediante opciones guiadas.\n4. El modelo de lenguaje propone decisiones dimensionales compactas: hecho, grano, medidas, dimensiones y indicadores.\n5. FastAPI expande claves, relaciones y operaciones tipadas desde la instantánea.\n6. Los validadores comprueban contrato, roles, fórmulas, evento comercial y cobertura de requisitos.\n7. Persiste un intento listo para revisar o bloqueado, junto con proveedor, modelo, validación y linaje."
+        ],
+        [
+          "Flujos alternos",
+          "Paso 1: Huella inexistente, de otro actor o entrada modificada. Solicita revisar de nuevo; no acepta la huella del navegador como evidencia suficiente.\nPaso 2–4: Cuota, truncamiento o documentos estructurados inválido. Aplica sólo recuperación admitida; si no resuelve, conserva un fallo y la necesidad.\nPaso 5–6: Referencia inventada, fórmula libre, ausencia de requisito viable o pedido usado como factura. Bloquea la aprobación y explica el control incumplido."
+        ],
+        [
+          "Postcondiciones",
+          "Versión persistida y auditable; sin SQL ejecutable del proveedor. Ninguna tabla analítica ni cifra calculada se atribuye a esta generación."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 3,
+      "texto": "Caso de uso 8 Personalizar, decidir y consultar una versión"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 70,
+      "titulo": "Descripción del caso de uso 8",
+      "filas": [
+        [
+          "Actor y activación",
+          "Analista de inteligencia de negocios autorizado. Apertura de una propuesta nueva o histórica."
+        ],
+        [
+          "Permisos",
+          "Consultar propuestas; generar propuestas para crear una versión derivada o descartar una versión no aprobada; revisar propuestas para aprobar, rechazar o retirar una aprobación."
+        ],
+        [
+          "Precondiciones",
+          "Versión persistida visible y su instantánea disponible. Para aprobar: lista para revisión, reglas vigentes sin errores y confirmación de advertencias."
+        ],
+        [
+          "Flujo normal",
+          "1. El usuario abre la versión; la aplicación repone su necesidad y periodicidad, no las del borrador actual.\n2. Consulta conceptos, grano, medidas, indicadores, supuestos y referencias comprobadas.\n3. Si requiere ajustes, elige opciones verificadas y registra justificación; se crea una versión derivada y se revalida sin nueva llamada al modelo de lenguaje.\n4. La persona autorizada aprueba o rechaza; las decisiones finales no se sobrescriben mediante edición del documento.\n5. Verificar evidencia recalcula integridad, referencias y reproducción como diagnóstico de sólo lectura.\n6. La aprobación puede retirarse explícitamente; la restauración exige controles actuales y advertencias confirmadas y deja motivo auditado.\n7. Desde una versión histórica puede crear un borrador nuevo sin cerrar sesión ni alterar la versión consultada."
+        ],
+        [
+          "Flujos alternos",
+          "Paso 3: Operando, dimensión o medida no compatible. Rechaza el ajuste o exige otra propuesta; no admite nombres o SQL libres.\nPaso 4: Error determinístico o advertencia sin confirmar. No permite aprobar.\nPaso 5: Sólo diferencia de huella por evolución del motor. Muestra compatibilidad; no retira por sí sola una aprobación ni cambia el carga de datos existente.\nPaso 6: Versión con errores vigentes o estado no restaurable. Bloquea restauración. Descartar una versión no aprobada la retira del trabajo ordinario sin borrarla."
+        ],
+        [
+          "Postcondiciones",
+          "Versión original y linaje conservados; nueva revisión o decisión auditada cuando procede. La aprobación no ejecuta carga de datos; verificar no modifica estado funcional."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 3,
+      "texto": "Caso de uso 9 Preparar y ejecutar materialización"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 71,
+      "titulo": "Descripción del caso de uso 9",
+      "filas": [
+        [
+          "Actor y activación",
+          "Analista de inteligencia de negocios. Selección y confirmación de una propuesta aprobada."
+        ],
+        [
+          "Permisos",
+          "Consultar ejecuciones de carga; ejecutar cargas para preparar y confirmar la materialización del datamart."
+        ],
+        [
+          "Precondiciones",
+          "Fuente habilitada, propuesta aprobada e instantánea accesible. Contrato y indicadores admitidos por el constructor; credencial de lectura disponible."
+        ],
+        [
+          "Flujo normal",
+          "1. La pantalla presenta propuestas elegibles y mantiene accesible el expediente publicado vigente.\n2. El analista confirma una propuesta y selecciona indicadores calculables, sin SQL libre.\n3. FastAPI revalida contrato y dependencias, compila recetas y recalcula cobertura completa o parcial.\n4. Comprueba bajo bloqueo si existe un expediente equivalente; si no existe, conserva uno preparado con identidad y huellas.\n5. La persona revisa transformaciones y confirma la ejecución.\n6. El ejecutor lee el origen, transforma y carga hecho/dimensiones en un esquema propio de la ejecución.\n7. Se conservan conteos, conciliación y estado; el analista pasa al expediente de validación."
+        ],
+        [
+          "Flujos alternos",
+          "Paso 1–3: Aprobación histórica no apta para reglas actuales. Bloquea carga nueva sin retirar automáticamente la aprobación ni ocultar carga de datos anterior.\nPaso 4: Misma propuesta y selección ya preparada o ejecutada. Abre el expediente o devuelve 409; no inicia una segunda carga accidental.\nPaso 6: Error de extracción, tipo, grano o regla bloqueante. No deja una materialización parcialmente publicada; registra fallo y diagnóstico."
+        ],
+        [
+          "Postcondiciones",
+          "Expediente físico y evidencia identificados o falla controlada. Sin escritura sistema transaccional de origen, refresco periódico ni reemplazo de otra ejecución nueva."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 3,
+      "texto": "Caso de uso 10 Conciliar y publicar resultados supervisados"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 72,
+      "titulo": "Descripción del caso de uso 10",
+      "filas": [
+        [
+          "Actor y activación",
+          "Analista de inteligencia de negocios. Apertura del expediente tras la carga."
+        ],
+        [
+          "Permisos",
+          "Consultar ejecuciones de carga; modificar ejecuciones para realizar comprobaciones y registrar decisiones sobre etiquetas."
+        ],
+        [
+          "Precondiciones",
+          "Expediente de ejecución disponible. Para interpretación: categorías aptas y proveedor probado; la carga numérica no depende de una traducción exitosa."
+        ],
+        [
+          "Flujo normal",
+          "1. El analista consulta filas, tablas, medidas y estado de conciliación.\n2. Examina referencia sistema transaccional de origen y resultado datamart con mismo grano, período, receta y tolerancia.\n3. Comprueba denominadores, evento comercial y unidades; conserva nulo si una razón no es calculable.\n4. Revisa identidad descriptiva y cobertura de dimensiones sin sustituir población por otra entidad.\n5. Cuando existen mapeos españoles aptos, confirma, corrige entre opciones admitidas o excluye, conservando valores originales.\n6. Publica la interpretación y conserva el comprobante con fuente, propuesta, ejecución y decisiones.\n7. Si falta evidencia de divisa, solicita comprobación controlada; sólo una moneda ISO inequívoca reemplaza la unidad genérica."
+        ],
+        [
+          "Flujos alternos",
+          "Paso 2: Diferencia bloqueante. El expediente muestra incumplimiento, no un indicadores validado.\nPaso 4: Ruta descriptiva insegura o sin cobertura suficiente. No publica la dimensión ejecutiva como correcta; exige alternativa admisible.\nPaso 5: Proveedor de interpretación falla. Mantiene conciliación y permite reintentar sólo interpretación sin repetir carga de datos.\nPaso 7: Moneda ausente o mixta. Conserva moneda de origen y la limitación, sin inventar USD."
+        ],
+        [
+          "Postcondiciones",
+          "Datos conciliados y estado semántico explícito, con evidencia recuperable. No se acredita costo histórico, equivalencia contable ni calidad universal por igualdad de sumas."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 3,
+      "texto": "Caso de uso 11 Consultar analítica con contexto e interacción"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 73,
+      "titulo": "Descripción del caso de uso 11",
+      "filas": [
+        [
+          "Actor y activación",
+          "Gerente comercial o analista inteligencia de negocios autorizado. Apertura del panel de ventas de una fuente."
+        ],
+        [
+          "Permisos",
+          "Consultar el panel analítico de ventas."
+        ],
+        [
+          "Precondiciones",
+          "Al menos una ejecución de esa fuente conciliada con tablas físicas disponibles. Identidad fuente–ejecución validada por servidor."
+        ],
+        [
+          "Flujo normal",
+          "1. El usuario confirma fuente, ejecución, propuesta y evento comercial de la cabecera.\n2. Cuando hay varias ejecuciones disponibles elige una; con una sola, la identidad se muestra en lectura.\n3. Selecciona vista, métrica, año o territorio del catálogo disponible.\n4. El servidor calcula indicadores, agregados y hallazgos de la misma selección.\n5. El usuario abre el detalle de un punto, barra o categoría para consultar cifra exacta y participación.\n6. Puede aplicar explícitamente un territorio permitido como filtro; todo el panel y su contexto se actualizan.\n7. La vista analítica añade calidad, tablas de respaldo y procedencia sin modificar datos."
+        ],
+        [
+          "Flujos alternos",
+          "Paso 1–2: Sin ejecución física elegible. Muestra estado vacío accionable; no ofrece sólo metadatos históricos como datamart consultable.\nPaso 3–4: indicadores sin dependencia o denominador calculable. Muestra causa de no calculable; no cero ni confirmación verde.\nPaso 4: Respuesta antigua o combinación de otra fuente. El cliente descarta la respuesta o el servidor rechaza; los gráficos previos no permanecen."
+        ],
+        [
+          "Postcondiciones",
+          "Selección visible, coherente y verificable. Las observaciones descriptivas no se presentan como causas ni pronósticos."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 3,
+      "texto": "Caso de uso 12 Consultar al copiloto y exportar evidencia"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "tabla",
+      "numero": 74,
+      "titulo": "Descripción del caso de uso 12",
+      "filas": [
+        [
+          "Actor y activación",
+          "Gerente comercial o analista autorizado. Pregunta sobre una ejecución o solicitud de PDF/Excel."
+        ],
+        [
+          "Permisos",
+          "Consultar el panel analítico para usar el copiloto; contar además con permiso de exportación de informes para descargar archivos."
+        ],
+        [
+          "Precondiciones",
+          "Dashboard autorizado de fuente y ejecución confirmadas. Para chat: modelo de lenguaje activo/probado; para exportar: ambos permisos y formato admitido."
+        ],
+        [
+          "Flujo normal",
+          "1. El usuario revisa selección, filtros y procedencia del panel.\n2. Subflujo conversación: redacta o elige una pregunta; el backend valida contexto e historial acotado.\n3. El modelo de lenguaje interpreta un contrato cerrado y el motor calcula agregados autorizados, incluso un filtro no visible cuando es permitido.\n4. La respuesta muestra evidencia, alcance, denominador, advertencia y proveedor/modelo; no ejecuta acciones.\n5. Subflujo exportación: el usuario elige PDF o Excel y el servidor reconstruye la selección, sin confiar en cifras del navegador.\n6. Se produce el archivo con vista, filtros y trazabilidad apropiados; Excel mantiene tipos numéricos y no incluye macros o fórmulas del modelo.\n7. La consulta y la descarga dejan auditoría mínima; cambiar contexto limpia la conversación."
+        ],
+        [
+          "Flujos alternos",
+          "Paso 2–4: inteligencia artificial no disponible o contrato de pregunta inválido. Falla sólo la conversación; el panel sigue disponible.\nPaso 3: ranking de las primeras categorías o participación. El denominador se calcula antes de limitar el ranking y se hace visible.\nPaso 5: Permiso de exportación o acceso al panel ausente. El servidor devuelve 403; no genera un archivo parcial.\nPaso 5–6: Ejecución ajena o ya no disponible. Rechaza el archivo de forma segura, sin reutilizar datos del navegador."
+        ],
+        [
+          "Postcondiciones",
+          "Respuesta contextual o archivo fiel a la selección autorizada. No hay memoria personal permanente ni efecto de escritura sobre el negocio."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Arquitectura del sistema"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "La arquitectura muestra qué responsabilidad cumple cada parte y cómo circula la información. La interfaz del navegador solicita acciones a los servicios del servidor. Estos comprueban los permisos y las reglas, consultan la fuente autorizada y conservan propuestas, ejecuciones y datos analíticos en PostgreSQL."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "El proveedor de inteligencia artificial es configurable y no aprueba diseños ni ejecuta escrituras por su cuenta. La aplicación controla el contenido enviado y comprueba lo recibido. La lectura del origen se mantiene separada de la creación del datamart."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir de los componentes implementados. Las fuentes de demostración utilizan SQL Server; PostgreSQL conserva el trabajo y los datamarts."
+    },
+    {
+      "tipo": "figura",
+      "numero": 11,
+      "titulo": "Arquitectura general del sistema inteligente de datamarts",
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/arquitectura/Arquitectura_general_BI_IA.png"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "El recorrido puede leerse desde la persona usuaria hacia la interfaz, las comprobaciones y los datos. Cada propuesta conserva su fuente de origen. La aprobación humana habilita la preparación de la carga; la conciliación comprueba el resultado antes de publicarlo para análisis."
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Modelos de interacción y datos"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Los diagramas utilizan el Lenguaje Unificado de Modelado para representar responsabilidades, actividades, secuencias, componentes y estados. El modelo dimensional final resume hechos de ventas y dimensiones de análisis. Sus nombres son conceptuales: el modelo físico se deriva de la propuesta y de los metadatos de cada fuente."
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 3,
+      "texto": "Casos de uso y responsabilidades"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Vista de responsabilidades funcionales agrupadas. Los permisos se comprueban en el servidor; el proveedor de inteligencia artificial no aprueba ni ejecuta cargas. Los casos detallados se presentan en sus tablas."
+    },
+    {
+      "tipo": "figura",
+      "numero": 12,
+      "titulo": "Casos de uso y responsabilidades",
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/01_casos_uso.png"
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 3,
+      "texto": "Actividad del ciclo de análisis supervisado"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. El flujo distingue la comprobación de la necesidad, la generación, la aprobación y la ejecución. Una respuesta inválida o una diferencia bloqueante no se presenta como resultado publicado."
+    },
+    {
+      "tipo": "figura",
+      "numero": 13,
+      "titulo": "Actividad del ciclo de análisis supervisado",
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/02_actividad_supervision.png"
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 3,
+      "texto": "Generación y aprobación de una propuesta"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. La secuencia conserva el objetivo de negocio y la procedencia de los metadatos. Los bloqueos no se omiten y la aprobación permanece bajo control humano."
+    },
+    {
+      "tipo": "figura",
+      "numero": 14,
+      "titulo": "Generación y aprobación de una propuesta",
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/03_secuencia_propuesta.png"
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 3,
+      "texto": "Carga y conciliación de un datamart"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. El servicio construye operaciones controladas y registra las diferencias. La existencia de tablas no sustituye la conciliación entre cantidades e importes del origen y del destino."
+    },
+    {
+      "tipo": "figura",
+      "numero": 15,
+      "titulo": "Carga y conciliación de un datamart",
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/04_secuencia_etl.png"
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 3,
+      "texto": "Componentes del sistema"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Los componentes separan presentación, acceso, fuentes, propuesta, carga y consumo analítico. Las reglas comunes evitan depender de nombres de una única base o de un único proveedor."
+    },
+    {
+      "tipo": "figura",
+      "numero": 16,
+      "titulo": "Componentes del sistema",
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/05_componentes.png"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Los contenedores de datos conservan su información en volúmenes. La clave maestra se mantiene separada de las credenciales cifradas y las tareas de inicio no son servicios de uso permanente."
+    },
+    {
+      "tipo": "figura",
+      "numero": 17,
+      "titulo": "Despliegue local de la demostración",
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/06_despliegue.png"
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 3,
+      "texto": "Entidades del ciclo de diseño y carga"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Vista conceptual verificada con las entidades persistentes de la aplicación. Las multiplicidades expresan las relaciones conservadas; la identidad de una propuesta corregida remite a su versión de origen."
+    },
+    {
+      "tipo": "figura",
+      "numero": 18,
+      "titulo": "Entidades del ciclo de diseño y carga",
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/07_clases_dominio.png"
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 3,
+      "texto": "Estados y decisiones de una propuesta"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Los estados traducen los valores implementados. La consulta de evidencia no cambia una aprobación; retirar, restaurar o descartar exige una acción autorizada."
+    },
+    {
+      "tipo": "figura",
+      "numero": 19,
+      "titulo": "Estados y decisiones de una propuesta",
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/08_estados_propuesta.png"
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 3,
+      "texto": "Modelo dimensional lógico de ventas"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Esquema lógico ilustrativo, no un diseño físico fijo para todas las fuentes. Cada ejecución determina sus dimensiones, atributos y medidas a partir del contrato aprobado. Las posibles ausencias de coincidencia se controlan durante la carga."
+    },
+    {
+      "tipo": "figura",
+      "numero": 20,
+      "titulo": "Modelo dimensional lógico de ventas",
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/09_modelo_estrella_logico.png"
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Reglas comerciales y decisiones de diseño"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Una misma cifra puede tener significados diferentes según su grano y su fórmula. El grano expresa qué representa una fila: por ejemplo, una línea de pedido o de factura. Por eso no se confunde el número de líneas con el número de pedidos distintos."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Los descuentos expresados como tasa requieren una operación para obtener un importe monetario. El costo total combina el costo unitario y las unidades cuando las referencias están comprobadas. Las razones por unidad y los márgenes deben declarar su denominador, la base de venta y el alcance utilizado."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir de las especificaciones y registros del proyecto."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 75,
+      "titulo": "Reglas que conservan el significado del análisis",
+      "filas": [
+        [
+          "Conteo de documentos",
+          "Contar identificadores distintos del pedido o factura, sin sustituirlos por filas."
+        ],
+        [
+          "Cálculo de descuento",
+          "Distinguir una tasa de un importe; utilizar una receta comprobada cuando corresponda."
+        ],
+        [
+          "Costo y margen",
+          "Usar las fuentes verificadas y declarar la operación de cálculo."
+        ],
+        [
+          "Moneda sin comprobación",
+          "Presentar moneda de origen; no asignar dólares por conveniencia."
+        ],
+        [
+          "Periodicidad",
+          "Conservar la periodicidad efectiva de la propuesta y de la ejecución."
+        ],
+        [
+          "Cliente y territorio",
+          "Utilizar relaciones verificadas; no inferir historia de entregas a partir de una dirección actual."
+        ],
+        [
+          "Fuentes y ejecuciones",
+          "Consultar indicadores dentro de la conexión y la ejecución seleccionadas."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Construcción e integración del prototipo"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "La construcción se implementó por módulos conectados mediante servicios. Las verificaciones se ejecutan en el servidor y no dependen solamente de que un botón esté visible. Los cambios se conservan mediante control de versiones y se revisan antes de integrar la rama de desarrollo y promover una versión de referencia."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "La puesta en marcha utiliza contenedores independientes y volúmenes persistentes. La entrega portable incorpora las imágenes y las bases de demostración para reproducir el entorno; los secretos de una instalación anterior no forman parte de una copia limpia."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir de las especificaciones y registros del proyecto."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 76,
+      "titulo": "Módulos y resultado de cada etapa",
+      "filas": [
+        [
+          "Preparación",
+          "Conexiones, permisos y modelo de inteligencia artificial.",
+          "Fuente habilitada y acceso controlado."
+        ],
+        [
+          "Comprensión de la fuente",
+          "Lectura y exploración de metadatos.",
+          "Instantánea estructural identificada."
+        ],
+        [
+          "Contexto comercial",
+          "Catálogo y necesidad del análisis.",
+          "Preguntas y objetivo que orientan la propuesta."
+        ],
+        [
+          "Diseño supervisado",
+          "Conceptos, modelo y revisión humana.",
+          "Versión aprobada y trazable."
+        ],
+        [
+          "Transformación y carga",
+          "Preparación, confirmación y ejecución.",
+          "Tablas analíticas y expediente de resultados."
+        ],
+        [
+          "Conciliación y consulta",
+          "Contraste, panel, copiloto y reportes.",
+          "Datos revisables para el análisis."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 1,
+      "texto": "Validación de la propuesta"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "La validación reúne criterios de aceptación, pruebas del software y conciliaciones numéricas. El encadenamiento fuente, metadatos, propuesta y ejecución permite identificar el origen de cada resultado. Los casos principales corresponden a la campaña operativa del seis de noviembre de 2026, con nuevas propuestas y cargas sobre ambas fuentes. Los antecedentes del cinco de noviembre se identifican por separado y conservan su historial."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia a partir de las especificaciones y registros del proyecto."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 77,
+      "titulo": "Condiciones para ejecutar y cerrar una prueba",
+      "filas": [
+        [
+          "Antes de la prueba",
+          "Servicios disponibles; fuente identificada; credenciales de lectura; metadatos y permisos preparados; proveedor disponible cuando la función lo requiera."
+        ],
+        [
+          "Al terminar",
+          "Resultado esperado contrastado; cantidades y contexto revisados; incidencias registradas; evidencia conservada; limitaciones comunicadas."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Plan de pruebas y resultados documentados"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Cada prueba se presenta con una situación, un resultado esperado y el resultado obtenido que consta en las evidencias. Cuando no existe una campaña completa, el estado se conserva como pendiente. Las pruebas automáticas complementan los recorridos de uso; no se sustituyen por la opinión recogida en la encuesta."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con verificaciones automáticas, recorridos de la interfaz y expedientes del proyecto. Cada resultado indica si corresponde a la campaña del 6 de noviembre o a un antecedente."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 78,
+      "titulo": "Prueba 1 Captura de esquema por fuente",
+      "filas": [
+        [
+          "Situación de prueba",
+          "Captura de esquema por fuente"
+        ],
+        [
+          "Resultado esperado",
+          "Cada instantánea pertenece a su conexión; cambiar el contexto no reutiliza tablas ajenas."
+        ],
+        [
+          "Resultado obtenido",
+          "AdventureWorks: instantánea 2, 6 esquemas, 71 tablas, 482 columnas y 90 relaciones. WideWorldImporters: instantánea 3, 4 esquemas, 48 tablas, 546 columnas y 98 relaciones."
+        ],
+        [
+          "Estado",
+          "Comprobación documentada"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con verificaciones automáticas, recorridos de la interfaz y expedientes del proyecto. Cada resultado indica si corresponde a la campaña del 6 de noviembre o a un antecedente."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 79,
+      "titulo": "Prueba 2 Catálogo aislado y necesidad literal",
+      "filas": [
+        [
+          "Situación de prueba",
+          "Catálogo aislado y necesidad literal"
+        ],
+        [
+          "Resultado esperado",
+          "Cambiar el catálogo de una fuente no modifica otra; revisar la necesidad no reescribe su objetivo."
+        ],
+        [
+          "Resultado obtenido",
+          "Catálogos separados; seis preguntas AdventureWorks, incluidas las dos personalizadas. Se conservaron las necesidades de 532 y 693 caracteres."
+        ],
+        [
+          "Estado",
+          "Comprobación documentada"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con verificaciones automáticas, recorridos de la interfaz y expedientes del proyecto. Cada resultado indica si corresponde a la campaña del 6 de noviembre o a un antecedente."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 80,
+      "titulo": "Prueba 3 Propuesta estructurada y revisión humana",
+      "filas": [
+        [
+          "Situación de prueba",
+          "Propuesta estructurada y revisión humana"
+        ],
+        [
+          "Resultado esperado",
+          "No existen errores bloqueantes y se revisan expresamente las advertencias antes de aprobar; aprobar no ejecuta carga de datos."
+        ],
+        [
+          "Resultado obtenido",
+          "Propuesta 129: cero errores, nueve advertencias y siete referencias. Propuesta 131: cero errores, siete advertencias y siete referencias. Sus huellas de propuesta y reconstrucción coinciden; ambas usan las reglas de compilación 5."
+        ],
+        [
+          "Estado",
+          "Comprobación documentada"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con verificaciones automáticas, recorridos de la interfaz y expedientes del proyecto. Cada resultado indica si corresponde a la campaña del 6 de noviembre o a un antecedente."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 81,
+      "titulo": "Prueba 4 Referencias, identidad y aritmética no válidas",
+      "filas": [
+        [
+          "Situación de prueba",
+          "Referencias, identidad y aritmética no válidas"
+        ],
+        [
+          "Resultado esperado",
+          "Una referencia inexistente, un identificador usado como importe o una granularidad incompatible impiden aprobar. No se sustituye silenciosamente la población."
+        ],
+        [
+          "Resultado obtenido",
+          "Regresiones backend e incidencias documentadas. Las reglas de validación actuales corresponden a las nuevas versiones; no modifican los artefactos históricos."
+        ],
+        [
+          "Estado",
+          "Comprobación documentada"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con verificaciones automáticas, recorridos de la interfaz y expedientes del proyecto. Cada resultado indica si corresponde a la campaña del 6 de noviembre o a un antecedente."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 82,
+      "titulo": "Prueba 5 Compatibilidad histórica sin mutación",
+      "filas": [
+        [
+          "Situación de prueba",
+          "Compatibilidad histórica sin mutación"
+        ],
+        [
+          "Resultado esperado",
+          "Verificar genera un diagnóstico y no retira por sí mismo una aprobación."
+        ],
+        [
+          "Resultado obtenido",
+          "Las propuestas 122, 126 y 128 conservaron sus reglas y huellas al reconstruirlas. Los expedientes 18, 19, 20 y 21 conservaron sus datos. Las pruebas de servidor rechazan nuevas preparaciones o cargas con contratos anteriores a las reglas 5, sin retirar su aprobación ni impedir consultar el historial."
+        ],
+        [
+          "Estado",
+          "Comprobación documentada"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con verificaciones automáticas, recorridos de la interfaz y expedientes del proyecto. Cada resultado indica si corresponde a la campaña del 6 de noviembre o a un antecedente."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 83,
+      "titulo": "Prueba 6 carga de datos trazable e idempotencia",
+      "filas": [
+        [
+          "Situación de prueba",
+          "carga de datos trazable e idempotencia"
+        ],
+        [
+          "Resultado esperado",
+          "Se exige una propuesta elegible, selección de indicadores y confirmación; el destino pertenece a la ejecución y se impide duplicar accidentalmente la carga."
+        ],
+        [
+          "Resultado obtenido",
+          "Ejecuciones 21 y 22: veintiséis operaciones y cinco tablas conciliadas por caso. Cada ejecución mantiene un esquema analítico propio; las fuentes transaccionales permanecieron en modo de lectura."
+        ],
+        [
+          "Estado",
+          "Comprobación documentada"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con verificaciones automáticas, recorridos de la interfaz y expedientes del proyecto. Cada resultado indica si corresponde a la campaña del 6 de noviembre o a un antecedente."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 84,
+      "titulo": "Prueba 7 Conciliación equivalente",
+      "filas": [
+        [
+          "Situación de prueba",
+          "Conciliación equivalente"
+        ],
+        [
+          "Resultado esperado",
+          "Se compara la misma receta, granularidad y alcance; se declaran las diferencias. Un resultado no calculable no se representa como cero."
+        ],
+        [
+          "Resultado obtenido",
+          "AdventureWorks: 121317 filas de origen y destino. WideWorldImporters: 228265 filas de origen y destino. Los importes y documentos se detallan en los casos reproducibles."
+        ],
+        [
+          "Estado",
+          "Comprobación documentada"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con verificaciones automáticas, recorridos de la interfaz y expedientes del proyecto. Cada resultado indica si corresponde a la campaña del 6 de noviembre o a un antecedente."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 85,
+      "titulo": "Prueba 8 Unidades, divisa y legibilidad",
+      "filas": [
+        [
+          "Situación de prueba",
+          "Unidades, divisa y legibilidad"
+        ],
+        [
+          "Resultado esperado",
+          "Las razones conservan denominador y decimales; se usa un código de moneda sólo si fue comprobado. No hay solapamientos en los anchos ensayados."
+        ],
+        [
+          "Resultado obtenido",
+          "Se comprobaron razones con denominador y decimales: AdventureWorks 3491,07 dólares por pedido; WideWorldImporters 2808,73 en moneda de origen por factura. Las pruebas de interfaz incluyen las unidades genéricas moneda de origen, Importe y valor; la campaña visual utiliza capturas completas de escritorio."
+        ],
+        [
+          "Estado",
+          "Comprobación documentada"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con verificaciones automáticas, recorridos de la interfaz y expedientes del proyecto. Cada resultado indica si corresponde a la campaña del 6 de noviembre o a un antecedente."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 86,
+      "titulo": "Prueba 9 Panel y periodicidad efectiva",
+      "filas": [
+        [
+          "Situación de prueba",
+          "Panel y periodicidad efectiva"
+        ],
+        [
+          "Resultado esperado",
+          "El indicadores, la serie y los filtros conservan el contexto; el período corresponde a la receta o a su herencia normalizada."
+        ],
+        [
+          "Resultado obtenido",
+          "En esta campaña se comprobaron los paneles mensuales y los filtros de las ejecuciones 21 y 22. El antecedente del 5 de noviembre conserva además veintidós lecturas para periodicidades explícitas y heredadas; esas lecturas no se atribuyen como nuevas a esta campaña."
+        ],
+        [
+          "Estado",
+          "Comprobación documentada"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con verificaciones automáticas, recorridos de la interfaz y expedientes del proyecto. Cada resultado indica si corresponde a la campaña del 6 de noviembre o a un antecedente."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 87,
+      "titulo": "Prueba 10 Copiloto con denominador y cautela",
+      "filas": [
+        [
+          "Situación de prueba",
+          "Copiloto con denominador y cautela"
+        ],
+        [
+          "Resultado esperado",
+          "ranking de las primeras categorías utiliza el total filtrado previo al recorte. No atribuye causalidad, preferencias ni historia territorial no demostradas."
+        ],
+        [
+          "Resultado obtenido",
+          "La respuesta de AdventureWorks 21 coincide con 17452 unidades y junio de 2013 con 2494 unidades para Northwest. La respuesta de WideWorldImporters 22 coincide con 3191769,11 en moneda de origen, 142247 unidades y 1179 facturas para 2015/California; distingue la ficha actual de una ubicación histórica o de una entrega realizada. El texto generado continúa sujeto a revisión humana."
+        ],
+        [
+          "Estado",
+          "Comprobación documentada"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con verificaciones automáticas, recorridos de la interfaz y expedientes del proyecto. Cada resultado indica si corresponde a la campaña del 6 de noviembre o a un antecedente."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 88,
+      "titulo": "Prueba 11 Fidelidad de archivos PDF/Excel",
+      "filas": [
+        [
+          "Situación de prueba",
+          "Fidelidad de archivos PDF/Excel"
+        ],
+        [
+          "Resultado esperado",
+          "El PDF y el Excel mantienen datos autorizados, unidad, fuente, filtros y desplazamiento horario; el texto es literal y el aviso se presenta completo."
+        ],
+        [
+          "Resultado obtenido",
+          "Se descargaron informes PDF de seis páginas y libros Excel de seis hojas de las ejecuciones 21 y 22 en vista analítica. Se contrastan los cuatro indicadores y las cuatro visualizaciones con el filtro de cada fuente; los archivos y su revisión se conservan como evidencia."
+        ],
+        [
+          "Estado",
+          "Comprobación documentada"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con verificaciones automáticas, recorridos de la interfaz y expedientes del proyecto. Cada resultado indica si corresponde a la campaña del 6 de noviembre o a un antecedente."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 89,
+      "titulo": "Prueba 12 Campaña autenticada por perfiles",
+      "filas": [
+        [
+          "Situación de prueba",
+          "Campaña autenticada por perfiles"
+        ],
+        [
+          "Resultado esperado",
+          "Una cuenta con el permiso necesario puede realizar la operación; una cuenta sin ese permiso recibe acceso denegado. Se conserva la recuperación administrativa."
+        ],
+        [
+          "Resultado obtenido",
+          "Pendiente una campaña completa con sesiones específicas de Analista, Gerente y Operador. La configuración observada de permisos no equivale a esa campaña."
+        ],
+        [
+          "Estado",
+          "Pendiente de campaña específica"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Elaboración propia con verificaciones automáticas, recorridos de la interfaz y expedientes del proyecto. Cada resultado indica si corresponde a la campaña del 6 de noviembre o a un antecedente."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 90,
+      "titulo": "Prueba 13 Roles distintos en relaciones estructuralmente válidas",
+      "filas": [
+        [
+          "Situación de prueba",
+          "Roles distintos en relaciones estructuralmente válidas"
+        ],
+        [
+          "Resultado esperado",
+          "Una relación de destinatario de facturación o ciudad postal no puede sustituir al comprador o a su ciudad de entrega cuando la necesidad revisada exige estos últimos. La carga y el análisis utilizan la misma ruta comprobada."
+        ],
+        [
+          "Resultado obtenido",
+          "La interfaz rechazó las dos selecciones contradictorias sin crear propuestas ni ejecutar datos. Las elecciones correctas generaron las versiones 130 y 131 y conservaron los dos vínculos y la provincia como destino. La ejecución 22 coincidió con la consulta OLTP independiente del rol requerido."
+        ],
+        [
+          "Estado",
+          "Comprobación documentada"
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Resultados de las verificaciones automáticas"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "El cierre de la campaña registra quinientas treinta pruebas de servicios y cincuenta pruebas de interfaz satisfactorias. Se comprobaron además el análisis de tipos, el formato, la compilación y los controles de integración aplicables. Estos resultados acreditan las condiciones ensayadas y no una ausencia de errores para cualquier situación o entorno."
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Corrección de relaciones y conservación del historial"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "La auditoría permitió identificar una dificultad que los totales generales no detectan: dos relaciones pueden conservar el número de filas y, aun así, representar funciones comerciales diferentes. En la fuente de facturas se distinguió al comprador del destinatario de facturación y la ciudad de entrega de la dirección postal. La necesidad revisada exigía al comprador y la ciudad de entrega de su ficha actual."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "La corrección incorporó la conservación de las relaciones exactas revisadas. Esos vínculos se comprobaron contra las claves de la instantánea y se utilizaron tanto en la carga como en la procedencia del análisis. Las dos selecciones contradictorias se rechazaron desde la interfaz. Si la evidencia no permite resolver una alternativa de forma inequívoca, se requiere una decisión guiada del analista antes de aprobar."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Las nuevas versiones utilizaron las reglas de compilación 5. Los contratos anteriores conservaron sus reglas, huellas y expedientes para consulta; las nuevas cargas requieren una versión derivada revisada con las reglas actuales. Por ello, una diferencia entre roles comerciales no se interpreta como pérdida de datos ni se corrige retirando automáticamente una aprobación histórica."
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Caso de demostración con AdventureWorks2022"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Los números de propuesta y ejecución permiten localizar el resultado en la plataforma. Los importes se redondean a dos decimales para su lectura; la evidencia conserva la precisión de cálculo."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 91,
+      "titulo": "Resultados conciliados de AdventureWorks2022",
+      "filas": [
+        [
+          "Grano del análisis",
+          "Línea de pedido"
+        ],
+        [
+          "Filas del origen",
+          "121.317"
+        ],
+        [
+          "Filas del datamart",
+          "121.317"
+        ],
+        [
+          "Diferencia de filas",
+          "0"
+        ],
+        [
+          "Importe total",
+          "109.846.381,40 dólares"
+        ],
+        [
+          "Unidades",
+          "274.914"
+        ],
+        [
+          "Documentos distintos",
+          "31.465 pedidos"
+        ],
+        [
+          "Promedio por documento",
+          "3.491,07 dólares por pedido"
+        ],
+        [
+          "Periodicidad",
+          "Mensual: 38 períodos"
+        ],
+        [
+          "Relación territorial",
+          "Territorio comercial registrado en el pedido."
+        ],
+        [
+          "Resultado conservado",
+          "Propuesta aprobada 129 y ejecución 21"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "El caso conserva la línea de venta y el identificador del pedido. El promedio por pedido divide el importe por pedidos distintos y no por líneas. En el filtro de 2013 y Northwest se documentaron 6.015.174,74 dólares, 17.452 unidades y 2.053 pedidos; el promedio filtrado fue 2.929,94 dólares por pedido."
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Caso de demostración con WideWorldImporters"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Los números de propuesta y ejecución permiten localizar el resultado en la plataforma. Los importes se redondean a dos decimales para su lectura; la evidencia conserva la precisión de cálculo."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 92,
+      "titulo": "Resultados conciliados de WideWorldImporters",
+      "filas": [
+        [
+          "Grano del análisis",
+          "Línea de factura"
+        ],
+        [
+          "Filas del origen",
+          "228.265"
+        ],
+        [
+          "Filas del datamart",
+          "228.265"
+        ],
+        [
+          "Diferencia de filas",
+          "0"
+        ],
+        [
+          "Importe total",
+          "198.043.439,45 en moneda de origen"
+        ],
+        [
+          "Unidades",
+          "8.950.628"
+        ],
+        [
+          "Documentos distintos",
+          "70.510 facturas"
+        ],
+        [
+          "Promedio por documento",
+          "2.808,73 en moneda de origen por factura"
+        ],
+        [
+          "Periodicidad",
+          "Mensual: 41 períodos"
+        ],
+        [
+          "Relación territorial",
+          "Provincia de la ciudad de entrega de la ficha actual del comprador de la factura."
+        ],
+        [
+          "Resultado conservado",
+          "Propuesta aprobada 131 y ejecución 22"
+        ]
+      ]
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "El caso utiliza facturas y mantiene la denominación moneda de origen porque no se acreditó una moneda única. Para 2015 y California se documentaron 3.191.769,11, 142.247 unidades y 1.179 facturas; el promedio filtrado fue 2.707,18 por factura. Se contrastaron también 3.771 líneas con una consulta independiente del sistema de origen que utilizó al comprador y su ciudad de entrega. Estos valores pertenecen a esta fuente y no se combinan con AdventureWorks ni se comparan como equivalentes al filtro de un expediente histórico basado en otro rol de cliente."
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Revisión del copiloto y las exportaciones"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "El copiloto debe responder sobre la fuente, la ejecución y los filtros seleccionados. En los rankings, la participación se calcula sobre el total filtrado completo, no sobre la suma de los elementos visibles. Las explicaciones deben distinguir una descripción de los datos de una relación causal que no ha sido demostrada."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Las exportaciones revisadas conservaron el contexto, las unidades y los filtros. En AdventureWorks se comprobó un informe de seis páginas y un libro de seis hojas en vista analítica: resumen, cuatro visualizaciones y trazabilidad. Los archivos de WideWorldImporters se revisaron con el contexto de la ejecución 22. El número de páginas y hojas depende de la vista y de los gráficos incluidos; no se fija como condición universal del producto."
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Comparación operativa de proveedores de inteligencia artificial"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "La evidencia disponible permite describir qué ocurrió con cada proveedor dentro de la campaña documentada. Para establecer superioridad de calidad o eficiencia sería necesario repetir las mismas tareas, los mismos metadatos y criterios, y registrar intentos, tiempos y consumo en condiciones comparables."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. La disponibilidad y las cuotas son condiciones de operación. No se declara un ganador universal ni equivalencia automática de niveles de razonamiento entre proveedores."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 93,
+      "titulo": "Resultados disponibles por proveedor",
+      "filas": [
+        [
+          "Anthropic Claude",
+          "Recorridos documentados con ambas fuentes, propuestas, conciliación y copiloto; correcciones comunes tras incidencias iniciales.",
+          "Es el proveedor con el recorrido más completo de esta campaña."
+        ],
+        [
+          "Groq",
+          "Conectividad mínima comprobada; el intento de generación comparable encontró un límite de cuota.",
+          "El intento incompleto no permite una comparación equivalente de calidad."
+        ],
+        [
+          "Otros proveedores configurables",
+          "No se dispone de una campaña homogénea completa en el registro utilizado.",
+          "Compatibilidad de configuración no equivale a resultado comparativo demostrado."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Evaluación formal por especialistas"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Los espacios se completarán con información y documentos efectivamente disponibles; no representan resultados obtenidos."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 94,
+      "titulo": "Evaluación formal por especialistas",
+      "filas": [
+        [
+          "Nombres, perfiles, experiencia y aceptación de participación de los especialistas.",
+          "[POR COMPLETAR]\n________________________________"
+        ],
+        [
+          "Instrumento y criterios de revisión técnica, comercial y de facilidad de uso.",
+          "[POR COMPLETAR]\n________________________________"
+        ],
+        [
+          "Dictámenes, observaciones y firmas de las evaluaciones realmente realizadas.",
+          "[POR COMPLETAR]\n________________________________"
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 2,
+      "texto": "Alcance de la validación y trabajo pendiente"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Los dos recorridos conservados muestran la construcción supervisada y la conciliación de resultados en las fuentes de demostración. La generalidad del diseño se apoya en reglas comunes y contexto por fuente; su ampliación a otros motores y situaciones requiere nuevas comprobaciones."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Quedan por completar la campaña autenticada de todos los perfiles, la evaluación formal por especialistas y, si se desea sostener eficiencia comparativa, la medición equivalente de tiempo, esfuerzo y costo. Estos elementos se identifican como información pendiente, no como resultados ya obtenidos."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": ""
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Nota. Esta matriz permite incorporar los respaldos cuando estén disponibles, sin sustituirlos por datos inventados."
+    },
+    {
+      "tipo": "tabla",
+      "numero": 95,
+      "titulo": "Información pendiente para completar el cierre académico",
+      "filas": [
+        [
+          "Población e invitación",
+          "Constancia del universo y número de estudiantes invitados.",
+          "Descripción de población y participación."
+        ],
+        [
+          "Validación del instrumento",
+          "Revisión de contenido por especialistas, si se realiza.",
+          "Calidad del cuestionario."
+        ],
+        [
+          "Gestión de Scrum",
+          "Designación del responsable del producto y acuerdos disponibles.",
+          "Equipo, planificación y seguimiento."
+        ],
+        [
+          "Horas y gastos",
+          "Dedicación del tutor y respaldo de los supuestos.",
+          "Presupuesto y valoración de aportes."
+        ],
+        [
+          "Perfiles de usuario",
+          "Sesiones y resultados por analista, gerente y operador.",
+          "Validación de permisos y navegación."
+        ],
+        [
+          "Juicio de especialistas",
+          "Dictámenes y observaciones firmadas.",
+          "Aceptación formal de la propuesta."
+        ]
+      ]
+    },
+    {
+      "tipo": "titulo",
+      "nivel": 1,
+      "texto": "Referencias citadas en el capítulo"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Docker. (s. f.). Docker Desktop license agreement. Recuperado el 6 de noviembre de 2026, de https://docs.docker.com/subscription-billing/desktop-license/"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Hevner, A. R., y vom Brocke, J. (2023). A proficiency model for design science research education. Journal of Information Systems Education, 34(3), 264-278. https://jise.org/volume34/n3/JISE2023v34n3pp264-278.html"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "IEEE Computer Society. (2024). Guide to the Software Engineering Body of Knowledge Version 4.0 (H. Washizaki, Ed.). https://www.computer.org/education/bodies-of-knowledge/software-engineering"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Microsoft. (s. f.). Editions and supported features of SQL Server 2022. Recuperado el 6 de noviembre de 2026, de https://learn.microsoft.com/en-us/sql/sql-server/editions-and-components-of-sql-server-2022?view=sql-server-ver16"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "PostgreSQL Global Development Group. (s. f.). PostgreSQL License. Recuperado el 6 de noviembre de 2026, de https://www.postgresql.org/about/licence/"
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Universidad de Guayaquil. (s. f.). Guía Elaboración Trabajo Integración Curricular Proyecto Desarrollo [Guía institucional proporcionada para este trabajo]."
+    },
+    {
+      "tipo": "parrafo",
+      "texto": "Verwijs, C., y Russo, D. (2023). A theory of Scrum team effectiveness. ACM Transactions on Software Engineering and Methodology, 32(3), artículo 74, 1-51. https://doi.org/10.1145/3571849"
+    }
+  ]
+}

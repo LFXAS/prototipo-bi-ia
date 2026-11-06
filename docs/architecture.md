@@ -127,7 +127,7 @@ añade una capacidad al catálogo. `invoice_event` exige intención positiva en 
 solicitud original (objetivo y preguntas, respetando exclusiones) y una cabecera que es el propio hecho, con PK completa declarada y referencias exactas, o una ruta FK
 completa hacia la cabecera de factura, no una coincidencia nominal del ID.
 La aceptación de límites no habilita una
-clasificación persistente incompatible. Las nuevas propuestas declaran
+clasificación persistente incompatible. Las propuestas del cierre del 4–5 de noviembre declararon
 `sales-bi-v7` y `compilation_rules_version=3`: los identificadores no son operandos
 monetarios, el promedio documental usa razón de agregados y las líneas no se renombran
 silenciosamente como pedidos. El verificador selecciona la versión de expansión del
@@ -179,10 +179,58 @@ casos de herencia del catálogo, sin modificar filas ni ejecutar otro ETL.
 La revisión vigente normaliza tildes y puntuación del ranking y distingue exclusiones
 de operaciones: «sin percentiles» no elimina agrupar/ordenar sumas. «No excluir» y
 «do not exclude» conservan petición positiva. Son reglas léxicas acotadas, no una
-garantía de interpretación exhaustiva. La compilación 3 limita Number/Numero como
+garantía de interpretación exhaustiva. La compilación 3 del corte anterior limita Number/Numero como
 señal de identificador a su semántica documental o de entidad y conserva PK/FK
 declaradas; NumberOfUnits/NumeroDeUnidades sin esas claves vuelve a ser una cantidad
 apta para SUM. Los casos 122/124 siguen reglas 2 sin mutación.
+
+### Conservación semántica: adenda del 6 de noviembre
+
+El corte intermedio del 6 de noviembre usó `sales-bi-v8` y `compilation_rules_version=4`. La expansión
+conserva fuentes dimensionales explícitas verificadas y rutas declaradas que mantienen
+el grano; una candidata con mayor puntaje léxico no sustituye una elección segura.
+`source_resolution` registra procedencia, clave y ruta. Una identidad dimensional
+compuesta no admitida o una fecha de evento ambigua se conservan como impedimentos,
+no se reducen ni se reemplazan por otra entidad. La comprobación de unicidad actual
+usa las claves primarias capturadas; las restricciones UNIQUE alternativas no
+exportadas siguen siendo un límite de evidencia.
+
+`business_request_scope` conserva el objetivo y requisitos adoptados bajo autoridad
+del servidor. La referencia temporal revisada y los tipos de calendario guían la
+fecha y sus atributos. El promedio por documento requiere una razón con documentos
+distintos; AVG de líneas no acredita ese resultado. Se mantienen cantidad variable
+de KPI, selección humana y dependencias financieras válidas. No se añaden componentes,
+motores ni permisos. Las reglas históricas 1, 2 y 3 conservan su reproducción y huellas.
+El contexto de intención y explicación analítica incorpora `calendar_reference`,
+fecha ISO UTC del servidor separada de selección histórica, catálogo y ventana ETL.
+La instrucción no introduce años o categorías ajenos a la evidencia y evita inventar
+un año al rechazar pronóstico relativo. No amplía filtros ni ejecuta otra consulta;
+la prosa sigue supervisada, sin un validador universal de exactitud.
+
+La verificación intermedia de código del 6 de noviembre, anterior al ajuste de rutas de reglas 5, aprobó make verify con salida 0,
+475 backend y 48 frontend, esta última etapa reutilizada de caché del mismo árbol.
+El cierre operativo y documental se registra por separado en
+[QA del 6 de noviembre](testing/qa-postcierre-2026-11-06.md).
+
+### Rutas exactas y roles: reglas 5
+
+Los contratos nuevos usan `compilation_rules_version=5` y conservan `sales-bi-v8`.
+La ruta ordenada de `source_resolution.path`, con columnas exactas de cada arista,
+se verifica contra la instantánea y gobierna la extracción. No se sustituye por
+la primera FK ni por una ruta más corta. La evidencia revisada y las relaciones
+controladas delimitan los roles; ambigüedad o prefijos incompatibles bloquean la
+propuesta en lugar de introducir alias por rol no implementados.
+
+`persisted_relationship_paths` es compartido por materialización y procedencia
+analítica. Las medidas externas reutilizan rutas custodiadas o una única ruta
+dirigida segura compatible. La enumeración de todas las rutas simples se detiene
+si supera sus límites; no simula unicidad. La ejecución y reconstrucción de reglas
+1–4 permanecen congeladas. No cambian componentes, permisos ni motores. La puerta ETL exige reglas 5 para preparar o ejecutar otra carga, conservando
+lectura y resultados históricos. El cierre definitivo de reglas 5 aprobó 530 backend y
+50 frontend; las 67 focales de materializador/procedencia y 27 de router son
+subconjuntos. Ese corte incluye título y unidades monetarias comunes. AW 129/21 y WWI 131/22
+completaron recorridos nuevos con rutas exactas y conciliación, sin reetiquetar
+los contratos históricos ni usar otro rol territorial como oráculo.
 
 ## Contrato de configuración LLM
 

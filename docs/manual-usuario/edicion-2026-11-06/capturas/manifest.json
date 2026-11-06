@@ -1,0 +1,2400 @@
+[
+  {
+    "key": "inicio_wwi",
+    "title": "Inicio con WideWorldImporters en contexto",
+    "path": "inicio_wwi.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:45:32.379Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1366,
+      "height": 900
+    },
+    "sha256": "a1d2e44c6d79821fbb40a0c2587f4d8ccca2a03e408708efd931bad4ca91ff1c"
+  },
+  {
+    "key": "login",
+    "title": "Acceso al sistema con cuenta autorizada",
+    "path": "login.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:45:42.441Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1366,
+      "height": 900
+    },
+    "sha256": "d93be5728ec5b7cff59c73054f11ee23b99a924846af3bf3d6bcdc594bfa8c13"
+  },
+  {
+    "key": "inicio_aw",
+    "title": "Inicio con AdventureWorks en contexto",
+    "path": "inicio_aw.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:46:19.357Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1366,
+      "height": 900
+    },
+    "sha256": "c67753d959974a27797fb40aa2a0639388c0895db1445d3cfa4dd4064c3a3c29"
+  },
+  {
+    "key": "conexiones_formulario",
+    "title": "Formulario de conexión SQL Server",
+    "path": "conexiones_formulario.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:46:29.459Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "5b834a7e08d803f1caf5ac3f201b77b1d69cb2476211658af16a9dd48f7d6766"
+  },
+  {
+    "key": "conexiones_listado",
+    "title": "Fuentes habilitadas y validación de sólo lectura",
+    "path": "conexiones_listado.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:46:52.918Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "64e1665fce1c79650c2763a2755edb90a9e6ae756c249ba684656a853992f8ce"
+  },
+  {
+    "key": "conexiones_validacion",
+    "title": "Comprobación de acceso de sólo lectura a las fuentes",
+    "path": "conexiones_validacion.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:47:46.152Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "0c45425dd9dc0a62159d6279c1183d08b8e5f334e073c998cf51879c9bffff7f"
+  },
+  {
+    "key": "esquema_aw",
+    "title": "Resumen y versiones de metadatos de AdventureWorks",
+    "path": "esquema_aw.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:50:10.453Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "7958eecb4f467f2408561c756d9be34e31f9128ac1a670404234b8252ad92384"
+  },
+  {
+    "key": "esquema_aw_columnas",
+    "title": "Columnas y tipos del detalle de pedido",
+    "path": "esquema_aw_columnas.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:51:14.475Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "5152bc3c0452c43a3d9477ae9a8113706261180e8eb78e2f76933285ec6c249e"
+  },
+  {
+    "key": "esquema_aw_relaciones",
+    "title": "Relaciones declaradas del detalle de pedido",
+    "path": "esquema_aw_relaciones.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:51:15.032Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "ce2bd9739870277e7a0da990a74588c00c238d5dc5858433ff746c393332dcab"
+  },
+  {
+    "key": "esquema_wwi",
+    "title": "Resumen y versión de metadatos de WideWorldImporters",
+    "path": "esquema_wwi.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:53:45.033Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "b8ede44a7af38d73deab6b4ef41b2baa300900d0e83b04474053c3de4a81673c"
+  },
+  {
+    "key": "esquema_wwi_columnas",
+    "title": "Tipos y columnas de las líneas de factura",
+    "path": "esquema_wwi_columnas.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:53:58.415Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "c7e255d65f3385ccca9c12aafd852164e795ce0f3abfa96f3c65a4c3d593f9b6"
+  },
+  {
+    "key": "esquema_wwi_relaciones",
+    "title": "Relaciones de líneas de factura con sus cabeceras y productos",
+    "path": "esquema_wwi_relaciones.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:53:59.770Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "dd49549eb407a06d3670b37f687d016d5731e2140afdc1eb5bc809591740626f"
+  },
+  {
+    "key": "parametros_superior",
+    "title": "Parámetros de conexión y del asistente",
+    "path": "parametros_superior.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:54:13.225Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "56d03f2c41b4be6560d7c80f3a304b88a68e09b53198bae432f5f84eb060c298"
+  },
+  {
+    "key": "parametros_inferior",
+    "title": "Parámetros de metadatos y tamaño de listados",
+    "path": "parametros_inferior.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:54:14.089Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "e32426f85fff32a3f929b6e1a39565943703b3cffa852561c603939acca4f91e"
+  },
+  {
+    "key": "llm_formulario",
+    "title": "Formulario para un proveedor de inteligencia artificial",
+    "path": "llm_formulario.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:54:32.001Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "f2a8800fb88c5bd4c4bb7158ad6e543177c39de3a3eaeac30e2009bd4fb1ad1b"
+  },
+  {
+    "key": "llm_configuraciones",
+    "title": "Configuraciones disponibles y proveedor activo",
+    "path": "llm_configuraciones.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:54:32.417Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "7a84eb71c2729cb7a192eedd0ce023b0d5eb188632def9092b4b6a8dd7641650"
+  },
+  {
+    "key": "llm_prueba",
+    "title": "Prueba del proveedor activo sin exponer su credencial",
+    "path": "llm_prueba.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:55:25.292Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "751e6f76c7b46e2e146a8a3f128529636dbe1168d0475d22a2c19ef833c89fb1"
+  },
+  {
+    "key": "catalogo_cobertura_wwi",
+    "title": "Cobertura técnica automática por fuente",
+    "path": "catalogo_cobertura_wwi.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:57:41.603Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "c6c0b3ba15983d5a7ca019443d6c5256fc473887175d2acaff9f64cb37d2a83f"
+  },
+  {
+    "key": "catalogo_preguntas",
+    "title": "Preguntas de negocio y explicación para el analista",
+    "path": "catalogo_preguntas.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:57:42.412Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "86acaa5780b8758b5f17b30b5cd0ae3df6d1ab0b1d75d0e5772c37cae5a1f2e1"
+  },
+  {
+    "key": "catalogo_instrucciones",
+    "title": "Instrucciones funcionales de las preguntas",
+    "path": "catalogo_instrucciones.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:57:43.502Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "98e8b470ba24b65a06456441ad7f731eb3ec21b5a1810bb4fd1397d43a64ae46"
+  },
+  {
+    "key": "catalogo_preguntas_adicionales",
+    "title": "Costos, márgenes y razones por unidad",
+    "path": "catalogo_preguntas_adicionales.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:57:44.077Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "8be35fcf61f42b2c58a104a3e8b85de7a5262085318db7c220c8a297d573d2e5"
+  },
+  {
+    "key": "catalogo_periodicidades",
+    "title": "Periodicidades admitidas y sus explicaciones",
+    "path": "catalogo_periodicidades.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:57:44.629Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "8be35fcf61f42b2c58a104a3e8b85de7a5262085318db7c220c8a297d573d2e5"
+  },
+  {
+    "key": "catalogo_cobertura_aw",
+    "title": "Catálogo y cobertura vinculados con AdventureWorks",
+    "path": "catalogo_cobertura_aw.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:58:51.105Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "9fa36d01f6a878d5f4026151dbde2bae5cc972dd1701b932a2f00544f27c22a2"
+  },
+  {
+    "key": "asistente_dominio",
+    "title": "Selección del dominio implementado de ventas",
+    "path": "asistente_dominio.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T05:59:42.821Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1366,
+      "height": 900
+    },
+    "sha256": "0c7a7415277319310d6a15ddc7fe0f05602604f1eb08978fd9d73b777d7577cb"
+  },
+  {
+    "key": "asistente_contexto",
+    "title": "Fuente y pasos del asistente de ventas",
+    "path": "asistente_contexto.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:03:20.021Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "a82802fe7b3f755696c2c894c27b85a436398109b3095e919421d2e7da9bcf06"
+  },
+  {
+    "key": "asistente_necesidad",
+    "title": "Objetivo escrito y autorización para revisar metadatos",
+    "path": "asistente_necesidad.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:03:20.609Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "c0bee6b76a97b9769501bb4e6a3c4a2fd9212c6832be6e06bf961172ddb81b34"
+  },
+  {
+    "key": "asistente_preguntas_periodicidad",
+    "title": "Preguntas de negocio y periodicidad mensual seleccionadas",
+    "path": "asistente_preguntas_periodicidad.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:03:21.158Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "b47ef2e12ce40d5d26c21ce7663955b545a555a4cb24384008e74266a5dd7bbd"
+  },
+  {
+    "key": "asistente_viabilidad",
+    "title": "Revisión previa y explicación de las derivaciones automáticas",
+    "path": "asistente_viabilidad.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:04:38.609Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "59e4b36a97df479432dc8e4d48d3706fa3d90597d29e46fdb8243cc1ae39252f"
+  },
+  {
+    "key": "asistente_viabilidad_evidencia",
+    "title": "Evidencia estructural y ruta declarada del análisis temporal",
+    "path": "asistente_viabilidad_evidencia.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:04:39.327Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "0bdc7069d7a223605aee5b149b3ae8a1d359cfa6eb2612aede95158eae27c2af"
+  },
+  {
+    "key": "asistente_limites",
+    "title": "Límites revisados antes de generar la propuesta",
+    "path": "asistente_limites.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:04:59.387Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "85848e35175d7dd3ca69fb6a6596e3c174748916cfeeb123cbea16cd56feed4e"
+  },
+  {
+    "key": "asistente_conceptos",
+    "title": "Conceptos propuestos y comprobados para AdventureWorks",
+    "path": "asistente_conceptos.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:06:44.116Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "6eefd53c8a6872c9d1c59b74dff0055601713e1994085be984410d5f29ea9240"
+  },
+  {
+    "key": "conceptos_evidencia",
+    "title": "Detalle de la evidencia de un concepto",
+    "path": "conceptos_evidencia.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:06:44.581Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "b15049684e71d29ff66e1d52049332e67ccd50a5bf93f74727719c596fee683f"
+  },
+  {
+    "key": "conceptos_limites",
+    "title": "Cliente respaldado y contexto monetario excluido",
+    "path": "conceptos_limites.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:06:45.145Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "94e84866119703384e9f1f9c97c20ba4db281088576f338ee44d91a96551a835"
+  },
+  {
+    "key": "incidencia125_modelo",
+    "title": "Ensayo125 pendiente de corrección del territorio y del alcance",
+    "path": "incidencia125_modelo.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:13:30.444Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "f0014ed8befce34370cf1090e0cf82feb0cb9fcc9431980dcac92e001e3f4022"
+  },
+  {
+    "key": "usuarios_formulario",
+    "title": "Formulario de cuenta y asignación de roles",
+    "path": "usuarios_formulario.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:15:10.204Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "0f480cf64a6ce0467bd7be306c2ffad1a07601b30a6141ce8207af1f00d3e7d6"
+  },
+  {
+    "key": "usuarios_listado",
+    "title": "Cuentas existentes y acciones disponibles",
+    "path": "usuarios_listado.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:15:27.096Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "4a47292526e9523553f558a4ef903d0cf3e46d50d34b3ed20709927782063413"
+  },
+  {
+    "key": "roles_formulario",
+    "title": "Creación de roles y permisos por responsabilidad",
+    "path": "roles_formulario.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:19:22.700Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "0ad2557eba57adbf76f7efa5f06a89e31366d7336fd802f66ddc7cfb70c4462b"
+  },
+  {
+    "key": "roles_analista",
+    "title": "Permisos del rol Analista BI",
+    "path": "roles_analista.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:21:44.396Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "3aa9fd71184b16c6cab820262f6dacd33cc56380f87d3611cafc0c67069f6cd6"
+  },
+  {
+    "key": "roles_analista_permisos",
+    "title": "Permisos operativos de diseño, metadatos y carga",
+    "path": "roles_analista_permisos.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:21:44.970Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "4fc5364eb3fc3805d9d17248d777c914a434bd396288f9fa24ed4dcff56f9aed"
+  },
+  {
+    "key": "roles_listado",
+    "title": "Roles existentes y su propósito",
+    "path": "roles_listado.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:22:00.602Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "c8d57afacdad19faa5509393b44f756708863ebf9f7013be4efb4e01a967c3fd"
+  },
+  {
+    "key": "roles_gerente",
+    "title": "Perfil de consulta Gerente comercial",
+    "path": "roles_gerente.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:22:01.304Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "c71b9d67fa3f27cecfe660f83f5a47d4ebfb5c472d311afe2354c664a27ecb99"
+  },
+  {
+    "key": "roles_gerente_permisos",
+    "title": "Consulta de metadatos sin generación de propuestas o ETL",
+    "path": "roles_gerente_permisos.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:22:02.035Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "95e518803f0409d9f7551b7160348359958d6892ea88881ff7b136a55e40c56a"
+  },
+  {
+    "key": "sesion_vencida",
+    "title": "Recuperación de sesión con avance conservado",
+    "path": "sesion_vencida.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:23:12.172Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1366,
+      "height": 900
+    },
+    "sha256": "87fa7306b10ca5c4ff771169f548bee59732e4f995479a83497050965670eef2"
+  },
+  {
+    "key": "permisos_catalogo",
+    "title": "Catálogo de permisos y sus descripciones",
+    "path": "permisos_catalogo.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:26:16.002Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "641a1f99afb5556aa6c8a63b6bf8f40b1b4d5da755763148ac40aa6845f0777d"
+  },
+  {
+    "key": "permisos_catalogo_segunda",
+    "title": "Permisos de materialización, metadatos y configuración",
+    "path": "permisos_catalogo_segunda.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:27:13.894Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "e1b785ebea7580241c00352548da4580e93e96fceefe5ac0b8d0f089c099958d"
+  },
+  {
+    "key": "menus_listado",
+    "title": "Catálogo de navegación y módulos autorizados",
+    "path": "menus_listado.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:28:29.467Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "ce55589f6d24a58b2d2e64b9194f391a17381f4c4f99a16a539037969d30c03f"
+  },
+  {
+    "key": "menus_edicion",
+    "title": "Opciones de edición y permisos requeridos del explorador",
+    "path": "menus_edicion.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:29:41.025Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "cb52c778e3936ff50dd035555de87bce457366def746700c00b3bf92e7b94bc4"
+  },
+  {
+    "key": "auditoria_listado",
+    "title": "Registro de operaciones y trazabilidad de la plataforma",
+    "path": "auditoria_listado.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:37:47.417Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "d374740aea10423b36baac7fd991053f8a40b4f43f52cd4ebc07dec366bbae3a"
+  },
+  {
+    "key": "caso_aw_expediente18",
+    "title": "Consulta del expediente18 conciliado de AdventureWorks",
+    "path": "caso_aw_expediente18.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:40:07.420Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "d7e3ee900cb8c90c87727bc8e3875e83d40dabe6d4eb23de5515efd8a9b94357"
+  },
+  {
+    "key": "caso_aw_conciliacion18",
+    "title": "Filas e indicadores conciliados del expediente18",
+    "path": "caso_aw_conciliacion18.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:40:07.998Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "fd173e971a1701b0109b52600cdd44a9cbbe8efa180cdf2de29d2747fdd56cfc"
+  },
+  {
+    "key": "caso_aw_semantica18",
+    "title": "Etiquetas españolas publicadas conservando los valores originales",
+    "path": "caso_aw_semantica18.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:40:08.546Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "cdb0c0d08b7a823f5d0b891da495968725425a381bfd65aafb3f44924c4575d8"
+  },
+  {
+    "key": "etl_elegir_propuesta",
+    "title": "Elección de propuesta; consulta del expediente 18 de AdventureWorks",
+    "path": "etl_elegir_propuesta.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:45:42.055Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "61052db1493a97fdeaee9b4fca2b99a230875a7664b8f34ae91130b000a03e25"
+  },
+  {
+    "key": "etl_indicadores",
+    "title": "Indicadores y origen del conteo de pedidos; expediente18",
+    "path": "etl_indicadores.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:45:50.358Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "f460b098b2172dab3fc32dd8dc4d5c0e620ae4519f941178a45f5be852dbe347"
+  },
+  {
+    "key": "etl_confirmacion",
+    "title": "Plan controlado del expediente18; consulta sin ejecutar",
+    "path": "etl_confirmacion.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:45:58.779Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "9aea2efefab8ecf9d3d28752a3db184eb0cc207402e95371e253c3df7570bb1c"
+  },
+  {
+    "key": "etl_materializacion",
+    "title": "Materialización finalizada del expediente18",
+    "path": "etl_materializacion.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:45:59.308Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "6fe6c6109763f12836747b51faca50652762cccd24f399634c7812ccc896fd3a"
+  },
+  {
+    "key": "asistente_justificacion",
+    "title": "Justificación del ajuste y selección humana de indicadores",
+    "path": "asistente_justificacion.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:48:06.289Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "94452b218a2301b89f94c7f45eefda9556007eb63b0cbb7a8b84a2a182675d50"
+  },
+  {
+    "key": "asistente_personalizacion",
+    "title": "Personalización de versión126 con orígenes y agregaciones legibles",
+    "path": "asistente_personalizacion.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:48:32.588Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "666a50ea170c470bf9e973dff9c67701864b33193b43ab72d2f694656e0bdfef"
+  },
+  {
+    "key": "asistente_calculo_controlado",
+    "title": "Editor opcional de fórmulas permitidas; demostración sin guardar cambios",
+    "path": "asistente_calculo_controlado.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:48:42.885Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "0898ae73e423de0339067742b2ee0bd20e017e3c4c33f48b6128a42486489703"
+  },
+  {
+    "key": "asistente_aprobada",
+    "title": "Propuesta126 aprobada sin ejecutar ETL",
+    "path": "asistente_aprobada.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:49:31.767Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "8e0c315c05e65f86d661c5c24774dba4f51dd02c5f6cf8e43bfcbbe661ec6da9"
+  },
+  {
+    "key": "etl_indicadores_nueva",
+    "title": "Cuatro indicadores de propuesta126 seleccionados antes de ejecutar",
+    "path": "etl_indicadores_nueva.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:50:15.668Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "caeb56f0fd001906785ca897fc7993e909740ba7a0f3caab4ebe43ea7a30d0ab"
+  },
+  {
+    "key": "etl_confirmacion_nueva",
+    "title": "Confirmación explícita del plan de la propuesta126",
+    "path": "etl_confirmacion_nueva.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:50:26.078Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "6045dd9ab3f0fc46d9466c8907773e864eb5eed71285ba0cb51a3f59b118fe1e"
+  },
+  {
+    "key": "etl_conciliacion",
+    "title": "Expediente20 con121317filas conciliadas y cuatro indicadores",
+    "path": "etl_conciliacion.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:51:36.263Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "ea4b22b91f965e6414c39a1a9b5499f3d938fbd6dd60044ca608e20257603fe0"
+  },
+  {
+    "key": "etl_semantica_revision",
+    "title": "Revisión de etiquetas españolas después de la conciliación",
+    "path": "etl_semantica_revision.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:51:37.038Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "06dc88092d48b86c7cd247d49fabab1a8e667dc176ceeb6d316d722617e240b3"
+  },
+  {
+    "key": "etl_semantica_seleccion",
+    "title": "Traducciones revisadas y códigos de país excluidos",
+    "path": "etl_semantica_seleccion.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:51:45.059Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "7bb79efedae0c3265d6514112f8aebbd52e858337be470224c53e865687c8c20"
+  },
+  {
+    "key": "etl_semantica_publicada",
+    "title": "Expediente20 validado con etiquetas revisadas publicadas",
+    "path": "etl_semantica_publicada.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:52:11.956Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "71c2c4738042f30ce586cdbc4e738656d1593c86657bf9c10761da85791415c7"
+  },
+  {
+    "key": "caso_aw_expediente",
+    "title": "Ejecución20 nueva y validada de AdventureWorks",
+    "path": "caso_aw_expediente.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:52:12.669Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "0195b447504eecb431cccd4df0748dbb6f12fce8dc710b4b9f390c2efbcbfdc8"
+  },
+  {
+    "key": "analitica_detallada",
+    "title": "Vista analítica con filtros y selector de indicador",
+    "path": "analitica_detallada.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:53:12.644Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "c0ad2cdf4e578eb3ec0d6ed8372e67d28a5ee8443cc238ab03d6e6568b6e4689"
+  },
+  {
+    "key": "sesion_recuperada",
+    "title": "Sesión recuperada en Analítica de ventas sin perder el expediente publicado",
+    "path": "sesion_recuperada.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:53:48.599Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "9a99ef3ea204e3aef26edf71d7ae5480112df8ca8be2b8bbf3083e786f38f24b"
+  },
+  {
+    "key": "analitica_indicador",
+    "title": "Cambio de indicador a unidades vendidas",
+    "path": "analitica_indicador.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:54:17.267Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "9000030e9e9e59887832a1d2e821c91c46cc504a5f470c5b4d3d8aab2d86302c"
+  },
+  {
+    "key": "analitica_tabla",
+    "title": "Tabla mensual que respalda el gráfico de unidades",
+    "path": "analitica_tabla.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:54:35.944Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "a0c442dc0ffed008018409f1b98789427220305ebfe17196ee6c2400c17d80b9"
+  },
+  {
+    "key": "copiloto_pregunta",
+    "title": "Pregunta del analista con indicador unidades y filtros explícitos",
+    "path": "copiloto_pregunta.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:54:43.183Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "038235afc1ed7b14359dbc5137a006ccd86d2701931c2d87b26fca1d0a55194e"
+  },
+  {
+    "key": "copiloto_limite",
+    "title": "Pregunta de pronóstico rechazada; revisión de límites y precisión temporal del texto pendiente",
+    "path": "copiloto_limite.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:56:16.228Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "448bdd68bf92cebc49219a94675ed0cc11ac4583034eef5923942efe1c7b14a7"
+  },
+  {
+    "key": "exportacion_panel",
+    "title": "Controles de exportación de la vista analítica filtrada de ejecución20",
+    "path": "exportacion_panel.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:56:53.237Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "00d78559c719fb1b6e4e03367a6ac55f6d5875cbcea568a2154905352c70207f"
+  },
+  {
+    "key": "asistente_sugerencias",
+    "title": "Necesidades sugeridas para WWI con referencias y límites reales",
+    "path": "asistente_sugerencias.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T06:59:51.771Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "69fb5360cd185df90329629df91547257c59a94389a5c2e4acf0d7e8fb1474f9"
+  },
+  {
+    "key": "asistente_formulacion",
+    "title": "Redacción sugerida que conserva la necesidad y expone límites de WWI",
+    "path": "asistente_formulacion.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:01:44.092Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "a91ee7817ac0038e0560509326d850187d135a6d193d07c17e6a8aebbd1e0b22"
+  },
+  {
+    "key": "caso_wwi_necesidad",
+    "title": "Viabilidad WWI con siete límites revisados y periodicidad mensual",
+    "path": "caso_wwi_necesidad.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:03:14.228Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "6d54a699226aee82b3d73e8eb4be1948275a456868369d2af5a9b8c71c7ea045"
+  },
+  {
+    "key": "asistente_copiloto_concepto",
+    "title": "Explicación de relaciones y límite histórico del territorio de WWI",
+    "path": "asistente_copiloto_concepto.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:04:58.144Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "99e6cd7152de7bbcc6a2ce9afdf7d84468a99380d69816793b0cfc50cdc6d2de"
+  },
+  {
+    "key": "asistente_cobertura",
+    "title": "Cobertura de necesidad127 por fuentes y salidas verificadas",
+    "path": "asistente_cobertura.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:05:16.115Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "8b2c04206e2dfdc78d76e3ea40101829a7ce4f9ce3c0ba7b5e4c8c15783f4d41"
+  },
+  {
+    "key": "asistente_identidades",
+    "title": "Cobertura descriptiva del100porciento en producto,cliente y territorio de WWI",
+    "path": "asistente_identidades.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:05:55.033Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "e4e4d38080a20070fd5f2c15a50dd668c7940aa57542706057025500f66d1779"
+  },
+  {
+    "key": "asistente_personalizacion_kpis",
+    "title": "Selección de cuatro KPI y asociación del promedio a importe total de línea",
+    "path": "asistente_personalizacion_kpis.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:06:17.521Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "ff7c5568ce2ae7ee843c43136b23f96665620fadb7d286452a5b4dff6f8b7fff"
+  },
+  {
+    "key": "llm_credencial_vacia",
+    "title": "Formulario de credencial vacío; no se revela ni sustituye ninguna clave",
+    "path": "llm_credencial_vacia.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:11:40.190Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "883ca044351df00d9459595259e11af519492f1317d56e43f84e9cf4f77badb0"
+  },
+  {
+    "key": "etl_comparacion",
+    "title": "Comparación de dos propuestas WWI sin ejecutar ni modificar sus expedientes",
+    "path": "etl_comparacion.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:12:34.860Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "d9611295fcdbf6ac787179b483c8e3fcd22a061848b90f8f480f3fc7ea424e00"
+  },
+  {
+    "key": "asistente_historial",
+    "title": "Versiones aprobadas de WWI conservadas sin modificar su estado",
+    "path": "asistente_historial.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:17:11.563Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "0832c34006708e35cc17f9410d7326a728b4b965ab5a430162a573c49d6c3399"
+  },
+  {
+    "key": "analitica_detalle_punto",
+    "title": "Detalle de junio2013 en AdventureWorks sin modificar el filtro",
+    "path": "analitica_detalle_punto.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:19:06.803Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "d5f64dfaf50b78c17acb1f3b5b0ea2860403168b4357ae346c3b0ede02010cb0"
+  },
+  {
+    "key": "copiloto_limite_corregido",
+    "title": "Respuesta que rechaza el pronóstico sin inventar un año",
+    "path": "copiloto_limite_corregido.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:22:02.113Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "6e8829f7ec1818a80909072ecf9db1022e6c4d924de052f1b7d6d29ef2104e8b"
+  },
+  {
+    "key": "copiloto_consulta_interpretada",
+    "title": "Consulta de Top5 por cliente con alcance y denominador explícitos",
+    "path": "copiloto_consulta_interpretada.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:23:35.224Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "63e6d459f92d8583428d0f5841e60bab55f268129f988f17db4c98961757f18e"
+  },
+  {
+    "key": "copiloto_seguimiento",
+    "title": "Procedencia de consulta adicional y respuesta de seguimiento del copiloto",
+    "path": "copiloto_seguimiento.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:23:35.976Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "218a4ac5b1c96e9116a1b0cb945241126171871781c473e936826c2d43f1c4e2"
+  },
+  {
+    "key": "asistente_propuesta",
+    "title": "Propuesta129 final de AdventureWorks con cuatro indicadores seleccionados",
+    "path": "asistente_propuesta.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:45:57.679Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "f305b0424618237a3184805998c36d0f63c42d5ea40e48499f760c05d11195e7"
+  },
+  {
+    "key": "asistente_aprobacion",
+    "title": "Revisión humana de la propuesta129 antes de ejecutar datos",
+    "path": "asistente_aprobacion.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:46:24.834Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "d722e824913fada2095201c0d1d906d03f17f48c261afac2de08e1ee5601138f"
+  },
+  {
+    "key": "etl_elegir_propuesta_nueva",
+    "title": "Propuesta129 seleccionada para nueva carga con reglas actuales",
+    "path": "etl_elegir_propuesta_nueva.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:48:14.291Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "a3825b7f47f21cbd2431a2f99b5d9859b02dc77acebc247f16c2630651029408"
+  },
+  {
+    "key": "etl_indicadores_detalle",
+    "title": "Revisión de indicadores de la propuesta129 antes de la carga",
+    "path": "etl_indicadores_detalle.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:48:25.605Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "3f2f152fea1092c4af6747d62aae7b814d9b667e7686db07486de60ebe251883"
+  },
+  {
+    "key": "etl_operaciones_plan",
+    "title": "Operaciones controladas de extracción y limpieza de la propuesta129",
+    "path": "etl_operaciones_plan.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:48:35.615Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "f2b33f8c5dcea71a564683c1dab875903e850a816c3243b94fe15b0f268e8683"
+  },
+  {
+    "key": "etl_preparado",
+    "title": "Ejecución21 preparada con esquema analítico propio y fuente separada",
+    "path": "etl_preparado.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:48:47.267Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "e00370acc1578a829b7a893b640804f3f495ba95fafe479088bb0090506a6807"
+  },
+  {
+    "key": "etl_ejecucion",
+    "title": "Ejecución21 materializando el contrato final de AdventureWorks",
+    "path": "etl_ejecucion.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:48:47.871Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "446771a425473839687a7a8bcd8aeda6234d7c5b034081ef31bca6f19f939e83"
+  },
+  {
+    "key": "etl_conciliacion_detalle",
+    "title": "Ejecución21:121317filas, diferencia0 y cuatro indicadores conciliados",
+    "path": "etl_conciliacion_detalle.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:50:58.396Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "d78d802a80e019c7d502ca752bccec4656d63d1f6537da455eb7a9db279c8783"
+  },
+  {
+    "key": "analitica_ejecutiva",
+    "title": "Panel ejecutivo publicado de la ejecución21 y propuesta129",
+    "path": "analitica_ejecutiva.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:53:11.703Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "8a0eb402691e0c90af0a2090d202d4f25693e0b3e39b94208214e9287f1d95de"
+  },
+  {
+    "key": "caso_aw_panel_filtrado",
+    "title": "Ejecución21 filtrada por2013 y Northwest",
+    "path": "caso_aw_panel_filtrado.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:53:27.666Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "a68cd43b199f73176edef74dabbaa53527278ec14b690a1da266adbbdeaea32e"
+  },
+  {
+    "key": "copiloto_aw",
+    "title": "Respuesta del copiloto sobre ejecución21:17452unidades y junio2494",
+    "path": "copiloto_aw.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:55:15.693Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "5e39a12a03c85856210554f06659953717f826ac9775da70b135df888b8ae042"
+  },
+  {
+    "key": "relacion_rol_incorrecto_rechazado",
+    "title": "Rechazo de BillToCustomerID por contradecir el cliente revisado",
+    "path": "relacion_rol_incorrecto_rechazado.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:56:40.392Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "79fce7313dcc08518271067f834da0cb2eb267e036c12d1f917d6bff2eaeb31f"
+  },
+  {
+    "key": "asistente_relacion_cliente_correcta",
+    "title": "Elección explícita del cliente comprador por la relación declarada",
+    "path": "asistente_relacion_cliente_correcta.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:56:41.315Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "e1600970d2cf8a3074c8a8b4bf2a0c14a6d0d0e4e7c20d08ab86550e0e4c9ee1"
+  },
+  {
+    "key": "asistente_relacion_guiada",
+    "title": "Territorio y vínculo de ciudad de entrega, conservando la provincia y la decisión de cliente",
+    "path": "asistente_relacion_guiada.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:57:26.379Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "db6926b63a708bd7d3eb42bc26a0dfca25d41ef4a6f536b85c1ea0af252f16d5"
+  },
+  {
+    "key": "caso_wwi_propuesta",
+    "title": "Propuesta131 con comprador y provincia de entrega revisados, cuatro KPI",
+    "path": "caso_wwi_propuesta.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:58:58.385Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "5b1dd73464467d190f678482e59e1963992bef8dc2e12feb73d93f0f83c8c65c"
+  },
+  {
+    "key": "asistente_validacion",
+    "title": "Cuatro comprobaciones de la propuesta131 con reproducción exacta y reglas5",
+    "path": "asistente_validacion.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T07:59:25.683Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "123ac24fe68a3655da8098e9073b96b4dad611525adf6869241a4b84c35241b8"
+  },
+  {
+    "key": "caso_wwi_conciliacion",
+    "title": "Ejecución22 con228265líneas conciliadas, diferencia0 y moneda de origen",
+    "path": "caso_wwi_conciliacion.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T08:09:14.861Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "02b9c0cc98bba6235d285c6b2ed84962ad58bcc81987373e1eac3d4490b6c7c2"
+  },
+  {
+    "key": "caso_wwi_divisa",
+    "title": "Comprobación de divisa no concluyente:importes conservados como moneda de origen",
+    "path": "caso_wwi_divisa.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T08:09:31.499Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "8ce3b01a53c3f23cf1b6f67f23ff926191678ff0fb1b259e0049004d96e9d543"
+  },
+  {
+    "key": "analitica_wwi_ejecutiva",
+    "title": "Panel ejecutivo exclusivo de WWI ejecución22 y propuesta131",
+    "path": "analitica_wwi_ejecutiva.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T08:14:12.706Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "196faf9013a292079c1690c42195bba1c15e8a25e458f121c1038ab44932412b"
+  },
+  {
+    "key": "caso_wwi_panel_filtrado",
+    "title": "Ejecución22,2015California con comprador y ciudad de entrega correctos",
+    "path": "caso_wwi_panel_filtrado.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T08:15:16.879Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "792c64ea2a89d0faf049681964c0380f895516189a59db77cff527c9eeec8c58"
+  },
+  {
+    "key": "copiloto_wwi",
+    "title": "Respuesta de WWI22 con tres cifras correctas y cautelas territoriales y monetarias",
+    "path": "copiloto_wwi.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T08:25:53.640Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "4760ed5437bab4ea2d7eea6fa9e8a0f13ec1bd1b4c552d450ce4d33f3ed000e3"
+  },
+  {
+    "key": "cambio_fuente_aw_final",
+    "title": "Cambio desde WWI a AdventureWorks:ejecución21 propuesta129 y datos propios",
+    "path": "cambio_fuente_aw_final.jpg",
+    "url": "http://localhost:5173/",
+    "timestamp": "2026-11-06T08:33:34.155Z",
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "full_viewport": true,
+    "source": "cua_repl tab.screenshot; no crop",
+    "requested_viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "image_dimensions": {
+      "width": 1351,
+      "height": 890
+    },
+    "sha256": "f1b5d0f4ba8779a325cdb1755feb9d0f1aeeeed44d021d779b1a66c16eabf0ac"
+  }
+]

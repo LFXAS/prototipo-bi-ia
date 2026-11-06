@@ -1,0 +1,29 @@
+{
+  "estado": "Ejemplos reales agregados, revisados; se copian sólo al ejecutar el cierre final autorizado. No son respuestas individuales de encuesta.",
+  "ejemplos": [
+    {
+      "origen": "/home/ceo/Descargas/ventas-ejecucion-21-analyst.pdf",
+      "archivo_entrega": "AdventureWorks2022_ejecucion21_analitica_2013_Northwest.pdf",
+      "informe_qa": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa_exportacion_ejecucion21_20261106.json",
+      "descripcion": "Salida real de AdventureWorks, propuesta129/ejecución21, vista analítica de unidades, 2013/Northwest. PDF de seis páginas y Excel de seis hojas; observaciones editoriales declaradas en QA."
+    },
+    {
+      "origen": "/home/ceo/Descargas/ventas-ejecucion-21-analyst.xlsx",
+      "archivo_entrega": "AdventureWorks2022_ejecucion21_analitica_2013_Northwest.xlsx",
+      "informe_qa": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa_exportacion_ejecucion21_20261106.json",
+      "descripcion": "Salida real de AdventureWorks, propuesta129/ejecución21, vista analítica de unidades, 2013/Northwest. PDF de seis páginas y Excel de seis hojas; observaciones editoriales declaradas en QA."
+    },
+    {
+      "origen": "/home/ceo/Descargas/ventas-ejecucion-22-analyst.pdf",
+      "archivo_entrega": "WideWorldImporters_ejecucion22_analitica_2015_California.pdf",
+      "informe_qa": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa_exportacion_ejecucion22_20261106.json",
+      "descripcion": "Salida agregada real de WideWorldImporters, propuesta131 y ejecución22, vista analítica de importe,2015/California. Seis páginas PDF y seis hojas Excel; moneda de origen y cautela de ficha actual conservadas."
+    },
+    {
+      "origen": "/home/ceo/Descargas/ventas-ejecucion-22-analyst.xlsx",
+      "archivo_entrega": "WideWorldImporters_ejecucion22_analitica_2015_California.xlsx",
+      "informe_qa": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa_exportacion_ejecucion22_20261106.json",
+      "descripcion": "Salida agregada real de WideWorldImporters, propuesta131 y ejecución22, vista analítica de importe,2015/California. Seis páginas PDF y seis hojas Excel; moneda de origen y cautela de ficha actual conservadas."
+    }
+  ]
+}

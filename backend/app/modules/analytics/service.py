@@ -10,7 +10,11 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.copilot.models import BiProposal
-from app.modules.etl.materializer import _relations, _shortest_path
+from app.modules.etl.materializer import (
+    _relations,
+    _shortest_path,
+    persisted_relationship_paths,
+)
 from app.modules.etl.models import EtlExecution
 from app.modules.metadata.models import MetadataSnapshot
 from app.modules.parameters.models import DataConnection
@@ -158,6 +162,16 @@ def dimension_provenance(
     fact = fact if isinstance(fact, dict) else {}
     fact_sources = [str(value) for value in fact.get("source_tables", [])]
     graph = _relations(snapshot.schema_document)
+    rules_version = document.get("compilation_rules_version", 1)
+    strict_paths = isinstance(rules_version, int) and rules_version >= 5
+    persisted_paths = {}
+    if strict_paths:
+        try:
+            persisted_paths = persisted_relationship_paths(document, snapshot.schema_document)
+        except ValueError as exc:
+            raise AnalyticsUnavailableError(
+                "La ejecución no conserva una evidencia dimensional verificable."
+            ) from exc
     dimensions = []
     for dimension in _dict_items(document.get("dimensions")):
         sources = [str(value) for value in dimension.get("source_tables", [])]
@@ -173,8 +187,10 @@ def dimension_provenance(
                         "left_columns": left_columns,
                         "right_columns": right_columns,
                     }
-                    for left, right, left_columns, right_columns in _shortest_path(
-                        graph, fact_sources[0], sources[0]
+                    for left, right, left_columns, right_columns in (
+                        persisted_paths[sources[0]]
+                        if strict_paths
+                        else _shortest_path(graph, fact_sources[0], sources[0])
                     )
                 ]
                 path_status = (
@@ -1177,7 +1193,7 @@ async def build_dashboard(
         data_connection_id=connection.id,
         source_name=connection.name,
         database_name=connection.database_name,
-        title="Panel ejecutivo de pedidos" if scope_note else "Panel ejecutivo de ventas",
+        title="Análisis de pedidos" if scope_note else "Análisis de ventas",
         description=scope_note
         + str(overview.get("summary", "Análisis del datamart reconciliado.")),
         grain=str(overview.get("grain", "Granularidad aprobada")),

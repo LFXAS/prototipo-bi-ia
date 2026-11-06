@@ -4,9 +4,9 @@ Fuente: anteproyecto corregido `A15_E25 (LVelásquez - ERobles) (ANTEPROYECTO).p
 
 ## Identificación vigente de la investigación
 
-Título acordado el 14 de septiembre de 2026:
+Título académico vigente:
 
-> **Prueba de concepto de un prototipo funcional de BI asistido por IA para la construcción semiautomatizada y supervisada de un datamart de ventas.**
+> **Prueba de concepto de un prototipo funcional de sistema inteligente para construcción supervisada de datamarts de ventas.**
 
 Las fuentes públicas funcionales de validación son AdventureWorks2022 y WideWorldImporters. Ambas se conectan mediante el mismo adaptador SQL Server y el mismo contrato universal; no representan implementaciones particulares. Los datos sintéticos se utilizan únicamente para pruebas controladas y valores faltantes.
 

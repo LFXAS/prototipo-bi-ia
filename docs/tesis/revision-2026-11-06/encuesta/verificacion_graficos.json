@@ -1,0 +1,500 @@
+{
+  "estado": "conforme",
+  "fecha": "2026-11-06T00:24:37.494261-05:00",
+  "numero_graficos": 10,
+  "formatos": [
+    "PNG",
+    "SVG"
+  ],
+  "tamano_pulgadas": [
+    8.5,
+    3.8
+  ],
+  "resolucion_png_dpi": 300,
+  "fuente": "Liberation Serif",
+  "archivo_fuente_tipografica": "LiberationSerif-Regular.ttf",
+  "fuente_puntos": 15,
+  "datos_originales_conservados": true,
+  "lectura": "La etiqueta 64 (62,75 %) significa 64 respuestas, equivalentes al 62,75 % de las 102 respuestas válidas.",
+  "separacion_de_categorias": "Los espacios blancos entre categorías son el fondo del gráfico. No hay líneas de cuadrícula ni rayas que atraviesen las barras.",
+  "revision_visual": "Conforme: pregunta 1 y pregunta 6 inspeccionadas mediante visualización nativa de los PNG a su resolución disponible. Etiquetas completas, conteos y porcentajes legibles; relleno azul uniforme; sin líneas blancas atravesando barras. Las diez figuras superan además comprobaciones de límites del texto y ausencia de cuadrícula, bordes y tramas.",
+  "graficos": [
+    {
+      "pregunta": 1,
+      "opciones_completas": [
+        "Totalmente en desacuerdo",
+        "En desacuerdo",
+        "Ni de acuerdo ni en desacuerdo",
+        "De acuerdo",
+        "Totalmente de acuerdo"
+      ],
+      "porcentajes": [
+        0.0,
+        0.0,
+        3.9215686274509802,
+        33.333333333333336,
+        62.745098039215684
+      ],
+      "rotulos": [
+        "0 (0,00 %)",
+        "0 (0,00 %)",
+        "4 (3,92 %)",
+        "34 (33,33 %)",
+        "64 (62,75 %)"
+      ],
+      "n_respuestas": 102,
+      "barras": 5,
+      "limites_porcentaje": [
+        0,
+        100
+      ],
+      "color_unico": "#1F4E79",
+      "cuadricula_visible": false,
+      "bordes_de_barras": false,
+      "tramas": false,
+      "texto_dentro_del_lienzo": true,
+      "archivos": [
+        {
+          "archivo": "graficos/pregunta_01.png",
+          "bytes": 124273,
+          "sha256": "178a6ce0cfbc5bc0d941d762bf38a48e2351b42c153883e52ba64ec0c612215d"
+        },
+        {
+          "archivo": "graficos/pregunta_01.svg",
+          "bytes": 7619,
+          "sha256": "c45d2b05b2f31a7ef8c163ec53a6883c22faa302e9ff4536a59f348ae1207a44"
+        }
+      ]
+    },
+    {
+      "pregunta": 2,
+      "opciones_completas": [
+        "Totalmente en desacuerdo",
+        "En desacuerdo",
+        "Ni de acuerdo ni en desacuerdo",
+        "De acuerdo",
+        "Totalmente de acuerdo"
+      ],
+      "porcentajes": [
+        0.0,
+        0.0,
+        4.901960784313726,
+        34.31372549019608,
+        60.78431372549019
+      ],
+      "rotulos": [
+        "0 (0,00 %)",
+        "0 (0,00 %)",
+        "5 (4,90 %)",
+        "35 (34,31 %)",
+        "62 (60,78 %)"
+      ],
+      "n_respuestas": 102,
+      "barras": 5,
+      "limites_porcentaje": [
+        0,
+        100
+      ],
+      "color_unico": "#1F4E79",
+      "cuadricula_visible": false,
+      "bordes_de_barras": false,
+      "tramas": false,
+      "texto_dentro_del_lienzo": true,
+      "archivos": [
+        {
+          "archivo": "graficos/pregunta_02.png",
+          "bytes": 126523,
+          "sha256": "15476b2adeaace9434e6cdc0a7d6792d68f0c32309275fe22eea5cd1d928e92e"
+        },
+        {
+          "archivo": "graficos/pregunta_02.svg",
+          "bytes": 7635,
+          "sha256": "e8b4fa46d3f6063e68c4b2b7d66ee714c503fb23b9a62c0f3519430ea9fa36fe"
+        }
+      ]
+    },
+    {
+      "pregunta": 3,
+      "opciones_completas": [
+        "Totalmente en desacuerdo",
+        "En desacuerdo",
+        "Ni de acuerdo ni en desacuerdo",
+        "De acuerdo",
+        "Totalmente de acuerdo"
+      ],
+      "porcentajes": [
+        0.0,
+        0.0,
+        7.8431372549019605,
+        33.333333333333336,
+        58.8235294117647
+      ],
+      "rotulos": [
+        "0 (0,00 %)",
+        "0 (0,00 %)",
+        "8 (7,84 %)",
+        "34 (33,33 %)",
+        "60 (58,82 %)"
+      ],
+      "n_respuestas": 102,
+      "barras": 5,
+      "limites_porcentaje": [
+        0,
+        100
+      ],
+      "color_unico": "#1F4E79",
+      "cuadricula_visible": false,
+      "bordes_de_barras": false,
+      "tramas": false,
+      "texto_dentro_del_lienzo": true,
+      "archivos": [
+        {
+          "archivo": "graficos/pregunta_03.png",
+          "bytes": 124349,
+          "sha256": "2092c10edc46d882e34646d4d49aa7c8fd70657b01fb77cf4ca1410a0df9a41e"
+        },
+        {
+          "archivo": "graficos/pregunta_03.svg",
+          "bytes": 7603,
+          "sha256": "27fc4d11e9cbdc23e7154df57e7f0f33e1f4432a70a9d11e152b866d56879b73"
+        }
+      ]
+    },
+    {
+      "pregunta": 4,
+      "opciones_completas": [
+        "Totalmente en desacuerdo",
+        "En desacuerdo",
+        "Ni de acuerdo ni en desacuerdo",
+        "De acuerdo",
+        "Totalmente de acuerdo"
+      ],
+      "porcentajes": [
+        0.0,
+        0.0,
+        4.901960784313726,
+        40.19607843137255,
+        54.90196078431372
+      ],
+      "rotulos": [
+        "0 (0,00 %)",
+        "0 (0,00 %)",
+        "5 (4,90 %)",
+        "41 (40,20 %)",
+        "56 (54,90 %)"
+      ],
+      "n_respuestas": 102,
+      "barras": 5,
+      "limites_porcentaje": [
+        0,
+        100
+      ],
+      "color_unico": "#1F4E79",
+      "cuadricula_visible": false,
+      "bordes_de_barras": false,
+      "tramas": false,
+      "texto_dentro_del_lienzo": true,
+      "archivos": [
+        {
+          "archivo": "graficos/pregunta_04.png",
+          "bytes": 126074,
+          "sha256": "482f902da279a468290888eab725ba6ff7bc71d62e4326c985b01a3abc7a8ae8"
+        },
+        {
+          "archivo": "graficos/pregunta_04.svg",
+          "bytes": 7607,
+          "sha256": "8ce190926e954fbd14a0a523a66b46dc2f64892bcb8e68f305dfb47b996a1e7e"
+        }
+      ]
+    },
+    {
+      "pregunta": 5,
+      "opciones_completas": [
+        "Totalmente en desacuerdo",
+        "En desacuerdo",
+        "Ni de acuerdo ni en desacuerdo",
+        "De acuerdo",
+        "Totalmente de acuerdo"
+      ],
+      "porcentajes": [
+        0.0,
+        0.0,
+        6.862745098039215,
+        34.31372549019608,
+        58.8235294117647
+      ],
+      "rotulos": [
+        "0 (0,00 %)",
+        "0 (0,00 %)",
+        "7 (6,86 %)",
+        "35 (34,31 %)",
+        "60 (58,82 %)"
+      ],
+      "n_respuestas": 102,
+      "barras": 5,
+      "limites_porcentaje": [
+        0,
+        100
+      ],
+      "color_unico": "#1F4E79",
+      "cuadricula_visible": false,
+      "bordes_de_barras": false,
+      "tramas": false,
+      "texto_dentro_del_lienzo": true,
+      "archivos": [
+        {
+          "archivo": "graficos/pregunta_05.png",
+          "bytes": 126040,
+          "sha256": "ed311ce40f8a3bd272970987e30c0dfe77a9b87d36714f0c24e00591aab9db25"
+        },
+        {
+          "archivo": "graficos/pregunta_05.svg",
+          "bytes": 7599,
+          "sha256": "1c0681422b5a2b7033e6b24cf8c937ed0331d3066001c5e342608f653f66b874"
+        }
+      ]
+    },
+    {
+      "pregunta": 6,
+      "opciones_completas": [
+        "Totalmente en desacuerdo",
+        "En desacuerdo",
+        "Ni de acuerdo ni en desacuerdo",
+        "De acuerdo",
+        "Totalmente de acuerdo"
+      ],
+      "porcentajes": [
+        0.0,
+        0.0,
+        7.8431372549019605,
+        41.1764705882353,
+        50.98039215686274
+      ],
+      "rotulos": [
+        "0 (0,00 %)",
+        "0 (0,00 %)",
+        "8 (7,84 %)",
+        "42 (41,18 %)",
+        "52 (50,98 %)"
+      ],
+      "n_respuestas": 102,
+      "barras": 5,
+      "limites_porcentaje": [
+        0,
+        100
+      ],
+      "color_unico": "#1F4E79",
+      "cuadricula_visible": false,
+      "bordes_de_barras": false,
+      "tramas": false,
+      "texto_dentro_del_lienzo": true,
+      "archivos": [
+        {
+          "archivo": "graficos/pregunta_06.png",
+          "bytes": 125616,
+          "sha256": "bb0285e695f8b2fe3d3f7047c92ba8b0be7c6d1bf78b1f5241df183d58e7b094"
+        },
+        {
+          "archivo": "graficos/pregunta_06.svg",
+          "bytes": 7603,
+          "sha256": "dbc46291398cd7c1d5b4b5d3d8fc4b308d10f6f71497b77a4d28a96c41166096"
+        }
+      ]
+    },
+    {
+      "pregunta": 7,
+      "opciones_completas": [
+        "Totalmente en desacuerdo",
+        "En desacuerdo",
+        "Ni de acuerdo ni en desacuerdo",
+        "De acuerdo",
+        "Totalmente de acuerdo"
+      ],
+      "porcentajes": [
+        0.0,
+        0.0,
+        5.882352941176471,
+        33.333333333333336,
+        60.78431372549019
+      ],
+      "rotulos": [
+        "0 (0,00 %)",
+        "0 (0,00 %)",
+        "6 (5,88 %)",
+        "34 (33,33 %)",
+        "62 (60,78 %)"
+      ],
+      "n_respuestas": 102,
+      "barras": 5,
+      "limites_porcentaje": [
+        0,
+        100
+      ],
+      "color_unico": "#1F4E79",
+      "cuadricula_visible": false,
+      "bordes_de_barras": false,
+      "tramas": false,
+      "texto_dentro_del_lienzo": true,
+      "archivos": [
+        {
+          "archivo": "graficos/pregunta_07.png",
+          "bytes": 124974,
+          "sha256": "f3fe8510fe89b1d4b1f9075e11d8fa4d23165c807137f778f11eb1b44f97f079"
+        },
+        {
+          "archivo": "graficos/pregunta_07.svg",
+          "bytes": 7601,
+          "sha256": "11253611cc1880de2e9362f22bfd4c352d06d5e5724dd490c87a3beb9d33f995"
+        }
+      ]
+    },
+    {
+      "pregunta": 8,
+      "opciones_completas": [
+        "Totalmente en desacuerdo",
+        "En desacuerdo",
+        "Ni de acuerdo ni en desacuerdo",
+        "De acuerdo",
+        "Totalmente de acuerdo"
+      ],
+      "porcentajes": [
+        0.0,
+        0.0,
+        3.9215686274509802,
+        37.254901960784316,
+        58.8235294117647
+      ],
+      "rotulos": [
+        "0 (0,00 %)",
+        "0 (0,00 %)",
+        "4 (3,92 %)",
+        "38 (37,25 %)",
+        "60 (58,82 %)"
+      ],
+      "n_respuestas": 102,
+      "barras": 5,
+      "limites_porcentaje": [
+        0,
+        100
+      ],
+      "color_unico": "#1F4E79",
+      "cuadricula_visible": false,
+      "bordes_de_barras": false,
+      "tramas": false,
+      "texto_dentro_del_lienzo": true,
+      "archivos": [
+        {
+          "archivo": "graficos/pregunta_08.png",
+          "bytes": 128558,
+          "sha256": "3829397ab4214ebaa41de69ce5401c507ce00b1f47b794839e181a69b6be80ac"
+        },
+        {
+          "archivo": "graficos/pregunta_08.svg",
+          "bytes": 7605,
+          "sha256": "1ee9bb8458aa816c198dedbded96912e638d6350927ed3e190e77249cac74b9f"
+        }
+      ]
+    },
+    {
+      "pregunta": 9,
+      "opciones_completas": [
+        "Totalmente en desacuerdo",
+        "En desacuerdo",
+        "Ni de acuerdo ni en desacuerdo",
+        "De acuerdo",
+        "Totalmente de acuerdo"
+      ],
+      "porcentajes": [
+        0.0,
+        0.0,
+        5.882352941176471,
+        34.31372549019608,
+        59.80392156862745
+      ],
+      "rotulos": [
+        "0 (0,00 %)",
+        "0 (0,00 %)",
+        "6 (5,88 %)",
+        "35 (34,31 %)",
+        "61 (59,80 %)"
+      ],
+      "n_respuestas": 102,
+      "barras": 5,
+      "limites_porcentaje": [
+        0,
+        100
+      ],
+      "color_unico": "#1F4E79",
+      "cuadricula_visible": false,
+      "bordes_de_barras": false,
+      "tramas": false,
+      "texto_dentro_del_lienzo": true,
+      "archivos": [
+        {
+          "archivo": "graficos/pregunta_09.png",
+          "bytes": 126580,
+          "sha256": "9b30fb877fc5c40c452b5767b9c5efcdae99e7dbb1f5b8a751da4f264e0f0584"
+        },
+        {
+          "archivo": "graficos/pregunta_09.svg",
+          "bytes": 7613,
+          "sha256": "18f2213b51f0f97b4e0c70bb3ecf4eeb2106793ca778b179baf717fddc3098d0"
+        }
+      ]
+    },
+    {
+      "pregunta": 10,
+      "opciones_completas": [
+        "Totalmente en desacuerdo",
+        "En desacuerdo",
+        "Ni de acuerdo ni en desacuerdo",
+        "De acuerdo",
+        "Totalmente de acuerdo"
+      ],
+      "porcentajes": [
+        0.0,
+        0.0,
+        7.8431372549019605,
+        34.31372549019608,
+        57.84313725490196
+      ],
+      "rotulos": [
+        "0 (0,00 %)",
+        "0 (0,00 %)",
+        "8 (7,84 %)",
+        "35 (34,31 %)",
+        "59 (57,84 %)"
+      ],
+      "n_respuestas": 102,
+      "barras": 5,
+      "limites_porcentaje": [
+        0,
+        100
+      ],
+      "color_unico": "#1F4E79",
+      "cuadricula_visible": false,
+      "bordes_de_barras": false,
+      "tramas": false,
+      "texto_dentro_del_lienzo": true,
+      "archivos": [
+        {
+          "archivo": "graficos/pregunta_10.png",
+          "bytes": 124580,
+          "sha256": "6c8d50058d2f1247b0469cae975ea77b9f56cc2cc484426409b50927e03c0c37"
+        },
+        {
+          "archivo": "graficos/pregunta_10.svg",
+          "bytes": 7627,
+          "sha256": "918008ffbe7c62eb07c7c68cc63fee08eb179afb22f049349f046b22abc695f6"
+        }
+      ]
+    }
+  ],
+  "png_inspeccionados_visualmente": [
+    "graficos/pregunta_01.png",
+    "graficos/pregunta_06.png"
+  ],
+  "matplotlib_version": "3.11.2",
+  "dependencias_de_autoria": "Matplotlib se instaló sólo en un directorio temporal para el Python empaquetado. No se alteraron dependencias gestionadas, aplicación, contenedores ni datos del archivo fuente.",
+  "normalizacion_fuentes_20261106": "Los SVG usan espacios y finales de línea normalizados para Git; se comprobó igualdad semántica del XML. PNG y gráficos incrustados en el Word permanecen idénticos."
+}

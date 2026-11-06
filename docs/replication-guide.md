@@ -311,11 +311,27 @@ La corrección posterior al cierre de noviembre no añade migración de tablas n
 reiniciar volúmenes. Despliegue el backend de la versión aprobada por el flujo habitual;
 repita la revisión previa de una necesidad nueva con `need-review-6`. Las evaluaciones
 anteriores se conservan como evidencia pero no autorizan otra generación. Las propuestas
-nuevas declaran `sales-bi-v7` y `compilation_rules_version=3`; las persistidas sin marcador
-se verifican con reglas históricas 1; las que declaran 2 conservan reglas 2. No agregue manualmente el marcador a un documento,
+nuevas declaran `sales-bi-v8` y `compilation_rules_version=5`; las persistidas sin marcador
+se verifican con reglas históricas 1; las que declaran 2, 3 o 4 conservan esas reglas. No agregue manualmente el marcador a un documento,
 no cambie su huella ni repita un ETL sólo por actualizar el motor. La verificación y
 repetición de aceptación se registran en
-[QA posterior al cierre](testing/qa-postcierre-2026-11-04.md).
+[QA del 4–5 de noviembre](testing/qa-postcierre-2026-11-04.md) y en la
+[adenda del 6 de noviembre](testing/qa-postcierre-2026-11-06.md), cuyo cierre final
+se registra por separado. El corte intermedio de reglas 4 preservó fuentes dimensionales seguras y
+la fecha revisada, bloquean identidades dimensionales compuestas no admitidas o
+fechas ambiguas y comprueban el denominador de promedios por documento. La cantidad
+de KPI continúa siendo variable y su selección permanece supervisada. No se
+modifican comandos, puertos ni volúmenes para esta corrección. Las reglas 5 añaden
+la ruta exacta de FK custodiada por dimensión: expansión, ejecutor y procedencia
+no pueden elegir roles distintos por el orden de metadatos o la longitud del camino.
+Una ambigüedad requiere una elección explícita compatible con la necesidad revisada.
+Los datos y huellas de versiones 1–4 no se migran ni se vuelven a materializar
+sólo por actualizar. Los casos de aceptación nuevos bajo reglas 5 son AW 129/21
+y WWI 131/22 en la instalación de auditoría; los IDs pueden variar en otra máquina.
+Un nuevo ensayo de reglas 5 requiere propuesta y ETL propios.
+Una propuesta o expediente preparado con reglas anteriores conserva su consulta,
+pero no puede preparar o ejecutar otra carga: cree y apruebe una versión derivada
+actual; no cambie manualmente el marcador ni elimine el historial.
 
 Si se necesita repetir el catálogo sin reiniciar PostgreSQL, desde la raíz del repositorio se puede ejecutar:
 
