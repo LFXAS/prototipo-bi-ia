@@ -59,11 +59,11 @@ pdfauthor={Emily Dayan Robles Alvarado y Lesly Samay Velasquez Anchundia}}
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & INF-SPR-06 \\
-    Versión & 1.2.1 \\
+    Versión & 1.2.2 \\
     Fecha de cierre & 1 de octubre de 2026 \\
-    Revisión acumulativa & 5 de noviembre de 2026, posterior al cierre \\
+    Revisión acumulativa & 6 de noviembre de 2026, posterior al cierre \\
     Rama de trabajo & \file{feature/multi-source-sqlserver} \\
-    Estado & Incremento funcional validado localmente \\
+    Estado & Reglas 5 verificadas; recorridos nuevos de ambas fuentes conciliados \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
   \end{tabularx}
   \vfill
@@ -495,6 +495,103 @@ USD 3.491,07 por transacción y WWI mantuvo moneda de origen. Las capturas 126/1
 y su registro tienen corte propio. La regeneración y revisión documental final
 se distinguen del resultado anterior 454/46 y de la suite de código.
 
+\section{Adenda correctiva del 6 de noviembre de 2026}
+
+La auditoría para renovar los manuales detectó una desviación en la expansión
+de propuestas. Una fuente dimensional explícita válida podía reemplazarse por
+otra de mayor puntuación nominal. El intento 125 mostró territorio comercial
+convertido a provincia, atributos temporales posicionales y un promedio de
+líneas rotulado como promedio por pedido. La revisión humana detuvo el intento
+antes de aprobar; no constituye un caso satisfactorio ni otro ETL.
+
+La corrección pertenece al endurecimiento transversal del incremento entregado,
+no a un sprint nuevo. Conserva fuentes y rutas seguras, el grano del hecho, la
+fecha de evento revisada y la evidencia de necesidad del servidor. Una
+identidad dimensional compuesta no admitida se bloquea en lugar de reducirla.
+La receta y el denominador deben corresponder al rótulo del indicador. Se
+mantienen la cantidad variable de KPI y la selección humana. La versión de
+reglas de aquel corte fue 4, con instrucciones sales-bi-v8 y reproducción histórica
+1, 2 y 3.
+
+El copiloto incorpora fecha ISO UTC del servidor como reloj de consulta separado
+del período histórico y de la ventana ETL. La instrucción no permite añadir fechas
+o categorías ajenas al contexto y usa ``el período solicitado'' al rechazar
+pronóstico relativo. No cambia SQL, filtros ni proveedor; su prosa sigue bajo
+supervisión, sin garantía universal de veracidad.
+
+El corte intermedio \file{make verify}, previo al ajuste de rutas, terminó
+con salida 0: 475 backend y 48 frontend; Ruff/formato
+revisó 91 archivos y Mypy 57. La etapa frontend fue reutilizada de caché del mismo
+árbol. El registro \path{/tmp/bi-verify-20261106-release.log} tiene corte de las
+02:03:22 del 6 de noviembre, hora de Guayaquil. El contraste independiente de reglas
+3 contra \file{origin/develop} conservó el objeto y hash de casos ES/EN; no compara
+la función nueva consigo misma. El escenario AW 126/20 y sus exportes están
+registrados; el cierre operativo WWI y revisión PDF final permanecen pendientes.
+La evidencia se conserva en
+\path{docs/testing/qa-postcierre-2026-11-06.md}. Los recorridos anteriores 122/18 y
+124/19 conservan su corte y no prueban las reglas nuevas.
+
+\subsection{Rutas exactas y roles con reglas 5}
+Los intentos WWI 127/128 se conservaron sin aprobación al detectarse que varias FK
+podían llegar a la misma tabla con roles diferentes. La expansión y la ejecución
+no deben escoger caminos por longitud ni por el orden del catálogo. Reglas 5,
+con sales-bi-v8, conserva cada arista exacta en la evidencia y la vuelve a comprobar
+antes de materializar o comunicar su procedencia analítica.
+
+El descubrimiento enumera rutas simples dirigidas seguras, con límites explícitos.
+La evidencia revisada y una decisión humana compatible delimitan los roles. Si
+persisten varias rutas, o dos dimensiones requieren prefijos incompatibles hacia
+una tabla sin alias por rol implementados, se bloquea la propuesta. Las medidas
+externas no pueden reabrir una búsqueda libre para eludir esa decisión.
+
+El texto de preparación del ETL identifica la fuente seleccionada y explica
+que creará un esquema propio del expediente, conservando los anteriores. No se
+modifica el comportamiento ni se anuncia reemplazar un esquema global.
+
+La prueba focal de materializador y procedencia aprobó 67 casos, Ruff/formato y
+Mypy en sus dos módulos. Las reglas históricas 1--4 permanecen congeladas; el caso
+126/20 conserva reglas 4 y no se convierte en prueba de reglas 5. El integral de reglas 5 aprobó 530 backend/48 frontend con salida 0, Ruff/formato
+en 93 archivos y Mypy en 57; registro del corte 02:43:46 de Guayaquil. El cierre definitivo siguiente incluye título, alias monetarios y los nuevos
+ETL por ambas fuentes.
+No se declara un cierre satisfactorio sólo a partir de las pruebas focales.
+
+La puerta de preparación/ejecución exige reglas 5 incluso para expedientes
+históricos que seguían preparados. Los GET, paneles, exportes, aprobaciones y
+huellas anteriores se conservan; se requiere derivada aprobada para otra carga.
+Las 27 focales de esa puerta y 67 de materializador/procedencia son subconjuntos
+de 530, no conteos adicionales. Los 42 casos focales de App incluyen dos pruebas
+existentes ajustadas para impedir preselección y guardado sin elección de FK.
+
+Después del integral se precisó únicamente el título genérico del dashboard,
+``Análisis de ventas/pedidos'', para ambas vistas y reportes. El integral se repitió al cierre documental, con 530 backend/50 frontend. Los exportes anteriores conservan su aspecto y
+se requieren evidencias nuevas para acreditar el resultado posterior.
+
+\subsection{Cierre definitivo de reglas 5 y nuevos recorridos}
+La pasada final \file{make verify} aprobó con salida 0: 530 backend/50 frontend,
+Ruff/formato 93 y Mypy 57; registro
+\path{/tmp/bi-verify-entrega-final-20261106.log}, corte 03:24:58 de Guayaquil,
+con reutilización de capas idénticas. Incluye título genérico coherente con ambas
+vistas y aviso/comprobación de divisa para importe/valor y denominadores, sin
+inventar USD ni modificar unidades personalizadas. Las 67/27/44 focales son
+subconjuntos; dos casos adicionales de alias explican pasar de 48 a 50 frontend.
+
+AW 129/21 y WWI 131/22 completaron aprobación, materialización y conciliación bajo
+reglas 5, con cuatro rutas idénticas en contrato, ejecutor y procedencia. AW cargó
+121.317 filas por lado y WWI 228.265; ambas con diferencia cero y cinco tablas.
+En AW 2013/Northwest se verificaron 6.015.174,735836 USD, 17.452 unidades y 2.053
+pedidos. En WWI 2015/California, el oráculo independiente comprador/ciudad registrada
+de entrega comprobó 3.771 líneas, 3.191.769,11 de importe, 142.247 unidades y 1.179
+facturas. El expediente legado 19 sólo permite contraste global y no territorial,
+pues utilizaba otro rol; sus datos y huellas se conservaron.
+
+Los PDF de ambos expedientes tienen seis páginas legibles y los XLS seis hojas,
+con cuatro visuales y Resumen/Trazabilidad. Las cifras, contexto e indicador
+coincidieron. El chat de WWI acertó cifras y distinguió ubicación histórica,
+entrega no demostrada y moneda no identificada; no se declara perfecta su prosa.
+La categoría de entrega corresponde a la ficha leída durante ETL, no a una entrega
+real ni a una dirección históricamente vigente. El acta QA conserva estas fronteras,
+la observación de unidad genérica de la razón AW y la revisión documental final.
+
 \section{Revisión y retrospectiva}
 
 El contraste entre dos modelos OLTP demostró que universalidad no significa reconocer
@@ -519,7 +616,7 @@ mantiene el contrato y el analista conserva la decisión de negocio.
   Especificación & \file{SPR-06-01-contexto-multifuente-sqlserver.md} \\
   Evidencia integral & \file{docs/testing/Informe\_pruebas\_integrales\_multifuente.pdf} \\
   Adenda operativa & \path{docs/testing/Auditoria_operativa_2026-10-03.pdf}; casos de pedido/factura y factibilidad previa. \\
-  QA posterior al cierre & \path{docs/testing/qa-postcierre-2026-11-04.md}; correcciones versionadas y estado de regresión sin abrir un sprint nuevo. \\
+  QA posterior al cierre & \path{docs/testing/qa-postcierre-2026-11-04.md} conserva el corte anterior; \path{docs/testing/qa-postcierre-2026-11-06.md} registra la adenda actual sin abrir otro sprint. \\
   Definición de terminado & Código, pruebas, evidencia real y documentación reproducible. \\
   \bottomrule
 \end{tabularx}

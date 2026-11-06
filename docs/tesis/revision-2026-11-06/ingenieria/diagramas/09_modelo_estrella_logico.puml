@@ -1,0 +1,60 @@
+@startuml
+skinparam backgroundColor white
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 16
+skinparam ArrowFontSize 15
+skinparam NoteFontSize 14
+skinparam Padding 6
+skinparam nodesep 24
+skinparam ranksep 28
+skinparam dpi 180
+skinparam wrapWidth 220
+skinparam maxMessageSize 190
+skinparam sequenceMessageAlign center
+hide empty members
+hide circle
+skinparam classAttributeIconSize 0
+
+skinparam ranksep 64
+
+hide methods
+class "Producto" as PROD {
+ Clave de referencia
+ Clave del producto en el origen
+ Atributos aprobados
+}
+class "Cliente" as CLI {
+ Clave de referencia
+ Clave del cliente en el origen
+ Atributos aprobados
+}
+class "Venta al detalle" as VENTA {
+ Claves del registro de origen
+ Unidades e importes aprobados
+ Referencias de dimensiones
+ Ejecución de procedencia
+}
+class "Fecha" as FECHA {
+ Clave de referencia
+ Fecha del origen
+ Períodos de análisis aprobados
+}
+class "Territorio" as TER {
+ Clave de referencia
+ Clave del territorio en el origen
+ Atributos aprobados
+}
+PROD "0..1" -- "0..*" VENTA
+CLI "0..1" -- "0..*" VENTA
+VENTA "0..*" -- "0..1" FECHA
+VENTA "0..*" -- "0..1" TER
+legend bottom
+Modelo lógico de referencia, no esquema físico fijo.
+Las dimensiones dependen del contrato aprobado.
+Las referencias sin coincidencia requieren control de calidad.
+endlegend
+
+
+@enduml

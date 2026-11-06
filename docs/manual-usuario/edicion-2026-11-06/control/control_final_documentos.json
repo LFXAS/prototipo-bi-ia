@@ -1,0 +1,117 @@
+{
+  "estado": "validado_para_entrega",
+  "fecha": "2026-11-06T04:16:15.338969-05:00",
+  "capturas_nuevas_verificadas": true,
+  "capturas_manifest": 109,
+  "archivos": [
+    {
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/output/Capitulo_III_Propuesta_tecnologica_revisada.docx",
+      "sha256": "1ad6391ed8cd4c0dae6af50eca5908ccc10eafd1276029132d70e5c666c9c17f",
+      "revisado_visualmente": true,
+      "paginas": 86,
+      "acta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/qa/QA_final_capitulo_III_reglas5.json"
+    },
+    {
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/output/Manual_de_usuario_universidad.docx",
+      "sha256": "cf405dfdb343b172565daa0164d3c9e7a67f6aebee82ff9c433e69b4b10407f5",
+      "revisado_visualmente": true,
+      "paginas": 38,
+      "acta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/QA_final_universidad.json"
+    },
+    {
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/output/Manual_de_usuario_universidad.pdf",
+      "sha256": "e2440981c34d8af47fcbeee464cb4e9bc7acd619b05d7662518b3a6d3b683699",
+      "revisado_visualmente": true,
+      "paginas": 38,
+      "acta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/QA_final_universidad.json"
+    },
+    {
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/output/Manual_de_formacion_BI_IA.docx",
+      "sha256": "8a0492cb2d0551722cbbbbaf73074383538e771716d2ff9f86aefffaac0187d0",
+      "revisado_visualmente": true,
+      "paginas": 137,
+      "acta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/QA_final_formacion.json"
+    },
+    {
+      "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/output/Manual_de_formacion_BI_IA.pdf",
+      "sha256": "ef66703b26de3accde56180e0198e3973afd789daa244dc1549258e7e436f1af",
+      "revisado_visualmente": true,
+      "paginas": 137,
+      "acta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/QA_final_formacion.json"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/docs/manual-tecnico/manual-tecnico.pdf",
+      "sha256": "2c87f61e67a6fcb8c503803dfdc004cb32321ddfa33d65955535d58428398c66",
+      "revisado_visualmente": true,
+      "paginas": 59,
+      "version": "5.2.2"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/docs/logbook/bitacora.pdf",
+      "sha256": "404d4d35486dd908650032af25acdd918ac8dbc4727fbd18dee569eb560c3e9a",
+      "revisado_visualmente": true,
+      "paginas": 68,
+      "version": "0.6.9"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/docs/sprints/sprint-06-multifuente-universal.pdf",
+      "sha256": "2918e2d49f2cec8a82ebdd7871d95d4543efd72ad6910aa604e9587d1d0c57d7",
+      "revisado_visualmente": true,
+      "paginas": 13,
+      "version": "1.2.2"
+    }
+  ],
+  "fuentes": [
+    {
+      "ruta": "/home/ceo/Proyectos/BI/docs/manual-tecnico/manual-tecnico.tex",
+      "sha256": "2fc10d2cd2b14ccce5458bef33a68e738136a41520333c03ae4cfe2e2c0a42f4"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/docs/logbook/bitacora.tex",
+      "sha256": "c46bc2042104d685b454db1c983a382b1148bbf384e9b4a79f5cbfbf10714cfc"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/docs/sprints/sprint-06-multifuente-universal.tex",
+      "sha256": "70914d5acf357a8fa370541ec4f4045efc468337859d2783047fda9f5e4003b0"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/docs/manual-tecnico/referencia-devops-sprint1.tex",
+      "sha256": "3b62c7eac1c337b87cdbe576aafd9cf58663e8d3c9577b95edebc5507ef7a00b"
+    }
+  ],
+  "paginas_finales_revisadas_por_documento": {
+    "capitulo_III": 86,
+    "manual_universidad": 38,
+    "manual_formacion": 137,
+    "manual_tecnico": 59,
+    "bitacora": 68,
+    "sprint_6": 13
+  },
+  "metodo": "Revisión visual nativa de cada página final, con reutilización exclusivamente por igualdad exacta de la imagen de una página previamente revisada. Cada Word/PDF está vinculado a una acta y a su SHA-256 actual. No se acredita una revisión de imágenes por extracción de texto sola.",
+  "actas": [
+    "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/qa/QA_final_capitulo_III_reglas5.json",
+    "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/QA_final_universidad.json",
+    "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/QA_final_formacion.json",
+    "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/QA_tres_PDF_tecnicos_final_20261106.json",
+    "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/QA_estructura_final_manuales.json"
+  ],
+  "corte_operativo": {
+    "fecha": "2026-11-06",
+    "AW": {
+      "propuesta": 129,
+      "ejecucion": 21
+    },
+    "WWI": {
+      "propuesta": 131,
+      "ejecucion": 22
+    },
+    "pruebas_backend": 530,
+    "pruebas_frontend": 50
+  },
+  "hallazgos_bloqueantes": [],
+  "observaciones": [
+    "Las páginas breves de continuación conservan contenido completo y referencias a figuras; no se reduce tipografía ni se recortan capturas.",
+    "Las guías portables conservadas tienen su propio corte anterior y no acreditan incorporar las correcciones del6 de noviembre.",
+    "La revisión documental no acredita despliegue ni fusión de PR; son acciones separadas."
+  ]
+}

@@ -1,0 +1,36 @@
+FIGURAS DE ARQUITECTURA DE LA PLATAFORMA INTELIGENTE DE BI
+
+Uso en el capítulo III
+Título sugerido: Arquitectura de la plataforma inteligente de BI.
+Archivo recomendado: Arquitectura_detallada_BI_IA.png. Existe también la fuente vectorial SVG para una impresión de mayor tamaño.
+Pie de figura sugerido: Arquitectura de la prueba de concepto: interfaz web, servidor de aplicación, persistencia interna y fuentes relacionales de demostración. La integración de inteligencia artificial utiliza contexto autorizado y la aprobación de la propuesta corresponde a una persona con el permiso necesario. Elaboración propia a partir de la implementación del prototipo.
+
+Uso en el manual de formación
+Título sugerido: Cómo funciona la plataforma de ventas con IA.
+Archivo recomendado: Arquitectura_general_BI_IA.png.
+Explicación inicial sugerida: La persona plantea una necesidad de ventas. La plataforma comprueba si las fuentes disponibles la respaldan y utiliza la IA para preparar una propuesta. Una persona autorizada revisa y aprueba esa propuesta. Después se ejecuta la carga, se verifican los resultados y se habilita su análisis. Aprobar una propuesta y ejecutar la carga son decisiones distintas.
+
+Uso en el manual para la universidad
+Archivo recomendado: Arquitectura_general_BI_IA.png. La versión detallada puede acompañar el apartado técnico si el espacio lo permite.
+Pie de figura sugerido: Recorrido supervisado desde la necesidad de negocio hasta los indicadores de ventas. Las fuentes originales se consultan sin modificarlas; la construcción analítica y la validación se realizan dentro de la plataforma.
+
+LECTURA DE LOS BLOQUES
+
+1. Personas y permisos. El administrador configura accesos y parámetros. El analista revisa las fuentes y las propuestas. La gerencia consulta los resultados autorizados. Los nombres representan responsabilidades de uso; las acciones reales dependen de los permisos asignados a cada cuenta.
+
+2. Interfaz web. Es el conjunto de pantallas de la aplicación. Permite configurar la fuente, estudiar los metadatos, formular la necesidad, revisar la propuesta, controlar la carga y consultar el análisis. React y Vite se utilizan en desarrollo; la entrega del frontend se sirve mediante Nginx.
+
+3. Servidor de aplicación. FastAPI recibe las acciones, comprueba permisos y aplica las reglas. Centraliza la lectura de metadatos, el catálogo, la validación de las propuestas, la ejecución controlada de las transformaciones, la conciliación y el análisis. La interfaz no reemplaza estas comprobaciones del servidor.
+
+4. SQL Server. Aloja las fuentes operacionales de demostración AdventureWorks2022 y WideWorldImporters. El prototipo lee sus metadatos y, durante la ejecución autorizada, los datos necesarios. No escribe sobre esas fuentes. Los nombres de las dos bases ilustran el entorno de demostración; no representan reglas especiales por empresa. El adaptador implementado en este entorno es SQL Server: no se debe afirmar que todos los motores ya están implementados o probados.
+
+5. PostgreSQL. Conserva la configuración, la seguridad, las instantáneas estructurales, las propuestas, la evidencia de ejecución y los datamarts. Los resultados se vinculan con su fuente y ejecución. La figura no afirma que se almacenen conversaciones completas del copiloto.
+
+6. Proveedor de inteligencia artificial configurable. La aplicación entrega únicamente el contexto autorizado para cada operación. La formulación y generación usan metadatos estructurales permitidos; las operaciones analíticas pueden incluir resúmenes agregados preparados por la plataforma. No se envían credenciales. La IA devuelve una salida que debe pasar las validaciones del programa. No accede directamente al servidor SQL, no modifica las fuentes y no aprueba propuestas ni ejecuta libremente consultas generadas.
+
+7. Recorrido de cinco etapas. La necesidad se revisa antes de la propuesta; la aprobación humana antecede a la carga; la conciliación comprueba los resultados antes de su publicación analítica. Los cinco números resumen el recorrido de negocio y no sustituyen las cinco pantallas particulares del asistente o de la carga.
+
+8. Contenedores. El recuadro principal representa los cuatro servicios base permanentes de la solución. Las tareas de migración y carga inicial son tareas de inicialización; no se muestran como servicios permanentes. Un proveedor local de IA puede requerir recursos adicionales, mientras que un proveedor en la nube se integra externamente. La figura no obliga a que todos los proveedores funcionen en el mismo contenedor.
+
+NOTAS DE EDICIÓN
+Las fuentes editables son crear_arquitectura.py y los archivos SVG. El archivo renderizar_arquitectura.mjs convierte los SVG a PNG mediante la dependencia sharp del entorno de autoría. Las imágenes finales son de 2400 × 1695 píxeles, con una relación de aspecto equivalente a una página A4 apaisada. El tamaño mínimo de texto en el SVG es 28 píxeles. Se revisaron visualmente ambas variantes y se verificaron dimensiones y límites exteriores de los textos.

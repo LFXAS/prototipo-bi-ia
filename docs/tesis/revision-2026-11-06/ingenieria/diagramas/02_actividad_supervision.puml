@@ -1,0 +1,54 @@
+@startuml
+skinparam backgroundColor white
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 16
+skinparam ArrowFontSize 15
+skinparam NoteFontSize 14
+skinparam Padding 6
+skinparam nodesep 24
+skinparam ranksep 28
+skinparam dpi 180
+skinparam wrapWidth 220
+skinparam maxMessageSize 190
+skinparam sequenceMessageAlign center
+hide empty members
+hide circle
+skinparam classAttributeIconSize 0
+
+skinparam ConditionStyle InsideDiamond
+start
+:Analista\nElegir fuente y formular necesidad;
+:Sistema\nComprobar contexto y permisos;
+:Inteligencia artificial\nEvaluar necesidad con los metadatos;
+if (¿Viabilidad suficiente?) then (no)
+ :Analista\nRevisar limitación y corregir solicitud;
+ stop
+else (sí)
+ :Inteligencia artificial\nProponer conceptos y modelo;
+ :Sistema\nVerificar referencias y cálculos;
+ if (¿Propuesta válida?) then (no)
+  :Sistema\nConservar intento y explicar bloqueo;
+  stop
+ else (sí)
+  :Analista\nRevisar y aprobar una versión;
+  :Analista\nElegir indicadores y revisar el plan;
+  if (¿Confirma la carga?) then (no)
+   stop
+  else (sí)
+   :Sistema\nLeer origen sin modificarlo;\ncargar y comparar origen con destino;
+   if (¿Resultado publicable?) then (no)
+    :Sistema\nRegistrar diferencias y bloquear publicación;
+    stop
+   else (sí)
+    :Analista\nRevisar nombres, unidades y advertencias;
+    :Usuario autorizado\nAnalizar, conversar y exportar;
+    stop
+   endif
+  endif
+ endif
+endif
+
+
+@enduml

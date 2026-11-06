@@ -1,0 +1,1312 @@
+{
+  "corte": {
+    "codigo": "8f1c7d1 (incluye bf50172)",
+    "documentacion": "0f23f7e",
+    "fecha_documental": "5 de noviembre de 2026",
+    "tests_backend": 454,
+    "tests_frontend": 48,
+    "checks_PR57": 8,
+    "verificacion": "make verify, ejecución V6: salida 0",
+    "natural": "Revisión documental actual; no se ejecutaron nuevas pruebas de aplicación ni nuevas llamadas LLM/ETL."
+  },
+  "introduccion": "La ingeniería de software se organiza mediante seis incrementos documentados y especificaciones SDD versionadas. Los requisitos, historias, casos de uso y pruebas se vinculan al contrato implementado; las correcciones posteriores al cierre precisan el mismo incremento sin crear un sprint adicional. La arquitectura desacopla los nombres de las bases y proveedores mediante metadatos canónicos, adaptadores y validadores comunes, con SQL Server como conector funcionalmente evaluado y ventas como único dominio habilitado.",
+  "alcance_implementado": [
+    "Monolito modular con React, TypeScript y FastAPI; PostgreSQL para configuración, auditoría y destinos analíticos; SQL Server como origen de sólo lectura.",
+    "Múltiples fuentes habilitadas a la vez, con connection_id explícito en el contexto de sesión; no existe una única base activa global.",
+    "Catálogo orientador por conexión y dominio; metadatos persistidos; propuestas e hijas versionadas; aprobación humana; ETL y destino por expediente.",
+    "Un proveedor LLM activo y probado a la vez entre los adaptadores configurables; sin cambio silencioso de proveedor y sin ejecutar SQL libre redactado por la IA.",
+    "Vistas ejecutiva y analítica, gráficos, hallazgos determinísticos, copiloto sobre agregados y reportes con contexto y procedencia."
+  ],
+  "exclusiones": [
+    "Otros motores requieren implementar y probar un adaptador; no se atribuye compatibilidad automática por el nombre de una base de datos.",
+    "No se incluyen pronósticos, CDC, carga incremental, dimensiones lentamente cambiantes complejas, alta disponibilidad ni certificación empresarial.",
+    "No se acredita empíricamente cada idioma, modelo, esquema o futura respuesta del proveedor.",
+    "No se presentan resultados formales de usabilidad ni causalidad sobre ventas, rentabilidad o aprendizaje."
+  ],
+  "RF": [
+    {
+      "id": "RF-01",
+      "requisito": "Autenticar y autorizar operaciones",
+      "criterio_aceptacion": "Una cuenta activa obtiene una sesión tras verificar la contraseña; cada operación protegida verifica JWT, usuario y permiso en FastAPI. Credenciales inválidas o permiso ausente no permiten la operación.",
+      "precision_corte_noviembre": "",
+      "fuentes_SDD": "SPR-02-01-seguridad-rbac.md — §4 API y controles del backend; §5 Criterios",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-02",
+      "requisito": "Administrar acceso y auditoría",
+      "criterio_aceptacion": "La administración mantiene usuarios, roles y asociaciones mediante catálogos controlados. Se rechazan cambios que eliminen la vía de recuperación; las mutaciones registran auditoría no editable sin secretos.",
+      "precision_corte_noviembre": "El correo sólo se establece al crear. En edición se presenta en consulta; no se envían role_ids al editar la cuenta protegida. Error de carga de roles/permisos bloquea el guardado hasta recarga válida.",
+      "fuentes_SDD": "SPR-02-01-seguridad-rbac.md — §2.1 Invariantes; §2.2 Semillas; §3.1–3.6 Flujos",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-03",
+      "requisito": "Configurar y probar un proveedor LLM",
+      "criterio_aceptacion": "La web guarda proveedor, endpoint permitido, modelo y nivel admitido; cifra la clave y no la devuelve. Sólo una configuración LLM permanece activa; cambiar su contrato invalida la prueba previa.",
+      "precision_corte_noviembre": "Los presets conservan el nombre escrito. Cambiar contrato de proveedor/modelo/razonamiento invalida la prueba previa; no hay failover silencioso.",
+      "fuentes_SDD": "SPR-02-03-parametros-y-llm.md — §3 Configuración; §4 Reglas; §5 Criterios\nSPR-05-04-capacidades-y-compatibilidad-llm.md — §2 Reglas; §5 Criterios",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-04",
+      "requisito": "Registrar y habilitar conexiones SQL Server",
+      "criterio_aceptacion": "La conexión se registra por campos validados; sólo se habilita tras prueba satisfactoria de lectura y ausencia de privilegios de escritura. Editar sin contraseña nueva conserva el secreto; una dependencia bloquea su eliminación.",
+      "precision_corte_noviembre": "",
+      "fuentes_SDD": "SPR-03-04-configuracion-web-conexiones-y-secretos.md — §3.2; §5–8; evolución vigente Sprint 6\nSPR-06-01-contexto-multifuente-sqlserver.md — Decisiones de arquitectura; Reglas y criterios",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-05",
+      "requisito": "Seleccionar fuente por contexto de sesión",
+      "criterio_aceptacion": "Varias conexiones probadas pueden coexistir. La selección de una sesión no cambia globalmente la otra; las solicitudes transmiten y verifican connection_id y descartan respuestas antiguas.",
+      "precision_corte_noviembre": "",
+      "fuentes_SDD": "SPR-06-01-contexto-multifuente-sqlserver.md — Decisiones 1–6; Flujo 3–12; MS-E2E03/04/12",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-06",
+      "requisito": "Capturar instantáneas estructurales",
+      "criterio_aceptacion": "La captura obtiene tablas, columnas, tipos base, PK y FK declaradas; ordena y calcula huella estable. Estructura sin cambios reutiliza la captura; una falla no sustituye la última válida por un documento parcial.",
+      "precision_corte_noviembre": "",
+      "fuentes_SDD": "SPR-03-01-conexion-e-introspeccion-adventureworks.md — §3 Flujo y reglas; §4.1–4.2; §7",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-07",
+      "requisito": "Explorar metadatos de la fuente elegida",
+      "criterio_aceptacion": "La búsqueda y detalle leen la instantánea persistida, no filas OLTP. Muestran versión, fecha, procedencia y columnas; al cambiar fuente reinician búsqueda, tabla, mensajes y respuestas pendientes.",
+      "precision_corte_noviembre": "",
+      "fuentes_SDD": "SPR-03-01-conexion-e-introspeccion-adventureworks.md — §4.3–4.4; §6\nSPR-03-03-explorador-esquema-y-trazabilidad.md — §4.3 Explorador; §9 Criterios\nSPR-06-01-contexto-multifuente-sqlserver.md — Flujo 12; Reglas del selector de versiones",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-08",
+      "requisito": "Administrar catálogo analítico por fuente",
+      "criterio_aceptacion": "Preguntas, etiquetas y periodicidades se guardan por conexión/dominio; no fijan dimensiones ni demuestran columnas inexistentes. La edición de una fuente no cambia otra ni reescribe propuestas previas.",
+      "precision_corte_noviembre": "",
+      "fuentes_SDD": "SPR-03-02-propuesta-bi-asistida-por-ia.md — §2 Alcance; §6 API; §9 Criterios\nSPR-06-01-contexto-multifuente-sqlserver.md — Propiedad del catálogo y de la evidencia; MS-E2E05",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-09",
+      "requisito": "Redactar o adoptar una necesidad asistida",
+      "criterio_aceptacion": "El analista puede escribir, solicitar sugerencias o reformular. La adopción es explícita; la llamada sólo usa contexto estructural permitido y consentimiento del destino LLM vigente. La sugerencia no crea preguntas del catálogo.",
+      "precision_corte_noviembre": "Sugerencia, reformulación y revisión son acciones distintas; el objetivo original sólo se sustituye mediante adopción explícita. No se modifica la necesidad durante la revisión.",
+      "fuentes_SDD": "SPR-03-02-propuesta-bi-asistida-por-ia.md — §2; §3.2; §6 Operaciones de necesidades\nSPR-06-01-contexto-multifuente-sqlserver.md — Flujo 7; MS-E2E11/12",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-10",
+      "requisito": "Persistir y exigir revisión de viabilidad",
+      "criterio_aceptacion": "La evaluación clasifica respaldo y límites, conserva actor, instantánea, texto, preguntas y período. Generar exige huella persistida coincidente y reglas vigentes; cambiar entrada o contexto obliga a revisar otra vez.",
+      "precision_corte_noviembre": "La revisión vigente es need-review-6. Se distinguen intención positiva y exclusiones ES/EN, ranking como operación analítica y trazabilidad documental frente a facturación. Una contradicción persistente tras la reparación acotada no se resuelve sólo aceptando un aviso.",
+      "fuentes_SDD": "SPR-03-02-propuesta-bi-asistida-por-ia.md — §3.2 paso 2; §4.1 business_need_reviews; §6; §9\nSPR-06-01-contexto-multifuente-sqlserver.md — Reglas need-review-6 y consentimiento",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-11",
+      "requisito": "Generar conceptos y contrato BI estructurado",
+      "criterio_aceptacion": "Con prerrequisitos y revisión vigentes se descubren conceptos y se solicita al LLM una decisión compacta. El servidor expande datos mecánicos y persiste contrato, validación, proveedor, modelo y procedencia, o un fallo recuperable.",
+      "precision_corte_noviembre": "Las generaciones actuales usan sales-bi-v7 y compilation_rules_version=3. El servidor expande decisiones compactas, no permite ejecutar SQL redactado por el LLM.",
+      "fuentes_SDD": "SPR-03-02-propuesta-bi-asistida-por-ia.md — §3.2 Flujo; §4.2–4.5 Contratos; §8",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-12",
+      "requisito": "Validar referencias y significado controlado",
+      "criterio_aceptacion": "Existencia, tipos, rutas declaradas, grano, roles de medida y cobertura se comprueban antes de aprobar. Una referencia inventada, SQL libre, conteo por detalle como pedido o pedido presentado como factura bloquea la propuesta.",
+      "precision_corte_noviembre": "PK/FK e identificadores no son operandos monetarios. El promedio documental exige razón de agregados; no se convierte silenciosamente un conteo de líneas en pedidos. NumberOfUnits sin semántica de identificador puede ser cantidad.",
+      "fuentes_SDD": "SPR-03-02-propuesta-bi-asistida-por-ia.md — §5 Validación determinística; §9\nSPR-05-06-endurecimiento-integral-asistente-bi.md — HBI003/004/005/014",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-13",
+      "requisito": "Personalizar y normalizar recetas controladas",
+      "criterio_aceptacion": "Una revisión selecciona objetos y recetas verificadas, nunca expresiones libres. Crea otra versión enlazada, revalida compatibilidad y dependencias; una corrección automática inequívoca conserva explicación y no inventa operandos.",
+      "precision_corte_noviembre": "El editor parte del contrato efectivo compilado, no de referencias crudas del proveedor. Una hija aprobada queda seleccionada y no es sustituida por una respuesta tardía del padre. Crear versión corregida es una acción explícita.",
+      "fuentes_SDD": "SPR-03-02-propuesta-bi-asistida-por-ia.md — §3.2 pasos 12–14; §4.5; §6 revisiones\nSPR-04-02-kpis-controlados-y-calculables.md — §4; §5.1\nSPR-04-04-limpieza-y-transformaciones-controladas.md — §3 Columnas calculadas",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-14",
+      "requisito": "Decidir y verificar sin alterar la historia",
+      "criterio_aceptacion": "La aprobación exige permiso, ausencia de errores y advertencias confirmadas; rechazo/retirada conservan motivo y auditoría. Verificar evidencia no cambia el estado ni invoca al LLM; una diferencia histórica de reproducción no retira una aprobación por sí sola.",
+      "precision_corte_noviembre": "El replay informa igualdad real de hashes y separa advertencias de compatibilidad. Una aprobación nueva de borrador antiguo recibe 409 y exige hija actual o regeneración; un aprobado legado conserva idempotencia y sus reglas.",
+      "fuentes_SDD": "SPR-03-02-propuesta-bi-asistida-por-ia.md — §3.3; §6–9; lectura histórica vigente\nSPR-04-01-seleccion-propuesta-y-validacion-etl.md — §1 Elegibilidad y aprobación histórica",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-15",
+      "requisito": "Consultar versiones e iniciar un nuevo borrador",
+      "criterio_aceptacion": "El historial filtra/pagina versiones persistidas y abre sus etapas sin generar otra respuesta. Una versión aprobada es de consulta; Crear nueva propuesta inicia un borrador independiente sin cerrar sesión ni sobrescribir la versión.",
+      "precision_corte_noviembre": "",
+      "fuentes_SDD": "SPR-03-02-propuesta-bi-asistida-por-ia.md — §7 Interfaz e historia\nSPR-05-06-endurecimiento-integral-asistente-bi.md — HBI010 y HBI013",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-16",
+      "requisito": "Seleccionar una propuesta materializable y KPI",
+      "criterio_aceptacion": "La selección exige estado aprobado, fuente/instantánea disponibles y validación actual del contrato y recetas. El analista confirma propuesta y KPI; la cobertura posterior se recalcula y puede quedar parcial sin falsear cumplimiento.",
+      "precision_corte_noviembre": "",
+      "fuentes_SDD": "SPR-04-01-seleccion-propuesta-y-validacion-etl.md — §1–3\nSPR-04-02-kpis-controlados-y-calculables.md — §5.1 Identidad canónica\nSPR-05-06-endurecimiento-integral-asistente-bi.md — HBI011",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-17",
+      "requisito": "Materializar una carga completa trazable",
+      "criterio_aceptacion": "El backend compila consultas desde tablas, columnas, FK y recetas verificadas, lee la fuente y carga dimensiones/hecho en destino por ejecución. La falla transaccional conserva evidencia sin escribir en el OLTP.",
+      "precision_corte_noviembre": "",
+      "fuentes_SDD": "SPR-04-01-seleccion-propuesta-y-validacion-etl.md — §3–5\nSPR-04-04-limpieza-y-transformaciones-controladas.md — §1–3; §7\nSPR-06-01-contexto-multifuente-sqlserver.md — ETL y analítica por expediente",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-18",
+      "requisito": "Evitar materializaciones duplicadas accidentales",
+      "criterio_aceptacion": "Una combinación idéntica de propuesta y selección KPI preparada o terminada abre el expediente existente o devuelve conflicto. El control transaccional no depende del botón React; no es una tarea de refresco periódico.",
+      "precision_corte_noviembre": "",
+      "fuentes_SDD": "SPR-04-01-seleccion-propuesta-y-validacion-etl.md — §3 Inmutabilidad e idempotencia; §5",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-19",
+      "requisito": "Conciliar y presentar diferencias de carga",
+      "criterio_aceptacion": "El expediente contrasta conteos e importes equivalentes entre origen y destino con receta, alcance y tolerancias. Cada KPI mantiene estado; una condición no calculable se explica y no se presenta como cero válido.",
+      "precision_corte_noviembre": "Importes, razones y cantidades fraccionarias mantienen precisión; sólo conteos explícitos se presentan como enteros. La UI contrae o apila columnas para evitar solapamiento de etiqueta y cifra.",
+      "fuentes_SDD": "SPR-04-01-seleccion-propuesta-y-validacion-etl.md — §4 Expediente\nSPR-04-02-kpis-controlados-y-calculables.md — §6 Validación; §7 Criterios\nSPR-04-04-limpieza-y-transformaciones-controladas.md — §5 Calidad",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-20",
+      "requisito": "Resolver etiquetas y conservar originales",
+      "criterio_aceptacion": "Las etiquetas descriptivas proceden de rutas verificadas que conservan población y grano. La localización de categorías aptas conserva el original y requiere revisión; moneda sólo usa ISO demostrado. No se traduce PII ni se asume costo histórico.",
+      "precision_corte_noviembre": "",
+      "fuentes_SDD": "SPR-04-04-limpieza-y-transformaciones-controladas.md — §4–7\nSPR-05-03-calidad-semantica-y-resolucion-de-entidades.md — §2–4; §6–8\nSPR-04-02-kpis-controlados-y-calculables.md — §6.1 Divisa",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-21",
+      "requisito": "Consultar un dashboard de una ejecución válida",
+      "criterio_aceptacion": "El panel identifica fuente, propuesta, ejecución y alcance comercial; sólo ofrece ejecuciones conciliadas con datos físicos disponibles de esa conexión. Cambiar fuente limpia resultados y rechaza una pareja fuente–ejecución ajena.",
+      "precision_corte_noviembre": "La serie temporal usa la periodicidad efectiva del KPI o hereda la propuesta normalizando day/week/month/quarter/year y daily/weekly/monthly/quarterly/yearly.",
+      "fuentes_SDD": "SPR-05-01-dashboard-ejecutivo-explicable.md — §3 reglas 1/11/12/15\nSPR-06-01-contexto-multifuente-sqlserver.md — Flujo 9–12; MS-E2E03/04",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-22",
+      "requisito": "Filtrar e interactuar con gráficos",
+      "criterio_aceptacion": "Vista, indicador y filtros actualizan conjuntamente KPI, gráficos y hallazgos. Puntos/barras/categorías muestran detalle accesible; sólo una categoría territorial autorizada puede aplicarse explícitamente como filtro global.",
+      "precision_corte_noviembre": "",
+      "fuentes_SDD": "SPR-05-01-dashboard-ejecutivo-explicable.md — §2–4; §6 Criterios",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-23",
+      "requisito": "Conversar sobre agregados autorizados",
+      "criterio_aceptacion": "El copiloto interpreta una pregunta como contrato cerrado, el servidor calcula agregados de la ejecución y el LLM explica evidencia y límites. Top N usa denominador previo al recorte; no hay SQL libre, acciones ni pronósticos.",
+      "precision_corte_noviembre": "La plataforma produce hasta tres preguntas desde el catálogo materializado y una cautela con procedencia. Un ranking no acredita preferencias ni causalidad; la ficha extraída en ETL no acredita territorio histórico ni entrega real.",
+      "fuentes_SDD": "SPR-05-05-copiloto-analitico-contextual.md — §2–3; §5–6\nSPR-06-01-contexto-multifuente-sqlserver.md — MS-E2E07/08",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-24",
+      "requisito": "Exportar la selección autorizada",
+      "criterio_aceptacion": "PDF y Excel se reconstruyen en servidor con vista, métrica, filtros y expediente. Exigen conjuntamente analytics.dashboard.read y reports.analytics.export; Excel mantiene números, escala porcentual y hojas acordes con la vista.",
+      "precision_corte_noviembre": "Ambos formatos identifican fuente/base/offset, unidad y filtros. XLSX conserva cadenas literales sin fórmulas ni vínculos automáticos; la altura de las celdas muestra el aviso completo.",
+      "fuentes_SDD": "SPR-05-02-reporteria-fiel-pdf-excel.md — §2–6\nSPR-06-01-contexto-multifuente-sqlserver.md — MS-E2E06; contrato reportes",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-25",
+      "requisito": "Conservar el linaje de los artefactos",
+      "criterio_aceptacion": "Cada propuesta refiere su instantánea y origen; cada ETL refiere propuesta, instantánea y esquema físico; panel, chat y exportación conservan esa identidad. La consulta histórica no sustituye la procedencia por la propuesta más reciente.",
+      "precision_corte_noviembre": "",
+      "fuentes_SDD": "SPR-03-02-propuesta-bi-asistida-por-ia.md — §4.1 Persistencia; §7 Historia\nSPR-04-01-seleccion-propuesta-y-validacion-etl.md — §1; §3\nSPR-06-01-contexto-multifuente-sqlserver.md — Decisiones 3–5; MS-E2E09",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    },
+    {
+      "id": "RF-26",
+      "requisito": "Recuperar sin duplicar efectos ni aceptar salidas inválidas",
+      "criterio_aceptacion": "Ante sesión vencida, red, cuota o contrato inválido se conserva el expediente y un borrador mínimo no secreto. Las recuperaciones son acotadas; reabrir una versión o falla de interpretación no repite el ETL ni alterna proveedor silenciosamente.",
+      "precision_corte_noviembre": "",
+      "fuentes_SDD": "SPR-03-02-propuesta-bi-asistida-por-ia.md — §8 Seguridad y reintento\nSPR-05-06-endurecimiento-integral-asistente-bi.md — HBI001/008/014\nSPR-06-01-contexto-multifuente-sqlserver.md — MS-E2E11/12",
+      "estado": "Implementado; evidencia con límites según plan de pruebas, no certificación universal."
+    }
+  ],
+  "RNF": [
+    {
+      "id": "RNF-01",
+      "requisito": "Seguridad y mínimo privilegio",
+      "condicion_y_comprobacion": "Todas las operaciones protegidas verifican autorización en la API; ocultar un menú no concede ni revoca permisos. Revisión de dependencias FastAPI, pruebas de seguridad y ensayo negativo autenticado pendiente por perfil.",
+      "limite": "RBAC mínimo, no certificación de seguridad empresarial."
+    },
+    {
+      "id": "RNF-02",
+      "requisito": "Confidencialidad y minimización",
+      "condicion_y_comprobacion": "Las claves se cifran y no retornan al navegador; asesoría y propuesta usan estructura permitida. Chat usa agregados y localización sólo categorías aptas no sensibles. Pruebas de cifrado, destino permitido y payload estructural; inspección de contratos y actas.",
+      "limite": "No implica bóveda externa ni rotación de claves implementadas."
+    },
+    {
+      "id": "RNF-03",
+      "requisito": "Integridad del contexto",
+      "condicion_y_comprobacion": "Fuente, instantánea, propuesta, ejecución, filtros y reporte mantienen pertenencia común; una combinación cruzada se rechaza. Dobles de respuestas tardías y pruebas de rechazo fuente–ejecución; MS-E2E03/04.",
+      "limite": "Separación por conexión no equivale a certificación multiarrendatario."
+    },
+    {
+      "id": "RNF-04",
+      "requisito": "Confiabilidad y fallo seguro",
+      "condicion_y_comprobacion": "Respuesta JSON inválida, cuota o referencia incorrecta no autoriza una carga ni altera artefactos válidos. Recuperación acotada sin proveedor alterno silencioso. Pruebas negativas de proveedor y validadores; historial de fallos del acta.",
+      "limite": "La continuidad y precisión del proveedor externo no están garantizadas."
+    },
+    {
+      "id": "RNF-05",
+      "requisito": "Reproducibilidad del artefacto",
+      "condicion_y_comprobacion": "La estructura canónica y las decisiones persistidas pueden verificarse con huellas y versiones; se distingue evolución del motor de corrupción de datos. Pruebas de normalización y reproducción; verificación de versiones históricas sólo lectura.",
+      "limite": "No se exige igualdad literal entre nuevas respuestas probabilísticas del LLM."
+    },
+    {
+      "id": "RNF-06",
+      "requisito": "Mantenibilidad y SDD",
+      "condicion_y_comprobacion": "Una capacidad tiene especificación, interfaz modular, pruebas proporcionales y cambio versionado; los módulos no ejecutan SQL libre del modelo. Revisión estática de módulos y trazabilidad especificación–código–pruebas–commit.",
+      "limite": "La existencia de una especificación no demuestra por sí sola todo su cumplimiento."
+    },
+    {
+      "id": "RNF-07",
+      "requisito": "Usabilidad y recuperación",
+      "condicion_y_comprobacion": "Los flujos muestran carga, vacío, éxito, error y acción de recuperación; consultar historia no obliga a cerrar sesión o repetir carga. Pruebas de componentes y revisión visual documentada.",
+      "limite": "Sin resultados de satisfacción ni usabilidad con participantes."
+    },
+    {
+      "id": "RNF-08",
+      "requisito": "Accesibilidad básica",
+      "condicion_y_comprobacion": "Campos y gráficos tienen nombres accesibles, foco visible, operación por teclado y mensajes no dependientes sólo del color. Pruebas React y revisión visual de puntos, detalles, formularios y contraste.",
+      "limite": "No equivale a una auditoría completa ni certificación WCAG."
+    },
+    {
+      "id": "RNF-09",
+      "requisito": "Explicabilidad y prudencia comercial",
+      "condicion_y_comprobacion": "Los indicadores muestran receta, período, denominador y procedencia; se distinguen valor nulo y cero, pedido y factura, observación y causalidad. Pruebas de denominadores, eventos y hallazgos; control de agregados históricos.",
+      "limite": "La explicación libre del LLM permanece supervisada; no acredita causalidad."
+    },
+    {
+      "id": "RNF-10",
+      "requisito": "Extensibilidad acotada",
+      "condicion_y_comprobacion": "Conectores y adaptadores usan contratos explícitos; AW/WWI comparten núcleo. Un nombre desconocido no crea una capacidad disponible. Pruebas con nombres ES/EN genéricos y dos fuentes SQL Server; inspección del registro de conectores.",
+      "limite": "Sólo SQL Server y ventas están implementados y evaluados; no todos los idiomas o esquemas."
+    },
+    {
+      "id": "RNF-11",
+      "requisito": "Límites de rendimiento",
+      "condicion_y_comprobacion": "Listas paginadas, presupuestos de contexto, tiempo máximo y reintentos acotados evitan trabajo ilimitado o truncamiento silencioso. Pruebas de rangos, tamaño de payload, timeout y recuperación; registro de tiempos históricos.",
+      "limite": "No hay SLA ni medición representativa de concurrencia o benchmark controlado."
+    },
+    {
+      "id": "RNF-12",
+      "requisito": "Portabilidad de entrega",
+      "condicion_y_comprobacion": "El entorno y la evolución de datos se declaran con Compose, imágenes, Alembic y semillas; no se distribuyen volúmenes ni secretos en Git. Inspección de Compose, migraciones, CI y guía de réplica; evidencia histórica de make verify.",
+      "limite": "Despliegue Azure, alta disponibilidad y restauración integral ensayada no se afirman como realizados."
+    }
+  ],
+  "casos_uso": [
+    {
+      "id": "CU-01",
+      "nombre": "CU-01. Autenticación y administración de acceso",
+      "campos": {
+        "Actor y activación": "Usuario autorizado; administrador en el subflujo de gestión. Inicio de sesión o apertura de una función de seguridad.",
+        "Permisos": "JWT y permisos específicos de seguridad según operación",
+        "Precondiciones": "Cuenta habilitada y servicios disponibles. Para administración: sesión válida y permiso del recurso.",
+        "Flujo normal": "1. El usuario presenta sus credenciales en el formulario de acceso.\n2. La API verifica contraseña y estado; obtiene roles y permisos efectivos.\n3. La aplicación muestra la navegación autorizada sin trasladar la autorización al navegador.\n4. En el subflujo administrativo, la persona selecciona usuarios o roles y modifica datos/asociaciones mediante catálogos por nombre.\n5. El backend valida registros protegidos, dependencias y conservación de recuperación antes de guardar.\n6. La operación admitida se confirma y queda auditada; la auditoría se consulta sin edición.",
+        "Flujos alternos": "Paso 2: Credencial incorrecta o cuenta inactiva. Se rechaza el acceso sin exponer contraseña o detalles sensibles.\nPaso 4–5: Permiso ausente o modificación de recuperación protegida. La API deniega y no altera el registro; la ocultación del menú no es el control definitivo.\nPaso 5: Eliminación con dependencias. Devuelve conflicto y relaciones por resolver; no ejecuta borrado en cascada silencioso.",
+        "Postcondiciones": "Sesión autorizada o rechazo controlado. Una gestión válida conserva vía de recuperación y auditoría; una denegada deja datos funcionales intactos.",
+        "Trazabilidad": "RF-01; RF-02. SPR-02-01-seguridad-rbac.md — §2–5",
+        "Evidencia y límite": "backend/tests/test_security_service.py; CP-31 pendiente para cuentas de cada perfil"
+      },
+      "precision_noviembre": ""
+    },
+    {
+      "id": "CU-02",
+      "nombre": "CU-02. Configurar fuente y proveedor de IA",
+      "campos": {
+        "Actor y activación": "Administrador de plataforma. Preparación o cambio de una conexión o configuración LLM.",
+        "Permisos": "connections.read; connections.write; connections.test; parameters.llm.read; parameters.llm.write, que también autoriza la prueba LLM",
+        "Precondiciones": "Sesión autorizada. Destino accesible y credencial suministrada por su titular; conector o adaptador implementado.",
+        "Flujo normal": "1. El administrador abre el catálogo correspondiente, sin reutilizar selecciones de otras pantallas.\n2. Para una fuente, registra campos SQL Server y contraseña; para IA, elige proveedor, endpoint permitido, modelo y nivel admitido.\n3. FastAPI valida campos y cifra el secreto; las lecturas posteriores sólo indican que existe una credencial.\n4. Ejecuta la prueba: la fuente debe confirmar lectura y ausencia de escritura; el LLM realiza una solicitud mínima sin contexto comercial.\n5. Si la prueba es satisfactoria, habilita la fuente o activa la configuración LLM.\n6. Las fuentes se habilitan independientemente; activar un LLM desactiva el anterior. El resultado y actor quedan auditados.",
+        "Flujos alternos": "Paso 2–4: Motor no implementado, endpoint no permitido, escritor, modelo ausente o credencial inválida. Se rechaza o conserva inactiva la configuración con causa segura.\nPaso 3: Edición sin nueva contraseña de fuente. Se conserva el secreto anterior; no se devuelve su texto.\nPaso 5: Cambio de campos que determinan el destino. La prueba anterior deja de habilitar el uso hasta una nueva comprobación.",
+        "Postcondiciones": "Configuración segura preparada o fallo explicable. El cambio no reescribe metadatos, propuestas ni cargas anteriores.",
+        "Trazabilidad": "RF-03; RF-04. SPR-02-03-parametros-y-llm.md — §3–5\nSPR-03-04-configuracion-web-conexiones-y-secretos.md — §3.2; §5–8\nSPR-06-01-contexto-multifuente-sqlserver.md — Flujo 1–2",
+        "Evidencia y límite": "backend/tests/test_parameter_secrets.py; backend/tests/test_data_connections.py; CP-07 y CP-16"
+      },
+      "precision_noviembre": ""
+    },
+    {
+      "id": "CU-03",
+      "nombre": "CU-03. Seleccionar contexto de trabajo",
+      "campos": {
+        "Actor y activación": "Analista BI; usuario gerencial autorizado en consulta. Selección de otra fuente en el espacio de trabajo.",
+        "Permisos": "Permiso de lectura del módulo solicitado",
+        "Precondiciones": "Existe al menos una fuente probada y habilitada. La sesión puede consultar los módulos que utilizará.",
+        "Flujo normal": "1. El usuario selecciona una fuente disponible.\n2. La interfaz conserva la preferencia de esa sesión y limpia el estado dependiente anterior.\n3. Las solicitudes de preparación y de cada módulo incluyen connection_id.\n4. FastAPI comprueba disponibilidad de la fuente y pertenencia de instantánea o ejecución solicitada.\n5. Inicio, explorador, catálogo, asistente, ETL y panel reflejan la misma conexión.\n6. La nueva respuesta se muestra sólo si corresponde a la solicitud y contexto aún vigentes.",
+        "Flujos alternos": "Paso 4: Fuente deshabilitada, inexistente o no probada. Se informa el prerrequisito; no inicia un nuevo proceso.\nPaso 4: Ejecución de otra conexión. Se rechaza la combinación en lugar de recuperar datos ajenos.\nPaso 6: Respuesta tardía del contexto anterior. Se descarta; no sustituye filtros, conversación ni gráficos vigentes.",
+        "Postcondiciones": "Contexto coherente en la sesión actual. Las selecciones de otras sesiones y los datos históricos no se modifican.",
+        "Trazabilidad": "RF-05; RF-21. SPR-06-01-contexto-multifuente-sqlserver.md — Decisiones 1–5; Flujo 3–12; MS-E2E03/04",
+        "Evidencia y límite": "CP-02; CP-03; frontend/src/AnalyticsPage.test.tsx"
+      },
+      "precision_noviembre": ""
+    },
+    {
+      "id": "CU-04",
+      "nombre": "CU-04. Capturar y explorar metadatos",
+      "campos": {
+        "Actor y activación": "Analista BI o administrador con permiso de actualización. Solicitud de actualizar o consultar la estructura.",
+        "Permisos": "metadata.read; metadata.refresh para captura",
+        "Precondiciones": "Fuente SQL Server habilitada y probada. Credencial de sólo lectura recuperable; para exploración histórica, instantánea autorizada disponible.",
+        "Flujo normal": "1. La persona elige la fuente y solicita actualizar metadatos.\n2. El conector lee catálogos estructurales; no consulta filas comerciales para esta operación.\n3. El servicio normaliza tipos, orden, PK/FK y relaciones declaradas y valida el documento canónico.\n4. Calcula la huella y reutiliza una captura sin cambios o persiste una nueva versión inmutable.\n5. El explorador presenta identidad, fecha, huella y totales; permite buscar y abrir una tabla.\n6. El detalle se obtiene desde PostgreSQL y conserva las referencias técnicas originales.",
+        "Flujos alternos": "Paso 2–3: Falla de origen o captura incompleta. Conserva la última instantánea válida y comunica la causa.\nPaso 4: Actualización simultánea. Serializa la captura para evitar duplicados equivalentes.\nPaso 5: Cambio de fuente o tabla ya fuera del contexto. Reinicia selección y descarta detalles atrasados; no arrastra Tabla no encontrada de otra base.",
+        "Postcondiciones": "Instantánea íntegra, reutilizada o nueva, con procedencia y auditoría. La búsqueda no cambia la estructura ni demuestra calidad de todas las filas.",
+        "Trazabilidad": "RF-06; RF-07; RF-25. SPR-03-01-conexion-e-introspeccion-adventureworks.md — §3–8\nSPR-06-01-contexto-multifuente-sqlserver.md — Flujo 12",
+        "Evidencia y límite": "CP-01; CP-02; backend/tests/test_metadata_introspection.py"
+      },
+      "precision_noviembre": ""
+    },
+    {
+      "id": "CU-05",
+      "nombre": "CU-05. Administrar catálogo analítico",
+      "campos": {
+        "Actor y activación": "Analista BI o administrador autorizado. Creación, modificación o retiro de una pregunta orientadora.",
+        "Permisos": "copilot.catalog.read; copilot.catalog.write para mutaciones",
+        "Precondiciones": "Conexión elegida y dominio ventas implementado. Sesión con autorización correspondiente.",
+        "Flujo normal": "1. El usuario abre el catálogo y confirma la fuente vigente.\n2. Consulta cobertura técnica calculada desde su instantánea y orientación funcional por separado.\n3. Crea o edita una pregunta con etiqueta e instrucción de negocio, o cambia su disponibilidad.\n4. Selecciona periodicidades del catálogo soportado; no define tablas ni dimensiones libres.\n5. FastAPI valida y guarda por conexión/dominio con auditoría.\n6. El asistente utiliza la configuración en solicitudes nuevas; las personalizaciones de otra fuente permanecen intactas.",
+        "Flujos alternos": "Paso 3–4: Pregunta personalizada no reconocida semánticamente. Se conserva como orientación; no se presume respaldo técnico.\nPaso 4: Periodicidad no soportada. Se rechaza el cambio y se mantienen los datos anteriores.\nPaso 5: Restaurar catálogo. Recupera la orientación validada de esa fuente, sin copiar evidencia técnica o personalizaciones ajenas.",
+        "Postcondiciones": "Catálogo funcional aislado y trazable. No hay propuesta aprobada ni dimensión creada como consecuencia de guardar preguntas.",
+        "Trazabilidad": "RF-08. SPR-03-02-propuesta-bi-asistida-por-ia.md — §2; §6 API\nSPR-06-01-contexto-multifuente-sqlserver.md — Propiedad del catálogo; MS-E2E05",
+        "Evidencia y límite": "CP-04; backend/tests/test_copilot_service.py::test_catalog_labels_and_availability_are_configurable_without_changing_codes"
+      },
+      "precision_noviembre": ""
+    },
+    {
+      "id": "CU-06",
+      "nombre": "CU-06. Formular y revisar la viabilidad de una necesidad",
+      "campos": {
+        "Actor y activación": "Analista BI. Redacción del objetivo o solicitud de sugerencia/revisión.",
+        "Permisos": "copilot.proposals.generate",
+        "Precondiciones": "Fuente e instantánea vigentes; proveedor activo y probado. Consentimiento coincidente con configuración, proveedor, URL y modelo antes del envío.",
+        "Flujo normal": "1. El analista escribe su objetivo o solicita sugerencias desde la instantánea.\n2. La IA propone una redacción con evidencia y límites; sólo se adopta cuando la persona lo decide.\n3. El analista selecciona preguntas y periodicidad habilitadas y solicita la revisión del texto definitivo.\n4. La plataforma comprueba referencias, tipos y rutas y clasifica directos, derivables, ambiguos y no disponibles.\n5. Si la respuesta incumple estructura o altera el objetivo, admite como máximo una corrección acotada al mismo destino, sin relajar validadores.\n6. La revisión persistida conserva actor, entrada, instantánea, proveedor y huellas; el analista confirma límites aceptables o modifica la necesidad.\n7. La puerta de generación sólo queda disponible para la revisión coincidente y reglas vigentes.",
+        "Flujos alternos": "Paso 1–3: Destino sin consentimiento o cambiado. No se recupera la credencial ni se llama al proveedor; se solicita renovar autorización.\nPaso 4: Dato ausente, componente desconectado o rol semántico incompatible. No se acredita la necesidad como cubierta; se expone la limitación.\nPaso 5: Reformulación no utilizable tras intento acotado. Permite mantener el texto original y revisarlo; CP11 conserva su límite funcional.\nPaso 6–7: Cambian fuente, texto, preguntas, período o reglas. La revisión histórica permanece guardada, pero no autoriza otra generación.",
+        "Postcondiciones": "Necesidad final y evaluación no ejecutable con procedencia, o fallo recuperable. No se crea una propuesta BI ni se ejecuta ETL durante la asesoría.",
+        "Trazabilidad": "RF-09; RF-10; RF-26. SPR-03-02-propuesta-bi-asistida-por-ia.md — §3.2; §4.1; §6–9\nSPR-06-01-contexto-multifuente-sqlserver.md — MS-E2E11/12",
+        "Evidencia y límite": "CP-07; CP-08; CP-10; CP-11 parcial; CP-12 a CP-15; backend/tests/test_need_advisor.py"
+      },
+      "precision_noviembre": "Revisión v6 y consentimiento por destino; no cambia automáticamente el objetivo."
+    },
+    {
+      "id": "CU-07",
+      "nombre": "CU-07. Generar conceptos y propuesta BI",
+      "campos": {
+        "Actor y activación": "Analista BI. Confirmación de generación para una necesidad revisada.",
+        "Permisos": "copilot.proposals.generate",
+        "Precondiciones": "Revisión persistida del mismo actor y entrada, límites confirmados y consentimiento vigente. Instantánea y configuración LLM disponibles; alcance no vacío.",
+        "Flujo normal": "1. El servidor comprueba la revisión y forma un paquete compacto con estructura permitida.\n2. El LLM identifica conceptos con referencias y explicaciones; la aplicación descarta referencias ajenas y determina alcance conectado.\n3. El analista revisa los conceptos y excluye los no pertinentes mediante opciones guiadas.\n4. El LLM propone decisiones dimensionales compactas: hecho, grano, medidas, dimensiones y KPI.\n5. FastAPI expande claves, relaciones y operaciones tipadas desde la instantánea.\n6. Los validadores comprueban contrato, roles, fórmulas, evento comercial y cobertura de requisitos.\n7. Persiste un intento listo para revisar o bloqueado, junto con proveedor, modelo, validación y linaje.",
+        "Flujos alternos": "Paso 1: Huella inexistente, de otro actor o entrada modificada. Solicita revisar de nuevo; no acepta la huella del navegador como evidencia suficiente.\nPaso 2–4: Cuota, truncamiento o JSON inválido. Aplica sólo recuperación admitida; si no resuelve, conserva un fallo y la necesidad.\nPaso 5–6: Referencia inventada, fórmula libre, ausencia de requisito viable o pedido usado como factura. Bloquea la aprobación y explica el control incumplido.",
+        "Postcondiciones": "Versión persistida y auditable; sin SQL ejecutable del proveedor. Ninguna tabla analítica ni cifra calculada se atribuye a esta generación.",
+        "Trazabilidad": "RF-11; RF-12. SPR-03-02-propuesta-bi-asistida-por-ia.md — §3.2; §4.2–4.5; §5; §8",
+        "Evidencia y límite": "CP-16; CP-18; CP-19; CP-21; CP-30; backend/tests/test_copilot_service.py"
+      },
+      "precision_noviembre": "sales-bi-v7 / reglas 3; fallo JSON seguro y cobertura validada antes de aprobar."
+    },
+    {
+      "id": "CU-08",
+      "nombre": "CU-08. Personalizar, decidir y consultar una versión",
+      "campos": {
+        "Actor y activación": "Analista BI autorizado. Apertura de una propuesta nueva o histórica.",
+        "Permisos": "copilot.proposals.read; copilot.proposals.generate para versión derivada/descarte; copilot.proposals.review para decisión",
+        "Precondiciones": "Versión persistida visible y su instantánea disponible. Para aprobar: ready_for_review, reglas vigentes sin errores y confirmación de advertencias.",
+        "Flujo normal": "1. El usuario abre la versión; la aplicación repone su necesidad y periodicidad, no las del borrador actual.\n2. Consulta conceptos, grano, medidas, KPI, supuestos y referencias comprobadas.\n3. Si requiere ajustes, elige opciones verificadas y registra justificación; se crea una versión derivada y se revalida sin nueva llamada al LLM.\n4. La persona autorizada aprueba o rechaza; las decisiones finales no se sobrescriben mediante edición del documento.\n5. Verificar evidencia recalcula integridad, referencias y reproducción como diagnóstico de sólo lectura.\n6. La aprobación puede retirarse explícitamente; la restauración exige controles actuales y advertencias confirmadas y deja motivo auditado.\n7. Desde una versión histórica puede crear un borrador nuevo sin cerrar sesión ni alterar la versión consultada.",
+        "Flujos alternos": "Paso 3: Operando, dimensión o medida no compatible. Rechaza el ajuste o exige otra propuesta; no admite nombres o SQL libres.\nPaso 4: Error determinístico o advertencia sin confirmar. No permite aprobar.\nPaso 5: Sólo diferencia de huella por evolución del motor. Muestra compatibilidad; no retira por sí sola una aprobación ni cambia el ETL existente.\nPaso 6: Versión con errores vigentes o estado no restaurable. Bloquea restauración. Descartar una versión no aprobada la retira del trabajo ordinario sin borrarla.",
+        "Postcondiciones": "Versión original y linaje conservados; nueva revisión o decisión auditada cuando procede. La aprobación no ejecuta ETL; verificar no modifica estado funcional.",
+        "Trazabilidad": "RF-12; RF-13; RF-14; RF-15; RF-25. SPR-03-02-propuesta-bi-asistida-por-ia.md — §3.3; §6–9\nSPR-05-06-endurecimiento-integral-asistente-bi.md — HBI010/013\nSPR-04-01-seleccion-propuesta-y-validacion-etl.md — §1",
+        "Evidencia y límite": "CP-05; CP-06; CP-17; CP-19; CP-22; backend/app/modules/copilot/router.py::verify_proposal"
+      },
+      "precision_noviembre": "Editor desde contrato efectivo; hija seleccionada; aprobación nueva exige versión vigente."
+    },
+    {
+      "id": "CU-09",
+      "nombre": "CU-09. Preparar y ejecutar materialización",
+      "campos": {
+        "Actor y activación": "Analista BI. Selección y confirmación de una propuesta aprobada.",
+        "Permisos": "etl.executions.read; etl.executions.write",
+        "Precondiciones": "Fuente habilitada, propuesta aprobada e instantánea accesible. Contrato y KPI admitidos por el constructor; credencial de lectura disponible.",
+        "Flujo normal": "1. La pantalla presenta propuestas elegibles y mantiene accesible el expediente publicado vigente.\n2. El analista confirma una propuesta y selecciona KPI calculables, sin SQL libre.\n3. FastAPI revalida contrato y dependencias, compila recetas y recalcula cobertura completa o parcial.\n4. Comprueba bajo bloqueo si existe un expediente equivalente; si no existe, conserva uno preparado con identidad y huellas.\n5. La persona revisa transformaciones y confirma la ejecución.\n6. El ejecutor lee el origen, transforma y carga hecho/dimensiones en un esquema propio de la ejecución.\n7. Se conservan conteos, conciliación y estado; el analista pasa al expediente de validación.",
+        "Flujos alternos": "Paso 1–3: Aprobación histórica no apta para reglas actuales. Bloquea carga nueva sin retirar automáticamente la aprobación ni ocultar ETL anterior.\nPaso 4: Misma propuesta y selección ya preparada o ejecutada. Abre el expediente o devuelve 409; no inicia una segunda carga accidental.\nPaso 6: Error de extracción, tipo, grano o regla bloqueante. No deja una materialización parcialmente publicada; registra fallo y diagnóstico.",
+        "Postcondiciones": "Expediente físico y evidencia identificados o falla controlada. Sin escritura OLTP, refresco periódico ni reemplazo de otra ejecución nueva.",
+        "Trazabilidad": "RF-16; RF-17; RF-18; RF-26. SPR-04-01-seleccion-propuesta-y-validacion-etl.md — §1–5\nSPR-04-02-kpis-controlados-y-calculables.md — §4–6\nSPR-04-04-limpieza-y-transformaciones-controladas.md — §1–3; §7",
+        "Evidencia y límite": "CP-20; CP-22; CP-23; backend/tests/test_etl_service.py"
+      },
+      "precision_noviembre": ""
+    },
+    {
+      "id": "CU-10",
+      "nombre": "CU-10. Conciliar y publicar resultados supervisados",
+      "campos": {
+        "Actor y activación": "Analista BI. Apertura del expediente tras la carga.",
+        "Permisos": "etl.executions.read; etl.executions.write para comprobaciones y decisiones",
+        "Precondiciones": "Expediente de ejecución disponible. Para interpretación: categorías aptas y proveedor probado; la carga numérica no depende de una traducción exitosa.",
+        "Flujo normal": "1. El analista consulta filas, tablas, medidas y estado de conciliación.\n2. Examina referencia OLTP y resultado datamart con mismo grano, período, receta y tolerancia.\n3. Comprueba denominadores, evento comercial y unidades; conserva nulo si una razón no es calculable.\n4. Revisa identidad descriptiva y cobertura de dimensiones sin sustituir población por otra entidad.\n5. Cuando existen mapeos españoles aptos, confirma, corrige entre opciones admitidas o excluye, conservando valores originales.\n6. Publica la interpretación y conserva el comprobante con fuente, propuesta, ejecución y decisiones.\n7. Si falta evidencia de divisa, solicita comprobación controlada; sólo una moneda ISO inequívoca reemplaza la unidad genérica.",
+        "Flujos alternos": "Paso 2: Diferencia bloqueante. El expediente muestra incumplimiento, no un KPI validado.\nPaso 4: Ruta descriptiva insegura o sin cobertura suficiente. No publica la dimensión ejecutiva como correcta; exige alternativa admisible.\nPaso 5: Proveedor de interpretación falla. Mantiene conciliación y permite reintentar sólo interpretación sin repetir ETL.\nPaso 7: Moneda ausente o mixta. Conserva moneda de origen y la limitación, sin inventar USD.",
+        "Postcondiciones": "Datos conciliados y estado semántico explícito, con evidencia recuperable. No se acredita costo histórico, equivalencia contable ni calidad universal por igualdad de sumas.",
+        "Trazabilidad": "RF-19; RF-20; RF-25. SPR-04-02-kpis-controlados-y-calculables.md — §6; §6.1\nSPR-04-04-limpieza-y-transformaciones-controladas.md — §4–7\nSPR-05-03-calidad-semantica-y-resolucion-de-entidades.md — §2–4; §8",
+        "Evidencia y límite": "CP-18; CP-20; CP-23; CP-24"
+      },
+      "precision_noviembre": "Unidad contractual y layout sin solapamientos; originales semánticos conservados."
+    },
+    {
+      "id": "CU-11",
+      "nombre": "CU-11. Consultar analítica con contexto e interacción",
+      "campos": {
+        "Actor y activación": "Gerente comercial o analista BI autorizado. Apertura del panel de ventas de una fuente.",
+        "Permisos": "analytics.dashboard.read",
+        "Precondiciones": "Al menos una ejecución de esa fuente conciliada con tablas físicas disponibles. Identidad fuente–ejecución validada por servidor.",
+        "Flujo normal": "1. El usuario confirma fuente, ejecución, propuesta y evento comercial de la cabecera.\n2. Cuando hay varias ejecuciones disponibles elige una; con una sola, la identidad se muestra en lectura.\n3. Selecciona vista, métrica, año o territorio del catálogo disponible.\n4. El servidor calcula KPI, agregados y hallazgos de la misma selección.\n5. El usuario abre el detalle de un punto, barra o categoría para consultar cifra exacta y participación.\n6. Puede aplicar explícitamente un territorio permitido como filtro; todo el panel y su contexto se actualizan.\n7. La vista analítica añade calidad, tablas de respaldo y procedencia sin modificar datos.",
+        "Flujos alternos": "Paso 1–2: Sin ejecución física elegible. Muestra estado vacío accionable; no ofrece sólo metadatos históricos como datamart consultable.\nPaso 3–4: KPI sin dependencia o denominador calculable. Muestra causa de no calculable; no cero ni confirmación verde.\nPaso 4: Respuesta antigua o combinación de otra fuente. El cliente descarta la respuesta o la API rechaza; los gráficos previos no permanecen.",
+        "Postcondiciones": "Selección visible, coherente y verificable. Las observaciones descriptivas no se presentan como causas ni pronósticos.",
+        "Trazabilidad": "RF-21; RF-22; RF-26. SPR-05-01-dashboard-ejecutivo-explicable.md — §2–6\nSPR-06-01-contexto-multifuente-sqlserver.md — Flujo 9–12; MS-E2E03/04",
+        "Evidencia y límite": "CP-24; CP-25; frontend/src/AnalyticsPage.test.tsx"
+      },
+      "precision_noviembre": "Periodicidad efectiva e identificación fuente/ejecución."
+    },
+    {
+      "id": "CU-12",
+      "nombre": "CU-12. Consultar al copiloto y exportar evidencia",
+      "campos": {
+        "Actor y activación": "Gerente comercial o analista autorizado. Pregunta sobre una ejecución o solicitud de PDF/Excel.",
+        "Permisos": "analytics.dashboard.read; reports.analytics.export adicional para archivos",
+        "Precondiciones": "Dashboard autorizado de fuente y ejecución confirmadas. Para chat: LLM activo/probado; para exportar: ambos permisos y formato admitido.",
+        "Flujo normal": "1. El usuario revisa selección, filtros y procedencia del panel.\n2. Subflujo conversación: redacta o elige una pregunta; el backend valida contexto e historial acotado.\n3. El LLM interpreta un contrato cerrado y el motor calcula agregados autorizados, incluso un filtro no visible cuando es permitido.\n4. La respuesta muestra evidencia, alcance, denominador, advertencia y proveedor/modelo; no ejecuta acciones.\n5. Subflujo exportación: el usuario elige PDF o Excel y el servidor reconstruye la selección, sin confiar en cifras del navegador.\n6. Se produce el archivo con vista, filtros y trazabilidad apropiados; Excel mantiene tipos numéricos y no incluye macros o fórmulas del modelo.\n7. La consulta y la descarga dejan auditoría mínima; cambiar contexto limpia la conversación.",
+        "Flujos alternos": "Paso 2–4: IA no disponible o contrato de pregunta inválido. Falla sólo la conversación; el panel sigue disponible.\nPaso 3: Top N o participación. El denominador se calcula antes de limitar el ranking y se hace visible.\nPaso 5: Permiso de exportación o acceso al panel ausente. La API devuelve 403; no genera un archivo parcial.\nPaso 5–6: Ejecución ajena o ya no disponible. Rechaza el archivo de forma segura, sin reutilizar datos del navegador.",
+        "Postcondiciones": "Respuesta contextual o archivo fiel a la selección autorizada. No hay memoria personal permanente ni efecto de escritura sobre el negocio.",
+        "Trazabilidad": "RF-23; RF-24. SPR-05-05-copiloto-analitico-contextual.md — §2–6\nSPR-05-02-reporteria-fiel-pdf-excel.md — §2–6\nSPR-06-01-contexto-multifuente-sqlserver.md — MS-E2E06/07/08",
+        "Evidencia y límite": "CP-26; CP-27; CP-28; CP-31 pendiente para campaña autenticada por perfil"
+      },
+      "precision_noviembre": "Preguntas sugeridas y cautela de plataforma; contexto completo y texto literal en reportes."
+    }
+  ],
+  "historias_usuario": [
+    {
+      "id": "HU-01",
+      "nombre": "HU-01. Iniciar una sesión con mis permisos efectivos",
+      "campos": {
+        "Historia": "Como usuario autorizado, quiero iniciar una sesión con mis permisos efectivos, para acceder únicamente a las capacidades que me corresponden.",
+        "Prioridad y sprint": "Esencial; SPR-02. Reconstrucción documental.",
+        "Criterios de aceptación": "1. Dado una cuenta activa y contraseña válida; cuando presento mis credenciales; entonces la API autentica y entrega una sesión de vida limitada.\n2. Dado una sesión sin el permiso de una operación; cuando invoco su endpoint directamente; entonces FastAPI deniega aunque la interfaz haya sido manipulada.",
+        "Trazabilidad": "RF-01; CU-01. Especificaciones heredadas de los RF relacionados."
+      }
+    },
+    {
+      "id": "HU-02",
+      "nombre": "HU-02. Gestionar cuentas, roles y permisos por nombres legibles",
+      "campos": {
+        "Historia": "Como administrador, quiero gestionar cuentas, roles y permisos por nombres legibles, para mantener acceso controlado sin perder la recuperación administrativa.",
+        "Prioridad y sprint": "Esencial; SPR-02. Reconstrucción documental.",
+        "Criterios de aceptación": "1. Dado un registro no protegido; cuando modifico asociaciones válidas; entonces el cambio se valida y audita sin secretos.\n2. Dado la cuenta o rol protegido de recuperación; cuando intento desactivar la vía administrativa; entonces la acción se rechaza sin cambio funcional.\n3. Dado eventos históricos; cuando consulto auditoría; entonces se muestran sin opción de editar o borrarlos.",
+        "Trazabilidad": "RF-02; CU-01. Especificaciones heredadas de los RF relacionados."
+      }
+    },
+    {
+      "id": "HU-03",
+      "nombre": "HU-03. Registrar y probar un proveedor LLM desde la web",
+      "campos": {
+        "Historia": "Como administrador, quiero registrar y probar un proveedor LLM desde la web, para cambiar una integración admitida sin exponer su clave.",
+        "Prioridad y sprint": "Esencial; SPR-02; SPR-05. Reconstrucción documental.",
+        "Criterios de aceptación": "1. Dado proveedor y endpoint permitidos; cuando registro la clave; entonces se cifra y no vuelve a una lectura de API.\n2. Dado configuración probada; cuando cambio modelo o nivel; entonces la prueba anterior ya no autoriza el uso.\n3. Dado otra configuración activa; cuando activo una nueva validada; entonces permanece una sola activa y se conserva auditoría.",
+        "Trazabilidad": "RF-03; CU-02. Especificaciones heredadas de los RF relacionados."
+      }
+    },
+    {
+      "id": "HU-04",
+      "nombre": "HU-04. Registrar conexiones SQL Server independientes de sólo lectura",
+      "campos": {
+        "Historia": "Como administrador, quiero registrar conexiones SQL Server independientes de sólo lectura, para preparar distintas fuentes sin modificar archivos de operación.",
+        "Prioridad y sprint": "Esencial; SPR-03; SPR-06. Reconstrucción documental.",
+        "Criterios de aceptación": "1. Dado una conexión con privilegios de escritura; cuando solicito probar y habilitar; entonces el sistema rechaza su aptitud.\n2. Dado dos conexiones probadas; cuando habilito la segunda; entonces no se deshabilita la primera.\n3. Dado una conexión utilizada por una instantánea; cuando solicito eliminarla; entonces la dependencia impide una pérdida de trazabilidad.",
+        "Trazabilidad": "RF-04; CU-02. Especificaciones heredadas de los RF relacionados."
+      }
+    },
+    {
+      "id": "HU-05",
+      "nombre": "HU-05. Seleccionar mi fuente de trabajo",
+      "campos": {
+        "Historia": "Como analista BI, quiero seleccionar mi fuente de trabajo, para mantener separado el análisis de cada origen.",
+        "Prioridad y sprint": "Esencial; SPR-06. Reconstrucción documental.",
+        "Criterios de aceptación": "1. Dado AW y WWI disponibles; cuando cambio el contexto; entonces se limpian resultados y se solicita la fuente elegida.\n2. Dado una respuesta de AW pendiente; cuando la recibo después de elegir WWI; entonces se descarta y no reemplaza el tablero de WWI.\n3. Dado una ejecución de AW; cuando la solicito con conexión WWI; entonces el servidor rechaza la combinación.",
+        "Trazabilidad": "RF-05; RF-21; CU-03. Especificaciones heredadas de los RF relacionados."
+      }
+    },
+    {
+      "id": "HU-06",
+      "nombre": "HU-06. Capturar y explorar la estructura versionada de la fuente",
+      "campos": {
+        "Historia": "Como analista BI, quiero capturar y explorar la estructura versionada de la fuente, para fundamentar mis decisiones sin suponer relaciones.",
+        "Prioridad y sprint": "Esencial; SPR-03; SPR-06. Reconstrucción documental.",
+        "Criterios de aceptación": "1. Dado la misma estructura en distinto orden; cuando se serializa la instantánea; entonces se obtiene huella estable y no duplicación.\n2. Dado una columna de tipo alias; cuando se introspecta su tipo base; entonces la columna no desaparece.\n3. Dado una captura persistida; cuando busco una tabla; entonces el explorador usa la instantánea y no consulta filas comerciales.",
+        "Trazabilidad": "RF-06; RF-07; CU-04. Especificaciones heredadas de los RF relacionados."
+      }
+    },
+    {
+      "id": "HU-07",
+      "nombre": "HU-07. Configurar preguntas y periodicidades por conexión",
+      "campos": {
+        "Historia": "Como analista BI, quiero configurar preguntas y periodicidades por conexión, para orientar el análisis de cada negocio sin imponer su modelo.",
+        "Prioridad y sprint": "Esencial; SPR-03; SPR-06. Reconstrucción documental.",
+        "Criterios de aceptación": "1. Dado un catálogo de AW personalizado; cuando guardo una pregunta adicional; entonces WWI mantiene su configuración propia.\n2. Dado una pregunta sin respaldo suficiente; cuando se evalúa su evidencia; entonces la etiqueta no se convierte automáticamente en capacidad técnica.\n3. Dado una periodicidad no implementada; cuando intento guardarla; entonces la API rechaza el valor.",
+        "Trazabilidad": "RF-08; CU-05. Especificaciones heredadas de los RF relacionados."
+      }
+    },
+    {
+      "id": "HU-08",
+      "nombre": "HU-08. Recibir sugerencias o reformulaciones de mi necesidad desde los metadatos",
+      "campos": {
+        "Historia": "Como analista BI, quiero recibir sugerencias o reformulaciones de mi necesidad desde los metadatos, para expresar un objetivo dentro de los datos disponibles.",
+        "Prioridad y sprint": "Esencial; SPR-03; SPR-05; SPR-06. Reconstrucción documental.",
+        "Criterios de aceptación": "1. Dado objetivo vacío y consentimiento válido; cuando solicito sugerencias; entonces se muestran opciones con evidencia y límites.\n2. Dado una sugerencia propuesta; cuando no elijo Usar esta necesidad; entonces mi objetivo no se sustituye.\n3. Dado una reformulación no utilizable; cuando mantengo mi redacción; entonces puedo revisar el original sin aceptar una capacidad no comprobada.",
+        "Trazabilidad": "RF-09; CU-06. Especificaciones heredadas de los RF relacionados."
+      }
+    },
+    {
+      "id": "HU-09",
+      "nombre": "HU-09. Revisar la viabilidad antes de generar",
+      "campos": {
+        "Historia": "Como analista BI, quiero revisar la viabilidad antes de generar, para conocer datos directos, derivables y límites pendientes.",
+        "Prioridad y sprint": "Esencial; SPR-03; SPR-05; SPR-06. Reconstrucción documental.",
+        "Criterios de aceptación": "1. Dado una entrada y evaluación coincidentes; cuando confirmo límites admitidos; entonces puede habilitarse generación sin ejecutar ETL.\n2. Dado una evaluación persistida; cuando cambio período o fuente; entonces se exige otra revisión.\n3. Dado el destino LLM ha cambiado; cuando intento usar consentimiento anterior; entonces no se realiza la llamada hasta renovar autorización.",
+        "Trazabilidad": "RF-10; RF-26; CU-06. Especificaciones heredadas de los RF relacionados."
+      },
+      "criterio_adicional_noviembre": "Dado un ranking y una exclusión de utilidad; cuando se revisa; entonces se comprueba la operación agregada sin añadir una petición positiva inexistente."
+    },
+    {
+      "id": "HU-10",
+      "nombre": "HU-10. Obtener una propuesta dimensional estructurada y comprobada",
+      "campos": {
+        "Historia": "Como analista BI, quiero obtener una propuesta dimensional estructurada y comprobada, para revisar una solución analítica sin redactar SQL.",
+        "Prioridad y sprint": "Esencial; SPR-03; SPR-05. Reconstrucción documental.",
+        "Criterios de aceptación": "1. Dado necesidad revisada y alcance válido; cuando solicito generar; entonces se conserva proveedor, modelo, contrato y validación.\n2. Dado una tabla inventada o SQL en la respuesta; cuando se valida el contrato; entonces la propuesta queda bloqueada.\n3. Dado una solicitud de facturación; cuando el modelo elige líneas de pedido; entonces la validación no la acepta como equivalente.",
+        "Trazabilidad": "RF-11; RF-12; CU-07. Especificaciones heredadas de los RF relacionados."
+      }
+    },
+    {
+      "id": "HU-11",
+      "nombre": "HU-11. Personalizar sólo decisiones y recetas verificadas",
+      "campos": {
+        "Historia": "Como analista BI, quiero personalizar sólo decisiones y recetas verificadas, para ajustar relevancia sin perder reproducibilidad.",
+        "Prioridad y sprint": "Esencial; SPR-03; SPR-04; SPR-05. Reconstrucción documental.",
+        "Criterios de aceptación": "1. Dado una medida y KPI compatibles; cuando reasigno el KPI y confirmo la revisión; entonces se crea una versión enlazada y validada.\n2. Dado una tasa propuesta como dinero; cuando hay precio y cantidad inequívocos; entonces la corrección controlada se explica con sus referencias.\n3. Dado operandos faltantes o ambiguos; cuando intento aprobar una derivación; entonces se bloquea sin inventar componentes.",
+        "Trazabilidad": "RF-12; RF-13; CU-08. Especificaciones heredadas de los RF relacionados."
+      },
+      "criterio_adicional_noviembre": "Dado una hija guardada; cuando llega una respuesta tardía de la versión origen; entonces permanece la identidad de la hija y su contrato efectivo."
+    },
+    {
+      "id": "HU-12",
+      "nombre": "HU-12. Decidir y volver a consultar versiones sin alterarlas",
+      "campos": {
+        "Historia": "Como analista BI autorizado, quiero decidir y volver a consultar versiones sin alterarlas, para conservar las decisiones y continuar un análisis nuevo.",
+        "Prioridad y sprint": "Esencial; SPR-03; SPR-05; SPR-06. Reconstrucción documental.",
+        "Criterios de aceptación": "1. Dado versión lista sin errores y advertencias confirmadas; cuando apruebo; entonces se guarda la decisión sin ejecutar carga.\n2. Dado una propuesta histórica aprobada; cuando verifico evidencia; entonces su estado funcional permanece intacto.\n3. Dado la consulta histórica está abierta; cuando elijo Crear nueva propuesta; entonces comienza un borrador nuevo sin cerrar sesión.",
+        "Trazabilidad": "RF-14; RF-15; RF-25; CU-08. Especificaciones heredadas de los RF relacionados."
+      }
+    },
+    {
+      "id": "HU-13",
+      "nombre": "HU-13. Confirmar un contrato y KPI antes de materializar",
+      "campos": {
+        "Historia": "Como analista BI, quiero confirmar un contrato y KPI antes de materializar, para construir un destino analítico desde referencias verificables.",
+        "Prioridad y sprint": "Esencial; SPR-04; SPR-06. Reconstrucción documental.",
+        "Criterios de aceptación": "1. Dado propuesta elegible; cuando selecciono KPI y reviso transformaciones; entonces se recalculan dependencias y cobertura.\n2. Dado selección parcial de salidas solicitadas; cuando preparo la ejecución; entonces se identifica cobertura parcial.\n3. Dado ejecución confirmada; cuando el motor carga el datamart; entonces usa destino por ejecución y no escribe sobre la fuente.",
+        "Trazabilidad": "RF-16; RF-17; CU-09. Especificaciones heredadas de los RF relacionados."
+      }
+    },
+    {
+      "id": "HU-14",
+      "nombre": "HU-14. Recuperar un expediente existente ante repetición o fallo",
+      "campos": {
+        "Historia": "Como analista BI, quiero recuperar un expediente existente ante repetición o fallo, para evitar cargas duplicadas accidentales.",
+        "Prioridad y sprint": "Esencial; SPR-04; SPR-05. Reconstrucción documental.",
+        "Criterios de aceptación": "1. Dado mismo contrato y KPI ya preparados; cuando repito la solicitud; entonces se abre el expediente o se devuelve conflicto.\n2. Dado carga conciliada e interpretación fallida; cuando reintento la interpretación; entonces no se repite el ETL.\n3. Dado sesión vencida; cuando vuelvo a autenticar; entonces se recupera por lectura autorizada el contexto mínimo, sin repetir mutaciones inciertas.",
+        "Trazabilidad": "RF-18; RF-26; CU-09. Especificaciones heredadas de los RF relacionados."
+      }
+    },
+    {
+      "id": "HU-15",
+      "nombre": "HU-15. Examinar conciliación, identidad y límites de las unidades",
+      "campos": {
+        "Historia": "Como analista BI, quiero examinar conciliación, identidad y límites de las unidades, para publicar resultados con significado y procedencia explícitos.",
+        "Prioridad y sprint": "Esencial; SPR-04; SPR-05. Reconstrucción documental.",
+        "Criterios de aceptación": "1. Dado referencia y destino del mismo alcance; cuando contrasto filas e importes; entonces se muestran diferencia y tolerancia.\n2. Dado moneda ambigua; cuando compruebo divisa; entonces se conserva moneda de origen, sin símbolo inventado.\n3. Dado etiquetas españolas propuestas; cuando confirmo o excluyo mapeos; entonces el dato original y mi decisión permanecen auditables.",
+        "Trazabilidad": "RF-19; RF-20; RF-25; CU-10. Especificaciones heredadas de los RF relacionados."
+      },
+      "criterio_adicional_noviembre": "Dado una razón monetaria con divisa comprobada; cuando se presenta el expediente; entonces conserva denominador y dos decimales sin solapamiento."
+    },
+    {
+      "id": "HU-16",
+      "nombre": "HU-16. Consultar y filtrar un panel explicable",
+      "campos": {
+        "Historia": "Como gerente comercial autorizado, quiero consultar y filtrar un panel explicable, para interpretar ventas de una ejecución identificada.",
+        "Prioridad y sprint": "Esencial; SPR-05; SPR-06. Reconstrucción documental.",
+        "Criterios de aceptación": "1. Dado ejecución conciliada con tablas; cuando abro el panel; entonces se identifica fuente, propuesta, ejecución y evento.\n2. Dado un filtro válido; cuando lo aplico; entonces cambian conjuntamente KPI, gráficos y hallazgos.\n3. Dado una barra o categoría; cuando la activo con teclado o ratón; entonces se presenta detalle sin aplicar filtros por sorpresa.",
+        "Trazabilidad": "RF-21; RF-22; RF-26; CU-11. Especificaciones heredadas de los RF relacionados."
+      },
+      "criterio_adicional_noviembre": "Dado KPI con periodicidad semanal o trimestral; cuando se consulta; entonces se agrupa con esa periodicidad sin repetir la carga."
+    },
+    {
+      "id": "HU-17",
+      "nombre": "HU-17. Preguntar sobre agregados de la ejecución",
+      "campos": {
+        "Historia": "Como usuario analítico autorizado, quiero preguntar sobre agregados de la ejecución, para entender comparaciones y límites del resultado.",
+        "Prioridad y sprint": "Esencial; SPR-05; SPR-06. Reconstrucción documental.",
+        "Criterios de aceptación": "1. Dado un catálogo autorizado; cuando solicito un Top 5 con territorio permitido; entonces el motor valida el contrato y calcula agregados.\n2. Dado ranking limitado; cuando se muestra participación; entonces su denominador corresponde al universo filtrado antes del Top N.\n3. Dado comparación temporal; cuando la IA explica; entonces la respuesta distingue evidencia de una causa o pronóstico no acreditados.",
+        "Trazabilidad": "RF-23; CU-12. Especificaciones heredadas de los RF relacionados."
+      },
+      "criterio_adicional_noviembre": "Dado un resultado de ranking; cuando se explica; entonces distingue cifra verificable, procedencia y límites históricos sin inventar causalidad."
+    },
+    {
+      "id": "HU-18",
+      "nombre": "HU-18. Descargar PDF o Excel de mi selección",
+      "campos": {
+        "Historia": "Como usuario con acceso al panel y exportación, quiero descargar PDF o Excel de mi selección, para compartir resultados fieles y verificables.",
+        "Prioridad y sprint": "Esencial; SPR-05; SPR-06. Reconstrucción documental.",
+        "Criterios de aceptación": "1. Dado vista y filtros autorizados; cuando exporto; entonces el servidor reconstruye esa selección y su procedencia.\n2. Dado un porcentaje en escala 0–100; cuando se escribe en Excel; entonces no se multiplica nuevamente por 100.\n3. Dado falta uno de los dos permisos; cuando invoco exportación; entonces se deniega y no se genera el archivo.",
+        "Trazabilidad": "RF-24; CU-12. Especificaciones heredadas de los RF relacionados."
+      },
+      "criterio_adicional_noviembre": "Dado texto largo y datos filtrados; cuando se exporta; entonces fuente/base/offset, cifras y aviso completo permanecen legibles y las cadenas XLSX no se ejecutan."
+    }
+  ],
+  "sprints": [
+    {
+      "sprint": "SPR-01",
+      "periodo_documentado": "24 de agosto al 2 de septiembre de 2026",
+      "objetivo": "Establecer entorno reproducible y flujo de entrega",
+      "incremento": "Docker, red y volúmenes aislados; PostgreSQL y SQL Server; salud, repositorio, CI/CD y cinco imágenes.",
+      "evidencia": "docs/sprints/sprint-01-entorno.tex; PR 15/16",
+      "limite": "No incorpora todavía módulos BI; Azure no se presenta como desplegado."
+    },
+    {
+      "sprint": "SPR-02",
+      "periodo_documentado": "4 al 11 de septiembre de 2026; adendas posteriores",
+      "objetivo": "Controlar acceso y configuración",
+      "incremento": "JWT, Argon2, usuarios, roles, permisos, menús, auditoría, parámetros y credenciales LLM cifradas.",
+      "evidencia": "docs/sprints/sprint-02-seguridad-y-parametros.tex; SPR-02-01/02-03",
+      "limite": "RBAC mínimo; las sesiones de todos los perfiles no se acreditan por la matriz de permisos."
+    },
+    {
+      "sprint": "SPR-03",
+      "periodo_documentado": "14 al 20 de septiembre de 2026; revisión acumulativa 3 de octubre",
+      "objetivo": "Convertir una necesidad en una propuesta supervisada",
+      "incremento": "Conexión, instantáneas, explorador, catálogo, asesoría/revisión de necesidad, conceptos, contrato BI y aprobación versionada.",
+      "evidencia": "docs/sprints/sprint-03-metadatos-y-propuesta-bi.tex; PR 35/36",
+      "limite": "Aprobación estructural no demuestra importes ni ejecuta el ETL."
+    },
+    {
+      "sprint": "SPR-04",
+      "periodo_documentado": "21 al 24 de septiembre de 2026",
+      "objetivo": "Materializar y conciliar el datamart",
+      "incremento": "Elegibilidad, selección KPI, motor ETL tipado, destinos por ejecución, calidad, moneda y etiquetas supervisadas.",
+      "evidencia": "docs/sprints/sprint-04-materializacion-etl.tex; SPR-04-01 a 04",
+      "limite": "Carga completa; sin CDC ni dimensiones lentamente cambiantes complejas."
+    },
+    {
+      "sprint": "SPR-05",
+      "periodo_documentado": "24 de septiembre al 3 de octubre de 2026",
+      "objetivo": "Publicar analítica explicable y reportes",
+      "incremento": "Identidad descriptiva, vistas ejecutiva/analítica, filtros, visuales, hallazgos, copiloto agregado, PDF/Excel y endurecimiento.",
+      "evidencia": "docs/sprints/sprint-05-analitica-y-reporteria.tex; SPR-05-01 a 06",
+      "limite": "No incluye forecast; sin causalidad ni resultados de usabilidad formal."
+    },
+    {
+      "sprint": "SPR-06",
+      "periodo_documentado": "Cierre 1 de octubre de 2026; revisión acumulativa 5 de noviembre",
+      "objetivo": "Aislar el ciclo BI por fuente y contrastar otra estructura",
+      "incremento": "connection_id explícito, catálogo por conexión/dominio, snapshot propio, esquema analítico por ejecución y validación AW/WWI.",
+      "evidencia": "docs/sprints/sprint-06-multifuente-universal.tex; SPR-06-01",
+      "limite": "Dos esquemas del mismo adaptador SQL Server; no compatibilidad empírica con todos los motores."
+    },
+    {
+      "sprint": "Postcierre correctivo de SPR-06",
+      "periodo_documentado": "4–5 de noviembre de 2026",
+      "objetivo": "Corregir riesgos observados y ampliar documentación y formación",
+      "incremento": "need-review-6, reglas 3, contratos históricos preservados, editor/formularios, periodicidad, unidades, procedencia de chat y reportes; manual de 464 páginas.",
+      "evidencia": "docs/testing/qa-postcierre-2026-11-04.md; commits bf50172, 8f1c7d1 y 0f23f7e",
+      "limite": "No crea Sprint 7; revisión documental actual no ejecuta nuevas pruebas ni reescribe los resultados anteriores."
+    }
+  ],
+  "actores": [
+    {
+      "actor": "Administrador",
+      "responsabilidad": "Preparar fuentes, configuración LLM, cuentas, roles, permisos y auditoría; puede recorrer el flujo con permisos asignados.",
+      "evidencia": "Recorrido operativo real con cuenta administrativa; no se entrega su contraseña."
+    },
+    {
+      "actor": "Analista BI",
+      "responsabilidad": "Definir necesidad, supervisar propuesta, aprobar con permiso, seleccionar KPI y ejecutar/conciliar/publicar ETL; consultar detalle analítico.",
+      "evidencia": "Rol observado con 15 permisos; pruebas autenticadas completas por rol siguen pendientes."
+    },
+    {
+      "actor": "Gerente comercial",
+      "responsabilidad": "Aportar criterios y consumir panel, agregados, copiloto y exportaciones autorizadas; no diseña rutas técnicas ni autoriza ETL por defecto.",
+      "evidencia": "Rol observado con 4 permisos: panel, conexiones, metadatos y exportación; no se probó sesión gerencial propia."
+    },
+    {
+      "actor": "Operador",
+      "responsabilidad": "Ejecutar únicamente las acciones que permitan sus asociaciones; el nombre del rol no otorga permisos implícitos.",
+      "evidencia": "Rol existente observado; sin formulario completo ni recorrido autenticado acreditado."
+    },
+    {
+      "actor": "Proveedor LLM",
+      "responsabilidad": "Interpretar y proponer artefactos o explicaciones dentro del contexto permitido; es actor de sistema externo, no aprobador.",
+      "evidencia": "Adaptadores y pruebas contractuales; respuestas probabilísticas y cuotas externas."
+    }
+  ],
+  "metodo_desarrollo": [
+    "Los informes describen incrementos iterativos; no se inventan velocidad, puntos de historia, actas diarias ni retrospectivas ausentes. Scrum se utiliza como organización del trabajo con alcance y entregables observables. Las fechas son períodos de referencia de sus informes y pueden solaparse por revisiones acumulativas.",
+    "Los archivos Markdown de especificación contienen problema, alcance, contratos, interfaz, seguridad y criterios; su trazabilidad se conserva mediante Git, pruebas y PR. Las historias HU son una reconstrucción documental alineada con requisitos implementados, no evidencia de un backlog histórico fechado.",
+    "La definición de terminado incluye controles del entorno Docker, pruebas proporcionales, verificación integrada, actualización documental y PR hacia develop, seguido de promoción hacia main. CI compila y comprueba el proyecto; CD publica cinco imágenes en GHCR tras la verificación. No se afirma un despliegue Azure que no esté acreditado."
+  ],
+  "diseno_datos": [
+    "La cadena de identidad sigue DataConnection → MetadataSnapshot → BiProposal → EtlExecution. AnalysisCatalog pertenece a una conexión y dominio; BusinessNeedReview refiere la instantánea. Las propuestas hijas conservan source_proposal_id. LlmConfiguration y Secret se separan para evitar devolver las credenciales.",
+    "La instantánea persistida contiene tablas, columnas, tipos y claves declaradas, con huella y versión. La IA devuelve decisiones compactas y el servidor reconstruye el contrato mediante reglas versionadas. Un documento histórico no recibe retrospectivamente las reglas 3.",
+    "El datamart se materializa en mart_ventas_e{id}; mart_ventas se conserva como esquema legado de compatibilidad. Cada dimensión incluye surrogate_key como PRIMARY KEY y atributos aprobados. El hecho conserva claves de origen, medidas, columnas <alias_dimensión>_sk y etl_execution_id.",
+    "El materializador no declara una PRIMARY KEY física ni restricciones FOREIGN KEY en fact_ventas. El modelo estrella representa enlaces lógicos validados y la granularidad comercial, sin atribuir restricciones SQL inexistentes. Las dimensiones y medidas dependen del contrato aprobado; no existe un catálogo fijo de tablas para todas las fuentes. Las columnas de referencia dimensional del hecho son anulables en el DDL; por ello el esquema lógico admite ausencia de coincidencia, que debe considerarse en los controles de calidad."
+  ],
+  "limites_IA": [
+    "La asesoría y la generación utilizan la necesidad y los metadatos estructurales, con consentimiento para el destino configurado. La interpretación semántica posterior puede utilizar categorías aptas, no sensibles y de baja cardinalidad, conservando sus valores originales. El copiloto recibe agregados autorizados; no credenciales ni filas OLTP completas.",
+    "El proveedor propone; los validadores comprueban existencia, tipo, PK/FK, ruta, granularidad, operación y receta. La persona autorizada revisa el significado y aprueba; cada nueva ejecución exige confirmación. La igualdad de huellas acredita la reproducción del artefacto, no respuestas futuras idénticas del LLM.",
+    "La revisión need-review-6 distingue intenciones positivas y exclusiones. Las nuevas propuestas sales-bi-v7 con reglas 3 impiden usar identificadores como dinero, calculan promedios mediante razones de agregados y conservan la población documental. Los casos 122/18 y 124/19 usan revisiones v4/v5 y reglas 2; no se presentan como ensayos retrospectivos de v6/reglas 3."
+  ],
+  "casos_verificados": [
+    {
+      "dimension": "Caso AW",
+      "necesidad": "532 caracteres conservados",
+      "propuesta": "121→122",
+      "ejecucion": 18,
+      "snapshot": 2,
+      "version_review": "v4",
+      "reglas_compilacion": 2,
+      "filas_origen": 121317,
+      "filas_destino": 121317,
+      "diferencia": 0,
+      "tablas": 5,
+      "operaciones": 26,
+      "importe": "109846381.399888 USD",
+      "unidades": 274914,
+      "documentos": 31465,
+      "tipo_documento": "pedidos distintos",
+      "promedio_documental": "3491.065672966407 USD por pedido",
+      "dimensiones": {
+        "producto": 504,
+        "cliente": 19820,
+        "territorio": 10,
+        "fecha": 1124
+      },
+      "filtro": "2013/Northwest",
+      "importe_filtro": "6015174.735836 USD",
+      "unidades_filtro": 17452,
+      "documentos_filtro": 2053,
+      "promedio_filtro": "2929.943855740867 USD por pedido",
+      "evidencia": "Informe QA de postcierre y registro de pruebas actuales del manual; huella del contrato 28ac4d6997d8 reproducida sin diferencias.",
+      "limite": "38 períodos mensuales. Cantidades y moneda acreditadas para este caso; no demuestra eficiencia temporal ni todas las necesidades posibles."
+    },
+    {
+      "dimension": "Caso WWI",
+      "necesidad": "693 caracteres conservados",
+      "propuesta": "123→124",
+      "ejecucion": 19,
+      "snapshot": 3,
+      "version_review": "v5",
+      "reglas_compilacion": 2,
+      "filas_origen": 228265,
+      "filas_destino": 228265,
+      "diferencia": 0,
+      "tablas": 5,
+      "operaciones": 26,
+      "importe": "198043439.45 moneda de origen",
+      "unidades": 8950628,
+      "documentos": 70510,
+      "tipo_documento": "facturas distintas",
+      "promedio_documental": "2808.73 moneda de origen por factura",
+      "dimensiones": {
+        "producto": 227,
+        "cliente": 663,
+        "territorio": 53,
+        "fecha": 1069
+      },
+      "filtro": "2015/California",
+      "importe_filtro": "1215705.55 moneda de origen",
+      "unidades_filtro": 57142,
+      "documentos_filtro": 481,
+      "promedio_filtro": "2527.454365904366 moneda de origen por factura",
+      "evidencia": "Informe QA de postcierre y registro de pruebas actuales del manual; huella b5872c3bbd6d reproducida sin diferencias.",
+      "limite": "41 períodos mensuales. No se demostró una moneda única; la dirección actual de la ficha del cliente no acredita la historia de cada entrega."
+    }
+  ],
+  "plan_pruebas_actualizado": [
+    {
+      "id": "CP-ACT-01",
+      "escenario": "Captura de esquema por fuente",
+      "requisitos": "RF-04,RF-05,RF-06,RF-07",
+      "resultado_esperado": "Cada instantánea pertenece a su conexión; cambiar el contexto no reutiliza tablas ajenas.",
+      "resultado_documentado": "AW: instantánea 2, 6 esquemas, 71 tablas, 482 columnas y 90 relaciones. WWI: instantánea 3, 4 esquemas, 48 tablas, 546 columnas y 98 relaciones.",
+      "fuentes": "docs/manual-usuario/pruebas_actuales.json, casos PREP-02/03; SPR-06-01."
+    },
+    {
+      "id": "CP-ACT-02",
+      "escenario": "Catálogo aislado y necesidad literal",
+      "requisitos": "RF-08,RF-09,RF-10",
+      "resultado_esperado": "Cambiar el catálogo de una fuente no modifica otra; revisar la necesidad no reescribe su objetivo.",
+      "resultado_documentado": "Catálogos separados; seis preguntas AW, incluidas las dos personalizadas. Se conservaron las necesidades de 532 y 693 caracteres.",
+      "fuentes": "docs/manual-usuario/pruebas_actuales.json, CAT-01 y casos finales; revisión need-review-6."
+    },
+    {
+      "id": "CP-ACT-03",
+      "escenario": "Propuesta estructurada y revisión humana",
+      "requisitos": "RF-11,RF-12,RF-13,RF-14",
+      "resultado_esperado": "No existen errores bloqueantes y se revisan expresamente las advertencias antes de aprobar; aprobar no ejecuta ETL.",
+      "resultado_documentado": "Propuesta 122: cero errores, nueve advertencias y seis referencias. Propuesta 124: cero errores, siete advertencias y siete referencias. Ambas huellas se reprodujeron iguales.",
+      "fuentes": "docs/testing/qa-postcierre-2026-11-04.md; expedientes históricos con reglas 2."
+    },
+    {
+      "id": "CP-ACT-04",
+      "escenario": "Referencias, identidad y aritmética no válidas",
+      "requisitos": "RF-12,RF-13",
+      "resultado_esperado": "Una referencia inexistente, un identificador monetario o una granularidad incompatible impiden aprobar. No se sustituye silenciosamente la población.",
+      "resultado_documentado": "Regresiones backend e incidencias documentadas. Las reglas 3 corresponden a las nuevas versiones; no modifican los artefactos históricos.",
+      "fuentes": "Pruebas backend de copiloto, revisión de necesidad y aprobación; informe QA de postcierre."
+    },
+    {
+      "id": "CP-ACT-05",
+      "escenario": "Compatibilidad histórica sin mutación",
+      "requisitos": "RF-14,RF-15,RF-25",
+      "resultado_esperado": "Verificar genera un diagnóstico y no retira por sí mismo una aprobación.",
+      "resultado_documentado": "Comparación de sólo lectura de seis aprobadas; 122 y 124 conservaron las reglas 2 y sus huellas.",
+      "fuentes": "qa/compatibilidad_reglas2_122_124_20261105.json; informe QA de postcierre."
+    },
+    {
+      "id": "CP-ACT-06",
+      "escenario": "ETL trazable e idempotencia",
+      "requisitos": "RF-16,RF-17,RF-18",
+      "resultado_esperado": "Se exige una propuesta elegible, selección de KPI y confirmación; el destino pertenece a la ejecución y se impide duplicar accidentalmente la carga.",
+      "resultado_documentado": "Ejecuciones 18 y 19: veintiséis operaciones y cinco tablas conciliadas por caso; sin modificación del OLTP.",
+      "fuentes": "docs/testing/qa-postcierre-2026-11-04.md; pruebas backend ETL."
+    },
+    {
+      "id": "CP-ACT-07",
+      "escenario": "Conciliación equivalente",
+      "requisitos": "RF-19,RF-20",
+      "resultado_esperado": "Se compara la misma receta, granularidad y alcance; se declaran las diferencias. Un resultado no calculable no se representa como cero.",
+      "resultado_documentado": "AW: 121317 filas de origen y destino. WWI: 228265 filas de origen y destino. Los importes y documentos se detallan en los casos reproducibles.",
+      "fuentes": "Expedientes 18 y 19 documentados en el registro de pruebas del manual."
+    },
+    {
+      "id": "CP-ACT-08",
+      "escenario": "Unidades, divisa y legibilidad",
+      "requisitos": "RF-19,RF-20",
+      "resultado_esperado": "Las razones conservan denominador y decimales; se usa un código de moneda sólo si fue comprobado. No hay solapamientos en los anchos ensayados.",
+      "resultado_documentado": "AW: USD 3491,07 por transacción; WWI: 2808,73 en moneda de origen. Comprobación visual a 574 y 1366 píxeles.",
+      "fuentes": "qa/verificacion_unidades_disposicion_etl_20261105.json; capturas del manual."
+    },
+    {
+      "id": "CP-ACT-09",
+      "escenario": "Panel y periodicidad efectiva",
+      "requisitos": "RF-21,RF-22",
+      "resultado_esperado": "El KPI, la serie y los filtros conservan el contexto; el período corresponde a la receta o a su herencia normalizada.",
+      "resultado_documentado": "Veintidós lecturas reales sin nuevas cargas: dos configuraciones mensuales, diez periodicidades explícitas y diez heredadas.",
+      "fuentes": "qa/matriz_temporal_solo_lectura.json; informe QA de postcierre."
+    },
+    {
+      "id": "CP-ACT-10",
+      "escenario": "Copiloto con denominador y cautela",
+      "requisitos": "RF-23",
+      "resultado_esperado": "Top N utiliza el total filtrado previo al recorte. No atribuye causalidad, preferencias ni historia territorial no demostradas.",
+      "resultado_documentado": "Preguntas finales de AW y WWI contrastadas; tres seguimientos sugeridos desde el catálogo. Se conservó el incidente territorial WWI y se verificó la repetición corregida.",
+      "fuentes": "Capturas 118–121; pruebas backend de copiloto analítico; informe QA de postcierre."
+    },
+    {
+      "id": "CP-ACT-11",
+      "escenario": "Fidelidad de archivos PDF/XLSX",
+      "requisitos": "RF-24",
+      "resultado_esperado": "El PDF y el XLSX mantienen datos autorizados, unidad, fuente, filtros y desplazamiento horario; el texto es literal y el aviso se presenta completo.",
+      "resultado_documentado": "Archivos finales de ejecuciones 18 y 19: cinco páginas PDF y cuatro hojas XLSX por caso. Se comprobaron tablas, totales y altura de 57 puntos para el aviso.",
+      "fuentes": "52 regresiones de exportación, incluidas en la suite global; informe QA de archivos finales."
+    },
+    {
+      "id": "CP-ACT-12",
+      "escenario": "Campaña autenticada por perfiles",
+      "requisitos": "RF-01,RF-02 yRNF01",
+      "resultado_esperado": "Una cuenta real con permiso accede y una sin permiso recibe 403 en la API; se protege la recuperación administrativa.",
+      "resultado_documentado": "Pendiente una campaña completa con sesiones específicas de Analista, Gerente y Operador. La configuración observada de permisos no equivale a esa campaña.",
+      "fuentes": "Límite explícito de la campaña documentada; la matriz de permisos se verificó sin sesiones completas de cada perfil."
+    }
+  ],
+  "criterios_entrada_salida": {
+    "entrada": [
+      "Código y versión identificados, contenedores aislados y fuentes de demostración de sólo lectura.",
+      "Actor autorizado, datos del caso, instantánea y huellas; consentimiento para el destino y configuración LLM probada.",
+      "Criterios definidos por requisito; sin comparar importes de poblaciones, monedas o alcances diferentes."
+    ],
+    "salida": [
+      "Suites vigentes y controles de calidad satisfactorios; incidencias y límites registrados.",
+      "Conciliación del alcance equivalente y trazabilidad de la aprobación al destino por ejecución; ningún resultado incompleto se presenta como éxito.",
+      "Las validaciones académicas pendientes siguen explícitas; la encuesta de percepción complementa, pero no reemplaza, las pruebas de software."
+    ]
+  },
+  "actualizaciones_frente_Oct18": [
+    "Actualizar el corte previo de 201 pruebas backend y 33 frontend al registro final de 454 y 48 del 5 de noviembre, conservando la evidencia histórica.",
+    "Actualizar la revisión de necesidad a la vigencia need-review-6 y explicar las versiones de los artefactos anteriores.",
+    "Precisar la edición desde el contrato efectivo, la identidad de las versiones hijas, los formularios protegidos y los límites de cuota de los proveedores.",
+    "Incorporar unidades completas, cinco periodicidades efectivas y cautelas de procedencia e historia de las dimensiones; distinguir sugerencias del catálogo y respuestas del LLM.",
+    "Actualizar el contexto de los reportes, el desplazamiento horario, la precisión numérica, el tratamiento literal del texto y la verificación de los archivos finales.",
+    "Actualizar UML de actividad y secuencia con revisión previa, fallo seguro y aprobación separada de la ejecución ETL.",
+    "Sustituir la tabulación simulada por las 102 respuestas reales; las percepciones de los estudiantes no son una certificación técnica ni evidencia de mejora comercial."
+  ],
+  "fuentes": [
+    "docs/scope.md",
+    "docs/architecture.md",
+    "docs/specs/SPR-02-01-seguridad-rbac.md",
+    "docs/specs/SPR-02-03-parametros-y-llm.md",
+    "docs/specs/SPR-03-02-propuesta-bi-asistida-por-ia.md",
+    "docs/specs/SPR-04-02-kpis-controlados-y-calculables.md",
+    "docs/specs/SPR-05-01-dashboard-ejecutivo-explicable.md",
+    "docs/specs/SPR-05-02-reporteria-fiel-pdf-excel.md",
+    "docs/specs/SPR-05-05-copiloto-analitico-contextual.md",
+    "docs/specs/SPR-06-01-contexto-multifuente-sqlserver.md",
+    "docs/testing/qa-postcierre-2026-11-04.md",
+    "backend/app/modules/etl/materializer.py",
+    "compose.yaml",
+    ".github/workflows/ci.yml",
+    ".github/workflows/cd.yml",
+    "docs/manual-usuario/pruebas_actuales.json",
+    "backend/app/modules/security/models.py",
+    "backend/app/modules/parameters/models.py",
+    "backend/app/modules/metadata/models.py",
+    "backend/app/modules/copilot/models.py",
+    "backend/app/modules/etl/models.py"
+  ],
+  "precauciones_editoriales": [
+    "Algunos encabezados de las especificaciones conservan estados previstos o PR pendientes de una etapa anterior; no definen el estado vigente de la integración.",
+    "docs/scope.md conserva un título histórico y una exclusión multifuente de una fase anterior. El capítulo actual documenta el alcance vigente de SPR-06.",
+    "Las tablas presentan académicamente requisitos derivados de las especificaciones y del código; no representan actas históricas ni ceremonias inventadas.",
+    "Las fuentes de la revisión se identifican por ruta y huella; el autor de este complemento no ejecutó nuevas pruebas, cargas ETL ni llamadas LLM."
+  ],
+  "matriz_trazabilidad": [
+    {
+      "requisito": "RF-01",
+      "caso_uso": "CU-01",
+      "historia_usuario": "HU-01",
+      "incremento_principal": "SPR-02",
+      "pruebas_actualizadas": [
+        "CP-ACT-12"
+      ]
+    },
+    {
+      "requisito": "RF-02",
+      "caso_uso": "CU-01",
+      "historia_usuario": "HU-02",
+      "incremento_principal": "SPR-02",
+      "pruebas_actualizadas": [
+        "CP-ACT-12"
+      ]
+    },
+    {
+      "requisito": "RF-03",
+      "caso_uso": "CU-02",
+      "historia_usuario": "HU-03",
+      "incremento_principal": "SPR-02",
+      "pruebas_actualizadas": []
+    },
+    {
+      "requisito": "RF-04",
+      "caso_uso": "CU-02",
+      "historia_usuario": "HU-04",
+      "incremento_principal": "SPR-03",
+      "pruebas_actualizadas": [
+        "CP-ACT-01"
+      ]
+    },
+    {
+      "requisito": "RF-05",
+      "caso_uso": "CU-03",
+      "historia_usuario": "HU-05",
+      "incremento_principal": "SPR-06",
+      "pruebas_actualizadas": [
+        "CP-ACT-01"
+      ]
+    },
+    {
+      "requisito": "RF-06",
+      "caso_uso": "CU-04",
+      "historia_usuario": "HU-06",
+      "incremento_principal": "SPR-03",
+      "pruebas_actualizadas": [
+        "CP-ACT-01"
+      ]
+    },
+    {
+      "requisito": "RF-07",
+      "caso_uso": "CU-04",
+      "historia_usuario": "HU-06",
+      "incremento_principal": "SPR-03",
+      "pruebas_actualizadas": [
+        "CP-ACT-01"
+      ]
+    },
+    {
+      "requisito": "RF-08",
+      "caso_uso": "CU-05",
+      "historia_usuario": "HU-07",
+      "incremento_principal": "SPR-03",
+      "pruebas_actualizadas": [
+        "CP-ACT-02"
+      ]
+    },
+    {
+      "requisito": "RF-09",
+      "caso_uso": "CU-06",
+      "historia_usuario": "HU-08",
+      "incremento_principal": "SPR-03",
+      "pruebas_actualizadas": [
+        "CP-ACT-02"
+      ]
+    },
+    {
+      "requisito": "RF-10",
+      "caso_uso": "CU-06",
+      "historia_usuario": "HU-09",
+      "incremento_principal": "SPR-03",
+      "pruebas_actualizadas": [
+        "CP-ACT-02"
+      ]
+    },
+    {
+      "requisito": "RF-11",
+      "caso_uso": "CU-07",
+      "historia_usuario": "HU-10",
+      "incremento_principal": "SPR-03",
+      "pruebas_actualizadas": [
+        "CP-ACT-03"
+      ]
+    },
+    {
+      "requisito": "RF-12",
+      "caso_uso": "CU-07",
+      "historia_usuario": "HU-10",
+      "incremento_principal": "SPR-03",
+      "pruebas_actualizadas": [
+        "CP-ACT-03",
+        "CP-ACT-04"
+      ]
+    },
+    {
+      "requisito": "RF-13",
+      "caso_uso": "CU-08",
+      "historia_usuario": "HU-11",
+      "incremento_principal": "SPR-03",
+      "pruebas_actualizadas": [
+        "CP-ACT-03",
+        "CP-ACT-04"
+      ]
+    },
+    {
+      "requisito": "RF-14",
+      "caso_uso": "CU-08",
+      "historia_usuario": "HU-12",
+      "incremento_principal": "SPR-03",
+      "pruebas_actualizadas": [
+        "CP-ACT-03",
+        "CP-ACT-05"
+      ]
+    },
+    {
+      "requisito": "RF-15",
+      "caso_uso": "CU-08",
+      "historia_usuario": "HU-12",
+      "incremento_principal": "SPR-03",
+      "pruebas_actualizadas": [
+        "CP-ACT-05"
+      ]
+    },
+    {
+      "requisito": "RF-16",
+      "caso_uso": "CU-09",
+      "historia_usuario": "HU-13",
+      "incremento_principal": "SPR-04",
+      "pruebas_actualizadas": [
+        "CP-ACT-06"
+      ]
+    },
+    {
+      "requisito": "RF-17",
+      "caso_uso": "CU-09",
+      "historia_usuario": "HU-13",
+      "incremento_principal": "SPR-04",
+      "pruebas_actualizadas": [
+        "CP-ACT-06"
+      ]
+    },
+    {
+      "requisito": "RF-18",
+      "caso_uso": "CU-09",
+      "historia_usuario": "HU-14",
+      "incremento_principal": "SPR-04",
+      "pruebas_actualizadas": [
+        "CP-ACT-06"
+      ]
+    },
+    {
+      "requisito": "RF-19",
+      "caso_uso": "CU-10",
+      "historia_usuario": "HU-15",
+      "incremento_principal": "SPR-04",
+      "pruebas_actualizadas": [
+        "CP-ACT-07",
+        "CP-ACT-08"
+      ]
+    },
+    {
+      "requisito": "RF-20",
+      "caso_uso": "CU-10",
+      "historia_usuario": "HU-15",
+      "incremento_principal": "SPR-04",
+      "pruebas_actualizadas": [
+        "CP-ACT-07",
+        "CP-ACT-08"
+      ]
+    },
+    {
+      "requisito": "RF-21",
+      "caso_uso": "CU-11",
+      "historia_usuario": "HU-16",
+      "incremento_principal": "SPR-05",
+      "pruebas_actualizadas": [
+        "CP-ACT-09"
+      ]
+    },
+    {
+      "requisito": "RF-22",
+      "caso_uso": "CU-11",
+      "historia_usuario": "HU-16",
+      "incremento_principal": "SPR-05",
+      "pruebas_actualizadas": [
+        "CP-ACT-09"
+      ]
+    },
+    {
+      "requisito": "RF-23",
+      "caso_uso": "CU-12",
+      "historia_usuario": "HU-17",
+      "incremento_principal": "SPR-05",
+      "pruebas_actualizadas": [
+        "CP-ACT-10"
+      ]
+    },
+    {
+      "requisito": "RF-24",
+      "caso_uso": "CU-12",
+      "historia_usuario": "HU-18",
+      "incremento_principal": "SPR-05",
+      "pruebas_actualizadas": [
+        "CP-ACT-11"
+      ]
+    },
+    {
+      "requisito": "RF-25",
+      "caso_uso": "CU-08",
+      "historia_usuario": "HU-12",
+      "incremento_principal": "SPR-06",
+      "pruebas_actualizadas": [
+        "CP-ACT-05"
+      ]
+    },
+    {
+      "requisito": "RF-26",
+      "caso_uso": "CU-09",
+      "historia_usuario": "HU-14",
+      "incremento_principal": "SPR-06",
+      "pruebas_actualizadas": [
+        "CP-ACT-03",
+        "CP-ACT-04",
+        "CP-ACT-06"
+      ]
+    }
+  ],
+  "comparacion_proveedores": [
+    {
+      "proveedor": "Anthropic Claude",
+      "comprobacion": "Conectividad y recorridos operativos con AW y WWI, incluidas propuestas, conciliación y copiloto contextual.",
+      "incidencia": "Revisiones iniciales cambiaron el objetivo y fueron rechazadas; se corrigió el prompt común. Se registró y corrigió una inferencia territorial no sustentada en el chat WWI.",
+      "conclusion_acotada": "Es el proveedor con evidencia más completa en esta campaña; no es prueba de superioridad universal ni de respuestas futuras infalibles."
+    },
+    {
+      "proveedor": "Groq",
+      "comprobacion": "Prueba mínima de conectividad; intento operativo con una necesidad breve AW.",
+      "incidencia": "Código 413 y rate_limit_exceeded en tres reintentos, 8000 tokens restantes y retry_after de 47; sin revisión ni propuesta en ese intento.",
+      "conclusion_acotada": "No se obtuvo una comparación de calidad equivalente. El bloqueo observado depende de la cuota disponible y no acredita calidad inferior."
+    },
+    {
+      "proveedor": "Gemini",
+      "comprobacion": "Adaptador configurable; sin comparación integral equivalente documentada en este corte.",
+      "incidencia": "No se ejecutó el mismo protocolo completo con ambas fuentes.",
+      "conclusion_acotada": "Sin conclusión comparativa empírica para esta campaña."
+    },
+    {
+      "proveedor": "Qwen Cloud",
+      "comprobacion": "Adaptador configurable; sin comparación integral equivalente documentada en este corte.",
+      "incidencia": "No se ejecutó el mismo protocolo completo con ambas fuentes.",
+      "conclusion_acotada": "Sin conclusión comparativa empírica para esta campaña."
+    },
+    {
+      "proveedor": "Ollama local",
+      "comprobacion": "Alternativa local opcional; sin comparación integral equivalente documentada en este corte.",
+      "incidencia": "No se acredita la misma evaluación del modelo, consumo de memoria, tiempos y dos fuentes.",
+      "conclusion_acotada": "No se presenta como sustituto verificado en todas las máquinas ni se le asigna posición en un ranking."
+    }
+  ],
+  "protocolo_comparacion_futura": "Una comparación de eficacia y eficiencia exige fijar las mismas necesidades, instantáneas, decisiones humanas, recetas, criterios de aceptación y presupuestos de salida; repetir por proveedor y nivel de razonamiento; registrar cumplimiento, fallos, latencia, consumo y costo. Los resultados actuales describen una campaña operativa y sus incidencias, sin puntuación compuesta ni ganador universal.",
+  "diseno_seguridad": [
+    "La identidad se autentica mediante JWT y contraseñas protegidas con Argon2. Los permisos se comprueban en los endpoints; ocultar una opción del menú no sustituye la autorización del servidor.",
+    "La cuenta administrativa protegida evita cambios que impidan la recuperación. Un fallo al cargar el catálogo de roles o permisos bloquea el guardado en los formularios afectados.",
+    "Los secretos de conexiones y proveedores se almacenan cifrados; la clave maestra se conserva aparte. Las respuestas de configuración no revelan la credencial.",
+    "El actor de cada creación, revisión y ejecución queda asociado a la auditoría o al artefacto. La separación por conexión preserva la procedencia del análisis y no constituye por sí sola una certificación multiarrendatario."
+  ],
+  "criterios_arquitectura": [
+    {
+      "decision": "Contexto explícito de fuente",
+      "motivo": "Evitar que filtros, metadatos o un panel mantengan información de la conexión anterior.",
+      "realizacion": "connection_id de sesión, snapshot propio, catálogo por conexión y dominio, ejecución y destino independientes."
+    },
+    {
+      "decision": "Contrato común y adaptadores",
+      "motivo": "Separar nombres de tablas y diferencias entre proveedores de las reglas de validación BI.",
+      "realizacion": "Metadatos canónicos, respuestas estructuradas y operaciones tipadas; el servidor compila y valida."
+    },
+    {
+      "decision": "Interpretación supervisada",
+      "motivo": "La relación estructural no demuestra por sí misma un significado comercial ni la moneda.",
+      "realizacion": "Revisión previa de factibilidad, advertencias y decisiones humanas; originales preservados y etiquetas publicadas de forma explícita."
+    },
+    {
+      "decision": "Aprobación distinta de ejecución",
+      "motivo": "Permitir revisión de contrato sin efectos de carga y exigir una decisión nueva para materializar.",
+      "realizacion": "Propuesta aprobada, preparación de expediente, selección de KPI y confirmación separada."
+    },
+    {
+      "decision": "Conciliación equivalente",
+      "motivo": "La presencia de filas no garantiza medidas correctas ni población comparable.",
+      "realizacion": "Comparación de agregados y cantidades con receta, granularidad, ámbito y unidad equivalentes."
+    },
+    {
+      "decision": "Histórico sin mutación por consulta",
+      "motivo": "Cambiar reglas del motor no debe retirar automáticamente versiones ya aprobadas.",
+      "realizacion": "Reglas versionadas, verificación de evidencia sin cambio de estado, corrección mediante versión hija y decisiones explícitas."
+    }
+  ],
+  "comparacion_proveedores_fuentes": [
+    "docs/manual-usuario/pruebas_actuales.json: IA-01 a IA-05 y casos de copiloto",
+    "docs/testing/qa-postcierre-2026-11-04.md"
+  ],
+  "diagramas_manifest": "diagramas/manifiesto_diagramas.json"
+}

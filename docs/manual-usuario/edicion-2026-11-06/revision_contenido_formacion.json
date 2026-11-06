@@ -1,0 +1,25 @@
+{
+  "estado": "Contenido final de formación, casos actuales observados y capturas resueltas; el cierre visual de cada página se registra en QA aparte.",
+  "fecha": "2026-11-06T04:13:48.536485-05:00",
+  "unidades": 28,
+  "claves_captura_unicas": 99,
+  "origen_casos": "Campaña del 6 de noviembre: AdventureWorks 129/21 y WideWorldImporters 131/22. Los antecedentes se conservan como tales; el caso 19 no es oráculo de comprador y ciudad de entrega.",
+  "limites": [
+    "Configuración de roles no acredita sesiones operativas con esas cuentas.",
+    "No se garantiza salida correcta de cualquier modelo ni soporte de todo motor.",
+    "La encuesta conserva sólo resultados agregados y es evidencia de percepción."
+  ],
+  "archivos": [
+    {
+      "archivo": "contenido_formacion.json",
+      "sha256": "89a60cdae4cc6ab6c5640f67fe9aca48ce7f2a25979016e3cdd2367b75bddd03",
+      "bytes": 147111
+    },
+    {
+      "archivo": "capturas_requeridas_formacion.json",
+      "sha256": "09d1e120df303edbcbaf5e88822db409097f43e5f330d4a99af72e89e1ed5660",
+      "bytes": 66162
+    }
+  ],
+  "caption_historica": "La aprobación 126 se muestra sólo como consulta histórica; una carga nueva requiere una derivada con reglas actuales."
+}

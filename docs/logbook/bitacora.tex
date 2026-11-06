@@ -12,6 +12,7 @@
 \usepackage{enumitem}
 \usepackage{fancyhdr}
 \usepackage{hyperref}
+\usepackage{xurl}
 
 \ifdefined\pdfinfoomitdate\pdfinfoomitdate=1\fi
 \ifdefined\pdftrailerid\pdftrailerid{}\fi
@@ -39,6 +40,7 @@
 \setlist[itemize]{leftmargin=1.5em,itemsep=0.25em,topsep=0.35em}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.55em}
+\setlength{\emergencystretch}{1.5em}
 \renewcommand{\arraystretch}{1.25}
 
 \newcommand{\statusok}{\textcolor{deepgreen}{\textbf{Completado}}}
@@ -67,7 +69,7 @@
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPI, analítica explicable y reportería \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.6.8 \\
+    Versión de la bitácora & 0.6.9 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -1523,12 +1525,153 @@ WWI conservó moneda de origen. Las capturas nuevas 126/127 y su registro QA tie
 corte propio. La compilación Docker de estos tres PDF y su revisión visual se
 realizan después del cierre de fuentes, separadas de la suite de código y sin solaparla.
 
+\subsection{6 de noviembre de 2026 - Conservación semántica y revisión comercial}
+
+La auditoría operativa para renovar los manuales detectó una desviación del
+motor de expansión. Una fuente dimensional explícita verificada podía ser
+reemplazada usando el puntaje léxico de otra candidata. En el intento 125, el
+territorio comercial pasó a una provincia. También se observaron atributos
+temporales posicionales y un promedio de líneas rotulado como promedio por
+pedido. La revisión humana detuvo el recorrido antes de aprobación; no se
+registra otra materialización ni se presenta ese intento como un caso correcto.
+
+Se definió una corrección transversal del incremento existente: preservar
+fuentes y rutas seguras, conservar el grano y no reducir identidades compuestas,
+elegir atributos por función y fechas de evento por evidencia revisada, mantener
+el objetivo y requisitos adoptados bajo custodia del servidor y comprobar el
+significado de los promedios por documento. La cantidad de KPI y la selección
+humana existentes se mantienen. La solución usa tipos, claves y relaciones
+sin excepciones por base de demostración o proveedor y sin ampliar motores.
+
+El cambio integrado en el árbol de trabajo corresponde al servicio y al módulo de rutas de copiloto,
+junto a sus regresiones. Identifica \file{sales-bi-v8} y reglas 4 para contratos
+nuevos, con reproducción histórica 1, 2 y 3. Conserva
+\file{source\_resolution}, \file{dimension\_blockers} y la evidencia
+\file{business\_request\_scope} construida por el servidor. Consultar expedientes
+anteriores no los reescribe ni ejecuta de nuevo.
+
+Se actualizaron las especificaciones SPR-03-02, SPR-04-02 y SPR-05-06, el manual
+técnico 5.2.2, esta bitácora 0.6.9, la adenda del Sprint 6 1.2.2 y el reporte
+posterior al cierre del 6 de noviembre. El título de
+\path{docs/scope.md} se alineó únicamente con el título académico
+aprobado de sistema inteligente para construcción supervisada de datamarts de
+ventas, sin cambiar objetivos o motores. Arquitectura y guía de réplica identifican las
+reglas vigentes sin alterar componentes, comandos, puertos ni volúmenes.
+
+Se corrigió además un riesgo narrativo del copiloto analítico: al rechazar un
+pronóstico añadió un año ajeno al contexto. \file{calendar\_reference} conserva
+fecha ISO UTC del servidor, separada de selección histórica y ventana ETL. Las
+instrucciones impiden introducir fechas o categorías ajenas y utilizan ``el período
+solicitado'' al rechazar pronóstico relativo. No cambian SQL, filtros, datos,
+proveedor ni cuotas. La prosa continúa supervisada y no dispone de un validador
+universal de veracidad. Las 26 pruebas focales del copiloto son un subconjunto del
+total, no otra suma de pruebas.
+
+\textbf{Verificación intermedia, anterior a reglas 5:} \file{make verify} terminó con salida 0:
+475 backend, un aviso sin fallo, 48 frontend, Ruff/formato en 91 archivos y Mypy
+en 57. La etapa frontend se reutilizó de caché del mismo árbol. El registro
+\path{/tmp/bi-verify-20261106-release.log} tiene corte de las 02:03:22 de Guayaquil.
+El escenario nuevo AW 126/20 y sus exportes 6 páginas/6 hojas están registrados.
+La continuación detectó otra ambigüedad de rutas en WWI; la corrección descrita
+a continuación exige otro integral y recorridos nuevos por ambas fuentes, además
+de regenerar y revisar los tres PDF. No se declara PR fusionado ni promoción.
+
+\paragraph{Ruta exacta y roles: corrección posterior del mismo día.}
+WWI 127/128 quedaron sin aprobación al detectarse FK paralelas de comprador y
+destinatario de facturación, o de ubicación postal y entrega. Conservar la tabla
+no impedía que el materializador eligiera otra FK por el orden del catálogo.
+Se integra reglas 5 con sales-bi-v8; los contratos 1--4 quedan congelados.
+La evidencia revisada y la elección supervisada de relaciones delimitan el rol;
+una ambigüedad no se resuelve por ruta más corta ni por una opción predeterminada.
+
+El materializador consume y verifica las aristas persistidas y comparte ese
+comprobador con la procedencia analítica. Se rechazan conflictos de prefijos,
+rutas inversas o alteradas y medidas externas sin una ruta única segura o
+custodiada. El descubrimiento de todas las rutas simples tiene límites explícitos
+que bloquean antes de simular unicidad. No se añaden alias por rol ni otro motor.
+
+Se precisó además el texto de preparación del ETL: crear un esquema propio del
+expediente y conservar los anteriores, con la fuente seleccionada por contexto.
+No cambia la ejecución ni sustituye globalmente datos analíticos.
+
+La prueba focal Docker aprobó 67 casos de materialización/procedencia, Ruff y
+formato; Mypy no halló incidencias en los dos módulos. El primer integral de reglas 5 aprobó 530 backend/48 frontend con salida 0;
+el cierre definitivo posterior incluye título y alias monetarios con 530/50. AW 126/20 y WWI 127/128 no se reclasifican como pruebas exitosas
+del cambio: se requieren propuestas derivadas y ejecuciones nuevas. Se actualizaron
+las especificaciones de propuesta, selección ETL, KPI, copiloto y endurecimiento,
+así como manual técnico, arquitectura, réplica, Sprint 6 y reporte QA.
+
+\paragraph{Puerta histórica, verificación de reglas 5 y ajuste de título.}
+La puerta ETL \file{\_candidate} exige reglas 5 para preparar o ejecutar una carga
+nueva, incluso si un expediente anterior seguía preparado. Se bloquea antes de
+insertar o pasar a running y se pide una derivada actual aprobada. No cambian
+aprobaciones, hashes, datos, GET de historial, panel ni exportes anteriores.
+Las 27 regresiones focales de router aprobaron y forman parte del total backend.
+
+El integral \file{make verify} de reglas 5 terminó con salida 0: 530 backend,
+un aviso sin fallo, 48 frontend en tres archivos, Ruff/formato en 93 archivos y
+Mypy en 57. El registro \path{/tmp/bi-verify-reglas5-20261106.log} tiene corte de
+las 02:43:46 de Guayaquil. La prueba focal de App con 42 casos incluye dos
+existentes ajustados para no preseleccionar FK y bloquear guardado sin elección;
+no se suman 42 al total frontend. El preflight de ambas fuentes construyó planes
+sin errores, pero no fue otra aprobación ni un ETL.
+
+Después se cambió únicamente el título genérico del dashboard a ``Análisis de
+ventas'' o ``Análisis de pedidos'', compatible con vista analítica y reportes.
+La observación del PDF 20 permanece como antecedente: no se modifica ese archivo
+ya exportado. El cierre definitivo y los nuevos recorridos UI de ambas fuentes se
+registran a continuación; no se declara PR fusionado ni cierre operativo.
+
+\paragraph{Cierre definitivo y evidencia operativa de ambas fuentes.}
+El último \file{make verify} terminó con salida 0: 530 backend, 50 frontend en
+3 archivos, Ruff/formato en 93 y Mypy en 57; corte del registro
+\path{/tmp/bi-verify-entrega-final-20261106.log} a las 03:24:58 de Guayaquil,
+con capas idénticas del árbol final. Incluye el título Análisis de ventas/pedidos,
+la puerta histórica, selección FK sin predeterminar y presentación monetaria
+común. Las 67/27/44 focales son subconjuntos. La ampliación de 48 a 50 frontend
+se debe a dos casos de los alias importe/valor, no a otro módulo.
+
+La interfaz conservó el aviso y la comprobación de divisa para alias monetarios
+y denominadores, sin inventar ISO. WWI 22 repitió sólo esa comprobación, quedó
+sin moneda identificada y mantuvo contrato, cifras y huella; no ejecutó otro ETL.
+Las unidades personalizadas anteriores permanecen sin cambio.
+
+AW 129/21, reglas 5, completó cinco tablas, 121.317 filas por lado y diferencia
+cero; cuatro rutas idénticas entre contrato, ejecutor y procedencia. Global:
+109.846.381,399888 USD, 274.914 unidades, 31.465 pedidos y promedio 3.491,065672966407.
+Filtro 2013/Northwest: 6.015.174,735836, 17.452, 2.053 y 2.929,943855740867.
+La lectura independiente conservó datos y huellas de 18/20/21.
+
+WWI 131/22, reglas 5, completó 228.265 filas por lado, diferencia cero y cinco
+tablas; global 198.043.439,45 de origen, 8.950.628 unidades, 70.510 facturas y
+promedio 2.808,7283995177986. Su ruta compradora y ciudad registrada de entrega
+coincide en las cuatro dimensiones. El oráculo OLTP independiente para
+2015/California comprobó 3.771 filas, 3.191.769,11 de importe, 142.247 unidades,
+1.179 facturas y 2.707,1832994062765 de promedio. El expediente 19, con otro rol
+legado, sólo se contrastó en sus cuatro totales globales; no es oráculo territorial.
+Los históricos permanecen sin mutación.
+
+Los PDF/XLS 21 y 22 se inspeccionaron: seis páginas legibles y seis hojas cada
+uno, cuatro gráficos y KPI/cifras acordes a filtros e indicador. La razón monetaria
+del PDF 21 conserva una unidad genérica pese a USD; es observación de presentación,
+no una diferencia numérica. No se retocan los archivos anteriores. El chat WWI
+acertó cifras y cautelas, pero su prosa permanece supervisada: no se afirma
+precisión perfecta ni vigencia histórica o entrega real demostradas.
+La compilación y revisión final de los tres PDF se registra en el acta QA.
+
 \section{Matriz de verificación de la fase}
+
+Los resultados V6 siguientes corresponden al cierre del 5 de noviembre. El
+mantenimiento del 6 de noviembre separa su verificación de código aprobada del
+cierre operativo y documental todavía pendiente, mediante filas y reporte propios.
 
 \begin{tabularx}{\textwidth}{@{}p{0.29\textwidth}@{\hspace{0.18in}}p{0.17\textwidth}@{\hspace{0.18in}}X@{}}
   \toprule
   \textbf{Control} & \textbf{Estado} & \textbf{Evidencia esperada} \\
   \midrule
+  Corte intermedio de código del 6 de noviembre & \statusok & Reglas 4: make verify con salida 0, 475 backend y 48 frontend; frontend de caché del mismo árbol. No acredita el integral de reglas 5. \\
+  Código definitivo de reglas 5 & \statusok & make verify con salida 0: 530 backend/50 frontend, Ruff/formato 93 y Mypy 57; capas idénticas del árbol final. \\
+  Recorridos de reglas 5 & \statusok & AW 129/21 y WWI 131/22 conciliados, rutas exactas y exportes inspeccionados; acta QA conserva límites y revisión PDF. \\
   Compose autocontenido válido & \statusok & \file{docker compose config --quiet} \\
   Compose de imágenes válido & \statusok & \file{docker compose -f compose.release.yaml config --quiet} \\
   Backend (cierre V6) & \statusok & 454 pruebas Pytest y controles de calidad dentro de Docker; V4 previo registró Ruff/formato (91 archivos) y Mypy (57). \\
@@ -1646,6 +1789,7 @@ realizan después del cierre de fuentes, separadas de la suite de código y sin 
   0.6.6 & 05-10-2026 & Entrega consolidada de mejoras BI + IA, guía formativa reproducible y control de doce PDF en CI. \\
   0.6.7 & 05-11-2026 & Cierre correctivo 4--5 de noviembre: revisión 6/reglas 3, compatibilidad histórica, formularios y editor hijo, analítica/exports con procedencia, 454 backend/46 frontend y casos 122/18 y 124/19. PR 57 abierto en borrador. \\
   0.6.8 & 05-11-2026 & Ajuste UI adicional \file{8f1c7d1}: unidad completa y conciliación adaptable; V6 con salida 0 y 454/48, UI 18/19 a dos anchos sin solapes. V4 y originales conservados; sin otro ETL ni LLM. \\
+  0.6.9 & 06-11-2026 & Preservación dimensional y temporal, evidencia del servidor y coherencia del promedio por documento; reglas 4 y sales-bi-v8. Corte intermedio 475/48 aprobado; reglas 5 para rutas exactas con focal 67. Cierre definitivo 530/50 y recorridos 129/21 y 131/22 conciliados; unidades genéricas y límites narrativos documentados. Sin ETL atribuido a 125/127/128. \\
   \bottomrule
 \end{longtable}
 

@@ -1,0 +1,354 @@
+{
+  "estado": "PRESUPUESTO ESTIMADO: no ejecución presupuestaria ni costos históricos comprobados",
+  "fecha_corte": "2026-11-05",
+  "duracion_meses": 4,
+  "moneda": "USD",
+  "autoras_cantidad": 2,
+  "introduccion": "Se adopta un escenario académico de cuatro meses con infraestructura local ya disponible. Se separan las partidas de efectivo asignadas al proyecto y los aportes valorizados de trabajo y equipos. Todos los valores de dedicación, tarifas imputadas y reservas son supuestos explícitos de planificación; no se recibieron facturas, reportes de consumo ni partes de horas.",
+  "no_comprobado": [
+    "No se entregaron facturas de hardware, conectividad, electricidad o API.",
+    "No se entregaron registros de horas de trabajo por tesista.",
+    "La tarifa por hora y el valor de referencia del equipo son supuestos académicos, no cotizaciones de mercado.",
+    "La imputación de servicios compartidos no equivale necesariamente a gasto incremental."
+  ],
+  "recursos_humanos": [
+    {
+      "recurso": "Tesista 1: análisis, desarrollo, pruebas y documentación",
+      "cantidad": 160,
+      "unidad": "hora",
+      "costo_unitario_usd": "6.00",
+      "efectivo_usd": "0.00",
+      "aporte_usd": "960.00",
+      "economico_usd": "960.00",
+      "base": "40 horas por mes durante cuatro meses. Tarifa académica supuesta, no salario observado ni pago realizado."
+    },
+    {
+      "recurso": "Tesista 2: análisis, desarrollo, pruebas y documentación",
+      "cantidad": 160,
+      "unidad": "hora",
+      "costo_unitario_usd": "6.00",
+      "efectivo_usd": "0.00",
+      "aporte_usd": "960.00",
+      "economico_usd": "960.00",
+      "base": "40 horas por mes durante cuatro meses. Tarifa académica supuesta, no salario observado ni pago realizado."
+    }
+  ],
+  "distribucion_esfuerzo_estimado": {
+    "filas": [
+      [
+        "Análisis de necesidades y especificaciones SDD",
+        40
+      ],
+      [
+        "Diseño funcional, arquitectura y modelado",
+        30
+      ],
+      [
+        "Implementación e integración",
+        130
+      ],
+      [
+        "Pruebas y correcciones",
+        70
+      ],
+      [
+        "Documentación y preparación de demostración",
+        50
+      ]
+    ],
+    "total_horas_equipo": 320,
+    "nota": "Las mismas dos tesistas asumen los distintos roles. No se cuentan analistas, desarrolladores y QA como contrataciones adicionales. Esta asignación es estimada y no reconstruye las horas de los sprints históricos."
+  },
+  "hardware": [
+    {
+      "recurso": "Uso de dos computadores existentes",
+      "cantidad": 2,
+      "unidad": "equipo aportado",
+      "valor_referencia_unitario_usd": "600.00",
+      "vida_util_supuesta_meses": 36,
+      "duracion_imputada_meses": 4,
+      "proporcion_imputacion": 0.5,
+      "formula": "2 × 600 / 36 × 4 × 0.50",
+      "efectivo_usd": "0.00",
+      "aporte_usd": "66.67",
+      "economico_usd": "66.67",
+      "base": "Valorización académica supuesta del uso de equipos ya disponibles. No representa compra, cotización vigente ni depreciación contable certificada."
+    }
+  ],
+  "software": [
+    {
+      "recurso": "PostgreSQL y componentes de código abierto del prototipo",
+      "licencia_adicional_usd": "0.00",
+      "condicion": "No se presupone adquisición de licencias comerciales; se conservan las condiciones de cada componente. No significa operación o mantenimiento gratuitos.",
+      "fuente": "PRE-05"
+    },
+    {
+      "recurso": "SQL Server 2022 Developer",
+      "licencia_adicional_usd": "0.00",
+      "condicion": "Únicamente desarrollo, prueba y demostración académica. El nombre release del repositorio no convierte esta edición en una licencia productiva.",
+      "fuente": "PRE-03; PRE-06"
+    },
+    {
+      "recurso": "Docker Engine / Docker Desktop elegible para educación",
+      "licencia_adicional_usd": "0.00",
+      "condicion": "El uso de Desktop debe ajustarse a sus condiciones educativas; no se generaliza la gratuidad a toda organización pública o comercial.",
+      "fuente": "PRE-04"
+    },
+    {
+      "recurso": "Git y repositorio dentro de las cuotas disponibles",
+      "licencia_adicional_usd": "0.00",
+      "condicion": "No se presupuesta un plan privado adicional ni consumo extraordinario de integración continua.",
+      "fuente": "Supuesto de planificación"
+    },
+    {
+      "recurso": "API de IA en la nube",
+      "licencia_adicional_usd": null,
+      "condicion": "Costo variable incluido en la reserva de USD 40.00; no volver a sumarlo como licencia.",
+      "fuente": "PRE-01; PRE-02"
+    }
+  ],
+  "operacion": [
+    {
+      "recurso": "Conectividad compartida",
+      "cantidad": 4,
+      "unidad": "mes",
+      "costo_unitario_usd": "17.50",
+      "efectivo_usd": "70.00",
+      "aporte_usd": "0.00",
+      "economico_usd": "70.00",
+      "base": "Supuesto: plan de USD 35 mensuales, con 50 % de imputación al proyecto. No es una factura verificada ni un desembolso incremental comprobado."
+    },
+    {
+      "recurso": "Energía eléctrica imputada",
+      "cantidad": 32,
+      "unidad": "kWh",
+      "costo_unitario_usd": "0.12",
+      "efectivo_usd": "3.84",
+      "aporte_usd": "0.00",
+      "economico_usd": "3.84",
+      "base": "Supuesto de consumo: dos equipos × 0.10 kW × 160 horas por equipo. USD 0.12/kWh es una tarifa de planificación, no una tarifa oficial ni una medición real."
+    },
+    {
+      "recurso": "Reserva para consultas API de modelos LLM",
+      "cantidad": 4,
+      "unidad": "mes",
+      "costo_unitario_usd": "10.00",
+      "efectivo_usd": "40.00",
+      "aporte_usd": "0.00",
+      "economico_usd": "40.00",
+      "base": "Límite presupuestario supuesto. El cobro depende de proveedor, tokens, reintentos y condiciones de cuenta. No es una factura de consumo."
+    },
+    {
+      "recurso": "Materiales de demostración y documentación",
+      "cantidad": 4,
+      "unidad": "mes",
+      "costo_unitario_usd": "5.00",
+      "efectivo_usd": "20.00",
+      "aporte_usd": "0.00",
+      "economico_usd": "20.00",
+      "base": "Reserva académica supuesta; sin comprobantes de gasto."
+    }
+  ],
+  "resumen": {
+    "columnas": [
+      "Rubro",
+      "Efectivo asignado (USD)",
+      "Aportes valorizados (USD)",
+      "Costo económico (USD)"
+    ],
+    "filas": [
+      [
+        "Trabajo académico de las dos tesistas",
+        "0.00",
+        "1920.00",
+        "1920.00"
+      ],
+      [
+        "Uso imputado de equipos existentes",
+        "0.00",
+        "66.67",
+        "66.67"
+      ],
+      [
+        "Conectividad, energía, API y materiales",
+        "133.84",
+        "0.00",
+        "133.84"
+      ],
+      [
+        "Licencias adicionales para demostración académica",
+        "0.00",
+        "0.00",
+        "0.00"
+      ],
+      [
+        "Subtotal",
+        "133.84",
+        "1986.67",
+        "2120.51"
+      ],
+      [
+        "Contingencia: 10 % del efectivo base",
+        "13.38",
+        "0.00",
+        "13.38"
+      ],
+      [
+        "Total estimado",
+        "147.22",
+        "1986.67",
+        "2133.89"
+      ]
+    ]
+  },
+  "totales": {
+    "efectivo_base": "133.84",
+    "contingencia_porcentaje": "10.00",
+    "contingencia": "13.38",
+    "efectivo_con_contingencia": "147.22",
+    "aportes_valorizados": "1986.67",
+    "costo_economico_con_contingencia": "2133.89"
+  },
+  "distribucion_mensual": {
+    "filas": [
+      {
+        "mes": 1,
+        "mano_obra_aportada_usd": "480.00",
+        "uso_equipos_aportado_usd": "16.67",
+        "conectividad_usd": "17.50",
+        "energia_usd": "0.96",
+        "reserva_API_usd": "10.00",
+        "materiales_usd": "5.00",
+        "efectivo_base_usd": "33.46",
+        "economico_base_usd": "530.13"
+      },
+      {
+        "mes": 2,
+        "mano_obra_aportada_usd": "480.00",
+        "uso_equipos_aportado_usd": "16.67",
+        "conectividad_usd": "17.50",
+        "energia_usd": "0.96",
+        "reserva_API_usd": "10.00",
+        "materiales_usd": "5.00",
+        "efectivo_base_usd": "33.46",
+        "economico_base_usd": "530.13"
+      },
+      {
+        "mes": 3,
+        "mano_obra_aportada_usd": "480.00",
+        "uso_equipos_aportado_usd": "16.67",
+        "conectividad_usd": "17.50",
+        "energia_usd": "0.96",
+        "reserva_API_usd": "10.00",
+        "materiales_usd": "5.00",
+        "efectivo_base_usd": "33.46",
+        "economico_base_usd": "530.13"
+      },
+      {
+        "mes": 4,
+        "mano_obra_aportada_usd": "480.00",
+        "uso_equipos_aportado_usd": "16.66",
+        "conectividad_usd": "17.50",
+        "energia_usd": "0.96",
+        "reserva_API_usd": "10.00",
+        "materiales_usd": "5.00",
+        "efectivo_base_usd": "33.46",
+        "economico_base_usd": "530.12"
+      }
+    ],
+    "nota": "Meses 1–4 son bloques presupuestarios. No se les asignan fechas ni se presentan como sprints históricos. La contingencia es global y se agrega después del subtotal. El último mes ajusta USD 0.01 por redondeo del uso de equipos."
+  },
+  "ejemplo_costo_API": {
+    "caracter": "Ejemplo aritmético de planificación; no es un experimento ejecutado ni una comparación de calidad. No se suma al presupuesto porque existe una reserva de API de USD 40.00.",
+    "solicitudes_supuesta": 400,
+    "tokens_entrada_por_solicitud": 6000,
+    "tokens_salida_por_solicitud": 1500,
+    "total_tokens_entrada": 2400000,
+    "total_tokens_salida": 600000,
+    "formula": "C_API = (T_entrada / 1 000 000 × P_entrada) + (T_salida / 1 000 000 × P_salida)",
+    "modelos": [
+      {
+        "modelo": "Anthropic Claude Haiku 4.5",
+        "entrada_usd_millon": "1.00",
+        "salida_usd_millon": "5.00",
+        "ejemplo_usd": "5.40",
+        "fuente": "PRE-01"
+      },
+      {
+        "modelo": "Groq: openai/gpt-oss-120b",
+        "entrada_usd_millon": "0.15",
+        "salida_usd_millon": "0.60",
+        "ejemplo_usd": "0.72",
+        "fuente": "PRE-02"
+      }
+    ],
+    "limites": "No incluye caché, procesamiento por lotes, herramientas, reintentos, impuestos ni cargos ajenos a tokens. La salida facturable puede incluir razonamiento según el proveedor. No garantiza disponibilidad ni elimina límites de uso."
+  },
+  "lectura_resultado": "El escenario requiere prever USD 147.22 de efectivo asignado, incluida la contingencia. Al reconocer USD 1986.67 de aportes académicos, el costo económico estimado es USD 2133.89. No se deducen rentabilidad, ahorro, eficiencia comparativa o retorno de inversión.",
+  "exclusiones_razonadas": [
+    "No se adquieren computadores nuevos porque se aporta el uso de equipos existentes.",
+    "No se presupone VPS, dominio público ni GPU dedicada: la demostración se ejecuta localmente en contenedores.",
+    "No se añaden licencias productivas de SQL Server: Developer se limita al alcance de desarrollo y demostración académica.",
+    "No se presenta una suscripción de chat como equivalente al consumo de API.",
+    "No se incorporan nuevos cargos profesionales por cada rol ni se duplica el costo de un mismo equipo."
+  ],
+  "referencias": [
+    {
+      "id": "PRE-01",
+      "autor": "Anthropic",
+      "titulo": "Pricing: Claude Haiku 4.5, API estándar",
+      "url": "https://claude.com/pricing",
+      "consulta": "2026-11-05",
+      "verificacion": "Entrada: USD 1 por millón de tokens; salida: USD 5 por millón. No equivale a una suscripción de chat."
+    },
+    {
+      "id": "PRE-02",
+      "autor": "Groq",
+      "titulo": "OpenAI GPT-OSS 120B: Pricing",
+      "url": "https://console.groq.com/docs/model/openai/gpt-oss-120b",
+      "consulta": "2026-11-05",
+      "verificacion": "Entrada estándar: USD 0.15 por millón de tokens; salida: USD 0.60 por millón."
+    },
+    {
+      "id": "PRE-03",
+      "autor": "Microsoft",
+      "titulo": "Editions and supported features of SQL Server 2022",
+      "url": "https://learn.microsoft.com/en-us/sql/sql-server/editions-and-components-of-sql-server-2022?view=sql-server-ver16",
+      "consulta": "2026-11-05",
+      "verificacion": "La edición Developer está licenciada para desarrollo y pruebas, no para producción."
+    },
+    {
+      "id": "PRE-04",
+      "autor": "Docker",
+      "titulo": "Docker Desktop license agreement",
+      "url": "https://docs.docker.com/subscription-billing/desktop-license/",
+      "consulta": "2026-11-05",
+      "verificacion": "Docker Desktop permite uso gratuito educativo y personal, con condiciones. La página también distingue las licencias de Docker Engine."
+    },
+    {
+      "id": "PRE-05",
+      "autor": "PostgreSQL Global Development Group",
+      "titulo": "PostgreSQL License",
+      "url": "https://www.postgresql.org/about/licence/",
+      "consulta": "2026-11-05",
+      "verificacion": "La licencia permite el uso del software sin tarifa, conservando las condiciones indicadas."
+    },
+    {
+      "id": "PRE-06",
+      "autor": "Microsoft",
+      "titulo": "SQL Server Downloads: Developer",
+      "url": "https://www.microsoft.com/en-us/sql-server/sql-server-downloads",
+      "consulta": "2026-11-05",
+      "verificacion": "La descarga Developer es gratuita para desarrollo y pruebas en un entorno no productivo."
+    }
+  ],
+  "verificacion_aritmetica": {
+    "recursos_humanos": "2 × 160 × 6 = 1920.00",
+    "hardware": "2 × 600 / 36 × 4 × 0.50 = 66.67, redondeado",
+    "efectivo_base": "70.00 + 3.84 + 40.00 + 20.00 = 133.84",
+    "contingencia": "133.84 × 10 % = 13.38, redondeado",
+    "total_efectivo": "133.84 + 13.38 = 147.22",
+    "total_economico": "147.22 + 1920.00 + 66.67 = 2133.89",
+    "resultado": true
+  }
+}

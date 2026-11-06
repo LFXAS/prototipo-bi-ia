@@ -1,0 +1,784 @@
+{
+  "titulo": "Manual de usuario de la plataforma de datamarts de ventas",
+  "version": "2026-11-06",
+  "idioma": "es",
+  "tipo": "Fuente editorial del manual universitario final verificado.",
+  "paginas_planificadas": 35,
+  "rango_final_objetivo": [
+    30,
+    40
+  ],
+  "instruccion_maquetacion": "Cada ficha planifica una página. Mantener cuerpo legible y capturas nuevas próximas al procedimiento. El compositor puede redistribuir dentro de 30–40 páginas sin reducir la letra para forzar 35. Actualizar el índice y referencias de página después de la composición.",
+  "politica_capturas": "Sólo imágenes nuevas de la aplicación real, vistas completas. Los capture_key son identificadores internos de producción; no imprimirlos ni presentarlos como códigos al lector. No reutilizar imágenes históricas. Una captura de consulta no se rotula como generación o ETL nuevos.",
+  "estado_evidencia": "Casos finales del 6 de noviembre de 2026: AdventureWorks 129/21 y WideWorldImporters 131/22, con rutas comerciales revisadas, aprobación humana, cargas y conciliación propias. Las versiones anteriores permanecen como antecedentes; no sustituyen la comprobación de los roles de cliente y territorio. Cada repetición recibe identificadores propios. Las imágenes de configuración de roles no acreditan sesiones con esos roles.",
+  "fuentes_editoriales": [
+    "/tmp/bi-manuales-plan-20261106/plan_manual.json",
+    "/home/ceo/Proyectos/BI/frontend/src/App.tsx",
+    "/home/ceo/Proyectos/BI/frontend/src/AnalyticsPage.tsx",
+    "/home/ceo/Proyectos/BI/docs/manual-usuario/contenido_roles_parametros.json",
+    "/home/ceo/Proyectos/BI/docs/manual-usuario/contenido_asistente_etl.json",
+    "/home/ceo/Proyectos/BI/docs/manual-usuario/contenido_analitica_sustentacion.json"
+  ],
+  "casos_referencia": [
+    {
+      "orden": 1,
+      "titulo": "AdventureWorks caso final de pedidos",
+      "propuesta_observada": 129,
+      "ejecucion_observada": 21,
+      "alcance": "Línea de pedido, fecha y territorio comercial de la cabecera, producto y cliente verificables. Cuatro indicadores finales seleccionados. Rutas exactas del contrato revisado usadas en carga y procedencia.",
+      "resultado_comprobado": "121.317 líneas por lado y diferencia cero; 109.846.381,40 USD, 274.914 unidades, 31.465 pedidos distintos y 3.491,07 por pedido. En 2013/Northwest: 6.015.174,74 USD, 17.452 unidades, 2.053 pedidos y 2.929,94 por pedido.",
+      "interpretacion": "El chat del expediente 21 confirmó 17.452 unidades y junio 2013 con 2.494.",
+      "limites": "PDF de seis páginas y Excel 6 hojas revisados en su contexto; el significado de pedido no equivale a cobro o rentabilidad.",
+      "version_de_validacion_observada": "Control actual de rutas exactas, versión 5."
+    },
+    {
+      "orden": 2,
+      "titulo": "WideWorldImporters caso final de facturación",
+      "propuesta_observada": 131,
+      "ejecucion_observada": 22,
+      "alcance": "Línea de factura, fecha de emisión, cliente comprador mediante CustomerID y provincia de la ciudad de entrega de la ficha mediante DeliveryCityID. Dos decisiones humanas acumuladas sin sustituir la provincia por un tramo intermedio.",
+      "resultado_comprobado": "228.265 líneas por lado y diferencia cero; 198.043.439,45 en moneda de origen, 8.950.628 unidades, 70.510 facturas y 2.808,73 por factura. En 2015/California: 3.191.769,11 de origen, 142.247 unidades, 1.179 facturas y 2.707,18 por factura; 3.771 líneas.",
+      "interpretacion": "Panel y consulta independiente coinciden con cliente comprador y ciudad de entrega. No se infiere una entrega realizada ni la ubicación histórica.",
+      "limites": "No se demostró un código monetario único; se mantiene moneda de origen. La consulta anterior 124/19 no es el oráculo territorial de esta edición.",
+      "version_de_validacion_observada": "Control actual de rutas exactas, versión 5."
+    }
+  ],
+  "limites": [
+    "No se afirma soporte implementado de todos los motores: la conexión visible ofrece SQL Server.",
+    "Roles configurados y sesiones autenticadas se deben acreditar por separado.",
+    "No se promete salida válida para todo modelo, toda base o toda necesidad.",
+    "El panel requiere datos físicos consultables; otros expedientes pueden ser sólo auditoría."
+  ],
+  "fichas": [
+    {
+      "pagina_planificada": 1,
+      "seccion": "Presentación",
+      "titulo": "Manual de usuario de la plataforma de datamarts de ventas",
+      "parrafos": [
+        "Universidad de Guayaquil · Carrera de Software. Guía operativa para la demostración de una prueba de concepto y un prototipo funcional de sistema inteligente para construcción supervisada de datamarts de ventas.",
+        "Este manual acompaña el aprendizaje inicial de operadores, analistas, responsables comerciales y programadoras. Explica qué hacer, qué revisar y qué resultado esperar. La guía de formación complementaria desarrolla con mayor amplitud los conceptos y ejercicios.",
+        "Versión de contenido: 6 de noviembre de 2026. Las capturas de esta edición deben corresponder a una nueva consulta de la aplicación; no se reutilizan imágenes de ediciones anteriores."
+      ],
+      "pasos": [],
+      "resultado": "Identificar el propósito y la versión del manual.",
+      "precaucion": "Los casos son fuentes de demostración. Su éxito documentado no garantiza que toda necesidad o cualquier proveedor produzca una propuesta aceptable.",
+      "capture_key": null,
+      "tipo_pagina": "portada"
+    },
+    {
+      "pagina_planificada": 2,
+      "seccion": "Índice y alcance",
+      "titulo": "Encuentre el procedimiento que necesita",
+      "parrafos": [
+        "Preparación: responsabilidades, página 4; acceso y fuente, páginas 5–6; conexiones, proveedor y parámetros, páginas 7–9; metadatos, páginas 10–11; catálogo, páginas 12–14.",
+        "Construcción: necesidad, viabilidad, modelo y aprobación, páginas 15–18; selección de indicadores, preparación, carga y conciliación, páginas 19–21.",
+        "Consulta: vistas e interpretación comercial, páginas 22–24; conversación y exportaciones, páginas 25–26; casos AdventureWorks y WideWorldImporters, páginas 27–32; recuperación y términos, páginas 33–35."
+      ],
+      "pasos": [
+        "Para configurar una instalación limpia, siga las páginas 4–21 en orden.",
+        "Para presentar resultados existentes, comience en la página 6 y siga uno de los casos de las páginas 27–32.",
+        "Para una consulta gerencial, revise las páginas 22–26 y las advertencias del caso elegido."
+      ],
+      "resultado": "Elegir una ruta según la tarea y el permiso disponible.",
+      "precaucion": "La numeración indicada es una planificación de composición. El índice del Word final debe actualizarse después de insertar las capturas.",
+      "capture_key": null,
+      "tipo_pagina": "indice"
+    },
+    {
+      "pagina_planificada": 3,
+      "seccion": "Índice y alcance",
+      "titulo": "Antes de comenzar: alcance y dos maneras de practicar",
+      "parrafos": [
+        "La responsable técnica debe entregar un entorno encendido, dirección de acceso, cuenta administradora, fuentes SQL Server y proveedor de inteligencia artificial disponible. El formulario actual conecta SQL Server; no se afirma soporte de todos los motores.",
+        "Consultar un expediente permite recorrer su evidencia sin generar ni cargar de nuevo. Una necesidad nueva inicia otra evaluación, puede requerir correcciones y recibe identificadores propios."
+      ],
+      "pasos": [
+        "Identifique desarrollo o release y confirme si consultará o ejecutará un caso nuevo.",
+        "Prepare necesidad, fuente y responsable de aprobación. Para exposición use primero expedientes conciliados."
+      ],
+      "resultado": "Entorno y propósito de práctica identificados.",
+      "precaucion": "Una consulta no acredita ejecución nueva; compruebe las cifras de su propia instalación.",
+      "capture_key": null
+    },
+    {
+      "pagina_planificada": 4,
+      "seccion": "Responsabilidades",
+      "titulo": "Qué hace cada persona y cómo se asigna el acceso",
+      "parrafos": [
+        "La administradora prepara cuentas, permisos, conexiones y proveedor. El analista revisa necesidad, modelo y cálculos; aprueba y carga si tiene permiso. La gerencia interpreta y solicita aclaraciones. Un rol reúne permisos: su nombre no concede acceso. Programadora es una responsabilidad, no un rol obligatorio.",
+        "La consulta gerencial documentada requiere Consultar análisis visual, Consultar conexiones, Consultar metadatos y Exportar reportes analíticos. Consultar metadatos habilita también el Explorador y permite cargar el selector de fuentes."
+      ],
+      "pasos": [
+        "En Administración y seguridad > Roles, pulse Crear rol si falta; complete Nombre, Descripción y Permisos otorgados y guarde.",
+        "En Usuarios, pulse Crear usuario; complete Correo, Nombre completo, Contraseña y Roles asignados. Guarde sin capturar la clave.",
+        "Use Editar para revisar una cuenta existente y compruebe después el acceso iniciando sesión con ella."
+      ],
+      "resultado": "Cuenta autorizada para su tarea.",
+      "precaucion": "Un rol configurado no prueba una sesión con ese perfil. La instalación limpia sólo garantiza la cuenta administradora.",
+      "capture_key": "roles_analista",
+      "capturas_adicionales": [
+        "roles_gerente",
+        "usuarios_formulario"
+      ]
+    },
+    {
+      "pagina_planificada": 5,
+      "seccion": "Acceso y navegación",
+      "titulo": "Ingresar y reconocer el espacio de trabajo",
+      "parrafos": [
+        "Después del acceso, el encabezado identifica la sesión y el menú agrupa preparación, diseño, análisis y administración. Inicio muestra prerrequisitos o accesos según los permisos."
+      ],
+      "pasos": [
+        "Abra la dirección del entorno, complete Correo y Contraseña y pulse Iniciar sesión.",
+        "Confirme la identidad y expanda el menú. En Inicio, lea Todo está listo o Faltan prerrequisitos y use Completar configuración inicial o Revisar configuración.",
+        "Al terminar, pulse Cerrar sesión."
+      ],
+      "resultado": "Acceso correcto y preparación conocida.",
+      "precaucion": "No comparta ni capture contraseñas. Si falta una opción, solicite revisar permisos.",
+      "capture_key": "acceso",
+      "capturas_adicionales": [
+        "inicio_adventureworks"
+      ]
+    },
+    {
+      "pagina_planificada": 6,
+      "seccion": "Acceso y navegación",
+      "titulo": "Elegir la fuente y conservar el contexto",
+      "parrafos": [
+        "Cambiar fuente elige el contexto, sin combinar negocios ni copiar catálogos. Ambas bases pueden permanecer habilitadas. Antes de interpretar, compruebe fuente, base, propuesta y ejecución."
+      ],
+      "pasos": [
+        "En Cambiar fuente seleccione AdventureWorks local · AdventureWorks2022 y lea Fuente en contexto.",
+        "Cambie a WideWorldImporters local · WideWorldImporters y espere. En Explorador y Analítica confirme sus encabezados.",
+        "Vuelva a la fuente de la práctica."
+      ],
+      "resultado": "Cada pantalla corresponde a la fuente elegida.",
+      "precaucion": "Un selector vacío puede indicar conexión deshabilitada o falta de Consultar metadatos. Si cruza fuentes, detenga el análisis.",
+      "capture_key": "inicio_wideworldimporters"
+    },
+    {
+      "pagina_planificada": 7,
+      "seccion": "Preparación del entorno",
+      "titulo": "Registrar y probar las dos conexiones",
+      "parrafos": [
+        "La cuenta de Conexiones de datos es de sólo lectura de SQL Server y es distinta de la cuenta de acceso. En Docker suele usarse sqlserver y puerto 1433; confirme los valores internos con la responsable técnica."
+      ],
+      "pasos": [
+        "Abra Preparación del entorno > Conexiones de datos. Complete Nombre visible, Servidor, Puerto, Base de datos, Usuario de sólo lectura y contraseña.",
+        "Revise Cifrar transporte y Confiar en certificado local según el servidor. Pulse Registrar conexión.",
+        "Pulse Probar conexión; ante Sólo lectura validada, use Habilitar y Leer metadatos.",
+        "Repita con la otra base y nombre diferente."
+      ],
+      "resultado": "Dos fuentes registradas, probadas y habilitadas.",
+      "precaucion": "No conceda escritura del origen. Deshabilite una conexión antes de editarla y corrija cualquier prueba fallida.",
+      "capture_key": "conexiones",
+      "capturas_adicionales": [
+        "conexion_formulario"
+      ]
+    },
+    {
+      "pagina_planificada": 8,
+      "seccion": "Preparación del entorno",
+      "titulo": "Preparar el proveedor de inteligencia artificial",
+      "parrafos": [
+        "Configuración LLM administra proveedor y modelo de lenguaje. El contrato es común, pero cuota y capacidades varían. Nivel de razonamiento ofrece modalidades compatibles; un nivel alto no garantiza una salida válida."
+      ],
+      "pasos": [
+        "Abra Preparación del entorno > Configuración LLM y Crear configuración LLM.",
+        "Complete Nombre de configuración y Proveedor; revise URL del servicio y Modelo, elija Nivel de razonamiento y guarde.",
+        "Use Registrar credencial para un servicio cloud. Ollama requiere servicio y modelo locales disponibles.",
+        "Pulse Probar conexión y después Activar en la configuración autorizada."
+      ],
+      "resultado": "Proveedor activo y prueba mínima registrada.",
+      "precaucion": "Activar afecta a la aplicación. Coordine cambios y nunca capture claves; una prueba mínima no garantiza cuota para solicitudes extensas.",
+      "capture_key": "llm_configuraciones",
+      "capturas_adicionales": [
+        "llm_formulario"
+      ]
+    },
+    {
+      "pagina_planificada": 9,
+      "seccion": "Preparación del entorno",
+      "titulo": "Parámetros, menús y control de las acciones",
+      "parrafos": [
+        "Parámetros contiene únicamente opciones operativas aprobadas. Cada tarjeta explica el significado, el rango permitido y el valor predeterminado. No es un espacio para introducir reglas de ventas, contraseñas ni nuevas claves.",
+        "Menús controla la etiqueta, el orden y los permisos de pantallas ya implementadas. Permisos muestra las capacidades que pueden asignarse a roles. Cambiar la etiqueta de un menú no implementa una función nueva."
+      ],
+      "pasos": [
+        "Abra Parámetros y lea la explicación de cada tarjeta antes de cambiar Valor.",
+        "Si existe una necesidad operativa, introduzca un número dentro del Rango y pulse Guardar en esa tarjeta. Use Restaurar sólo para volver al valor predeterminado de esa opción.",
+        "Como administradora, consulte Permisos y relacione sus nombres y descripciones con las tareas del perfil.",
+        "En Menús, pulse Editar únicamente si debe corregir Etiqueta visible, Posición o Permisos requeridos.",
+        "En Auditoría consulte los eventos registrados y su responsable para investigar cambios."
+      ],
+      "resultado": "Una configuración comprensible y cambios atribuibles a una decisión.",
+      "precaucion": "No modifique parámetros o permisos para forzar la aprobación de una propuesta. Conserve las configuraciones protegidas y limite la edición a la responsable autorizada.",
+      "capture_key": "parametros",
+      "capturas_adicionales": [
+        "permisos",
+        "menus",
+        "auditoria"
+      ]
+    },
+    {
+      "pagina_planificada": 10,
+      "seccion": "Metadatos",
+      "titulo": "Leer el esquema sin consultar las ventas",
+      "parrafos": [
+        "Los metadatos describen esquemas, tablas, columnas, tipos, claves y relaciones. Una instantánea conserva esa estructura y una huella que permite reconocerla. Esta pantalla no muestra filas de ventas.",
+        "Una fuente puede tener una o varias versiones de metadatos. El selector Versión de metadatos permanece visible y queda deshabilitado cuando sólo existe una versión."
+      ],
+      "pasos": [
+        "Elija la fuente en Cambiar fuente y abra Explorador de esquema.",
+        "Si aparece Todavía no hay metadatos, pulse Crear primera instantánea. Si ya existe una, consulte su fecha y use Actualizar metadatos sólo cuando corresponda.",
+        "Revise los totales de esquemas, tablas, columnas y relaciones.",
+        "Seleccione una Versión de metadatos, si dispone de más de una.",
+        "Use Buscar tabla o columna y Esquema; pulse Buscar. Seleccione una tabla de la lista y examine sus columnas."
+      ],
+      "resultado": "Una estructura capturada y vinculada a la fuente correcta.",
+      "precaucion": "La presencia de una columna permite estudiar viabilidad estructural; no prueba que tenga datos completos, valores correctos o el significado comercial que necesitamos.",
+      "capture_key": "esquema_adventureworks",
+      "capturas_adicionales": [
+        "esquema_wideworldimporters"
+      ]
+    },
+    {
+      "pagina_planificada": 11,
+      "seccion": "Metadatos",
+      "titulo": "Comprobar detalle, cabeceras y relaciones",
+      "parrafos": [
+        "La granularidad responde qué representa una fila. En ventas puede ser una línea de pedido o una línea de factura. La cabecera aporta información común al documento, como su fecha o cliente.",
+        "Una unión muchos a uno evita multiplicar líneas sólo si su destino es único. Aun así, una factura puede enlazar comprador o destinatario de facturación, y una ficha puede contener dirección de entrega o postal: las relaciones son válidas, pero tienen significados distintos. Revise las columnas y la ruta exacta que responde al objetivo."
+      ],
+      "pasos": [
+        "En AdventureWorks busque SalesOrderDetail; revise SalesOrderDetailID, SalesOrderID y las relaciones declaradas de la tabla.",
+        "Revise SalesOrderHeader para comprender de dónde proceden fecha y cliente del pedido.",
+        "Cambie a WideWorldImporters y busque InvoiceLines; revise InvoiceLineID, InvoiceID y su relación con Invoices.",
+        "Lea los tipos, claves y referencias en el detalle. Formule la diferencia: una línea no equivale a un documento completo."
+      ],
+      "resultado": "Reconocer el evento y la ruta que sustentarán el modelo analítico.",
+      "precaucion": "Estos nombres corresponden a los ejemplos de esta instalación. Para otra base use sus claves y relaciones reales; no copie una ruta de AdventureWorks o WideWorldImporters.",
+      "capture_key": "esquema_relaciones_aw",
+      "capturas_adicionales": [
+        "esquema_relaciones_wwi"
+      ]
+    },
+    {
+      "pagina_planificada": 12,
+      "seccion": "Catálogo por fuente",
+      "titulo": "Qué contiene el catálogo analítico",
+      "parrafos": [
+        "El catálogo define preguntas y periodicidades. La plataforma descubre respaldo técnico en metadatos y la IA interpreta ese alcance. Cobertura técnica distingue Verificable, Por validar y No disponible; ninguna etiqueta sustituye la conciliación de importes y filas."
+      ],
+      "pasos": [
+        "Seleccione AdventureWorks y Diseño y transformación BI > Catálogo analítico.",
+        "Revise Dominio habilitado, instantánea y Referencias detectadas de cada pregunta.",
+        "Cambie a WideWorldImporters y contraste sus fuentes; vuelva al catálogo que deba editar."
+      ],
+      "resultado": "Configuración comercial separada por fuente.",
+      "precaucion": "Una pregunta habilitada no es una propuesta aprobada: debe validarse para el objetivo concreto.",
+      "capture_key": "catalogo_aw_cobertura",
+      "capturas_adicionales": [
+        "catalogo_wwi_cobertura"
+      ]
+    },
+    {
+      "pagina_planificada": 13,
+      "seccion": "Catálogo por fuente",
+      "titulo": "Agregar y mantener una pregunta de negocio",
+      "parrafos": [
+        "Etiqueta nombra la opción del asistente. Explicación para el analista indica su utilidad e Instrucción funcional para la IA precisa la comparación. No escriba SQL ni prometa fuentes inexistentes."
+      ],
+      "pasos": [
+        "En Preguntas de negocio pulse Agregar pregunta y complete los tres campos.",
+        "Ejemplo: Productos con mayor importe registrado; comparar importe acumulado por producto en el período elegido.",
+        "Marque Habilitada y pulse Guardar catálogo. Desmarque para dejar de ofrecerla; Retirar pregunta la quita del catálogo."
+      ],
+      "resultado": "Pregunta clara ofrecida sólo en su fuente.",
+      "precaucion": "Restaurar catálogo validado puede sustituir personalizaciones: revise las preguntas que debe conservar. No prometa margen histórico con costo sólo actual.",
+      "capture_key": "catalogo_preguntas"
+    },
+    {
+      "pagina_planificada": 14,
+      "seccion": "Catálogo por fuente",
+      "titulo": "Periodicidad y criterios mínimos de ventas",
+      "parrafos": [
+        "Mensual agrupa por mes y año, sin programar cargas automáticas. Pedido, factura y cobro son eventos distintos. Use importe registrado si no está demostrada su composición neta, bruta o fiscal."
+      ],
+      "pasos": [
+        "En Periodicidades lea la Explicación y habilite las necesarias. Para otra estrategia soportada use Agregar periodicidad y Agregar.",
+        "Conserve Mensual para estos casos y pulse Guardar catálogo.",
+        "Defina evento, línea, documento distinto, unidades e importe; confirme después las opciones del asistente."
+      ],
+      "resultado": "Organización temporal y significado comercial claros.",
+      "precaucion": "Cambiar una etiqueta no implementa otra frecuencia. Contar líneas no equivale a contar pedidos o facturas distintas.",
+      "capture_key": "catalogo_periodicidades"
+    },
+    {
+      "pagina_planificada": 15,
+      "seccion": "Propuesta BI",
+      "titulo": "Paso 1: expresar la necesidad y pedir ayuda",
+      "parrafos": [
+        "Una necesidad debe indicar decisión, evento, indicadores y comparaciones. Ejemplo para una práctica nueva: Comparar mensualmente el importe registrado y las unidades de las líneas de venta por producto, conservando la trazabilidad con el documento comercial y sin suponer cobros ni costos históricos.",
+        "La inteligencia artificial puede sugerir necesidades o mejorar el texto; usted decide si acepta su redacción. Antes de la asistencia se informa el proveedor que recibirá la necesidad y los metadatos estructurales."
+      ],
+      "pasos": [
+        "Abra Asistente de datamart y elija Datamart de ventas.",
+        "En Necesidad, escriba Objetivo del análisis, seleccione Preguntas de negocio disponibles y Periodicidad: Mensual.",
+        "Lea Destino y marque la autorización únicamente si acepta el envío descrito.",
+        "Use Sugerir necesidades con esta fuente o Ayúdame a formular la necesidad. Revise el respaldo y los límites de cada sugerencia.",
+        "Si es adecuada, pulse Usar esta necesidad o Usar esta redacción; en otro caso mantenga o edite su texto. Pulse Validar viabilidad."
+      ],
+      "resultado": "Una solicitud concreta sometida a evaluación previa.",
+      "precaucion": "El ejemplo de esta página es una entrada para probar, no una generación nueva ya validada. Si la IA cambia el evento o añade indicadores ajenos al objetivo, corrija el texto antes de continuar.",
+      "capture_key": "asistente_necesidad",
+      "capturas_adicionales": [
+        "asistente_sugerencias"
+      ]
+    },
+    {
+      "pagina_planificada": 16,
+      "seccion": "Propuesta BI",
+      "titulo": "Paso 1–2: viabilidad y conceptos",
+      "parrafos": [
+        "La viabilidad contrasta la necesidad con las referencias de la fuente. Directo significa respaldo en una referencia; Automático indica una relación o fórmula controlada que se resolverá y volverá a validar. Una Derivación candidata propuesta por IA todavía no es una fórmula ejecutable.",
+        "Por decidir exige entender una ambigüedad o ausencia. Aceptar una limitación no crea la fuente faltante. Los conceptos representan lo que se incluirá en el diseño; las evidencias débiles pueden quedar excluidas preventivamente."
+      ],
+      "pasos": [
+        "En Viabilidad contra los metadatos, abra Ver evidencia técnica de los requisitos.",
+        "Lea cada resolución. Si hay limitaciones, decida si el alcance parcial sigue sirviendo; si no, pulse Volver a editar.",
+        "Cuando sea aceptable y esté habilitado, pulse Generar propuesta y resolver … derivables; la cantidad depende de la revisión.",
+        "En Conceptos, revise Incluir, confianza y evidencia. Resuelva las decisiones pendientes mediante las opciones guiadas disponibles.",
+        "Si se muestra Generar propuesta BI, úselo para continuar con la selección revisada; si la propuesta ya está preparada, recorra sus etapas disponibles."
+      ],
+      "resultado": "Un alcance explicable y referencias revisadas antes de la aprobación.",
+      "precaucion": "Una sugerencia de IA puede ser descartada por el validador. No marque todas las limitaciones para habilitar un botón; conserve sólo un alcance que pueda explicar y demostrar.",
+      "capture_key": "asistente_viabilidad",
+      "capturas_adicionales": [
+        "asistente_conceptos"
+      ]
+    },
+    {
+      "pagina_planificada": 17,
+      "seccion": "Propuesta BI",
+      "titulo": "Paso 3–4: modelo y personalización",
+      "parrafos": [
+        "La Propuesta presenta el hecho, las dimensiones, medidas e indicadores. El hecho conserva el evento al detalle; dimensiones como fecha, producto, cliente y territorio organizan las comparaciones. Una medida es un valor de origen o derivado; un indicador combina medidas con una regla de agregación.",
+        "En Personalización seleccione elementos compatibles. Si una ruta es ambigua, detenga la aprobación y revise el papel de sus columnas; una elección humana sin SQL debe conservar la dimensión prevista y quedar registrada. La corrección crea una versión derivada y conserva la anterior. Revise el resultado antes de guardar otros ajustes.",
+        "La IA puede proponer una cantidad variable de indicadores. Para reproducir un caso con cuatro resultados, compruebe que estén esos cuatro y revise los adicionales: desmárquelos en Personalización o en la selección previa a la carga si no aportan al objetivo. No se elimina una medida necesaria sólo porque no se presente como indicador final."
+      ],
+      "pasos": [
+        "En Propuesta revise necesidad, fuente, granularidad y referencias. Confirme que cliente y producto tengan una identificación comprensible.",
+        "Entre en Personalización. Revise las dimensiones incluidas y las medidas con sus fuentes y Agregación.",
+        "Para documentos, compruebe Conteo distinto sobre el identificador del pedido o factura; para cantidades e importes compatibles, revise Suma.",
+        "Lea las recetas recomendadas; mantenga los indicadores que respondan al objetivo y sus medidas necesarias.",
+        "Complete Justificación del ajuste y pulse Guardar como nueva versión, o Continuar sin cambios si no necesita modificar el contrato."
+      ],
+      "resultado": "Una versión que conserva trazabilidad y cálculos comprensibles.",
+      "precaucion": "No invente fórmulas ni relaciones. Costo unitario actual no demuestra costo histórico. No confunda una corrección de relación, que crea su propia versión, con el guardado de cambios generales.",
+      "capture_key": "asistente_propuesta",
+      "capturas_adicionales": [
+        "asistente_personalizacion"
+      ]
+    },
+    {
+      "pagina_planificada": 18,
+      "seccion": "Propuesta BI",
+      "titulo": "Paso 5: revisar, aprobar y consultar versiones",
+      "parrafos": [
+        "La aprobación es una decisión humana sobre el contrato de análisis. Reejecuta controles y registra responsable, fecha y comentario; no crea tablas ni realiza el proceso de extracción, transformación y carga.",
+        "Una versión aprobada se abre en consulta con sus campos bloqueados. Crear nueva propuesta inicia otro trabajo; Crear versión corregida desde ésta conserva el vínculo con la versión que se desea ajustar. Consultar una versión no equivale a retirarla."
+      ],
+      "pasos": [
+        "Abra Revisión y compare Necesidad, Dominio, Fuente, instantánea y Validación.",
+        "Lea advertencias y cobertura de requisitos. Si existen errores bloqueantes, regrese a corregir; no apruebe.",
+        "Escriba Comentario de revisión si necesita aclarar la decisión. Marque Leí y comprendí las advertencias y las acciones indicadas cuando aparezca.",
+        "Pulse Aprobar propuesta si todo corresponde al objetivo. Para rechazar, explique el motivo y use Rechazar propuesta.",
+        "Para revisar otra vez, localice la versión en Versiones generadas, elija Mostrar: Aprobadas y pulse Abrir resultado."
+      ],
+      "resultado": "La propuesta queda aprobada o rechazada con una decisión registrada.",
+      "precaucion": "Retirar aprobación y Descartar versión son acciones deliberadas de depuración. No las use para salir de una consulta. Si abre una propuesta histórica con diferencias, distinga la evidencia original de su habilitación para una carga nueva.",
+      "capture_key": "asistente_aprobacion",
+      "capturas_adicionales": [
+        "asistente_versiones"
+      ]
+    },
+    {
+      "pagina_planificada": 19,
+      "seccion": "Preparación y carga",
+      "titulo": "Pasos 1–2: elegir propuesta e indicadores",
+      "parrafos": [
+        "Datamart de ventas contiene otro recorrido de cinco etapas. La propuesta aprobada fija qué se puede ejecutar; en esta pantalla se decide cuál materializar y qué indicadores compatibles incluir.",
+        "La tarjeta Recomendada orienta la elección, pero no ejecuta nada por sí sola. Ya ejecutada identifica una materialización existente y permite Abrir expediente sin repetir la carga."
+      ],
+      "pasos": [
+        "Seleccione la fuente y abra Datamart de ventas.",
+        "En Elegir propuesta compare objetivo, Granularidad e Indicadores. Puede marcar Comparar en hasta dos versiones.",
+        "Para una ejecución nueva pulse Seleccionar y luego Revisar indicadores. Para el caso existente use Abrir expediente.",
+        "En Revisar indicadores lea Cálculo controlado, Unidad y Período de cada tarjeta. Conserve los necesarios mediante Incluir indicador.",
+        "Abra Ver trazabilidad técnica si necesita comprobar las entradas. Pulse Revisar transformaciones."
+      ],
+      "resultado": "Una selección de contrato e indicadores identificada para la ejecución.",
+      "precaucion": "No fuerce una versión bloqueada. Un expediente histórico puede conservarse para auditoría aunque ya no pueda usarse en una ejecución nueva. En consulta sus decisiones no se editan.",
+      "capture_key": "etl_elegir_propuesta",
+      "capturas_adicionales": [
+        "etl_indicadores"
+      ]
+    },
+    {
+      "pagina_planificada": 20,
+      "seccion": "Preparación y carga",
+      "titulo": "Pasos 3–4: confirmar y materializar",
+      "parrafos": [
+        "El proceso de extracción, transformación y carga se abrevia ETL. Extrae columnas autorizadas del origen, aplica operaciones controladas y carga las estructuras analíticas. Preparar materialización registra el expediente; Materializar y cargar datamart realiza la operación física.",
+        "Confirmar ejecución muestra el detalle de limpieza, uniones, derivaciones y carga sin exigir SQL. Las posibles etiquetas en español se revisan después: no se aprueban al confirmar el plan."
+      ],
+      "pasos": [
+        "En Confirmar ejecución examine tabla de hechos, Granularidad, Dimensiones, Medidas y cada transformación.",
+        "Lea las advertencias heredadas y escriba un Registro de decisión que explique el alcance aceptado.",
+        "Marque la confirmación del plan y pulse Preparar materialización.",
+        "En Materializar y cargar, revise el comprobante y el número de expediente. Si está preparado y es una operación nueva autorizada, pulse Materializar y cargar datamart.",
+        "Espere el resultado; no repita el clic ni cierre la sesión durante la carga. En una consulta histórica, recorra la etapa sin buscar un botón de nueva ejecución."
+      ],
+      "resultado": "Un expediente identifica el plan y el resultado de la carga.",
+      "precaucion": "Cada carga crea un esquema analítico propio. Su publicación cambia el datamart vigente de esa fuente y conserva separadas las ejecuciones anteriores. El origen sigue en sólo lectura; si falla un control, revise el expediente antes de repetir.",
+      "capture_key": "etl_confirmacion",
+      "capturas_adicionales": [
+        "etl_materializacion"
+      ]
+    },
+    {
+      "pagina_planificada": 21,
+      "seccion": "Preparación y carga",
+      "titulo": "Paso 5: conciliar y revisar etiquetas",
+      "parrafos": [
+        "La conciliación compara origen y destino de forma independiente durante la ejecución. Revise filas, diferencias e indicadores: crear tablas no demuestra por sí solo que las cifras sean correctas.",
+        "Interpretación semántica puede proponer etiquetas en español para categorías aptas. Los valores originales se conservan. No cambia importes ni convierte una ubicación actual en una ubicación histórica."
+      ],
+      "pasos": [
+        "En Validar resultados lea Conciliación OLTP–datamart: Filas de origen, Filas cargadas, Diferencia y Tablas creadas.",
+        "Revise Calidad por tabla e Indicadores calculados. Los duplicados controlados de una dimensión no equivalen automáticamente a pérdida de hechos.",
+        "Si hay Divisa pendiente de comprobación, use Comprobar divisa sin repetir el ETL cuando esté disponible; mantenga moneda de origen si no se prueba un código único.",
+        "Si hay etiquetas para revisar, compare original y Etiqueta en español; corrija o excluya cada mapeo. Escriba Comentario de revisión, confirme y pulse Publicar etiquetas revisadas.",
+        "Conserve el expediente y consulte la analítica cuando el estado y los controles lo permitan."
+      ],
+      "resultado": "Datos conciliados y, si corresponde, etiquetas publicadas con revisión humana.",
+      "precaucion": "Si hay diferencias, no presente el panel como validado. Una interpretación pendiente puede reintentarse sin repetir el ETL; no confunda publicación de etiquetas con creación de una nueva carga.",
+      "capture_key": "etl_conciliacion",
+      "capturas_adicionales": [
+        "etl_etiquetas"
+      ]
+    },
+    {
+      "pagina_planificada": 22,
+      "seccion": "Análisis de ventas",
+      "titulo": "Leer la vista ejecutiva",
+      "parrafos": [
+        "Vista ejecutiva resume indicadores y hallazgos para gerencia con fuente, ejecución, propuesta, unidad y período. Millones y miles son abreviaturas; use valores exactos para comprobar. Sin valor no equivale a cero."
+      ],
+      "pasos": [
+        "Abra Analítica de ventas y confirme Fuente en contexto y las etiquetas de Ejecución y Propuesta.",
+        "Seleccione Vista ejecutiva y revise tarjetas, unidades, estados y Última actualización.",
+        "Use Consultar respaldo para abrir el expediente."
+      ],
+      "resultado": "Resumen con procedencia verificable.",
+      "precaucion": "El panel requiere datos físicos consultables; otros expedientes pueden conservar sólo evidencia de auditoría.",
+      "capture_key": "analitica_aw_ejecutiva"
+    },
+    {
+      "pagina_planificada": 23,
+      "seccion": "Análisis de ventas",
+      "titulo": "Filtrar y explorar la vista analítica",
+      "parrafos": [
+        "Vista analítica permite elegir Indicador de los gráficos. Año y Territorio delimitan las cifras; declare el alcance al comparar. Seleccionar un punto muestra valor y participación visible, cuyo denominador debe leerse."
+      ],
+      "pasos": [
+        "Pulse Vista analítica y elija, en Datamart analizado, una ejecución consultable de esa fuente.",
+        "Seleccione indicador, Año y Territorio y espere Actualizando resultados.",
+        "Seleccione un punto o barra y lea Detalle seleccionado, Valor y Participación visible.",
+        "Cerrar detalle cierra la selección; Restablecer filtros vuelve a Todos. Filtrar tablero por… cambia el filtro territorial cuando se ofrece."
+      ],
+      "resultado": "Comparación detallada por indicador y alcance.",
+      "precaucion": "Cambiar el gráfico no redefine las tarjetas. Cerrar detalle conserva los filtros; la ficha actual no demuestra ubicación histórica.",
+      "capture_key": "analitica_aw_filtrada",
+      "capturas_adicionales": [
+        "analitica_detalle"
+      ]
+    },
+    {
+      "pagina_planificada": 24,
+      "seccion": "Análisis de ventas",
+      "titulo": "Interpretar las cifras con criterio comercial",
+      "parrafos": [
+        "Sume importes y unidades compatibles. Los documentos distintos no se suman entre productos: una factura con dos productos aparece una vez en cada uno. Recalcule el conteo global.",
+        "Importe por documento = importe total ÷ documentos distintos; venta por unidad = importe total ÷ unidades. Use igual fuente y filtros. No promedie promedios.",
+        "Margen bruto exige venta neta y costo compatibles; costo total puede ser costo unitario × cantidad si están verificados. Margen porcentual divide por venta neta y controla el cero."
+      ],
+      "pasos": [
+        "Identifique evento, composición del importe, unidad y denominador.",
+        "Lea Hallazgos explicables y Cómo se generaron. Explique el resultado y qué evidencia adicional requeriría una decisión."
+      ],
+      "resultado": "Lectura comercial sustentada.",
+      "precaucion": "Mayor importe no prueba preferencia ni causalidad. Facturar no es cobrar; costo actual no acredita rentabilidad histórica. No compare monedas diferentes.",
+      "capture_key": "analitica_hallazgos"
+    },
+    {
+      "pagina_planificada": 25,
+      "seccion": "Copiloto y exportación",
+      "titulo": "Preguntar y verificar la respuesta del copiloto",
+      "parrafos": [
+        "El copiloto interpreta qué indicador, dimensión, período, territorio y cantidad de resultados se solicitan. Consulta agregados permitidos del datamart; no ejecuta SQL libre escrito por la IA. Puede usar un filtro explícito en la pregunta aunque no esté seleccionado en el panel.",
+        "Una buena pregunta especifica la comparación y no exige una causa que los datos no prueban. Ejemplo: ¿Cuáles son los tres productos con mayor importe en Northwest en 2013? Use ese territorio y año sólo en el caso AdventureWorks que los contiene."
+      ],
+      "pasos": [
+        "En Preguntar sobre estos resultados, revise Guía de preguntas sugeridas o escriba en Escriba su pregunta.",
+        "Pulse Preguntar al copiloto y espere la respuesta.",
+        "Compare la consulta interpretada con su intención: indicador, dimensión, filtros y cantidad de resultados.",
+        "Revise cifras, evidencia, denominador de porcentajes y advertencia de alcance.",
+        "Si una sugerencia de continuación es pertinente, selecciónela y compruebe su nuevo contexto; si una respuesta cambia el evento o el filtro, aclare la pregunta."
+      ],
+      "resultado": "Una respuesta contextual que puede contrastarse con el panel y el expediente.",
+      "precaucion": "Una respuesta bien redactada no es por sí sola evidencia. No envíe credenciales ni datos personales. Una limitación o un rechazo seguro es preferible a inventar un dato ausente.",
+      "capture_key": "copiloto_aw",
+      "capturas_adicionales": [
+        "copiloto_wwi"
+      ]
+    },
+    {
+      "pagina_planificada": 26,
+      "seccion": "Copiloto y exportación",
+      "titulo": "Exportar y comunicar los resultados",
+      "parrafos": [
+        "Exportar PDF conserva una representación del análisis seleccionado. Exportar Excel incluye los datos que respaldan los gráficos visibles. Los filtros, la vista y el indicador activos son parte del contenido, por lo que deben revisarse antes de descargar.",
+        "Un informe útil identifica fuente, ejecución, período, unidad y limitaciones. El archivo exportado permite comunicar la evidencia; no autoriza quitar las advertencias para presentar el resultado como más concluyente.",
+        "Abra los archivos desde Descargas con las aplicaciones del equipo. La carpeta Ejemplos_exportados que acompaña estos manuales contiene el PDF y Excel reales de AdventureWorks, ejecución 21, vista analítica de unidades en 2013/Northwest. Una exportación nueva se comprueba con su propio contexto."
+      ],
+      "pasos": [
+        "En el panel fije Vista ejecutiva o Vista analítica, indicador y filtros que quiere comunicar.",
+        "Lea de nuevo fuente, propuesta, ejecución y unidad.",
+        "Pulse Exportar PDF y espere a que termine Generando. Abra el archivo descargado y compruebe encabezado, cifras y avisos.",
+        "Pulse Exportar Excel. Abra sus hojas y confirme que corresponden a las visualizaciones y filtros actuales.",
+        "Guarde los archivos con un nombre que identifique fuente, ejecución y contexto; para una nueva prueba registre también fecha y resultado de la revisión."
+      ],
+      "resultado": "Archivos legibles y coherentes con el contexto que se presentó.",
+      "precaucion": "Si no aparecen los botones, revise Exportar reportes analíticos. No presente el Excel como copia completa del origen ni suponga que incluye gráficos o datos que no estaban visibles.",
+      "capture_key": "exportacion_panel",
+      "capturas_adicionales": [
+        "exportacion_archivos"
+      ]
+    },
+    {
+      "pagina_planificada": 27,
+      "seccion": "Caso AdventureWorks",
+      "titulo": "Caso probado: pedido y línea de venta",
+      "parrafos": [
+        "La prueba final del 6 de noviembre creó la propuesta 129 y el expediente 21 con el control actual de rutas exactas. El diseño conserva fecha, producto, cliente y territorio, y cuatro indicadores seleccionados. SalesOrderDetailID identifica la línea y SalesOrderID permite contar pedidos distintos.",
+        "Objetivo para la práctica: Conservar cada línea de pedido de venta en un datamart. Para priorizar productos y territorios, comparar mensualmente cuatro indicadores: suma del importe registrado de las líneas, suma de unidades, conteo de identificadores de pedido distintos e importe total dividido entre pedidos distintos. Usar fecha y territorio comercial del pedido, producto y cliente con nombre verificable. Los rankings comparan sumas por entidad. Mantener la trazabilidad de cada línea al pedido. La moneda se reportará sólo si se comprueba en la fuente.",
+        "La revisión comprobó fecha y territorio comercial del pedido, y la carga usó esas mismas relaciones. Los expedientes 18 y 20 permanecen consultables como antecedentes. Para repetir el procedimiento cree una propuesta propia; no cambie números de reglas o huellas manualmente."
+      ],
+      "pasos": [
+        "Elija AdventureWorks local · AdventureWorks2022 y revise el esquema y su catálogo.",
+        "Para repetir el caso, use Crear nueva propuesta; pegue el objetivo, seleccione las preguntas pertinentes y Mensual, y compruebe la viabilidad.",
+        "Revise conceptos, grano, fecha del pedido y territorio comercial. Compruebe los cuatro indicadores finales y desmarque adicionales no necesarios mediante Personalización o la selección previa a ETL.",
+        "Apruebe únicamente el contrato sin errores bloqueantes y después de revisar las advertencias. Registre su nuevo número.",
+        "Siga Elegir propuesta, Revisar indicadores, Confirmar ejecución, Materializar y cargar y Validar resultados. Para una consulta del caso ya probado, abra el expediente 21 sin repetir la carga."
+      ],
+      "resultado": "Una construcción supervisada cuyo caso final de referencia es 129/21.",
+      "precaucion": "La generación puede sugerir una cantidad variable de indicadores. La selección humana concreta el objetivo; la aprobación no publica datos ni ejecuta ETL. No confunda una consulta con una repetición nueva.",
+      "capture_key": "case_aw_proposal"
+    },
+    {
+      "pagina_planificada": 28,
+      "seccion": "Caso AdventureWorks",
+      "titulo": "Caso probado: conciliación e indicadores",
+      "parrafos": [
+        "El expediente 21 registró cinco tablas y 26 operaciones, con 121.317 filas por lado y diferencia cero. Los resultados redondeados fueron 109.846.381,40 USD, 274.914 unidades y 31.465 pedidos distintos.",
+        "El importe promedio por pedido divide el importe total entre 31.465 documentos distintos: 3.491,07 USD por pedido. No es el promedio de los importes de las líneas. Se publicaron tres traducciones de grupos territoriales y se conservaron los seis códigos de país originales."
+      ],
+      "pasos": [
+        "En el expediente 21 abra Validar resultados.",
+        "Compare Filas de origen, Filas cargadas y Diferencia con los valores registrados.",
+        "Revise Indicadores calculados: sumas de importe y unidades, conteo distinto y razón por pedido.",
+        "En Interpretación semántica compare las etiquetas revisadas y su publicación; no traduzca identificadores.",
+        "Abra Analítica de ventas y confirme Ejecución 21 y Propuesta 129 antes de explicar las cifras."
+      ],
+      "resultado": "Un panel respaldado por conciliación y una selección explícita de indicadores.",
+      "precaucion": "Los expedientes anteriores conservan su evidencia. Para esta demostración final use la ejecución 21 y propuesta 129; una carga nueva de un contrato histórico requiere una versión derivada actual y aprobada. No confunda la aprobación de un diseño con una conciliación de datos.",
+      "capture_key": "etl_conciliacion"
+    },
+    {
+      "pagina_planificada": 29,
+      "seccion": "Caso AdventureWorks",
+      "titulo": "Demostración breve y alternativa de práctica nueva",
+      "parrafos": [
+        "En la ejecución 21 con 2013/Northwest, el reporte conservó 6.015.174,74 USD, 17.452 unidades, 2.053 pedidos y 2.929,94 por pedido. La tarjeta del panel abrevia el importe como 6 M. El chat de unidades confirmó junio de 2013 con 2.494 unidades como el mes de mayor cantidad.",
+        "Para crear otro caso use una necesidad expresamente nueva. Una entrada prudente es: Comparar mensualmente el importe registrado y las unidades por producto, a nivel de línea de pedido, conservando el identificador del pedido y sus relaciones verificadas. Este texto se ofrece como práctica a evaluar; no se afirma que ya fue aprobado."
+      ],
+      "pasos": [
+        "En la ejecución 21 seleccione Año: 2013 y Territorio: Northwest, y confirme la fuente y propuesta 129.",
+        "En Vista analítica elija Suma de unidades vendidas y pregunte: «Resume las unidades vendidas en 2013 para Northwest. Indica el total y el mes con mayor cantidad, sin atribuir causas ni mezclar importes.». Contraste el total y el máximo con la tabla mensual.",
+        "Exporte PDF y Excel y abra ambos. En esta prueba se comprobaron seis páginas y seis hojas, con los cuatro indicadores y la misma fuente, ejecución y filtros.",
+        "Para una práctica nueva autorizada, use Crear nueva propuesta y siga los apartados de necesidad, propuesta y carga.",
+        "Registre los identificadores nuevos, el alcance aceptado y el resultado real; no exija los mismos indicadores ni valores de la historia."
+      ],
+      "resultado": "Una demostración de consulta del caso nuevo y una ruta diferenciada para su repetición.",
+      "precaucion": "Los filtros deben existir en el conjunto seleccionado. El ranking mide liderazgo en el importe consultado; no demuestra preferencias ni causalidad.",
+      "capture_key": "caso_aw_panel_filtrado"
+    },
+    {
+      "pagina_planificada": 30,
+      "seccion": "Caso WideWorldImporters",
+      "titulo": "Caso probado factura y línea de factura",
+      "parrafos": [
+        "La prueba final aprobó la propuesta 131 y cargó el expediente 22. Una línea se identifica por InvoiceLineID y una factura distinta por InvoiceID. La fecha de emisión procede de la cabecera. La persona revisó el cliente comprador y la ciudad de entrega de su ficha; ambas decisiones quedaron guardadas.",
+        "Objetivo exacto para repetir la práctica: Diseñar un datamart cuyo grano físico sea una línea de factura. Sobre ese detalle, resumir mensualmente el importe registrado de la línea, las unidades y las facturas distintas por producto y cliente. Usar la fecha de emisión. Para el territorio, usar la provincia de la ciudad de entrega registrada en la ficha del cliente y aclarar que no representa necesariamente su ubicación histórica. Conservar el importe de origen sin asumir moneda, utilidad ni composición fiscal. Limitar los indicadores a importe total, unidades totales, facturas distintas e importe promedio por factura. Los rankings deben comparar totales por producto; el máximo de una sola línea no identifica al producto líder."
+      ],
+      "pasos": [
+        "Elija WideWorldImporters local y revise InvoiceLines, Invoices, Customers, Cities y StateProvinces y sus relaciones declaradas.",
+        "Para repetir, cree una propuesta con ese alcance y Mensual. Para consultar la prueba final abra la propuesta 131.",
+        "En Personalización, si se requiere resolver la ruta, elija Cliente y la relación de Invoices.CustomerID hacia Customers; justifique el cliente comprador y cree la versión corregida.",
+        "Después elija Territorio y la relación de Customers.DeliveryCityID hacia Cities. Justifique la ciudad de entrega; la provincia de StateProvinces debe mantenerse como destino. Cree la nueva versión y compruebe que conserva la elección anterior.",
+        "Revise cuatro indicadores, cero errores y advertencias; apruebe sólo después de contrastarlos. La prueba creó sucesivamente 130 y 131. Después prepare y ejecute la carga; para consultar el resultado abra 22."
+      ],
+      "resultado": "Facturación con rutas revisadas, sin confundir comprador con destinatario de facturación ni ciudad de entrega con postal.",
+      "precaucion": "Una relación válida técnicamente puede representar otro papel comercial. La selección BillToCustomerID o PostalCityID contradictoria se rechazó sin crear versión. Las decisiones correctas no prueban una entrega realizada ni una dirección histórica.",
+      "capture_key": "case_wwi_proposal"
+    },
+    {
+      "pagina_planificada": 31,
+      "seccion": "Caso WideWorldImporters",
+      "titulo": "Caso probado conciliación y unidad monetaria",
+      "parrafos": [
+        "El expediente 22 registra cinco tablas y 228.265 líneas de hechos por lado, con diferencia cero. Sus cuatro resultados globales son 198.043.439,45 en moneda de origen, 8.950.628 unidades, 70.510 facturas y 2.808,73 de importe promedio por factura.",
+        "Las dimensiones cargaron 1.069 fechas, 227 productos, 663 clientes y 53 territorios. Controlar 69.441 fechas repetidas de 70.510 cabeceras no elimina líneas del hecho. Comprobar divisa no demostró un código único, por lo que se mantiene moneda de origen."
+      ],
+      "pasos": [
+        "Abra Validar resultados del expediente 22 y compare 228.265 filas de origen y destino y diferencia cero.",
+        "Revise los cuatro indicadores y el denominador de facturas distintas. No llame pedido a una factura.",
+        "Lea Calidad por tabla y los duplicados controlados en dimensiones.",
+        "Use Comprobar divisa sin repetir el ETL cuando se ofrezca; si sigue sin probarse una moneda, conserve la advertencia.",
+        "En Analítica de ventas confirme Ejecución 22, Propuesta 131 y moneda de origen."
+      ],
+      "resultado": "Un contraste de facturación con grano, unidad y límites explícitos.",
+      "precaucion": "No añada USD por analogía con AdventureWorks si la evidencia mantiene moneda de origen. No atribuya costo histórico a LastCostPrice ni presente un margen que no figure calculable en el expediente.",
+      "capture_key": "case_wwi_reconciliation"
+    },
+    {
+      "pagina_planificada": 32,
+      "seccion": "Caso WideWorldImporters",
+      "titulo": "Demostración breve y alternativa de práctica nueva",
+      "parrafos": [
+        "En el expediente 22, el filtro 2015/California dio 3.191.769,11 en moneda de origen, 142.247 unidades, 1.179 facturas y 2.707,18 por factura. Una consulta independiente confirmó 3.771 líneas y esos resultados mediante cliente comprador y ciudad de entrega. El caso anterior 19 no es la referencia territorial de esta prueba.",
+        "Entrada para una práctica nueva: Comparar mensualmente el importe registrado y las unidades de las líneas de factura por producto y cliente, conservando la factura distinta y la fecha de emisión mediante relaciones verificadas, sin suponer cobros ni costo histórico. Debe someterse a viabilidad; no se presenta como un resultado nuevo probado."
+      ],
+      "pasos": [
+        "Seleccione ejecución 22, Año 2015 y Territorio California.",
+        "Compare las tarjetas con los valores de esta práctica; conserve moneda de origen.",
+        "Consulte al copiloto sobre el alcance visible y contraste cualquier respuesta con el indicador, filtro y denominador. Las facturas distintas no se suman entre productos, porque una factura puede contener varios.",
+        "Exporte PDF y Excel y verifique el contexto en cada archivo; no los sustituya por exportes de otro expediente.",
+        "Si desea un diseño nuevo, use Crear nueva propuesta y registre sus propias decisiones. Vuelva a AdventureWorks y confirme que cambia fuente, ejecución y resultados."
+      ],
+      "resultado": "Una comparación de dos fuentes con el mismo proceso y significado específico.",
+      "precaucion": "Universalidad significa aplicar contratos y controles comunes a estructuras distintas dentro del alcance implementado. No garantiza que toda base disponga de todos los indicadores o que toda respuesta del modelo sea aceptable.",
+      "capture_key": "caso_wwi_panel_filtrado"
+    },
+    {
+      "pagina_planificada": 33,
+      "seccion": "Problemas frecuentes",
+      "titulo": "Problemas de acceso, conexión y metadatos",
+      "parrafos": [
+        "Si no puede ingresar, revise entorno, correo y credencial antes de solicitar ayuda. Si falta una pantalla, la administradora debe revisar permisos efectivos y roles activos; el nombre del rol no basta.",
+        "Si Cambiar fuente está vacío, compruebe conexiones probadas y habilitadas y el permiso Consultar metadatos. Si la tabla buscada no aparece, confirme fuente, instantánea y filtros antes de concluir que la estructura falta."
+      ],
+      "pasos": [
+        "Anote la pantalla, la fuente y el mensaje literal; haga una captura sin credenciales.",
+        "Para conexión fallida, la administradora revisa servidor, puerto, base y cuenta de sólo lectura y vuelve a usar Probar conexión.",
+        "Para ausencia de metadatos, habilite la conexión y use Crear primera instantánea o Leer metadatos.",
+        "Para una búsqueda vacía, borre filtros y pulse Buscar; seleccione una tabla de la lista actual.",
+        "Si persiste un cruce de fuentes, no genere ni apruebe. Informe fuente esperada y visible y deje que la responsable técnica revise la carga de contexto."
+      ],
+      "resultado": "Un diagnóstico inicial con evidencia suficiente para solicitar soporte.",
+      "precaucion": "No elimine conexiones, volúmenes o bases para resolver un fallo de navegación. No ejecute limpiezas del equipo desde este manual de uso.",
+      "capture_key": "problema_actual",
+      "captura_condicional": true
+    },
+    {
+      "pagina_planificada": 34,
+      "seccion": "Problemas frecuentes",
+      "titulo": "Problemas del proveedor, las versiones y la carga",
+      "parrafos": [
+        "Una respuesta que incumple el contrato estructurado se descarta para impedir que un diseño inválido llegue a ejecución. Reintentar no demuestra que la necesidad sea incorrecta; revise también disponibilidad, cuota y configuración del proveedor.",
+        "Un expediente histórico conserva su evidencia aunque las reglas actuales bloqueen una ejecución nueva de ese contrato. El panel muestra una carga física consultable; una lista de propuestas no es una lista de todos los paneles disponibles."
+      ],
+      "pasos": [
+        "Ante generación interrumpida use Reintentar la misma solicitud si se ofrece. Si persiste, conserve objetivo y mensaje y solicite revisar el proveedor.",
+        "No cambie de modelo sin coordinar el proveedor activo; después de cualquier cambio vuelva a validar la misma necesidad.",
+        "Ante diferencias bloqueantes, lea su motivo y cree una versión corregida si corresponde; no retire ni descarte versiones para cerrar la consulta.",
+        "Si la carga falla, consulte el expediente. Si hay diferencias numéricas, detenga la interpretación comercial y notifique al analista.",
+        "Si sólo falta la interpretación en español, use Reintentar interpretación sin repetir el ETL y revise sus etiquetas. Para rastrear una decisión, consulte Auditoría con permiso autorizado."
+      ],
+      "resultado": "Recuperar el proceso conservando objetivo, evidencia y versiones previas.",
+      "precaucion": "No repita ETL únicamente para corregir una etiqueta. Una prueba de conexión exitosa no elimina límites de cuota. No sustituya datos faltantes por estimaciones no declaradas.",
+      "capture_key": "versiones_evidencia",
+      "capturas_adicionales": [
+        "auditoria"
+      ]
+    },
+    {
+      "pagina_planificada": 35,
+      "seccion": "Glosario y cierre",
+      "titulo": "Términos esenciales y comprobación final",
+      "parrafos": [
+        "Inteligencia de negocios (BI): proceso de convertir datos en información útil para decisiones. Datamart: estructura analítica orientada a un dominio, aquí ventas. Metadatos: descripción de las fuentes, sus columnas y relaciones. Granularidad: qué representa una fila.",
+        "Hecho: evento medible, como la línea de factura. Dimensión: contexto para agrupar, como producto o fecha. Medida: valor contado, sumado o derivado. Indicador clave: cálculo con significado comercial. ETL: extracción, transformación y carga controladas. Conciliación: comparación entre origen y destino.",
+        "Contrato BI: definición estructurada y versionada del diseño. Expediente: evidencia del plan y de la ejecución. Copiloto: asistencia contextual que debe contrastarse con esa evidencia. Inteligencia artificial propone e interpreta; el sistema valida y la persona asume la decisión autorizada."
+      ],
+      "pasos": [
+        "Al cerrar la práctica registre fuente, necesidad, propuesta, ejecución, fecha y tipo de operación: consulta o generación nueva.",
+        "Compruebe que los indicadores concilian, sus unidades están declaradas y sus limitaciones se conservan.",
+        "Verifique que el archivo exportado coincide con el contexto mostrado.",
+        "Explique en voz alta una decisión del catálogo, la granularidad, un denominador y una limitación.",
+        "Cierre la sesión y comunique cualquier incidencia no resuelta; deje constancia de qué faltó comprobar."
+      ],
+      "resultado": "Una demostración comprensible que distingue evidencia, decisiones y límites.",
+      "precaucion": "Se puede afirmar que un caso documentado funcionó bajo sus condiciones. No se debe afirmar que cualquier escenario siempre funcionará o que ya se midió mejora de tiempos, costos o ventas.",
+      "capture_key": null
+    }
+  ],
+  "casos_historicos": [
+    {
+      "orden": 1,
+      "titulo": "AdventureWorks: objetivo detallado de cuatro KPI",
+      "propuesta_observada": 122,
+      "ejecucion_observada": 18,
+      "alcance": "Objetivo exacto de 532 caracteres conservado. Cuatro KPI y cuatro dimensiones: fecha, producto, cliente y territorio. Tres medidas efectivas; SalesOrderID y SalesOrderDetailID para trazabilidad. Personalización de 121 a 122 sin modificar el origen.",
+      "resultado_comprobado": "Cinco tablas, 26 operaciones, 121.317 filas por lado y diferencia cero. Importe 109.846.381,399888 USD, 274.914 unidades, 31.465 pedidos y razón 3.491,065672966407. Para 2013/Northwest: 6.015.174,735836 USD, 17.452 unidades, 2.053 pedidos y razón 2.929,943855740867.",
+      "interpretacion": "La repetición final de la pregunta2013/Northwest confirmó Top 3 y denominador 6.015.174,74 USD, sin preferencias ni causalidad, con tres sugerencias válidas (121).",
+      "limites": "FinalesPDF/XLSX18 comprobados: cinco páginas/cuatro hojas, fuente/base/offset, cifras/razón y advertencia completa. Originales anteriores y sus límites permanecen identificados. No se afirma revisión Calc final no completada ni universalidad del caso."
+    },
+    {
+      "orden": 1,
+      "titulo": "AdventureWorks: caso nuevo de formación del 6 de noviembre",
+      "propuesta_observada": 126,
+      "ejecucion_observada": 20,
+      "alcance": "Objetivo de línea de pedido, cuatro indicadores finales seleccionados y cuatro dimensiones. Fecha OrderDate y territorio comercial del pedido comprobados tras la corrección universal; personalización de 125 a 126.",
+      "resultado_comprobado": "Cinco tablas, 26 operaciones, 121.317 filas por lado y diferencia cero; importe 109.846.381,40 USD, 274.914 unidades, 31.465 pedidos y razón 3.491,07. En 2013/Northwest se comprobaron en reportes 6.015.174,74 USD, 17.452 unidades, 2.053 pedidos y razón 2.929,94.",
+      "interpretacion": "El copiloto confirmó 17.452 unidades en 2013/Northwest y junio con 2.494 unidades, sin mezclar importes. Se publicaron tres traducciones de grupos y se conservaron seis códigos de país.",
+      "limites": "PDF de seis páginas y Excel de seis hojas nuevos revisados con su contexto y cifras. La revisión de Excel se hizo con openpyxl, no mediante una sesión visual de Calc. No acredita todas las consultas posibles ni todas las sesiones por rol.",
+      "version_de_validacion_observada": "Reglas 4, corte intermedio del 6 de noviembre; no se presenta como una ejecución de reglas 5.",
+      "estado": "Antecedente conservado; no es el oráculo de las rutas comerciales exactas de esta edición."
+    },
+    {
+      "orden": 2,
+      "titulo": "WideWorldImporters: objetivo completo y cuatro KPI",
+      "propuesta_observada": 124,
+      "ejecucion_observada": 19,
+      "alcance": "Mismos 693 caracteres, cuatro preguntas y Mensual. V5/v7/reglas 2: línea física por InvoiceLineID, facturas distintas por InvoiceID, importe de origen y ficha territorial actual sin presumir historia.",
+      "resultado_comprobado": "26 operaciones, cinco tablas, 228.265 filas por lado y diferencia cero; importe 198.043.439,45, 8.950.628 unidades, 70.510 facturas y promedio 2.808,73. Fecha 1.069 desde 70.510 con 69.441 duplicados controlados; Producto 227, Cliente 663 y Territorio 53 al 100 % descriptivo. Huella b5872c3bbd6d, siete referencias, cero errores, siete advertencias. En 2015/California se comprobaron 1.215.705,55 de origen, 57.142 unidades, 481 facturas y razón 2.527,454365904366; PDF de cinco páginas y XLSX de cuatro hojas y 22 controles conformes con fuente/base/offset.",
+      "interpretacion": "Respuesta final 117–119 correcta en cifras, porcentajes y ficha durante ventana ETL sin historia/entrega probadas. Clic en sugerencia de unidades por cliente devolvió cinco clientes y denominador completo 57.142 para2015/California (120).",
+      "limites": "FinalesPDF/XLSX19 comprobados con fuente/base/offset y aviso completo, cinco páginas/cuatro hojas. El incidente inicial116 y el contexto recortado se conservan; no se afirma Calc final ni todas las respuestas del proveedor.",
+      "estado": "Antecedente conservado; no es el oráculo de las rutas comerciales exactas de esta edición."
+    }
+  ],
+  "paginas_finales": 38
+}

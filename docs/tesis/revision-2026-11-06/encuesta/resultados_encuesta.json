@@ -1,0 +1,937 @@
+{
+  "naturaleza": "Tabulación descriptiva de respuestas reales suministradas por el usuario; no son datos simulados.",
+  "fecha_autoria": "2026-11-05T21:54:42-05:00",
+  "archivo_fuente": "Formulario Respuestas Encuesta.xlsx",
+  "sha256_archivo_fuente": "555e52c22e79494a51a5d891720e4489b55ae026005b2aa01a1fbf6cb2633d08",
+  "hoja_fuente": "Respuestas de formulario 1",
+  "cuestionario_url": "https://docs.google.com/forms/d/1lKV0EgPdN7LeNfucgUhSVyH0uqvx7lfOK3fPPP09yXc/viewform?edit_requested=true&pli=1",
+  "cuestionario_publico_resuelto_url": "https://docs.google.com/forms/d/e/1FAIpQLSe_5PjHbFpge6EqaRi-ayY1UlpqtY6AC3h-6a36tm9i3u8R4Q/viewform",
+  "sha256_texto_formulario_publico": "6512a34ce0c898893196a8a9449e8e0cccf49abc9a4b0f2f2c05d3c9a9c16af9",
+  "numero_respuestas_finales": 102,
+  "numero_preguntas": 10,
+  "numero_celdas_respuesta": 1020,
+  "validas": 1020,
+  "faltantes": 0,
+  "fuera_de_escala": 0,
+  "escala": [
+    {
+      "valor": 1,
+      "etiqueta": "Totalmente en desacuerdo"
+    },
+    {
+      "valor": 2,
+      "etiqueta": "En desacuerdo"
+    },
+    {
+      "valor": 3,
+      "etiqueta": "Ni de acuerdo ni en desacuerdo"
+    },
+    {
+      "valor": 4,
+      "etiqueta": "De acuerdo"
+    },
+    {
+      "valor": 5,
+      "etiqueta": "Totalmente de acuerdo"
+    }
+  ],
+  "captacion": "Enlace por correo electrónico y participación voluntaria, según confirmación del usuario a la raíz.",
+  "muestreo": "No probabilístico por autoselección; selección aleatoria no acreditada.",
+  "unidad_observada": "Un registro anónimo de respuesta al cuestionario.",
+  "objeto_medicion": "Utilidad potencial percibida de diez funciones de un software inteligente de apoyo a BI.",
+  "limites": [
+    "El archivo no contiene identificación, marcas temporales ni caracterización del participante. No se reconstruyen esos datos ni se inventan fechas de aplicación.",
+    "Los 102 registros son el total final confirmado por el usuario; la anonimización impide verificar personas únicas o elegibilidad de manera independiente.",
+    "El formulario no exige haber utilizado el prototipo. No mide directamente usabilidad, comprensión, exactitud, eficiencia o desempeño de un sistema ya usado.",
+    "No se acredita selección aleatoria; no se declara representatividad estadística, margen de error alcanzado ni nivel de confianza poblacional.",
+    "El acuerdo agrupado suma únicamente las categorías 4 y 5 por pregunta. No es una puntuación global validada ni una proporción de participantes que validaron técnicamente el prototipo.",
+    "Las preguntas están redactadas en sentido favorable y los valores observados son 3, 4 y 5; la posibilidad de autoselección y aquiescencia debe considerarse al interpretar.",
+    "Las respuestas no demuestran viabilidad técnica ni causalidad sobre ventas, costos, aprendizaje o productividad."
+  ],
+  "plan_muestral_anterior": {
+    "poblacion_provisional": 331,
+    "marco_certificado_disponible": false,
+    "formula_original_UG": "n = N / [e²(N − 1) + 1]",
+    "error_de_planificacion": 0.05,
+    "resultado_sin_redondeo": 181.36986301369862,
+    "meta_planificada": 182,
+    "registros_finales": 102,
+    "cumplimiento_numerico_meta_pct": 56.043956043956044,
+    "interpretacion": "102/182 = 56,04 % de la meta de planificación. No es una tasa de respuesta, porque no se dispone del número de invitaciones efectivamente recibidas por personas elegibles. La meta y el supuesto N = 331 no certifican representatividad de una convocatoria voluntaria."
+  },
+  "metodo": {
+    "lectura": "XLSX de sólo lectura mediante openpyxl del runtime empaquetado; no se modifica el original.",
+    "columnas": "Se toman las diez columnas con preguntas; las tres cabeceras adicionales vacías no contienen respuestas y no se analizan.",
+    "limpieza": "No se imputa, reescala ni elimina ninguna respuesta. Sólo se normalizan espacios para cotejar los enunciados con el formulario público.",
+    "calculo": "Frecuencia absoluta por valor y porcentaje 100 × fi / 102. Cada pregunta tiene 102 respuestas válidas y 0 omisiones.",
+    "redondeo": "Los porcentajes se presentan con dos decimales y redondeo half-up. Los totales mostrados de porcentajes redondeados pueden diferir por 0,01 del 100 %.",
+    "graficos": "Diez gráficos de barras horizontales. Cada uno conserva las cinco opciones completas, ordenadas desde Totalmente en desacuerdo hasta Totalmente de acuerdo, y presenta cantidad y porcentaje al extremo de la barra. Todos comparten escala porcentual de 0 a 100. Se utiliza relleno azul uniforme, sin cuadrícula, bordes blancos, tramas o subdivisiones internas. Las opciones con cero respuestas se mantienen con etiqueta 0 (0,00 %).",
+    "inferencia": "Sólo descripción del conjunto suministrado. No se calcula un margen de error poblacional ni se atribuye causalidad."
+  },
+  "preguntas": [
+    {
+      "numero": 1,
+      "codigo": "P01",
+      "enunciado_literal": "1. ¿Considera útil contar con un software que ayude a formular necesidades de análisis comercial mediante lenguaje natural?",
+      "tema": "Formulación de necesidades mediante lenguaje natural",
+      "cotejo_formulario": "Coincide, normalizando sólo espacios.",
+      "n_total": 102,
+      "n_validas": 102,
+      "n_omitidas": 0,
+      "frecuencias": [
+        {
+          "valor": 1,
+          "opcion": "Totalmente en desacuerdo",
+          "frecuencia_absoluta": 0,
+          "porcentaje": 0.0,
+          "porcentaje_mostrado": "0,00 %",
+          "denominador": 102
+        },
+        {
+          "valor": 2,
+          "opcion": "En desacuerdo",
+          "frecuencia_absoluta": 0,
+          "porcentaje": 0.0,
+          "porcentaje_mostrado": "0,00 %",
+          "denominador": 102
+        },
+        {
+          "valor": 3,
+          "opcion": "Ni de acuerdo ni en desacuerdo",
+          "frecuencia_absoluta": 4,
+          "porcentaje": 3.9215686274509802,
+          "porcentaje_mostrado": "3,92 %",
+          "denominador": 102
+        },
+        {
+          "valor": 4,
+          "opcion": "De acuerdo",
+          "frecuencia_absoluta": 34,
+          "porcentaje": 33.333333333333336,
+          "porcentaje_mostrado": "33,33 %",
+          "denominador": 102
+        },
+        {
+          "valor": 5,
+          "opcion": "Totalmente de acuerdo",
+          "frecuencia_absoluta": 64,
+          "porcentaje": 62.745098039215684,
+          "porcentaje_mostrado": "62,75 %",
+          "denominador": 102
+        }
+      ],
+      "total_frecuencia": 102,
+      "total_porcentaje_sin_redondeo": 100,
+      "acuerdo_4_5_n": 98,
+      "acuerdo_4_5_pct": 96.07843137254902,
+      "acuerdo_4_5_mostrado": "96,08 %",
+      "mediana_codigo_ordinal": 5.0,
+      "moda_codigo_ordinal": 5,
+      "analisis": "De las 102 respuestas, 64 (62,75 %) corresponden a «Totalmente de acuerdo» y 34 (33,33 %) a «De acuerdo». El acuerdo agregado reúne 98 respuestas (96,08 %); 4 (3,92 %) se ubican en «Ni de acuerdo ni en desacuerdo». No se registraron respuestas en las dos categorías de desacuerdo. La distribución respalda el interés de este grupo por un apoyo que traduzca la intención comercial a una necesidad de análisis más explícita. Esta percepción orienta la inclusión de asistencia en lenguaje natural; no demuestra por sí misma una reducción del esfuerzo de diseño.",
+      "grafico_svg": "graficos/pregunta_01.svg",
+      "grafico_png": "graficos/pregunta_01.png"
+    },
+    {
+      "numero": 2,
+      "codigo": "P02",
+      "enunciado_literal": "2. ¿Considera útil que un software compruebe si una necesidad de análisis tiene respaldo en las tablas, columnas y relaciones disponibles?",
+      "tema": "Comprobación del respaldo de la necesidad en los metadatos",
+      "cotejo_formulario": "Coincide, normalizando sólo espacios.",
+      "n_total": 102,
+      "n_validas": 102,
+      "n_omitidas": 0,
+      "frecuencias": [
+        {
+          "valor": 1,
+          "opcion": "Totalmente en desacuerdo",
+          "frecuencia_absoluta": 0,
+          "porcentaje": 0.0,
+          "porcentaje_mostrado": "0,00 %",
+          "denominador": 102
+        },
+        {
+          "valor": 2,
+          "opcion": "En desacuerdo",
+          "frecuencia_absoluta": 0,
+          "porcentaje": 0.0,
+          "porcentaje_mostrado": "0,00 %",
+          "denominador": 102
+        },
+        {
+          "valor": 3,
+          "opcion": "Ni de acuerdo ni en desacuerdo",
+          "frecuencia_absoluta": 5,
+          "porcentaje": 4.901960784313726,
+          "porcentaje_mostrado": "4,90 %",
+          "denominador": 102
+        },
+        {
+          "valor": 4,
+          "opcion": "De acuerdo",
+          "frecuencia_absoluta": 35,
+          "porcentaje": 34.31372549019608,
+          "porcentaje_mostrado": "34,31 %",
+          "denominador": 102
+        },
+        {
+          "valor": 5,
+          "opcion": "Totalmente de acuerdo",
+          "frecuencia_absoluta": 62,
+          "porcentaje": 60.78431372549019,
+          "porcentaje_mostrado": "60,78 %",
+          "denominador": 102
+        }
+      ],
+      "total_frecuencia": 102,
+      "total_porcentaje_sin_redondeo": 100,
+      "acuerdo_4_5_n": 97,
+      "acuerdo_4_5_pct": 95.09803921568627,
+      "acuerdo_4_5_mostrado": "95,10 %",
+      "mediana_codigo_ordinal": 5.0,
+      "moda_codigo_ordinal": 5,
+      "analisis": "De las 102 respuestas, 62 (60,78 %) corresponden a «Totalmente de acuerdo» y 35 (34,31 %) a «De acuerdo». El acuerdo agregado reúne 97 respuestas (95,10 %); 5 (4,90 %) se ubican en «Ni de acuerdo ni en desacuerdo». No se registraron respuestas en las dos categorías de desacuerdo. El resultado respalda la pertinencia percibida de comprobar la necesidad antes de diseñar el datamart. La funcionalidad debe contrastar tablas, columnas y relaciones disponibles, y comunicar los límites encontrados; el acuerdo estudiantil no certifica que esa comprobación sea correcta.",
+      "grafico_svg": "graficos/pregunta_02.svg",
+      "grafico_png": "graficos/pregunta_02.png"
+    },
+    {
+      "numero": 3,
+      "codigo": "P03",
+      "enunciado_literal": "3. ¿Le resultaría útil que la inteligencia artificial sugiera un modelo de datamart con hechos, dimensiones y medidas a partir de una necesidad de negocio?",
+      "tema": "Sugerencia del modelo dimensional mediante IA",
+      "cotejo_formulario": "Coincide, normalizando sólo espacios.",
+      "n_total": 102,
+      "n_validas": 102,
+      "n_omitidas": 0,
+      "frecuencias": [
+        {
+          "valor": 1,
+          "opcion": "Totalmente en desacuerdo",
+          "frecuencia_absoluta": 0,
+          "porcentaje": 0.0,
+          "porcentaje_mostrado": "0,00 %",
+          "denominador": 102
+        },
+        {
+          "valor": 2,
+          "opcion": "En desacuerdo",
+          "frecuencia_absoluta": 0,
+          "porcentaje": 0.0,
+          "porcentaje_mostrado": "0,00 %",
+          "denominador": 102
+        },
+        {
+          "valor": 3,
+          "opcion": "Ni de acuerdo ni en desacuerdo",
+          "frecuencia_absoluta": 8,
+          "porcentaje": 7.8431372549019605,
+          "porcentaje_mostrado": "7,84 %",
+          "denominador": 102
+        },
+        {
+          "valor": 4,
+          "opcion": "De acuerdo",
+          "frecuencia_absoluta": 34,
+          "porcentaje": 33.333333333333336,
+          "porcentaje_mostrado": "33,33 %",
+          "denominador": 102
+        },
+        {
+          "valor": 5,
+          "opcion": "Totalmente de acuerdo",
+          "frecuencia_absoluta": 60,
+          "porcentaje": 58.8235294117647,
+          "porcentaje_mostrado": "58,82 %",
+          "denominador": 102
+        }
+      ],
+      "total_frecuencia": 102,
+      "total_porcentaje_sin_redondeo": 100,
+      "acuerdo_4_5_n": 94,
+      "acuerdo_4_5_pct": 92.15686274509804,
+      "acuerdo_4_5_mostrado": "92,16 %",
+      "mediana_codigo_ordinal": 5.0,
+      "moda_codigo_ordinal": 5,
+      "analisis": "De las 102 respuestas, 60 (58,82 %) corresponden a «Totalmente de acuerdo» y 34 (33,33 %) a «De acuerdo». El acuerdo agregado reúne 94 respuestas (92,16 %); 8 (7,84 %) se ubican en «Ni de acuerdo ni en desacuerdo». No se registraron respuestas en las dos categorías de desacuerdo. El grupo considera útil recibir una propuesta inicial de hechos, dimensiones y medidas. Esa preferencia orienta el apoyo al modelado, pero la calidad estructural y comercial de cada modelo deberá comprobarse mediante reglas, revisión humana y pruebas técnicas.",
+      "grafico_svg": "graficos/pregunta_03.svg",
+      "grafico_png": "graficos/pregunta_03.png"
+    },
+    {
+      "numero": 4,
+      "codigo": "P04",
+      "enunciado_literal": "4. ¿Considera útil que el software identifique las fuentes de datos que respaldan cada indicador comercial?",
+      "tema": "Identificación de fuentes de los indicadores",
+      "cotejo_formulario": "Coincide, normalizando sólo espacios.",
+      "n_total": 102,
+      "n_validas": 102,
+      "n_omitidas": 0,
+      "frecuencias": [
+        {
+          "valor": 1,
+          "opcion": "Totalmente en desacuerdo",
+          "frecuencia_absoluta": 0,
+          "porcentaje": 0.0,
+          "porcentaje_mostrado": "0,00 %",
+          "denominador": 102
+        },
+        {
+          "valor": 2,
+          "opcion": "En desacuerdo",
+          "frecuencia_absoluta": 0,
+          "porcentaje": 0.0,
+          "porcentaje_mostrado": "0,00 %",
+          "denominador": 102
+        },
+        {
+          "valor": 3,
+          "opcion": "Ni de acuerdo ni en desacuerdo",
+          "frecuencia_absoluta": 5,
+          "porcentaje": 4.901960784313726,
+          "porcentaje_mostrado": "4,90 %",
+          "denominador": 102
+        },
+        {
+          "valor": 4,
+          "opcion": "De acuerdo",
+          "frecuencia_absoluta": 41,
+          "porcentaje": 40.19607843137255,
+          "porcentaje_mostrado": "40,20 %",
+          "denominador": 102
+        },
+        {
+          "valor": 5,
+          "opcion": "Totalmente de acuerdo",
+          "frecuencia_absoluta": 56,
+          "porcentaje": 54.90196078431372,
+          "porcentaje_mostrado": "54,90 %",
+          "denominador": 102
+        }
+      ],
+      "total_frecuencia": 102,
+      "total_porcentaje_sin_redondeo": 100,
+      "acuerdo_4_5_n": 97,
+      "acuerdo_4_5_pct": 95.09803921568627,
+      "acuerdo_4_5_mostrado": "95,10 %",
+      "mediana_codigo_ordinal": 5.0,
+      "moda_codigo_ordinal": 5,
+      "analisis": "De las 102 respuestas, 56 (54,90 %) corresponden a «Totalmente de acuerdo» y 41 (40,20 %) a «De acuerdo». El acuerdo agregado reúne 97 respuestas (95,10 %); 5 (4,90 %) se ubican en «Ni de acuerdo ni en desacuerdo». No se registraron respuestas en las dos categorías de desacuerdo. La distribución indica interés por conocer de dónde procede cada indicador. Esta capacidad favorece una revisión informada del análisis; su cumplimiento técnico requiere trazabilidad entre necesidad, referencias de origen, fórmula y resultado.",
+      "grafico_svg": "graficos/pregunta_04.svg",
+      "grafico_png": "graficos/pregunta_04.png"
+    },
+    {
+      "numero": 5,
+      "codigo": "P05",
+      "enunciado_literal": "5. ¿Le resultaría útil recibir explicaciones sobre los cálculos utilizados en indicadores como ventas, costos y márgenes?",
+      "tema": "Explicación de los cálculos comerciales",
+      "cotejo_formulario": "Coincide, normalizando sólo espacios.",
+      "n_total": 102,
+      "n_validas": 102,
+      "n_omitidas": 0,
+      "frecuencias": [
+        {
+          "valor": 1,
+          "opcion": "Totalmente en desacuerdo",
+          "frecuencia_absoluta": 0,
+          "porcentaje": 0.0,
+          "porcentaje_mostrado": "0,00 %",
+          "denominador": 102
+        },
+        {
+          "valor": 2,
+          "opcion": "En desacuerdo",
+          "frecuencia_absoluta": 0,
+          "porcentaje": 0.0,
+          "porcentaje_mostrado": "0,00 %",
+          "denominador": 102
+        },
+        {
+          "valor": 3,
+          "opcion": "Ni de acuerdo ni en desacuerdo",
+          "frecuencia_absoluta": 7,
+          "porcentaje": 6.862745098039215,
+          "porcentaje_mostrado": "6,86 %",
+          "denominador": 102
+        },
+        {
+          "valor": 4,
+          "opcion": "De acuerdo",
+          "frecuencia_absoluta": 35,
+          "porcentaje": 34.31372549019608,
+          "porcentaje_mostrado": "34,31 %",
+          "denominador": 102
+        },
+        {
+          "valor": 5,
+          "opcion": "Totalmente de acuerdo",
+          "frecuencia_absoluta": 60,
+          "porcentaje": 58.8235294117647,
+          "porcentaje_mostrado": "58,82 %",
+          "denominador": 102
+        }
+      ],
+      "total_frecuencia": 102,
+      "total_porcentaje_sin_redondeo": 100,
+      "acuerdo_4_5_n": 95,
+      "acuerdo_4_5_pct": 93.13725490196079,
+      "acuerdo_4_5_mostrado": "93,14 %",
+      "mediana_codigo_ordinal": 5.0,
+      "moda_codigo_ordinal": 5,
+      "analisis": "De las 102 respuestas, 60 (58,82 %) corresponden a «Totalmente de acuerdo» y 35 (34,31 %) a «De acuerdo». El acuerdo agregado reúne 95 respuestas (93,14 %); 7 (6,86 %) se ubican en «Ni de acuerdo ni en desacuerdo». No se registraron respuestas en las dos categorías de desacuerdo. Las respuestas respaldan el interés por comprender fórmulas y supuestos, además de observar cifras. En el proyecto, las explicaciones deberán distinguir ventas, costos y márgenes y conservar sus fuentes y denominadores; esta encuesta no comprueba la exactitud de esos cálculos.",
+      "grafico_svg": "graficos/pregunta_05.svg",
+      "grafico_png": "graficos/pregunta_05.png"
+    },
+    {
+      "numero": 6,
+      "codigo": "P06",
+      "enunciado_literal": "6. ¿Considera útil contar con apoyo inteligente para definir las transformaciones necesarias durante el proceso de extracción, transformación y carga de datos ETL?",
+      "tema": "Apoyo inteligente en las transformaciones ETL",
+      "cotejo_formulario": "Coincide, normalizando sólo espacios.",
+      "n_total": 102,
+      "n_validas": 102,
+      "n_omitidas": 0,
+      "frecuencias": [
+        {
+          "valor": 1,
+          "opcion": "Totalmente en desacuerdo",
+          "frecuencia_absoluta": 0,
+          "porcentaje": 0.0,
+          "porcentaje_mostrado": "0,00 %",
+          "denominador": 102
+        },
+        {
+          "valor": 2,
+          "opcion": "En desacuerdo",
+          "frecuencia_absoluta": 0,
+          "porcentaje": 0.0,
+          "porcentaje_mostrado": "0,00 %",
+          "denominador": 102
+        },
+        {
+          "valor": 3,
+          "opcion": "Ni de acuerdo ni en desacuerdo",
+          "frecuencia_absoluta": 8,
+          "porcentaje": 7.8431372549019605,
+          "porcentaje_mostrado": "7,84 %",
+          "denominador": 102
+        },
+        {
+          "valor": 4,
+          "opcion": "De acuerdo",
+          "frecuencia_absoluta": 42,
+          "porcentaje": 41.1764705882353,
+          "porcentaje_mostrado": "41,18 %",
+          "denominador": 102
+        },
+        {
+          "valor": 5,
+          "opcion": "Totalmente de acuerdo",
+          "frecuencia_absoluta": 52,
+          "porcentaje": 50.98039215686274,
+          "porcentaje_mostrado": "50,98 %",
+          "denominador": 102
+        }
+      ],
+      "total_frecuencia": 102,
+      "total_porcentaje_sin_redondeo": 100,
+      "acuerdo_4_5_n": 94,
+      "acuerdo_4_5_pct": 92.15686274509804,
+      "acuerdo_4_5_mostrado": "92,16 %",
+      "mediana_codigo_ordinal": 5.0,
+      "moda_codigo_ordinal": 5,
+      "analisis": "De las 102 respuestas, 52 (50,98 %) corresponden a «Totalmente de acuerdo» y 42 (41,18 %) a «De acuerdo». El acuerdo agregado reúne 94 respuestas (92,16 %); 8 (7,84 %) se ubican en «Ni de acuerdo ni en desacuerdo». No se registraron respuestas en las dos categorías de desacuerdo. Existe una percepción favorable hacia el apoyo en la definición de transformaciones ETL. La opinión recogida orienta la asistencia al analista, mientras que la integridad de la carga y la corrección de las transformaciones deberán evaluarse con conciliaciones y casos reproducibles.",
+      "grafico_svg": "graficos/pregunta_06.svg",
+      "grafico_png": "graficos/pregunta_06.png"
+    },
+    {
+      "numero": 7,
+      "codigo": "P07",
+      "enunciado_literal": "7. ¿Considera útil que el software permita revisar y aprobar las propuestas generadas por la IA antes de ejecutarlas?",
+      "tema": "Revisión y aprobación humana de propuestas",
+      "cotejo_formulario": "Coincide, normalizando sólo espacios.",
+      "n_total": 102,
+      "n_validas": 102,
+      "n_omitidas": 0,
+      "frecuencias": [
+        {
+          "valor": 1,
+          "opcion": "Totalmente en desacuerdo",
+          "frecuencia_absoluta": 0,
+          "porcentaje": 0.0,
+          "porcentaje_mostrado": "0,00 %",
+          "denominador": 102
+        },
+        {
+          "valor": 2,
+          "opcion": "En desacuerdo",
+          "frecuencia_absoluta": 0,
+          "porcentaje": 0.0,
+          "porcentaje_mostrado": "0,00 %",
+          "denominador": 102
+        },
+        {
+          "valor": 3,
+          "opcion": "Ni de acuerdo ni en desacuerdo",
+          "frecuencia_absoluta": 6,
+          "porcentaje": 5.882352941176471,
+          "porcentaje_mostrado": "5,88 %",
+          "denominador": 102
+        },
+        {
+          "valor": 4,
+          "opcion": "De acuerdo",
+          "frecuencia_absoluta": 34,
+          "porcentaje": 33.333333333333336,
+          "porcentaje_mostrado": "33,33 %",
+          "denominador": 102
+        },
+        {
+          "valor": 5,
+          "opcion": "Totalmente de acuerdo",
+          "frecuencia_absoluta": 62,
+          "porcentaje": 60.78431372549019,
+          "porcentaje_mostrado": "60,78 %",
+          "denominador": 102
+        }
+      ],
+      "total_frecuencia": 102,
+      "total_porcentaje_sin_redondeo": 100,
+      "acuerdo_4_5_n": 96,
+      "acuerdo_4_5_pct": 94.11764705882354,
+      "acuerdo_4_5_mostrado": "94,12 %",
+      "mediana_codigo_ordinal": 5.0,
+      "moda_codigo_ordinal": 5,
+      "analisis": "De las 102 respuestas, 62 (60,78 %) corresponden a «Totalmente de acuerdo» y 34 (33,33 %) a «De acuerdo». El acuerdo agregado reúne 96 respuestas (94,12 %); 6 (5,88 %) se ubican en «Ni de acuerdo ni en desacuerdo». No se registraron respuestas en las dos categorías de desacuerdo. La revisión humana resulta pertinente para la utilidad esperada del sistema. Este resultado respalda conservar la decisión de aprobación antes de ejecutar una propuesta, sin atribuir al acuerdo de los participantes una prueba del control de acceso o de la seguridad de la ejecución.",
+      "grafico_svg": "graficos/pregunta_07.svg",
+      "grafico_png": "graficos/pregunta_07.png"
+    },
+    {
+      "numero": 8,
+      "codigo": "P08",
+      "enunciado_literal": "8. ¿Considera útil que un software facilite la presentación de los datos procesados mediante gráficos e indicadores comerciales?",
+      "tema": "Presentación mediante gráficos e indicadores",
+      "cotejo_formulario": "Coincide, normalizando sólo espacios.",
+      "n_total": 102,
+      "n_validas": 102,
+      "n_omitidas": 0,
+      "frecuencias": [
+        {
+          "valor": 1,
+          "opcion": "Totalmente en desacuerdo",
+          "frecuencia_absoluta": 0,
+          "porcentaje": 0.0,
+          "porcentaje_mostrado": "0,00 %",
+          "denominador": 102
+        },
+        {
+          "valor": 2,
+          "opcion": "En desacuerdo",
+          "frecuencia_absoluta": 0,
+          "porcentaje": 0.0,
+          "porcentaje_mostrado": "0,00 %",
+          "denominador": 102
+        },
+        {
+          "valor": 3,
+          "opcion": "Ni de acuerdo ni en desacuerdo",
+          "frecuencia_absoluta": 4,
+          "porcentaje": 3.9215686274509802,
+          "porcentaje_mostrado": "3,92 %",
+          "denominador": 102
+        },
+        {
+          "valor": 4,
+          "opcion": "De acuerdo",
+          "frecuencia_absoluta": 38,
+          "porcentaje": 37.254901960784316,
+          "porcentaje_mostrado": "37,25 %",
+          "denominador": 102
+        },
+        {
+          "valor": 5,
+          "opcion": "Totalmente de acuerdo",
+          "frecuencia_absoluta": 60,
+          "porcentaje": 58.8235294117647,
+          "porcentaje_mostrado": "58,82 %",
+          "denominador": 102
+        }
+      ],
+      "total_frecuencia": 102,
+      "total_porcentaje_sin_redondeo": 100,
+      "acuerdo_4_5_n": 98,
+      "acuerdo_4_5_pct": 96.07843137254902,
+      "acuerdo_4_5_mostrado": "96,08 %",
+      "mediana_codigo_ordinal": 5.0,
+      "moda_codigo_ordinal": 5,
+      "analisis": "De las 102 respuestas, 60 (58,82 %) corresponden a «Totalmente de acuerdo» y 38 (37,25 %) a «De acuerdo». El acuerdo agregado reúne 98 respuestas (96,08 %); 4 (3,92 %) se ubican en «Ni de acuerdo ni en desacuerdo». No se registraron respuestas en las dos categorías de desacuerdo. La presentación gráfica y mediante indicadores figura entre las funciones con mayor acuerdo agregado de este conjunto. Se respalda su utilidad esperada para comunicar resultados, aunque no se ha medido aquí la facilidad de uso, legibilidad ni comprensión de una interfaz utilizada.",
+      "grafico_svg": "graficos/pregunta_08.svg",
+      "grafico_png": "graficos/pregunta_08.png"
+    },
+    {
+      "numero": 9,
+      "codigo": "P09",
+      "enunciado_literal": "9. ¿Le resultaría útil formular preguntas en lenguaje natural a un asistente de IA para comprender los resultados de un análisis comercial?",
+      "tema": "Consultas en lenguaje natural al asistente de IA",
+      "cotejo_formulario": "Coincide, normalizando sólo espacios.",
+      "n_total": 102,
+      "n_validas": 102,
+      "n_omitidas": 0,
+      "frecuencias": [
+        {
+          "valor": 1,
+          "opcion": "Totalmente en desacuerdo",
+          "frecuencia_absoluta": 0,
+          "porcentaje": 0.0,
+          "porcentaje_mostrado": "0,00 %",
+          "denominador": 102
+        },
+        {
+          "valor": 2,
+          "opcion": "En desacuerdo",
+          "frecuencia_absoluta": 0,
+          "porcentaje": 0.0,
+          "porcentaje_mostrado": "0,00 %",
+          "denominador": 102
+        },
+        {
+          "valor": 3,
+          "opcion": "Ni de acuerdo ni en desacuerdo",
+          "frecuencia_absoluta": 6,
+          "porcentaje": 5.882352941176471,
+          "porcentaje_mostrado": "5,88 %",
+          "denominador": 102
+        },
+        {
+          "valor": 4,
+          "opcion": "De acuerdo",
+          "frecuencia_absoluta": 35,
+          "porcentaje": 34.31372549019608,
+          "porcentaje_mostrado": "34,31 %",
+          "denominador": 102
+        },
+        {
+          "valor": 5,
+          "opcion": "Totalmente de acuerdo",
+          "frecuencia_absoluta": 61,
+          "porcentaje": 59.80392156862745,
+          "porcentaje_mostrado": "59,80 %",
+          "denominador": 102
+        }
+      ],
+      "total_frecuencia": 102,
+      "total_porcentaje_sin_redondeo": 100,
+      "acuerdo_4_5_n": 96,
+      "acuerdo_4_5_pct": 94.11764705882354,
+      "acuerdo_4_5_mostrado": "94,12 %",
+      "mediana_codigo_ordinal": 5.0,
+      "moda_codigo_ordinal": 5,
+      "analisis": "De las 102 respuestas, 61 (59,80 %) corresponden a «Totalmente de acuerdo» y 35 (34,31 %) a «De acuerdo». El acuerdo agregado reúne 96 respuestas (94,12 %); 6 (5,88 %) se ubican en «Ni de acuerdo ni en desacuerdo». No se registraron respuestas en las dos categorías de desacuerdo. El resultado indica interés por consultar los resultados mediante lenguaje natural. La capacidad esperada de interacción no equivale a exactitud demostrada de las respuestas: el copiloto deberá mantener cifras, filtros, fuentes y límites verificables.",
+      "grafico_svg": "graficos/pregunta_09.svg",
+      "grafico_png": "graficos/pregunta_09.png"
+    },
+    {
+      "numero": 10,
+      "codigo": "P10",
+      "enunciado_literal": "10. ¿Considera útil trabajar con distintas bases de datos desde una misma herramienta, manteniendo separados sus procesos y resultados?",
+      "tema": "Trabajo con distintas bases y separación de resultados",
+      "cotejo_formulario": "Coincide, normalizando sólo espacios.",
+      "n_total": 102,
+      "n_validas": 102,
+      "n_omitidas": 0,
+      "frecuencias": [
+        {
+          "valor": 1,
+          "opcion": "Totalmente en desacuerdo",
+          "frecuencia_absoluta": 0,
+          "porcentaje": 0.0,
+          "porcentaje_mostrado": "0,00 %",
+          "denominador": 102
+        },
+        {
+          "valor": 2,
+          "opcion": "En desacuerdo",
+          "frecuencia_absoluta": 0,
+          "porcentaje": 0.0,
+          "porcentaje_mostrado": "0,00 %",
+          "denominador": 102
+        },
+        {
+          "valor": 3,
+          "opcion": "Ni de acuerdo ni en desacuerdo",
+          "frecuencia_absoluta": 8,
+          "porcentaje": 7.8431372549019605,
+          "porcentaje_mostrado": "7,84 %",
+          "denominador": 102
+        },
+        {
+          "valor": 4,
+          "opcion": "De acuerdo",
+          "frecuencia_absoluta": 35,
+          "porcentaje": 34.31372549019608,
+          "porcentaje_mostrado": "34,31 %",
+          "denominador": 102
+        },
+        {
+          "valor": 5,
+          "opcion": "Totalmente de acuerdo",
+          "frecuencia_absoluta": 59,
+          "porcentaje": 57.84313725490196,
+          "porcentaje_mostrado": "57,84 %",
+          "denominador": 102
+        }
+      ],
+      "total_frecuencia": 102,
+      "total_porcentaje_sin_redondeo": 100,
+      "acuerdo_4_5_n": 94,
+      "acuerdo_4_5_pct": 92.15686274509804,
+      "acuerdo_4_5_mostrado": "92,16 %",
+      "mediana_codigo_ordinal": 5.0,
+      "moda_codigo_ordinal": 5,
+      "analisis": "De las 102 respuestas, 59 (57,84 %) corresponden a «Totalmente de acuerdo» y 35 (34,31 %) a «De acuerdo». El acuerdo agregado reúne 94 respuestas (92,16 %); 8 (7,84 %) se ubican en «Ni de acuerdo ni en desacuerdo». No se registraron respuestas en las dos categorías de desacuerdo. La distribución respalda la utilidad percibida de una misma herramienta para varias bases con sus contextos separados. La comprobación técnica del aislamiento y la compatibilidad con otros motores exige pruebas independientes; no puede deducirse de estas opiniones.",
+      "grafico_svg": "graficos/pregunta_10.svg",
+      "grafico_png": "graficos/pregunta_10.png"
+    }
+  ],
+  "sintesis": "Las diez funciones presentan un acuerdo agregado entre 92,16 % y 96,08 % dentro de las 102 respuestas finales. Las preguntas 1 y 8 alcanzan 98 respuestas de acuerdo, mientras que las preguntas 3, 6 y 10 reúnen 94. Estas diferencias son descriptivas; no se ha probado que sean estadísticamente significativas. Los resultados respaldan el interés del conjunto encuestado por las capacidades propuestas, especialmente la formulación en lenguaje natural y la presentación de resultados. La revisión con metadatos, la trazabilidad, la supervisión humana y el aislamiento de fuentes también reciben valoración favorable. Su utilidad percibida debe complementarse con pruebas funcionales, numéricas y de coherencia comercial del prototipo. No se interpreta esta encuesta como una validación de uso ni se generaliza a todos los estudiantes o empresas.",
+  "recomendacion_metodologia": [
+    "El componente de encuesta corresponde a un estudio descriptivo de percepción sobre utilidad potencial, mediante diez preguntas cerradas en escala Likert de cinco opciones. La difusión del enlace se realizó por correo electrónico y la participación fue voluntaria.",
+    "Se analizaron 102 registros finales suministrados en un archivo anónimo. Al no acreditarse un marco de personas únicas ni selección aleatoria, la captación se describirá como no probabilística por autoselección. Los porcentajes describen este conjunto y no se les asigna margen de error o confianza poblacional.",
+    "La planificación previa contemplaba 182 respuestas bajo un universo provisional de 331 estudiantes y un error de planificación del 5 %. El total final 102 equivale al 56,04 % de esa meta; se conserva como antecedente logístico y se distingue del tamaño efectivamente obtenido.",
+    "El instrumento aplicado difiere de la propuesta anterior de dos momentos y de 16 ítems de percepción más 6 preguntas de comprensión. El capítulo deberá describir exclusivamente las diez preguntas realmente publicadas y las 102 respuestas finales, sustituyendo la simulación y las etapas no acreditadas.",
+    "La ausencia de datos de exposición al prototipo impide evaluar eficacia de uso, comprensión, usabilidad o aprendizaje con esta encuesta. Tampoco se acredita validación por expertos, piloto, alfa de Cronbach ni validez de constructo; no deben añadirse como hechos realizados."
+  ],
+  "auditoria_20261106": {
+    "estado": "conforme",
+    "archivo_excel_sin_modificar": true,
+    "sha256_fuente_verificado": true,
+    "comparacion_con_tabulacion_anterior": "Coinciden los diez enunciados, cincuenta frecuencias, cincuenta porcentajes y diez acuerdos agrupados.",
+    "columnas_adicionales_vacias": 3,
+    "respuestas_observadas": 102,
+    "celdas_respuesta": 1020,
+    "valores_faltantes": 0,
+    "valores_fuera_de_escala": 0,
+    "leyenda_escala": "El XLSX almacena números, no la leyenda. Las etiquetas se conservan del registro previo, que documenta su cotejo con el formulario público. No se inventa una nueva escala.",
+    "datos_no_disponibles": [
+      "Identificación o prueba de personas únicas",
+      "Carrera o asignatura individual",
+      "Semestre o nivel individual",
+      "Fechas de aplicación",
+      "Número de invitaciones efectivamente recibidas por personas elegibles",
+      "Marco de población certificado",
+      "Selección aleatoria de participantes"
+    ],
+    "nota_sobre_filas_repetidas": "No se eliminan respuestas iguales: la repetición de un patrón Likert no prueba duplicidad de una persona.",
+    "resumen_por_pregunta": [
+      {
+        "pregunta": 1,
+        "enunciado": "1. ¿Considera útil contar con un software que ayude a formular necesidades de análisis comercial mediante lenguaje natural?",
+        "frecuencias": [
+          0,
+          0,
+          4,
+          34,
+          64
+        ],
+        "porcentajes": [
+          "0,00 %",
+          "0,00 %",
+          "3,92 %",
+          "33,33 %",
+          "62,75 %"
+        ],
+        "respuestas_de_acuerdo_o_totalmente_de_acuerdo": 98,
+        "porcentaje_de_acuerdo_o_totalmente_de_acuerdo": "96,08 %",
+        "coincide_tabulacion_anterior": true
+      },
+      {
+        "pregunta": 2,
+        "enunciado": "2. ¿Considera útil que un software compruebe si una necesidad de análisis tiene respaldo en las tablas, columnas y relaciones disponibles?",
+        "frecuencias": [
+          0,
+          0,
+          5,
+          35,
+          62
+        ],
+        "porcentajes": [
+          "0,00 %",
+          "0,00 %",
+          "4,90 %",
+          "34,31 %",
+          "60,78 %"
+        ],
+        "respuestas_de_acuerdo_o_totalmente_de_acuerdo": 97,
+        "porcentaje_de_acuerdo_o_totalmente_de_acuerdo": "95,10 %",
+        "coincide_tabulacion_anterior": true
+      },
+      {
+        "pregunta": 3,
+        "enunciado": "3. ¿Le resultaría útil que la inteligencia artificial sugiera un modelo de datamart con hechos, dimensiones y medidas a partir de una necesidad de negocio?",
+        "frecuencias": [
+          0,
+          0,
+          8,
+          34,
+          60
+        ],
+        "porcentajes": [
+          "0,00 %",
+          "0,00 %",
+          "7,84 %",
+          "33,33 %",
+          "58,82 %"
+        ],
+        "respuestas_de_acuerdo_o_totalmente_de_acuerdo": 94,
+        "porcentaje_de_acuerdo_o_totalmente_de_acuerdo": "92,16 %",
+        "coincide_tabulacion_anterior": true
+      },
+      {
+        "pregunta": 4,
+        "enunciado": "4. ¿Considera útil que el software identifique las fuentes de datos que respaldan cada indicador comercial?",
+        "frecuencias": [
+          0,
+          0,
+          5,
+          41,
+          56
+        ],
+        "porcentajes": [
+          "0,00 %",
+          "0,00 %",
+          "4,90 %",
+          "40,20 %",
+          "54,90 %"
+        ],
+        "respuestas_de_acuerdo_o_totalmente_de_acuerdo": 97,
+        "porcentaje_de_acuerdo_o_totalmente_de_acuerdo": "95,10 %",
+        "coincide_tabulacion_anterior": true
+      },
+      {
+        "pregunta": 5,
+        "enunciado": "5. ¿Le resultaría útil recibir explicaciones sobre los cálculos utilizados en indicadores como ventas, costos y márgenes?",
+        "frecuencias": [
+          0,
+          0,
+          7,
+          35,
+          60
+        ],
+        "porcentajes": [
+          "0,00 %",
+          "0,00 %",
+          "6,86 %",
+          "34,31 %",
+          "58,82 %"
+        ],
+        "respuestas_de_acuerdo_o_totalmente_de_acuerdo": 95,
+        "porcentaje_de_acuerdo_o_totalmente_de_acuerdo": "93,14 %",
+        "coincide_tabulacion_anterior": true
+      },
+      {
+        "pregunta": 6,
+        "enunciado": "6. ¿Considera útil contar con apoyo inteligente para definir las transformaciones necesarias durante el proceso de extracción, transformación y carga de datos ETL?",
+        "frecuencias": [
+          0,
+          0,
+          8,
+          42,
+          52
+        ],
+        "porcentajes": [
+          "0,00 %",
+          "0,00 %",
+          "7,84 %",
+          "41,18 %",
+          "50,98 %"
+        ],
+        "respuestas_de_acuerdo_o_totalmente_de_acuerdo": 94,
+        "porcentaje_de_acuerdo_o_totalmente_de_acuerdo": "92,16 %",
+        "coincide_tabulacion_anterior": true
+      },
+      {
+        "pregunta": 7,
+        "enunciado": "7. ¿Considera útil que el software permita revisar y aprobar las propuestas generadas por la IA antes de ejecutarlas?",
+        "frecuencias": [
+          0,
+          0,
+          6,
+          34,
+          62
+        ],
+        "porcentajes": [
+          "0,00 %",
+          "0,00 %",
+          "5,88 %",
+          "33,33 %",
+          "60,78 %"
+        ],
+        "respuestas_de_acuerdo_o_totalmente_de_acuerdo": 96,
+        "porcentaje_de_acuerdo_o_totalmente_de_acuerdo": "94,12 %",
+        "coincide_tabulacion_anterior": true
+      },
+      {
+        "pregunta": 8,
+        "enunciado": "8. ¿Considera útil que un software facilite la presentación de los datos procesados mediante gráficos e indicadores comerciales?",
+        "frecuencias": [
+          0,
+          0,
+          4,
+          38,
+          60
+        ],
+        "porcentajes": [
+          "0,00 %",
+          "0,00 %",
+          "3,92 %",
+          "37,25 %",
+          "58,82 %"
+        ],
+        "respuestas_de_acuerdo_o_totalmente_de_acuerdo": 98,
+        "porcentaje_de_acuerdo_o_totalmente_de_acuerdo": "96,08 %",
+        "coincide_tabulacion_anterior": true
+      },
+      {
+        "pregunta": 9,
+        "enunciado": "9. ¿Le resultaría útil formular preguntas en lenguaje natural a un asistente de IA para comprender los resultados de un análisis comercial?",
+        "frecuencias": [
+          0,
+          0,
+          6,
+          35,
+          61
+        ],
+        "porcentajes": [
+          "0,00 %",
+          "0,00 %",
+          "5,88 %",
+          "34,31 %",
+          "59,80 %"
+        ],
+        "respuestas_de_acuerdo_o_totalmente_de_acuerdo": 96,
+        "porcentaje_de_acuerdo_o_totalmente_de_acuerdo": "94,12 %",
+        "coincide_tabulacion_anterior": true
+      },
+      {
+        "pregunta": 10,
+        "enunciado": "10. ¿Considera útil trabajar con distintas bases de datos desde una misma herramienta, manteniendo separados sus procesos y resultados?",
+        "frecuencias": [
+          0,
+          0,
+          8,
+          35,
+          59
+        ],
+        "porcentajes": [
+          "0,00 %",
+          "0,00 %",
+          "7,84 %",
+          "34,31 %",
+          "57,84 %"
+        ],
+        "respuestas_de_acuerdo_o_totalmente_de_acuerdo": 94,
+        "porcentaje_de_acuerdo_o_totalmente_de_acuerdo": "92,16 %",
+        "coincide_tabulacion_anterior": true
+      }
+    ],
+    "recomendacion_redaccion": "Describir utilidad potencial percibida; no presentar la encuesta como prueba de uso, eficacia, eficiencia o corrección del prototipo. Explicar las limitaciones una sola vez en metodología y cierre, sin reiterarlas en cada párrafo de análisis.",
+    "fecha_auditoria": "2026-11-06T00:18:11.922474-05:00"
+  }
+}

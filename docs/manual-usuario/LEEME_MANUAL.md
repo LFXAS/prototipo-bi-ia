@@ -1,3 +1,17 @@
+# Manuales vigentes de uso y formación
+
+La edición del 6 de noviembre de 2026 ofrece dos recorridos con capturas nuevas completas de escritorio y la misma arquitectura general del capítulo III:
+
+- [Manual de formación](edicion-2026-11-06/Manual_de_formacion_BI_IA.pdf), también en[Word editable](edicion-2026-11-06/Manual_de_formacion_BI_IA.docx). Desarrolla conceptos, criterios comerciales, configuración, catálogo, necesidad, propuesta, decisiones guiadas, aprobación, ETL, conciliación, analítica, copiloto, reportes y ejercicios para la sustentación.
+- [Manual universitario](edicion-2026-11-06/Manual_de_usuario_universidad.pdf), también en[Word editable](edicion-2026-11-06/Manual_de_usuario_universidad.docx). Resume el recorrido en 38 páginas con pasos, comprobaciones y resultados esperados.
+- [Fuentes y evidencia de esta edición](edicion-2026-11-06/LEEME_EDICION.md).
+
+Los casos principales son AdventureWorks propuesta 129/ejecución 21 y WideWorldImporters propuesta 131/ejecución 22. Las dos cargas se conciliaron contra sus fuentes; la segunda distingue comprador, destinatario de facturación y ciudad de entrega. El número de versión y expediente puede cambiar al replicar la demostración: se verifica el significado y las cifras, no se intenta reproducir sus identificadores.
+
+Las ediciones anteriores permanecen a continuación como antecedentes con su propio corte. Las capturas parciales del manual anterior no describen la política de imágenes de los dos manuales nuevos.
+
+## Referencia histórica anterior
+
 # Manual de usuario y entrenamiento en BI e IA
 
 El manual principal se entrega en Word editable y PDF. Su secuencia comienza con

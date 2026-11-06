@@ -84,18 +84,18 @@
 
   {\color{deepgreen}\fontsize{30}{35}\selectfont\textbf{Manual técnico}}\\[0.7em]
   {\LARGE Instalación, operación y réplica del entorno}\\[0.6em]
-  {\large Prueba de concepto de un prototipo funcional de BI asistido por IA para la construcción semiautomatizada y supervisada de un datamart de ventas}
+  {\large Prueba de concepto de un prototipo funcional de sistema inteligente para construcción supervisada de datamarts de ventas}
 
   \vspace{1.5cm}
 
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & MAN-TEC-01 \\
-    Versión del manual & 5.2.1 \\
+    Versión del manual & 5.2.2 \\
     Línea base & Ramas \file{develop} y \file{main} \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
     Clasificación & Documentación técnica - repositorio público \\
-    Fecha & 5 de noviembre de 2026 \\
+    Fecha & 6 de noviembre de 2026 \\
   \end{tabularx}
 
   \vfill
@@ -134,7 +134,8 @@ La versión actual conserva la infraestructura del Sprint 1 y el núcleo adminis
     \begin{tabular}{c@{\hspace{1.6cm}}c}
       $\swarrow$ & $\searrow$ \\
       \textbf{PostgreSQL} & \textbf{SQL Server} \\
-      \file{app} + \file{mart} & AdventureWorks 2022 \\
+      \file{app} + esquemas analíticos & AdventureWorks2022 \\
+persistencia interna & WideWorldImporters \\
       lectura/escritura interna & usuario externo de sólo lectura
     \end{tabular}
   \end{minipage}}
@@ -150,7 +151,7 @@ La versión actual conserva la infraestructura del Sprint 1 y el núcleo adminis
   frontend-delivery & Frontend compilado servido por Nginx & 8080 & Sin volumen \\
   backend & API FastAPI, configuración y salud & 8000 & Código montado \\
   postgres & Configuración interna y datamart materializado & 55432 & Volumen \file{postgres\_data} \\
-  sqlserver & Fuente AdventureWorks externa & 51433 & Volumen \file{sqlserver\_data} \\
+  sqlserver & Fuentes SQL Server de demostración & 51433 & Volumen \file{sqlserver\_data} \\
   ollama & LLM local opcional, sólo red interna & No publicado & Volumen \file{ollama\_models} \\
   raíz criptográfica & Clave local para cifrar secretos autorizados & No aplica & Volumen \file{secret\_key\_data} \\
   \bottomrule
@@ -164,7 +165,7 @@ Compose crea la red y los volúmenes de desarrollo bajo el nombre lógico \file{
 backend/                  FastAPI, pruebas y migraciones
 frontend/                 React, Vite, pruebas y Nginx
 infra/postgres/           imagen e inicializacion PostgreSQL
-infra/sqlserver/          imagen y restauracion AdventureWorks
+infra/sqlserver/          restauracion de las dos fuentes SQL Server
 infra/docs/               imagen reproducible de LaTeX
 scripts/                  arranque, espera y verificacion
 docs/                     arquitectura, guias y evidencias
@@ -258,9 +259,9 @@ make bootstrap
 \begin{enumerate}
   \item valida o crea el archivo de configuración local;
   \item construye las imágenes propias;
-  \item crea una red y tres volúmenes exclusivos;
+  \item crea la red y los volúmenes exclusivos, incluida la raíz criptográfica;
   \item inicia PostgreSQL y espera su estado saludable;
-  \item inicia SQL Server, descarga y restaura AdventureWorks si el volumen está vacío;
+  \item inicia SQL Server y restaura AdventureWorks2022 y WideWorldImporters cuando faltan en el volumen;
   \item crea y prueba el usuario \file{bi\_reader};
   \item aplica las migraciones Alembic pendientes;
   \item ejecuta el servicio \file{seed}, que incorpora sin duplicar el catálogo protegido aprobado;
@@ -323,7 +324,7 @@ Las dos respuestas deben indicar \file{"status":"ok"}; la segunda también debe 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.88\textwidth]{../assets/sprint-01/frontend.jpg}
-  \caption{Resultado esperado después de levantar el entorno de desarrollo.}
+  \caption{Pantalla histórica del Sprint 1; el pronóstico se retiró del alcance.}
 \end{figure}
 
 \section{Vista local de entrega sin reemplazar desarrollo}
@@ -410,7 +411,7 @@ Toda mutación administrativa genera un evento de auditoría con actor, fecha, a
 
 \subsection{Parámetros generales}
 
-La pantalla Parámetros no es una tabla libre de clave/valor. Sólo muestra cuatro enteros operativos aprobados: \path{UI_PAGE_SIZE}, \path{CONNECTION_TIMEOUT_SECONDS}, \path{LLM_TIMEOUT_SECONDS} y \path{METADATA_BLOCK_MAX_ITEMS}. El catálogo analítico se administra en \textbf{IA > Catálogo analítico} con los permisos independientes \path{copilot.catalog.read} y \path{copilot.catalog.write}. Allí se gestionan preguntas de negocio y periodicidades por dominio y por fuente. El objetivo pertenece a cada análisis y las dimensiones no son un parámetro. FastAPI valida y audita cada cambio.
+La pantalla Parámetros no es una tabla libre de clave/valor. Sólo muestra cuatro enteros operativos aprobados: \path{UI_PAGE_SIZE}, \path{CONNECTION_TIMEOUT_SECONDS}, \path{LLM_TIMEOUT_SECONDS} y \path{METADATA_BLOCK_MAX_ITEMS}. El catálogo analítico se administra en \textbf{Diseño y transformación BI > Catálogo analítico} con los permisos independientes \path{copilot.catalog.read} y \path{copilot.catalog.write}. Allí se gestionan preguntas de negocio y periodicidades por dominio y por fuente. El objetivo pertenece a cada análisis y las dimensiones no son un parámetro. FastAPI valida y audita cada cambio.
 
 El catálogo tiene dos planos visibles. El \textbf{catálogo de negocio} pertenece al analista: define qué preguntas quiere ofrecer y con qué periodicidades. La \textbf{cobertura técnica} pertenece a la plataforma: se recalcula desde la instantánea seleccionada y muestra las tablas o columnas reales que respaldan cada capacidad. El LLM interpreta ambos planos y redacta una propuesta, pero no crea evidencia ni determina por sí solo que una capacidad existe. Después de cada respuesta, FastAPI vuelve a validar referencias, tipos, PK, FK, rutas, granularidad, fórmulas y cobertura.
 
@@ -432,7 +433,7 @@ La acción \textbf{Actualizar metadatos} está disponible sobre la fuente selecc
 
 El documento canónico se ordena de forma estable y se almacena como JSONB en \path{app.metadata_snapshots}. Su hash SHA-256 permite reconocer la misma estructura: si no cambió, se reutiliza la instantánea vigente y no se duplica. Cada captura conserva conexión, base, versión contractual, totales, actor histórico y fecha. La migración \path{20260918_08} impide eliminar una conexión que tenga instantáneas asociadas.
 
-La pantalla \textbf{Datos > Explorador de esquema} consulta la captura persistida, no la fuente original. Permite buscar por esquema, tabla o columna y presenta detalle de columnas, PK y relaciones entrantes y salientes. La auditoría del 3 de octubre confirmó en la instantánea 2 de AdventureWorks 6 esquemas, 71 tablas, 482 columnas y 90 relaciones; en la instantánea 3 de WideWorldImporters, 4 esquemas, 48 tablas, 546 columnas y 98 relaciones. Estos conteos pertenecen a las capturas usadas y no sustituyen la comprobación de una fuente nueva.
+La pantalla \textbf{Preparación del entorno > Explorador de esquema} consulta la captura persistida, no la fuente original. Permite buscar por esquema, tabla o columna y presenta detalle de columnas, PK y relaciones entrantes y salientes. La auditoría del 3 de octubre confirmó en la instantánea 2 de AdventureWorks 6 esquemas, 71 tablas, 482 columnas y 90 relaciones; en la instantánea 3 de WideWorldImporters, 4 esquemas, 48 tablas, 546 columnas y 98 relaciones. Estos conteos pertenecen a las capturas usadas y no sustituyen la comprobación de una fuente nueva.
 
 \subsection{Restauración académica de WideWorldImporters}
 
@@ -440,9 +441,9 @@ El script \path{infra/sqlserver/bootstrap-wideworldimporters.sh} obtiene el resp
 
 \subsection{Asistente de datamart supervisado}
 
-La pantalla \textbf{IA > Asistente de datamart} requiere tres condiciones comprobables: fuente seleccionada, habilitada y probada en sólo lectura; instantánea vigente de esa fuente; y proveedor LLM activo con prueba satisfactoria. La entrada no abre directamente ventas: consulta \file{GET /api/v1/copilot/catalog} con \file{connection\_id} y muestra los dominios que disponen de perfil, metadatos y validadores. Sólo \textbf{Datamart de ventas} está implementado; un dominio futuro puede añadirse al catálogo sin crear otra pantalla.
+La pantalla \textbf{Diseño y transformación BI > Asistente de datamart} requiere tres condiciones comprobables: fuente seleccionada, habilitada y probada en sólo lectura; instantánea vigente de esa fuente; y proveedor LLM activo con prueba satisfactoria. La entrada no abre directamente ventas: consulta \file{GET /api/v1/copilot/catalog} con \file{connection\_id} y muestra los dominios que disponen de perfil, metadatos y validadores. Sólo \textbf{Datamart de ventas} está implementado; un dominio futuro puede añadirse al catálogo sin crear otra pantalla.
 
-Al elegir el dominio, el backend devuelve preguntas orientadoras y periodicidades compatibles con la instantánea. React no contiene un modelo dimensional fijo de AdventureWorks. El catálogo se administra por dominio desde \textbf{IA > Catálogo analítico}. Las preguntas guían la interpretación, pero no fijan tablas, columnas ni dimensiones. El analista BI continúa por cinco pasos:
+Al elegir el dominio, el backend devuelve preguntas orientadoras y periodicidades compatibles con la instantánea. React no contiene un modelo dimensional fijo de AdventureWorks. El catálogo se administra por dominio desde \textbf{Diseño y transformación BI > Catálogo analítico}. Las preguntas guían la interpretación, pero no fijan tablas, columnas ni dimensiones. El analista BI continúa por cinco pasos:
 
 \begin{enumerate}
   \item escribir el objetivo comercial, seleccionar preguntas orientadoras y escoger una periodicidad soportada;
@@ -542,8 +543,9 @@ una transformación ejecutable.
 \subsection{Corrección posterior al cierre: revisión del 4--5 de noviembre de 2026}
 
 La preparación de la sustentación reprodujo defectos del motor general, sin abrir
-un sprint nuevo. El corte vigente usa \file{need-review-6}, \file{sales-bi-v7} y
-\path{compilation_rules_version=3}. Las pruebas operativas previas conservan sus
+un sprint nuevo. Aquel cierre usó \file{need-review-6}, \file{sales-bi-v7} y
+\path{compilation_rules_version=3}; la adenda siguiente registra las reglas 4 y
+las instrucciones sales-bi-v8 del 6 de noviembre. Las pruebas operativas previas conservan sus
 versiones: AW 122/18 se generó con revisión 4 y WWI 124/19 con revisión 5; ambas
 propuestas almacenan reglas 2. No se reetiquetan como ensayos del motor posterior.
 
@@ -705,6 +707,193 @@ a 574 y 1366 px no mostró solapes: AW presentó USD 3.491,07 por transacción y
 conservó 2.808,73 moneda de origen por transacción. Las nuevas capturas 126/127
 tienen evidencia propia; la regeneración y revisión documental se registran aparte.
 
+\subsection{Conservación semántica durante la expansión: 6 de noviembre de 2026}
+
+\textbf{Cierre de la adenda: reglas 5 verificadas con 530 backend/50 frontend; recorridos nuevos AW 129/21 y WWI 131/22 aprobados, conciliados y contrastados. La precisión narrativa de la IA permanece supervisada.}
+La auditoría operativa para renovar los manuales detectó un defecto en
+\file{expand\_proposal\_blueprint}: una fuente dimensional explícita y con ruta
+segura podía reemplazarse por otra tabla de mayor puntuación léxica. En el
+intento 125, el territorio comercial pasó a una provincia. Se observaron además
+atributos temporales posicionales y un promedio de líneas rotulado como promedio
+por pedido. La revisión humana detuvo el intento antes de aprobar. No acredita
+un ETL ni una analítica nueva.
+
+\paragraph{Fuentes, rutas e identidad dimensional.}
+La corrección conserva decisiones explícitas respaldadas por fuente, función,
+identidad y ruta declarada. La similitud nominal ayuda a descubrir candidatas
+no resueltas, pero no cambia por sí sola una decisión segura. Una alternativa
+compatible debe conservar el grano y registrar el motivo. No se recorre una
+relación inversa que multiplique el hecho ni se reduce una clave dimensional
+compuesta a su primera columna: la identidad compuesta no admitida se registra
+como impedimento. La comprobación actual de unicidad se apoya en las claves
+primarias capturadas; no acredita restricciones UNIQUE alternativas que el
+extractor no exporta.
+
+\paragraph{Fecha de negocio y atributos.}
+La fecha conserva la referencia temporal revisada y utiliza tipos de calendario
+compatibles. El orden físico de las columnas no determina los atributos. Los
+tipos SQL Server \file{time}, \file{timestamp} y \file{rowversion} no son fechas de
+calendario. Si no existe una fecha de evento inequívoca, se registra la
+ambigüedad y se impide aprobar. Las demás dimensiones mantienen atributos
+coherentes con su función y procedencia.
+
+\paragraph{Evidencia del servidor y significado de los indicadores.}
+El servidor construye \path{ai_decisions.business_request_scope} con el objetivo
+y los requisitos adoptados. La generación y las revisiones utilizan esa
+evidencia, ligada a la revisión de necesidad, fuente e instantánea. El navegador
+no puede sustituirla como autoridad de cobertura. La evidencia
+\file{source\_resolution} registra estado, origen propuesto y elegido, referencia
+de clave de negocio, ruta y razón. \file{dimension\_blockers} conserva los
+impedimentos de fuente, identidad compuesta o fecha ambigua, que la validación
+traduce en errores.
+
+Un promedio por documento no equivale a AVG de líneas de detalle. Un importe
+promedio por pedido o factura necesita importe agregado y documentos distintos
+verificables. Una receta incompatible se corrige sólo con evidencia suficiente
+o se excluye con diagnóstico. La cantidad de KPI permanece variable y su
+selección sigue bajo revisión humana. Los indicadores adicionales válidos y las
+dependencias financieras compatibles no se eliminan por un número prefijado.
+
+\paragraph{Reloj de consulta del copiloto analítico.}
+El contexto de interpretación y explicación incorpora \file{calendar\_reference}:
+fecha ISO actual del servidor, zona UTC y significado de reloj de consulta. Es una
+referencia distinta del año filtrado, la cobertura histórica y la ventana del ETL.
+Las instrucciones prohíben añadir fechas o categorías ajenas a pregunta y evidencia.
+Al rechazar un pronóstico relativo no disponible, la respuesta debe referirse a
+``el período solicitado'' sin inventar un año de ejemplo. La fecha actual no amplía
+el catálogo histórico ni acredita un modelo predictivo.
+
+La regresión compara un reloj de 2026 con datos de 2014, conserva los catálogos y
+no ejecuta una consulta adicional para explicar el dashboard. Las 26 pruebas
+focales del copiloto forman parte del total backend. No cambian SQL, filtros,
+proveedor ni cuotas y no se reescriben números de la respuesta. La prosa de IA
+continúa supervisada; el cambio no garantiza exactitud universal del texto libre.
+
+\paragraph{Versionado y comprobación.}
+El corte intermedio identificó \file{sales-bi-v8} y reglas de compilación 4.
+Antes del ajuste de rutas de reglas 5, \file{make verify} cerró con salida 0 el 6 de noviembre: 475 pruebas backend,
+un aviso sin fallo y 48 frontend; Ruff/formato revisó 91 archivos y Mypy 57.
+La etapa frontend se reutilizó de caché del mismo árbol. El registro
+\path{/tmp/bi-verify-20261106-release.log} tiene corte de las 02:03:22,
+hora de Guayaquil; no se suman al total las regresiones focales. Las reglas históricas 1, 2 y 3 deben
+reproducir sus documentos sin reescribir JSON, huellas o aprobaciones. Los
+expedientes 18 y 19 conservan su corte anterior. El recorrido nuevo 126/20 de AdventureWorks y su exportación están registrados;
+en aquel corte el cierre operativo nuevo de WideWorldImporters seguía pendiente. La campaña y
+los resultados se conservan en
+\path{docs/testing/qa-postcierre-2026-11-06.md}.
+
+\paragraph{Corrección posterior de ruta exacta: reglas 5.}
+Las propuestas WWI 127 y 128 se detuvieron sin aprobación: aunque una dimensión
+conservara su tabla, podían existir FK paralelas con roles diferentes. La ruta
+custodiada y la escogida por el materializador no eran necesariamente iguales.
+No se atribuye a esos intentos una carga ni un éxito operativo.
+
+Los contratos nuevos identifican reglas 5 y conservan sales-bi-v8. La evidencia
+\file{source\_resolution.path} declara aristas ordenadas con tablas y columnas de
+ambos extremos. El descubrimiento enumera rutas simples dirigidas hacia PK
+completas, con límites de 32 rutas y 4096 estados. Exceder esos límites o conservar
+varias rutas sin respaldo de rol bloquea la decisión; no se elige por longitud o
+por orden del catálogo. La evidencia revisada delimita el rol. La herramienta
+supervisada de relaciones no preselecciona una opción ni permite cambiar la
+necesidad custodiada sin revisarla de nuevo.
+
+El materializador y la procedencia analítica comparten
+\file{persisted\_relationship\_paths}. Vuelven a comprobar FK, PK completa,
+continuidad, clave de negocio y prefijos compartidos. Si dos dimensiones exigen
+roles distintos hacia la misma tabla y el constructor no dispone de esos alias,
+se registra un impedimento. Las medidas externas reutilizan una ruta persistida
+o requieren una única ruta dirigida segura compatible; no reabren BFS libre.
+Analytics no presenta otra ruta buscada como si fuera la ejecutada.
+
+La preparación del ETL explica que creará un esquema propio del expediente y
+conservará los anteriores; no anuncia una sustitución global. Identifica la
+fuente seleccionada, sin fijar el nombre del motor en la etiqueta de operación.
+Es una corrección de texto, sin alterar el comportamiento de materialización.
+
+Las reglas 1, 2, 3 y 4 mantienen su comportamiento histórico. AW 126 y su ejecución
+20 continúan bajo reglas 4, sin modificar huellas ni datos; un caso de reglas 5
+requiere versión y ETL nuevos. La prueba focal del materializador/procedencia
+aprobó 67 casos, Ruff/formato y Mypy en sus dos módulos. No equivale a pruebas de operación de todos los modelos o esquemas.
+El cierre definitivo de reglas 5 aprobó 530 backend/50 frontend, incluido el
+ajuste de título y la presentación de unidades comunes. Los recorridos nuevos
+de ambas fuentes se describen a continuación; su evidencia no convierte en
+actuales los contratos históricos.
+
+\paragraph{Puerta de carga histórica y corte automático de reglas 5.}
+Las propuestas anteriores a reglas 5 mantienen lectura, aprobación, huellas y
+resultados, pero no pueden preparar otra carga ni ejecutar un expediente que
+seguía preparado. La puerta \file{\_candidate} exige una versión derivada aprobada
+con reglas actuales antes de insertar o cambiar a ejecución. El historial, el
+panel y los exportes anteriores siguen accesibles; no se cambian modelos ni
+contratos históricos para hacerlos pasar por actuales.
+
+El primer \file{make verify} de reglas 5 concluyó con salida 0: 530 backend,
+un aviso sin fallo y 48 frontend en tres archivos; Ruff/formato revisó 93 archivos y Mypy 57.
+El registro \path{/tmp/bi-verify-reglas5-20261106.log} tiene corte de las 02:43:46,
+hora de Guayaquil. Las 67 focales de materialización/procedencia y 27 de la puerta
+histórica son subconjuntos; no se suman al total. La prueba de 42 casos de
+\file{App.test.tsx} comprobó ausencia de relación predeterminada y guardado
+bloqueado hasta elegir, modificando dos pruebas existentes, no añadiendo 42 casos.
+
+Después de ese corte se ajustó únicamente el título genérico de dashboard a
+``Análisis de ventas'' o ``Análisis de pedidos'', coherente con ambas vistas y
+reportes. La vista ejecutiva conserva su propio encabezado. La auditoría principal repitió el integral al cerrar las fuentes; el corte
+definitivo siguiente incluye este ajuste y el de unidades comunes. Los nuevos resultados operativos de
+reglas 5 se registran por separado; no se atribuyen al cambio los casos anteriores.
+La instrucción del copiloto pide explicar significado de negocio sin trasladar
+claves JSON, estados internos o códigos KPI a la prosa de la respuesta.
+
+\paragraph{Cierre automático y unidades monetarias comunes.}
+\file{make verify} definitivo terminó con salida 0: 530 backend y 50 frontend en
+tres archivos, Ruff/formato en 93 fuentes y Mypy en 57. El registro
+\path{/tmp/bi-verify-entrega-final-20261106.log} tiene corte de las 03:24:58 de
+Guayaquil y reutiliza capas idénticas del árbol final. Incluye título genérico,
+puerta histórica, elección explícita de FK y alias monetarios. Los subconjuntos
+67 de materialización/procedencia, 27 de puerta histórica y 44 de App no se suman
+al total. El aumento de 48 a 50 corresponde a dos casos adicionales de alias.
+
+La interfaz reconoce los términos monetarios comunes importe y valor, además de
+moneda/currency y sus denominadores; mantiene visible la comprobación de divisa.
+Sin ISO verificable comunica moneda de origen, nunca USD por el solo rótulo.
+Las unidades personalizadas históricas se conservan. El expediente 22 repitió la
+comprobación sin otra carga: quedó no resuelto, sin cambiar cifras ni huella de
+la propuesta 131. Los exportes pueden conservar la etiqueta genérica Importe
+del contrato, con moneda de origen explícita en el contexto.
+
+\paragraph{Recorridos operativos nuevos bajo reglas 5.}
+AW 129/21 conservó cuatro dimensiones con rutas idénticas entre contrato, plan y
+procedencia, cinco tablas y 121.317 líneas por lado, diferencia cero. Sin filtros:
+109.846.381,399888 USD, 274.914 unidades, 31.465 pedidos y promedio por pedido
+3.491,065672966407. En 2013/Northwest se verificaron 6.015.174,735836 USD,
+17.452 unidades, 2.053 pedidos y promedio 2.929,943855740867. Su contrato conserva
+cero errores y nueve avisos aceptados. La lectura independiente comprobó el
+historial y la separación de esquemas de los expedientes 18, 20 y 21.
+
+WWI 131/22 conservó fecha de factura y rutas desde el comprador
+\path{Sales.Invoices.CustomerID}, la ciudad registrada de entrega del cliente
+\path{Sales.Customers.DeliveryCityID} y su provincia. Cargó cinco tablas y
+228.265 líneas por lado, diferencia cero: 198.043.439,45 de importe en moneda de
+origen, 8.950.628 unidades y 70.510 facturas, promedio 2.808,7283995177986.
+En 2015/California, la consulta OLTP independiente y el datamart coincidieron:
+3.771 líneas, 3.191.769,11 de importe, 142.247 unidades, 1.179 facturas y promedio
+2.707,1832994062765. Cero errores y siete avisos aceptados. La ejecución 19 no
+es un oráculo territorial: utilizaba un rol legado de facturación diferente;
+sólo se contrastaron sus cuatro totales globales y su conservación sin mutación.
+
+Los exportes 21 y 22 tienen seis páginas PDF legibles y seis hojas XLS cada uno:
+Resumen, cuatro hojas de visuales y Trazabilidad. El primero conserva el indicador
+de unidades; el segundo, importe. Las sumas mensuales/territoriales y cuatro KPI
+coincidieron con cada control. La razón monetaria del PDF 21 conserva una etiqueta
+genérica pese a USD comprobado; se registra como observación, sin cambiar su cifra.
+No se modifica retroactivamente el aspecto de los exportes anteriores.
+
+El chat de WWI 22 acertó las cifras del filtro y explicó límites de ubicación
+histórica, entrega no demostrada y moneda sin identificar. No se declara perfecta
+la prosa: sus expresiones siguen sujetas a revisión y no hay validador universal
+de veracidad. La vigencia dimensional se refiere al estado leído durante ETL,
+no a una reconstrucción histórica ni a prueba de entrega real. La compilación y
+revisión de los tres PDF técnicos queda registrada en el acta QA del corte.
+
 \subsection{Validación acumulativa visible}
 
 La versión seleccionada incorpora \textbf{Validación estructural de la propuesta - Sprint 3}. La acción \textbf{Verificar evidencia} llama a \file{POST /api/v1/copilot/proposals/\{id\}/verify}; FastAPI no vuelve a consumir el LLM, no ejecuta el ETL y no modifica el estado de la propuesta. Comprueba la huella de los metadatos, referencias técnicas, consistencia del contrato BI y reconstrucción determinística desde \file{ai\_decisions}. Una diferencia entre la propuesta persistida y la reconstruida se presenta como advertencia de compatibilidad, no como prueba de corrupción. La seguridad vigente depende de la integridad de la instantánea, las referencias comprobadas y la ausencia de errores estructurales.
@@ -723,7 +912,7 @@ Una aprobación puede retirarse desde la web con motivo obligatorio y una versi�
 
 \subsection{Materialización controlada del Sprint 4}
 
-La pantalla \textbf{Datos > Datamart de ventas} guía cinco pasos: elegir propuesta, revisar indicadores, confirmar ejecución, materializar y validar. Al entrar, abre primero la ejecución conciliada más reciente de la fuente y muestra la misma pareja ejecución--propuesta publicada en Analítica de ventas. Las propuestas aprobadas no ejecutadas quedan como alternativas para una carga nueva; no sustituyen visualmente al datamart vigente. El catálogo conserva además los contratos con ejecuciones históricas aunque hayan dejado de ser elegibles, pero los presenta en modo de sólo lectura. FastAPI repite las comprobaciones inmediatamente antes de preparar una ejecución nueva.
+La pantalla \textbf{Diseño y transformación BI > Datamart de ventas} guía cinco pasos: elegir propuesta, revisar indicadores, confirmar ejecución, materializar y validar. Al entrar, abre primero la ejecución conciliada más reciente de la fuente y muestra la misma pareja ejecución--propuesta publicada en Analítica de ventas. Las propuestas aprobadas no ejecutadas quedan como alternativas para una carga nueva; no sustituyen visualmente al datamart vigente. El catálogo conserva además los contratos con ejecuciones históricas aunque hayan dejado de ser elegibles, pero los presenta en modo de sólo lectura. FastAPI repite las comprobaciones inmediatamente antes de preparar una ejecución nueva.
 
 El analista revisa una cantidad variable de KPI sugeridos por la IA. Cada indicador muestra nombre, propósito, medida, periodicidad, unidad y receta compilada. Las recetas permitidas son agregación, razón y participación; las medidas calculadas aceptan únicamente operaciones aritméticas tipadas y columnas verificadas. No existe un campo de SQL ni una fórmula libre. Si una tasa de descuento se usa como importe, el backend exige precio, tasa y cantidad inequívocos y construye \file{precio * tasa * cantidad}; si no puede demostrarlo, bloquea la ejecución.
 
@@ -764,7 +953,7 @@ La propuesta 54 produjo la ejecución 7. El datamart conserva 121317 líneas, 27
 
 \subsection{Analítica explicable y conversación contextual}
 
-La opción \textbf{Análisis y decisiones > Analítica de ventas} abre únicamente una ejecución exitosa y conciliada. La vista ejecutiva prioriza KPI, evolución, productos, territorios y hallazgos; la vista analítica habilita selección de indicador, clientes principales, tablas de respaldo y calidad. Año y territorio se aplican en el servidor a KPIs, gráficos, hallazgos y exportaciones. La moneda se muestra como \file{USD} porque fue comprobada en la fuente, no inferida por un símbolo.
+La opción \textbf{Análisis y decisiones > Analítica de ventas} abre únicamente una ejecución exitosa y conciliada. La vista ejecutiva prioriza KPI, evolución, productos, territorios y hallazgos; la vista analítica habilita selección de indicador, clientes principales, tablas de respaldo y calidad. Año y territorio se aplican en el servidor a KPIs, gráficos, hallazgos y exportaciones. En el caso de AdventureWorks, \file{USD} fue comprobado en la fuente. Otra fuente conserva su moneda de origen mientras no exista evidencia de una divisa concreta.
 
 Los gráficos admiten exploración directa con ratón, toque o teclado. Seleccionar un punto, barra o categoría abre dentro de la tarjeta un detalle con etiqueta, valor exacto y participación sobre el conjunto visible; cerrar el detalle no altera filtros. En la distribución territorial aparece \textbf{Filtrar tablero por...} únicamente cuando la etiqueta coincide con una opción real del catálogo devuelto por FastAPI. Aplicarla actualiza conjuntamente indicadores, visuales y hallazgos; no se aceptan valores escritos libremente.
 
@@ -1045,7 +1234,7 @@ En otro equipo se sustituye esa ruta por la carpeta donde se clonó el repositor
   \bottomrule
 \end{tabularx}
 
-\warningbox{No añadir \file{--volumes} para una detención normal. PostgreSQL y AdventureWorks sólo se conservan cuando los volúmenes permanecen.}
+\warningbox{No añadir \file{--volumes} para una detención normal. Las bases internas, las dos fuentes de demostración y la raíz criptográfica sólo se conservan cuando permanecen sus volúmenes.}
 
 \subsection{Ciclo del ambiente de desarrollo}
 
@@ -1171,7 +1360,7 @@ El primer comando retira desarrollo y \file{frontend-delivery}; el segundo retir
   \file{make test} & Ejecuta pruebas en las etapas Docker de backend y frontend. \\
   \file{make lint} & Ejecuta Ruff, Mypy y ESLint en contenedores. \\
   \file{make compose-check} & Valida Compose de desarrollo, entrega y perfil Ollama opcional. \\
-  \file{make docs} & Regenera bitácora, informes de Sprint 1 y Sprint 2, y manual. \\
+  \file{make docs} & Regenera los doce PDF: bitácora, seis sprints, evidencias, guía formativa, capítulo III y manual. \\
   \file{make verify} & Ejecuta la verificación completa antes de entregar. \\
   \bottomrule
 \end{tabularx}
@@ -1187,7 +1376,7 @@ docker compose --profile delivery down
 make release-down
 \end{lstlisting}
 
-El primer comando cubre desarrollo y la vista Nginx cuando está activa. El segundo cubre la entrega completa aislada. Los volúmenes permanecen y el siguiente arranque reutiliza PostgreSQL y AdventureWorks.
+El primer comando cubre desarrollo y la vista Nginx cuando está activa. El segundo cubre la entrega completa aislada. Los volúmenes permanecen y el siguiente arranque reutiliza PostgreSQL, ambas fuentes SQL Server y la raíz criptográfica.
 
 \subsection{Reconstruir desde cero}
 
@@ -1198,14 +1387,14 @@ docker compose down --volumes
 make bootstrap
 \end{lstlisting}
 
-La restauración de AdventureWorks volverá a descargar el respaldo cuando el volumen esté vacío.
+Las dos fuentes SQL Server se restauran desde respaldos oficiales cuando faltan; un volumen vacío puede requerir descargar ambos respaldos.
 
 \subsection{Qué se versiona}
 
 \begin{itemize}
   \item Se versionan Dockerfiles, Compose, scripts, migraciones, documentación y datos sintéticos aprobados.
   \item No se versionan volúmenes, contraseñas, tokens, archivos \file{.bak}, \file{.dump} ni datos productivos.
-  \item AdventureWorks se reconstruye desde el respaldo oficial y PostgreSQL desde scripts/migraciones.
+  \item AdventureWorks2022 y WideWorldImporters se reconstruyen desde sus respaldos oficiales; PostgreSQL, desde scripts y migraciones.
 \end{itemize}
 
 \section{Actualización y reversión}
@@ -1308,14 +1497,14 @@ En GitHub se abre la pestaña \textbf{Actions}. Cada fila representa una ejecuci
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.96\textwidth]{../assets/sprint-01/github-actions.png}
-  \caption{Historial real de GitHub Actions: CI y CD concluyen con estado satisfactorio después de promover \file{develop} hacia \file{main}.}
+  \caption{Evidencia histórica del Sprint 1: CI y CD satisfactorios tras la promoción de \file{develop} a \file{main}.}
 \end{figure}
 
 \begin{tabularx}{\textwidth}{@{}p{0.22\textwidth}X X@{}}
   \toprule
   Flujo & Cuándo se ejecuta & Resultado esperado \\
   \midrule
-  CI & Push o pull request hacia \file{develop} o \file{main}. & Valida flujo de ramas, Compose, backend, frontend, infraestructura y los nueve PDF. No publica ni deja contenedores activos ni descarga modelos LLM. \\
+  CI & Push o pull request hacia \file{develop} o \file{main}. & Valida flujo de ramas, Compose, backend, frontend, infraestructura y los doce PDF. No publica ni deja contenedores activos ni descarga modelos LLM. \\
   CD & Cambio ya fusionado en \file{main} o etiqueta \file{v*}. & Revalida backend/frontend y publica cinco imágenes de producción en GHCR con etiqueta de rama, SHA y, cuando aplique, versión. No despliega aún una VM Azure. \\
   Dependabot & Según su programación. & Abre un PR temporal de actualización; se revisa y prueba igual que un cambio humano. \\
   \bottomrule
@@ -1326,7 +1515,7 @@ Para diagnosticar una falla se abre primero el trabajo con marca roja, se identi
 \begin{figure}[H]
   \centering
   \includegraphics[height=0.57\textheight]{../assets/sprint-01/pr-checks.png}
-  \caption{Control de promoción: aprobación humana, verificaciones obligatorias y ausencia de conflictos antes de habilitar la fusión.}
+  \caption{Ejemplo histórico del control de promoción: aprobación humana y verificaciones obligatorias antes de la fusión.}
 \end{figure}
 
 \subsection{Qué significa DevOps en este prototipo}
@@ -1362,7 +1551,7 @@ El Sprint 1 no se rehace con SDD porque ya se cerró como una base técnica. Des
 \begin{enumerate}
   \item Cambiar todas las credenciales de ejemplo antes del primer arranque.
   \item Mantener \file{.env} fuera de Git y fuera de los documentos.
-  \item Usar \file{bi\_reader} para AdventureWorks; no conectar la aplicación como \file{sa}.
+  \item Usar una cuenta de sólo lectura, como \file{bi\_reader}, en ambas fuentes; no conectar la aplicación como \file{sa}.
   \item Conservar \file{SQLSERVER\_APPLICATION\_INTENT=ReadOnly}, pero apoyarse en permisos reales del motor.
   \item Gestionar la visibilidad de cada paquete GHCR de forma independiente y no incluir secretos ni datos reales en ninguna imagen.
   \item Otorgar acceso únicamente a cuentas identificadas y revocar colaboradores que ya no participen.
@@ -1386,7 +1575,7 @@ El Sprint 1 no se rehace con SDD porque ya se cerró como una base técnica. Des
   Backend vivo, pero \file{ready} falla & PostgreSQL no está saludable o las credenciales no coinciden. & Revisar \file{docker compose ps} y los registros de PostgreSQL/backend. \\
   SQL Server no queda saludable & Memoria insuficiente, clave SA inválida o descarga bloqueada. & Asignar 8 GB a Docker, corregir la clave y revisar los registros. \\
   Restauración muy lenta & Primera descarga o emulación ARM. & Esperar y seguir \file{docker compose logs -f sqlserver}. \\
-  SQL Server queda no saludable tras reiniciar & AdventureWorks todavía está recuperándose. & Esperar la sonda; el inicializador comprueba la base antes de recrear la marca de disponibilidad. \\
+  SQL Server queda no saludable tras reiniciar & Una de las fuentes SQL Server todavía está recuperándose. & Esperar la sonda; el inicializador comprueba la base antes de recrear la marca de disponibilidad. \\
   Frontend no muestra API disponible & Backend no saludable o proxy mal configurado. & Probar \file{/health/live}, revisar puertos y registros del frontend. \\
   GHCR devuelve \file{denied} & Falta autenticación, acceso al paquete o permiso \file{read:packages}. & Repetir \file{docker login ghcr.io} con una cuenta autorizada. \\
   PDF no se actualiza & No se regeneró después de editar LaTeX. & Ejecutar \file{make docs} y revisar los archivos modificados. \\
@@ -1413,9 +1602,9 @@ docker compose --profile local-llm logs --tail=200 ollama
   \item Ejecutar \file{docker compose ps}; los cuatro servicios deben estar saludables.
   \item Consultar \file{/health/live} y \file{/health/ready}.
   \item Abrir frontend y OpenAPI en el navegador.
-  \item Confirmar que AdventureWorks contiene 71 tablas y el acceso externo usa \file{bi\_reader}.
+  \item Comprobar la fuente seleccionada y su instantánea: 71 tablas en AdventureWorks o 48 en WideWorldImporters en los casos documentados; cuenta lectora verificada.
   \item Confirmar que no hay secretos ni archivos \file{.env} en los cambios de Git.
-  \item Abrir las ejecuciones 9 y 11 y comprobar 121317 filas conciliadas, 19820 clientes con nombre y tipo, moneda USD y KPI derivados calculables.
+  \item Abrir las ejecuciones 21 y 22 y comprobar 121317 y 228265 filas conciliadas, respectivamente; revisar las rutas, los cuatro KPI del caso y la moneda respaldada por cada fuente.
   \item Probar las vistas ejecutiva y analítica, una pregunta guiada y las exportaciones PDF/Excel con la misma selección.
   \item Registrar SHA, etiqueta y digest de imágenes en la bitácora.
   \item Conservar los PDF generados para la evidencia de tesis.
@@ -1432,6 +1621,7 @@ make sprint2-report
 make sprint3-report
 make sprint4-report
 make sprint5-report
+make sprint6-report
 make technical-manual
 make docs
 \end{lstlisting}
@@ -1452,7 +1642,7 @@ Después de cambios técnicos se deben actualizar, según corresponda, README, a
   \bottomrule
 \end{tabularx}
 
-Ante pérdida de datos locales, credenciales expuestas, imágenes inesperadas o permisos de escritura en AdventureWorks, detener la demostración, conservar registros, revocar las credenciales afectadas y documentar la resolución antes de continuar.
+Ante pérdida de datos locales, credenciales expuestas, imágenes inesperadas o permisos de escritura en alguna fuente externa, detener la demostración, conservar registros, revocar las credenciales afectadas y documentar la resolución antes de continuar.
 
 \appendix
 \section{Referencia rápida de URLs y puertos}
@@ -1556,6 +1746,7 @@ make verify
   5.1.0 & 03-10-2026 & Necesidades sugeridas y revisadas con metadatos, consentimiento por destino, evaluación persistida; auditoría de pedidos/facturas y promedios por documento, con límites de evidencia explícitos. \\
   5.2.0 & 05-11-2026 & Revisión posterior al cierre del 4--5 de noviembre: trazabilidad documental, necesidad positiva de factura, compilación versionada para IDs, razones y conteos, periodicidad efectiva y límites de interpretación del chat. Evidencia previa y regresión posterior separadas. \\
   5.2.1 & 05-11-2026 & Ajuste adicional de presentación: unidad monetaria completa y denominador conservado, precisión de cantidades y conteos, y conciliación sin superposición. Verificación posterior separada del corte V4; originales anteriores intactos. \\
+  5.2.2 & 06-11-2026 & Preservación de fuentes y rutas dimensionales seguras, fecha revisada, evidencia del servidor y coherencia del promedio por documento; reglas 4 como corte intermedio y reglas 5 para rutas exactas con sales-bi-v8. Cierre definitivo 530/50, rutas exactas y cargas nuevas 129/21 y 131/22 conciliadas; límites semánticos y narrativos documentados. \\
   \bottomrule
 \end{longtable}
 
