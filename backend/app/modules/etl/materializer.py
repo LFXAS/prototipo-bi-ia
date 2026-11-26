@@ -11,7 +11,7 @@ import psycopg
 import pyodbc  # type: ignore[import-not-found]
 
 from app.core.config import settings
-from app.modules.copilot.service import metadata_tables
+from app.modules.copilot.service import metadata_tables, safe_relationship_paths
 from app.modules.parameters.connections import build_connection_string
 from app.modules.parameters.models import DataConnection
 
@@ -203,6 +203,134 @@ def _shortest_path(
     raise ValueError(f"No existe una relación declarada entre {start} y {target}.")
 
 
+def _persisted_path_step(
+    value: object, tables: dict[str, dict[str, Any]]
+) -> tuple[str, str, list[str], list[str]]:
+    """Validate an exact directed FK, including the complete target identity."""
+    if not isinstance(value, dict):
+        raise ValueError("La ruta dimensional persistida contiene una arista inválida.")
+    left = value.get("left_table")
+    right = value.get("right_table")
+    left_columns = value.get("left_columns")
+    right_columns = value.get("right_columns")
+    if (
+        not isinstance(left, str)
+        or not isinstance(right, str)
+        or left not in tables
+        or right not in tables
+        or not isinstance(left_columns, list)
+        or not isinstance(right_columns, list)
+        or not left_columns
+        or len(left_columns) != len(right_columns)
+        or any(not isinstance(item, str) or not item for item in [*left_columns, *right_columns])
+        or len(set(left_columns)) != len(left_columns)
+        or len(set(right_columns)) != len(right_columns)
+    ):
+        raise ValueError("La ruta dimensional no conserva tablas y claves verificables.")
+    available_left = {
+        str(column.get("name"))
+        for column in tables[left].get("columns", [])
+        if isinstance(column, dict)
+    }
+    target_keys = {
+        str(column.get("name"))
+        for column in tables[right].get("columns", [])
+        if isinstance(column, dict) and column.get("primary_key", column.get("pk", False))
+    }
+    declared = any(
+        isinstance(relation, dict)
+        and not _is_audit_relation(relation)
+        and f"{relation.get('referenced_schema', '')}.{relation.get('referenced_table', '')}"
+        == right
+        and relation.get("columns") == left_columns
+        and relation.get("referenced_columns") == right_columns
+        for relation in tables[left].get("foreign_keys", [])
+    )
+    if (
+        not declared
+        or not set(left_columns).issubset(available_left)
+        or not target_keys
+        or set(right_columns) != target_keys
+    ):
+        raise ValueError(
+            "La ruta persistida no es una FK dirigida hacia una clave primaria completa."
+        )
+    return left, right, list(left_columns), list(right_columns)
+
+
+def _register_relationship_path(
+    paths: dict[str, list[tuple[str, str, list[str], list[str]]]],
+    fact_source: str,
+    path: list[tuple[str, str, list[str], list[str]]],
+) -> None:
+    current = fact_source
+    visited = {fact_source}
+    prefix: list[tuple[str, str, list[str], list[str]]] = []
+    for step in path:
+        left, right, _, _ = step
+        if left != current or right in visited:
+            raise ValueError("La ruta persistida no es un recorrido continuo desde el hecho.")
+        prefix = [*prefix, step]
+        if right in paths and paths[right] != prefix:
+            raise ValueError(
+                "Dos dimensiones o medidas requieren rutas incompatibles hacia la misma tabla."
+            )
+        paths[right] = prefix
+        visited.add(right)
+        current = right
+
+
+def persisted_relationship_paths(
+    proposal: dict[str, Any], schema_document: dict[str, Any]
+) -> dict[str, list[tuple[str, str, list[str], list[str]]]]:
+    """Return reviewed paths for rules 5; never rediscover them from FK order."""
+    tables = metadata_tables(schema_document)
+    fact = proposal.get("fact", {})
+    fact = fact if isinstance(fact, dict) else {}
+    sources = fact.get("source_tables", [])
+    if not isinstance(sources, list) or len(sources) != 1 or sources[0] not in tables:
+        raise ValueError("El hecho no conserva una fuente para sus rutas persistidas.")
+    fact_source = str(sources[0])
+    paths: dict[str, list[tuple[str, str, list[str], list[str]]]] = {fact_source: []}
+    for dimension in proposal.get("dimensions", []):
+        if not isinstance(dimension, dict):
+            raise ValueError("La dimensión no conserva su evidencia de ruta.")
+        dimension_sources = dimension.get("source_tables", [])
+        resolution = dimension.get("source_resolution")
+        if (
+            not isinstance(dimension_sources, list)
+            or len(dimension_sources) != 1
+            or dimension_sources[0] not in tables
+            or not isinstance(resolution, dict)
+            or not isinstance(resolution.get("path"), list)
+            or resolution.get("selected_source") != dimension_sources[0]
+        ):
+            raise ValueError("La dimensión no conserva una ruta persistida inequívoca.")
+        target = str(dimension_sources[0])
+        business_key = str(dimension.get("business_key", ""))
+        columns = [
+            column for column in tables[target].get("columns", []) if isinstance(column, dict)
+        ]
+        keys = [column for column in columns if column.get("primary_key", column.get("pk", False))]
+        if len(keys) > 1 and dimension.get("name") != "dim_fecha":
+            raise ValueError("La identidad dimensional compuesta no puede reducirse a una columna.")
+        if dimension.get("name") != "dim_fecha" and (
+            len(keys) != 1 or keys[0].get("name") != business_key
+        ):
+            raise ValueError("La dimensión requiere una clave primaria simple comprobada.")
+        if (
+            not business_key
+            or not any(column.get("name") == business_key for column in columns)
+            or resolution.get("business_key_reference") != f"{target}.{business_key}"
+        ):
+            raise ValueError("La ruta dimensional no conserva su clave de negocio comprobada.")
+        path = [_persisted_path_step(value, tables) for value in resolution["path"]]
+        if (path[-1][1] if path else fact_source) != target:
+            raise ValueError("La ruta persistida no termina en la fuente dimensional aprobada.")
+        _register_relationship_path(paths, fact_source, path)
+    return paths
+
+
 def build_materialization_plan(
     proposal: dict[str, Any], schema_document: dict[str, Any]
 ) -> MaterializationPlan:
@@ -213,6 +341,9 @@ def build_materialization_plan(
         raise ValueError("El hecho debe conservar una única fuente comprobada.")
     fact_source = fact_sources[0]
     graph = _relations(schema_document)
+    rules_version = proposal.get("compilation_rules_version", 1)
+    strict_paths = isinstance(rules_version, int) and rules_version >= 5
+    approved_paths = persisted_relationship_paths(proposal, schema_document) if strict_paths else {}
     dimensions: list[DimensionPlan] = []
     for raw in proposal.get("dimensions", []):
         if not isinstance(raw, dict):
@@ -289,6 +420,16 @@ def build_materialization_plan(
                     if not declared:
                         raise ValueError(
                             "La ruta de identidad no corresponde a una relación declarada."
+                        )
+                    if strict_paths:
+                        _persisted_path_step(
+                            {
+                                "left_table": source_ref,
+                                "right_table": variant_source,
+                                "left_columns": left_columns,
+                                "right_columns": right_columns,
+                            },
+                            tables,
                         )
                     variant_alias = f"d{variant_index}"
                     conditions = " AND ".join(
@@ -371,11 +512,39 @@ def build_materialization_plan(
     joined_edges: set[tuple[str, str]] = set()
 
     def ensure_joined(target_ref: str) -> None:
-        path = _shortest_path(graph, fact_source, target_ref)
+        if strict_paths:
+            if target_ref not in approved_paths:
+                decisions = proposal.get("ai_decisions", {})
+                decisions = decisions if isinstance(decisions, dict) else {}
+                controlled = decisions.get("controlled_relations")
+                controlled = controlled if isinstance(controlled, list) else None
+                candidates = safe_relationship_paths(
+                    tables, fact_source, target_ref, controlled_relations=controlled
+                )
+                compatible = []
+                for candidate in candidates:
+                    candidate_path = [_persisted_path_step(step, tables) for step in candidate]
+                    combined = dict(approved_paths)
+                    try:
+                        _register_relationship_path(combined, fact_source, candidate_path)
+                    except ValueError:
+                        continue
+                    compatible.append(candidate_path)
+                if len(compatible) != 1:
+                    raise ValueError(
+                        "La medida externa requiere una única ruta dirigida segura o una ruta "
+                        "persistida compatible; no se elegirá por orden de metadatos."
+                    )
+                _register_relationship_path(approved_paths, fact_source, compatible[0])
+            path = approved_paths[target_ref]
+        else:
+            path = _shortest_path(graph, fact_source, target_ref)
         for left_ref, right_ref, left_columns, right_columns in path:
             edge = (left_ref, right_ref)
             reverse_edge = (right_ref, left_ref)
-            if edge in joined_edges or reverse_edge in joined_edges:
+            if strict_paths and right_ref in alias_by_table:
+                continue
+            if not strict_paths and (edge in joined_edges or reverse_edge in joined_edges):
                 continue
             left_alias = alias_by_table.get(left_ref)
             if left_alias is None:

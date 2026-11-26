@@ -9,8 +9,8 @@ from typing import Any
 from app.modules.copilot.domains import SALES_PROFILE
 from app.modules.copilot.entity_resolution import enrich_dimension_labels
 
-PROMPT_VERSION = "sales-bi-v7"
-COMPILATION_RULES_VERSION = 3
+PROMPT_VERSION = "sales-bi-v9"
+COMPILATION_RULES_VERSION = 6
 CONTRACT_VERSION = 1
 ALLOWED_OPERATIONS = {"extract", "join", "filter", "derive", "aggregate", "load"}
 ALLOWED_AGGREGATIONS = {"sum", "count", "count_distinct", "average", "min", "max"}
@@ -377,6 +377,11 @@ PROPOSAL_BLUEPRINT_SYSTEM_INSTRUCTION = (
     "Para un importe promedio por documento declara una medida de importe total con sum "
     "y otra de documentos con count_distinct; el compilador construirá su razón de agregados. "
     "No dividas el importe de cada fila por el valor de un identificador. "
+    "Conserva todos los requisitos directos o derivables y sus referencias comprobadas: "
+    "las limitaciones aceptadas se aplican sólo al requisito señalado, no autorizan a "
+    "omitir otros importes, fechas, dimensiones o conteos viables. La moneda desconocida "
+    "no impide sumar un importe registrado en moneda de origen. El alcance contiene las "
+    "columnas disponibles; no declares ausente una columna que aparece en él. "
     "Conserva columnas monetarias específicas: precio usa price, descuento usa discount y el "
     "importe de venta usa amount o total. Asocia producto, "
     "cliente y territorio con la tabla técnica cuyo nombre corresponda. No inventes "
@@ -489,7 +494,10 @@ def proposal_blueprint_schema(
             for column in item.get("columns", [])
             if isinstance(column, dict)
             and column.get("name")
-            and bool(_search_tokens(column.get("name")) & measure_terms)
+            and (
+                bool(_search_tokens(column.get("name")) & measure_terms)
+                or str(column.get("name")) in _identifier_columns(item)
+            )
         }
     )
     if not measure_columns:
@@ -932,6 +940,7 @@ def compact_metadata_blocks(
     document: dict[str, Any], business_request: dict[str, Any], max_items: int
 ) -> list[dict[str, Any]]:
     tables = metadata_tables(document)
+    reviewed_columns = _reviewed_column_references(business_request)
     selected_references = _discovery_references(tables, business_request)
     compact: list[dict[str, Any]] = []
     for reference in selected_references:
@@ -939,7 +948,9 @@ def compact_metadata_blocks(
         compact.append(
             {
                 "ref": reference,
-                "columns": _compact_columns(table),
+                "columns": _compact_columns(
+                    table, required_columns=reviewed_columns.get(reference, set())
+                ),
                 "foreign_keys": [
                     {
                         "columns": relation.get("columns", []),
@@ -1061,7 +1072,25 @@ def _identifier_columns(
     return result
 
 
-def _compact_columns(table: dict[str, Any], limit: int = 8) -> list[dict[str, object]]:
+def _reviewed_column_references(business_request: dict[str, Any]) -> dict[str, set[str]]:
+    """Keep exact references already checked during viability in every later context."""
+    assessment = business_request.get("viability_assessment", {})
+    if not isinstance(assessment, dict):
+        return {}
+    result: dict[str, set[str]] = {}
+    for item in assessment.get("requirements", []):
+        if not isinstance(item, dict) or item.get("status") not in {"direct", "derivable"}:
+            continue
+        for value in [*item.get("evidence", []), *item.get("identity_references", [])]:
+            match = re.fullmatch(r"([^\s.]+\.[^\s.]+)\.([^\s.]+)", str(value))
+            if match:
+                result.setdefault(match.group(1), set()).add(match.group(2))
+    return result
+
+
+def _compact_columns(
+    table: dict[str, Any], limit: int = 8, *, required_columns: set[str] | None = None
+) -> list[dict[str, object]]:
     foreign_key_columns = {
         str(column)
         for relation in table.get("foreign_keys", [])
@@ -1074,10 +1103,10 @@ def _compact_columns(table: dict[str, Any], limit: int = 8) -> list[dict[str, ob
         if not isinstance(column, dict):
             continue
         name = str(column.get("name", ""))
-        data_type = str(column.get("data_type", ""))
+        data_type = str(column.get("data_type", column.get("type", "")))
         tokens = _search_tokens(name)
         score = (
-            (20 if bool(column.get("primary_key", False)) else 0)
+            (20 if bool(column.get("primary_key", column.get("pk", False))) else 0)
             + (16 if name in foreign_key_columns else 0)
             + 6 * len(tokens & SALES_PROFILE.discovery_terms)
             + 10 * len(tokens & descriptive_terms)
@@ -1090,12 +1119,15 @@ def _compact_columns(table: dict[str, Any], limit: int = 8) -> list[dict[str, ob
                 {
                     "name": name,
                     "type": data_type,
-                    "pk": bool(column.get("primary_key", False)),
+                    "pk": bool(column.get("primary_key", column.get("pk", False))),
                     "nullable": bool(column.get("nullable", False)),
                 },
             )
         )
-    selected = sorted(ranked)[:limit]
+    required = required_columns or set()
+    mandatory = [item for item in ranked if str(item[2]["name"]) in required]
+    remaining = [item for item in ranked if str(item[2]["name"]) not in required]
+    selected = [*mandatory, *sorted(remaining)[: max(0, limit - len(mandatory))]]
     return [item for _, _, item in sorted(selected, key=lambda entry: entry[1])]
 
 
@@ -1166,6 +1198,13 @@ def _discovery_references(
             best = min(matching, key=lambda ref: (len(_search_tokens(ref)), -scores[ref], ref))
             if best not in selected:
                 selected.append(best)
+    # A prior review has already checked these references against the full snapshot.
+    # A lexical shortlist may add context, but must not silently remove that evidence.
+    reviewed_references = _reviewed_column_references(business_request)
+    for reference in ranked:
+        if reference in reviewed_references and reference not in selected:
+            selected.append(reference)
+    shortlist_limit = max(scope_limit, len(selected))
     for reference in ranked:
         if invoice_required and invoice_lines:
             reference_tokens = _search_tokens(reference)
@@ -1175,9 +1214,9 @@ def _discovery_references(
                 continue
         if reference not in selected:
             selected.append(reference)
-        if len(selected) >= scope_limit:
+        if len(selected) >= shortlist_limit:
             break
-    return selected[:scope_limit]
+    return selected[:shortlist_limit]
 
 
 def validated_semantic_candidates(
@@ -1610,13 +1649,16 @@ def derived_scope(
                         identity_queue.append((target, depth + 1))
     # Never discard an LLM candidate merely because a connector path consumed the limit.
     expanded.update(selected_set)
+    reviewed_columns = _reviewed_column_references(business_request or {})
     scope_tables = []
     for reference in sorted(expanded):
         table = tables[reference]
         scope_tables.append(
             {
                 "ref": reference,
-                "columns": _compact_columns(table, limit=12),
+                "columns": _compact_columns(
+                    table, limit=12, required_columns=reviewed_columns.get(reference, set())
+                ),
                 "foreign_keys": [
                     relation
                     for relation in table.get("foreign_keys", [])
@@ -1636,6 +1678,17 @@ def proposal_payload(
 ) -> dict[str, Any]:
     assessment = business_request.get("viability_assessment", {})
     assessment = assessment if isinstance(assessment, dict) else {}
+    reviewed_columns = _reviewed_column_references(business_request)
+    scoped_column_references = {
+        f"{table.get('ref')}.{column.get('name')}"
+        for table in scope.get("tables", [])
+        if isinstance(table, dict)
+        for column in table.get("columns", [])
+        if isinstance(column, dict)
+    }
+    reviewed_references = {
+        f"{table}.{column}" for table, columns in reviewed_columns.items() for column in columns
+    } & scoped_column_references
     compact_request = {
         "domain": business_request.get("domain"),
         "goal": business_request.get("goal"),
@@ -1658,6 +1711,21 @@ def proposal_payload(
                 "status": item.get("status"),
                 "components": item.get("components", []),
                 "formula": item.get("formula"),
+                **(
+                    {
+                        "references": [
+                            reference
+                            for reference in item.get("evidence", [])
+                            if str(reference) in reviewed_references
+                        ]
+                    }
+                    if item.get("status") in {"direct", "derivable"}
+                    and any(
+                        str(reference) in reviewed_references
+                        for reference in item.get("evidence", [])
+                    )
+                    else {}
+                ),
                 **({"coverage_code": item["coverage_code"]} if item.get("coverage_code") else {}),
                 **(
                     {"identity_references": deepcopy(item["identity_references"])}
@@ -1693,7 +1761,10 @@ def proposal_payload(
         "tables": [
             {
                 "ref": table.get("ref"),
-                "columns": list(table.get("columns", []))[:8],
+                "columns": _compact_columns(
+                    table,
+                    required_columns=reviewed_columns.get(str(table.get("ref")), set()),
+                ),
                 "foreign_keys": [
                     relation
                     for relation in table.get("foreign_keys", [])
@@ -1948,6 +2019,595 @@ def _discount_amount_recipe_is_complete(operation: str, inputs: list[str]) -> bo
     return (has_price and has_quantity) or has_amount_base
 
 
+def _dimension_source_path(
+    tables: dict[str, dict[str, Any]], start: str, target: str
+) -> list[dict[str, Any]] | None:
+    """Find only declared, grain-preserving routes, never an arbitrary graph walk."""
+    if start not in tables or target not in tables:
+        return None
+    graph: dict[str, list[tuple[str, dict[str, Any]]]] = {ref: [] for ref in tables}
+    for source, table in tables.items():
+        source_keys = {
+            str(col.get("name"))
+            for col in table.get("columns", [])
+            if isinstance(col, dict) and bool(col.get("pk", col.get("primary_key", False)))
+        }
+        for relation in table.get("foreign_keys", []):
+            if not isinstance(relation, dict) or _is_audit_relation(relation):
+                continue
+            destination = (
+                f"{relation.get('referenced_schema', '')}.{relation.get('referenced_table', '')}"
+            )
+            if destination not in tables:
+                continue
+            left = [str(value) for value in relation.get("columns", [])]
+            right = [str(value) for value in relation.get("referenced_columns", [])]
+            target_keys = {
+                str(col.get("name"))
+                for col in tables[destination].get("columns", [])
+                if isinstance(col, dict) and bool(col.get("pk", col.get("primary_key", False)))
+            }
+            if not left or len(left) != len(right) or set(right) != target_keys:
+                continue
+            edge = {
+                "left_table": source,
+                "right_table": destination,
+                "left_columns": left,
+                "right_columns": right,
+            }
+            graph[source].append((destination, edge))
+            if set(left) == source_keys:
+                graph[destination].append((source, edge))
+    pending: list[tuple[str, list[dict[str, Any]]]] = [(start, [])]
+    visited = {start}
+    while pending:
+        current, path = pending.pop(0)
+        if current == target:
+            return path
+        for neighbor, edge in sorted(graph[current], key=lambda item: item[0]):
+            if neighbor not in visited:
+                visited.add(neighbor)
+                pending.append((neighbor, [*path, edge]))
+    return None
+
+
+def _temporal_column(column: dict[str, Any]) -> bool:
+    data_type = str(column.get("type", column.get("data_type", ""))).casefold()
+    base_type = data_type.split("(", 1)[0].strip()
+    return base_type in {"date", "datetime", "datetime2", "datetimeoffset", "smalldatetime"} or (
+        not data_type and bool(_search_tokens(column.get("name", "")) & {"date", "fecha"})
+    )
+
+
+def relationship_signature(
+    edge: dict[str, Any],
+) -> tuple[str, str, tuple[str, ...], tuple[str, ...]]:
+    return (
+        str(edge.get("left_table", "")),
+        str(edge.get("right_table", "")),
+        tuple(str(value) for value in edge.get("left_columns", [])),
+        tuple(str(value) for value in edge.get("right_columns", [])),
+    )
+
+
+def safe_relationship_paths(
+    tables: dict[str, dict[str, Any]],
+    start: str,
+    target: str,
+    controlled_relations: list[dict[str, Any]] | None = None,
+    reviewed_references: set[str] | None = None,
+) -> list[list[dict[str, Any]]]:
+    """Enumerate all bounded simple FK paths; never infer a role from ordering."""
+    if start not in tables or target not in tables:
+        return []
+    if start == target:
+        return [[]]
+    groups: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    for source, table in tables.items():
+        source_columns = {
+            str(col.get("name")) for col in table.get("columns", []) if isinstance(col, dict)
+        }
+        for relation in table.get("foreign_keys", []):
+            if not isinstance(relation, dict) or _is_audit_relation(relation):
+                continue
+            destination = (
+                f"{relation.get('referenced_schema', '')}.{relation.get('referenced_table', '')}"
+            )
+            if destination not in tables:
+                continue
+            left = [str(value) for value in relation.get("columns", [])]
+            right = [str(value) for value in relation.get("referenced_columns", [])]
+            target_keys = {
+                str(col.get("name"))
+                for col in tables[destination].get("columns", [])
+                if isinstance(col, dict) and bool(col.get("pk", col.get("primary_key", False)))
+            }
+            if (
+                not left
+                or len(left) != len(right)
+                or not set(left) <= source_columns
+                or set(right) != target_keys
+            ):
+                continue
+            edge = {
+                "left_table": source,
+                "right_table": destination,
+                "left_columns": left,
+                "right_columns": right,
+            }
+            group = groups.setdefault((source, destination), [])
+            if edge not in group:
+                group.append(edge)
+    constraints: dict[tuple[str, str], dict[str, Any]] = {}
+    for edge in controlled_relations or []:
+        pair = (str(edge.get("left_table", "")), str(edge.get("right_table", "")))
+        if pair in constraints and relationship_signature(
+            constraints[pair]
+        ) != relationship_signature(edge):
+            raise ValueError(
+                "Las decisiones de relación contienen dos roles incompatibles "
+                "para el mismo par de tablas."
+            )
+        if not any(
+            relationship_signature(candidate) == relationship_signature(edge)
+            for candidate in groups.get(pair, [])
+        ):
+            raise ValueError(
+                "Una relación seleccionada no coincide con una FK completa "
+                "hacia una clave única de la instantánea."
+            )
+        constraints[pair] = edge
+    graph: dict[str, list[dict[str, Any]]] = {reference: [] for reference in tables}
+    refs = reviewed_references or set()
+    for pair, candidates in groups.items():
+        supported = [
+            edge
+            for edge in candidates
+            if all(f"{edge['left_table']}.{column}" in refs for column in edge["left_columns"])
+        ]
+        if pair in constraints:
+            if len(supported) == 1 and relationship_signature(
+                supported[0]
+            ) != relationship_signature(constraints[pair]):
+                raise ValueError(
+                    "La relación elegida contradice las referencias revisadas de la necesidad. "
+                    "Edite y revise la necesidad si desea cambiar ese alcance."
+                )
+            candidates = [
+                edge
+                for edge in candidates
+                if relationship_signature(edge) == relationship_signature(constraints[pair])
+            ]
+        elif len(candidates) > 1:
+            if len(supported) == 1:
+                candidates = supported
+        graph[pair[0]].extend(sorted(candidates, key=relationship_signature))
+    paths: list[list[dict[str, Any]]] = []
+    pending: list[tuple[str, list[dict[str, Any]], frozenset[str]]] = [
+        (start, [], frozenset({start}))
+    ]
+    visited_states = 0
+    while pending:
+        current, path, seen = pending.pop()
+        visited_states += 1
+        if visited_states > 4096:
+            raise ValueError(
+                "El conjunto de rutas supera el límite de comprobación; "
+                "precise el alcance antes de aprobar."
+            )
+        if current == target:
+            paths.append(path)
+            if len(paths) > 32:
+                raise ValueError(
+                    "Existen más de 32 rutas seguras; precise las relaciones antes de aprobar."
+                )
+            continue
+        for edge in graph[current]:
+            neighbor = str(edge["right_table"])
+            if neighbor not in seen:
+                pending.append((neighbor, [*path, edge], seen | {neighbor}))
+    return sorted(paths, key=lambda path: tuple(relationship_signature(edge) for edge in path))
+
+
+def _reviewed_link_references(
+    blueprint: dict[str, Any], dimension_name: str | None = None
+) -> set[str]:
+    code = {
+        "dim_fecha": "goal:date",
+        "dim_producto": "goal:product",
+        "dim_cliente": "goal:customer",
+        "dim_territorio": "goal:territory",
+    }.get(dimension_name or "")
+    return {
+        str(reference)
+        for item in blueprint.get("business_request_scope", {}).get("requirements", [])
+        if isinstance(item, dict)
+        and item.get("status") in {"direct", "derivable"}
+        and (code is None or str(item.get("coverage_code") or item.get("code")) == code)
+        for reference in item.get("evidence", [])
+        if isinstance(reference, str)
+    }
+
+
+def _paths_matching_reviewed_links(
+    paths: list[list[dict[str, Any]]],
+    references: set[str],
+    candidate_paths: list[list[dict[str, Any]]] | None = None,
+) -> list[list[dict[str, Any]]]:
+    possible_links = {
+        f"{edge['left_table']}.{column}"
+        for path in (candidate_paths if candidate_paths is not None else paths)
+        for edge in path
+        for column in edge["left_columns"]
+    }
+    required = references & possible_links
+    return [
+        path
+        for path in paths
+        if required
+        <= {f"{edge['left_table']}.{column}" for edge in path for column in edge["left_columns"]}
+    ]
+
+
+def _reviewed_dimension_context(blueprint: dict[str, Any]) -> set[str]:
+    return set().union(
+        *(
+            _reviewed_link_references(blueprint, name)
+            for name in ("dim_fecha", "dim_producto", "dim_cliente", "dim_territorio")
+        )
+    )
+
+
+def _dimension_attributes(
+    name: str, columns: list[dict[str, Any]], business_key: str, *, rules_version: int = 4
+) -> list[str]:
+    """Select meaningful attributes independently of physical ordinal position."""
+    identifiers = _identifier_columns({"columns": columns}, compilation_rules_version=4)
+    descriptive = {
+        "name",
+        "nombre",
+        "description",
+        "descripcion",
+        "category",
+        "categoria",
+        "subcategory",
+        "subcategoria",
+        "color",
+        "size",
+        "talla",
+        "class",
+        "clase",
+        "group",
+        "grupo",
+        "type",
+        "tipo",
+        "region",
+        "territory",
+        "territorio",
+        "country",
+        "pais",
+        "state",
+        "province",
+        "provincia",
+        "city",
+        "ciudad",
+    }
+    temporal = {
+        "year",
+        "anio",
+        "ano",
+        "month",
+        "mes",
+        "quarter",
+        "trimestre",
+        "day",
+        "dia",
+        "week",
+        "semana",
+    }
+    ranked: list[tuple[int, str]] = []
+    for column in columns:
+        attribute = str(column["name"])
+        tokens = _search_tokens(attribute)
+        business_code = (
+            name != "dim_fecha"
+            and bool(tokens & {"account", "cuenta", "code", "codigo", "number", "numero"})
+            and bool(
+                re.search(
+                    r"char|text", str(column.get("type", column.get("data_type", ""))).casefold()
+                )
+            )
+        )
+        if attribute == business_key or (attribute in identifiers and not business_code):
+            continue
+        if tokens & {"modified", "updated", "created", "rowguid", "password", "email", "phone"}:
+            continue
+        if rules_version >= 5 and tokens & {
+            "fax",
+            "phone",
+            "telephone",
+            "telefono",
+            "teléfono",
+            "mobile",
+            "movil",
+            "móvil",
+            "correo",
+            "email",
+            "address",
+            "direccion",
+            "dirección",
+            "contact",
+            "contacto",
+            "password",
+            "contrasena",
+            "contraseña",
+            "secret",
+            "secreto",
+            "token",
+            "credential",
+            "credencial",
+        }:
+            continue
+        if name == "dim_fecha":
+            if _temporal_column(column) or bool(tokens & temporal):
+                ranked.append((0 if _temporal_column(column) else 1, attribute))
+        elif tokens & descriptive:
+            ranked.append((-len(tokens & descriptive), attribute))
+        elif (
+            rules_version >= 5
+            and business_code
+            and tokens
+            & {
+                "account",
+                "cuenta",
+                "product",
+                "producto",
+                "item",
+                "articulo",
+                "artículo",
+                "code",
+                "codigo",
+                "código",
+            }
+        ):
+            ranked.append((0, attribute))
+        elif rules_version <= 4 and re.search(
+            r"char|text", str(column.get("type", column.get("data_type", ""))).casefold()
+        ):
+            ranked.append((1, attribute))
+    return [attribute for _, attribute in sorted(ranked)[:4]]
+
+
+_AGGREGATE_COMPONENTS = {
+    "sales_amount": ("sales_amount", "sum", "moneda de origen"),
+    "quantity": ("quantity", "sum", "Unidades"),
+    "transactions": ("transaction_count", "count_distinct", "Documentos"),
+}
+
+
+def _requested_aggregate_components(requirement: dict[str, Any]) -> set[str]:
+    """Distinguish requested results from operands of a more complex calculation."""
+    if requirement.get("status") not in {"direct", "derivable"}:
+        return set()
+    code = str(requirement.get("coverage_code") or requirement.get("code", ""))
+    explicit = {
+        "goal:sales_amount": "sales_amount",
+        "goal:quantity": "quantity",
+        "goal:transactions": "transactions",
+    }.get(code)
+    if explicit:
+        return {explicit}
+    components = set(map(str, requirement.get("components", [])))
+    simple_axes = {"date", "product", "customer", "territory", "invoice_event"}
+    if isinstance(requirement.get("analytical_operation"), dict) or (
+        code.startswith("question:") and components <= simple_axes | _AGGREGATE_COMPONENTS.keys()
+    ):
+        return components & _AGGREGATE_COMPONENTS.keys()
+    return set()
+
+
+def _matching_aggregate_kpis(
+    kpis: list[dict[str, Any]], measure_name: str, operation: str
+) -> list[dict[str, Any]]:
+    return [
+        item
+        for item in kpis
+        if item.get("formula_kind", "aggregate") == "aggregate"
+        and isinstance(item.get("formula"), dict)
+        and item["formula"].get("measure") == measure_name
+        and item["formula"].get("operation") == operation
+    ]
+
+
+def _derived_metric_bindings(
+    coverage_code: str, measures: list[dict[str, Any]], kpis: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Bind requested derived outcomes to verified recipes, independently of model labels."""
+    aggregate_roles = {
+        "goal:discount_amount": "discount_amount",
+        "goal:total_cost": "cost_amount",
+    }
+    ratio_roles = {
+        "goal:average_transaction": ("sales_amount", "transaction_count"),
+        "goal:sales_per_unit": ("sales_amount", "quantity"),
+        "goal:cost_per_unit": ("cost_amount", "quantity"),
+    }
+    by_name = {str(item.get("name")): item for item in measures}
+
+    def has_role(reference: object, role: str) -> bool:
+        measure = by_name.get(str(reference), {})
+        return measure.get("semantic_role") == role and measure.get("aggregation") == (
+            "count_distinct" if role == "transaction_count" else "sum"
+        )
+
+    def is_margin(item: dict[str, Any]) -> bool:
+        inputs = item.get("inputs", [])
+        return (
+            item.get("formula_kind") == "difference"
+            and isinstance(inputs, list)
+            and len(inputs) == 2
+            and has_role(inputs[0], "sales_amount")
+            and has_role(inputs[1], "cost_amount")
+        )
+
+    groups: dict[str, list[str]] = {}
+    for item in kpis:
+        code = str(item.get("code", ""))
+        if not code:
+            continue
+        kind = item.get("formula_kind", "aggregate")
+        formula = item.get("formula", {})
+        inputs = item.get("inputs", [])
+        supported = False
+        if coverage_code in aggregate_roles:
+            supported = (
+                kind == "aggregate"
+                and isinstance(formula, dict)
+                and formula.get("operation") == "sum"
+                and has_role(formula.get("measure"), aggregate_roles[coverage_code])
+            )
+        elif coverage_code in ratio_roles:
+            numerator, denominator = ratio_roles[coverage_code]
+            supported = (
+                kind == "ratio"
+                and isinstance(inputs, list)
+                and len(inputs) == 2
+                and has_role(inputs[0], numerator)
+                and has_role(inputs[1], denominator)
+            )
+        elif coverage_code == "goal:gross_margin":
+            supported = is_margin(item)
+            if kind == "share" and isinstance(inputs, list) and len(inputs) == 2:
+                supported = has_role(inputs[1], "sales_amount") and any(
+                    str(candidate.get("code")) == str(inputs[0]) and is_margin(candidate)
+                    for candidate in kpis
+                )
+        if supported:
+            signature = canonical_hash(
+                {
+                    "kind": kind,
+                    "formula": formula if kind == "aggregate" else {},
+                    "inputs": inputs if kind != "aggregate" else [],
+                }
+            )
+            groups.setdefault(signature, []).append(code)
+    return [
+        {"component": coverage_code, "kpi_codes": sorted(set(codes))}
+        for _, codes in sorted(groups.items())
+    ]
+
+
+def _complete_requested_aggregate_decisions(
+    blueprint: dict[str, Any],
+    measures: list[dict[str, Any]],
+    measure_index_map: dict[int, int],
+    tables: dict[str, dict[str, Any]],
+) -> None:
+    """Expose only unambiguous, already-proven aggregates explicitly requested by the analyst."""
+    requirements = blueprint.get("business_request_scope", {}).get("requirements", [])
+    requested: dict[str, list[str]] = {}
+    for requirement in requirements:
+        if isinstance(requirement, dict):
+            for component in _requested_aggregate_components(requirement):
+                requested.setdefault(component, []).append(str(requirement.get("code", "")))
+    decisions = [item for item in blueprint.get("kpis", []) if isinstance(item, dict)]
+    exclusions = blueprint.get("analyst_excluded_aggregate_metrics", [])
+    additions = list(blueprint.get("platform_kpi_additions", []))
+    fact_source = str(blueprint.get("fact_source", ""))
+    columns = {
+        f"{ref}.{col.get('name')}": col
+        for ref, table in tables.items()
+        for col in table.get("columns", [])
+        if isinstance(col, dict)
+    }
+    identifiers = {
+        f"{ref}.{name}" for ref, table in tables.items() for name in _identifier_columns(table)
+    }
+    for component in sorted(requested):
+        role, operation, unit = _AGGREGATE_COMPONENTS[component]
+        candidates = [
+            (index, measure)
+            for index, measure in enumerate(measures)
+            if measure.get("semantic_role") == role and measure.get("aggregation") == operation
+        ]
+        if len(candidates) != 1:
+            continue
+        effective_index, measure = candidates[0]
+        name = str(measure.get("name", ""))
+        source_index = next(
+            (
+                index
+                for index, effective in measure_index_map.items()
+                if effective == effective_index
+            ),
+            None,
+        )
+        references = [
+            str(value) if "." in str(value) else f"{fact_source}.{value}"
+            for value in measure.get("provenance", {}).get(
+                "source_references", measure.get("source_columns", [])
+            )
+        ]
+        if source_index is None or not references or any(ref not in columns for ref in references):
+            continue
+        if operation == "sum" and (
+            set(references) & identifiers
+            or any(
+                not re.fullmatch(
+                    r"tinyint|smallint|int|bigint|decimal|numeric|money|smallmoney|float|real",
+                    str(columns[ref].get("type", "")).casefold().split("(")[0],
+                )
+                for ref in references
+            )
+        ):
+            continue
+        if any(
+            isinstance(item, dict)
+            and item.get("measure_name") == name
+            and item.get("semantic_role") == role
+            and item.get("operation") == operation
+            for item in exclusions
+        ):
+            continue
+        if (
+            any(
+                item.get("measure_index", 0) == source_index and item.get("operation") == operation
+                for item in decisions
+            )
+            or len(decisions) >= 12
+        ):
+            continue
+        code = f"requested_{role}_{operation}"
+        if any(str(item.get("code")) == code for item in decisions):
+            code += f"_{canonical_hash({'measure': name, 'references': references})[:8]}"
+        if "provider_kpis" not in blueprint:
+            blueprint["provider_kpis"] = deepcopy(decisions)
+        decisions.append(
+            {
+                "code": code,
+                "name": name,
+                "measure_index": source_index,
+                "operation": operation,
+                "unit": unit,
+                "semantic_role": role,
+                "decision_origin": "validated_requirement",
+            }
+        )
+        additions.append(
+            {
+                "code": code,
+                "name": name,
+                "measure_name": name,
+                "operation": operation,
+                "requirement_codes": sorted(set(requested[component])),
+                "source_references": references,
+            }
+        )
+    blueprint["kpis"] = decisions
+    if additions:
+        blueprint["platform_kpi_additions"] = additions
+
+
 def expand_proposal_blueprint(
     blueprint: dict[str, Any],
     scope: dict[str, Any],
@@ -1956,6 +2616,9 @@ def expand_proposal_blueprint(
     compilation_rules_version: int = COMPILATION_RULES_VERSION,
 ) -> dict[str, Any]:
     """Expand compact AI decisions into a deterministic, auditable proposal contract."""
+    if compilation_rules_version >= 6:
+        # Platform additions must never alter the provider's object or a stored parent.
+        blueprint = deepcopy(blueprint)
     scoped = {
         str(item.get("ref")): item
         for item in scope.get("tables", [])
@@ -2424,6 +3087,18 @@ def expand_proposal_blueprint(
             chosen_dimensions[name] = (score, item)
 
     dimensions: list[dict[str, Any]] = []
+    dimension_paths: list[dict[str, Any]] = []
+    dimension_blockers: list[dict[str, str]] = []
+    path_prefixes: dict[str, tuple[Any, ...]] = {fact_source: ()}
+    reviewed_temporal_refs = {
+        str(reference)
+        for requirement in blueprint.get("business_request_scope", {}).get("requirements", [])
+        if isinstance(requirement, dict)
+        and str(requirement.get("coverage_code") or requirement.get("code")) == "goal:date"
+        and requirement.get("status") in {"direct", "derivable"}
+        for reference in requirement.get("evidence", [])
+        if isinstance(reference, str)
+    }
 
     def dimension_source_score(name: str, reference: str) -> tuple[int, int, str]:
         terms = dimension_terms.get(name, set())
@@ -2472,6 +3147,42 @@ def expand_proposal_blueprint(
                 score -= 100
         return score, -len(reference), reference
 
+    def eligible_dimension_source(name: str, reference: str) -> bool:
+        if (
+            reference not in scoped
+            or _dimension_source_path(scoped, fact_source, reference) is None
+        ):
+            return False
+        columns = scoped[reference].get("columns", [])
+        if name == "dim_fecha":
+            return any(
+                _temporal_column(col)
+                and (
+                    not reviewed_temporal_refs
+                    or f"{reference}.{col.get('name')}" in reviewed_temporal_refs
+                )
+                for col in columns
+                if isinstance(col, dict)
+            )
+        primary_keys = [col for col in columns if isinstance(col, dict) and col.get("pk")]
+        if len(primary_keys) != 1:
+            return False
+        terms = dimension_terms.get(name, set())
+        semantic_terms = {
+            token
+            for candidate in selected_semantic_candidates(semantic_map)
+            if reference in candidate.get("technical_refs", [])
+            for token in _search_tokens(candidate.get("business_concept", ""))
+        }
+        identity_columns = _identifier_columns(scoped[reference], compilation_rules_version=4)
+        descriptive_role_terms = {
+            token
+            for col in columns
+            if isinstance(col, dict) and str(col.get("name", "")) not in identity_columns
+            for token in _search_tokens(col.get("name", ""))
+        }
+        return bool((_search_tokens(reference) | semantic_terms | descriptive_role_terms) & terms)
+
     requested_destinations = {
         destination
         for code, destination in SALES_PROFILE.dimension_destinations
@@ -2479,15 +3190,41 @@ def expand_proposal_blueprint(
     }
     for name in sorted(requested_destinations - set(chosen_dimensions)):
         ranked_sources = sorted(
-            scoped,
-            key=lambda reference: dimension_source_score(name, reference),
+            (
+                ref
+                for ref in scoped
+                if compilation_rules_version < 4 or eligible_dimension_source(name, ref)
+            ),
+            key=lambda reference: (
+                (
+                    -len(_dimension_source_path(scoped, fact_source, reference) or []),
+                    dimension_source_score(name, reference),
+                )
+                if compilation_rules_version >= 4
+                else dimension_source_score(name, reference)
+            ),
             reverse=True,
         )
         if not ranked_sources:
             continue
+        if compilation_rules_version >= 5 and len(ranked_sources) > 1:
+            reviewed_targets = {
+                ref.rsplit(".", 1)[0] for ref in _reviewed_link_references(blueprint, name)
+            }
+            ranked_sources = [ref for ref in ranked_sources if ref in reviewed_targets]
+            if len(ranked_sources) != 1:
+                dimension_blockers.append(
+                    {
+                        "dimension": name,
+                        "code": "dimension.source_ambiguous",
+                        "message": "La dimensión omitida tiene varias fuentes posibles sin "
+                        "una entidad inequívoca en la necesidad revisada.",
+                    }
+                )
+                continue
         source = ranked_sources[0]
         score = dimension_source_score(name, source)[0]
-        if score <= 0:
+        if score <= 0 and compilation_rules_version < 4:
             continue
         chosen_dimensions[name] = (score, {"name": name, "source_table": source})
         automatic_adjustments.append(
@@ -2498,15 +3235,147 @@ def expand_proposal_blueprint(
     for _, item in chosen_dimensions.values():
         name = str(item.get("name", ""))
         proposed_source = str(item.get("source_table", ""))
-        source = (
-            proposed_source
-            if bool(item.get("source_locked")) and proposed_source in scoped
-            else max(scoped, key=lambda ref: dimension_source_score(name, ref))
-        )
+        route_status = "preserved"
+        route_reason = ""
+        if compilation_rules_version >= 4:
+            proposed_keys = [
+                col
+                for col in scoped.get(proposed_source, {}).get("columns", [])
+                if isinstance(col, dict) and bool(col.get("pk"))
+            ]
+            if (
+                name != "dim_fecha"
+                and len(proposed_keys) > 1
+                and bool(_search_tokens(proposed_source) & dimension_terms.get(name, set()))
+            ):
+                proposal_warnings.append(
+                    f"La dimensión {name} requiere una identidad compuesta que el constructor "
+                    "dimensional todavía no admite; no se sustituirá por otra entidad."
+                )
+                dimension_blockers.append(
+                    {
+                        "dimension": name,
+                        "code": "dimension.composite_identity",
+                        "message": "La identidad compuesta de la entidad no puede reducirse "
+                        "a su primera columna ni sustituirse por otra entidad.",
+                    }
+                )
+                continue
+            candidates = [ref for ref in scoped if eligible_dimension_source(name, ref)]
+            if eligible_dimension_source(name, proposed_source):
+                source = proposed_source
+            elif candidates:
+                if compilation_rules_version >= 5:
+                    reviewed_targets = {
+                        ref.rsplit(".", 1)[0] for ref in _reviewed_link_references(blueprint, name)
+                    }
+                    supported_sources = [ref for ref in candidates if ref in reviewed_targets]
+                    if len(candidates) == 1:
+                        source = candidates[0]
+                    elif len(supported_sources) == 1:
+                        source = supported_sources[0]
+                    else:
+                        dimension_blockers.append(
+                            {
+                                "dimension": name,
+                                "code": "dimension.source_ambiguous",
+                                "message": "La fuente propuesta no es compatible y hay varias "
+                                "entidades alternativas; precise la necesidad antes de continuar.",
+                            }
+                        )
+                        continue
+                else:
+                    source = max(
+                        candidates,
+                        key=lambda ref: (
+                            -len(_dimension_source_path(scoped, fact_source, ref) or []),
+                            dimension_source_score(name, ref),
+                        ),
+                    )
+            else:
+                proposal_warnings.append(
+                    f"La dimensión {name} se excluyó: no existe una fuente compatible "
+                    "con una ruta declarada que conserve la granularidad."
+                )
+                dimension_blockers.append(
+                    {
+                        "dimension": name,
+                        "code": "dimension.source_unresolved",
+                        "message": "No existe una fuente dimensional compatible "
+                        "con identidad simple y una ruta declarada segura.",
+                    }
+                )
+                continue
+            path = _dimension_source_path(scoped, fact_source, source) or []
+            if compilation_rules_version >= 5:
+                try:
+                    unconstrained = safe_relationship_paths(scoped, fact_source, source)
+                    options = safe_relationship_paths(
+                        scoped,
+                        fact_source,
+                        source,
+                        controlled_relations=blueprint.get("controlled_relations", []),
+                        reviewed_references=_reviewed_dimension_context(blueprint),
+                    )
+                    options = _paths_matching_reviewed_links(
+                        options,
+                        _reviewed_link_references(blueprint, name),
+                        unconstrained,
+                    )
+                    options = _paths_matching_reviewed_links(
+                        options, _reviewed_dimension_context(blueprint)
+                    )
+                    if len(options) != 1:
+                        raise ValueError(
+                            "Hay varias rutas de relación posibles o la decisión contradice "
+                            "los enlaces revisados. Seleccione los vínculos pertinentes; "
+                            "si cambia el alcance, edite y revise la necesidad."
+                        )
+                    path = options[0]
+                    prefix: tuple[Any, ...] = ()
+                    proposed_prefixes = dict(path_prefixes)
+                    for edge in path:
+                        prefix = (*prefix, relationship_signature(edge))
+                        destination = str(edge["right_table"])
+                        if (
+                            destination in proposed_prefixes
+                            and proposed_prefixes[destination] != prefix
+                        ):
+                            raise ValueError(
+                                "Las dimensiones requieren roles de relación "
+                                "incompatibles hacia la misma tabla; precise el alcance."
+                            )
+                        proposed_prefixes[destination] = prefix
+                    path_prefixes = proposed_prefixes
+                except ValueError as exc:
+                    path = []
+                    route_status = "requires_decision"
+                    route_reason = str(exc)
+                    dimension_blockers.append(
+                        {
+                            "dimension": name,
+                            "code": "dimension.relationship_ambiguous",
+                            "message": route_reason,
+                        }
+                    )
+            for edge in path:
+                if edge not in dimension_paths:
+                    dimension_paths.append(edge)
+        else:
+            source = (
+                proposed_source
+                if bool(item.get("source_locked")) and proposed_source in scoped
+                else max(scoped, key=lambda ref: dimension_source_score(name, ref))
+            )
         if source != proposed_source:
             automatic_adjustments.append(
                 f"La fuente de {name} se ajustó de {proposed_source} a {source} "
-                "según los metadatos verificados."
+                + (
+                    "porque la fuente propuesta no es compatible o no tiene una ruta "
+                    "declarada que conserve la granularidad."
+                    if compilation_rules_version >= 4
+                    else "según los metadatos verificados."
+                )
             )
         table = scoped.get(source, {})
         columns = [
@@ -2522,22 +3391,104 @@ def expand_proposal_blueprint(
                 if _search_tokens(column.get("name", "")) & dimension_terms[name]
             ]
             business_key = date_columns[0] if date_columns else (keys[0] if keys else "")
+            if compilation_rules_version >= 4:
+                temporal_columns = [col for col in columns if _temporal_column(col)]
+                if reviewed_temporal_refs:
+                    temporal_columns = [
+                        col
+                        for col in temporal_columns
+                        if f"{source}.{col['name']}" in reviewed_temporal_refs
+                    ]
+                else:
+                    audit_terms = {
+                        "modified",
+                        "created",
+                        "updated",
+                        "creacion",
+                        "actualizacion",
+                        "modificacion",
+                    }
+                    temporal_columns = [
+                        col
+                        for col in temporal_columns
+                        if not _search_tokens(col["name"]) & audit_terms
+                    ]
+                event_terms = _search_tokens(fact_source) & {
+                    "order",
+                    "pedido",
+                    "invoice",
+                    "factura",
+                    "sale",
+                    "venta",
+                }
+                if len(temporal_columns) > 1:
+                    matching_event = [
+                        col for col in temporal_columns if _search_tokens(col["name"]) & event_terms
+                    ]
+                    if len(matching_event) == 1:
+                        temporal_columns = matching_event
+                if len(temporal_columns) != 1:
+                    proposal_warnings.append(
+                        f"La dimensión {name} no tiene una fecha de evento inequívoca; "
+                        "se requiere revisar la referencia temporal antes de aprobar."
+                    )
+                    dimension_blockers.append(
+                        {
+                            "dimension": name,
+                            "code": "dimension.date_ambiguous",
+                            "message": "No se ha identificado una única fecha de evento "
+                            "compatible con la referencia temporal revisada.",
+                        }
+                    )
+                    continue
+                business_key = str(temporal_columns[0]["name"])
         else:
             business_key = keys[0] if keys else (str(columns[0]["name"]) if columns else "")
         attributes = [
             str(column["name"]) for column in columns if str(column["name"]) != business_key
         ][:4]
-        dimensions.append(
-            {
-                "name": name,
-                "source_tables": [source],
-                "business_key": business_key,
-                "attributes": attributes,
+        if compilation_rules_version >= 4:
+            attributes = _dimension_attributes(
+                name,
+                columns,
+                business_key,
+                rules_version=compilation_rules_version,
+            )
+        dimension: dict[str, Any] = {
+            "name": name,
+            "source_tables": [source],
+            "business_key": business_key,
+            "attributes": attributes,
+        }
+        if compilation_rules_version >= 4:
+            dimension["source_resolution"] = {
+                "status": "preserved" if source == proposed_source else "fallback",
+                "proposed_source": proposed_source,
+                "selected_source": source,
+                "business_key_reference": f"{source}.{business_key}",
+                "path": deepcopy(path),
+                "reason": (
+                    "Se conserva la fuente explícita compatible y su ruta declarada "
+                    "hacia claves únicas, sin sustituir su significado por similitud léxica."
+                    if source == proposed_source
+                    else "La fuente propuesta no es compatible o no conserva la granularidad; "
+                    "se eligió una alternativa compatible por una ruta declarada segura."
+                ),
             }
-        )
+            if compilation_rules_version >= 5:
+                dimension["source_resolution"]["status"] = (
+                    route_status
+                    if route_status == "requires_decision"
+                    else "preserved"
+                    if source == proposed_source
+                    else "fallback"
+                )
+                if route_reason:
+                    dimension["source_resolution"]["reason"] = route_reason
+        dimensions.append(dimension)
 
-    joins: list[dict[str, Any]] = []
-    for source, table in scoped.items():
+    joins: list[dict[str, Any]] = list(dimension_paths) if compilation_rules_version >= 4 else []
+    for source, table in scoped.items() if compilation_rules_version <= 4 else []:
         for relation in table.get("foreign_keys", []):
             if not isinstance(relation, dict) or _is_audit_relation(relation):
                 continue
@@ -2546,14 +3497,14 @@ def expand_proposal_blueprint(
             )
             if target not in scoped:
                 continue
-            joins.append(
-                {
-                    "left_table": source,
-                    "right_table": target,
-                    "left_columns": list(relation.get("columns", [])),
-                    "right_columns": list(relation.get("referenced_columns", [])),
-                }
-            )
+            edge = {
+                "left_table": source,
+                "right_table": target,
+                "left_columns": list(relation.get("columns", [])),
+                "right_columns": list(relation.get("referenced_columns", [])),
+            }
+            if compilation_rules_version < 4 or edge not in joins:
+                joins.append(edge)
             if len(joins) >= 6:
                 break
         if len(joins) >= 6:
@@ -2577,6 +3528,9 @@ def expand_proposal_blueprint(
                     f"La medida {previous_name} se renombró como promedio por línea: "
                     "AVG sobre una tabla de detalle no calcula el promedio por transacción."
                 )
+
+    if compilation_rules_version >= 6:
+        _complete_requested_aggregate_decisions(blueprint, measures, measure_index_map, scoped)
 
     kpis: list[dict[str, Any]] = []
     for item in blueprint.get("kpis", []):
@@ -2678,6 +3632,23 @@ def expand_proposal_blueprint(
         operation = str(formula.get("operation", ""))
         role = str(kpi.get("semantic_role", ""))
         name = str(kpi.get("name", ""))
+        if (
+            compilation_rules_version >= 4
+            and role != "sales_amount"
+            and operation == "average"
+            and _claims_transaction_average(name)
+        ):
+            decision_diagnostics.append(
+                {
+                    "kind": "kpi",
+                    "code": str(kpi.get("code", "")),
+                    "status": "excluded",
+                    "reason": "Un promedio por documento requiere una razón de agregados; "
+                    "AVG de líneas no conserva ese denominador.",
+                    "compatible_measures": [],
+                }
+            )
+            continue
         if (
             (line_grain or strict_semantics)
             and (operation == "average" or strict_semantics)
@@ -2796,6 +3767,36 @@ def expand_proposal_blueprint(
         normalized_kpis.append(kpi)
     kpis = normalized_kpis
 
+    if compilation_rules_version >= 6:
+        for addition in blueprint.get("platform_kpi_additions", []):
+            if not isinstance(addition, dict):
+                continue
+            code = str(addition.get("code", ""))
+            included = any(str(kpi.get("code")) == code for kpi in kpis)
+            reason = (
+                "La plataforma añadió una agregación seleccionable de una medida solicitada "
+                "y comprobada; conserva la misma receta y requiere revisión humana."
+                if included
+                else "El indicador añadido por la plataforma fue retirado de la selección; "
+                "el requisito seguirá sin cubrir hasta revisar la necesidad o la selección."
+            )
+            decision_diagnostics.append(
+                {
+                    "kind": "kpi",
+                    "code": code,
+                    "status": "included" if included else "excluded",
+                    "origin": "validated_requirement",
+                    "reason": reason,
+                    "requirement_codes": list(addition.get("requirement_codes", [])),
+                    "compatible_measures": [str(addition.get("measure_name", ""))],
+                }
+            )
+            if included:
+                automatic_adjustments.append(
+                    f"El KPI {addition.get('name', code)} se incorporó para permitir "
+                    "analizar una medida solicitada mediante su agregación comprobada."
+                )
+
     included_destinations = {str(item.get("name", "")) for item in dimensions}
     for missing in sorted(requested_destinations - included_destinations):
         proposal_warnings.append(
@@ -2892,6 +3893,8 @@ def expand_proposal_blueprint(
     }
     if strict_semantics:
         proposal["compilation_rules_version"] = compilation_rules_version
+    if compilation_rules_version >= 4 and dimension_blockers:
+        proposal["dimension_blockers"] = dimension_blockers
     return proposal
 
 
@@ -2958,6 +3961,27 @@ def apply_analyst_adjustments(
     requested_kpis = list(adjustments.get("kpi_codes", []))
     if not requested_kpis or not set(requested_kpis).issubset(source_kpis):
         raise ValueError("Seleccione únicamente KPIs incluidos en la propuesta de origen.")
+    # Only choices actually offered in the parent can be intentional exclusions.
+    # A v5 parent lacking a quantity KPI must not suppress its first v6 completion.
+    exclusions = list(blueprint.get("analyst_excluded_aggregate_metrics", []))
+    for code, item in source_kpis.items():
+        if code in requested_kpis:
+            continue
+        index = item.get("measure_index", 0)
+        if not isinstance(index, int) or not 0 <= index < len(source_measures):
+            continue
+        operation = str(item.get("operation", ""))
+        if operation not in {"sum", "count_distinct"}:
+            continue
+        exclusion = {
+            "measure_name": str(source_measures[index].get("name", "")),
+            "semantic_role": _semantic_role(item),
+            "operation": operation,
+        }
+        if exclusion not in exclusions:
+            exclusions.append(exclusion)
+    if exclusions:
+        blueprint["analyst_excluded_aggregate_metrics"] = exclusions
     selected_kpis: list[dict[str, Any]] = []
     kpi_measure_names = adjustments.get("kpi_measure_names", {})
     for code in requested_kpis:
@@ -3050,12 +4074,10 @@ def controlled_relation_catalog(scope: dict[str, Any]) -> list[dict[str, Any]]:
                     for left_type, right_type in zip(left_types, right_types, strict=True)
                 )
             )
-            target_unique = bool(right_columns) and all(
-                bool(target_columns.get(item, {}).get("pk", False)) for item in right_columns
-            )
-            source_unique = bool(left_columns) and all(
-                bool(source_columns.get(item, {}).get("pk", False)) for item in left_columns
-            )
+            target_keys = {key for key, column in target_columns.items() if column.get("pk")}
+            source_keys = {key for key, column in source_columns.items() if column.get("pk")}
+            target_unique = bool(right_columns) and set(right_columns) == target_keys
+            source_unique = bool(left_columns) and set(left_columns) == source_keys
             cardinality = (
                 "one_to_one"
                 if source_unique and target_unique
@@ -3103,8 +4125,9 @@ def apply_controlled_relationship(
     source_blueprint: dict[str, Any],
     dimension_name: str,
     option: dict[str, Any],
+    scope: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Lock one dimensional source to the parent of a prevalidated declared relationship."""
+    """Constrain a verified route segment without replacing its dimensional entity."""
     if not bool(option.get("eligible")) or bool(option.get("duplication_risk")):
         raise ValueError("La relación no conserva la granularidad aprobada.")
     blueprint = deepcopy(source_blueprint)
@@ -3112,7 +4135,49 @@ def apply_controlled_relationship(
     dimension = next((item for item in dimensions if str(item.get("name")) == dimension_name), None)
     if dimension is None:
         raise ValueError("La dimensión no pertenece a la propuesta seleccionada.")
-    dimension["source_table"] = str(option["right_table"])
+    if scope is None:
+        raise ValueError("Se requiere la instantánea de alcance para comprobar la ruta elegida.")
+    tables = {
+        str(item["ref"]): item
+        for item in scope.get("tables", [])
+        if isinstance(item, dict) and item.get("ref")
+    }
+    target = str(dimension.get("source_table", ""))
+    start = str(blueprint.get("fact_source", ""))
+    selected_pair = (str(option["left_table"]), str(option["right_table"]))
+    controls = [
+        deepcopy(item)
+        for item in blueprint.get("controlled_relations", [])
+        if isinstance(item, dict)
+        and (str(item.get("left_table")), str(item.get("right_table"))) != selected_pair
+    ]
+    controls.append(
+        {
+            **{
+                key: deepcopy(option[key])
+                for key in ("left_table", "right_table", "left_columns", "right_columns")
+            },
+            "option_id": option.get("option_id"),
+            "dimension_name": dimension_name,
+        }
+    )
+    candidates = safe_relationship_paths(
+        tables, start, target, controls, _reviewed_dimension_context(blueprint)
+    )
+    unconstrained = safe_relationship_paths(tables, start, target)
+    candidates = _paths_matching_reviewed_links(
+        candidates, _reviewed_link_references(blueprint, dimension_name), unconstrained
+    )
+    candidates = _paths_matching_reviewed_links(candidates, _reviewed_dimension_context(blueprint))
+    if not any(
+        any(relationship_signature(edge) == relationship_signature(option) for edge in path)
+        for path in candidates
+    ):
+        raise ValueError(
+            "El vínculo no pertenece a una ruta compatible hacia la dimensión "
+            "seleccionada. Si desea cambiar su significado, edite y revise la necesidad."
+        )
+    blueprint["controlled_relations"] = controls
     dimension["source_locked"] = True
     blueprint["controlled_relation"] = {
         "dimension_name": dimension_name,
@@ -3295,7 +4360,19 @@ def build_requirement_coverage(
                 outputs.extend(matches)
             else:
                 component_gaps.append(component)
-        explicit_derived = derived_outputs(coverage_code)
+        rules_version = proposal.get("compilation_rules_version", 1)
+        modern_coverage = isinstance(rules_version, int) and rules_version >= 6
+        derived_bindings = (
+            _derived_metric_bindings(coverage_code, measures, kpis) if modern_coverage else []
+        )
+        derived_codes = {
+            code for metric in derived_bindings for code in metric.get("kpi_codes", [])
+        }
+        explicit_derived = (
+            [f"kpi:{kpi.get('name')}" for kpi in kpis if kpi.get("code") in derived_codes]
+            if modern_coverage and coverage_code in derived_term_groups
+            else derived_outputs(coverage_code)
+        )
         if explicit_derived:
             outputs.extend(explicit_derived)
             component_gaps = []
@@ -3304,6 +4381,24 @@ def build_requirement_coverage(
             # ratio or other requested result. Keep its original requirement ID
             # while requiring a concrete derived measure/KPI in the proposal.
             component_gaps.append(str(requirement.get("label") or coverage_code))
+        required_metrics: list[dict[str, Any]] = list(derived_bindings)
+        if modern_coverage:
+            for component in sorted(_requested_aggregate_components(requirement)):
+                role, operation, _ = _AGGREGATE_COMPONENTS[component]
+                matching_kpis = [
+                    kpi
+                    for measure in measures
+                    if measure.get("semantic_role") == role
+                    and measure.get("aggregation") == operation
+                    for kpi in _matching_aggregate_kpis(
+                        kpis, str(measure.get("name", "")), operation
+                    )
+                ]
+                codes = sorted({str(kpi.get("code")) for kpi in matching_kpis if kpi.get("code")})
+                required_metrics.append({"component": component, "kpi_codes": codes})
+                if not matching_kpis:
+                    component_gaps.append(f"indicador seleccionable de {component}")
+                outputs.extend(f"kpi:{kpi.get('name')}" for kpi in matching_kpis)
         identity_gaps: list[str] = []
         if "identity_references" in requirement:
             identity_references = requirement.get("identity_references")
@@ -3351,6 +4446,7 @@ def build_requirement_coverage(
                 "coverage_status": coverage_status,
                 "outputs": list(dict.fromkeys(outputs)),
                 "explanation": explanation,
+                **({"required_metrics": required_metrics} if modern_coverage else {}),
                 **(
                     {"analytical_operation": deepcopy(requirement["analytical_operation"])}
                     if "analytical_operation" in requirement
@@ -4188,6 +5284,17 @@ def validate_proposal(
                             )
 
     dimensions = proposal.get("dimensions", [])
+    if isinstance(rules_version, int) and rules_version >= 4:
+        for blocker in proposal.get("dimension_blockers", []):
+            if isinstance(blocker, dict):
+                issues.append(
+                    _issue(
+                        str(blocker.get("code", "dimension.source_unresolved")),
+                        "error",
+                        "dimensions",
+                        str(blocker.get("message", "Dimensión no resuelta.")),
+                    )
+                )
     if not isinstance(dimensions, list):
         issues.append(
             _issue(
@@ -4444,6 +5551,21 @@ def validate_proposal(
                 kpi if isinstance(kpi, dict) else {},
             )
             operation = str(formula.get("operation", ""))
+            if (
+                isinstance(rules_version, int)
+                and rules_version >= 4
+                and operation == "average"
+                and _claims_transaction_average(kpi.get("name", ""))
+            ):
+                issues.append(
+                    _issue(
+                        "kpi.document_average_requires_ratio",
+                        "error",
+                        f"kpis.{index}.formula",
+                        "Un promedio por documento exige una razón de agregados con documentos "
+                        "distintos; AVG de filas no representa ese resultado.",
+                    )
+                )
             label_tokens = _search_tokens(kpi.get("name", ""))
             ranked_entity = bool(
                 label_tokens

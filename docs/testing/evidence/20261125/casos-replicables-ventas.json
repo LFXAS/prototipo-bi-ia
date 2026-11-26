@@ -1,0 +1,72 @@
+{
+  "fecha_contenido": "2026-11-25",
+  "naturaleza": "Objetivos empleados en dos recorridos reales; fichas para repetir con revisión, no promesa de respuesta idéntica.",
+  "modelo_del_recorrido": "gpt-6.2-sol",
+  "razonamiento": "medium",
+  "reglas_compilacion": 6,
+  "prompt": "sales-bi-v9",
+  "casos": [
+    {
+      "fuente": "AdventureWorks2022",
+      "propuesta_observada": 136,
+      "ejecucion_observada": 24,
+      "objetivo_textual": "Analizar mensualmente el importe registrado y las unidades de las líneas de pedidos por producto, cliente y territorio comercial. Los indicadores deben incluir importe total, unidades totales, pedidos distintos e importe promedio por pedido. Usar la fecha del pedido y el territorio comercial asociado al pedido. Identificar los clientes con nombres descriptivos de personas u organizaciones mediante relaciones declaradas. Conservar el detalle de cada línea y la trazabilidad del pedido. No calcular costos, margen ni impuestos.",
+      "periodicidad": "monthly",
+      "preguntas_estandar": [
+        "sales_over_time",
+        "top_products",
+        "customer_performance",
+        "territory_performance"
+      ],
+      "resultado_esperado_comercial": [
+        "Importe registrado de líneas",
+        "Unidades totales",
+        "Pedidos distintos",
+        "Importe total dividido para pedidos distintos"
+      ],
+      "filtro_de_contraste": {
+        "anio": 2013,
+        "territorio": "Northwest"
+      },
+      "cuidados": [
+        "Territorio comercial del pedido; no atribuir entrega física.",
+        "No agregar costos, margen o impuestos a partir de este objetivo."
+      ]
+    },
+    {
+      "fuente": "WideWorldImporters",
+      "propuesta_observada": 135,
+      "ejecucion_observada": 23,
+      "objetivo_textual": "Analizar mensualmente el importe registrado y las unidades de las líneas de factura por producto y cliente, con el número de facturas distintas y el importe promedio por factura. Usar la fecha de emisión y, para el territorio, la provincia de la ciudad de entrega registrada del cliente. Mantener la trazabilidad de cada línea y aclarar que esa ubicación corresponde a la ficha actual del cliente. Conservar la moneda de origen sin asumir impuestos, costos ni rentabilidad.",
+      "periodicidad": "monthly",
+      "preguntas_estandar": [
+        "sales_over_time",
+        "top_products",
+        "customer_performance",
+        "territory_performance"
+      ],
+      "resultado_esperado_comercial": [
+        "Importe registrado de líneas",
+        "Unidades totales",
+        "Facturas distintas",
+        "Importe total dividido para facturas distintas"
+      ],
+      "filtro_de_contraste": {
+        "anio": 2015,
+        "territorio": "California"
+      },
+      "cuidados": [
+        "Ubicación de la ficha del cliente al cargar datos; no historia garantizada de entrega.",
+        "La moneda permanece de origen si no hay código ISO acreditado.",
+        "No interpretar el importe como neto, impuestos o rentabilidad sin comprobar su composición."
+      ]
+    }
+  ],
+  "replica": [
+    "En un entorno limpio crear y verificar las conexiones y catálogos propios.",
+    "Seleccionar por etiqueta funcional; los códigos e IDs son evidencia de esta instalación.",
+    "Revisar tipos, rutas, granularidad, fórmulas, cobertura y advertencias antes de aprobar.",
+    "Materializar sólo la versión aprobada, contrastar cifras y documentar los IDs nuevos.",
+    "Luna sólo pasó conexión y salida estructurada; la réplica del recorrido completo con ese modelo queda por ejecutar."
+  ]
+}

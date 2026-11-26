@@ -1,0 +1,5 @@
+Añada archivos <id>.tex con llamadas a \pantalla{ruta_relativa}{titulo}{leyenda}.
+El generador incluye estos archivos si existen y nunca los sobrescribe.
+La relación de id y unidad está en ../cobertura_contenido.json.
+Las rutas de imágenes se interpretan desde manual_latex.
+Ejemplo: \pantalla{../capturas/01_inicio.jpg}{Inicio y preparación}{Observe la fuente seleccionada y los tres prerrequisitos.}

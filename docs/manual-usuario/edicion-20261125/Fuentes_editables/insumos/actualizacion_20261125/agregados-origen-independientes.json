@@ -1,0 +1,81 @@
+{
+  "captured_at_utc": "2026-11-26T01:42:06.221105+00:00",
+  "captured_at_america_guayaquil": "2026-11-25T20:42:06.221105-05:00",
+  "purpose": "Oráculo independiente QA para las dos bases demostrativas autorizadas; SQL de referencia específico de datos de ensayo, no lógica runtime ni configuración del producto.",
+  "operation": "Lectura SQL Server con las conexiones activas registradas en la aplicación; sin LLM, ETL, cambios de configuración ni filas individuales en la salida.",
+  "precision": "Importes decimales serializados como texto para conservar precisión; conteos y cantidades como enteros.",
+  "cases": [
+    {
+      "connection_id": 1,
+      "source_name": "AdventureWorks local",
+      "database_name": "AdventureWorks2022",
+      "status": "observed",
+      "case": "all_sales_lines",
+      "business_scope": "Todas las líneas registradas en SalesOrderDetail; importe LineTotal sin reinterpretar su significado fiscal.",
+      "sql": "SELECT COUNT_BIG(*) AS line_count,\nSUM(CAST(d.[OrderQty] AS bigint)) AS total_units,\nCOUNT_BIG(DISTINCT d.[SalesOrderID]) AS distinct_documents,\nSUM(d.[LineTotal]) AS recorded_amount\nFROM [Sales].[SalesOrderDetail] AS d",
+      "parameters": [],
+      "aggregates": {
+        "line_count": 121317,
+        "total_units": 274914,
+        "distinct_documents": 31465,
+        "recorded_amount": "109846381.399888"
+      }
+    },
+    {
+      "connection_id": 1,
+      "source_name": "AdventureWorks local",
+      "database_name": "AdventureWorks2022",
+      "status": "observed",
+      "case": "2013_northwest_commercial_territory",
+      "business_scope": "Año 2013 por fecha de pedido y territorio comercial Northwest de la cabecera de pedido.",
+      "sql": "SELECT COUNT_BIG(*) AS line_count,\nSUM(CAST(d.[OrderQty] AS bigint)) AS total_units,\nCOUNT_BIG(DISTINCT d.[SalesOrderID]) AS distinct_documents,\nSUM(d.[LineTotal]) AS recorded_amount\nFROM [Sales].[SalesOrderDetail] AS d\nJOIN [Sales].[SalesOrderHeader] AS h ON d.[SalesOrderID] = h.[SalesOrderID]\nJOIN [Sales].[SalesTerritory] AS t ON h.[TerritoryID] = t.[TerritoryID]\nWHERE h.[OrderDate] >= ? AND h.[OrderDate] < ? AND t.[Name] = ?",
+      "parameters": [
+        "2013-01-01",
+        "2014-01-01",
+        "Northwest"
+      ],
+      "aggregates": {
+        "line_count": 7757,
+        "total_units": 17452,
+        "distinct_documents": 2053,
+        "recorded_amount": "6015174.735836"
+      }
+    },
+    {
+      "connection_id": 2,
+      "source_name": "WideWorldImporters local",
+      "database_name": "WideWorldImporters",
+      "status": "observed",
+      "case": "all_invoice_lines",
+      "business_scope": "Todas las líneas de factura; importe ExtendedPrice en moneda de origen sin atribuir moneda ISO ni composición fiscal no demostrada.",
+      "sql": "SELECT COUNT_BIG(*) AS line_count,\nSUM(CAST(l.[Quantity] AS bigint)) AS total_units,\nCOUNT_BIG(DISTINCT l.[InvoiceID]) AS distinct_documents,\nSUM(l.[ExtendedPrice]) AS recorded_amount\nFROM [Sales].[InvoiceLines] AS l",
+      "parameters": [],
+      "aggregates": {
+        "line_count": 228265,
+        "total_units": 8950628,
+        "distinct_documents": 70510,
+        "recorded_amount": "198043439.45"
+      }
+    },
+    {
+      "connection_id": 2,
+      "source_name": "WideWorldImporters local",
+      "database_name": "WideWorldImporters",
+      "status": "observed",
+      "case": "2015_california_customer_delivery_state",
+      "business_scope": "Año 2015 por InvoiceDate y provincia California de la ciudad de entrega del cliente facturado. La dirección actual no prueba la ubicación histórica de la entrega.",
+      "sql": "SELECT COUNT_BIG(*) AS line_count,\nSUM(CAST(l.[Quantity] AS bigint)) AS total_units,\nCOUNT_BIG(DISTINCT l.[InvoiceID]) AS distinct_documents,\nSUM(l.[ExtendedPrice]) AS recorded_amount\nFROM [Sales].[InvoiceLines] AS l\nJOIN [Sales].[Invoices] AS i ON l.[InvoiceID] = i.[InvoiceID]\nJOIN [Sales].[Customers] AS c ON i.[CustomerID] = c.[CustomerID]\nJOIN [Application].[Cities] AS city ON c.[DeliveryCityID] = city.[CityID]\nJOIN [Application].[StateProvinces] AS sp ON city.[StateProvinceID] = sp.[StateProvinceID]\nWHERE i.[InvoiceDate] >= ? AND i.[InvoiceDate] < ? AND sp.[StateProvinceName] = ?",
+      "parameters": [
+        "2015-01-01",
+        "2016-01-01",
+        "California"
+      ],
+      "aggregates": {
+        "line_count": 3771,
+        "total_units": 142247,
+        "distinct_documents": 1179,
+        "recorded_amount": "3191769.11"
+      }
+    }
+  ]
+}

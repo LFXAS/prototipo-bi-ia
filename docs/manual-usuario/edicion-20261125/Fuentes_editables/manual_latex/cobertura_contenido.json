@@ -1,0 +1,867 @@
+{
+  "input_files": [
+    {
+      "file": "/tmp/bi-auditoria-20261125/manual-completo-v2/insumos/introduccion_y_fundamentos.json",
+      "sha256": "6b45c6d48217b7c61a23fbef8ccfaad231497bbc843b75f0dff571af1d614bc8"
+    },
+    {
+      "file": "/tmp/bi-auditoria-20261125/manual-completo-v2/insumos/operacion_configuracion_y_catalogo.json",
+      "sha256": "2073064ad5f9918290752d83f3c51366dc06d6e344acd17682d4bb85b77a31ec"
+    },
+    {
+      "file": "/tmp/bi-auditoria-20261125/manual-completo-v2/insumos/operacion_bi_etl_analitica.json",
+      "sha256": "73f3157ad38246a9a05fe760ba48d2e2ea40bf6bdb5cf3f3f01434751eae40e2"
+    },
+    {
+      "file": "/tmp/bi-auditoria-20261125/manual-completo-v2/insumos/base_datos_manual.json",
+      "sha256": "929576425951cf63c13f478f6956ad274fa683a3488dd6401c5d082cc9e0deb0"
+    },
+    {
+      "file": "/tmp/bi-auditoria-20261125/manual-completo-v2/insumos/actualizacion_20261125/actualizaciones_operacion.json",
+      "sha256": "480bc99423630f13ed07b1eb9ce97ec0daa960edf8fc45bdb8127cc7b3e554c4"
+    },
+    {
+      "file": "/tmp/bi-auditoria-20261125/manual-completo-v2/insumos/actualizacion_20261125/12_base_datos.tex",
+      "sha256": "c2e83ce46e64cd3b2c53d118f8b3988a146722d60b4ee080fb4f0cb5b2081214"
+    },
+    {
+      "file": "/tmp/bi-auditoria-20261125/manual-completo-v2/insumos/operacion_practicas_y_defensa.json",
+      "sha256": "ac90572d4be383754c5c4bd45510f93703a4a1c2c958ce76fb5557e618609c70"
+    },
+    {
+      "file": "/tmp/bi-auditoria-20261125/manual-completo-v2/insumos/roles_permisos_actuales_sin_usuarios.json",
+      "sha256": "9751b3c9816f7fb3e59b2eda79bdfb69759522e77679b0103e1d8d99471b4898"
+    },
+    {
+      "file": "/tmp/bi-auditoria-20261125/manual-completo-v2/insumos/mapa_capturas.json",
+      "sha256": "ce88631dcac5ac32a2b95bd352f5fa5d7e4001208889355445008efc718aa4f2"
+    }
+  ],
+  "base_units_expected": 82,
+  "units_rendered": 90,
+  "all_sections_rendered": true,
+  "dictionary_columns_rendered": 251,
+  "photos_mapped": 52,
+  "unmapped_photo_units": [],
+  "units": [
+    {
+      "source": "introduccion_y_fundamentos.json",
+      "path": "chapters[0]",
+      "title": "Cómo aprender con este manual",
+      "rendered": true
+    },
+    {
+      "source": "introduccion_y_fundamentos.json",
+      "path": "chapters[1]",
+      "title": "Comprender una venta antes de calcular indicadores",
+      "rendered": true
+    },
+    {
+      "source": "introduccion_y_fundamentos.json",
+      "path": "chapters[2]",
+      "title": "Entender la arquitectura y el papel de la IA",
+      "rendered": true
+    },
+    {
+      "source": "operacion_configuracion_y_catalogo.json",
+      "path": "sections[0]",
+      "title": "Ingresar y reconocer una sesión autorizada",
+      "rendered": true
+    },
+    {
+      "source": "operacion_configuracion_y_catalogo.json",
+      "path": "sections[1]",
+      "title": "Comenzar desde Inicio y completar la preparación",
+      "rendered": true
+    },
+    {
+      "source": "operacion_configuracion_y_catalogo.json",
+      "path": "sections[2]",
+      "title": "Navegar y conservar la fuente de trabajo",
+      "rendered": true
+    },
+    {
+      "source": "operacion_configuracion_y_catalogo.json",
+      "path": "sections[8]",
+      "title": "Registrar, probar y habilitar fuentes de datos",
+      "rendered": true
+    },
+    {
+      "source": "operacion_configuracion_y_catalogo.json",
+      "path": "sections[9]",
+      "title": "Ajustar parámetros con un propósito concreto",
+      "rendered": true
+    },
+    {
+      "source": "operacion_configuracion_y_catalogo.json",
+      "path": "sections[10]",
+      "title": "Configurar y comprobar el asistente de IA",
+      "rendered": true
+    },
+    {
+      "source": "operacion_configuracion_y_catalogo.json",
+      "path": "sections[11]",
+      "title": "Leer y comprender el esquema antes de diseñar",
+      "rendered": true
+    },
+    {
+      "source": "operacion_configuracion_y_catalogo.json",
+      "path": "sections[12]",
+      "title": "Construir un catálogo de preguntas con criterio de negocio",
+      "rendered": true
+    },
+    {
+      "source": "operacion_configuracion_y_catalogo.json",
+      "path": "sections[13]",
+      "title": "Elegir periodicidades sin confundirlas con el detalle de los datos",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[0]",
+      "title": "Antes de empezar piense qué decisión necesita apoyar",
+      "display_title": "Antes de empezar: piense qué decisión necesita apoyar",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[1]",
+      "title": "Asistente paso 1 escribir o elegir una necesidad",
+      "display_title": "Asistente, paso 1: escribir o elegir una necesidad",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[2]",
+      "title": "Comprender la viabilidad antes de generar",
+      "display_title": "Comprender la viabilidad antes de generar",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[3]",
+      "title": "Asistente paso 2 revisar los conceptos",
+      "display_title": "Asistente, paso 2: revisar los conceptos",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[4]",
+      "title": "Asistente paso 3 leer el diseño propuesto",
+      "display_title": "Asistente, paso 3: leer el diseño propuesto",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[5]",
+      "title": "Asistente paso 4 ajustar medidas y relaciones con criterio",
+      "display_title": "Asistente, paso 4: ajustar medidas y relaciones con criterio",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[6]",
+      "title": "Asistente paso 5 aprobar y consultar versiones",
+      "display_title": "Asistente, paso 5: aprobar y consultar versiones",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[7]",
+      "title": "Materialización paso 1 elegir una propuesta",
+      "display_title": "Materialización, paso 1: elegir una propuesta",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[8]",
+      "title": "Materialización paso 2 elegir indicadores y recetas",
+      "display_title": "Materialización, paso 2: elegir indicadores y recetas",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[9]",
+      "title": "Materialización paso 3 confirmar el plan",
+      "display_title": "Materialización, paso 3: confirmar el plan",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[10]",
+      "title": "Materialización paso 4 cargar sin repetir accidentalmente",
+      "display_title": "Materialización, paso 4: cargar sin repetir accidentalmente",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[11]",
+      "title": "Materialización paso 5 revisar conciliación y calidad",
+      "display_title": "Materialización, paso 5: revisar conciliación y calidad",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[12]",
+      "title": "Revisar etiquetas en español y comprobar la moneda",
+      "display_title": "Revisar etiquetas en español y comprobar la moneda",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[13]",
+      "title": "Elegir el datamart y filtrar el análisis",
+      "display_title": "Elegir el datamart y filtrar el análisis",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[14]",
+      "title": "Leer gráficos y hallazgos con criterio comercial",
+      "display_title": "Leer gráficos y hallazgos con criterio comercial",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[15]",
+      "title": "Conversar con el copiloto y revisar su respuesta",
+      "display_title": "Conversar con el copiloto y revisar su respuesta",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[16]",
+      "title": "Exportar y comprobar antes de compartir",
+      "display_title": "Exportar y comprobar antes de compartir",
+      "rendered": true
+    },
+    {
+      "source": "operacion_configuracion_y_catalogo.json",
+      "path": "sections[3]",
+      "title": "Crear y mantener cuentas de usuario",
+      "rendered": true
+    },
+    {
+      "source": "operacion_configuracion_y_catalogo.json",
+      "path": "sections[4]",
+      "title": "Definir roles según las responsabilidades",
+      "rendered": true
+    },
+    {
+      "source": "operacion_configuracion_y_catalogo.json",
+      "path": "sections[5]",
+      "title": "Interpretar el catálogo de permisos",
+      "rendered": true
+    },
+    {
+      "source": "operacion_configuracion_y_catalogo.json",
+      "path": "sections[6]",
+      "title": "Ajustar los nombres y el orden de los menús",
+      "rendered": true
+    },
+    {
+      "source": "operacion_configuracion_y_catalogo.json",
+      "path": "sections[7]",
+      "title": "Consultar la auditoría y reportar una incidencia",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[17]",
+      "title": "Practicar con las dos fuentes sin memorizar una respuesta del modelo",
+      "display_title": "Practicar con las dos fuentes sin memorizar una respuesta del modelo",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[18]",
+      "title": "Costos descuentos y márgenes una ampliación que exige evidencia",
+      "display_title": "Costos, descuentos y márgenes: una ampliación que exige evidencia",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[19]",
+      "title": "Resolver problemas y reconocer un rechazo correcto",
+      "display_title": "Resolver problemas y reconocer un rechazo correcto",
+      "rendered": true
+    },
+    {
+      "source": "operacion_bi_etl_analitica.json",
+      "path": "secciones[20]",
+      "title": "Demostrar y defender el recorrido completo",
+      "display_title": "Demostrar y defender el recorrido completo",
+      "rendered": true
+    },
+    {
+      "source": "operacion_practicas_y_defensa.json",
+      "path": "secciones[0]",
+      "title": "Preguntas para explicarlo con sus propias palabras",
+      "rendered": true
+    },
+    {
+      "source": "operacion_practicas_y_defensa.json",
+      "path": "secciones[1]",
+      "title": "Diez minutos: leer y explicar ventas como gerente",
+      "rendered": true
+    },
+    {
+      "source": "operacion_practicas_y_defensa.json",
+      "path": "secciones[2]",
+      "title": "Veinticinco minutos: construir y justificar un caso como analista",
+      "rendered": true
+    },
+    {
+      "source": "operacion_practicas_y_defensa.json",
+      "path": "secciones[3]",
+      "title": "Sesenta minutos: empezar en una aplicación limpia y aprender el recorrido",
+      "rendered": true
+    },
+    {
+      "source": "operacion_practicas_y_defensa.json",
+      "path": "secciones[4]",
+      "title": "Qué hacer cuando una etapa no termina",
+      "rendered": true
+    },
+    {
+      "source": "operacion_practicas_y_defensa.json",
+      "path": "secciones[5]",
+      "title": "Rúbrica de aprendizaje: veinte puntos",
+      "rendered": true
+    },
+    {
+      "source": "operacion_practicas_y_defensa.json",
+      "path": "secciones[6]",
+      "title": "Hoja de registro de una práctica nueva",
+      "rendered": true
+    },
+    {
+      "source": "operacion_practicas_y_defensa.json",
+      "path": "secciones[7]",
+      "title": "Referencias históricas para contrastar los casos",
+      "rendered": true
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "secciones[0]",
+      "title": "Dos bases de datos con trabajos diferentes",
+      "rendered": true
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "secciones[1]",
+      "title": "Base de datos, esquema, tabla y fila",
+      "rendered": true
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "secciones[2]",
+      "title": "Qué se comprobó realmente",
+      "rendered": true
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "secciones[3]",
+      "title": "Claves primarias y claves foráneas",
+      "rendered": true
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "secciones[4]",
+      "title": "Cómo leer las cardinalidades",
+      "rendered": true
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "secciones[5]",
+      "title": "Autoría, roles y permisos",
+      "rendered": true
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "secciones[6]",
+      "title": "JSON y JSONB no son tablas separadas",
+      "rendered": true
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "secciones[7]",
+      "title": "La revisión previa no está unida por una FK directa a la propuesta",
+      "rendered": true
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "secciones[8]",
+      "title": "Una propuesta y una ejecución no son lo mismo",
+      "rendered": true
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "secciones[9]",
+      "title": "Cómo se conservan los resultados físicos",
+      "rendered": true
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "secciones[10]",
+      "title": "Por qué las columnas de ventas cambian entre fuentes",
+      "rendered": true
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "secciones[11]",
+      "title": "Cómo interpretar medidas y conteos",
+      "rendered": true
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "secciones[12]",
+      "title": "Asesoría del diseño y conversación analítica",
+      "rendered": true
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "secciones[13]",
+      "title": "Qué garantiza y qué no garantiza este inventario",
+      "rendered": true
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "secciones[14]",
+      "title": "Una fotografía local, no un requisito del portable",
+      "rendered": true
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "secciones[15]",
+      "title": "Roles observados y alcance de la comprobación",
+      "rendered": true
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_app[0]",
+      "title": "app.analysis_catalogs",
+      "rendered": true,
+      "columns_rendered": 8
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_app[1]",
+      "title": "app.audit_events",
+      "rendered": true,
+      "columns_rendered": 8
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_app[2]",
+      "title": "app.bi_proposals",
+      "rendered": true,
+      "columns_rendered": 26
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_app[3]",
+      "title": "app.business_need_reviews",
+      "rendered": true,
+      "columns_rendered": 9
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_app[4]",
+      "title": "app.data_connections",
+      "rendered": true,
+      "columns_rendered": 16
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_app[5]",
+      "title": "app.etl_executions",
+      "rendered": true,
+      "columns_rendered": 17
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_app[6]",
+      "title": "app.llm_configurations",
+      "rendered": true,
+      "columns_rendered": 14
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_app[7]",
+      "title": "app.menu_permissions",
+      "rendered": true,
+      "columns_rendered": 2
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_app[8]",
+      "title": "app.menus",
+      "rendered": true,
+      "columns_rendered": 9
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_app[9]",
+      "title": "app.metadata_snapshots",
+      "rendered": true,
+      "columns_rendered": 14
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_app[10]",
+      "title": "app.parameters",
+      "rendered": true,
+      "columns_rendered": 12
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_app[11]",
+      "title": "app.permissions",
+      "rendered": true,
+      "columns_rendered": 6
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_app[12]",
+      "title": "app.role_permissions",
+      "rendered": true,
+      "columns_rendered": 2
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_app[13]",
+      "title": "app.roles",
+      "rendered": true,
+      "columns_rendered": 6
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_app[14]",
+      "title": "app.secrets",
+      "rendered": true,
+      "columns_rendered": 5
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_app[15]",
+      "title": "app.semantic_advice",
+      "rendered": true,
+      "columns_rendered": 10
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_app[16]",
+      "title": "app.user_roles",
+      "rendered": true,
+      "columns_rendered": 2
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_app[17]",
+      "title": "app.users",
+      "rendered": true,
+      "columns_rendered": 8
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_fisicas_demostracion[0]",
+      "title": "mart_ventas_e21.dim_cliente",
+      "rendered": true,
+      "columns_rendered": 6
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_fisicas_demostracion[1]",
+      "title": "mart_ventas_e21.dim_fecha",
+      "rendered": true,
+      "columns_rendered": 7
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_fisicas_demostracion[2]",
+      "title": "mart_ventas_e21.dim_producto",
+      "rendered": true,
+      "columns_rendered": 9
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_fisicas_demostracion[3]",
+      "title": "mart_ventas_e21.dim_territorio",
+      "rendered": true,
+      "columns_rendered": 9
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_fisicas_demostracion[4]",
+      "title": "mart_ventas_e21.fact_ventas",
+      "rendered": true,
+      "columns_rendered": 10
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_fisicas_demostracion[5]",
+      "title": "mart_ventas_e22.dim_cliente",
+      "rendered": true,
+      "columns_rendered": 6
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_fisicas_demostracion[6]",
+      "title": "mart_ventas_e22.dim_fecha",
+      "rendered": true,
+      "columns_rendered": 7
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_fisicas_demostracion[7]",
+      "title": "mart_ventas_e22.dim_producto",
+      "rendered": true,
+      "columns_rendered": 6
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_fisicas_demostracion[8]",
+      "title": "mart_ventas_e22.dim_territorio",
+      "rendered": true,
+      "columns_rendered": 8
+    },
+    {
+      "source": "base_datos_manual.json",
+      "path": "tablas_fisicas_demostracion[9]",
+      "title": "mart_ventas_e22.fact_ventas",
+      "rendered": true,
+      "columns_rendered": 9
+    }
+  ],
+  "capture_hooks": [
+    {
+      "id": "fundamentos_01",
+      "title": "Cómo aprender con este manual",
+      "file": "capturas/fundamentos_01.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "fundamentos_02",
+      "title": "Comprender una venta antes de calcular indicadores",
+      "file": "capturas/fundamentos_02.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "fundamentos_03",
+      "title": "Entender la arquitectura y el papel de la IA",
+      "file": "capturas/fundamentos_03.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "operacion_01",
+      "title": "Ingresar y reconocer una sesión autorizada",
+      "file": "capturas/operacion_01.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "operacion_02",
+      "title": "Comenzar desde Inicio y completar la preparación",
+      "file": "capturas/operacion_02.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "operacion_03",
+      "title": "Navegar y conservar la fuente de trabajo",
+      "file": "capturas/operacion_03.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "operacion_09",
+      "title": "Registrar, probar y habilitar fuentes de datos",
+      "file": "capturas/operacion_09.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "operacion_10",
+      "title": "Ajustar parámetros con un propósito concreto",
+      "file": "capturas/operacion_10.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "operacion_11",
+      "title": "Configurar y comprobar el asistente de IA",
+      "file": "capturas/operacion_11.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "operacion_12",
+      "title": "Leer y comprender el esquema antes de diseñar",
+      "file": "capturas/operacion_12.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "operacion_13",
+      "title": "Construir un catálogo de preguntas con criterio de negocio",
+      "file": "capturas/operacion_13.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "operacion_14",
+      "title": "Elegir periodicidades sin confundirlas con el detalle de los datos",
+      "file": "capturas/operacion_14.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "BI01",
+      "title": "Antes de empezar: piense qué decisión necesita apoyar",
+      "file": "capturas/BI01.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "BI02",
+      "title": "Asistente, paso 1: escribir o elegir una necesidad",
+      "file": "capturas/BI02.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "BI03",
+      "title": "Comprender la viabilidad antes de generar",
+      "file": "capturas/BI03.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "BI04",
+      "title": "Asistente, paso 2: revisar los conceptos",
+      "file": "capturas/BI04.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "BI05",
+      "title": "Asistente, paso 3: leer el diseño propuesto",
+      "file": "capturas/BI05.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "BI06",
+      "title": "Asistente, paso 4: ajustar medidas y relaciones con criterio",
+      "file": "capturas/BI06.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "BI07",
+      "title": "Asistente, paso 5: aprobar y consultar versiones",
+      "file": "capturas/BI07.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "ETL01",
+      "title": "Materialización, paso 1: elegir una propuesta",
+      "file": "capturas/ETL01.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "ETL02",
+      "title": "Materialización, paso 2: elegir indicadores y recetas",
+      "file": "capturas/ETL02.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "ETL03",
+      "title": "Materialización, paso 3: confirmar el plan",
+      "file": "capturas/ETL03.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "ETL04",
+      "title": "Materialización, paso 4: cargar sin repetir accidentalmente",
+      "file": "capturas/ETL04.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "ETL05",
+      "title": "Materialización, paso 5: revisar conciliación y calidad",
+      "file": "capturas/ETL05.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "ETL06",
+      "title": "Revisar etiquetas en español y comprobar la moneda",
+      "file": "capturas/ETL06.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "AN01",
+      "title": "Elegir el datamart y filtrar el análisis",
+      "file": "capturas/AN01.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "AN02",
+      "title": "Leer gráficos y hallazgos con criterio comercial",
+      "file": "capturas/AN02.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "AN03",
+      "title": "Conversar con el copiloto y revisar su respuesta",
+      "file": "capturas/AN03.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "AN04",
+      "title": "Exportar y comprobar antes de compartir",
+      "file": "capturas/AN04.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "operacion_04",
+      "title": "Crear y mantener cuentas de usuario",
+      "file": "capturas/operacion_04.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "operacion_05",
+      "title": "Definir roles según las responsabilidades",
+      "file": "capturas/operacion_05.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "operacion_06",
+      "title": "Interpretar el catálogo de permisos",
+      "file": "capturas/operacion_06.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "operacion_07",
+      "title": "Ajustar los nombres y el orden de los menús",
+      "file": "capturas/operacion_07.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "operacion_08",
+      "title": "Consultar la auditoría y reportar una incidencia",
+      "file": "capturas/operacion_08.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "PR01",
+      "title": "Practicar con las dos fuentes sin memorizar una respuesta del modelo",
+      "file": "capturas/PR01.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "BI08",
+      "title": "Costos, descuentos y márgenes: una ampliación que exige evidencia",
+      "file": "capturas/BI08.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "QA01",
+      "title": "Resolver problemas y reconocer un rechazo correcto",
+      "file": "capturas/QA01.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    },
+    {
+      "id": "DEMO01",
+      "title": "Demostrar y defender el recorrido completo",
+      "file": "capturas/DEMO01.tex",
+      "usage": "\\pantalla{../capturas/archivo.jpg}{Título de la pantalla}{Qué debe observar y comprobar.}"
+    }
+  ]
+}

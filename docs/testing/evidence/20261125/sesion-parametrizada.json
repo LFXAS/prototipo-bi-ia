@@ -1,0 +1,16 @@
+{
+  "checked_at_utc": "2026-11-26T01:39:27.603015+00:00",
+  "migration_applied": "20261125_20",
+  "parameter": "AUTH_SESSION_MINUTES",
+  "initial_and_current_minutes": 60,
+  "allowed_minutes": [
+    15,
+    240
+  ],
+  "effective_issuer_duration_seconds": 3600,
+  "login_route_unit_test_minutes": 120,
+  "security_tests_passed": 24,
+  "credentials_or_tokens_included": false,
+  "private_environment_modified": false,
+  "existing_tokens_renewed": false
+}

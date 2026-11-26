@@ -1,0 +1,1696 @@
+\chapter{Responsabilidades, permisos y precisión de esta edición}
+Catálogo base extraído literalmente del código; las columnas de Analista y Gerencia son una propuesta de capacitación, no una lectura de sus asignaciones actuales en PostgreSQL.
+
+\section{Lectura de la matriz}
+El rol de Analista responsable del catálogo incluye Administrar catálogo solo si esa responsabilidad se le asignó. Un perfil de analista que únicamente crea propuestas puede mantener el catálogo en consulta.
+
+Actualizar metadatos puede reservarse a administración y retirarse del analista si la preparación de fuentes se realiza centralmente.
+
+La propuesta de Gerente comercial incluye lectura de conexiones sin secretos, lectura de metadatos por dependencia del selector, panel y exportación. No incluye materialización, revisión ni administración del catálogo.
+
+Administrador es el perfil base sembrado. Los nombres locales Analista BI, Gerente comercial u Operador no garantizan por sí mismos ninguna lista de permisos.
+
+Product Owner y Scrum Master son responsabilidades del proyecto académico y no perfiles de autorización de la aplicación.
+
+\section{Permisos de la plataforma}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Consultar usuarios\par}
+
+Permite consultar usuarios.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{security.users.read}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Consultar usuarios}
+Permite consultar usuarios.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{security.users.read}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & No necesario para el recorrido propuesto. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Administrar usuarios\par}
+
+Permite crear y modificar usuarios.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{security.users.write}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Administrar usuarios}
+Permite crear y modificar usuarios.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{security.users.write}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & No necesario para el recorrido propuesto. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Consultar roles\par}
+
+Permite consultar roles.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{security.roles.read}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Consultar roles}
+Permite consultar roles.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{security.roles.read}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & No necesario para el recorrido propuesto. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Administrar roles\par}
+
+Permite crear roles y asignar permisos.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{security.roles.write}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Administrar roles}
+Permite crear roles y asignar permisos.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{security.roles.write}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & No necesario para el recorrido propuesto. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Consultar permisos\par}
+
+Permite consultar permisos.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{security.permissions.read}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Consultar permisos}
+Permite consultar permisos.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{security.permissions.read}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & No necesario para el recorrido propuesto. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Administrar permisos\par}
+
+Permite crear permisos.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{security.permissions.write}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Administrar permisos}
+Permite crear permisos.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{security.permissions.write}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & No necesario para el recorrido propuesto. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Consultar menús\par}
+
+Permite consultar la navegación.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{security.menus.read}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Consultar menús}
+Permite consultar la navegación.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{security.menus.read}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & No necesario para el recorrido propuesto. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Administrar menús\par}
+
+Permite crear y parametrizar menús.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{security.menus.write}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Administrar menús}
+Permite crear y parametrizar menús.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{security.menus.write}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & No necesario para el recorrido propuesto. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Consultar parámetros\par}
+
+Permite consultar parámetros operativos.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{parameters.read}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Consultar parámetros}
+Permite consultar parámetros operativos.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{parameters.read}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & No necesario para el recorrido propuesto. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Administrar parámetros\par}
+
+Permite crear y modificar parámetros.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{parameters.write}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Administrar parámetros}
+Permite crear y modificar parámetros.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{parameters.write}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & No necesario para el recorrido propuesto. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Consultar configuración LLM\par}
+
+Permite consultar proveedores LLM.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{parameters.llm.read}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Consultar configuración LLM}
+Permite consultar proveedores LLM.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{parameters.llm.read}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & No necesario para el recorrido propuesto. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Administrar configuración LLM\par}
+
+Permite parametrizar proveedores LLM.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{parameters.llm.write}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Administrar configuración LLM}
+Permite parametrizar proveedores LLM.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{parameters.llm.write}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & No necesario para el recorrido propuesto. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Consultar conexiones\par}
+
+Permite consultar fuentes sin secretos.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{connections.read}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Consultar conexiones}
+Permite consultar fuentes sin secretos.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{connections.read}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & No necesario para el recorrido propuesto. \\
+\addlinespace[3pt]
+Gerencia comercial & Incluir para el recorrido de consulta propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Administrar conexiones\par}
+
+Permite parametrizar fuentes de datos.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{connections.write}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Administrar conexiones}
+Permite parametrizar fuentes de datos.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{connections.write}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & No necesario para el recorrido propuesto. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Probar conexiones\par}
+
+Permite validar fuentes de solo lectura.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{connections.test}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Probar conexiones}
+Permite validar fuentes de solo lectura.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{connections.test}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & No necesario para el recorrido propuesto. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Consultar metadatos\par}
+
+Permite consultar instantáneas del esquema.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{metadata.read}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Consultar metadatos}
+Permite consultar instantáneas del esquema.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{metadata.read}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & Incluir según la responsabilidad acordada. \\
+\addlinespace[3pt]
+Gerencia comercial & Incluir para el recorrido de consulta propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Actualizar metadatos\par}
+
+Permite leer la estructura de una fuente habilitada y seleccionada.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{metadata.refresh}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Actualizar metadatos}
+Permite leer la estructura de una fuente habilitada y seleccionada.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{metadata.refresh}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & Incluir según la responsabilidad acordada. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Revisar identidad de dimensiones\par}
+
+Permite comprobar relaciones, cobertura y muestras descriptivas controladas.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{metadata.semantic\_resolution.read}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Revisar identidad de dimensiones}
+Permite comprobar relaciones, cobertura y muestras descriptivas controladas.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{metadata.semantic\_resolution.read}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & Incluir según la responsabilidad acordada. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Resolver identidad de dimensiones\par}
+
+Permite crear una versión corregida desde rutas semánticas verificadas.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{metadata.semantic\_resolution.manage}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Resolver identidad de dimensiones}
+Permite crear una versión corregida desde rutas semánticas verificadas.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{metadata.semantic\_resolution.manage}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & No necesario para el recorrido propuesto. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+Declarado en el catálogo; no se identificó una operación autorizada con este código en el recorrido web auditado. No atribuir una capacidad nueva por su mera existencia.
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Consultar propuestas BI\par}
+
+Permite consultar solicitudes, propuestas y decisiones del asistente.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{copilot.proposals.read}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Consultar propuestas BI}
+Permite consultar solicitudes, propuestas y decisiones del asistente.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{copilot.proposals.read}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & Incluir según la responsabilidad acordada. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Generar propuestas BI\par}
+
+Permite solicitar interpretación semántica y propuestas de ventas.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{copilot.proposals.generate}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Generar propuestas BI}
+Permite solicitar interpretación semántica y propuestas de ventas.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{copilot.proposals.generate}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & Incluir según la responsabilidad acordada. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Revisar propuestas BI\par}
+
+Permite aprobar o rechazar propuestas validadas.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{copilot.proposals.review}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Revisar propuestas BI}
+Permite aprobar o rechazar propuestas validadas.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{copilot.proposals.review}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & Incluir según la responsabilidad acordada. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Consultar catálogo analítico\par}
+
+Permite consultar preguntas de negocio y periodicidades por dominio.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{copilot.catalog.read}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Consultar catálogo analítico}
+Permite consultar preguntas de negocio y periodicidades por dominio.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{copilot.catalog.read}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & Incluir según la responsabilidad acordada. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Administrar catálogo analítico\par}
+
+Permite crear, modificar, habilitar y retirar guías analíticas por dominio.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{copilot.catalog.write}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Administrar catálogo analítico}
+Permite crear, modificar, habilitar y retirar guías analíticas por dominio.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{copilot.catalog.write}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & Incluir según la responsabilidad acordada. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Consultar materializaciones\par}
+
+Permite revisar propuestas elegibles, planes y evidencia de ejecuciones ETL.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{etl.executions.read}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Consultar materializaciones}
+Permite revisar propuestas elegibles, planes y evidencia de ejecuciones ETL.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{etl.executions.read}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & Incluir según la responsabilidad acordada. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Preparar materializaciones\par}
+
+Permite seleccionar una propuesta y preparar una ejecución ETL controlada.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{etl.executions.write}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Preparar materializaciones}
+Permite seleccionar una propuesta y preparar una ejecución ETL controlada.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{etl.executions.write}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & Incluir según la responsabilidad acordada. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Consultar análisis visual\par}
+
+Permite explorar KPI, visualizaciones e insights sobre un datamart conciliado.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{analytics.dashboard.read}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Consultar análisis visual}
+Permite explorar KPI, visualizaciones e insights sobre un datamart conciliado.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{analytics.dashboard.read}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & Incluir según la responsabilidad acordada. \\
+\addlinespace[3pt]
+Gerencia comercial & Incluir para el recorrido de consulta propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Exportar reportes analíticos\par}
+
+Permite descargar en PDF o Excel la selección analítica visible y autorizada.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{reports.analytics.export}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Exportar reportes analíticos}
+Permite descargar en PDF o Excel la selección analítica visible y autorizada.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{reports.analytics.export}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & Incluir según la responsabilidad acordada. \\
+\addlinespace[3pt]
+Gerencia comercial & Incluir para el recorrido de consulta propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Consultar auditoría\par}
+
+Permite consultar eventos de auditoría.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{audit.read}}\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+Administración & Incluido en el rol administrativo base protegido. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Consultar auditoría}
+Permite consultar eventos de auditoría.
+
+\textbf{Referencia técnica:} \texttt{\seqsplit{audit.read}}\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Tratamiento en la formación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Incluido en el rol administrativo base protegido. \\
+\addlinespace[3pt]
+Analista de BI & No necesario para el recorrido propuesto. \\
+\addlinespace[3pt]
+Gerencia comercial & No necesario para el recorrido de gerencia propuesto. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\RaggedRight\sffamily\bfseries\large\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000 Dependencias que deben comprobarse\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Operación} & \textbf{Permisos y condición} \\
+\midrule
+Seleccionar fuente y operar pantallas con contexto & Consultar metadatos (metadata.read). También permite abrir el Explorador en consulta. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\section{Dependencias que deben comprobarse}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Operación} & \textbf{Permisos y condición} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Operación} & \textbf{Permisos y condición} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Seleccionar fuente y operar pantallas con contexto & Consultar metadatos (metadata.read). También permite abrir el Explorador en consulta. \\
+\addlinespace[3pt]
+Editar usuarios no protegidos mediante la UI & Administrar usuarios y Consultar roles para cargar las opciones. \\
+\addlinespace[3pt]
+Crear o editar roles y menús mediante la UI & Administrar el recurso y Consultar permisos para cargar las casillas. \\
+\addlinespace[3pt]
+Mostrar cobertura técnica del catálogo & La configuración usa Consultar catálogo analítico; la cobertura consulta el catálogo técnico mediante Consultar propuestas BI. La falta de esa consulta puede dejar la cobertura sin mostrar. \\
+\addlinespace[3pt]
+Exportar PDF o Excel & Consultar análisis visual y Exportar reportes analíticos conjuntamente. \\
+\addlinespace[3pt]
+Revisar o generar una propuesta & Consulta de propuestas más el permiso de generar o revisar correspondiente; no se confunden. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\section{Precisiones respecto de documentación anterior}
+\subsection{Catálogo de preguntas}
+Cuatro orientaciones base definidas por el perfil; no hay generación LLM del editor de catálogo. Dos orientaciones adicionales de AW fueron decisiones humanas históricas.
+
+Explicar su procedencia y su independencia por fuente.
+
+\subsection{Restauración del catálogo}
+El endpoint reset aplica default\_\allowbreak{}needs\_\allowbreak{}catalog\_\allowbreak{}configuration a la fuente actual.
+
+Advertir que sustituye personalizaciones; no confundirlo con recuperar la última edición.
+
+\subsection{Paginación}
+App.tsx usa const pageSize = 10 en los listados auditados aunque UI\_\allowbreak{}PAGE\_\allowbreak{}SIZE se guarda.
+
+No prometer efecto inmediato de ese parámetro; verificar antes de una demostración.
+
+\subsection{Usuarios y auditoría}
+La UI no expone buscador de usuarios ni filtros de auditoría por fecha/actor en este corte.
+
+Documentar únicamente la paginación disponible.
+
+\subsection{Permisos y menús}
+No se crean contratos técnicos o pantallas libres desde el navegador.
+
+Separar edición de roles/etiquetas de ampliaciones del producto.
+
+\subsection{Pruebas por rol}
+La consulta de una configuración no acredita un recorrido autenticado bajo ese perfil.
+
+Proponer la verificación sin afirmar que se ejecutó durante esta lectura de código.
+
+\section{Origen de los contenidos y de los ejemplos}
+Esta edición integra la lectura de código y especificaciones, las capturas históricas del 18 de noviembre y las comprobaciones operativas del 25 de noviembre. Los casos 135/23 y 136/24 son recorridos nuevos comprobados con OpenAI Sol. Luna sólo tiene comprobación mínima de conexión y JSON. Los ejercicios para que el grupo practique siguen distinguiéndose de esas pruebas realizadas.
+
+No presentar ejercicios propuestos como pruebas realizadas.
+
+No garantizar generación idéntica o éxito de todos los escenarios de un LLM.
+
+No incluir credenciales o tokens.
+
+Mantener distinción pedido/factura, rol de entidad, moneda e identidad.
+
+Poner los resultados históricos junto a su fecha y expediente.
+
+El material base del 18 de noviembre se redactó sin nuevas propuestas ni ETL. La campaña adicional del 25 de noviembre sí incluyó configuración OpenAI, correcciones, propuestas aprobadas y ETL nuevos, documentados en sus unidades. Copiar y compilar este manual no vuelve a ejecutar esas operaciones. Las capturas actuales son vistas reales estrechas, conservadas sin estirar; no se presentan como nuevas capturas de escritorio completo.
+
+\section{Reproducir una práctica en otro equipo}
+Un portable limpio no debe contener la API key privada ni todos los expedientes locales de quien preparó el proyecto. La administración registra su propia credencial, comprueba el proveedor y configura las fuentes. Los números 135, 136, 23 y 24 son referencias de esta instalación, no valores que deban forzarse en las bases. La guía de traslado vigente acompaña la entrega y debe usarse para puertos, credenciales locales y encendido.
+
+La política de ahorro consiste en elegir un modelo económico compatible, reducir clics repetidos y reutilizar evidencia conservada. No se recortan metadatos verificados, requisitos ni validaciones para abaratar una propuesta: esa pérdida de contexto puede dejar fuera un resultado obligatorio.
+
+\section{Fuentes para consultar modelos y facturación}
+Las tarifas se consultaron el 25 de noviembre de 2026 en la documentación oficial de OpenAI. Pueden cambiar; verifique modelo y disponibilidad antes de una demostración.
+
+\url{https://developers.openai.com/api/docs/models/gpt-6-luna}\par\smallskip
+\url{https://developers.openai.com/api/docs/models/gpt-5.4-mini}\par\smallskip
+\url{https://developers.openai.com/api/docs/models/gpt-6.1-terra}\par\smallskip
+\url{https://developers.openai.com/api/docs/models/gpt-6.2-sol}\par\smallskip
+\url{https://developers.openai.com/api/docs/models/gpt-6.2-astra}\par\smallskip

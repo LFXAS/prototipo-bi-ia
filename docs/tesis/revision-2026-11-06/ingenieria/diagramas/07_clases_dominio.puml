@@ -1,0 +1,75 @@
+@startuml
+skinparam backgroundColor white
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 16
+skinparam ArrowFontSize 15
+skinparam NoteFontSize 14
+skinparam Padding 6
+skinparam nodesep 24
+skinparam ranksep 28
+skinparam dpi 180
+skinparam wrapWidth 220
+skinparam maxMessageSize 190
+skinparam sequenceMessageAlign center
+hide empty members
+hide circle
+skinparam classAttributeIconSize 0
+
+skinparam ranksep 64
+top to bottom direction
+class "Fuente de datos" as FUENTE {
+ Nombre de conexión
+ Base de datos
+ Estado de habilitación
+}
+class "Versión de metadatos" as META {
+ Estructura capturada
+ Huella de integridad
+}
+class "Catálogo de análisis" as CAT {
+ Dominio de análisis
+ Preguntas y opciones
+}
+class "Revisión de necesidad" as REV {
+ Huella de la necesidad
+ Evaluación de viabilidad
+}
+class "Propuesta" as PROP {
+ Modelo y medidas
+ Estado de revisión
+ Advertencias y decisión
+}
+class "Ejecución de carga" as EJEC {
+ Plan de carga
+ Estado y responsable
+ Resultados de conciliación
+}
+class "Credencial cifrada" as CLAVE {
+ Tipo de credencial
+ Contenido cifrado
+}
+class "Configuración del proveedor" as IA {
+ Proveedor y modelo
+ Estado de comprobación
+}
+FUENTE "1" -- "0..*" META : dispone de
+FUENTE "1" -- "0..*" CAT : configura
+META "1" -- "0..*" REV : fundamenta
+META "1" -- "0..*" PROP : sustenta
+META "1" -- "0..*" EJEC : identifica origen
+PROP "1" -- "0..*" EJEC
+PROP "0..1" <-- "0..*" PROP : versión de origen
+CLAVE "1" -- "0..1" FUENTE
+CLAVE "0..1" -- "0..1" IA
+note bottom of CAT
+Cada catálogo corresponde a una fuente y dominio.
+Los números indican cuántos registros se relacionan.
+end note
+note bottom of PROP
+Las etiquetas traducen las entidades persistentes.
+Se muestran sólo atributos seleccionados.
+end note
+
+@enduml

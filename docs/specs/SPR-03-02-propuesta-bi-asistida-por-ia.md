@@ -259,8 +259,8 @@ añade una API ni un sprint y no cambia los documentos aprobados existentes.
 - `need-review-6` obliga a evaluar otra vez entradas nuevas o revisiones anteriores;
   conserva para auditoría las evaluaciones `need-review-2`, `need-review-3`, `need-review-4` y `need-review-5` sin
   alterar propuestas o ETL.
-- Las propuestas nuevas identifican `sales-bi-v7` y
-  `compilation_rules_version=3`. Los documentos con marcador 2 conservan sus reglas y los documentos sin marcador se reproducen con las
+- En el cierre del 4–5 de noviembre, las propuestas nuevas identificaban `sales-bi-v7` y
+  `compilation_rules_version=3`; la adenda 4.5.2 registra las versiones vigentes desde el 6 de noviembre. Los documentos con marcador 2 conservan sus reglas y los documentos sin marcador se reproducen con las
   reglas históricas `1`. No se agrega el marcador retrospectivamente ni se migran
   huellas, decisiones, aprobaciones o tablas de propuestas como 117 y 120.
 - La reproducción histórica no habilita una aprobación nueva de un borrador legado.
@@ -306,9 +306,41 @@ exclusiones del ranking. No exige una columna de ranking por «sin percentiles»
 conserva como positiva «no excluir/do not exclude». El evento de factura admite
 cabecera como hecho sólo con intención positiva, PK completa declarada y referencias
 exactas, o la FK completa existente; el nombre o una PK parcial no bastan.
-La compilación 3 y su precisión de identificadores se especifican en SPR-04-02.
+La compilación 3 de ese corte y su precisión de identificadores se especifican en SPR-04-02.
 La regresión final de los cuatro módulos de necesidad/compilación/aprobación aprobó
 266 pruebas focalizadas (156 + 110); forma parte del integral 454 backend/46 frontend.
+
+### 4.5.2 Corte intermedio: conservación de decisiones y evidencia con reglas 4
+
+La auditoría del 6 de noviembre detectó una alteración del motor de expansión: una dimensión con fuente explícita verificada podía reemplazarse por otra de mayor puntuación léxica. En la propuesta 125 el territorio comercial pasó a una provincia. También se observaron atributos temporales elegidos por posición y un promedio de líneas rotulado como promedio por pedido. La revisión humana detuvo el recorrido antes de aprobar. No se presenta ese intento como construcción correcta ni como ejecución ETL nueva.
+
+La corrección distingue tres situaciones:
+
+1. **Decisión explícita y segura:** conservar fuente y ruta cuando la instantánea, la función, la identidad y las comprobaciones estructurales las respaldan.
+2. **Decisión incompleta:** descubrir candidatos mediante metadatos y criterios semánticos; una coincidencia de nombres es una señal de búsqueda, no una autoridad para cambiar el significado.
+3. **Decisión inválida o ambigua:** registrar el motivo y bloquear o corregir sólo si existe una alternativa compatible y demostrable. No sustituir silenciosamente una entidad ni reducir una identidad compuesta no admitida.
+
+Las rutas conservan la granularidad del hecho y se apoyan en relaciones declaradas y claves primarias capturadas. Las restricciones UNIQUE alternativas no exportadas constituyen un límite de la evidencia actual. La dimensión de fecha conserva la referencia temporal revisada; selecciona tipos de calendario compatibles y no utiliza el orden físico de las columnas. Una fecha de evento ambigua queda como impedimento para aprobación.
+
+El servidor conserva `ai_decisions.business_request_scope`, con objetivo y requisitos adoptados. El navegador no constituye la autoridad de esa evidencia. `dimensions[].source_resolution` registra `status` (`preserved` o `fallback`), `proposed_source`, `selected_source`, `business_key_reference`, `path` y `reason`. Los impedimentos dimensionales se conservan en `dimension_blockers` y se traducen en errores de validación: `dimension.composite_identity`, `dimension.source_unresolved` o `dimension.date_ambiguous`.
+
+La selección humana de KPI y su cantidad variable se mantienen. Se comprueba la coherencia de la receta con su rótulo: un promedio por documento requiere un denominador de documentos distintos y no se obtiene con AVG de líneas. La corrección no agrega una regla numérica que limite automáticamente toda propuesta.
+
+Aquel corte identificó `sales-bi-v8` y `compilation_rules_version=4`; la sección 4.5.3 establece las reglas 5 vigentes. Su verificación del 6 de noviembre se registra con un corte propio. Se conservan los caminos históricos de reglas 1, 2 y 3 y la evidencia persistida. La puerta de nueva aprobación exige el contrato vigente; consultar o repetir una aprobación histórica idempotente no reescribe su origen. No se amplían motores, dominio ni permisos de ejecución.
+
+Verificación del corte intermedio, anterior a reglas 5: make verify del 6 de noviembre aprobó con salida 0, 475 backend y 48 frontend (etapa frontend reutilizada de caché del mismo árbol). La repetición operativa y documental tiene un corte propio; AW 126/20 registrado y WWI nuevo todavía pendiente. El reporte complementario será `docs/testing/qa-postcierre-2026-11-06.md`.
+
+### 4.5.3 Ruta y rol verificados con reglas 5
+
+La auditoría posterior detectó que conservar la tabla no bastaba: varias FK pueden llegar a la misma entidad mediante roles diferentes. En WWI 127/128, la evidencia dimensional y la ruta que reconstruía el materializador podían escoger comprador frente a destinatario de facturación, o ubicación de entrega frente a postal, usando el orden del catálogo. Las versiones se detuvieron antes de aprobar; no se les atribuye ETL nuevo.
+
+`compilation_rules_version=5`, con `sales-bi-v8`, conserva la secuencia exacta en `dimensions[].source_resolution.path`. Cada arista declara `left_table`, `right_table`, `left_columns` y `right_columns`. El descubrimiento recorre todas las rutas simples dirigidas hacia PK completas, con límites explícitos de 32 rutas y 4096 estados; excederlos bloquea, no autoriza elegir una ruta parcial o más corta.
+
+La evidencia revisada delimita el rol de las aristas. Si no permite una ruta inequívoca, se registra la ambigüedad y se exige decisión supervisada mediante las relaciones existentes. No se preselecciona la primera opción. Una elección incompatible con el objetivo revisado no cambia silenciosamente el alcance: requiere editar y reevaluar la necesidad.
+
+Se rechazan prefijos incompatibles hacia la misma tabla cuando harían necesarios alias distintos por rol que el constructor no admite. El materializador vuelve a comprobar la ruta exacta contra la instantánea y la usa para el hecho; las medidas externas no pueden recuperar una ruta libre por BFS. La procedencia analítica comparte ese comprobador y no inventa una ruta alternativa para explicar una ejecución.
+
+Los contratos 1–4 conservan su expansión y ejecución históricas. AW 126/20 sigue bajo reglas 4, con sus huellas; no se migra ni se renombra como prueba de reglas 5. La nueva aprobación exige reglas 5 y las instrucciones vigentes. Las pruebas focales de ejecución/procedencia aprobaron 67 casos; el cierre definitivo aprobó 530 backend/50 frontend con salida 0, incluidas las correcciones de título y unidades genéricas. Los recorridos nuevos AW 129/21 y WWI 131/22 se aprobaron, materializaron y conciliaron bajo reglas 5; el reporte QA del 6 de noviembre conserva sus cifras y límites, separados de los históricos.
 
 ### 4.6 Límite con la generación y ejecución de SQL
 
@@ -365,7 +397,7 @@ Por tanto, un programador construye el motor como parte del producto, pero no pa
 
 ### Advertencias que requieren atención humana
 
-- Relación muchos a muchos, clave compuesta o columna nullable usada como clave de negocio.
+- Relación muchos a muchos o columna nullable usada como clave de negocio. Desde reglas 4, una identidad dimensional compuesta no admitida es un error bloqueante, no una advertencia que pueda aceptarse reduciendo la clave.
 - Medida potencialmente derivada, conversión monetaria o zona horaria no resuelta.
 - Dimensión prevista por el alcance académico que el modelo omite con justificación.
 - Supuesto no respaldado por metadatos.

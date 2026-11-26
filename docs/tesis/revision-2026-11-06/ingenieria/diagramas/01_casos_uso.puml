@@ -1,0 +1,61 @@
+@startuml
+skinparam backgroundColor white
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 16
+skinparam ArrowFontSize 15
+skinparam NoteFontSize 14
+skinparam Padding 6
+skinparam nodesep 24
+skinparam ranksep 28
+skinparam dpi 180
+skinparam wrapWidth 220
+skinparam maxMessageSize 190
+skinparam sequenceMessageAlign center
+hide empty members
+hide circle
+skinparam classAttributeIconSize 0
+
+left to right direction
+actor "Administrador" as ADM
+actor "Analista de negocios" as ANA
+actor "Gerente comercial" as GER
+actor "Proveedor de\ninteligencia artificial" as IA
+rectangle "Sistema inteligente de datamarts de ventas" {
+ usecase "Administrar acceso\ny configuración" as ACC
+ usecase "Preparar fuentes\ny metadatos" as MET
+ usecase "Mantener catálogo\nde preguntas" as CAT
+ usecase "Formular y comprobar\nla necesidad" as NEC
+ usecase "Generar y revisar\nla propuesta" as PROP
+ usecase "Aprobar una versión" as APR
+ usecase "Cargar y conciliar\nel datamart" as ETL
+ usecase "Consultar panel\ny aplicar filtros" as PANEL
+ usecase "Preguntar al copiloto\ny exportar resultados" as CHAT
+}
+ADM -- ACC
+ADM -- MET
+ADM -- CAT
+ANA -- MET
+ANA -- CAT
+ANA -- NEC
+ANA -- PROP
+ANA -- APR
+ANA -- ETL
+ANA -- PANEL
+ANA -- CHAT
+GER -- PANEL
+GER -- CHAT
+IA -- NEC
+IA -- PROP
+IA -- CHAT
+note bottom of ETL
+La aprobación y la ejecución de la carga
+requieren decisiones humanas separadas.
+end note
+note bottom of ADM
+Las asociaciones describen responsabilidades.
+Cada acción requiere el permiso del usuario.
+end note
+
+@enduml

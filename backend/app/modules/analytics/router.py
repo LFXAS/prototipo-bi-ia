@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+from datetime import UTC, datetime
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
@@ -49,10 +50,15 @@ resúmenes o explicaciones ya cubiertas por el panel. "Más vendidos" significa 
 indicador de unidades cuando exista; "mayores ventas" significa el indicador monetario.
 __dashboard__ conserva el filtro visible y __all__ lo elimina. Devuelve únicamente el
 objeto JSON solicitado.
+calendar_reference es el reloj de referencia de esta consulta, no la cobertura de
+los datos ni un año adicional habilitado para filtros. Conserva los catálogos recibidos.
 """.strip()
 
 _ANALYTICS_COPILOT_INSTRUCTION = """
 Eres un copiloto de análisis de ventas. Responde en español claro para el perfil indicado.
+Explica la evidencia con nombres de negocio y unidades comprensibles. No muestres claves
+internas del JSON, códigos de estado ni identificadores de KPI como si fueran una
+explicación para el usuario; expresa su significado en lenguaje sencillo.
 Usa exclusivamente los indicadores, puntos agregados, el resultado de la consulta segura,
 los filtros, hallazgos y controles de calidad incluidos en el contexto. La consulta segura
 es calculada por la aplicación desde un catálogo cerrado y puede abarcar filtros que no
@@ -82,6 +88,13 @@ facturación emitida a importes derivados de pedidos.
 No confundas el filtro actual con una imposibilidad de análisis: si hay años o
 territorios disponibles, explica que la comparación requiere cambiar el filtro
 o consultar un agregado adicional, no que el sistema carezca de esos datos.
+calendar_reference identifica la fecha actual del servidor y está separada del período
+histórico del datamart y de la fecha de extracción. No introduzcas fechas, años, períodos
+ni nombres de categorías ajenos a la evidencia y a la pregunta. No infieras el año actual
+a partir del último dato histórico, de la fecha de extracción o de conocimiento externo.
+Si no hay un pronóstico disponible para una referencia relativa como "próximo año",
+refiérete a "el período solicitado" sin inventar un año de ejemplo. La fecha de referencia
+no acredita datos futuros, planificación ni un modelo de pronóstico.
 """.strip()
 
 _ANALYTICS_COPILOT_SCHEMA: dict[str, object] = {
@@ -444,8 +457,14 @@ async def analytics_copilot(
         select(Parameter.value).where(Parameter.key == "LLM_TIMEOUT_SECONDS")
     )
     timeout_seconds = int(timeout_value or 30)
+    calendar_reference = {
+        "date": datetime.now(UTC).date().isoformat(),
+        "timezone": "UTC",
+        "meaning": "request_clock_not_dataset_coverage",
+    }
     intent_context = {
         "question": payload.question,
+        "calendar_reference": calendar_reference,
         "visible_selection": {
             "metric_code": dashboard.metric_code,
             "year": dashboard.filters.selected_year,
@@ -486,6 +505,7 @@ async def analytics_copilot(
     intent_context["business_scope"] = business_scope
     context: dict[str, object] = {
         "audience": "dirección y gerencia" if payload.view == "executive" else "analista BI",
+        "calendar_reference": calendar_reference,
         "question": payload.question,
         "history": [item.model_dump() for item in payload.history[-6:]],
         "selection": {

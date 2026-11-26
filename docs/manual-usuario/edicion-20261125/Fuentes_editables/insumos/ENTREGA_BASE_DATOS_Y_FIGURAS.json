@@ -1,0 +1,496 @@
+{
+  "estado": "conforme",
+  "fecha": "2026-11-18T00:37:29.125471-05:00",
+  "agente": "arquitectura_profesional",
+  "alcance": "Auditoría de catálogos y campos técnicos permitidos; figuras y diccionario para integrar al manual. No es una entrega autónoma ni modifica índices de consulta.",
+  "estadisticas": {
+    "tablas": 83,
+    "columnas": 782,
+    "tablas_app": 18,
+    "columnas_app": 174,
+    "tablas_analiticas": 64,
+    "fk_app": 24,
+    "fk_analiticas": 0,
+    "migraciones": 19
+  },
+  "linaje": [
+    {
+      "proposal_id": 129,
+      "proposal_status": "approved",
+      "metadata_snapshot_id": 2,
+      "execution_id": 21,
+      "execution_status": "succeeded",
+      "execution_snapshot_id": 2,
+      "same_snapshot": true,
+      "data_connection_id": 1,
+      "database_name": "AdventureWorks2022",
+      "connector_kind": "sqlserver"
+    },
+    {
+      "proposal_id": 131,
+      "proposal_status": "approved",
+      "metadata_snapshot_id": 3,
+      "execution_id": 22,
+      "execution_status": "succeeded",
+      "execution_snapshot_id": 3,
+      "same_snapshot": true,
+      "data_connection_id": 2,
+      "database_name": "WideWorldImporters",
+      "connector_kind": "sqlserver"
+    }
+  ],
+  "archivos": [
+    {
+      "archivo": "figuras/Arquitectura_plataforma.pdf",
+      "bytes": 46357,
+      "sha256": "f2fb3ecb6062256e59024c6177cdaf177bc73a53210b77230a182bf97cea2eb2",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/Arquitectura_plataforma.png",
+      "bytes": 311774,
+      "sha256": "e687c7a7f87a2fc3e109f123ce700157d85a600c1f7b380bff3d94e0ffdc3d64",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/Arquitectura_plataforma.svg",
+      "bytes": 9087,
+      "sha256": "fcf61745213e932d821f02d2e038fe8e6de5747aeb66982c8612927d4e184a74",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_00_recorrido_identidades.pdf",
+      "bytes": 40369,
+      "sha256": "209c9e23381d1906c0efe15ce5658d1b7b1ee4ecb55e11ffedf3170440d14013",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_00_recorrido_identidades.png",
+      "bytes": 146047,
+      "sha256": "d7eb8071939bac401951fdcd313edc8e5fd33d11b45572976dc84264e2c2e904",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_00_recorrido_identidades.svg",
+      "bytes": 8099,
+      "sha256": "4620ffdd9a7ec54ded066cf94cb57f3ef1d0a67f9dc8f75c46a46a3b02530ad8",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_01_seguridad.pdf",
+      "bytes": 35803,
+      "sha256": "fa34af35512f633f9ea421eae44952b44d1d17bb56ed774a1838e0303e6c56e3",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_01_seguridad.png",
+      "bytes": 173285,
+      "sha256": "8b765fb51c6406fda3e98e3a2ebe04a54740b7c965e0dc776077bf0ccd3e6140",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_01_seguridad.svg",
+      "bytes": 10961,
+      "sha256": "490ecb31ab2bfc45ed06b457fef8e05455b7f78287df23edb716f61a90015217",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_02_configuracion_metadatos.pdf",
+      "bytes": 39866,
+      "sha256": "aea970980db5beef0aad7b88ccd128ebb3859e89ee765901904c91b97018cb44",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_02_configuracion_metadatos.png",
+      "bytes": 183855,
+      "sha256": "09b896110549b6fc8725a693b91473af7e2fa6f3fb47f972b3ba41517f08c5d3",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_02_configuracion_metadatos.svg",
+      "bytes": 8746,
+      "sha256": "c79071c97d5cbd9193affc7b3be2e05af4879b6856f2bdf29936b1922b296d63",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_03_propuestas_ejecuciones.pdf",
+      "bytes": 39908,
+      "sha256": "6f81a4be1b0c02918afeb0ca8c613f6da9ba7cf9157293733e2349f4f73a81ac",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_03_propuestas_ejecuciones.png",
+      "bytes": 255157,
+      "sha256": "9dc6eebe48d0ce38a771fc4e332c270a32ed54cc003e9ae90fd663842ebbe393",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_03_propuestas_ejecuciones.svg",
+      "bytes": 8967,
+      "sha256": "2c06c94635208b32b5fe20e0915b1f7f5156c4b1ad51059394d71806ff75dd6f",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_04_autoria.pdf",
+      "bytes": 40583,
+      "sha256": "2a8e37daa02bf657254b3b33e96fa31a33d5b7a32f2149c46c36795f24390c05",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_04_autoria.png",
+      "bytes": 175345,
+      "sha256": "0d03fa692490d5f87b805d715c32986c43e220ff902cd37c0dd799d3e9ed22fa",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_04_autoria.svg",
+      "bytes": 9204,
+      "sha256": "a05606ef7fca95fa06278191c76ba633ec3f60f3636103c43f25f3a5025b4ca0",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_05_datamart_e21.pdf",
+      "bytes": 38369,
+      "sha256": "cdefeb2099d83e77d2e5753248419959754bbad89c88b9a05d0619345b03fad7",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_05_datamart_e21.png",
+      "bytes": 295589,
+      "sha256": "91e07883b25485d71d1a80b1b35ceade515fa99b5868abe73c80c620b664f34c",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_05_datamart_e21.svg",
+      "bytes": 8913,
+      "sha256": "db0328b546cc373ae1b7dfbd8771c5b95bffdf592bfbf8cd4aee14700cb99182",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_05_datamart_e22.pdf",
+      "bytes": 37103,
+      "sha256": "d53e006da2fd51dc074cd9a0a4f24509e594ef218142cf2f26f1c9c518cc38db",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_05_datamart_e22.png",
+      "bytes": 278306,
+      "sha256": "31177afb17cb6749d93edbdc1cbdbd39c3169a499ad2550e9e2a5b46a1e53014",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/ER_05_datamart_e22.svg",
+      "bytes": 8209,
+      "sha256": "a22cd042cdc3a561fa9dfe9f39a997b63f148f122892a6b844cf0fe35988d587",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/LEEME_FIGURAS_DATOS.txt",
+      "bytes": 2653,
+      "sha256": "96567cf41742c6feb3afe3bfa63837c91e1cb922c22ed162a04398721365f7b9",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/crear_modelo_datos_manual.py",
+      "bytes": 14127,
+      "sha256": "d3861158457f8363f3c3e9e75a08f9b3616a968be630d653627fc72a08c8e2c5",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/manifest_figuras_datos.json",
+      "bytes": 43199,
+      "sha256": "b464b4294732e721d97f0773d3f946a11cb88a7828f46079cc08009156dabde6",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "figuras/renderizar_modelo_datos_manual.py",
+      "bytes": 1455,
+      "sha256": "e51afb4833ad9fe0df95d082b8951d5e3f8a8334d69779b59dc138307924a481",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/Cotejo_ORM_migraciones.json",
+      "bytes": 7252,
+      "sha256": "055be8c9f46500722f82e66e6fe4dc442f62a79600184507e19ef09f1e529dd0",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/QA_figuras_base_datos.json",
+      "bytes": 8584,
+      "sha256": "5d9490da79feb469739742588db46b7eaf62d7aae5478cd2e0cfad331b1d84b9",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/base_datos_manual.json",
+      "bytes": 163064,
+      "sha256": "929576425951cf63c13f478f6956ad274fa683a3488dd6401c5d082cc9e0deb0",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/base_datos_manual.md",
+      "bytes": 36973,
+      "sha256": "93fb8fa84ba0fdd49ab3dbf446cb416071a71714a5d38ef83d60b14aed4fd8b2",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/consultas_tecnicas_solo_lectura.sql",
+      "bytes": 1190,
+      "sha256": "bd870ad55e6c4708f5e2fbf81a9d345be000defcfb2cc3ac5ff2e30ba025d40b",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/cotejar_orm_migraciones.py",
+      "bytes": 3668,
+      "sha256": "03aa763698a08ee602ec167a2c106f8c0993740adb5a0efacb1d2bf6ae892ae9",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/crear_diccionario_didactico.py",
+      "bytes": 27878,
+      "sha256": "198000c1c2d1e1efd696114176a48eb43a9ee02933987bab9cdc00db5b376445",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/extraer_catalogo_postgresql.py",
+      "bytes": 7081,
+      "sha256": "ef98f2996773374196817e7ebf0bf2ac86c48619287cd4fe9e748c239f3e4e1d",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/introduccion_y_fundamentos.json",
+      "bytes": 21915,
+      "sha256": "d594eaf3ab910dc9d8b69ce7d31e4398f75c8660312a3e023f8b53896063085c",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/inventario_postgresql_real.json",
+      "bytes": 290026,
+      "sha256": "c33753c92d62520bab320986d147c1840e5b381a9cbc6981141f962a56678fed",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/linaje_ids_demostracion.json",
+      "bytes": 523,
+      "sha256": "13cc6bb69ee7bd46c87b55afd81d09ff59053758fb47acf4909f67bee9bd717f",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/operacion_bi_etl_analitica.json",
+      "bytes": 155401,
+      "sha256": "8fc6e1638952d0bb79bcf9873589e274f3be127ded8f4d4b64324747b830e563",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/operacion_bi_etl_analitica.md",
+      "bytes": 106701,
+      "sha256": "c8ce478a2cf4901ed6127e7309a280eed2a1b8eec55211e20a5662bd8f91528d",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/operacion_configuracion_y_catalogo.json",
+      "bytes": 142874,
+      "sha256": "05fcb4de6847612d8144466dec9af358381c3fbbd3f3d716ebb09715ef5dad53",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/operacion_configuracion_y_catalogo.md",
+      "bytes": 100759,
+      "sha256": "729c22e6e793ada4b4df2787f63ef67b22a9ecf044dc172a42d7bf48f646bb4d",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/redactar_operacion.py",
+      "bytes": 127794,
+      "sha256": "4b672cb50e05e2d00572d9bfe5a32e9d40bd8439ca09847f527a46a12dddab17",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/redactar_operacion_configuracion.py",
+      "bytes": 102426,
+      "sha256": "46f93f73d56bd600a2ab5e8725ce572768f69b2e3a50f6c49207f64e4259a206",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/roles_permisos_actuales_sin_usuarios.csv",
+      "bytes": 3443,
+      "sha256": "61d21319298afaf75b431edbd2b061aeedb84d86a4ca8f5625a3f981d57a6b4f",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/roles_permisos_actuales_sin_usuarios.json",
+      "bytes": 5318,
+      "sha256": "9751b3c9816f7fb3e59b2eda79bdfb69759522e77679b0103e1d8d99471b4898",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/roles_permisos_actuales_sin_usuarios.md",
+      "bytes": 3157,
+      "sha256": "9bb87e5f048f3abb7e0ecb51542655367ee6798c1c701f8424f396585eb4baea",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/verificacion_operacion_configuracion_y_catalogo.json",
+      "bytes": 708,
+      "sha256": "7a9ecc15fcab9a48eac1834160bee0a54bcf89434515b1c7123dface35d42ef9",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/version_migracion_aplicada.json",
+      "bytes": 16,
+      "sha256": "e9a0b9820aa8c6d78a2cdbc22821633fcf720309ae1fd45472a8775b8f75389b",
+      "estado": "Fuente documental o figura final; sin datos comerciales ni secretos."
+    },
+    {
+      "archivo": "insumos/operacion_practicas_y_defensa.json",
+      "bytes": 116565,
+      "sha256": "ac90572d4be383754c5c4bd45510f93703a4a1c2c958ce76fb5557e618609c70",
+      "estado": "Material formativo propuesto; las referencias históricas se identifican con su contexto. Sin ejecución nueva de prácticas."
+    },
+    {
+      "archivo": "insumos/redactar_practicas_y_defensa.py",
+      "bytes": 43250,
+      "sha256": "50f55eec6b143a088d19b6c656d81c3fbc39911eabc8a28f593e27aeacb89381",
+      "estado": "Material formativo propuesto; las referencias históricas se identifican con su contexto. Sin ejecución nueva de prácticas."
+    },
+    {
+      "archivo": "insumos/QA_operacion_practicas_y_defensa.json",
+      "bytes": 1379,
+      "sha256": "d6b3735ce3f0348af419d82687d828629776ee734fa3f2e203bada07fde26917",
+      "estado": "Material formativo propuesto; las referencias históricas se identifican con su contexto. Sin ejecución nueva de prácticas."
+    }
+  ],
+  "figuras_congeladas": 8,
+  "datos_individuales_o_credenciales_exportados": false,
+  "modificaciones_db_repo_contenedores": false,
+  "consulta_roles_sin_usuarios": true,
+  "limite": "Las 64 tablas analíticas son estado acumulado variable. Los números locales de propuesta/ejecución no se garantizan en portable limpio. Definiciones de roles no acreditan pruebas de login con otros perfiles.",
+  "ajuste_semantico_arquitectura": "Sin credenciales, para no confundirlas con nombres de claves PK/FK de los metadatos.",
+  "practicas_y_defensa_sha256": "ac90572d4be383754c5c4bd45510f93703a4a1c2c958ce76fb5557e618609c70",
+  "verificacion_final_de_registro": {
+    "fecha": "2026-11-18",
+    "estado": "conforme_por_bytes_definitivos",
+    "pdf_manual_revisado_sha256": "491ec69d0a24ef9a6b4d99309bfb35cf8b39fdf92df8f3071d742c5dfb15aee3",
+    "nota": "Registro actualizado al congelado definitivo después de alinear títulos y mantener juntos los24 pasos de guion. Sólo huellas de fuentes; sin editar PDF, insumos ni figuras.",
+    "registros_actualizados": [
+      {
+        "archivo": "fuentes/generar_manual.py",
+        "sha256_anterior": "910c31c3638fef3692eb4362a01afe1c2e152a2e57e06c04079a5b02098d3ccd",
+        "sha256_actual": "5f003ac234613c4268e9587855191da657679f076b68617a06c3c5e5ab597bfd"
+      },
+      {
+        "archivo": "manual_latex/main.tex",
+        "sha256_anterior": "6ed9198388cd3ef9ad1374125d260c5b23b0d5b884bba55511a660734565b5f6",
+        "sha256_actual": "128c548e1e4210fe54a8ba8a56f3b749fe5c21eec73d3b45647b21219ebd46d8"
+      }
+    ],
+    "verificacion_previa": {
+      "fecha": "2026-11-18",
+      "estado": "conforme_por_bytes_finales",
+      "pdf_manual_revisado_sha256": "64b1b2214aeeeacd010579c6a35c66d627ff4dbe380606846d83e12da6ff1078",
+      "nota": "Huellas de insumos editoriales y sus generadores actualizadas después del segundo congelado. Se verifican los bytes, sin reescribir contenido ni figuras. Este registro de fuentes no sustituye las actas visuales del manual.",
+      "registros_actualizados": [
+        {
+          "archivo": "insumos/operacion_bi_etl_analitica.json",
+          "sha256_anterior": "ee8456e822723ab2b5118502ca1261cd0c06ce4a4973ae3c386a1cc70e2ffcf9",
+          "sha256_actual": "8fc6e1638952d0bb79bcf9873589e274f3be127ded8f4d4b64324747b830e563"
+        },
+        {
+          "archivo": "insumos/operacion_bi_etl_analitica.md",
+          "sha256_anterior": "e9c17a1246bcf8ec8cf116ea509d29b43ebd3b08df1988f198026aed5c617fe2",
+          "sha256_actual": "c8ce478a2cf4901ed6127e7309a280eed2a1b8eec55211e20a5662bd8f91528d"
+        },
+        {
+          "archivo": "insumos/operacion_configuracion_y_catalogo.json",
+          "sha256_anterior": "cae8b49f3fa25c316d6243e6a200c444baaf1f976f2477abe0ae99377104d05d",
+          "sha256_actual": "05fcb4de6847612d8144466dec9af358381c3fbbd3f3d716ebb09715ef5dad53"
+        },
+        {
+          "archivo": "insumos/operacion_configuracion_y_catalogo.md",
+          "sha256_anterior": "a25f5e9855b4b32281fb3f7cce10f30b86bee3195735ab6d522b565d44f6a5a8",
+          "sha256_actual": "729c22e6e793ada4b4df2787f63ef67b22a9ecf044dc172a42d7bf48f646bb4d"
+        },
+        {
+          "archivo": "insumos/redactar_operacion.py",
+          "sha256_anterior": "9e5a2f6ea8097b19b75fddbfa5405d4c706355832e9b7381aa64f27967724a5e",
+          "sha256_actual": "4b672cb50e05e2d00572d9bfe5a32e9d40bd8439ca09847f527a46a12dddab17"
+        },
+        {
+          "archivo": "insumos/redactar_operacion_configuracion.py",
+          "sha256_anterior": "e33e1a9905b3596c2ba8b617216b842afbdbba6f9a7731260aa34e3217450792",
+          "sha256_actual": "46f93f73d56bd600a2ab5e8725ce572768f69b2e3a50f6c49207f64e4259a206"
+        },
+        {
+          "archivo": "insumos/verificacion_operacion_configuracion_y_catalogo.json",
+          "sha256_anterior": "c50781da4b0a1ac43ff3db7fe9ef2e420ba1e335e5f4f41b51aef4291d81831b",
+          "sha256_actual": "7a9ecc15fcab9a48eac1834160bee0a54bcf89434515b1c7123dface35d42ef9"
+        }
+      ],
+      "verificacion_previa": {
+        "fecha": "2026-11-18",
+        "estado": "conforme_por_bytes_actuales",
+        "nota": "Actualización de huellas de tres fuentes de operación tras las correcciones editoriales del autor. No se modifica su contenido ni ninguna figura. Arquitectura conserva sin credenciales.",
+        "registros_actualizados": [
+          {
+            "archivo": "insumos/operacion_bi_etl_analitica.json",
+            "sha256_anterior": "f7a35f4ffae1bb29205b12dfd1c333f10f6f7643ea068bf67aac27f1995704c6",
+            "sha256_actual": "ee8456e822723ab2b5118502ca1261cd0c06ce4a4973ae3c386a1cc70e2ffcf9"
+          },
+          {
+            "archivo": "insumos/operacion_bi_etl_analitica.md",
+            "sha256_anterior": "67e60b1e5b20d1f2b87c89ae533f5a0ee83d878579147c08718453306080d676",
+            "sha256_actual": "e9c17a1246bcf8ec8cf116ea509d29b43ebd3b08df1988f198026aed5c617fe2"
+          },
+          {
+            "archivo": "insumos/redactar_operacion.py",
+            "sha256_anterior": "ae252332ec77abeb05196b6e3b690603884e2c85e73b4981cfb20876977bd03f",
+            "sha256_actual": "9e5a2f6ea8097b19b75fddbfa5405d4c706355832e9b7381aa64f27967724a5e"
+          }
+        ]
+      }
+    }
+  },
+  "referencias_composicion_final": [
+    {
+      "archivo": "fuentes/generar_manual.py",
+      "bytes": 44084,
+      "sha256": "5f003ac234613c4268e9587855191da657679f076b68617a06c3c5e5ab597bfd",
+      "estado": "Fuente de composición definitiva o mapa editorial; no es una prueba operativa."
+    },
+    {
+      "archivo": "fuentes/pasos_unidos.py",
+      "bytes": 1249,
+      "sha256": "436d09b7290280ee4b95db060ee8305c2da1b123a1312c270a9c813199573666",
+      "estado": "Fuente de composición definitiva o mapa editorial; no es una prueba operativa."
+    },
+    {
+      "archivo": "fuentes/reservar_titulos.py",
+      "bytes": 4018,
+      "sha256": "209fa8347a3d5764f92849f2d313067ca61b93742d2c85230030beb8feecf2fc",
+      "estado": "Fuente de composición definitiva o mapa editorial; no es una prueba operativa."
+    },
+    {
+      "archivo": "manual_latex/main.tex",
+      "bytes": 6501,
+      "sha256": "128c548e1e4210fe54a8ba8a56f3b749fe5c21eec73d3b45647b21219ebd46d8",
+      "estado": "Fuente de composición definitiva o mapa editorial; no es una prueba operativa."
+    },
+    {
+      "archivo": "manual_latex/LEEME_COMPILACION.txt",
+      "bytes": 1345,
+      "sha256": "4519f24a2d2bb07cc7a69d90dc47f254798f1ff818d1353100e5112a06a4a446",
+      "estado": "Fuente de composición definitiva o mapa editorial; no es una prueba operativa."
+    },
+    {
+      "archivo": "manual_latex/ajustes_maquetacion.json",
+      "bytes": 31373,
+      "sha256": "2ddb159197af63398424b1e6a85ec1a4e55a476c62ec2633f40baa84f416e2aa",
+      "estado": "Fuente de composición definitiva o mapa editorial; no es una prueba operativa."
+    },
+    {
+      "archivo": "manual_latex/cobertura_contenido.json",
+      "bytes": 29566,
+      "sha256": "ea0ed0d591c9502de55404be5d21a08e322cae852663158c3cabb180bd383a2e",
+      "estado": "Fuente de composición definitiva o mapa editorial; no es una prueba operativa."
+    }
+  ]
+}

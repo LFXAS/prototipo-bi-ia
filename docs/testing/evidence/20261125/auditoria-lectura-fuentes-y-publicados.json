@@ -1,0 +1,416 @@
+{
+  "checked_at_utc": "2026-11-26T01:14:43.167371+00:00",
+  "mode": "read_only_no_llm_no_etl_no_catalog_change",
+  "sources": [
+    {
+      "source_id": 1,
+      "source_name": "AdventureWorks local",
+      "database_name": "AdventureWorks2022",
+      "snapshot_id": 2,
+      "snapshot_hash": "bf2842f08c8f8f3d29a551604075a7c8853aa40b624c926d48d0a3cee9f3da15",
+      "live_hash": "bf2842f08c8f8f3d29a551604075a7c8853aa40b624c926d48d0a3cee9f3da15",
+      "hash_matches": true,
+      "counts": {
+        "schemas": 6,
+        "tables": 71,
+        "columns": 482,
+        "relationships": 90
+      },
+      "questions_in_catalog": 6,
+      "custom_questions_in_catalog": 2
+    },
+    {
+      "source_id": 2,
+      "source_name": "WideWorldImporters local",
+      "database_name": "WideWorldImporters",
+      "snapshot_id": 3,
+      "snapshot_hash": "008c4832c216f0024770cc9a078d599daa625122a4928147ff604fb399cb1d50",
+      "live_hash": "008c4832c216f0024770cc9a078d599daa625122a4928147ff604fb399cb1d50",
+      "hash_matches": true,
+      "counts": {
+        "schemas": 4,
+        "tables": 48,
+        "columns": 546,
+        "relationships": 98
+      },
+      "questions_in_catalog": 6,
+      "custom_questions_in_catalog": 2
+    }
+  ],
+  "published_cases": [
+    {
+      "proposal_id": 129,
+      "execution_id": 21,
+      "status": "approved",
+      "physical_schema": "mart_ventas_e21",
+      "verification": {
+        "verified": true,
+        "approval_safe": true,
+        "compatibility_warning": false,
+        "checks": [
+          {
+            "code": "snapshot.integrity",
+            "label": "Integridad de los metadatos",
+            "passed": true,
+            "detail": "La huella coincide con la instantánea estructural persistida."
+          },
+          {
+            "code": "references.current",
+            "label": "Referencias técnicas comprobadas",
+            "passed": true,
+            "detail": "7 referencias técnicas válidas; 0 descartadas."
+          },
+          {
+            "code": "validation.consistency",
+            "label": "Consistencia del contrato BI",
+            "passed": true,
+            "detail": "La validación vigente conserva un contrato válido: 0 errores y 9 advertencias."
+          },
+          {
+            "code": "proposal.replay",
+            "label": "Reproducción determinística del contrato",
+            "passed": true,
+            "detail": "Las decisiones persistidas reconstruyen exactamente el mismo contrato con sus reglas de compilación persistidas. Instrucciones persistidas: sales-bi-v8; actuales: sales-bi-v8. Reglas de compilación persistidas: 5; actuales: 5."
+          }
+        ],
+        "snapshot_hash": "bf2842f08c8f8f3d29a551604075a7c8853aa40b624c926d48d0a3cee9f3da15",
+        "proposal_hash": "d356df39841888ac8a110553d88e34b31f1a34def61603d1148615a93ed81aea",
+        "replay_hash": "d356df39841888ac8a110553d88e34b31f1a34def61603d1148615a93ed81aea",
+        "validated_reference_count": 7,
+        "rejected_reference_count": 0,
+        "validation_errors": 0,
+        "validation_warnings": 9,
+        "pending_validations": [
+          "Contraste de cifras mediante consultas de referencia después de materializar el datamart.",
+          "Evaluación formal de utilidad mediante juicio de expertos."
+        ]
+      },
+      "status_and_contract_unchanged": true,
+      "all_periods": {
+        "data_connection_id": 1,
+        "proposal_id": 129,
+        "execution_id": 21,
+        "source_name": "AdventureWorks local",
+        "database_name": "AdventureWorks2022",
+        "currency_code": "USD",
+        "currency_status": "verified",
+        "period_label": "Todos los períodos",
+        "quality": {
+          "source_rows": 121317,
+          "datamart_rows": 121317,
+          "difference_rows": 0,
+          "reconciliation_passed": true,
+          "tables_loaded": 5
+        },
+        "kpis": [
+          {
+            "code": "KPI_001",
+            "name": "Suma de importe de líneas",
+            "value": 109846381.399888,
+            "unit": "USD",
+            "status": "reconciled"
+          },
+          {
+            "code": "KPI_002",
+            "name": "Suma de unidades vendidas",
+            "value": 274914.0,
+            "unit": "Unidades",
+            "status": "reconciled"
+          },
+          {
+            "code": "KPI_003",
+            "name": "Conteo de pedidos distintos",
+            "value": 31465.0,
+            "unit": "Pedidos",
+            "status": "reconciled"
+          },
+          {
+            "code": "KPI_005",
+            "name": "Importe promedio por pedido",
+            "value": 3491.065672966407,
+            "unit": "moneda de origen por transacción",
+            "status": "reconciled"
+          }
+        ],
+        "visuals": [
+          {
+            "code": "trend",
+            "points": 38
+          },
+          {
+            "code": "products",
+            "points": 8
+          },
+          {
+            "code": "territories",
+            "points": 8
+          },
+          {
+            "code": "customers",
+            "points": 8
+          }
+        ],
+        "years_available": 4,
+        "territories_available": 10
+      },
+      "filtered": {
+        "year": 2013,
+        "territory": "Northwest",
+        "dashboard": {
+          "data_connection_id": 1,
+          "proposal_id": 129,
+          "execution_id": 21,
+          "source_name": "AdventureWorks local",
+          "database_name": "AdventureWorks2022",
+          "currency_code": "USD",
+          "currency_status": "verified",
+          "period_label": "2013 · Northwest",
+          "quality": {
+            "source_rows": 121317,
+            "datamart_rows": 121317,
+            "difference_rows": 0,
+            "reconciliation_passed": true,
+            "tables_loaded": 5
+          },
+          "kpis": [
+            {
+              "code": "KPI_001",
+              "name": "Suma de importe de líneas",
+              "value": 6015174.735836,
+              "unit": "USD",
+              "status": "reconciled"
+            },
+            {
+              "code": "KPI_002",
+              "name": "Suma de unidades vendidas",
+              "value": 17452.0,
+              "unit": "Unidades",
+              "status": "reconciled"
+            },
+            {
+              "code": "KPI_003",
+              "name": "Conteo de pedidos distintos",
+              "value": 2053.0,
+              "unit": "Pedidos",
+              "status": "reconciled"
+            },
+            {
+              "code": "KPI_005",
+              "name": "Importe promedio por pedido",
+              "value": 2929.943855740867,
+              "unit": "moneda de origen por transacción",
+              "status": "reconciled"
+            }
+          ],
+          "visuals": [
+            {
+              "code": "trend",
+              "points": 12
+            },
+            {
+              "code": "products",
+              "points": 8
+            },
+            {
+              "code": "territories",
+              "points": 1
+            },
+            {
+              "code": "customers",
+              "points": 8
+            }
+          ],
+          "years_available": 4,
+          "territories_available": 10
+        }
+      }
+    },
+    {
+      "proposal_id": 131,
+      "execution_id": 22,
+      "status": "approved",
+      "physical_schema": "mart_ventas_e22",
+      "verification": {
+        "verified": true,
+        "approval_safe": true,
+        "compatibility_warning": false,
+        "checks": [
+          {
+            "code": "snapshot.integrity",
+            "label": "Integridad de los metadatos",
+            "passed": true,
+            "detail": "La huella coincide con la instantánea estructural persistida."
+          },
+          {
+            "code": "references.current",
+            "label": "Referencias técnicas comprobadas",
+            "passed": true,
+            "detail": "7 referencias técnicas válidas; 0 descartadas."
+          },
+          {
+            "code": "validation.consistency",
+            "label": "Consistencia del contrato BI",
+            "passed": true,
+            "detail": "La validación vigente conserva un contrato válido: 0 errores y 7 advertencias."
+          },
+          {
+            "code": "proposal.replay",
+            "label": "Reproducción determinística del contrato",
+            "passed": true,
+            "detail": "Las decisiones persistidas reconstruyen exactamente el mismo contrato con sus reglas de compilación persistidas. Instrucciones persistidas: sales-bi-v8; actuales: sales-bi-v8. Reglas de compilación persistidas: 5; actuales: 5."
+          }
+        ],
+        "snapshot_hash": "008c4832c216f0024770cc9a078d599daa625122a4928147ff604fb399cb1d50",
+        "proposal_hash": "732bd8b1c09e9699f37fa1ae6208acba67a89120a642104db2e68fce5cd82c48",
+        "replay_hash": "732bd8b1c09e9699f37fa1ae6208acba67a89120a642104db2e68fce5cd82c48",
+        "validated_reference_count": 7,
+        "rejected_reference_count": 0,
+        "validation_errors": 0,
+        "validation_warnings": 7,
+        "pending_validations": [
+          "Contraste de cifras mediante consultas de referencia después de materializar el datamart.",
+          "Evaluación formal de utilidad mediante juicio de expertos."
+        ]
+      },
+      "status_and_contract_unchanged": true,
+      "all_periods": {
+        "data_connection_id": 2,
+        "proposal_id": 131,
+        "execution_id": 22,
+        "source_name": "WideWorldImporters local",
+        "database_name": "WideWorldImporters",
+        "currency_code": "moneda de origen",
+        "currency_status": "unresolved",
+        "period_label": "Todos los períodos",
+        "quality": {
+          "source_rows": 228265,
+          "datamart_rows": 228265,
+          "difference_rows": 0,
+          "reconciliation_passed": true,
+          "tables_loaded": 5
+        },
+        "kpis": [
+          {
+            "code": "KPI_001",
+            "name": "Ventas totales mensuales",
+            "value": 198043439.45,
+            "unit": "Importe",
+            "status": "reconciled"
+          },
+          {
+            "code": "KPI_002",
+            "name": "Unidades vendidas mensuales",
+            "value": 8950628.0,
+            "unit": "Unidades",
+            "status": "reconciled"
+          },
+          {
+            "code": "KPI_003",
+            "name": "Facturas emitidas",
+            "value": 70510.0,
+            "unit": "Documentos",
+            "status": "reconciled"
+          },
+          {
+            "code": "KPI_004",
+            "name": "Importe promedio por factura",
+            "value": 2808.7283995177986,
+            "unit": "moneda de origen por transacción",
+            "status": "reconciled"
+          }
+        ],
+        "visuals": [
+          {
+            "code": "trend",
+            "points": 41
+          },
+          {
+            "code": "products",
+            "points": 8
+          },
+          {
+            "code": "territories",
+            "points": 8
+          },
+          {
+            "code": "customers",
+            "points": 8
+          }
+        ],
+        "years_available": 4,
+        "territories_available": 49
+      },
+      "filtered": {
+        "year": 2015,
+        "territory": "California",
+        "dashboard": {
+          "data_connection_id": 2,
+          "proposal_id": 131,
+          "execution_id": 22,
+          "source_name": "WideWorldImporters local",
+          "database_name": "WideWorldImporters",
+          "currency_code": "moneda de origen",
+          "currency_status": "unresolved",
+          "period_label": "2015 · California",
+          "quality": {
+            "source_rows": 228265,
+            "datamart_rows": 228265,
+            "difference_rows": 0,
+            "reconciliation_passed": true,
+            "tables_loaded": 5
+          },
+          "kpis": [
+            {
+              "code": "KPI_001",
+              "name": "Ventas totales mensuales",
+              "value": 3191769.11,
+              "unit": "Importe",
+              "status": "reconciled"
+            },
+            {
+              "code": "KPI_002",
+              "name": "Unidades vendidas mensuales",
+              "value": 142247.0,
+              "unit": "Unidades",
+              "status": "reconciled"
+            },
+            {
+              "code": "KPI_003",
+              "name": "Facturas emitidas",
+              "value": 1179.0,
+              "unit": "Documentos",
+              "status": "reconciled"
+            },
+            {
+              "code": "KPI_004",
+              "name": "Importe promedio por factura",
+              "value": 2707.1832994062765,
+              "unit": "moneda de origen por transacción",
+              "status": "reconciled"
+            }
+          ],
+          "visuals": [
+            {
+              "code": "trend",
+              "points": 12
+            },
+            {
+              "code": "products",
+              "points": 8
+            },
+            {
+              "code": "territories",
+              "points": 1
+            },
+            {
+              "code": "customers",
+              "points": 8
+            }
+          ],
+          "years_available": 4,
+          "territories_available": 49
+        }
+      }
+    }
+  ]
+}

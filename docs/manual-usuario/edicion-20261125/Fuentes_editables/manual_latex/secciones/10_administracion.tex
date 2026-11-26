@@ -1,0 +1,1089 @@
+\chapter{Administrar cuentas, permisos y trazabilidad}
+\section{Crear y mantener cuentas de usuario}
+\label{unidad:operacion_04}
+\textbf{Para quién:} Administración\par
+\textbf{Opción:} Administración y seguridad > Usuarios\par
+
+Una cuenta se crea para una persona, no para una base de datos. Los roles asignados determinan sus permisos efectivos en toda la plataforma. La misma cuenta de analista puede seleccionar las fuentes habilitadas para el flujo disponible; el sistema no crea automáticamente una cuenta por conexión.
+
+En Usuarios, el formulario se encuentra en la propia pantalla. Para crear se completan Correo, Nombre completo, Contraseña y Roles asignados, y se pulsa Crear registro. En edición, el correo identifica a la cuenta y permanece en consulta. Una contraseña vacía conserva la existente; escribir una nueva la sustituye.
+
+No es necesario escribir identificadores numéricos: los roles se eligen por nombre y descripción. Si falla la carga de roles, el formulario queda bloqueado y aparece Reintentar carga de opciones. Un error de red no debe resolverse guardando una cuenta sin sus roles previstos.
+
+El estado true de la tabla significa activo; false significa inactivo. Una cuenta desactivada conserva su registro, pero no puede usar una sesión válida. Eliminar es una operación diferente y solicita confirmación. Los registros Protegido y la recuperación administrativa tienen controles adicionales; la administración inicial no debe desaparecer como parte de una práctica.
+
+\subsection{Conceptos para comprender la opción}
+\paragraph{Cuenta} Identidad de acceso con correo y nombre.
+
+\paragraph{Rol} Conjunto de permisos asignable a una cuenta. Analista BI o Gerente comercial son nombres de perfiles configurados.
+
+\paragraph{Permisos efectivos} Unión de permisos activos de los roles activos de la cuenta.
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Abra Usuarios y compruebe si va a crear una cuenta o editar una existente.
+\item Para una cuenta de práctica, escriba un correo no utilizado y un nombre que identifique a la persona. Defina una clave de al menos 12 caracteres sin incluirla en capturas o documentos.
+\item En Roles asignados, marque los perfiles necesarios y lea su descripción.
+\item Pulse Crear registro y verifique la nueva fila.
+\item Para editar, pulse Editar en la fila exacta. Cambie el nombre o roles; deje Contraseña vacía si no desea cambiarla.
+\item Pulse Guardar cambios y vuelva a abrir la misma fila para comprobar las asociaciones. Utilice Cancelar si no desea guardar.
+\item La prueba completa del perfil requiere iniciar sesión con esa cuenta y verificar operaciones permitidas y denegadas; la lista de casillas por sí sola no lo demuestra.
+\end{enumerate}
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y botones\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+Correo & Identifica una cuenta nueva y no se edita después desde esta pantalla. & \textbf{Ejemplo:} Correo asignado a la persona.\par\smallskip\textbf{Resultado:} Evita que se confunda el nombre visible con el identificador de acceso. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y botones}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Correo & Identifica una cuenta nueva y no se edita después desde esta pantalla. & \textbf{Ejemplo:} Correo asignado a la persona.\par\smallskip\textbf{Resultado:} Evita que se confunda el nombre visible con el identificador de acceso. \\
+\addlinespace[3pt]
+Nombre completo & Permite reconocer a quien opera y atribuirle acciones. & \textbf{Ejemplo:} Nombre de la estudiante, no su correo.\par\smallskip\textbf{Resultado:} Se usa como identificación visible de la cuenta. \\
+\addlinespace[3pt]
+Contraseña & Establece o cambia la clave. & \textbf{Ejemplo:} Al editar, dejar vacío para conservarla.\par\smallskip\textbf{Resultado:} Se guarda protegida y no vuelve a mostrarse. \\
+\addlinespace[3pt]
+Roles asignados & Concede los roles seleccionados. & \textbf{Ejemplo:} Marcar Gerente comercial para consulta.\par\smallskip\textbf{Resultado:} La cuenta recibe los permisos de sus roles activos. \\
+\addlinespace[3pt]
+Desactivar / Activar & Cambia la disponibilidad de una cuenta no protegida. & \textbf{Ejemplo:} Desactivar una cuenta de práctica que ya no se usa.\par\smallskip\textbf{Resultado:} El registro permanece; el acceso se deniega si está inactivo. \\
+\addlinespace[3pt]
+Eliminar & Solicita eliminación definitiva de una cuenta no protegida. & \textbf{Ejemplo:} Retirar una cuenta temporal autorizada.\par\smallskip\textbf{Resultado:} El servidor valida dependencias y conserva la evidencia histórica segura que corresponda. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Editar sin cambiar la contraseña}
+Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.
+
+\begin{enumerate}
+\item En un entorno de capacitación, abra una cuenta no protegida.
+\item Cambie únicamente su Nombre completo y deje Contraseña vacía.
+\item Guarde y vuelva a consultar la fila.
+\item Compruebe acceso con las credenciales conocidas de esa cuenta cuando corresponda.
+\end{enumerate}
+
+\textbf{Qué debe obtener.} El nombre se actualiza. No se simula un cambio de correo ni se exige reemplazar la clave para editar los roles.
+
+\textbf{Cómo comprobarlo.} La cuenta conserva el correo y la contraseña previstos y recibe solo los roles seleccionados.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Si aparece un problema\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+No se pueden cargar los roles. & Permiso Consultar roles ausente o fallo al consultar el catálogo. & Solicite revisar el permiso complementario y utilice Reintentar carga de opciones. No guarde hasta que la tabla sea la correcta.\par\smallskip\textbf{Comprobación:} El formulario vuelve a habilitarse y muestra los roles esperados. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Si aparece un problema}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+No se pueden cargar los roles. & Permiso Consultar roles ausente o fallo al consultar el catálogo. & Solicite revisar el permiso complementario y utilice Reintentar carga de opciones. No guarde hasta que la tabla sea la correcta.\par\smallskip\textbf{Comprobación:} El formulario vuelve a habilitarse y muestra los roles esperados. \\
+\addlinespace[3pt]
+El correo no cambia al editar. & Es un campo de consulta en la edición vigente. & Mantenga el correo original. Si se necesita otra identidad de acceso, acuerde con la administración el tratamiento de la cuenta; no anuncie un cambio no admitido.\par\smallskip\textbf{Comprobación:} La fila conserva el correo que identifica la cuenta. \\
+\addlinespace[3pt]
+No se permite eliminar o desactivar. & Cuenta protegida, sesión propia o control de recuperación/dependencias. & Lea la causa y utilice una cuenta de práctica autorizada. No altere directamente PostgreSQL para eludir el control.\par\smallskip\textbf{Comprobación:} La vía de administración permanece disponible. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Para explicar durante la sustentación}
+\paragraph{¿Por qué no se cambia el correo al editar?} La cuenta se identifica con ese correo y el contrato de edición no admite modificarlo. La pantalla lo muestra en consulta para evitar simular un cambio.
+
+\paragraph{¿Ver las casillas marcadas prueba la seguridad del rol?} No. Permite revisar la configuración; la verificación operativa exige autenticar la cuenta y probar permisos permitidos y denegados.
+
+\pantalla{recursos/pantallas/44_usuarios.jpg}{Alta y asignación de roles: formulario sin enviar}{Formulario de usuario vacío y sin enviar. Asignar un rol concede permisos; utilice cuentas autorizadas para las prácticas. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/operacion_04.tex}{\input{capturas/operacion_04.tex}}{}
+\section{Definir roles según las responsabilidades}
+\label{unidad:operacion_05}
+\textbf{Para quién:} Administración\par
+\textbf{Opción:} Administración y seguridad > Roles\par
+
+Diseñe primero la responsabilidad y después sus permisos. La administración prepara el entorno y el acceso; el analista convierte necesidades en diseños y resultados verificados; la gerencia consulta, interpreta y exporta. El nombre del rol es una etiqueta: llamar a un rol Gerente comercial no le concede automáticamente permisos de lectura.
+
+En Crear rol se escriben Nombre y Descripción y se marcan Permisos otorgados. El sistema genera la clave interna. Use los nombres y las explicaciones de la tabla; no necesita conocer códigos técnicos para operar. Al editar un rol, una casilla retirada deja de formar parte de sus permisos al guardar.
+
+La instalación base garantiza el rol administrativo protegido; Analista BI, Gerente comercial y otros perfiles pueden ser configuraciones locales de la demostración. Una copia limpia puede requerir crearlos o asignarlos. Por eso este manual distingue la matriz recomendada de la evidencia de una instalación concreta.
+
+Tras una modificación, vuelva a abrir el rol para comprobar nombre y casillas. La edición de datos y de permisos utiliza operaciones separadas: si aparece un error después de una actualización parcial, revise qué quedó guardado y complete la corrección. No dé por sentado que todo se guardó por haber pulsado el botón.
+
+Eliminar y Desactivar tienen efectos distintos. Eliminar borra definitivamente un rol no protegido y exige que ya no tenga asignaciones a usuarios ni permisos asociados; también cuentan las asociaciones existentes aunque el usuario o el permiso estén inactivos. La plataforma no retira esas relaciones automáticamente para permitir el borrado. Si se busca suspender el uso del perfil y conservar su definición, debe evaluarse Desactivar en lugar de eliminarlo.
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Roles y permisos observados en la instalación de referencia\par}
+
+La siguiente relación procede de una consulta de definiciones de roles y permisos, sin cuentas ni asignaciones de personas. Describe la configuración observada; no acredita una sesión autenticada ni una prueba integral bajo cada perfil. Una instalación limpia puede conservar únicamente el perfil administrativo base.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Permisos activos} & \textbf{Alcance observado} \\
+\midrule
+Administrador & 29 & Perfil protegido de administración con los 29 permisos base. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Roles y permisos observados en la instalación de referencia}
+La siguiente relación procede de una consulta de definiciones de roles y permisos, sin cuentas ni asignaciones de personas. Describe la configuración observada; no acredita una sesión autenticada ni una prueba integral bajo cada perfil. Una instalación limpia puede conservar únicamente el perfil administrativo base.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Permisos activos} & \textbf{Alcance observado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Permisos activos} & \textbf{Alcance observado} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administrador & 29 & Perfil protegido de administración con los 29 permisos base. \\
+\addlinespace[3pt]
+Operador & 4 & Configuración local de cuatro permisos específicos; no representa un perfil completo de operación ni acredita acceso a todos los módulos. \\
+\addlinespace[3pt]
+Analista BI & 15 & Configuración local para diseñar, revisar y materializar con consulta de contexto, catálogo, auditoría y analítica. \\
+\addlinespace[3pt]
+Gerente comercial & 4 & Consulta analítica, conexiones sin secretos, metadatos y exportación. No incluye ETL ni aprobación de propuestas. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\normalfont\normalsize\bfseries\hyphenpenalty=10000\exhyphenpenalty=10000 Administrador\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Permiso concedido} & \textbf{Estado} \\
+\midrule
+Consultar análisis visual & Activo \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\paragraph{Administrador}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Permiso concedido} & \textbf{Estado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Permiso concedido} & \textbf{Estado} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Consultar análisis visual & Activo \\
+\addlinespace[3pt]
+Consultar auditoría & Activo \\
+\addlinespace[3pt]
+Consultar conexiones & Activo \\
+\addlinespace[3pt]
+Probar conexiones & Activo \\
+\addlinespace[3pt]
+Administrar conexiones & Activo \\
+\addlinespace[3pt]
+Consultar catálogo analítico & Activo \\
+\addlinespace[3pt]
+Administrar catálogo analítico & Activo \\
+\addlinespace[3pt]
+Generar propuestas BI & Activo \\
+\addlinespace[3pt]
+Consultar propuestas BI & Activo \\
+\addlinespace[3pt]
+Revisar propuestas BI & Activo \\
+\addlinespace[3pt]
+Consultar materializaciones & Activo \\
+\addlinespace[3pt]
+Preparar materializaciones & Activo \\
+\addlinespace[3pt]
+Consultar metadatos & Activo \\
+\addlinespace[3pt]
+Actualizar metadatos & Activo \\
+\addlinespace[3pt]
+Resolver identidad de dimensiones & Activo \\
+\addlinespace[3pt]
+Revisar identidad de dimensiones & Activo \\
+\addlinespace[3pt]
+Consultar configuración LLM & Activo \\
+\addlinespace[3pt]
+Administrar configuración LLM & Activo \\
+\addlinespace[3pt]
+Consultar parámetros & Activo \\
+\addlinespace[3pt]
+Administrar parámetros & Activo \\
+\addlinespace[3pt]
+Exportar reportes analíticos & Activo \\
+\addlinespace[3pt]
+Consultar menús & Activo \\
+\addlinespace[3pt]
+Administrar menús & Activo \\
+\addlinespace[3pt]
+Consultar permisos & Activo \\
+\addlinespace[3pt]
+Administrar permisos & Activo \\
+\addlinespace[3pt]
+Consultar roles & Activo \\
+\addlinespace[3pt]
+Administrar roles & Activo \\
+\addlinespace[3pt]
+Consultar usuarios & Activo \\
+\addlinespace[3pt]
+Administrar usuarios & Activo \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\normalfont\normalsize\bfseries\hyphenpenalty=10000\exhyphenpenalty=10000 Operador\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Permiso concedido} & \textbf{Estado} \\
+\midrule
+Probar conexiones & Activo \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\paragraph{Operador}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Permiso concedido} & \textbf{Estado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Permiso concedido} & \textbf{Estado} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Probar conexiones & Activo \\
+\addlinespace[3pt]
+Consultar configuración LLM & Activo \\
+\addlinespace[3pt]
+Administrar configuración LLM & Activo \\
+\addlinespace[3pt]
+Administrar parámetros & Activo \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\normalfont\normalsize\bfseries\hyphenpenalty=10000\exhyphenpenalty=10000 Analista BI\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Permiso concedido} & \textbf{Estado} \\
+\midrule
+Consultar análisis visual & Activo \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\paragraph{Analista BI}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Permiso concedido} & \textbf{Estado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Permiso concedido} & \textbf{Estado} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Consultar análisis visual & Activo \\
+\addlinespace[3pt]
+Consultar auditoría & Activo \\
+\addlinespace[3pt]
+Consultar conexiones & Activo \\
+\addlinespace[3pt]
+Consultar catálogo analítico & Activo \\
+\addlinespace[3pt]
+Administrar catálogo analítico & Activo \\
+\addlinespace[3pt]
+Generar propuestas BI & Activo \\
+\addlinespace[3pt]
+Consultar propuestas BI & Activo \\
+\addlinespace[3pt]
+Revisar propuestas BI & Activo \\
+\addlinespace[3pt]
+Consultar materializaciones & Activo \\
+\addlinespace[3pt]
+Preparar materializaciones & Activo \\
+\addlinespace[3pt]
+Consultar metadatos & Activo \\
+\addlinespace[3pt]
+Actualizar metadatos & Activo \\
+\addlinespace[3pt]
+Resolver identidad de dimensiones & Activo \\
+\addlinespace[3pt]
+Revisar identidad de dimensiones & Activo \\
+\addlinespace[3pt]
+Exportar reportes analíticos & Activo \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\normalfont\normalsize\bfseries\hyphenpenalty=10000\exhyphenpenalty=10000 Gerente comercial\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Permiso concedido} & \textbf{Estado} \\
+\midrule
+Consultar análisis visual & Activo \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\paragraph{Gerente comercial}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Permiso concedido} & \textbf{Estado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Permiso concedido} & \textbf{Estado} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Consultar análisis visual & Activo \\
+\addlinespace[3pt]
+Consultar conexiones & Activo \\
+\addlinespace[3pt]
+Consultar metadatos & Activo \\
+\addlinespace[3pt]
+Exportar reportes analíticos & Activo \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+Gerente comercial necesita Consultar metadatos porque el selector actual de fuentes utiliza esa consulta. También puede abrir el Explorador en lectura; ese permiso no concede actualización de metadatos ni ejecución ETL. En Operador, Probar conexiones y Administrar parámetros no incluyen por sí solos los permisos de consulta complementarios: no se asume que pueda recorrer sus pantallas completas.
+
+\subsection{Conceptos para comprender la opción}
+\paragraph{Mínimo privilegio} Conceder solo las operaciones necesarias para una responsabilidad.
+
+\paragraph{Consulta y administración} Leer un recurso y modificarlo son permisos diferentes. Consultar catálogo no equivale a Administrar catálogo.
+
+\paragraph{Rol protegido} Perfil del sistema con controles que conservan la recuperación administrativa.
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Liste las tareas del perfil que va a crear. Para gerencia: consultar el panel, seleccionar fuentes y exportar resultados.
+\item Abra Roles y complete Nombre y Descripción.
+\item Marque los permisos necesarios en Permisos otorgados. Para un rol con selector de fuentes, incluya Consultar metadatos.
+\item Pulse Crear registro. Para modificar uno existente, abra Editar, ajuste las casillas y pulse Guardar cambios.
+\item Vuelva a abrir el rol y coteje sus permisos con la matriz acordada.
+\item Asigne el rol a una cuenta en Usuarios y compruebe el recorrido autenticado. Si se retiró un permiso, verifique también que la operación correspondiente se deniega.
+\end{enumerate}
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y botones\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+Nombre & Identifica el perfil en Usuarios y Roles. & \textbf{Ejemplo:} Gerente comercial.\par\smallskip\textbf{Resultado:} Produce una etiqueta legible y una clave interna generada. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y botones}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Nombre & Identifica el perfil en Usuarios y Roles. & \textbf{Ejemplo:} Gerente comercial.\par\smallskip\textbf{Resultado:} Produce una etiqueta legible y una clave interna generada. \\
+\addlinespace[3pt]
+Descripción & Explica qué puede hacer ese perfil. & \textbf{Ejemplo:} Consulta resultados y exporta informes, sin ejecutar ETL.\par\smallskip\textbf{Resultado:} Facilita una asignación de cuentas con criterio. \\
+\addlinespace[3pt]
+Permisos otorgados & Define el alcance real de las acciones. & \textbf{Ejemplo:} Consultar análisis visual y Exportar reportes analíticos.\par\smallskip\textbf{Resultado:} El servidor utiliza estos permisos al autorizar. \\
+\addlinespace[3pt]
+Editar & Abre el perfil concreto. & \textbf{Ejemplo:} Revisar un rol existente antes de agregar otro similar.\par\smallskip\textbf{Resultado:} Muestra sus datos y permisos actuales. \\
+\addlinespace[3pt]
+Desactivar / Activar & Cambia el uso de un rol no protegido. & \textbf{Ejemplo:} Retirar temporalmente un perfil de capacitación.\par\smallskip\textbf{Resultado:} Los permisos de un rol inactivo no aportan acceso efectivo. \\
+\addlinespace[3pt]
+Protegido & Identifica controles especiales del registro. & \textbf{Ejemplo:} Rol Administrador inicial.\par\smallskip\textbf{Resultado:} No equivale a una acción que deba pulsarse ni a un error. \\
+\addlinespace[3pt]
+Eliminar & Borra físicamente un rol no protegido que no conserve asignaciones a usuarios ni permisos. Aparece en las filas no protegidas cuando la cuenta puede administrar roles. & \textbf{Ejemplo:} Un rol de práctica vacío y sin asignaciones; es un ejemplo propuesto, no un borrado realizado durante esta edición.\par\smallskip\textbf{Resultado:} Solicita confirmación: «Eliminar definitivamente… Esta acción no se puede deshacer». Cancelar conserva el registro. Tras confirmar, el servidor comprueba permisos, protección y dependencias; si autoriza el borrado, la fila desaparece al actualizarse la lista y se registra el evento en Auditoría. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Explicar un perfil de gerencia}
+Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.
+
+\begin{enumerate}
+\item Consulte el rol de gerencia si existe o prepare su matriz antes de crearlo.
+\item Identifique consulta del panel, exportación y consulta de metadatos.
+\item Confirme que no requiere preparar materializaciones ni revisar propuestas.
+\end{enumerate}
+
+\textbf{Qué debe obtener.} Se distingue lectura analítica de escritura técnica. La estudiante explica la dependencia del selector de fuentes.
+
+\textbf{Cómo comprobarlo.} Puede justificar cada permiso del perfil sin conceder administración general por comodidad.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Si aparece un problema\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+La tabla de permisos no carga. & Falta Consultar permisos o hay un fallo de red. & Revise el permiso complementario y pulse Reintentar carga de opciones.\par\smallskip\textbf{Comprobación:} No queda habilitado el guardado de una selección vacía por error. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Si aparece un problema}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+La tabla de permisos no carga. & Falta Consultar permisos o hay un fallo de red. & Revise el permiso complementario y pulse Reintentar carga de opciones.\par\smallskip\textbf{Comprobación:} No queda habilitado el guardado de una selección vacía por error. \\
+\addlinespace[3pt]
+El rol parece correcto, pero la cuenta no accede. & El rol o la cuenta están inactivos, falta la asignación o no se concedió una dependencia de interfaz. & Revise estado, asignación y permisos; autentique otra vez para actualizar la navegación.\par\smallskip\textbf{Comprobación:} La operación se autoriza en el servidor y la navegación corresponde a la cuenta. \\
+\addlinespace[3pt]
+No se permite retirar ciertos permisos del administrador. & La modificación dañaría la recuperación del entorno. & Mantenga el rol protegido y cree un perfil separado para la práctica.\par\smallskip\textbf{Comprobación:} Permanece una administración activa y recuperable. \\
+\addlinespace[3pt]
+Eliminar informa que primero se resuelvan asignaciones a usuarios o de permisos. & El rol tiene relaciones persistidas. No basta con que esté inactivo ni con que no haya usuarios activos. & Lea la dependencia indicada y decida con la responsable de acceso si corresponde conservar, desactivar o retirar deliberadamente las asignaciones. No vacíe un perfil en uso sólo para completar una práctica. Si se autoriza su retiro, revise primero las cuentas afectadas.\par\smallskip\textbf{Comprobación:} Un rechazo conserva el rol y sus relaciones. Un borrado autorizado elimina la fila de la lista y deja en Auditoría el evento de eliminación de rol. \\
+\addlinespace[3pt]
+No aparece Eliminar o el servidor informa «El rol protegido no puede eliminarse». & Es el perfil administrativo protegido, o faltan permisos para administrar roles. & Conserve el rol protegido y use un perfil de práctica no protegido para estudiar sus opciones. La interfaz muestra Protegido y oculta Eliminar en ese caso.\par\smallskip\textbf{Comprobación:} El perfil de recuperación administrativo sigue disponible. La protección se comprueba también en el servidor. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Para explicar durante la sustentación}
+\paragraph{¿Scrum Master es un rol de la plataforma?} No. Es una responsabilidad del proyecto de desarrollo. Product Owner y Scrum Master no conceden permisos de la aplicación.
+
+\paragraph{¿Es lo mismo ocultar ETL que denegar ETL?} No. El menú refleja permisos, pero la autorización de la operación se comprueba también en el servidor.
+
+\paragraph{¿Eliminar un rol equivale a desactivarlo y se puede deshacer?} No. Desactivar conserva la definición. Eliminar ejecuta un borrado físico, después de confirmar y sólo si el rol no es protegido y no tiene asignaciones de usuarios o permisos. No existe una papelera ni un botón de restauración. Crear otro perfil con el mismo nombre produce otro registro y exige volver a configurar sus permisos y asignaciones.
+
+\pantalla{recursos/pantallas/45_roles.jpg}{Perfiles disponibles y acciones de administración}{Roles registrados. El perfil funcional Gerente comercial se diferencia del papel académico de Product Owner o Scrum Master. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/46_rol_gerencia.jpg}{Permisos del rol Gerente comercial: consulta sin guardar}{Consulta del editor de Gerente comercial, cancelada sin guardar. El rol tiene lectura analítica, conexiones, metadatos y exportación. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/operacion_05.tex}{\input{capturas/operacion_05.tex}}{}
+\section{Interpretar el catálogo de permisos}
+\label{unidad:operacion_06}
+\textbf{Para quién:} Administración, Personas autorizadas para consulta\par
+\textbf{Opción:} Administración y seguridad > Permisos\par
+
+Permisos es el diccionario de operaciones que los módulos conocen. Consultar propuestas BI, Generar propuestas BI y Revisar propuestas BI son capacidades distintas: consultar una versión no permite generarla ni aprobarla. La separación evita conceder escritura por el simple hecho de necesitar leer un expediente.
+
+La pantalla vigente es informativa. Presenta nombre, descripción y estado en un listado paginado; no ofrece crear un permiso libre. Escribir un nombre como Administrar inventario no implementaría inventario ni protegería una operación real. Los permisos técnicos se incorporan cuando se desarrolla la funcionalidad correspondiente.
+
+Algunas descripciones históricas del catálogo utilizan verbos como crear permisos o menús, pero la operación actual de la pantalla se rige por sus controles y por el servidor. Para asignar privilegios se trabaja en Roles; para conocer el significado de un permiso se consulta esta lista.
+
+\subsection{Conceptos para comprender la opción}
+\paragraph{Permiso} Autorización concreta que protege una operación implementada.
+
+\paragraph{Permiso de lectura} Permite consultar sin modificar el recurso.
+
+\paragraph{Permiso declarado} Entrada del catálogo; no demuestra por sí misma que exista una nueva función utilizable.
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Abra Permisos.
+\item Lea el nombre y la descripción de las operaciones que correspondan a su tarea.
+\item Use Anterior o Siguiente si el listado tiene más de una página.
+\item Regrese a Roles para conceder o retirar esos permisos del perfil correspondiente.
+\item Compruebe el resultado con una cuenta de ese perfil; no modifique códigos internos ni datos directamente.
+\end{enumerate}
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y botones\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+Elemento & Presenta el nombre del permiso. & \textbf{Ejemplo:} Revisar propuestas BI.\par\smallskip\textbf{Resultado:} Permite identificar una capacidad con lenguaje comprensible. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y botones}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Elemento & Presenta el nombre del permiso. & \textbf{Ejemplo:} Revisar propuestas BI.\par\smallskip\textbf{Resultado:} Permite identificar una capacidad con lenguaje comprensible. \\
+\addlinespace[3pt]
+Detalle & Describe el alcance funcional. & \textbf{Ejemplo:} Aprobar o rechazar propuestas validadas.\par\smallskip\textbf{Resultado:} Ayuda a diferenciar revisión de mera consulta. \\
+\addlinespace[3pt]
+Estado & Indica si el permiso está activo. & \textbf{Ejemplo:} true en el catálogo aprobado.\par\smallskip\textbf{Resultado:} Un permiso inactivo no aporta acceso efectivo. \\
+\addlinespace[3pt]
+Anterior / Siguiente & Recorre el catálogo vigente. & \textbf{Ejemplo:} Consultar la segunda página de los 29 permisos base.\par\smallskip\textbf{Resultado:} Muestra otro tramo del listado sin crear registros. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Separar tres permisos del asistente}
+Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.
+
+\begin{enumerate}
+\item Localice Consultar propuestas BI, Generar propuestas BI y Revisar propuestas BI.
+\item Asocie a cada uno una tarea.
+\item Explique cuál requiere un analista revisor y cuál puede necesitar una persona que solo consulta.
+\end{enumerate}
+
+\textbf{Qué debe obtener.} Las tareas se vinculan con permisos diferentes.
+
+\textbf{Cómo comprobarlo.} La estudiante no atribuye aprobación al permiso de lectura.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Si aparece un problema\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+No existe el permiso que se desea escribir. & La capacidad no está implementada o se está buscando por un nombre diferente. & Revise el catálogo por su descripción y consulte la especificación; no intente crear códigos desde el navegador.\par\smallskip\textbf{Comprobación:} Se asigna una capacidad existente o se reconoce correctamente una ampliación pendiente de desarrollo. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Si aparece un problema}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+No existe el permiso que se desea escribir. & La capacidad no está implementada o se está buscando por un nombre diferente. & Revise el catálogo por su descripción y consulte la especificación; no intente crear códigos desde el navegador.\par\smallskip\textbf{Comprobación:} Se asigna una capacidad existente o se reconoce correctamente una ampliación pendiente de desarrollo. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Para explicar durante la sustentación}
+\paragraph{¿Agregar un permiso implementa una función?} No. Un permiso protege una operación existente. La funcionalidad requiere código, controles y pruebas propios.
+
+\pantalla{recursos/pantallas/47_permisos.jpg}{Permisos técnicos registrados}{El catálogo de permisos explica las capacidades existentes. Crear un nombre de permiso no implementa una función nueva. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/operacion_06.tex}{\input{capturas/operacion_06.tex}}{}
+\section{Ajustar los nombres y el orden de los menús}
+\label{unidad:operacion_07}
+\textbf{Para quién:} Administración\par
+\textbf{Opción:} Administración y seguridad > Menús\par
+
+Un menú es la entrada visible a una pantalla ya implementada. Cambiar su etiqueta ayuda a la navegación, pero no crea un nuevo módulo ni cambia el contrato de la operación. La aplicación conserva las rutas y claves internas; el formulario permite ajustar Etiqueta visible, Posición y Permisos requeridos.
+
+Primero seleccione Editar en un menú registrado. No hay una operación normal para inventar una ruta o agregar una pantalla desde esta lista. En el catálogo base, los menús están protegidos: puede haber datos de presentación editables, pero no se permite eliminarlos o desactivarlos como si fueran registros de práctica.
+
+Los grupos de navegación tienen un orden común y las opciones se organizan dentro de ellos. Un número de posición menor sitúa antes una opción dentro del orden aplicable. Con varios permisos asociados, el servidor de navegación muestra actualmente el menú si la cuenta posee al menos uno de ellos; cada acción sigue exigiendo su permiso específico. Por ello, la configuración del menú no sustituye al control de acceso.
+
+\subsection{Conceptos para comprender la opción}
+\paragraph{Menú} Acceso de navegación a una pantalla registrada.
+
+\paragraph{Etiqueta} Nombre que lee la persona usuaria; es distinto de la ruta técnica.
+
+\paragraph{Posición} Valor de orden; no es un identificador de permiso ni una prioridad comercial.
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Abra Menús y localice la entrada que necesita ajustar.
+\item Pulse Editar en esa fila.
+\item Cambie Etiqueta visible solo si mejora la comprensión y mantiene la función real.
+\item Ajuste Posición y revise Permisos requeridos.
+\item Pulse Guardar cambios o Cancelar.
+\item Actualice la sesión para volver a consultar la navegación y compruebe la etiqueta con la cuenta destinataria.
+\end{enumerate}
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y botones\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+Etiqueta visible & Define el nombre de navegación. & \textbf{Ejemplo:} Conservar Analítica de ventas como nombre preciso.\par\smallskip\textbf{Resultado:} Modifica la presentación del menú registrado. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y botones}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Etiqueta visible & Define el nombre de navegación. & \textbf{Ejemplo:} Conservar Analítica de ventas como nombre preciso.\par\smallskip\textbf{Resultado:} Modifica la presentación del menú registrado. \\
+\addlinespace[3pt]
+Posición & Ordena la entrada. & \textbf{Ejemplo:} Una posición anterior dentro de su grupo.\par\smallskip\textbf{Resultado:} Reordena la navegación aplicable, no concede permisos. \\
+\addlinespace[3pt]
+Permisos requeridos & Asocia condiciones de visibilidad del menú. & \textbf{Ejemplo:} Consultar análisis visual para la entrada del panel.\par\smallskip\textbf{Resultado:} Influye en la navegación; el servidor sigue validando la operación. \\
+\addlinespace[3pt]
+Guardar cambios / Cancelar & Confirma o abandona la edición. & \textbf{Ejemplo:} Ajustar una etiqueta sin cambiar una ruta.\par\smallskip\textbf{Resultado:} El registro se actualiza o se conserva como estaba. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Reconocer menú y operación}
+Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.
+
+\begin{enumerate}
+\item Consulte la entrada Datamart de ventas y la entrada Analítica de ventas.
+\item Identifique sus funciones y los permisos de consulta asociados.
+\item Explique por qué abrir el panel no permite ejecutar una carga.
+\end{enumerate}
+
+\textbf{Qué debe obtener.} Se distingue navegación, consulta y ejecución.
+
+\textbf{Cómo comprobarlo.} Puede justificar la separación sin intentar crear rutas nuevas.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Si aparece un problema\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+No aparece Crear menú. & La UI solo edita pantallas ya registradas. & Use Editar sobre una entrada existente. Para otra pantalla se necesita desarrollo e incorporación controlada.\par\smallskip\textbf{Comprobación:} No se presenta una ruta inventada como una función operativa. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Si aparece un problema}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+No aparece Crear menú. & La UI solo edita pantallas ya registradas. & Use Editar sobre una entrada existente. Para otra pantalla se necesita desarrollo e incorporación controlada.\par\smallskip\textbf{Comprobación:} No se presenta una ruta inventada como una función operativa. \\
+\addlinespace[3pt]
+La etiqueta cambió, pero la cuenta no ve el menú. & La sesión conserva su navegación anterior o faltan los permisos efectivos. & Vuelva a autenticar y revise el rol; no retire la autorización del servidor para forzar la visualización.\par\smallskip\textbf{Comprobación:} La navegación actual refleja los permisos y la etiqueta guardada. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Para explicar durante la sustentación}
+\paragraph{¿Puedo agregar inventario escribiéndolo en Menús?} No. La pantalla, las reglas de inventario y sus pruebas deben desarrollarse antes de registrar una entrada operativa.
+
+\pantalla{recursos/pantallas/48_menus.jpg}{Listado de menús y rutas protegidas}{Navegación registrada y protegida. Cambiar una etiqueta visible no cambia la ruta interna ni la autorización del backend. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/49_menu_edicion.jpg}{Edición de navegación sin guardar cambios}{Editor de menú abierto y cancelado. Etiqueta, posición y permisos afectan a la navegación de los usuarios. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/operacion_07.tex}{\input{capturas/operacion_07.tex}}{}
+\begingroup
+\setlength{\parskip}{4pt plus 1pt minus 1pt}
+\setlist[enumerate]{itemsep=3pt,topsep=4pt}
+\titlespacing*{\paragraph}{0pt}{4pt}{0.5em}
+\section{Consultar la auditoría y reportar una incidencia}
+\label{unidad:operacion_08}
+\textbf{Para quién:} Administración, Personas con Consultar auditoría\par
+\textbf{Opción:} Administración y seguridad > Auditoría\par
+
+La auditoría registra acciones críticas y ayuda a reconstruir quién actuó sobre un recurso. Sirve para investigar una modificación o acompañar un expediente. No reemplaza la conciliación de importes: un evento de ejecución informa que hubo una acción, mientras que el expediente muestra las comprobaciones y sus resultados.
+
+La interfaz actual presenta una lista paginada de eventos recientes, con acción, actor y tipo de recurso. Algunas acciones aparecen con claves técnicas, como copilot.catalog.update o etl.execution.run. Deben interpretarse como actualización del catálogo y ejecución de carga, respectivamente. No son instrucciones que la estudiante deba ejecutar.
+
+Esta pantalla es de consulta. No se crean, corrigen ni eliminan eventos para que una demostración parezca exitosa. Si una cuenta fue retirada, la evidencia puede conservar su etiqueta histórica. Para un reporte útil, acompañe la pantalla con la fuente, la propuesta o ejecución afectada y los pasos que reprodujeron la incidencia.
+
+\subsection{Conceptos para comprender la opción}
+\paragraph{Evento de auditoría} Registro de una acción realizada sobre un recurso.
+
+\paragraph{Actor} Cuenta atribuida a la acción.
+
+\paragraph{Recurso} Objeto sobre el que se actuó. Una propuesta, un catálogo, una conexión o una ejecución.
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Abra Auditoría.
+\item Lea los eventos más recientes y distinga acción, actor y recurso.
+\item Use Siguiente o Anterior para revisar eventos anteriores.
+\item Si investiga un caso, abra por separado su expediente para comprobar estado y cifras.
+\item Describa la incidencia con pasos, fuente e identificadores; adjunte la captura sin claves ni tokens.
+\end{enumerate}
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y botones\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+Elemento & Muestra la acción registrada. & \textbf{Ejemplo:} Inicio de sesión o copilot.catalog.update.\par\smallskip\textbf{Resultado:} Identifica qué tipo de operación ocurrió. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y botones}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Elemento & Muestra la acción registrada. & \textbf{Ejemplo:} Inicio de sesión o copilot.catalog.update.\par\smallskip\textbf{Resultado:} Identifica qué tipo de operación ocurrió. \\
+\addlinespace[3pt]
+Detalle & Permite reconocer al actor histórico. & \textbf{Ejemplo:} Nombre y correo de la cuenta de práctica.\par\smallskip\textbf{Resultado:} Ayuda a atribuir la acción sin mostrar credenciales. \\
+\addlinespace[3pt]
+Estado & En esta tabla puede representar el tipo de recurso. & \textbf{Ejemplo:} etl\_\allowbreak{}execution.\par\smallskip\textbf{Resultado:} No debe interpretarse automáticamente como éxito o fracaso del ETL. \\
+\addlinespace[3pt]
+Anterior / Siguiente & Recorre los eventos. & \textbf{Ejemplo:} Revisar operaciones anteriores de una campaña.\par\smallskip\textbf{Resultado:} Cambia la página de consulta; no filtra por actor automáticamente. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Relacionar un evento con su expediente}
+Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.
+
+\begin{enumerate}
+\item Consulte un evento de ejecución existente.
+\item Identifique su tipo de recurso.
+\item Abra el expediente correspondiente desde Datamart de ventas y revise conciliación.
+\end{enumerate}
+
+\textbf{Qué debe obtener.} Se usan dos evidencias complementarias: acción auditada y resultado cuantitativo.
+
+\textbf{Cómo comprobarlo.} La estudiante no utiliza la mera presencia del evento como prueba de igualdad de importes.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Si aparece un problema\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+No encuentra filtros por fecha o actor. & La UI de este corte solo ofrece paginación. & Revise las páginas disponibles o solicite apoyo técnico para una consulta autorizada. No siga instrucciones de un manual anterior que anuncien filtros inexistentes.\par\smallskip\textbf{Comprobación:} La investigación documenta el alcance real de la consulta. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Si aparece un problema}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+No encuentra filtros por fecha o actor. & La UI de este corte solo ofrece paginación. & Revise las páginas disponibles o solicite apoyo técnico para una consulta autorizada. No siga instrucciones de un manual anterior que anuncien filtros inexistentes.\par\smallskip\textbf{Comprobación:} La investigación documenta el alcance real de la consulta. \\
+\addlinespace[3pt]
+Aparece una acción técnica difícil de comprender. & El evento conserva el nombre interno de la operación. & Asóciela con el módulo y consulte el expediente; registre la clave literal si necesita reportar una incidencia.\par\smallskip\textbf{Comprobación:} El reporte identifica qué se hizo, sin inventar su resultado. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Para explicar durante la sustentación}
+\paragraph{¿Se puede borrar un error de la auditoría?} No desde la interfaz. La auditoría conserva acciones y aporta trazabilidad; la solución del problema se registra mediante nuevas acciones válidas.
+
+\endgroup
+\pantalla{recursos/pantallas/50_auditoria.jpg}{Auditoría consultable de acciones críticas}{La auditoría registra acciones críticas. La pantalla es de consulta y no ofrece edición de los eventos. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/operacion_08.tex}{\input{capturas/operacion_08.tex}}{}

@@ -1,0 +1,82 @@
+\chapter{Entender la arquitectura y el papel de la IA}
+El navegador presenta formularios, recorridos y resultados. El backend recibe las solicitudes, comprueba los permisos y aplica las reglas. SQL Server conserva las fuentes operacionales de demostración; PostgreSQL conserva la información interna del prototipo y los datos analíticos materializados. El proveedor de IA recibe únicamente el contexto permitido para cada función.
+
+React organiza la interfaz. En desarrollo se sirve con Vite; la entrega compilada se sirve con Nginx. FastAPI concentra los servicios y la autorización. Docker ejecuta los componentes del entorno. Estos nombres describen piezas técnicas; durante la operación ordinaria la analista trabaja desde las pantallas.
+
+La arquitectura emplea un proceso común y configuraciones por conexión. AdventureWorks y WideWorldImporters demuestran su aplicación sobre dos estructuras SQL Server distintas. Esto no significa que el corte actual ya disponga de conectores funcionales para todos los motores del mercado.
+
+El sistema no ejecuta SQL libre redactado por el modelo. La propuesta debe ajustarse a contratos y referencias verificables. Una persona autorizada decide su aprobación, y el motor determinístico prepara la materialización. Después de la carga se comparan los resultados con el origen.
+
+OpenAI se integra como un adaptador adicional: no cambia el recorrido de catálogo, viabilidad, contrato, aprobación ni ETL. El modelo propone o explica; el servidor sigue comprobando referencias, recetas y permisos. La fuente activa y el proveedor activo son decisiones distintas: cambiar el proveedor no cambia la base del análisis.
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\RaggedRight\sffamily\bfseries\large\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000 Qué ocurre en cada etapa\par}
+
+Un LLM es un modelo de lenguaje. Puede producir una respuesta convincente que no conserve el objetivo o que confunda conceptos. El sistema inteligente combina esa capacidad con reglas, datos estructurales, validaciones y supervisión. Esas piezas deben explicarse juntas al presentar el proyecto.
+
+Una respuesta en JSON puede ser sintácticamente válida y aun así incumplir el contrato del prototipo. Un contrato aceptado tampoco demuestra por sí solo que todos los registros sean completos o que un costo tenga significado histórico. Las verificaciones se acumulan durante el proceso.
+
+Cambiar de proveedor modifica el destino de las consultas de IA; no cambia automáticamente las reglas del motor. El tiempo de respuesta, la cuota, la disponibilidad y el cumplimiento del contrato pueden variar. Evalúe el resultado que recibió, no el prestigio del nombre del modelo.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Etapa} & \textbf{Participación de la IA} & \textbf{Control de la plataforma y decisión humana} \\
+\midrule
+Conexión y metadatos & No sustituye la lectura del esquema. & El conector consulta tablas, columnas, tipos y claves con permisos de lectura; se conserva una instantánea. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\section{Qué ocurre en cada etapa}
+Un LLM es un modelo de lenguaje. Puede producir una respuesta convincente que no conserve el objetivo o que confunda conceptos. El sistema inteligente combina esa capacidad con reglas, datos estructurales, validaciones y supervisión. Esas piezas deben explicarse juntas al presentar el proyecto.
+
+Una respuesta en JSON puede ser sintácticamente válida y aun así incumplir el contrato del prototipo. Un contrato aceptado tampoco demuestra por sí solo que todos los registros sean completos o que un costo tenga significado histórico. Las verificaciones se acumulan durante el proceso.
+
+Cambiar de proveedor modifica el destino de las consultas de IA; no cambia automáticamente las reglas del motor. El tiempo de respuesta, la cuota, la disponibilidad y el cumplimiento del contrato pueden variar. Evalúe el resultado que recibió, no el prestigio del nombre del modelo.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Etapa} & \textbf{Participación de la IA} & \textbf{Control de la plataforma y decisión humana} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Etapa} & \textbf{Participación de la IA} & \textbf{Control de la plataforma y decisión humana} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Conexión y metadatos & No sustituye la lectura del esquema. & El conector consulta tablas, columnas, tipos y claves con permisos de lectura; se conserva una instantánea. \\
+\addlinespace[3pt]
+Catálogo & Utiliza las preguntas elegidas como orientación al generar una propuesta. & El analista mantiene preguntas y periodicidades por fuente. Las preguntas iniciales del producto no son una generación nueva de IA. \\
+\addlinespace[3pt]
+Necesidad y viabilidad & Puede sugerir necesidades, mejorar su redacción e interpretar los requisitos frente a la estructura. & Se comprueba el contexto y el respaldo de referencias y derivaciones. La persona adopta el texto y revisa los límites. \\
+\addlinespace[3pt]
+Conceptos y modelo & Propone conceptos, grano, dimensiones, medidas, indicadores y un plan declarativo. & El contrato valida estructura y semántica admitida. La analista corrige, justifica y aprueba o rechaza. \\
+\addlinespace[3pt]
+ETL y conciliación & La interpretación semántica puede sugerir etiquetas para categorías aptas. & El motor extrae, transforma y carga con reglas fijadas; compara resultados y exige revisar las etiquetas publicadas. \\
+\addlinespace[3pt]
+Analítica & El chat interpreta preguntas y explica evidencia de agregados permitidos. & Los indicadores y los hallazgos del panel se calculan mediante reglas. Los filtros y las exportaciones conservan el contexto. \\
+\addlinespace[3pt]
+Decisión comercial & Puede ayudar a resumir y formular nuevas preguntas. & La gerencia contrasta los resultados y sus límites; una explicación no prueba causalidad ni efectos futuros. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+
+\IfFileExists{capturas/fundamentos_03.tex}{\input{capturas/fundamentos_03.tex}}{}
+\diagramasistema{recursos/diagramas/Arquitectura_plataforma.pdf}{Arquitectura de la plataforma}{Interfaz, servicios, fuentes de lectura, persistencia y proveedor de IA. La aplicación comprueba las reglas y una persona autoriza el diseño y confirma la carga por separado.}

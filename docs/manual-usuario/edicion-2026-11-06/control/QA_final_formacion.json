@@ -1,0 +1,1012 @@
+{
+  "estado": "validado_para_entrega",
+  "fecha": "2026-11-06T04:16:15.338969-05:00",
+  "docx": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/output/Manual_de_formacion_BI_IA.docx",
+  "pdf": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/output/Manual_de_formacion_BI_IA.pdf",
+  "docx_sha256": "8a0492cb2d0551722cbbbbaf73074383538e771716d2ff9f86aefffaac0187d0",
+  "pdf_sha256": "ef66703b26de3accde56180e0198e3973afd789daa244dc1549258e7e436f1af",
+  "total_paginas": 137,
+  "figuras": 75,
+  "revisado_visualmente": true,
+  "metodo": "137 páginas abiertas completas nativamente en la composición definitiva o reutilizadas sólo por igualdad exacta del SHA-256 de la página PNG. En el último cierre únicamente cambiaron85 y124 y ambas se abrieron otra vez.",
+  "paginas": [
+    {
+      "numero": 1,
+      "sha256": "64bab2ba07f6ce232ef071143a895fca6bb4b1621a9a7a7afb51f29154d06b25",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 2,
+      "sha256": "e538df3bee899ed48cf88e038457439484e64fbc98859844f7a8d4bf5f42b76e",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 3,
+      "sha256": "b4a2b59331f7ef24f66d82309a43a93968d8169a9ac8d2a54b15fce80ad0293d",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 4,
+      "sha256": "c2e6445b85814074d4db7f7039c77299e32c8485a6b3ecc5b14b2576460a9d89",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 5,
+      "sha256": "96705a8b858f244fce946b7e64f783499685d3469aab102065ee7ed4ae047dda",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 6,
+      "sha256": "22ccf7fb4491fd48dd28bb484f6f7485ebef2871d5a9f7fdc81f1560960d27f8",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 7,
+      "sha256": "ff9954c1fec71e4142c35784c691f9c00c3531971541ca77b096be75ed4abffc",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 8,
+      "sha256": "9bac00a9a5f1daeb8b8ff632d6df52353f50a7a535e8cc141db8cf343bad3ff7",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 9,
+      "sha256": "610067a6aa56d3ce83ec8f6e8a87d2ebec895fd10e64881523825deb435e5685",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 10,
+      "sha256": "2deb5092f67bfd90223581c47d7c99078dfab04596b7cf89d79d0111e98cd8ca",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 11,
+      "sha256": "51f11c485fa7bc879fee92d9d4118056dff92a4c805983d73ab01f0400b81e80",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 12,
+      "sha256": "247ca540a798ae8ddebb107e06e81b7b3cb332f473141464893fae687b4a27e9",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 13,
+      "sha256": "22fdf9749e2b060d3cb8203096c82d4febcf065f7c90c5f9c9b30df85c6983f7",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 14,
+      "sha256": "73f0041ddd19b456263bfd66868fcd1a4320f3fac73aad24d40f5ecd35472dbc",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 15,
+      "sha256": "30e1c33267c93390f9ceb0a680d2661ef00b1a7348731d78439e39fc5c3c6daa",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 16,
+      "sha256": "75efac8b133bb0f377f252dc7fdc4a1d1945d66926191ab3a8ed5aca7047ff0c",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 17,
+      "sha256": "e61d92223ab27cd8032406e8d1509de247a7e7926c183ad536595cbe1fc3eba7",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 18,
+      "sha256": "ebb2e0336f37d1d6c750836bc7278412cc38cad7228f0272e4ad1c2a9a7192e7",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 19,
+      "sha256": "ddf2d1abe0c4c4d8851b4231b39588a4b1b70fa2b9c3c711fbb9539a16ff8272",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 20,
+      "sha256": "c6762a25fb3e7243dc052da0c6b6105c7b711182709b60ff331d50d775214874",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 21,
+      "sha256": "bf8f0a57006e1d95b11ce3fa82e0deef1e66816a62ecdd0bcb0bcc0885c13085",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 22,
+      "sha256": "0a9a28eb48808b8af5efe237cea35c566e2ae318b04dd82bb70724c6e6ac8a38",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 23,
+      "sha256": "304466663c5f4547e94afc35fae45b4d22098590110493fe45ce2a5d2f5f1758",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 24,
+      "sha256": "bdda8a3fa8b3e39dc26256ad14186cc6cdf9fa94d517f8937803d2c3beb2ff97",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 25,
+      "sha256": "a3ef988b800016251cfc1ac2ec212dc1390ca1226ffc09023f478a8e8ac300d8",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 26,
+      "sha256": "70019c9b0cd85f937cda229e29420602d7f2d9f18ad64f6c3b23163db0f8b0ff",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 27,
+      "sha256": "50942d573dde006e6982f6cdb61bec3d8e6fdd54a58c8d3b8d826784dc5eb124",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 28,
+      "sha256": "99d6745466457948bb3bea4295ad304aa94d8b2857ae0c2856d72e3cd79f7b77",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 29,
+      "sha256": "b62aa78c32def7527ff1b093fc1987f0d076331121b62364d8e1ce6301e3da2a",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 30,
+      "sha256": "b02331992881af9adaaab9302c159c60a297c90e583cd560108dab4427010ace",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 31,
+      "sha256": "22e49f53461887351ec1da668879da76da8dcfd7cf6c0fb137b5693d456068d5",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 32,
+      "sha256": "1f2596961c2dc9bcb8d1713c22955f467b594909dbd2c2b01e100054642a757f",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 33,
+      "sha256": "0bad08a790dba76c9894958d988c10d793c0a49821ae730c90945f92de6edd0a",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 34,
+      "sha256": "5752525449b836cab78a637b84912d057ac2ed65364a5196830fe3bfad99a21c",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 35,
+      "sha256": "77aab177d57eb4da7117a1cfe47ee06c92cabc136cd7b73927dcbadb8040b656",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 36,
+      "sha256": "7803693679de634f461d04e896d713392709e05d1a87c2322292ceefc64c9a26",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 37,
+      "sha256": "500fff83cd2e5e78235b30238ec218eb10c12a4680af21dde584c5330cf0bd26",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 38,
+      "sha256": "121355fbc0e1ca3a1b0987e71c6258b013315e19841be1a5a7c6c56f41035d94",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 39,
+      "sha256": "578bf4785467ac0e88f72db50bc270e7d61abf159566206d9b632675bf3cd9e8",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 40,
+      "sha256": "2687d4c08fd516079c015e351b0566c4ef813ce1370130536c08de3e6a2c4e5f",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 41,
+      "sha256": "cfe94aa91afcc920f021dbebb1ed4aedd2f58a0afa0fb43ec49fd87b967c7d2b",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 42,
+      "sha256": "465c068423d478d1892a7c06082a391e2cbb452e0dc8a71ddb1365097f8f7074",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 43,
+      "sha256": "3e22737201f681e9e492a0b1261981d1bc6ca9990b411e728ef0cc2af74cd569",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 44,
+      "sha256": "fad83fec3d2bab67d7aa75003878734f8b4366ff8ec488ac4220f295a2bf6506",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 45,
+      "sha256": "589d48fb81713bfbd2a23df439c9acb0d9f4f93834024d559820b147d2696952",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 46,
+      "sha256": "88d3164169a6278aeb7c3db97c8d3cb4fc4c041e941c8ed6cc584d630ec3d40c",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 47,
+      "sha256": "8b30ef92c17f4588828eb2a3d210b7832d09ef67e6ca396dafb4e593a227bab8",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 48,
+      "sha256": "d13b6ea11aa941dc29ad8368f489a4c8bd6d6a35cf47ea6d46ad5b66b84d98d5",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 49,
+      "sha256": "05716bdef01a067cb061fd868e0c738b2939aead36f51b8f8f90cacace859e1f",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 50,
+      "sha256": "ca48e7bc743668f825d2a07cab7d8c6ded6a5e4641139f5f309a4e387529bd3b",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 51,
+      "sha256": "58a59764b1dfc7f9e017287486709e3048f8e8417c9ce557e4068453967bd20a",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 52,
+      "sha256": "af2b4999a43f35ce9eea2c87dc31646b3dacadf63bf6048877f69baa2b4ad481",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 53,
+      "sha256": "c33906d0f36878d7c050e55c77265384c9f723858d61ca13d9a2a3d05a495416",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 54,
+      "sha256": "a0b64fe7347aa4e8d8a3bb0557eeec86fa24e64742eeeb8d8c17288ce3383ef2",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 55,
+      "sha256": "8eca3d4e5bad25f3d7491ed2d21b22ba99bf2dfeed5a8c2a8237ebd15df5dd18",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 56,
+      "sha256": "ec3b1c68d97b7fd1d2d902e1dec3a657a4e1e3590c619a9aa1768a4402b3e0a2",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 57,
+      "sha256": "e78c62c67c0608e4d18efb8a08010d07d354cb5d7934489fb572f5adb5945703",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 58,
+      "sha256": "f22c3d3962841e69fafb951bc07bf1876c605dc418f91932a144f4c680edd2c0",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 59,
+      "sha256": "c0ef4a9d323d4a06c8371bafb1796817021194a79129c8c166cfd04d9d6342bd",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 60,
+      "sha256": "242271750b23293b7d4d04c42d9224ffbe4c2eba2259c123e33799aa00c281e7",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 61,
+      "sha256": "9dbfbe84c55b4b123d3cbeca08dff7d3d7b1db8fde04880882b7b93016e469da",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 62,
+      "sha256": "2254f88530bc41dee01b1d738c43482bc83f13166119dc8e31b5614cd91529d0",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 63,
+      "sha256": "47234bdd292b0a27f222bcab826c3b4a5e307425e219faeb0f58c3422189b82a",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 64,
+      "sha256": "d6df8b36084d9b4815ca28e67bcedcd3a53e6f7c44c0e8f0e353eea6c94ef3b0",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 65,
+      "sha256": "375d61c6963ceaf81900b24042708abf1f1fe929bb9d7b39ef0dc3aaf6103547",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 66,
+      "sha256": "708f0ac44cb80fa76c7eb0b3d6f1e5ff19c77ae73de3ae74b1b71bcd49a3a629",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 67,
+      "sha256": "dd0f98cc6769836d24a3ac2c3f44626731a5bff4946371e9c69f1b975c8cc18d",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 68,
+      "sha256": "50f6f1dbe0124ff53832dc81c8f6a3c1ebbe0cced5bdcac3640b0c6c84e50495",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 69,
+      "sha256": "89511468111ea98cf2b95d006a54b166ee0d6579dc0e3ef426b5e92f8d89d429",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 70,
+      "sha256": "8529cf6c83c6376ffbcf7a0486aee657f1fce878d0c91b31ae5a0991eb032506",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 71,
+      "sha256": "3baf64ccd02f6f56e91895ee96f29a7a26b1e3ef64500e87e038f784d6ee7b09",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 72,
+      "sha256": "f5bc3d41e7636e4ad2ad5dcacc8fa024e3fca15654c548d89055af52b23d66e5",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 73,
+      "sha256": "aad2815d0f6fd794707be5203de2fabfce7328a211a279704ca50685d5b8185a",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 74,
+      "sha256": "fa6302d875a1e03450a6cce1536accfb5ef58940cc8940811197fd522b698f6e",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 75,
+      "sha256": "71c05a147c78ba1632edb14913380dcc5221fc95ca0c0c1775fab33c9762b4d0",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 76,
+      "sha256": "cfafc0767e4139da45ee0e72dbcdc09b6e0971ccbb07b7590b64884ae44abbdc",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 77,
+      "sha256": "0bdd4fb3c934a9453594e4c3a75ce77263eb4a20c5ec990f6ffbbacfca6e9b09",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 78,
+      "sha256": "153a6b2b16e7192d2970c1c951e73870a83a57346693e43ef549595e73066443",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 79,
+      "sha256": "69f65eba41ca88f4df76345210e4ac8e951bad49ee70862670cb369ecff9b277",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 80,
+      "sha256": "ab242d37da21c933aa7b763fff9179d2f4adaea546cc716f0aeba0cdf143d13a",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 81,
+      "sha256": "9426b4f5dc6b2a6a5a8719f97ae049e3d5d307fd41c92b64397d4784c19ee81d",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 82,
+      "sha256": "f51aa041d217e39b183c3a24715f17337e9b8e540671a006c8a5f942f8adfb47",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 83,
+      "sha256": "5772565b4110f3cdc5c1861144053c6d3593273c708253b15eb3902df92303ce",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 84,
+      "sha256": "1bcd4788441f5e212240d1a9b15edc1fe8be670fa05a828be03a55f821561480",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 85,
+      "sha256": "527d729c2e8f976212d541171b6feba1ef415e5b8c7f5fa9026be4a41a65f14a",
+      "identica_a_pagina_revisada": false,
+      "revisada_visualmente": true,
+      "metodo": "reabierta tras corrección local"
+    },
+    {
+      "numero": 86,
+      "sha256": "8d0f5ef9058dd458483520dc62eaf34dcb66506b2d289b0a42350479b2b351dd",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 87,
+      "sha256": "8eba8e39291ce38512c59db667d7312dce50cd9378bc2a1f1458b7a8b2e78a2b",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 88,
+      "sha256": "b10440cfbeb2d553d8936a2b3b4ed2886a72292b7dee9fe0e91673aeade1108d",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 89,
+      "sha256": "2d8951b5fbaca422bc34e9c05fca945467cf9354d8469118ee80c81b8950cea2",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 90,
+      "sha256": "9e42570e81ac3b3791460311f2f1f5f22cc61ec89d147115ef99efa770634717",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 91,
+      "sha256": "452e761cb19dc4f26c7b5e3d1146f2d885c74085e2ab74a406476fdef0fbe598",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 92,
+      "sha256": "7f34dd60d8088084a97dc876e79edf329cb5e3561d44c579465aa206dec58178",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 93,
+      "sha256": "6108328f2679de5020c5c1696a6f5e32f87bcd17847d568bf75a4f63926acc41",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 94,
+      "sha256": "f51dd04a29c31870f11dcf518d55f40051ee1b8b175b0c392b27b501147c724c",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 95,
+      "sha256": "7cd292ce49be8cccd485adae54f91370590a5ee4c2ee83e42538c3b31d6c203b",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 96,
+      "sha256": "6387278279f777756f3f724d127574617c6ae382c614588117c6873f444f4c10",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 97,
+      "sha256": "b23f21318d507c71723f7c49bbe938c2791454c2fa09cab1f17aca3df470316c",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 98,
+      "sha256": "02072ce3fe97164e3f6fa63540c198cb28abc56624c647871e2915dc743dac83",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 99,
+      "sha256": "05c03013ba6a146d50c8ae9ea84d8b5e2a3d861da18c20d55871338e52689160",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 100,
+      "sha256": "ddf22f73b05988c2e4a2f865bc154591d6785c369e3150f81862db2fab842b85",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 101,
+      "sha256": "c7f6df5820bfaa26507a563f6cf5b9f3c35bc8e64bbb544c9077b53bb70990a1",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 102,
+      "sha256": "155fa61d8f6311ba52c917962cd8a707654328ab95b0ff3200bc76cc32138e6f",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 103,
+      "sha256": "9ed7e16706fc2312f80fe68d9c7c7fc7cdd2b04bef4295be9b04c34fd4361c67",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 104,
+      "sha256": "7e76740863bf35fea4d360d79aa3a51668c7160cb5aaba43893a65583b33fe0b",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 105,
+      "sha256": "30211648c79f3595b2a5ba243383ca1c0175058750a4bf3e0fc17e3287037212",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 106,
+      "sha256": "02146315a3ee0df051a7b5516126752c70e147ce2b242537f762320bd53763cf",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 107,
+      "sha256": "d1a3b1e2dd90f9aa8ea5caa4d4f6760578d3814c08fa3cb5853675e73c39d719",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 108,
+      "sha256": "bd9eb41e7da907acf13b409e426efa90eb6845b87e2dd2dcdcae7957af4e7d08",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 109,
+      "sha256": "e8bb636d56b2b05c8cade23b21dbf8f3ffc8104b98ed9075c7b560930eb073a1",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 110,
+      "sha256": "660a7afdeea5d7e305e8b2b6c7471da6a64eaed499ba1702b5e6c82a1e15d096",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 111,
+      "sha256": "033528ff5bbaf7ffe839b723b4216b8c8ee0ca677d5de169cd897ba0803ba84f",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 112,
+      "sha256": "31cc0cac4d218b5797d8a601c5b2a10dfb892bc9acb5935ed1e7924e821e9342",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 113,
+      "sha256": "69a9adb85ffd108e06e9b7485ff557bc5bbb19d2005bbc970e89d8c74d7bd17f",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 114,
+      "sha256": "78f9b25efaf47d2e2db92b8d0d5f81736779f7c30c83a66c76c05b99ce15b640",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 115,
+      "sha256": "0b4d59d4436ec12e429f12266a2b8de3634569b4636147bf33441160031eb1c2",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 116,
+      "sha256": "580d81437f6e8587764fb50a452489f45b8729a6a2a5d29ec7fe33c8a81a831e",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 117,
+      "sha256": "ec3c5ca05a0eb8f1e3d3d5c0a9e5357f7fb808595571ae4459a0a737d23bd1a4",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 118,
+      "sha256": "271427a7df223a973e372076f841edd56a3a48b3a7beea1c32e9f348ffbc0492",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 119,
+      "sha256": "300ef6905ae6ccdfea16cb02273cd31c44825f0e3d2ead863e84745a57ba4c5e",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 120,
+      "sha256": "be408dc9a44021fa9de1d1112cdc99ffddee08e8d1fd3a3f5b9d9fbe3f6ecb76",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 121,
+      "sha256": "0eea56524be5d16152ca40830285b22908cf084c8950bbe6950a919d22947659",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 122,
+      "sha256": "1895a0d37678b4cfea7f7373bd8832654c09cc57024637f46d1ce55ce45c8735",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 123,
+      "sha256": "824b1120f25571e50289d22fe674565d6c55cc2fa521eddc141bdbb131551fea",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 124,
+      "sha256": "58e7b827ec2930be209e6ee4c0840860dc0c6fcd15eea01488660ac6b166c138",
+      "identica_a_pagina_revisada": false,
+      "revisada_visualmente": true,
+      "metodo": "reabierta tras corrección local"
+    },
+    {
+      "numero": 125,
+      "sha256": "ffb860041daed19375a76f8d24fcff0e9835aae01e984a99a935224e03177e25",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 126,
+      "sha256": "8a55bafbc9ffed7cf38ee53b3c4d70cc9e6980e02da365ff6fcfdaf9ecd6a247",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 127,
+      "sha256": "628690029bba019d5bf318ee1e503000f34a187b8c409bdf3908d2877678f997",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 128,
+      "sha256": "65c1e9535dceb2378f2ac9427eca63b856c5d670e45baa64c1d71364233daaf3",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 129,
+      "sha256": "e03d0e422f6781abaedaa6b9fca5c340c5f3142254fb86b1b9e05e937aadf44d",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 130,
+      "sha256": "1e38693472ef33dbe2029fec31651cdcd844bc1c5d38610f121b54ebf7407d02",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 131,
+      "sha256": "ec12f601aa4cc77a4584b50c27f89208ea14d1911880689d300f56bff9e422ab",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 132,
+      "sha256": "e50b1f347268d4992084b5a004bf3c32d8fd0198e24397f5977522168cdd4b8f",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 133,
+      "sha256": "1e1dd1cbefee00d1f86a4e0b07238b69b6429bb5c5d2b7836adfa6bd95101642",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 134,
+      "sha256": "f0f8e31f43634ef28bd3f7cea7a261a04d298ea1a4fa7de1d4cc36bd4ecc48b4",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 135,
+      "sha256": "5ac015d24876879d9fb86fa48162484ce1312506ef00a500bf905e6ade3b8af6",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 136,
+      "sha256": "07c986f76d292f030b62f2929c0f266039cb35f282063c227bcb9ade17a94e37",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    },
+    {
+      "numero": 137,
+      "sha256": "d0da6067b648856e9a7404de84b88e96e5dfb38e77171a2eebb9e55ad4adad48",
+      "identica_a_pagina_revisada": true,
+      "revisada_visualmente": true,
+      "metodo": "revisión nativa previa con SHA idéntico"
+    }
+  ],
+  "hallazgos_bloqueantes": [],
+  "correcciones_cerradas": [
+    {
+      "pagina": 85,
+      "detalle": "Caption identifica inequívocamente la aprobación126 como consulta histórica y exige derivada actual para una carga nueva."
+    },
+    {
+      "pagina": 124,
+      "detalle": "Separados los términos mediante Invoices.CustomerID, mediante Customers.DeliveryCityID y de StateProvinces."
+    }
+  ],
+  "observaciones_no_bloqueantes": [
+    {
+      "paginas": [
+        75,
+        83,
+        88,
+        94,
+        100,
+        117,
+        136
+      ],
+      "detalle": "Continuaciones breves de unidad antes de comenzar sus figuras o la unidad siguiente; contenido íntegro y legible."
+    },
+    {
+      "paginas": [
+        36,
+        58,
+        63
+      ],
+      "detalle": "Continuaciones breves registradas por el revisor del primer tramo; sin pérdida de contenido."
+    }
+  ],
+  "actas_previas": [
+    "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/auditoria_visual_formacion_definitiva_001_070.json",
+    "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/auditoria_visual_formacion_071_137_antes_ultima_caption.json",
+    "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/mapa_reutilizacion_formacion_cierre.json"
+  ],
+  "alcance": "Formación operativa y conceptos de BI; se distinguen casos nuevos129/21 y131/22, consulta histórica y ejercicios por ejecutar. No se promete infalibilidad de cualquier modelo o soporte de motores no implementados."
+}

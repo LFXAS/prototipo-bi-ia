@@ -1,0 +1,1746 @@
+{
+  "titulo": "Prácticas guiadas, autoexplicación y defensa de la demostración",
+  "fecha_redaccion": "2026-11-18T00:36:46.394580-05:00",
+  "tipo": "Material de capacitación propuesto, con referencias históricas identificadas.",
+  "alcance": "Redacción a partir de los insumos verificados del manual. No se inició sesión, consultó la aplicación, llamó a un proveedor ni ejecutó ETL para producir estas prácticas.",
+  "nota_para_el_generador": "Renderizar secciones una sola vez. Los bloques de primer nivel son las mismas estructuras para validación y reutilización; no duplicarlas en el documento. Conservar tiempos, contingencias, distinción histórico/nuevo y hoja intencionalmente en blanco.",
+  "preguntas_autoexplicacion": [
+    {
+      "numero": 1,
+      "tema": "Propósito",
+      "pregunta": "¿Qué problema atiende el proyecto y cómo demostraría que lo atiende?",
+      "respuesta_orientativa": "Ayuda a relacionar una necesidad comercial con fuentes, grano y cálculos verificables mediante un recorrido supervisado. Se demuestra siguiendo un caso y contrastando sus resultados. Que funcione no demuestra que aumente ventas ni que sea más rápido que otro método; esa comparación exigiría mediciones equivalentes.",
+      "evidencia_o_actividad": "Explique una decisión comercial y señale propuesta, ejecución y conciliación del caso correspondiente."
+    },
+    {
+      "numero": 2,
+      "tema": "Detalle y documentos",
+      "pregunta": "Si un pedido tiene tres líneas, ¿cuántas filas del hecho y cuántos pedidos distintos representa?",
+      "respuesta_orientativa": "A grano de línea son tres filas y un pedido distinto. Contar filas o sumar el identificador del pedido no da la cantidad de pedidos.",
+      "evidencia_o_actividad": "Dibuje un pedido con tres productos y escriba ambos conteos."
+    },
+    {
+      "numero": 3,
+      "tema": "Tiempo",
+      "pregunta": "¿Elegir Mensual cambia el detalle físico o programa una carga mensual?",
+      "respuesta_orientativa": "Mensual indica cómo agrupar el análisis. Las filas pueden seguir siendo líneas de pedido o factura y la carga se confirma por separado. No significa que exista un programador automático.",
+      "evidencia_o_actividad": "Compare el grano declarado en la propuesta con la agrupación temporal del panel."
+    },
+    {
+      "numero": 4,
+      "tema": "Metadatos",
+      "pregunta": "¿Qué aprende la IA al recibir metadatos y qué todavía no está demostrado?",
+      "respuesta_orientativa": "Recibe estructura autorizada: nombres, tipos, claves y relaciones. Esto puede respaldar una ruta o receta, pero no prueba que los valores estén completos, que un costo sea histórico o que una dirección represente una entrega realizada.",
+      "evidencia_o_actividad": "Abra una tabla y una relación del explorador; explique su alcance sin consultar filas de ventas."
+    },
+    {
+      "numero": 5,
+      "tema": "Catálogo",
+      "pregunta": "¿La IA arma por sí sola el catálogo de preguntas y lo copia a todas las bases?",
+      "respuesta_orientativa": "El perfil del producto aporta cuatro orientaciones base; la persona autorizada administra preguntas y periodicidades por conexión y dominio. Las dos preguntas de costos de AdventureWorks fueron adiciones humanas históricas. Las sugerencias de necesidades del asistente no sustituyen automáticamente ese catálogo.",
+      "evidencia_o_actividad": "Compare ambos catálogos y justifique una pregunta apropiada para cada fuente."
+    },
+    {
+      "numero": 6,
+      "tema": "Viabilidad",
+      "pregunta": "¿Qué haría con un requisito marcado como derivable?",
+      "respuesta_orientativa": "Leer si depende de una relación declarada o de una fórmula controlada, comprobar sus entradas y conservar el grano. Una explicación candidata de IA no se convierte por sí sola en cálculo ejecutable. Si falta una decisión de negocio, hay que aclararla antes de aprobar.",
+      "evidencia_o_actividad": "Explique una derivación posible y sus entradas; no escriba SQL libre para quitar el aviso."
+    },
+    {
+      "numero": 7,
+      "tema": "Límites",
+      "pregunta": "¿Que la necesidad tenga respaldo estructural garantiza que la propuesta se genere correctamente?",
+      "respuesta_orientativa": "No. La revisión de viabilidad y la generación son controles distintos. El proveedor puede fallar en formato, cuota o interpretación. Aceptar una limitación tampoco crea datos ausentes ni elimina los errores bloqueantes.",
+      "evidencia_o_actividad": "Distinga una revisión válida de una generación rechazada y registre cada estado por separado."
+    },
+    {
+      "numero": 8,
+      "tema": "IA y supervisión",
+      "pregunta": "¿Qué hacen la IA, la plataforma y la persona en el mismo caso?",
+      "respuesta_orientativa": "La IA puede sugerir, interpretar y explicar. La plataforma valida referencias y contratos, construye consultas controladas y calcula. La persona define el propósito, resuelve ambigüedades, aprueba el diseño, confirma la carga y revisa el resultado.",
+      "evidencia_o_actividad": "Señale una acción concreta de cada participante en el asistente y en el panel."
+    },
+    {
+      "numero": 9,
+      "tema": "Evento comercial",
+      "pregunta": "¿Puede llamar facturas, cobros o utilidades a las cifras de un datamart de pedidos?",
+      "respuesta_orientativa": "Debe conservar el evento demostrado. Un pedido no prueba facturación ni cobro; un importe de venta no prueba utilidad. En WideWorldImporters el caso de referencia usa líneas de factura y en AdventureWorks líneas de pedido.",
+      "evidencia_o_actividad": "Lea el evento y el grano de ambas necesidades antes de comparar sus tarjetas."
+    },
+    {
+      "numero": 10,
+      "tema": "Relaciones comerciales",
+      "pregunta": "¿Por qué importan comprador, destinatario de facturación y ciudad de entrega?",
+      "respuesta_orientativa": "Pueden representar funciones distintas aunque las relaciones sean válidas y los totales coincidan. El caso WWI pide comprador y provincia de la ciudad de entrega de su ficha actual: no sustituir por destinatario de facturación o dirección postal ni afirmar ubicación histórica.",
+      "evidencia_o_actividad": "Explique la ruta revisada de WWI: CustomerID, DeliveryCityID y StateProvinceID, usando las etiquetas de la interfaz."
+    },
+    {
+      "numero": 11,
+      "tema": "Promedios",
+      "pregunta": "¿Cómo obtiene el importe promedio por pedido o factura?",
+      "respuesta_orientativa": "Divide el importe total entre documentos distintos del mismo filtro. No usa el promedio de importes de línea ni un denominador de unidades. Si el denominador es cero, debe quedar sin valor calculable; no inventar cero, infinito o un porcentaje.",
+      "evidencia_o_actividad": "Compruebe numerador, denominador, unidad y filtro de una razón visible."
+    },
+    {
+      "numero": 12,
+      "tema": "Moneda",
+      "pregunta": "¿Por qué el importe de WWI no se presenta automáticamente como dólares?",
+      "respuesta_orientativa": "El caso conservado no demuestra un código de moneda único. Debe decir moneda de origen y conservar el importe. En AdventureWorks el caso de referencia sí comprobó USD. No se suman ambos importes como si compartieran unidad y evento.",
+      "evidencia_o_actividad": "Lea la unidad de las dos ejecuciones y explique el límite antes de emitir una comparación monetaria."
+    },
+    {
+      "numero": 13,
+      "tema": "Filtros y rankings",
+      "pregunta": "¿Qué debe revisar antes de interpretar un producto líder o una participación?",
+      "respuesta_orientativa": "Fuente, ejecución, indicador y filtros. Un ranking por sumas del conjunto no equivale al máximo de una sola línea. La participación utiliza el universo filtrado completo; el Top N no convierte al subconjunto mostrado en el total del negocio.",
+      "evidencia_o_actividad": "Cambie un filtro y compruebe que tarjeta, gráfico, tabla y explicación correspondan al nuevo alcance."
+    },
+    {
+      "numero": 14,
+      "tema": "Aprobación y carga",
+      "pregunta": "¿Qué se obtiene al aprobar y qué exige cargar el datamart?",
+      "respuesta_orientativa": "La aprobación conserva un contrato revisado. La carga necesita preparar la selección, revisar el plan, confirmar la ejecución y comprobar la conciliación. Tener una propuesta aprobada no significa que ya existan datos analíticos.",
+      "evidencia_o_actividad": "Muestre las identidades separadas de propuesta y ejecución sin volver a ejecutar un expediente histórico."
+    },
+    {
+      "numero": 15,
+      "tema": "Historia",
+      "pregunta": "¿Puede consultar o verificar una versión aprobada sin retirarla?",
+      "respuesta_orientativa": "La consulta y la verificación deben conservar el estado. Una decisión de retiro o restauración es explícita y auditada. Si las reglas actuales requieren una versión nueva para otra carga, el histórico no se corrige sobrescribiéndolo.",
+      "evidencia_o_actividad": "Anote el estado antes y después de una consulta autorizada; si cambia sin decisión, registre la incidencia."
+    },
+    {
+      "numero": 16,
+      "tema": "Cambio de fuente",
+      "pregunta": "¿Qué debe ocurrir al pasar de AdventureWorks a WideWorldImporters?",
+      "respuesta_orientativa": "Debe cambiar el contexto de fuente y seleccionarse un resultado de esa base. Filtros, ejecución y conversación anteriores no deben interpretarse como pertenecientes a la nueva fuente. Cambiar fuente no mezcla ni desactiva ambas conexiones.",
+      "evidencia_o_actividad": "Repita el recorrido de ida y vuelta y lea los identificadores del encabezado antes de copiar cifras."
+    },
+    {
+      "numero": 17,
+      "tema": "Permisos",
+      "pregunta": "¿Un menú visible concede permisos? ¿Qué puede hacer el Gerente comercial observado?",
+      "respuesta_orientativa": "FastAPI autoriza cada operación; el menú sólo refleja permisos. El rol observado puede consultar el panel, conexiones y metadatos y exportar análisis. Consultar metadatos ayuda al selector y permite el explorador; no da escritura, aprobación ni ETL. Una cuenta con varios roles puede acumular permisos.",
+      "evidencia_o_actividad": "Revise la matriz de roles. Si prueba una cuenta, registre su identidad de práctica y sus roles reales; no simule gerencia usando una sesión administrativa."
+    },
+    {
+      "numero": 18,
+      "tema": "Datos internos",
+      "pregunta": "¿Qué distingue una FK real de un enlace dentro de JSON o del datamart?",
+      "respuesta_orientativa": "La FK es una restricción del motor. Los documentos JSONB guardan diseños y evidencia y requieren validación de aplicación. En e21/e22 las dimensiones tienen PK, pero fact_ventas no tiene PK ni FK físicas; sus enlaces a dimensiones y etl_execution_id son lógicos. No dibuje restricciones inexistentes.",
+      "evidencia_o_actividad": "Explique una línea continua de app y una discontinua de los datamarts en los diagramas."
+    },
+    {
+      "numero": 19,
+      "tema": "Replicación",
+      "pregunta": "¿Una instalación limpia debe tener 83 tablas y las propuestas 129 y 131?",
+      "respuesta_orientativa": "No. Ese inventario describe historial acumulado local. La estructura inicial de app se crea con migraciones y las tablas analíticas aparecen al cargar. Las propuestas y ejecuciones reciben identificadores propios; los casos 129/21 y 131/22 son referencias de una instalación, no valores que haya que forzar.",
+      "evidencia_o_actividad": "Registre los identificadores propios y diferencie consulta histórica de ejecución nueva."
+    },
+    {
+      "numero": 20,
+      "tema": "Recuperación",
+      "pregunta": "¿Qué dice y hace si falla el proveedor frente al jurado?",
+      "respuesta_orientativa": "Conserva el mensaje, comprueba si la solicitud terminó y evita reenviarla mientras siga pendiente. No aprueba una respuesta inválida. Puede consultar evidencia histórica anunciándola como tal o continuar después con un proveedor autorizado y nueva revisión del destino. Un rechazo correcto no es una carga exitosa ni una prueba de que cualquier modelo funcionará.",
+      "evidencia_o_actividad": "Ensaye una explicación verbal de contingencia y complete un registro con estado real, sin secretos ni resultados inventados."
+    }
+  ],
+  "guiones_demostracion": [
+    {
+      "codigo": "G10",
+      "titulo": "Diez minutos: leer y explicar ventas como gerente",
+      "duracion_total_minutos": 10,
+      "estado": "Guion de aprendizaje propuesto; no ejecutado durante esta redacción.",
+      "proposito": "Explicar una decisión comercial con resultados de ambas fuentes, mostrando el contexto y sus límites.",
+      "requisitos": [
+        "Plataforma ya preparada, con acceso autorizado y datamarts conciliados físicamente disponibles de ambas fuentes. Esta ruta no parte de una aplicación vacía.",
+        "Identificar los expedientes de referencia disponibles o sus equivalentes comprobados. En la instalación documentada son AW 129/21 y WWI 131/22; en otra pueden cambiar.",
+        "Usar una cuenta de demostración con rol y permisos realmente asignados. La matriz observada describe el rol; este guion no acredita una prueba previa de login con esa cuenta.",
+        "Para chat nuevo, proveedor ya activo y probado y consumo autorizado. Conservar como respaldo archivos históricos revisados y rotulados con su fecha."
+      ],
+      "permisos_minimos": [
+        "analytics.dashboard.read",
+        "connections.read",
+        "metadata.read",
+        "reports.analytics.export"
+      ],
+      "alcance_de_acciones": "Consulta de datos conservados y, si se realiza, chat y exportación nuevos. No genera propuestas ni ejecuta ETL.",
+      "presupuestos_y_contingencia": {
+        "tiempo_total": "10 minutos de exposición; no garantiza disponibilidad del servicio externo.",
+        "intentos_chat_manuales": 1,
+        "espera_chat_dentro_del_bloque": "Como máximo el tiempo del bloque de dos minutos; no modificar el timeout técnico ni reenviar mientras siga pendiente.",
+        "alternativa": "Explicar la falla y consultar un archivo histórico identificado. Eso no completa una consulta de IA nueva."
+      },
+      "pasos": [
+        {
+          "numero": 1,
+          "intervalo_minutos": "0–1",
+          "duracion_maxima_guion_minutos": 1,
+          "accion": "Presente la decisión: comparar unidades y documentos dentro de cada fuente. Lea la cuenta y el contexto de trabajo.",
+          "resultado_que_debe_observar": "La audiencia entiende el propósito y sabe con qué rol real se trabaja.",
+          "evidencia_a_registrar": "Fuente y rol observados; indicar que los datos cargados son de un expediente conservado.",
+          "si_no_se_cumple": "Si sólo hay una sesión administrativa disponible, diga que usa administración para la lectura; no la presente como validación del rol gerente."
+        },
+        {
+          "numero": 2,
+          "intervalo_minutos": "1–3",
+          "duracion_maxima_guion_minutos": 2,
+          "accion": "Abra Analítica de ventas de AdventureWorks. Seleccione el expediente correcto y el filtro 2013/Northwest; espere que termine la actualización.",
+          "resultado_que_debe_observar": "En el caso histórico equivalente: 17.452 unidades y 2.053 pedidos; el importe se expresa como USD comprobado. Las tarjetas abreviadas se contrastan con su respaldo exacto.",
+          "evidencia_a_registrar": "Captura del contexto y al menos una cifra exacta. Referencia histórica: 6.015.174,74 USD; 2.929,94 USD por pedido.",
+          "si_no_se_cumple": "Si el alcance o la copia no coincide, no fuerce esas cifras. Registre la diferencia o limite la lectura a lo que realmente esté disponible."
+        },
+        {
+          "numero": 3,
+          "intervalo_minutos": "3–5",
+          "duracion_maxima_guion_minutos": 2,
+          "accion": "Cambie a WideWorldImporters y seleccione la ejecución de esa fuente. Aplique 2015/California y lea la unidad.",
+          "resultado_que_debe_observar": "En el caso histórico equivalente: 142.247 unidades y 1.179 facturas; 3.191.769,11 en moneda de origen y 2.707,18 por factura. El territorio procede de la ficha actual del comprador.",
+          "evidencia_a_registrar": "Fuente, ejecución y filtros nuevos. Señalar que pedido y factura son eventos distintos.",
+          "si_no_se_cumple": "Si sigue mostrando el contexto anterior al terminar la carga de pantalla, suspenda la conclusión y registre incidencia de aislamiento."
+        },
+        {
+          "numero": 4,
+          "intervalo_minutos": "5–7",
+          "duracion_maxima_guion_minutos": 2,
+          "accion": "Muestre una tabla de respaldo o exporte el alcance visible y abra el archivo. Explique por qué los datos no son una predicción ni demuestran utilidad.",
+          "resultado_que_debe_observar": "El archivo y la lectura tienen la misma fuente, ejecución, filtro, indicador y unidad.",
+          "evidencia_a_registrar": "Nombre del archivo realmente abierto y su contexto. Si utiliza un archivo anterior, indicarlo como histórico.",
+          "si_no_se_cumple": "Si no se puede exportar o abrir, marque el paso no completado. Una captura antigua no se anuncia como una exportación nueva."
+        },
+        {
+          "numero": 5,
+          "intervalo_minutos": "7–9",
+          "duracion_maxima_guion_minutos": 2,
+          "accion": "Haga una pregunta concreta al copiloto sobre WWI 2015/California. Lea Consulta interpretada y contraste una cifra con el panel.",
+          "resultado_que_debe_observar": "La explicación conserva alcance, denominador y cautelas; el texto no atribuye cobro, entrega efectiva ni causalidad no demostrada.",
+          "evidencia_a_registrar": "Pregunta, estado de respuesta y una comparación numérica. Puede usar la pregunta de referencia del caso WWI.",
+          "si_no_se_cumple": "Un intento manual. Si falla o permanece pendiente al terminar el bloque, registre el estado y explique la contingencia; el panel sigue siendo una evidencia independiente del chat."
+        },
+        {
+          "numero": 6,
+          "intervalo_minutos": "9–10",
+          "duracion_maxima_guion_minutos": 1,
+          "accion": "Cierre con una conclusión comercial acotada y un límite. Explique qué tendría que pedir al analista para otra pregunta.",
+          "resultado_que_debe_observar": "Se interpreta el dato observado sin afirmar aumento de ventas, moneda común o compatibilidad universal.",
+          "evidencia_a_registrar": "Conclusión breve y una limitación explícita.",
+          "si_no_se_cumple": "No convierta una impresión en un resultado medido ni sume importes de ambas fuentes."
+        }
+      ],
+      "criterios_de_cierre": [
+        "Se identificaron las dos fuentes y sus contextos.",
+        "Se contrastó al menos una cifra por fuente con su alcance.",
+        "Se diferenció una operación nueva de un expediente o archivo histórico.",
+        "Las fallas o pasos omitidos quedaron registrados con su estado real."
+      ]
+    },
+    {
+      "codigo": "G25",
+      "titulo": "Veinticinco minutos: construir y justificar un caso como analista",
+      "duracion_total_minutos": 25,
+      "estado": "Guion de aprendizaje propuesto; no ejecutado durante esta redacción.",
+      "proposito": "Recorrer un caso nuevo de una fuente, desde la lectura del esquema hasta la conciliación y su lectura analítica.",
+      "requisitos": [
+        "Administrador preparó conexiones, permisos y proveedor activo probado. El analista no necesita ni recibe claves técnicas para operar.",
+        "Elegir una sola fuente para la ejecución nueva. Repetir el mismo guion en otra sesión para la segunda; no prometer dos cargas nuevas dentro de 25 minutos.",
+        "Utilizar la necesidad avanzada de referencia de AW o WWI, con sus límites, o acordar un alcance sencillo explícito. Las cifras históricas sólo sirven si copia, filtros y contrato son equivalentes.",
+        "Disponer de permiso de generación, revisión, materialización, consulta y exportación; aceptar el envío al destino mostrado cuando el flujo lo solicite.",
+        "Tener un expediente histórico comprobado como respaldo, identificado como consulta y no como salida de la generación actual."
+      ],
+      "permisos_minimos": [
+        "analytics.dashboard.read",
+        "audit.read",
+        "connections.read",
+        "copilot.catalog.read",
+        "copilot.catalog.write",
+        "copilot.proposals.generate",
+        "copilot.proposals.read",
+        "copilot.proposals.review",
+        "etl.executions.read",
+        "etl.executions.write",
+        "metadata.read",
+        "metadata.refresh",
+        "metadata.semantic_resolution.manage",
+        "metadata.semantic_resolution.read",
+        "reports.analytics.export"
+      ],
+      "alcance_de_acciones": "Una generación y una carga nuevas de una fuente si superan sus controles; la consulta histórica es una alternativa de exposición y no reemplaza su resultado.",
+      "presupuestos_y_contingencia": {
+        "tiempo_total": "25 minutos de práctica guiada; las demoras de proveedor o carga pueden obligar a continuar en otra sesión.",
+        "generaciones_nuevas_planificadas": 1,
+        "reintentos_manuales": "Como máximo uno después de un error definitivo y si hay tiempo; nunca reenviar una operación pendiente.",
+        "regla_de_corte": "Al agotar el bloque, anotar estado, conservar evidencia y consultar el historial antes de decidir un nuevo intento. El reloj de la exposición no cambia el timeout del producto.",
+        "segunda_fuente": "Repetir el guion en otra sesión con su propio catálogo y metadatos. Las referencias de ambas fuentes se incluyen para preparar esa repetición."
+      },
+      "pasos": [
+        {
+          "numero": 1,
+          "intervalo_minutos": "0–2",
+          "duracion_maxima_guion_minutos": 2,
+          "accion": "Explique evento y grano. En el explorador compruebe fuente, instantánea, fecha de negocio y una relación relevante.",
+          "resultado_que_debe_observar": "El caso distingue línea de pedido o factura y conoce su procedencia.",
+          "evidencia_a_registrar": "Fuente, instantánea y relación elegida; no es necesario escribir SQL.",
+          "si_no_se_cumple": "Si la estructura no respalda una capacidad imprescindible, aclare el objetivo o detenga ese caso."
+        },
+        {
+          "numero": 2,
+          "intervalo_minutos": "2–4",
+          "duracion_maxima_guion_minutos": 2,
+          "accion": "Revise el catálogo propio y escriba la necesidad. Seleccione sólo las preguntas pertinentes y Mensual.",
+          "resultado_que_debe_observar": "Texto, preguntas y período representan el mismo propósito; no se restauran catálogos sólo para igualar una captura.",
+          "evidencia_a_registrar": "Objetivo definitivo y opciones seleccionadas.",
+          "si_no_se_cumple": "Si falta una orientación, revise con una persona autorizada. No copie relaciones de la otra base por parecido de nombres."
+        },
+        {
+          "numero": 3,
+          "intervalo_minutos": "4–8",
+          "duracion_maxima_guion_minutos": 4,
+          "accion": "Autorice el destino mostrado y revise la viabilidad. Abra la evidencia de requisitos directos o derivables; aclare las ambigüedades importantes.",
+          "resultado_que_debe_observar": "Existe una revisión vigente del texto y contexto definitivo. Aceptar un límite no fabrica una capacidad.",
+          "evidencia_a_registrar": "Estado de viabilidad, límites leídos y decisión humana.",
+          "si_no_se_cumple": "Si la IA cambia el propósito, conserve el texto original. Ante falla use el protocolo; no continúe como si la revisión hubiera terminado."
+        },
+        {
+          "numero": 4,
+          "intervalo_minutos": "8–12",
+          "duracion_maxima_guion_minutos": 4,
+          "accion": "Genere conceptos y propuesta. Revise las cinco etapas, los nombres descriptivos, las medidas y las rutas que preservan el grano.",
+          "resultado_que_debe_observar": "Contrato revisable que conserva el objetivo. En WWI se distingue comprador de destinatario de facturación y entrega de dirección postal.",
+          "evidencia_a_registrar": "Identificador propio de la propuesta, proveedor/modelo y aspectos comprobados.",
+          "si_no_se_cumple": "Si no aparece un contrato válido dentro del bloque, marque generación pendiente o bloqueada y pase a consultar un histórico anunciado. No lo apruebe para ahorrar tiempo."
+        },
+        {
+          "numero": 5,
+          "intervalo_minutos": "12–15",
+          "duracion_maxima_guion_minutos": 3,
+          "accion": "Personalice sólo decisiones permitidas y justifique el cambio si hace falta. Apruebe únicamente cuando no haya errores bloqueantes y comprenda las advertencias.",
+          "resultado_que_debe_observar": "La aprobación conserva una versión; una personalización crea otra ligada a su origen sin sobrescribirla.",
+          "evidencia_a_registrar": "Propuesta aprobada o motivo real de no aprobación; justificar las advertencias aceptadas.",
+          "si_no_se_cumple": "No marque advertencias a ciegas. Si el significado no se puede justificar, mantenga la propuesta sin aprobar."
+        },
+        {
+          "numero": 6,
+          "intervalo_minutos": "15–19",
+          "duracion_maxima_guion_minutos": 4,
+          "accion": "En Datamart de ventas elija esa propuesta, revise indicadores y denominadores, confirme el plan e inicie una sola carga.",
+          "resultado_que_debe_observar": "Se prepara y ejecuta un expediente propio. Generación, aprobación e inicio de carga son decisiones distintas.",
+          "evidencia_a_registrar": "Identificador de ejecución, estado y selección; registrar hora sin reenviar por una respuesta lenta.",
+          "si_no_se_cumple": "Si la pantalla pierde respuesta, consulte el expediente antes de repetir. Si sigue en curso al terminar el bloque, no anuncie carga completada."
+        },
+        {
+          "numero": 7,
+          "intervalo_minutos": "19–22",
+          "duracion_maxima_guion_minutos": 3,
+          "accion": "Revise conciliación, cobertura y estado de publicación. Abra el panel con esa ejecución y aplique el filtro de contraste.",
+          "resultado_que_debe_observar": "Filas y cálculos se contrastan con el mismo universo; no basta que se vea un gráfico. Moneda y fecha tienen fundamento.",
+          "evidencia_a_registrar": "Resultado de conciliación y al menos una suma, conteo distinto y razón si existen en la selección.",
+          "si_no_se_cumple": "Si hay diferencias sin explicar, el resultado no se declara aprobado. Un filtro nuevo se compara con su propio denominador."
+        },
+        {
+          "numero": 8,
+          "intervalo_minutos": "22–24",
+          "duracion_maxima_guion_minutos": 2,
+          "accion": "Pida una explicación breve al copiloto y, si el tiempo lo permite, exporte y abra el archivo con el mismo alcance.",
+          "resultado_que_debe_observar": "Se revisa la interpretación y una cifra; sólo se marca lo que realmente se obtuvo y abrió.",
+          "evidencia_a_registrar": "Respuesta o error del chat; archivo y contexto comprobados, o paso no ejecutado.",
+          "si_no_se_cumple": "Cuando no alcance el tiempo, registre el paso pendiente para otra práctica; no use un archivo histórico como si fuera una descarga nueva."
+        },
+        {
+          "numero": 9,
+          "intervalo_minutos": "24–25",
+          "duracion_maxima_guion_minutos": 1,
+          "accion": "Explique quién propuso, quién validó, quién aprobó y qué cálculo respalda la conclusión. Complete el registro.",
+          "resultado_que_debe_observar": "La persona puede defender el caso con evidencia y sus límites.",
+          "evidencia_a_registrar": "Conclusión, estado de cada etapa y siguiente paso.",
+          "si_no_se_cumple": "Si se usó la contingencia histórica, separar claramente la ejecución nueva incompleta del resultado conservado."
+        }
+      ],
+      "criterios_de_cierre": [
+        "Objetivo, evento, grano y fuente conservados.",
+        "Aprobación y carga identificadas de forma separada.",
+        "Conciliación y contexto numérico revisados antes de concluir.",
+        "Ninguna propuesta inválida fue aprobada para cumplir el tiempo.",
+        "Las etapas que no terminaron se registran y no se convierten en éxitos por la existencia de un histórico."
+      ]
+    },
+    {
+      "codigo": "G60",
+      "titulo": "Sesenta minutos: empezar en una aplicación limpia y aprender el recorrido",
+      "duracion_total_minutos": 60,
+      "estado": "Guion de aprendizaje propuesto; no ejecutado durante esta redacción.",
+      "proposito": "Configurar desde la web un entorno de práctica ya instalado y realizar dos ejercicios básicos, uno por fuente, registrando el resultado real de cada etapa.",
+      "requisitos": [
+        "La infraestructura ya fue levantada por el responsable: aplicación accesible, contenedores saludables, migraciones y administrador inicial disponibles y las dos bases demostrativas restauradas. No se instalan ni se eliminan contenedores en este guion.",
+        "Usar una instancia de práctica limpia dispuesta por el responsable. No borrar una instalación con trabajo anterior para simular limpieza.",
+        "Tener acceso administrativo autorizado y, por un canal privado, credenciales de lectura de ambas fuentes y una credencial de IA propia autorizada cuando corresponda. No escribirlas en el manual ni en la hoja de práctica.",
+        "Acordar un presupuesto de consumo y tiempo. Las dos rutas básicas son ejercicios propuestos; su repetición no se presenta como ya realizada por este manual.",
+        "Conservar las necesidades de referencia y la hoja de registro. Los IDs de las nuevas propuestas y ejecuciones serán los que genere esta instalación."
+      ],
+      "permisos_minimos": [
+        "Cuenta administrativa autorizada para configurar. Verificar después permisos de las cuentas de práctica; no suponer que crear un rol también crea una cuenta o la asigna."
+      ],
+      "alcance_de_acciones": "Configuración funcional desde la web y dos ejecuciones básicas nuevas condicionadas a sus controles. Sin instalación, parada, limpieza ni migración de infraestructura durante la práctica.",
+      "presupuestos_y_contingencia": {
+        "tiempo_total": "60 minutos de aprendizaje. Es una agenda orientativa, no una garantía de duración del proveedor o de las cargas.",
+        "dos_fuentes": "Doce minutos de trabajo guiado por fuente; ampliar a otra sesión cuando una fase siga pendiente.",
+        "reintentos_manuales": "Máximo uno tras un error definitivo dentro del bloque; no repetir una carga en curso ni consumir cuota para forzar un caso.",
+        "si_falta_IA": "Completar preparación, catálogo, esquema, roles y explicación. Registrar las generaciones como no ejecutadas y retomarlas cuando haya un destino autorizado utilizable."
+      },
+      "pasos": [
+        {
+          "numero": 1,
+          "intervalo_minutos": "0–4",
+          "duracion_maxima_guion_minutos": 4,
+          "accion": "Abra Inicio e identifique lo que falta. Explique navegador, servidor, SQL Server de origen y PostgreSQL de configuración y resultados.",
+          "resultado_que_debe_observar": "Se reconoce una aplicación preparada para configurar, no un panel de ventas ya cargado.",
+          "evidencia_a_registrar": "Estado inicial, entorno y rol real. Explicar que las 83 tablas del inventario histórico no son un requisito del portable limpio.",
+          "si_no_se_cumple": "Si no inicia sesión o la aplicación no está disponible, registrar bloqueo y volver con el responsable de infraestructura; no gastar la sesión inventando resultados."
+        },
+        {
+          "numero": 2,
+          "intervalo_minutos": "4–12",
+          "duracion_maxima_guion_minutos": 8,
+          "accion": "Registre, pruebe y habilite cada fuente con sus datos privados. Capture metadatos de AW y WWI y observe que cada explorador cambia con el selector.",
+          "resultado_que_debe_observar": "Dos conexiones de solo lectura identificadas y sus instantáneas propias; obtener metadatos no extrae ventas.",
+          "evidencia_a_registrar": "Nombre de base, conector y resultado de prueba; no guardar contraseña ni nombre técnico de usuario en una captura.",
+          "si_no_se_cumple": "Si una prueba no confirma lectura autorizada, no habilitar por omisión ni usar una cuenta administrativa de SQL para saltar el control."
+        },
+        {
+          "numero": 3,
+          "intervalo_minutos": "12–18",
+          "duracion_maxima_guion_minutos": 6,
+          "accion": "Configure el proveedor y modelo acordados, registre la credencial de manera privada si hace falta y ejecute su prueba.",
+          "resultado_que_debe_observar": "Proveedor probado con credencial configurada, sin mostrar su valor. Configurar un proveedor no valida todavía cada propuesta que produzca.",
+          "evidencia_a_registrar": "Proveedor/modelo y resultado de prueba sin secretos; registro de consumo sólo si se informa realmente.",
+          "si_no_se_cumple": "Si no hay cuota o conectividad, registrar la limitación y continuar con esquema, catálogo y explicación del flujo. Una práctica sin proveedor utilizable no se declara ciclo BI completo."
+        },
+        {
+          "numero": 4,
+          "intervalo_minutos": "18–24",
+          "duracion_maxima_guion_minutos": 6,
+          "accion": "Abra el catálogo de cada fuente. Lea las cuatro orientaciones base y elija tiempo y producto para las rutas básicas. Revise las periodicidades.",
+          "resultado_que_debe_observar": "Preguntas y períodos pertenecen a cada conexión. El catálogo no fija por adelantado el hecho y las dimensiones ni se genera automáticamente con una llamada de IA.",
+          "evidencia_a_registrar": "Etiquetas e instrucciones utilizadas y Mensual habilitado por fuente.",
+          "si_no_se_cumple": "No pulsar Restaurar catálogo si se quieren conservar cambios. No copiar las preguntas de costos a otra base sin comprobar su sentido."
+        },
+        {
+          "numero": 5,
+          "intervalo_minutos": "24–29",
+          "duracion_maxima_guion_minutos": 5,
+          "accion": "Revise roles y permisos con la matriz. Si el ejercicio incluye crearlos, prepare Analista BI y Gerente comercial y asigne sólo cuentas de práctica autorizadas.",
+          "resultado_que_debe_observar": "Se distingue crear un rol, asignarle permisos y asociarlo a una cuenta. Gerencia puede leer y exportar, sin aprobar o ejecutar ETL.",
+          "evidencia_a_registrar": "Definiciones y asignaciones realizadas o paso no ejecutado. Registrar aparte cualquier prueba de login realmente realizada.",
+          "si_no_se_cumple": "Si sigue usando la cuenta administrativa, indicarlo. Revisar definiciones no acredita haber operado toda la plataforma como analista o gerente."
+        },
+        {
+          "numero": 6,
+          "intervalo_minutos": "29–41",
+          "duracion_maxima_guion_minutos": 12,
+          "accion": "En AdventureWorks utilice la necesidad básica de unidades por producto y mes. Revise viabilidad, conceptos y modelo; apruebe sólo lo válido, confirme la carga y revise conciliación.",
+          "resultado_que_debe_observar": "Un caso propio de línea de pedido y unidades. El proveedor puede proponer otras etiquetas; se revisan significado y receta, no una captura idéntica.",
+          "evidencia_a_registrar": "Texto usado, instantánea, propuesta, ejecución, avisos comprendidos y resultado de conciliación, o la etapa precisa donde se interrumpió.",
+          "si_no_se_cumple": "Si falla un control, detener ese caso y registrarlo. No sustituir el diseño por SQL libre ni completar a mano la hoja con las cifras de referencia."
+        },
+        {
+          "numero": 7,
+          "intervalo_minutos": "41–53",
+          "duracion_maxima_guion_minutos": 12,
+          "accion": "Cambie a WideWorldImporters y repita el recorrido básico de unidades por producto y mes, conservando línea de factura y fecha de emisión.",
+          "resultado_que_debe_observar": "Segundo caso con contexto propio. No reutiliza las claves de AW ni afirma cobro, margen, moneda o entrega efectiva.",
+          "evidencia_a_registrar": "Los identificadores propios de WWI y el resultado de cada control; contraste entre ambos eventos.",
+          "si_no_se_cumple": "Si no alcanza el tiempo o el proveedor falla, dejar la etapa como pendiente o bloqueada y continuar en otra sesión. No completar una carga ficticia para cerrar la hora."
+        },
+        {
+          "numero": 8,
+          "intervalo_minutos": "53–58",
+          "duracion_maxima_guion_minutos": 5,
+          "accion": "Consulte los resultados que sí quedaron conciliados. Cambie de fuente, aplique un filtro, compruebe una cifra y formule una pregunta breve al copiloto. Abra una exportación si se realizó.",
+          "resultado_que_debe_observar": "Se entiende el alcance de los datos propios. La referencia de 274.914 unidades AW o 8.950.628 WWI sólo sirve si la copia y selección equivalen al histórico y la conciliación lo confirma.",
+          "evidencia_a_registrar": "Fuente, filtros, cálculo propio y respuesta o fallo del chat. Archivos realmente abiertos con su contexto.",
+          "si_no_se_cumple": "No compare como equivalentes dos eventos o monedas diferentes. Si sólo una fuente quedó completada, describa ese resultado parcial."
+        },
+        {
+          "numero": 9,
+          "intervalo_minutos": "58–60",
+          "duracion_maxima_guion_minutos": 2,
+          "accion": "Complete la hoja y responda qué hizo la IA, qué controló el servidor y qué aprobó una persona. Elija la próxima práctica.",
+          "resultado_que_debe_observar": "Queda una bitácora reproducible con avances, límites e incidencias, incluso si no concluyeron las dos cargas.",
+          "evidencia_a_registrar": "Estado de cada fuente y tareas pendientes específicas.",
+          "si_no_se_cumple": "No calificar todo el recorrido como exitoso si falta evidencia de alguna etapa."
+        }
+      ],
+      "criterios_de_cierre": [
+        "Las fuentes e instantáneas se mantuvieron separadas.",
+        "Cada generación/carga realizada tiene contexto e identificadores propios.",
+        "Se registró cuál de los dos ejercicios terminó y cuál no.",
+        "La configuración de roles se distinguió de una prueba de sesión por perfil.",
+        "No se usaron números del histórico como resultados obtenidos de una instalación limpia."
+      ],
+      "textos_basicos_para_copiar": [
+        {
+          "fuente": "AdventureWorks 2022",
+          "texto": "Conservar cada línea de pedido de venta para comparar mensualmente la suma de unidades por producto. Usar la fecha del pedido y un nombre de producto comprobable. Mantener la referencia de cada línea a su pedido. Limitar esta práctica al total de unidades y su evolución; no interpretar estos registros como facturas, cobros o pronósticos.",
+          "estado": "Ejercicio nuevo propuesto; resultado propio pendiente de ejecución."
+        },
+        {
+          "fuente": "WideWorldImporters",
+          "texto": "Conservar cada línea de factura para comparar mensualmente la suma de unidades facturadas por producto. Usar la fecha de emisión y el producto con nombre verificable. Mantener el identificador de factura y el de línea para conservar la trazabilidad. Limitar la práctica a unidades y evolución; no afirmar moneda, cobro, utilidad ni entrega realizada.",
+          "estado": "Ejercicio nuevo propuesto; resultado propio pendiente de ejecución."
+        }
+      ]
+    }
+  ],
+  "protocolo_ante_fallos": [
+    {
+      "situacion": "Respuesta de IA pendiente o demasiado lenta",
+      "accion": "Conservar la pantalla y el contexto. No pulsar varias veces. Si termina el tiempo del bloque, anotar pendiente y comprobar historial antes de reintentar.",
+      "no_declarar": "No decir que se generó, aprobó o cargó algo sin el comprobante correspondiente."
+    },
+    {
+      "situacion": "El proveedor informa cuota, capacidad o conectividad insuficiente",
+      "accion": "Registrar el mensaje y la etapa. Una persona autorizada puede revisar la configuración o acordar otro proveedor; si cambia el destino, revisar su prueba y autorización de envío.",
+      "no_declarar": "No cambiar silenciosamente de modelo ni atribuir éxito a un intento interrumpido."
+    },
+    {
+      "situacion": "La respuesta no cumple el formato o contrato",
+      "accion": "Aceptar el rechazo de la plataforma; revisar la solicitud o hacer un único reintento manual si el error es definitivo y queda tiempo.",
+      "no_declarar": "No pegar una respuesta inválida a mano ni desactivar validaciones para continuar."
+    },
+    {
+      "situacion": "La propuesta cambia el objetivo, evento o rol de una relación",
+      "accion": "Mantener el propósito original, aclarar la ambigüedad y revisar una versión nueva cuando corresponda. Si no puede justificarse, no aprobar.",
+      "no_declarar": "No afirmar que una FK válida demuestra por sí sola la interpretación comercial."
+    },
+    {
+      "situacion": "Advertencia o requisito no disponible",
+      "accion": "Leer la limitación y decidir si el alcance restante sigue siendo útil. Si falta un requisito esencial, corregir la necesidad.",
+      "no_declarar": "Aceptar el aviso no hace que exista la capacidad ausente."
+    },
+    {
+      "situacion": "Se pierde la respuesta durante una carga",
+      "accion": "Recuperar el expediente y leer su estado antes de iniciar cualquier otra operación. Registrar si terminó, falló o sigue en curso.",
+      "no_declarar": "No reenviar por reflejo ni anunciar conciliación por el mero paso del tiempo."
+    },
+    {
+      "situacion": "Hay diferencia numérica, fuente equivocada o denominador incoherente",
+      "accion": "Suspender la conclusión, guardar contexto y comparar universos equivalentes. Registrar esperado y obtenido sin alterar filas ni la evidencia anterior.",
+      "no_declarar": "No ajustar las cifras para que coincidan con la guía ni sumar monedas sin evidencia."
+    },
+    {
+      "situacion": "Se muestra una explicación o un archivo histórico como respaldo",
+      "accion": "Anunciar fuente, fecha, propuesta y ejecución histórica. Separarlo del estado del intento nuevo.",
+      "no_declarar": "Un respaldo histórico no prueba que la operación nueva se completó."
+    },
+    {
+      "situacion": "El rol no tiene permiso o no aparece una opción",
+      "accion": "Pedir revisión a administración y registrar el permiso faltante. Continuar sólo las operaciones autorizadas.",
+      "no_declarar": "No presentar una sesión administrativa como prueba de un perfil con menos permisos."
+    },
+    {
+      "situacion": "El chat explica algo que las cifras no sostienen",
+      "accion": "Conservar pregunta, interpretación, evidencia, respuesta y filtros. Contrastar números y cautelas antes de usar la narración.",
+      "no_declarar": "Una frase fluida no demuestra causalidad, rentabilidad, pronóstico o precisión universal."
+    }
+  ],
+  "rubrica_20_puntos": {
+    "titulo": "Rúbrica de aprendizaje: veinte puntos",
+    "uso": "Guía orientativa para autoevaluación o acompañamiento docente; no es un instrumento validado de usabilidad ni una medición de la eficacia del producto.",
+    "puntuacion_maxima": 20,
+    "criterios": [
+      {
+        "criterio": "Comprender la decisión comercial",
+        "maximo": 4,
+        "evidencia": "Explica evento, grano, indicadores, unidades y comparación sin confundir pedido, factura o cobro."
+      },
+      {
+        "criterio": "Preparar el contexto de cada fuente",
+        "maximo": 4,
+        "evidencia": "Distingue conexión, instantánea y catálogo; conserva sus identidades y usa preguntas y período apropiados."
+      },
+      {
+        "criterio": "Supervisar y recuperar con criterio",
+        "maximo": 4,
+        "evidencia": "Distingue IA, reglas y decisión humana; revisa advertencias, no aprueba errores y registra con honestidad una interrupción."
+      },
+      {
+        "criterio": "Comprobar e interpretar los resultados",
+        "maximo": 4,
+        "evidencia": "Contrasta conciliación, filtros, moneda, sumas, documentos distintos y denominadores de una razón; o explica correctamente qué control no pudo ejecutar."
+      },
+      {
+        "criterio": "Cuidar acceso, evidencia y comunicación",
+        "maximo": 4,
+        "evidencia": "Trabaja con la identidad autorizada, evita exponer secretos y presenta contexto, archivos y procedencia sin confundir lo histórico con lo nuevo."
+      }
+    ],
+    "escala": [
+      {
+        "puntos": 4,
+        "descripcion": "Lo realiza o explica con autonomía, evidencia suficiente y sin errores sustantivos."
+      },
+      {
+        "puntos": 3,
+        "descripcion": "Lo realiza de forma correcta con una aclaración menor."
+      },
+      {
+        "puntos": 2,
+        "descripcion": "Comprensión parcial; necesita apoyo para completar o justificar una decisión."
+      },
+      {
+        "puntos": 1,
+        "descripcion": "Reconoce parte del concepto, pero requiere acompañamiento continuo."
+      },
+      {
+        "puntos": 0,
+        "descripcion": "No presenta evidencia de aprendizaje o mantiene una interpretación incorrecta después de revisarla."
+      }
+    ],
+    "criterios_no_observados": "Marcar No evaluado cuando no hubo oportunidad de observar el criterio. No asignar cuatro puntos por un paso no realizado ni publicar un total sobre veinte como si todos se hubieran evaluado. Puede registrarse por separado una explicación verbal correcta y una operación bloqueada.",
+    "interpretacion": "Con los cinco criterios evaluados, dieciséis puntos o más puede utilizarse como orientación para repetir el caso con menor ayuda. El umbral es didáctico y no representa una validación estadística del producto.",
+    "condiciones_criticas": [
+      "Exponer una credencial, aprobar una propuesta con error no resuelto, mezclar deliberadamente fuentes/monedas o declarar una carga inexistente requiere detener y corregir la práctica, aunque la suma de otros criterios sea alta.",
+      "Un fallo externo de cuota no se convierte en una falta de aprendizaje si se interpreta y registra correctamente; la operación continúa como bloqueada o no ejecutada, sin calificarse como ciclo funcional terminado."
+    ]
+  },
+  "hoja_registro_en_blanco": {
+    "titulo": "Hoja de registro de una práctica nueva",
+    "instrucciones": [
+      "Copiar una hoja por fuente y ejecución. Completar el resultado esperado antes de ejecutar y el obtenido después.",
+      "Dejar sin valor lo que no se obtuvo y marcar su estado. No copiar las cifras históricas en la columna de resultado obtenido.",
+      "Usar alias de práctica y el rol real; no escribir contraseñas, API keys, tokens ni datos personales innecesarios."
+    ],
+    "contexto": {
+      "fecha_y_hora": "",
+      "participante_o_alias": "",
+      "persona_que_acompana": "",
+      "objetivo_de_aprendizaje": "",
+      "tipo_de_actividad": "",
+      "entorno_o_version_visible": "",
+      "rol_y_permisos_reales": "",
+      "fuente_y_base": "",
+      "conexion_local": "",
+      "instantanea_local": "",
+      "proveedor_modelo_si_se_usa": "",
+      "destino_de_envio_autorizado": "",
+      "necesidad_textual": "",
+      "preguntas_de_catalogo": "",
+      "periodicidad": "",
+      "evento_y_grano": "",
+      "indicadores_y_unidades": "",
+      "limitaciones_aceptadas_y_motivo": "",
+      "propuesta_local": "",
+      "propuesta_origen_si_hay_derivacion": "",
+      "estado_de_revision": "",
+      "ejecucion_local": "",
+      "estado_de_ejecucion": "",
+      "contexto_del_filtro": "",
+      "formula_y_denominador_a_comprobar": "",
+      "resultado_esperado_y_fuente_del_criterio": "",
+      "resultado_obtenido": "",
+      "diferencia_y_explicacion": "",
+      "archivo_o_captura_sin_secretos": "",
+      "naturaleza_y_fecha_de_la_evidencia": "",
+      "incidencia_y_recuperacion": "",
+      "pasos_no_ejecutados_o_pendientes": "",
+      "conclusion_con_limites": "",
+      "proxima_accion": ""
+    },
+    "opciones_tipo_actividad": [
+      "Consulta de expediente histórico",
+      "Generación y ejecución nuevas",
+      "Ejercicio propuesto aún no ejecutado",
+      "Prueba de acceso bajo un perfil realmente autenticado"
+    ],
+    "opciones_estado": [
+      "No ejecutado",
+      "En curso",
+      "Terminado y comprobado para el alcance indicado",
+      "Rechazo esperado observado",
+      "Bloqueado por proveedor",
+      "Bloqueado por permisos o preparación",
+      "Interrumpido",
+      "Resultado inconsistente por revisar"
+    ],
+    "tabla_comprobaciones": {
+      "columnas": [
+        "Etapa o indicador",
+        "Fuente/propuesta/ejecución y filtros",
+        "Fórmula o criterio esperado",
+        "Resultado esperado antes de ejecutar",
+        "Resultado obtenido",
+        "Estado",
+        "Evidencia"
+      ],
+      "filas": [
+        {
+          "etapa_o_indicador": "Viabilidad de la necesidad",
+          "contexto": "",
+          "formula_o_criterio": "",
+          "esperado": "",
+          "obtenido": "",
+          "estado": "",
+          "evidencia": ""
+        },
+        {
+          "etapa_o_indicador": "Contrato y revisión humana",
+          "contexto": "",
+          "formula_o_criterio": "",
+          "esperado": "",
+          "obtenido": "",
+          "estado": "",
+          "evidencia": ""
+        },
+        {
+          "etapa_o_indicador": "Preparación y ejecución de carga",
+          "contexto": "",
+          "formula_o_criterio": "",
+          "esperado": "",
+          "obtenido": "",
+          "estado": "",
+          "evidencia": ""
+        },
+        {
+          "etapa_o_indicador": "Conciliación de filas e importes",
+          "contexto": "",
+          "formula_o_criterio": "",
+          "esperado": "",
+          "obtenido": "",
+          "estado": "",
+          "evidencia": ""
+        },
+        {
+          "etapa_o_indicador": "Panel y filtro",
+          "contexto": "",
+          "formula_o_criterio": "",
+          "esperado": "",
+          "obtenido": "",
+          "estado": "",
+          "evidencia": ""
+        },
+        {
+          "etapa_o_indicador": "Conteo distinto y razón, si aplican",
+          "contexto": "",
+          "formula_o_criterio": "",
+          "esperado": "",
+          "obtenido": "",
+          "estado": "",
+          "evidencia": ""
+        },
+        {
+          "etapa_o_indicador": "Copiloto y cautelas",
+          "contexto": "",
+          "formula_o_criterio": "",
+          "esperado": "",
+          "obtenido": "",
+          "estado": "",
+          "evidencia": ""
+        },
+        {
+          "etapa_o_indicador": "Exportación abierta",
+          "contexto": "",
+          "formula_o_criterio": "",
+          "esperado": "",
+          "obtenido": "",
+          "estado": "",
+          "evidencia": ""
+        },
+        {
+          "etapa_o_indicador": "Acceso con el rol de práctica",
+          "contexto": "",
+          "formula_o_criterio": "",
+          "esperado": "",
+          "obtenido": "",
+          "estado": "",
+          "evidencia": ""
+        }
+      ]
+    },
+    "tabla_rubrica": {
+      "columnas": [
+        "Criterio",
+        "Puntuación 0–4 o No evaluado",
+        "Evidencia o apoyo requerido"
+      ],
+      "filas": [
+        {
+          "criterio": "Comprender la decisión comercial",
+          "puntuacion": "",
+          "evidencia": ""
+        },
+        {
+          "criterio": "Preparar el contexto de cada fuente",
+          "puntuacion": "",
+          "evidencia": ""
+        },
+        {
+          "criterio": "Supervisar y recuperar con criterio",
+          "puntuacion": "",
+          "evidencia": ""
+        },
+        {
+          "criterio": "Comprobar e interpretar los resultados",
+          "puntuacion": "",
+          "evidencia": ""
+        },
+        {
+          "criterio": "Cuidar acceso, evidencia y comunicación",
+          "puntuacion": "",
+          "evidencia": ""
+        }
+      ]
+    },
+    "cierre": "Un registro con fases bloqueadas o no ejecutadas sigue siendo útil si permite reconocer qué se hizo y qué falta. No demuestra un ciclo completo hasta contar con sus evidencias."
+  },
+  "referencias_historicas": [
+    {
+      "fuente": "AdventureWorks 2022",
+      "necesidad_de_referencia": "Conservar cada línea de pedido de venta en un datamart. Para priorizar productos y territorios, comparar mensualmente cuatro indicadores: suma del importe registrado de las líneas, suma de unidades, conteo de identificadores de pedido distintos e importe total dividido entre pedidos distintos. Usar fecha y territorio comercial del pedido, producto y cliente con nombre verificable. Los rankings comparan sumas por entidad. Mantener la trazabilidad de cada línea al pedido. La moneda se reportará sólo si se comprueba en la fuente.",
+      "fecha_evidencia": "2026-11-06",
+      "propuesta_local": 129,
+      "ejecucion_local": 21,
+      "grano": "Línea de pedido",
+      "filas_origen": 121317,
+      "filas_destino": 121317,
+      "diferencia_filas": 0,
+      "global": {
+        "importe_exacto": "109846381.399888",
+        "moneda": "USD comprobado",
+        "unidades": 274914,
+        "pedidos_distintos": 31465,
+        "importe_por_pedido_exacto": "3491.065672966407"
+      },
+      "filtro": {
+        "anio": 2013,
+        "territorio": "Northwest",
+        "importe_exacto": "6015174.735836",
+        "unidades": 17452,
+        "pedidos_distintos": 2053,
+        "importe_por_pedido_exacto": "2929.943855740867",
+        "mes_mayor_unidades": "junio de 2013",
+        "unidades_mes_lider": 2494
+      },
+      "pregunta_chat": "Resume las unidades vendidas en 2013 para Northwest. Indica el total y el mes con mayor cantidad, sin atribuir causas ni mezclar importes.",
+      "alcance": "Evidencia histórica comprobada en esa campaña. No es un resultado nuevo obtenido al redactar este material ni el contenido garantizado de un portable limpio."
+    },
+    {
+      "fuente": "WideWorldImporters",
+      "necesidad_de_referencia": "Diseñar un datamart cuyo grano físico sea una línea de factura. Sobre ese detalle, resumir mensualmente el importe registrado de la línea, las unidades y las facturas distintas por producto y cliente. Usar la fecha de emisión. Para el territorio, usar la provincia de la ciudad de entrega registrada en la ficha del cliente y aclarar que no representa necesariamente su ubicación histórica. Conservar el importe de origen sin asumir moneda, utilidad ni composición fiscal. Limitar los indicadores a importe total, unidades totales, facturas distintas e importe promedio por factura. Los rankings deben comparar totales por producto; el máximo de una sola línea no identifica al producto líder.",
+      "fecha_evidencia": "2026-11-06",
+      "propuesta_local": 131,
+      "ejecucion_local": 22,
+      "grano": "Línea de factura",
+      "filas_origen": 228265,
+      "filas_destino": 228265,
+      "diferencia_filas": 0,
+      "global": {
+        "importe_exacto": "198043439.45",
+        "moneda": "moneda de origen; sin código único demostrado",
+        "unidades": 8950628,
+        "facturas_distintas": 70510,
+        "importe_por_factura_exacto": "2808.7283995177986"
+      },
+      "filtro": {
+        "anio": 2015,
+        "territorio": "California",
+        "lineas": 3771,
+        "importe_exacto": "3191769.11",
+        "unidades": 142247,
+        "facturas_distintas": 1179,
+        "importe_por_factura_exacto": "2707.1832994062765"
+      },
+      "pregunta_chat": "Resume el importe, las unidades y las facturas distintas en 2015 para California. Explica el denominador del importe por factura y qué significa la provincia usada, sin asumir moneda ni entrega realizada.",
+      "alcance": "Evidencia histórica comprobada en esa campaña. No es un resultado nuevo obtenido al redactar este material ni el contenido garantizado de un portable limpio."
+    }
+  ],
+  "secciones": [
+    {
+      "codigo": "AP01",
+      "titulo": "Preguntas para explicarlo con sus propias palabras",
+      "objetivo_de_aprendizaje": "Defender el propósito y las decisiones del sistema sin memorizar frases.",
+      "introduccion": [
+        "Conteste primero sin mirar la respuesta; luego señale una pantalla, cálculo o diagrama que sostenga su explicación. Las respuestas son orientativas y deben relacionarse con el contexto realmente observado."
+      ],
+      "autoevaluacion": [
+        {
+          "numero": 1,
+          "tema": "Propósito",
+          "pregunta": "¿Qué problema atiende el proyecto y cómo demostraría que lo atiende?",
+          "respuesta_orientativa": "Ayuda a relacionar una necesidad comercial con fuentes, grano y cálculos verificables mediante un recorrido supervisado. Se demuestra siguiendo un caso y contrastando sus resultados. Que funcione no demuestra que aumente ventas ni que sea más rápido que otro método; esa comparación exigiría mediciones equivalentes.",
+          "evidencia_o_actividad": "Explique una decisión comercial y señale propuesta, ejecución y conciliación del caso correspondiente."
+        },
+        {
+          "numero": 2,
+          "tema": "Detalle y documentos",
+          "pregunta": "Si un pedido tiene tres líneas, ¿cuántas filas del hecho y cuántos pedidos distintos representa?",
+          "respuesta_orientativa": "A grano de línea son tres filas y un pedido distinto. Contar filas o sumar el identificador del pedido no da la cantidad de pedidos.",
+          "evidencia_o_actividad": "Dibuje un pedido con tres productos y escriba ambos conteos."
+        },
+        {
+          "numero": 3,
+          "tema": "Tiempo",
+          "pregunta": "¿Elegir Mensual cambia el detalle físico o programa una carga mensual?",
+          "respuesta_orientativa": "Mensual indica cómo agrupar el análisis. Las filas pueden seguir siendo líneas de pedido o factura y la carga se confirma por separado. No significa que exista un programador automático.",
+          "evidencia_o_actividad": "Compare el grano declarado en la propuesta con la agrupación temporal del panel."
+        },
+        {
+          "numero": 4,
+          "tema": "Metadatos",
+          "pregunta": "¿Qué aprende la IA al recibir metadatos y qué todavía no está demostrado?",
+          "respuesta_orientativa": "Recibe estructura autorizada: nombres, tipos, claves y relaciones. Esto puede respaldar una ruta o receta, pero no prueba que los valores estén completos, que un costo sea histórico o que una dirección represente una entrega realizada.",
+          "evidencia_o_actividad": "Abra una tabla y una relación del explorador; explique su alcance sin consultar filas de ventas."
+        },
+        {
+          "numero": 5,
+          "tema": "Catálogo",
+          "pregunta": "¿La IA arma por sí sola el catálogo de preguntas y lo copia a todas las bases?",
+          "respuesta_orientativa": "El perfil del producto aporta cuatro orientaciones base; la persona autorizada administra preguntas y periodicidades por conexión y dominio. Las dos preguntas de costos de AdventureWorks fueron adiciones humanas históricas. Las sugerencias de necesidades del asistente no sustituyen automáticamente ese catálogo.",
+          "evidencia_o_actividad": "Compare ambos catálogos y justifique una pregunta apropiada para cada fuente."
+        },
+        {
+          "numero": 6,
+          "tema": "Viabilidad",
+          "pregunta": "¿Qué haría con un requisito marcado como derivable?",
+          "respuesta_orientativa": "Leer si depende de una relación declarada o de una fórmula controlada, comprobar sus entradas y conservar el grano. Una explicación candidata de IA no se convierte por sí sola en cálculo ejecutable. Si falta una decisión de negocio, hay que aclararla antes de aprobar.",
+          "evidencia_o_actividad": "Explique una derivación posible y sus entradas; no escriba SQL libre para quitar el aviso."
+        },
+        {
+          "numero": 7,
+          "tema": "Límites",
+          "pregunta": "¿Que la necesidad tenga respaldo estructural garantiza que la propuesta se genere correctamente?",
+          "respuesta_orientativa": "No. La revisión de viabilidad y la generación son controles distintos. El proveedor puede fallar en formato, cuota o interpretación. Aceptar una limitación tampoco crea datos ausentes ni elimina los errores bloqueantes.",
+          "evidencia_o_actividad": "Distinga una revisión válida de una generación rechazada y registre cada estado por separado."
+        },
+        {
+          "numero": 8,
+          "tema": "IA y supervisión",
+          "pregunta": "¿Qué hacen la IA, la plataforma y la persona en el mismo caso?",
+          "respuesta_orientativa": "La IA puede sugerir, interpretar y explicar. La plataforma valida referencias y contratos, construye consultas controladas y calcula. La persona define el propósito, resuelve ambigüedades, aprueba el diseño, confirma la carga y revisa el resultado.",
+          "evidencia_o_actividad": "Señale una acción concreta de cada participante en el asistente y en el panel."
+        },
+        {
+          "numero": 9,
+          "tema": "Evento comercial",
+          "pregunta": "¿Puede llamar facturas, cobros o utilidades a las cifras de un datamart de pedidos?",
+          "respuesta_orientativa": "Debe conservar el evento demostrado. Un pedido no prueba facturación ni cobro; un importe de venta no prueba utilidad. En WideWorldImporters el caso de referencia usa líneas de factura y en AdventureWorks líneas de pedido.",
+          "evidencia_o_actividad": "Lea el evento y el grano de ambas necesidades antes de comparar sus tarjetas."
+        },
+        {
+          "numero": 10,
+          "tema": "Relaciones comerciales",
+          "pregunta": "¿Por qué importan comprador, destinatario de facturación y ciudad de entrega?",
+          "respuesta_orientativa": "Pueden representar funciones distintas aunque las relaciones sean válidas y los totales coincidan. El caso WWI pide comprador y provincia de la ciudad de entrega de su ficha actual: no sustituir por destinatario de facturación o dirección postal ni afirmar ubicación histórica.",
+          "evidencia_o_actividad": "Explique la ruta revisada de WWI: CustomerID, DeliveryCityID y StateProvinceID, usando las etiquetas de la interfaz."
+        },
+        {
+          "numero": 11,
+          "tema": "Promedios",
+          "pregunta": "¿Cómo obtiene el importe promedio por pedido o factura?",
+          "respuesta_orientativa": "Divide el importe total entre documentos distintos del mismo filtro. No usa el promedio de importes de línea ni un denominador de unidades. Si el denominador es cero, debe quedar sin valor calculable; no inventar cero, infinito o un porcentaje.",
+          "evidencia_o_actividad": "Compruebe numerador, denominador, unidad y filtro de una razón visible."
+        },
+        {
+          "numero": 12,
+          "tema": "Moneda",
+          "pregunta": "¿Por qué el importe de WWI no se presenta automáticamente como dólares?",
+          "respuesta_orientativa": "El caso conservado no demuestra un código de moneda único. Debe decir moneda de origen y conservar el importe. En AdventureWorks el caso de referencia sí comprobó USD. No se suman ambos importes como si compartieran unidad y evento.",
+          "evidencia_o_actividad": "Lea la unidad de las dos ejecuciones y explique el límite antes de emitir una comparación monetaria."
+        },
+        {
+          "numero": 13,
+          "tema": "Filtros y rankings",
+          "pregunta": "¿Qué debe revisar antes de interpretar un producto líder o una participación?",
+          "respuesta_orientativa": "Fuente, ejecución, indicador y filtros. Un ranking por sumas del conjunto no equivale al máximo de una sola línea. La participación utiliza el universo filtrado completo; el Top N no convierte al subconjunto mostrado en el total del negocio.",
+          "evidencia_o_actividad": "Cambie un filtro y compruebe que tarjeta, gráfico, tabla y explicación correspondan al nuevo alcance."
+        },
+        {
+          "numero": 14,
+          "tema": "Aprobación y carga",
+          "pregunta": "¿Qué se obtiene al aprobar y qué exige cargar el datamart?",
+          "respuesta_orientativa": "La aprobación conserva un contrato revisado. La carga necesita preparar la selección, revisar el plan, confirmar la ejecución y comprobar la conciliación. Tener una propuesta aprobada no significa que ya existan datos analíticos.",
+          "evidencia_o_actividad": "Muestre las identidades separadas de propuesta y ejecución sin volver a ejecutar un expediente histórico."
+        },
+        {
+          "numero": 15,
+          "tema": "Historia",
+          "pregunta": "¿Puede consultar o verificar una versión aprobada sin retirarla?",
+          "respuesta_orientativa": "La consulta y la verificación deben conservar el estado. Una decisión de retiro o restauración es explícita y auditada. Si las reglas actuales requieren una versión nueva para otra carga, el histórico no se corrige sobrescribiéndolo.",
+          "evidencia_o_actividad": "Anote el estado antes y después de una consulta autorizada; si cambia sin decisión, registre la incidencia."
+        },
+        {
+          "numero": 16,
+          "tema": "Cambio de fuente",
+          "pregunta": "¿Qué debe ocurrir al pasar de AdventureWorks a WideWorldImporters?",
+          "respuesta_orientativa": "Debe cambiar el contexto de fuente y seleccionarse un resultado de esa base. Filtros, ejecución y conversación anteriores no deben interpretarse como pertenecientes a la nueva fuente. Cambiar fuente no mezcla ni desactiva ambas conexiones.",
+          "evidencia_o_actividad": "Repita el recorrido de ida y vuelta y lea los identificadores del encabezado antes de copiar cifras."
+        },
+        {
+          "numero": 17,
+          "tema": "Permisos",
+          "pregunta": "¿Un menú visible concede permisos? ¿Qué puede hacer el Gerente comercial observado?",
+          "respuesta_orientativa": "FastAPI autoriza cada operación; el menú sólo refleja permisos. El rol observado puede consultar el panel, conexiones y metadatos y exportar análisis. Consultar metadatos ayuda al selector y permite el explorador; no da escritura, aprobación ni ETL. Una cuenta con varios roles puede acumular permisos.",
+          "evidencia_o_actividad": "Revise la matriz de roles. Si prueba una cuenta, registre su identidad de práctica y sus roles reales; no simule gerencia usando una sesión administrativa."
+        },
+        {
+          "numero": 18,
+          "tema": "Datos internos",
+          "pregunta": "¿Qué distingue una FK real de un enlace dentro de JSON o del datamart?",
+          "respuesta_orientativa": "La FK es una restricción del motor. Los documentos JSONB guardan diseños y evidencia y requieren validación de aplicación. En e21/e22 las dimensiones tienen PK, pero fact_ventas no tiene PK ni FK físicas; sus enlaces a dimensiones y etl_execution_id son lógicos. No dibuje restricciones inexistentes.",
+          "evidencia_o_actividad": "Explique una línea continua de app y una discontinua de los datamarts en los diagramas."
+        },
+        {
+          "numero": 19,
+          "tema": "Replicación",
+          "pregunta": "¿Una instalación limpia debe tener 83 tablas y las propuestas 129 y 131?",
+          "respuesta_orientativa": "No. Ese inventario describe historial acumulado local. La estructura inicial de app se crea con migraciones y las tablas analíticas aparecen al cargar. Las propuestas y ejecuciones reciben identificadores propios; los casos 129/21 y 131/22 son referencias de una instalación, no valores que haya que forzar.",
+          "evidencia_o_actividad": "Registre los identificadores propios y diferencie consulta histórica de ejecución nueva."
+        },
+        {
+          "numero": 20,
+          "tema": "Recuperación",
+          "pregunta": "¿Qué dice y hace si falla el proveedor frente al jurado?",
+          "respuesta_orientativa": "Conserva el mensaje, comprueba si la solicitud terminó y evita reenviarla mientras siga pendiente. No aprueba una respuesta inválida. Puede consultar evidencia histórica anunciándola como tal o continuar después con un proveedor autorizado y nueva revisión del destino. Un rechazo correcto no es una carga exitosa ni una prueba de que cualquier modelo funcionará.",
+          "evidencia_o_actividad": "Ensaye una explicación verbal de contingencia y complete un registro con estado real, sin secretos ni resultados inventados."
+        }
+      ]
+    },
+    {
+      "codigo": "G10",
+      "titulo": "Diez minutos: leer y explicar ventas como gerente",
+      "objetivo_de_aprendizaje": "Explicar una decisión comercial con resultados de ambas fuentes, mostrando el contexto y sus límites.",
+      "introduccion": [
+        "Guion de aprendizaje propuesto; no ejecutado durante esta redacción.",
+        "Consulta de datos conservados y, si se realiza, chat y exportación nuevos. No genera propuestas ni ejecuta ETL.",
+        "Plataforma ya preparada, con acceso autorizado y datamarts conciliados físicamente disponibles de ambas fuentes. Esta ruta no parte de una aplicación vacía.",
+        "Identificar los expedientes de referencia disponibles o sus equivalentes comprobados. En la instalación documentada son AW 129/21 y WWI 131/22; en otra pueden cambiar.",
+        "Usar una cuenta de demostración con rol y permisos realmente asignados. La matriz observada describe el rol; este guion no acredita una prueba previa de login con esa cuenta.",
+        "Para chat nuevo, proveedor ya activo y probado y consumo autorizado. Conservar como respaldo archivos históricos revisados y rotulados con su fecha."
+      ],
+      "presupuestos_y_contingencia": {
+        "tiempo_total": "10 minutos de exposición; no garantiza disponibilidad del servicio externo.",
+        "intentos_chat_manuales": 1,
+        "espera_chat_dentro_del_bloque": "Como máximo el tiempo del bloque de dos minutos; no modificar el timeout técnico ni reenviar mientras siga pendiente.",
+        "alternativa": "Explicar la falla y consultar un archivo histórico identificado. Eso no completa una consulta de IA nueva."
+      },
+      "pasos": [
+        {
+          "numero": 1,
+          "intervalo_minutos": "0–1",
+          "duracion_maxima_guion_minutos": 1,
+          "accion": "Presente la decisión: comparar unidades y documentos dentro de cada fuente. Lea la cuenta y el contexto de trabajo.",
+          "resultado_que_debe_observar": "La audiencia entiende el propósito y sabe con qué rol real se trabaja.",
+          "evidencia_a_registrar": "Fuente y rol observados; indicar que los datos cargados son de un expediente conservado.",
+          "si_no_se_cumple": "Si sólo hay una sesión administrativa disponible, diga que usa administración para la lectura; no la presente como validación del rol gerente."
+        },
+        {
+          "numero": 2,
+          "intervalo_minutos": "1–3",
+          "duracion_maxima_guion_minutos": 2,
+          "accion": "Abra Analítica de ventas de AdventureWorks. Seleccione el expediente correcto y el filtro 2013/Northwest; espere que termine la actualización.",
+          "resultado_que_debe_observar": "En el caso histórico equivalente: 17.452 unidades y 2.053 pedidos; el importe se expresa como USD comprobado. Las tarjetas abreviadas se contrastan con su respaldo exacto.",
+          "evidencia_a_registrar": "Captura del contexto y al menos una cifra exacta. Referencia histórica: 6.015.174,74 USD; 2.929,94 USD por pedido.",
+          "si_no_se_cumple": "Si el alcance o la copia no coincide, no fuerce esas cifras. Registre la diferencia o limite la lectura a lo que realmente esté disponible."
+        },
+        {
+          "numero": 3,
+          "intervalo_minutos": "3–5",
+          "duracion_maxima_guion_minutos": 2,
+          "accion": "Cambie a WideWorldImporters y seleccione la ejecución de esa fuente. Aplique 2015/California y lea la unidad.",
+          "resultado_que_debe_observar": "En el caso histórico equivalente: 142.247 unidades y 1.179 facturas; 3.191.769,11 en moneda de origen y 2.707,18 por factura. El territorio procede de la ficha actual del comprador.",
+          "evidencia_a_registrar": "Fuente, ejecución y filtros nuevos. Señalar que pedido y factura son eventos distintos.",
+          "si_no_se_cumple": "Si sigue mostrando el contexto anterior al terminar la carga de pantalla, suspenda la conclusión y registre incidencia de aislamiento."
+        },
+        {
+          "numero": 4,
+          "intervalo_minutos": "5–7",
+          "duracion_maxima_guion_minutos": 2,
+          "accion": "Muestre una tabla de respaldo o exporte el alcance visible y abra el archivo. Explique por qué los datos no son una predicción ni demuestran utilidad.",
+          "resultado_que_debe_observar": "El archivo y la lectura tienen la misma fuente, ejecución, filtro, indicador y unidad.",
+          "evidencia_a_registrar": "Nombre del archivo realmente abierto y su contexto. Si utiliza un archivo anterior, indicarlo como histórico.",
+          "si_no_se_cumple": "Si no se puede exportar o abrir, marque el paso no completado. Una captura antigua no se anuncia como una exportación nueva."
+        },
+        {
+          "numero": 5,
+          "intervalo_minutos": "7–9",
+          "duracion_maxima_guion_minutos": 2,
+          "accion": "Haga una pregunta concreta al copiloto sobre WWI 2015/California. Lea Consulta interpretada y contraste una cifra con el panel.",
+          "resultado_que_debe_observar": "La explicación conserva alcance, denominador y cautelas; el texto no atribuye cobro, entrega efectiva ni causalidad no demostrada.",
+          "evidencia_a_registrar": "Pregunta, estado de respuesta y una comparación numérica. Puede usar la pregunta de referencia del caso WWI.",
+          "si_no_se_cumple": "Un intento manual. Si falla o permanece pendiente al terminar el bloque, registre el estado y explique la contingencia; el panel sigue siendo una evidencia independiente del chat."
+        },
+        {
+          "numero": 6,
+          "intervalo_minutos": "9–10",
+          "duracion_maxima_guion_minutos": 1,
+          "accion": "Cierre con una conclusión comercial acotada y un límite. Explique qué tendría que pedir al analista para otra pregunta.",
+          "resultado_que_debe_observar": "Se interpreta el dato observado sin afirmar aumento de ventas, moneda común o compatibilidad universal.",
+          "evidencia_a_registrar": "Conclusión breve y una limitación explícita.",
+          "si_no_se_cumple": "No convierta una impresión en un resultado medido ni sume importes de ambas fuentes."
+        }
+      ],
+      "criterios_de_cierre": [
+        "Se identificaron las dos fuentes y sus contextos.",
+        "Se contrastó al menos una cifra por fuente con su alcance.",
+        "Se diferenció una operación nueva de un expediente o archivo histórico.",
+        "Las fallas o pasos omitidos quedaron registrados con su estado real."
+      ],
+      "textos_basicos_para_copiar": []
+    },
+    {
+      "codigo": "G25",
+      "titulo": "Veinticinco minutos: construir y justificar un caso como analista",
+      "objetivo_de_aprendizaje": "Recorrer un caso nuevo de una fuente, desde la lectura del esquema hasta la conciliación y su lectura analítica.",
+      "introduccion": [
+        "Guion de aprendizaje propuesto; no ejecutado durante esta redacción.",
+        "Una generación y una carga nuevas de una fuente si superan sus controles; la consulta histórica es una alternativa de exposición y no reemplaza su resultado.",
+        "Administrador preparó conexiones, permisos y proveedor activo probado. El analista no necesita ni recibe claves técnicas para operar.",
+        "Elegir una sola fuente para la ejecución nueva. Repetir el mismo guion en otra sesión para la segunda; no prometer dos cargas nuevas dentro de 25 minutos.",
+        "Utilizar la necesidad avanzada de referencia de AW o WWI, con sus límites, o acordar un alcance sencillo explícito. Las cifras históricas sólo sirven si copia, filtros y contrato son equivalentes.",
+        "Disponer de permiso de generación, revisión, materialización, consulta y exportación; aceptar el envío al destino mostrado cuando el flujo lo solicite.",
+        "Tener un expediente histórico comprobado como respaldo, identificado como consulta y no como salida de la generación actual."
+      ],
+      "presupuestos_y_contingencia": {
+        "tiempo_total": "25 minutos de práctica guiada; las demoras de proveedor o carga pueden obligar a continuar en otra sesión.",
+        "generaciones_nuevas_planificadas": 1,
+        "reintentos_manuales": "Como máximo uno después de un error definitivo y si hay tiempo; nunca reenviar una operación pendiente.",
+        "regla_de_corte": "Al agotar el bloque, anotar estado, conservar evidencia y consultar el historial antes de decidir un nuevo intento. El reloj de la exposición no cambia el timeout del producto.",
+        "segunda_fuente": "Repetir el guion en otra sesión con su propio catálogo y metadatos. Las referencias de ambas fuentes se incluyen para preparar esa repetición."
+      },
+      "pasos": [
+        {
+          "numero": 1,
+          "intervalo_minutos": "0–2",
+          "duracion_maxima_guion_minutos": 2,
+          "accion": "Explique evento y grano. En el explorador compruebe fuente, instantánea, fecha de negocio y una relación relevante.",
+          "resultado_que_debe_observar": "El caso distingue línea de pedido o factura y conoce su procedencia.",
+          "evidencia_a_registrar": "Fuente, instantánea y relación elegida; no es necesario escribir SQL.",
+          "si_no_se_cumple": "Si la estructura no respalda una capacidad imprescindible, aclare el objetivo o detenga ese caso."
+        },
+        {
+          "numero": 2,
+          "intervalo_minutos": "2–4",
+          "duracion_maxima_guion_minutos": 2,
+          "accion": "Revise el catálogo propio y escriba la necesidad. Seleccione sólo las preguntas pertinentes y Mensual.",
+          "resultado_que_debe_observar": "Texto, preguntas y período representan el mismo propósito; no se restauran catálogos sólo para igualar una captura.",
+          "evidencia_a_registrar": "Objetivo definitivo y opciones seleccionadas.",
+          "si_no_se_cumple": "Si falta una orientación, revise con una persona autorizada. No copie relaciones de la otra base por parecido de nombres."
+        },
+        {
+          "numero": 3,
+          "intervalo_minutos": "4–8",
+          "duracion_maxima_guion_minutos": 4,
+          "accion": "Autorice el destino mostrado y revise la viabilidad. Abra la evidencia de requisitos directos o derivables; aclare las ambigüedades importantes.",
+          "resultado_que_debe_observar": "Existe una revisión vigente del texto y contexto definitivo. Aceptar un límite no fabrica una capacidad.",
+          "evidencia_a_registrar": "Estado de viabilidad, límites leídos y decisión humana.",
+          "si_no_se_cumple": "Si la IA cambia el propósito, conserve el texto original. Ante falla use el protocolo; no continúe como si la revisión hubiera terminado."
+        },
+        {
+          "numero": 4,
+          "intervalo_minutos": "8–12",
+          "duracion_maxima_guion_minutos": 4,
+          "accion": "Genere conceptos y propuesta. Revise las cinco etapas, los nombres descriptivos, las medidas y las rutas que preservan el grano.",
+          "resultado_que_debe_observar": "Contrato revisable que conserva el objetivo. En WWI se distingue comprador de destinatario de facturación y entrega de dirección postal.",
+          "evidencia_a_registrar": "Identificador propio de la propuesta, proveedor/modelo y aspectos comprobados.",
+          "si_no_se_cumple": "Si no aparece un contrato válido dentro del bloque, marque generación pendiente o bloqueada y pase a consultar un histórico anunciado. No lo apruebe para ahorrar tiempo."
+        },
+        {
+          "numero": 5,
+          "intervalo_minutos": "12–15",
+          "duracion_maxima_guion_minutos": 3,
+          "accion": "Personalice sólo decisiones permitidas y justifique el cambio si hace falta. Apruebe únicamente cuando no haya errores bloqueantes y comprenda las advertencias.",
+          "resultado_que_debe_observar": "La aprobación conserva una versión; una personalización crea otra ligada a su origen sin sobrescribirla.",
+          "evidencia_a_registrar": "Propuesta aprobada o motivo real de no aprobación; justificar las advertencias aceptadas.",
+          "si_no_se_cumple": "No marque advertencias a ciegas. Si el significado no se puede justificar, mantenga la propuesta sin aprobar."
+        },
+        {
+          "numero": 6,
+          "intervalo_minutos": "15–19",
+          "duracion_maxima_guion_minutos": 4,
+          "accion": "En Datamart de ventas elija esa propuesta, revise indicadores y denominadores, confirme el plan e inicie una sola carga.",
+          "resultado_que_debe_observar": "Se prepara y ejecuta un expediente propio. Generación, aprobación e inicio de carga son decisiones distintas.",
+          "evidencia_a_registrar": "Identificador de ejecución, estado y selección; registrar hora sin reenviar por una respuesta lenta.",
+          "si_no_se_cumple": "Si la pantalla pierde respuesta, consulte el expediente antes de repetir. Si sigue en curso al terminar el bloque, no anuncie carga completada."
+        },
+        {
+          "numero": 7,
+          "intervalo_minutos": "19–22",
+          "duracion_maxima_guion_minutos": 3,
+          "accion": "Revise conciliación, cobertura y estado de publicación. Abra el panel con esa ejecución y aplique el filtro de contraste.",
+          "resultado_que_debe_observar": "Filas y cálculos se contrastan con el mismo universo; no basta que se vea un gráfico. Moneda y fecha tienen fundamento.",
+          "evidencia_a_registrar": "Resultado de conciliación y al menos una suma, conteo distinto y razón si existen en la selección.",
+          "si_no_se_cumple": "Si hay diferencias sin explicar, el resultado no se declara aprobado. Un filtro nuevo se compara con su propio denominador."
+        },
+        {
+          "numero": 8,
+          "intervalo_minutos": "22–24",
+          "duracion_maxima_guion_minutos": 2,
+          "accion": "Pida una explicación breve al copiloto y, si el tiempo lo permite, exporte y abra el archivo con el mismo alcance.",
+          "resultado_que_debe_observar": "Se revisa la interpretación y una cifra; sólo se marca lo que realmente se obtuvo y abrió.",
+          "evidencia_a_registrar": "Respuesta o error del chat; archivo y contexto comprobados, o paso no ejecutado.",
+          "si_no_se_cumple": "Cuando no alcance el tiempo, registre el paso pendiente para otra práctica; no use un archivo histórico como si fuera una descarga nueva."
+        },
+        {
+          "numero": 9,
+          "intervalo_minutos": "24–25",
+          "duracion_maxima_guion_minutos": 1,
+          "accion": "Explique quién propuso, quién validó, quién aprobó y qué cálculo respalda la conclusión. Complete el registro.",
+          "resultado_que_debe_observar": "La persona puede defender el caso con evidencia y sus límites.",
+          "evidencia_a_registrar": "Conclusión, estado de cada etapa y siguiente paso.",
+          "si_no_se_cumple": "Si se usó la contingencia histórica, separar claramente la ejecución nueva incompleta del resultado conservado."
+        }
+      ],
+      "criterios_de_cierre": [
+        "Objetivo, evento, grano y fuente conservados.",
+        "Aprobación y carga identificadas de forma separada.",
+        "Conciliación y contexto numérico revisados antes de concluir.",
+        "Ninguna propuesta inválida fue aprobada para cumplir el tiempo.",
+        "Las etapas que no terminaron se registran y no se convierten en éxitos por la existencia de un histórico."
+      ],
+      "textos_basicos_para_copiar": []
+    },
+    {
+      "codigo": "G60",
+      "titulo": "Sesenta minutos: empezar en una aplicación limpia y aprender el recorrido",
+      "objetivo_de_aprendizaje": "Configurar desde la web un entorno de práctica ya instalado y realizar dos ejercicios básicos, uno por fuente, registrando el resultado real de cada etapa.",
+      "introduccion": [
+        "Guion de aprendizaje propuesto; no ejecutado durante esta redacción.",
+        "Configuración funcional desde la web y dos ejecuciones básicas nuevas condicionadas a sus controles. Sin instalación, parada, limpieza ni migración de infraestructura durante la práctica.",
+        "La infraestructura ya fue levantada por el responsable: aplicación accesible, contenedores saludables, migraciones y administrador inicial disponibles y las dos bases demostrativas restauradas. No se instalan ni se eliminan contenedores en este guion.",
+        "Usar una instancia de práctica limpia dispuesta por el responsable. No borrar una instalación con trabajo anterior para simular limpieza.",
+        "Tener acceso administrativo autorizado y, por un canal privado, credenciales de lectura de ambas fuentes y una credencial de IA propia autorizada cuando corresponda. No escribirlas en el manual ni en la hoja de práctica.",
+        "Acordar un presupuesto de consumo y tiempo. Las dos rutas básicas son ejercicios propuestos; su repetición no se presenta como ya realizada por este manual.",
+        "Conservar las necesidades de referencia y la hoja de registro. Los IDs de las nuevas propuestas y ejecuciones serán los que genere esta instalación."
+      ],
+      "presupuestos_y_contingencia": {
+        "tiempo_total": "60 minutos de aprendizaje. Es una agenda orientativa, no una garantía de duración del proveedor o de las cargas.",
+        "dos_fuentes": "Doce minutos de trabajo guiado por fuente; ampliar a otra sesión cuando una fase siga pendiente.",
+        "reintentos_manuales": "Máximo uno tras un error definitivo dentro del bloque; no repetir una carga en curso ni consumir cuota para forzar un caso.",
+        "si_falta_IA": "Completar preparación, catálogo, esquema, roles y explicación. Registrar las generaciones como no ejecutadas y retomarlas cuando haya un destino autorizado utilizable."
+      },
+      "pasos": [
+        {
+          "numero": 1,
+          "intervalo_minutos": "0–4",
+          "duracion_maxima_guion_minutos": 4,
+          "accion": "Abra Inicio e identifique lo que falta. Explique navegador, servidor, SQL Server de origen y PostgreSQL de configuración y resultados.",
+          "resultado_que_debe_observar": "Se reconoce una aplicación preparada para configurar, no un panel de ventas ya cargado.",
+          "evidencia_a_registrar": "Estado inicial, entorno y rol real. Explicar que las 83 tablas del inventario histórico no son un requisito del portable limpio.",
+          "si_no_se_cumple": "Si no inicia sesión o la aplicación no está disponible, registrar bloqueo y volver con el responsable de infraestructura; no gastar la sesión inventando resultados."
+        },
+        {
+          "numero": 2,
+          "intervalo_minutos": "4–12",
+          "duracion_maxima_guion_minutos": 8,
+          "accion": "Registre, pruebe y habilite cada fuente con sus datos privados. Capture metadatos de AW y WWI y observe que cada explorador cambia con el selector.",
+          "resultado_que_debe_observar": "Dos conexiones de solo lectura identificadas y sus instantáneas propias; obtener metadatos no extrae ventas.",
+          "evidencia_a_registrar": "Nombre de base, conector y resultado de prueba; no guardar contraseña ni nombre técnico de usuario en una captura.",
+          "si_no_se_cumple": "Si una prueba no confirma lectura autorizada, no habilitar por omisión ni usar una cuenta administrativa de SQL para saltar el control."
+        },
+        {
+          "numero": 3,
+          "intervalo_minutos": "12–18",
+          "duracion_maxima_guion_minutos": 6,
+          "accion": "Configure el proveedor y modelo acordados, registre la credencial de manera privada si hace falta y ejecute su prueba.",
+          "resultado_que_debe_observar": "Proveedor probado con credencial configurada, sin mostrar su valor. Configurar un proveedor no valida todavía cada propuesta que produzca.",
+          "evidencia_a_registrar": "Proveedor/modelo y resultado de prueba sin secretos; registro de consumo sólo si se informa realmente.",
+          "si_no_se_cumple": "Si no hay cuota o conectividad, registrar la limitación y continuar con esquema, catálogo y explicación del flujo. Una práctica sin proveedor utilizable no se declara ciclo BI completo."
+        },
+        {
+          "numero": 4,
+          "intervalo_minutos": "18–24",
+          "duracion_maxima_guion_minutos": 6,
+          "accion": "Abra el catálogo de cada fuente. Lea las cuatro orientaciones base y elija tiempo y producto para las rutas básicas. Revise las periodicidades.",
+          "resultado_que_debe_observar": "Preguntas y períodos pertenecen a cada conexión. El catálogo no fija por adelantado el hecho y las dimensiones ni se genera automáticamente con una llamada de IA.",
+          "evidencia_a_registrar": "Etiquetas e instrucciones utilizadas y Mensual habilitado por fuente.",
+          "si_no_se_cumple": "No pulsar Restaurar catálogo si se quieren conservar cambios. No copiar las preguntas de costos a otra base sin comprobar su sentido."
+        },
+        {
+          "numero": 5,
+          "intervalo_minutos": "24–29",
+          "duracion_maxima_guion_minutos": 5,
+          "accion": "Revise roles y permisos con la matriz. Si el ejercicio incluye crearlos, prepare Analista BI y Gerente comercial y asigne sólo cuentas de práctica autorizadas.",
+          "resultado_que_debe_observar": "Se distingue crear un rol, asignarle permisos y asociarlo a una cuenta. Gerencia puede leer y exportar, sin aprobar o ejecutar ETL.",
+          "evidencia_a_registrar": "Definiciones y asignaciones realizadas o paso no ejecutado. Registrar aparte cualquier prueba de login realmente realizada.",
+          "si_no_se_cumple": "Si sigue usando la cuenta administrativa, indicarlo. Revisar definiciones no acredita haber operado toda la plataforma como analista o gerente."
+        },
+        {
+          "numero": 6,
+          "intervalo_minutos": "29–41",
+          "duracion_maxima_guion_minutos": 12,
+          "accion": "En AdventureWorks utilice la necesidad básica de unidades por producto y mes. Revise viabilidad, conceptos y modelo; apruebe sólo lo válido, confirme la carga y revise conciliación.",
+          "resultado_que_debe_observar": "Un caso propio de línea de pedido y unidades. El proveedor puede proponer otras etiquetas; se revisan significado y receta, no una captura idéntica.",
+          "evidencia_a_registrar": "Texto usado, instantánea, propuesta, ejecución, avisos comprendidos y resultado de conciliación, o la etapa precisa donde se interrumpió.",
+          "si_no_se_cumple": "Si falla un control, detener ese caso y registrarlo. No sustituir el diseño por SQL libre ni completar a mano la hoja con las cifras de referencia."
+        },
+        {
+          "numero": 7,
+          "intervalo_minutos": "41–53",
+          "duracion_maxima_guion_minutos": 12,
+          "accion": "Cambie a WideWorldImporters y repita el recorrido básico de unidades por producto y mes, conservando línea de factura y fecha de emisión.",
+          "resultado_que_debe_observar": "Segundo caso con contexto propio. No reutiliza las claves de AW ni afirma cobro, margen, moneda o entrega efectiva.",
+          "evidencia_a_registrar": "Los identificadores propios de WWI y el resultado de cada control; contraste entre ambos eventos.",
+          "si_no_se_cumple": "Si no alcanza el tiempo o el proveedor falla, dejar la etapa como pendiente o bloqueada y continuar en otra sesión. No completar una carga ficticia para cerrar la hora."
+        },
+        {
+          "numero": 8,
+          "intervalo_minutos": "53–58",
+          "duracion_maxima_guion_minutos": 5,
+          "accion": "Consulte los resultados que sí quedaron conciliados. Cambie de fuente, aplique un filtro, compruebe una cifra y formule una pregunta breve al copiloto. Abra una exportación si se realizó.",
+          "resultado_que_debe_observar": "Se entiende el alcance de los datos propios. La referencia de 274.914 unidades AW o 8.950.628 WWI sólo sirve si la copia y selección equivalen al histórico y la conciliación lo confirma.",
+          "evidencia_a_registrar": "Fuente, filtros, cálculo propio y respuesta o fallo del chat. Archivos realmente abiertos con su contexto.",
+          "si_no_se_cumple": "No compare como equivalentes dos eventos o monedas diferentes. Si sólo una fuente quedó completada, describa ese resultado parcial."
+        },
+        {
+          "numero": 9,
+          "intervalo_minutos": "58–60",
+          "duracion_maxima_guion_minutos": 2,
+          "accion": "Complete la hoja y responda qué hizo la IA, qué controló el servidor y qué aprobó una persona. Elija la próxima práctica.",
+          "resultado_que_debe_observar": "Queda una bitácora reproducible con avances, límites e incidencias, incluso si no concluyeron las dos cargas.",
+          "evidencia_a_registrar": "Estado de cada fuente y tareas pendientes específicas.",
+          "si_no_se_cumple": "No calificar todo el recorrido como exitoso si falta evidencia de alguna etapa."
+        }
+      ],
+      "criterios_de_cierre": [
+        "Las fuentes e instantáneas se mantuvieron separadas.",
+        "Cada generación/carga realizada tiene contexto e identificadores propios.",
+        "Se registró cuál de los dos ejercicios terminó y cuál no.",
+        "La configuración de roles se distinguió de una prueba de sesión por perfil.",
+        "No se usaron números del histórico como resultados obtenidos de una instalación limpia."
+      ],
+      "textos_basicos_para_copiar": [
+        {
+          "fuente": "AdventureWorks 2022",
+          "texto": "Conservar cada línea de pedido de venta para comparar mensualmente la suma de unidades por producto. Usar la fecha del pedido y un nombre de producto comprobable. Mantener la referencia de cada línea a su pedido. Limitar esta práctica al total de unidades y su evolución; no interpretar estos registros como facturas, cobros o pronósticos.",
+          "estado": "Ejercicio nuevo propuesto; resultado propio pendiente de ejecución."
+        },
+        {
+          "fuente": "WideWorldImporters",
+          "texto": "Conservar cada línea de factura para comparar mensualmente la suma de unidades facturadas por producto. Usar la fecha de emisión y el producto con nombre verificable. Mantener el identificador de factura y el de línea para conservar la trazabilidad. Limitar la práctica a unidades y evolución; no afirmar moneda, cobro, utilidad ni entrega realizada.",
+          "estado": "Ejercicio nuevo propuesto; resultado propio pendiente de ejecución."
+        }
+      ]
+    },
+    {
+      "codigo": "AP02",
+      "titulo": "Qué hacer cuando una etapa no termina",
+      "introduccion": [
+        "El protocolo protege el aprendizaje y la evidencia. No requiere que la demostración parezca perfecta. Hay que distinguir un rechazo correcto, un fallo externo y una inconsistencia del producto."
+      ],
+      "errores_y_recuperacion": [
+        {
+          "situacion": "Respuesta de IA pendiente o demasiado lenta",
+          "accion": "Conservar la pantalla y el contexto. No pulsar varias veces. Si termina el tiempo del bloque, anotar pendiente y comprobar historial antes de reintentar.",
+          "no_declarar": "No decir que se generó, aprobó o cargó algo sin el comprobante correspondiente."
+        },
+        {
+          "situacion": "El proveedor informa cuota, capacidad o conectividad insuficiente",
+          "accion": "Registrar el mensaje y la etapa. Una persona autorizada puede revisar la configuración o acordar otro proveedor; si cambia el destino, revisar su prueba y autorización de envío.",
+          "no_declarar": "No cambiar silenciosamente de modelo ni atribuir éxito a un intento interrumpido."
+        },
+        {
+          "situacion": "La respuesta no cumple el formato o contrato",
+          "accion": "Aceptar el rechazo de la plataforma; revisar la solicitud o hacer un único reintento manual si el error es definitivo y queda tiempo.",
+          "no_declarar": "No pegar una respuesta inválida a mano ni desactivar validaciones para continuar."
+        },
+        {
+          "situacion": "La propuesta cambia el objetivo, evento o rol de una relación",
+          "accion": "Mantener el propósito original, aclarar la ambigüedad y revisar una versión nueva cuando corresponda. Si no puede justificarse, no aprobar.",
+          "no_declarar": "No afirmar que una FK válida demuestra por sí sola la interpretación comercial."
+        },
+        {
+          "situacion": "Advertencia o requisito no disponible",
+          "accion": "Leer la limitación y decidir si el alcance restante sigue siendo útil. Si falta un requisito esencial, corregir la necesidad.",
+          "no_declarar": "Aceptar el aviso no hace que exista la capacidad ausente."
+        },
+        {
+          "situacion": "Se pierde la respuesta durante una carga",
+          "accion": "Recuperar el expediente y leer su estado antes de iniciar cualquier otra operación. Registrar si terminó, falló o sigue en curso.",
+          "no_declarar": "No reenviar por reflejo ni anunciar conciliación por el mero paso del tiempo."
+        },
+        {
+          "situacion": "Hay diferencia numérica, fuente equivocada o denominador incoherente",
+          "accion": "Suspender la conclusión, guardar contexto y comparar universos equivalentes. Registrar esperado y obtenido sin alterar filas ni la evidencia anterior.",
+          "no_declarar": "No ajustar las cifras para que coincidan con la guía ni sumar monedas sin evidencia."
+        },
+        {
+          "situacion": "Se muestra una explicación o un archivo histórico como respaldo",
+          "accion": "Anunciar fuente, fecha, propuesta y ejecución histórica. Separarlo del estado del intento nuevo.",
+          "no_declarar": "Un respaldo histórico no prueba que la operación nueva se completó."
+        },
+        {
+          "situacion": "El rol no tiene permiso o no aparece una opción",
+          "accion": "Pedir revisión a administración y registrar el permiso faltante. Continuar sólo las operaciones autorizadas.",
+          "no_declarar": "No presentar una sesión administrativa como prueba de un perfil con menos permisos."
+        },
+        {
+          "situacion": "El chat explica algo que las cifras no sostienen",
+          "accion": "Conservar pregunta, interpretación, evidencia, respuesta y filtros. Contrastar números y cautelas antes de usar la narración.",
+          "no_declarar": "Una frase fluida no demuestra causalidad, rentabilidad, pronóstico o precisión universal."
+        }
+      ]
+    },
+    {
+      "codigo": "AP03",
+      "titulo": "Rúbrica de aprendizaje: veinte puntos",
+      "introduccion": [
+        "Guía orientativa para autoevaluación o acompañamiento docente; no es un instrumento validado de usabilidad ni una medición de la eficacia del producto."
+      ],
+      "rubrica": {
+        "titulo": "Rúbrica de aprendizaje: veinte puntos",
+        "uso": "Guía orientativa para autoevaluación o acompañamiento docente; no es un instrumento validado de usabilidad ni una medición de la eficacia del producto.",
+        "puntuacion_maxima": 20,
+        "criterios": [
+          {
+            "criterio": "Comprender la decisión comercial",
+            "maximo": 4,
+            "evidencia": "Explica evento, grano, indicadores, unidades y comparación sin confundir pedido, factura o cobro."
+          },
+          {
+            "criterio": "Preparar el contexto de cada fuente",
+            "maximo": 4,
+            "evidencia": "Distingue conexión, instantánea y catálogo; conserva sus identidades y usa preguntas y período apropiados."
+          },
+          {
+            "criterio": "Supervisar y recuperar con criterio",
+            "maximo": 4,
+            "evidencia": "Distingue IA, reglas y decisión humana; revisa advertencias, no aprueba errores y registra con honestidad una interrupción."
+          },
+          {
+            "criterio": "Comprobar e interpretar los resultados",
+            "maximo": 4,
+            "evidencia": "Contrasta conciliación, filtros, moneda, sumas, documentos distintos y denominadores de una razón; o explica correctamente qué control no pudo ejecutar."
+          },
+          {
+            "criterio": "Cuidar acceso, evidencia y comunicación",
+            "maximo": 4,
+            "evidencia": "Trabaja con la identidad autorizada, evita exponer secretos y presenta contexto, archivos y procedencia sin confundir lo histórico con lo nuevo."
+          }
+        ],
+        "escala": [
+          {
+            "puntos": 4,
+            "descripcion": "Lo realiza o explica con autonomía, evidencia suficiente y sin errores sustantivos."
+          },
+          {
+            "puntos": 3,
+            "descripcion": "Lo realiza de forma correcta con una aclaración menor."
+          },
+          {
+            "puntos": 2,
+            "descripcion": "Comprensión parcial; necesita apoyo para completar o justificar una decisión."
+          },
+          {
+            "puntos": 1,
+            "descripcion": "Reconoce parte del concepto, pero requiere acompañamiento continuo."
+          },
+          {
+            "puntos": 0,
+            "descripcion": "No presenta evidencia de aprendizaje o mantiene una interpretación incorrecta después de revisarla."
+          }
+        ],
+        "criterios_no_observados": "Marcar No evaluado cuando no hubo oportunidad de observar el criterio. No asignar cuatro puntos por un paso no realizado ni publicar un total sobre veinte como si todos se hubieran evaluado. Puede registrarse por separado una explicación verbal correcta y una operación bloqueada.",
+        "interpretacion": "Con los cinco criterios evaluados, dieciséis puntos o más puede utilizarse como orientación para repetir el caso con menor ayuda. El umbral es didáctico y no representa una validación estadística del producto.",
+        "condiciones_criticas": [
+          "Exponer una credencial, aprobar una propuesta con error no resuelto, mezclar deliberadamente fuentes/monedas o declarar una carga inexistente requiere detener y corregir la práctica, aunque la suma de otros criterios sea alta.",
+          "Un fallo externo de cuota no se convierte en una falta de aprendizaje si se interpreta y registra correctamente; la operación continúa como bloqueada o no ejecutada, sin calificarse como ciclo funcional terminado."
+        ]
+      }
+    },
+    {
+      "codigo": "AP04",
+      "titulo": "Hoja de registro de una práctica nueva",
+      "introduccion": [
+        "Copiar una hoja por fuente y ejecución. Completar el resultado esperado antes de ejecutar y el obtenido después.",
+        "Dejar sin valor lo que no se obtuvo y marcar su estado. No copiar las cifras históricas en la columna de resultado obtenido.",
+        "Usar alias de práctica y el rol real; no escribir contraseñas, API keys, tokens ni datos personales innecesarios."
+      ],
+      "hoja_de_registro": {
+        "titulo": "Hoja de registro de una práctica nueva",
+        "instrucciones": [
+          "Copiar una hoja por fuente y ejecución. Completar el resultado esperado antes de ejecutar y el obtenido después.",
+          "Dejar sin valor lo que no se obtuvo y marcar su estado. No copiar las cifras históricas en la columna de resultado obtenido.",
+          "Usar alias de práctica y el rol real; no escribir contraseñas, API keys, tokens ni datos personales innecesarios."
+        ],
+        "contexto": {
+          "fecha_y_hora": "",
+          "participante_o_alias": "",
+          "persona_que_acompana": "",
+          "objetivo_de_aprendizaje": "",
+          "tipo_de_actividad": "",
+          "entorno_o_version_visible": "",
+          "rol_y_permisos_reales": "",
+          "fuente_y_base": "",
+          "conexion_local": "",
+          "instantanea_local": "",
+          "proveedor_modelo_si_se_usa": "",
+          "destino_de_envio_autorizado": "",
+          "necesidad_textual": "",
+          "preguntas_de_catalogo": "",
+          "periodicidad": "",
+          "evento_y_grano": "",
+          "indicadores_y_unidades": "",
+          "limitaciones_aceptadas_y_motivo": "",
+          "propuesta_local": "",
+          "propuesta_origen_si_hay_derivacion": "",
+          "estado_de_revision": "",
+          "ejecucion_local": "",
+          "estado_de_ejecucion": "",
+          "contexto_del_filtro": "",
+          "formula_y_denominador_a_comprobar": "",
+          "resultado_esperado_y_fuente_del_criterio": "",
+          "resultado_obtenido": "",
+          "diferencia_y_explicacion": "",
+          "archivo_o_captura_sin_secretos": "",
+          "naturaleza_y_fecha_de_la_evidencia": "",
+          "incidencia_y_recuperacion": "",
+          "pasos_no_ejecutados_o_pendientes": "",
+          "conclusion_con_limites": "",
+          "proxima_accion": ""
+        },
+        "opciones_tipo_actividad": [
+          "Consulta de expediente histórico",
+          "Generación y ejecución nuevas",
+          "Ejercicio propuesto aún no ejecutado",
+          "Prueba de acceso bajo un perfil realmente autenticado"
+        ],
+        "opciones_estado": [
+          "No ejecutado",
+          "En curso",
+          "Terminado y comprobado para el alcance indicado",
+          "Rechazo esperado observado",
+          "Bloqueado por proveedor",
+          "Bloqueado por permisos o preparación",
+          "Interrumpido",
+          "Resultado inconsistente por revisar"
+        ],
+        "tabla_comprobaciones": {
+          "columnas": [
+            "Etapa o indicador",
+            "Fuente/propuesta/ejecución y filtros",
+            "Fórmula o criterio esperado",
+            "Resultado esperado antes de ejecutar",
+            "Resultado obtenido",
+            "Estado",
+            "Evidencia"
+          ],
+          "filas": [
+            {
+              "etapa_o_indicador": "Viabilidad de la necesidad",
+              "contexto": "",
+              "formula_o_criterio": "",
+              "esperado": "",
+              "obtenido": "",
+              "estado": "",
+              "evidencia": ""
+            },
+            {
+              "etapa_o_indicador": "Contrato y revisión humana",
+              "contexto": "",
+              "formula_o_criterio": "",
+              "esperado": "",
+              "obtenido": "",
+              "estado": "",
+              "evidencia": ""
+            },
+            {
+              "etapa_o_indicador": "Preparación y ejecución de carga",
+              "contexto": "",
+              "formula_o_criterio": "",
+              "esperado": "",
+              "obtenido": "",
+              "estado": "",
+              "evidencia": ""
+            },
+            {
+              "etapa_o_indicador": "Conciliación de filas e importes",
+              "contexto": "",
+              "formula_o_criterio": "",
+              "esperado": "",
+              "obtenido": "",
+              "estado": "",
+              "evidencia": ""
+            },
+            {
+              "etapa_o_indicador": "Panel y filtro",
+              "contexto": "",
+              "formula_o_criterio": "",
+              "esperado": "",
+              "obtenido": "",
+              "estado": "",
+              "evidencia": ""
+            },
+            {
+              "etapa_o_indicador": "Conteo distinto y razón, si aplican",
+              "contexto": "",
+              "formula_o_criterio": "",
+              "esperado": "",
+              "obtenido": "",
+              "estado": "",
+              "evidencia": ""
+            },
+            {
+              "etapa_o_indicador": "Copiloto y cautelas",
+              "contexto": "",
+              "formula_o_criterio": "",
+              "esperado": "",
+              "obtenido": "",
+              "estado": "",
+              "evidencia": ""
+            },
+            {
+              "etapa_o_indicador": "Exportación abierta",
+              "contexto": "",
+              "formula_o_criterio": "",
+              "esperado": "",
+              "obtenido": "",
+              "estado": "",
+              "evidencia": ""
+            },
+            {
+              "etapa_o_indicador": "Acceso con el rol de práctica",
+              "contexto": "",
+              "formula_o_criterio": "",
+              "esperado": "",
+              "obtenido": "",
+              "estado": "",
+              "evidencia": ""
+            }
+          ]
+        },
+        "tabla_rubrica": {
+          "columnas": [
+            "Criterio",
+            "Puntuación 0–4 o No evaluado",
+            "Evidencia o apoyo requerido"
+          ],
+          "filas": [
+            {
+              "criterio": "Comprender la decisión comercial",
+              "puntuacion": "",
+              "evidencia": ""
+            },
+            {
+              "criterio": "Preparar el contexto de cada fuente",
+              "puntuacion": "",
+              "evidencia": ""
+            },
+            {
+              "criterio": "Supervisar y recuperar con criterio",
+              "puntuacion": "",
+              "evidencia": ""
+            },
+            {
+              "criterio": "Comprobar e interpretar los resultados",
+              "puntuacion": "",
+              "evidencia": ""
+            },
+            {
+              "criterio": "Cuidar acceso, evidencia y comunicación",
+              "puntuacion": "",
+              "evidencia": ""
+            }
+          ]
+        },
+        "cierre": "Un registro con fases bloqueadas o no ejecutadas sigue siendo útil si permite reconocer qué se hizo y qué falta. No demuestra un ciclo completo hasta contar con sus evidencias."
+      }
+    },
+    {
+      "codigo": "AP05",
+      "titulo": "Referencias históricas para contrastar los casos",
+      "introduccion": [
+        "Estos valores corresponden a la campaña del 6 de noviembre de 2026. Los IDs y resultados no se fuerzan en una instalación nueva. Antes de comparar cifras se comprueban fuente, copia, contrato, período, filtros y receta. En WWI la unidad permanece como moneda de origen."
+      ],
+      "casos_de_referencia": [
+        {
+          "fuente": "AdventureWorks 2022",
+          "necesidad_de_referencia": "Conservar cada línea de pedido de venta en un datamart. Para priorizar productos y territorios, comparar mensualmente cuatro indicadores: suma del importe registrado de las líneas, suma de unidades, conteo de identificadores de pedido distintos e importe total dividido entre pedidos distintos. Usar fecha y territorio comercial del pedido, producto y cliente con nombre verificable. Los rankings comparan sumas por entidad. Mantener la trazabilidad de cada línea al pedido. La moneda se reportará sólo si se comprueba en la fuente.",
+          "fecha_evidencia": "2026-11-06",
+          "propuesta_local": 129,
+          "ejecucion_local": 21,
+          "grano": "Línea de pedido",
+          "filas_origen": 121317,
+          "filas_destino": 121317,
+          "diferencia_filas": 0,
+          "global": {
+            "importe_exacto": "109846381.399888",
+            "moneda": "USD comprobado",
+            "unidades": 274914,
+            "pedidos_distintos": 31465,
+            "importe_por_pedido_exacto": "3491.065672966407"
+          },
+          "filtro": {
+            "anio": 2013,
+            "territorio": "Northwest",
+            "importe_exacto": "6015174.735836",
+            "unidades": 17452,
+            "pedidos_distintos": 2053,
+            "importe_por_pedido_exacto": "2929.943855740867",
+            "mes_mayor_unidades": "junio de 2013",
+            "unidades_mes_lider": 2494
+          },
+          "pregunta_chat": "Resume las unidades vendidas en 2013 para Northwest. Indica el total y el mes con mayor cantidad, sin atribuir causas ni mezclar importes.",
+          "alcance": "Evidencia histórica comprobada en esa campaña. No es un resultado nuevo obtenido al redactar este material ni el contenido garantizado de un portable limpio."
+        },
+        {
+          "fuente": "WideWorldImporters",
+          "necesidad_de_referencia": "Diseñar un datamart cuyo grano físico sea una línea de factura. Sobre ese detalle, resumir mensualmente el importe registrado de la línea, las unidades y las facturas distintas por producto y cliente. Usar la fecha de emisión. Para el territorio, usar la provincia de la ciudad de entrega registrada en la ficha del cliente y aclarar que no representa necesariamente su ubicación histórica. Conservar el importe de origen sin asumir moneda, utilidad ni composición fiscal. Limitar los indicadores a importe total, unidades totales, facturas distintas e importe promedio por factura. Los rankings deben comparar totales por producto; el máximo de una sola línea no identifica al producto líder.",
+          "fecha_evidencia": "2026-11-06",
+          "propuesta_local": 131,
+          "ejecucion_local": 22,
+          "grano": "Línea de factura",
+          "filas_origen": 228265,
+          "filas_destino": 228265,
+          "diferencia_filas": 0,
+          "global": {
+            "importe_exacto": "198043439.45",
+            "moneda": "moneda de origen; sin código único demostrado",
+            "unidades": 8950628,
+            "facturas_distintas": 70510,
+            "importe_por_factura_exacto": "2808.7283995177986"
+          },
+          "filtro": {
+            "anio": 2015,
+            "territorio": "California",
+            "lineas": 3771,
+            "importe_exacto": "3191769.11",
+            "unidades": 142247,
+            "facturas_distintas": 1179,
+            "importe_por_factura_exacto": "2707.1832994062765"
+          },
+          "pregunta_chat": "Resume el importe, las unidades y las facturas distintas en 2015 para California. Explica el denominador del importe por factura y qué significa la provincia usada, sin asumir moneda ni entrega realizada.",
+          "alcance": "Evidencia histórica comprobada en esa campaña. No es un resultado nuevo obtenido al redactar este material ni el contenido garantizado de un portable limpio."
+        }
+      ]
+    }
+  ],
+  "fuentes": [
+    {
+      "archivo": "introduccion_y_fundamentos.json",
+      "sha256": "d594eaf3ab910dc9d8b69ce7d31e4398f75c8660312a3e023f8b53896063085c"
+    },
+    {
+      "archivo": "operacion_configuracion_y_catalogo.json",
+      "sha256": "cae8b49f3fa25c316d6243e6a200c444baaf1f976f2477abe0ae99377104d05d"
+    },
+    {
+      "archivo": "operacion_bi_etl_analitica.json",
+      "sha256": "f7a35f4ffae1bb29205b12dfd1c333f10f6f7643ea068bf67aac27f1995704c6"
+    },
+    {
+      "archivo": "base_datos_manual.json",
+      "sha256": "929576425951cf63c13f478f6956ad274fa683a3488dd6401c5d082cc9e0deb0"
+    },
+    {
+      "archivo": "roles_permisos_actuales_sin_usuarios.json",
+      "sha256": "9751b3c9816f7fb3e59b2eda79bdfb69759522e77679b0103e1d8d99471b4898"
+    },
+    {
+      "archivo": "Cotejo_ORM_migraciones.json",
+      "sha256": "055be8c9f46500722f82e66e6fe4dc442f62a79600184507e19ef09f1e529dd0"
+    },
+    {
+      "archivo": "linaje_ids_demostracion.json",
+      "sha256": "13cc6bb69ee7bd46c87b55afd81d09ff59053758fb47acf4909f67bee9bd717f"
+    }
+  ]
+}

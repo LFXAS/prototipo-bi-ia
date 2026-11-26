@@ -1,0 +1,52 @@
+@startuml
+skinparam backgroundColor white
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 16
+skinparam ArrowFontSize 15
+skinparam NoteFontSize 14
+skinparam Padding 6
+skinparam nodesep 24
+skinparam ranksep 28
+skinparam dpi 180
+skinparam wrapWidth 220
+skinparam maxMessageSize 190
+skinparam sequenceMessageAlign center
+hide empty members
+hide circle
+skinparam classAttributeIconSize 0
+
+
+hide empty description
+state "Generación en curso" as G
+state "Fallo del proveedor" as F
+state "Validación bloqueante" as V
+state "Lista para revisión" as R
+state "Aprobada" as A
+state "Rechazada" as RE
+state "Aprobación retirada" as I
+state "Descartada" as D
+[*] --> G : solicitar
+G --> F : fallo
+G --> V : no cumple
+G --> R : cumple
+R --> A : aprobar
+R --> RE : rechazar
+R --> V : bloqueo
+A --> A : consultar
+A --> I : retirar
+I --> A : restaurar
+R --> D : descartar
+V --> D : descartar
+F --> D : descartar
+RE --> D : descartar
+I --> D : descartar
+legend bottom
+Consultar no retira una aprobación y aprobar no ejecuta la carga.
+Las decisiones requieren permiso y las comprobaciones aplicables.
+Corregir o regenerar crea otra versión.
+endlegend
+
+
+@enduml

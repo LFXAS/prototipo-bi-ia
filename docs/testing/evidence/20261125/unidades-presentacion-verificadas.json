@@ -1,0 +1,74 @@
+{
+  "captured_at_utc": "2026-11-26T02:00:07.523081+00:00",
+  "operation": "Lectura de presentación mediante el constructor real de tablero, sin ETL ni LLM ni cambios persistentes.",
+  "executions": [
+    {
+      "execution_id": 23,
+      "proposal_id": 135,
+      "source_name": "WideWorldImporters local",
+      "currency_code": "moneda de origen",
+      "currency_status": "unresolved",
+      "kpis": [
+        {
+          "code": "importe_registrado",
+          "name": "Importe registrado total",
+          "persisted_unit": "moneda de origen",
+          "display_unit": "moneda de origen"
+        },
+        {
+          "code": "facturas_distintas",
+          "name": "Facturas distintas",
+          "persisted_unit": "facturas",
+          "display_unit": "facturas"
+        },
+        {
+          "code": "importe_promedio_por_factura",
+          "name": "Importe promedio por factura",
+          "persisted_unit": "moneda de origen por transacción",
+          "display_unit": "moneda de origen por transacción"
+        },
+        {
+          "code": "requested_quantity_sum",
+          "name": "Unidades registradas",
+          "persisted_unit": "Unidades",
+          "display_unit": "Unidades"
+        }
+      ],
+      "persisted_documents_unchanged": true
+    },
+    {
+      "execution_id": 24,
+      "proposal_id": 136,
+      "source_name": "AdventureWorks local",
+      "currency_code": "USD",
+      "currency_status": "verified",
+      "kpis": [
+        {
+          "code": "importe_total",
+          "name": "Importe total registrado",
+          "persisted_unit": "USD",
+          "display_unit": "USD"
+        },
+        {
+          "code": "pedidos_distintos",
+          "name": "Pedidos distintos",
+          "persisted_unit": "pedidos",
+          "display_unit": "pedidos"
+        },
+        {
+          "code": "requested_quantity_sum",
+          "name": "Unidades totales",
+          "persisted_unit": "Unidades",
+          "display_unit": "Unidades"
+        },
+        {
+          "code": "importe_promedio_transaccion",
+          "name": "Importe promedio por transacción",
+          "persisted_unit": "moneda de origen por transacción",
+          "display_unit": "USD por transacción"
+        }
+      ],
+      "persisted_documents_unchanged": true
+    }
+  ]
+}

@@ -39,7 +39,9 @@ import {
 } from './api/security'
 import { roleChoicesForUserAssignment } from './roleChoices'
 import { AnalyticsPage } from './AnalyticsPage'
-import { assistantDraftKey, readAssistantDraft, type AssistantDraft } from './assistantRecovery'
+import { assistantDraftKey, readAssistantDraft, reconcileAssistantQuestions, type AssistantDraft } from './assistantRecovery'
+import { initialWorkspaceNavigation, readWorkspaceNavigation, tokenExpirationTime, workspaceNavigation, workspaceNavigationKey, type WorkspaceNavigation } from './workspaceNavigation'
+import { analyticsContextKey } from './analyticsRecovery'
 
 type PageData =
   | Page<User>
@@ -173,7 +175,8 @@ function parseSelectedIds(value: string) {
 export default function App() {
   const [token, setToken] = useState(() => localStorage.getItem(tokenKey) ?? '')
   const [session, setSession] = useState<Session | null>(null)
-  const [page, setPage] = useState('/')
+  const [navigation, setNavigation] = useState(() => readWorkspaceNavigation(Object.keys(labels)))
+  const page = navigation.page
   const [data, setData] = useState<PageData>(null)
   const [message, setMessage] = useState('')
   const [email, setEmail] = useState('admin@bi.local')
@@ -184,11 +187,63 @@ export default function App() {
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({})
   const [sidebarHidden, setSidebarHidden] = useState(false)
   const [sources, setSources] = useState<SourceWorkspace[]>([])
+  const [sourcesLoaded, setSourcesLoaded] = useState(false)
   const [selectedSourceId, setSelectedSourceId] = useState(() => Number(localStorage.getItem(sourceContextKey) ?? 0))
   const loadedPage = useRef(page)
+  const navigationSequence = useRef(0)
+
+  function navigate(path: string, contextual = false) {
+    if (!session?.menus.some((menu) => menu.path === path)) return
+    navigationSequence.current += 1
+    const next: WorkspaceNavigation = {
+      page: path,
+      setupStep: navigation.setupStep,
+      returnTo: contextual ? { page, setupStep: navigation.setupStep } : null,
+    }
+    window.history.pushState({ biWorkspace: next }, '')
+    setNavigation(next)
+    setOffset(0)
+    setMenuOpen(false)
+  }
+
+  async function returnToOrigin() {
+    if (!navigation.returnTo) return
+    const request = ++navigationSequence.current
+    try {
+      const currentSession = await api.session(token)
+      if (request !== navigationSequence.current) return
+      const allowed = [...new Set(['/', ...currentSession.menus.map((menu) => menu.path)])]
+      const next = workspaceNavigation({ ...navigation.returnTo, returnTo: null }, allowed)
+      setSession(currentSession)
+      window.history.pushState({ biWorkspace: next }, '')
+      setNavigation(next)
+      setOffset(0)
+    } catch (error) {
+      if (request !== navigationSequence.current) return
+      setMessage(error instanceof Error ? error.message : 'No fue posible comprobar el acceso al módulo de origen.')
+    }
+  }
+
+  useEffect(() => {
+    sessionStorage.setItem(workspaceNavigationKey, JSON.stringify(navigation))
+    window.history.replaceState({ biWorkspace: navigation }, '')
+  }, [navigation])
+
+  useEffect(() => {
+    function restoreNavigation(event: PopStateEvent) {
+      navigationSequence.current += 1
+      const allowed = session ? [...new Set(['/', ...session.menus.map((menu) => menu.path)])] : Object.keys(labels)
+      setNavigation(workspaceNavigation(event.state?.biWorkspace, allowed))
+      setOffset(0)
+      setMenuOpen(false)
+    }
+    window.addEventListener('popstate', restoreNavigation)
+    return () => window.removeEventListener('popstate', restoreNavigation)
+  }, [session])
 
   useEffect(() => {
     function handleSessionExpired() {
+      navigationSequence.current += 1
       const resumePage = page !== '/'
         ? page
         : localStorage.getItem(assistantDraftKey) ? '/asistente' : '/'
@@ -197,6 +252,8 @@ export default function App() {
       setToken('')
       setSession(null)
       setData(null)
+      setSources([])
+      setSourcesLoaded(false)
       setMessage('La sesión venció. Inicie sesión nuevamente para retomar el punto guardado.')
     }
     window.addEventListener(sessionExpiredEvent, handleSessionExpired)
@@ -204,27 +261,52 @@ export default function App() {
   }, [page])
 
   useEffect(() => {
+    const expiresAt = tokenExpirationTime(token)
+    if (!token || expiresAt === null) return
+    function checkExpiry() {
+      if (Date.now() >= expiresAt!) window.dispatchEvent(new Event(sessionExpiredEvent))
+    }
+    const timer = window.setTimeout(checkExpiry, Math.max(0, expiresAt - Date.now()))
+    window.addEventListener('focus', checkExpiry)
+    document.addEventListener('visibilitychange', checkExpiry)
+    return () => {
+      window.clearTimeout(timer)
+      window.removeEventListener('focus', checkExpiry)
+      document.removeEventListener('visibilitychange', checkExpiry)
+    }
+  }, [token])
+
+  useEffect(() => {
     if (!token) return
+    let cancelled = false
     api.session(token)
       .then((activeSession) => {
+        if (cancelled) return
         setSession(activeSession)
         const resumePage = localStorage.getItem(resumePageKey)
+        const allowed = [...new Set(['/', ...activeSession.menus.map((menu) => menu.path)])]
+        setNavigation((current) => workspaceNavigation(current, allowed))
         if (resumePage && activeSession.menus.some((menu) => menu.path === resumePage)) {
-          setPage(resumePage)
+          setNavigation((current) => workspaceNavigation({ ...current, page: resumePage }, allowed))
           setMessage('Sesión recuperada. Restauramos el módulo y el avance guardado.')
         }
         localStorage.removeItem(resumePageKey)
       })
       .catch(() => {
+        if (cancelled) return
         localStorage.removeItem(tokenKey)
         setToken('')
         setMessage('La sesión venció. Inicie sesión nuevamente para retomar el punto guardado.')
       })
+    return () => { cancelled = true }
   }, [token, revision])
 
   useEffect(() => {
     if (!token || !session) return
+    let cancelled = false
     api.sources(token).then((items) => {
+      if (cancelled) return
+      setSourcesLoaded(true)
       if (!Array.isArray(items)) {
         setSources([])
         return
@@ -237,7 +319,8 @@ export default function App() {
         if (next) localStorage.setItem(sourceContextKey, String(next))
         return next
       })
-    }).catch(() => setSources([]))
+    }).catch(() => { if (!cancelled) { setSources([]); setSourcesLoaded(true) } })
+    return () => { cancelled = true }
   }, [revision, session, token])
 
   useEffect(() => {
@@ -286,13 +369,18 @@ export default function App() {
   }
 
   function logout() {
+    navigationSequence.current += 1
     localStorage.removeItem(tokenKey)
     localStorage.removeItem(resumePageKey)
     localStorage.removeItem(assistantDraftKey)
     setToken('')
     setSession(null)
     setData(null)
-    setPage('/')
+    setSources([])
+    setSourcesLoaded(false)
+    setNavigation({ ...initialWorkspaceNavigation })
+    sessionStorage.removeItem(workspaceNavigationKey)
+    sessionStorage.removeItem(analyticsContextKey)
   }
 
   function isGroupExpanded(group: { code: string; items: Menu[] }) {
@@ -335,25 +423,26 @@ export default function App() {
       </header>
       <div className={`workspace ${sidebarHidden ? 'sidebar-hidden' : ''}`}>
         <aside className={`navigation-panel ${menuOpen ? 'open' : ''}`}><div className="navigation-intro"><span>Espacio de trabajo</span><strong>Operación BI</strong></div><nav id="main-navigation" aria-label="Navegación principal">
-          {session.menus.filter((menu) => menu.path === '/').map((menu) => <button className={page === menu.path ? 'active direct-menu' : 'direct-menu'} onClick={() => { setPage(menu.path); setOffset(0); setMenuOpen(false) }} key={menu.id}><NavigationIcon name={routeIcons[menu.path] ?? 'home'} /><span>{menu.label}</span></button>)}
-          {groupMenus(session.menus.filter((menu) => menu.path !== '/')).map((group) => <div className="navigation-group" key={group.code}><button className="module-toggle" aria-expanded={isGroupExpanded(group)} aria-controls={`menu-group-${group.code}`} onClick={() => toggleGroup(group)}><span><NavigationIcon name={group.icon} />{group.label}</span><span className="navigation-chevron" aria-hidden="true">{isGroupExpanded(group) ? '⌄' : '›'}</span></button><div className="submenu" id={`menu-group-${group.code}`} hidden={!isGroupExpanded(group)}>{group.items.map((menu) => <button className={page === menu.path ? 'active' : ''} onClick={() => { setPage(menu.path); setOffset(0); setMenuOpen(false) }} key={menu.id}><NavigationIcon name={routeIcons[menu.path] ?? 'menu'} /><span>{menu.label}</span></button>)}</div></div>)}
+          {session.menus.filter((menu) => menu.path === '/').map((menu) => <button className={page === menu.path ? 'active direct-menu' : 'direct-menu'} onClick={() => navigate(menu.path)} key={menu.id}><NavigationIcon name={routeIcons[menu.path] ?? 'home'} /><span>{menu.label}</span></button>)}
+          {groupMenus(session.menus.filter((menu) => menu.path !== '/')).map((group) => <div className="navigation-group" key={group.code}><button className="module-toggle" aria-expanded={isGroupExpanded(group)} aria-controls={`menu-group-${group.code}`} onClick={() => toggleGroup(group)}><span><NavigationIcon name={group.icon} />{group.label}</span><span className="navigation-chevron" aria-hidden="true">{isGroupExpanded(group) ? '⌄' : '›'}</span></button><div className="submenu" id={`menu-group-${group.code}`} hidden={!isGroupExpanded(group)}>{group.items.map((menu) => <button className={page === menu.path ? 'active' : ''} onClick={() => navigate(menu.path)} key={menu.id}><NavigationIcon name={routeIcons[menu.path] ?? 'menu'} /><span>{menu.label}</span></button>)}</div></div>)}
         </nav></aside>
         <button className="sidebar-rail-toggle" aria-expanded={!sidebarHidden} aria-label={sidebarHidden ? 'Mostrar navegación lateral' : 'Ocultar navegación lateral'} title={sidebarHidden ? 'Mostrar navegación lateral' : 'Ocultar navegación lateral'} onClick={() => setSidebarHidden((hidden) => !hidden)}><span aria-hidden="true">{sidebarHidden ? '›' : '‹'}</span></button>
         <section className="content">
           <h1>{labels[page]}</h1>
+          {navigation.returnTo && <div className="form-actions"><button type="button" className="secondary" onClick={returnToOrigin}>← Atrás</button><span className="field-help">Volver a {labels[navigation.returnTo.page]}</span></div>}
           {['/', '/esquema', '/catalogo-analitico', '/asistente', '/datamart-ventas', '/analitica-ventas'].includes(page) && <SourceContextSelector sources={sources} selectedSourceId={selectedSourceId} onChange={selectSource} />}
           {page === '/'
-            ? <Home session={session} token={token} connectionId={selectedSourceId} navigate={setPage} />
+            ? <Home session={session} token={token} connectionId={selectedSourceId} navigate={(path) => navigate(path, true)} setupStep={navigation.setupStep} onSetupStep={(setupStep) => setNavigation((current) => ({ ...current, setupStep }))} />
             : page === '/conexiones'
               ? <ConnectionsPage data={visibleData as Page<DataConnection> | null} message={message} token={token} canWrite={session.permissions.includes('connections.write')} canTest={session.permissions.includes('connections.test')} canRefresh={session.permissions.includes('metadata.refresh')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
               : page === '/esquema'
                 ? <SchemaExplorerPage key={selectedSourceId} source={sources.find((item) => item.connection.id === selectedSourceId) ?? null} snapshots={visibleData as Page<MetadataSnapshot> | null} message={message} token={token} canRefresh={session.permissions.includes('metadata.refresh')} onSaved={() => { setOffset(0); setRevision((value) => value + 1) }} onChangePage={setOffset} />
                 : page === '/asistente'
-                  ? <AnalysisAssistantPage key={selectedSourceId} source={sources.find((item) => item.connection.id === selectedSourceId) ?? null} token={token} canGenerate={session.permissions.includes('copilot.proposals.generate')} canReview={session.permissions.includes('copilot.proposals.review')} canPreviewSemantics={session.permissions.includes('metadata.semantic_resolution.read')} navigate={setPage} />
+                  ? sourcesLoaded ? <AnalysisAssistantPage key={selectedSourceId} source={sources.find((item) => item.connection.id === selectedSourceId) ?? null} token={token} canGenerate={session.permissions.includes('copilot.proposals.generate')} canReview={session.permissions.includes('copilot.proposals.review')} canPreviewSemantics={session.permissions.includes('metadata.semantic_resolution.read')} navigate={navigate} /> : <p className="notice">Comprobando la fuente del borrador guardado…</p>
                 : page === '/datamart-ventas'
-                  ? <SalesDatamartPage key={selectedSourceId} sourceId={selectedSourceId} token={token} canWrite={session.permissions.includes('etl.executions.write')} navigate={setPage} />
+                  ? <SalesDatamartPage key={selectedSourceId} sourceId={selectedSourceId} token={token} canWrite={session.permissions.includes('etl.executions.write')} navigate={navigate} />
                 : page === '/analitica-ventas'
-                  ? <AnalyticsPage key={selectedSourceId} connectionId={selectedSourceId} token={token} canExport={session.permissions.includes('reports.analytics.export')} navigate={setPage} />
+                  ? <AnalyticsPage key={selectedSourceId} connectionId={selectedSourceId} token={token} canExport={session.permissions.includes('reports.analytics.export')} navigate={(path) => navigate(path, true)} />
                 : page === '/catalogo-analitico'
                   ? <AnalysisCatalogPage key={selectedSourceId} source={sources.find((item) => item.connection.id === selectedSourceId) ?? null} token={token} canWrite={session.permissions.includes('copilot.catalog.write')} />
               : page === '/parametros'
@@ -389,9 +478,8 @@ function SourceContextSelector({ sources, selectedSourceId, onChange }: { source
   return <section className="source-context" aria-label="Fuente de datos del espacio de trabajo"><div><p className="eyebrow">Fuente en contexto</p><strong>{selected.connection.name}</strong><span>SQL Server · {selected.connection.database_name} · {selected.status === 'ready' ? 'metadatos disponibles' : selected.status === 'metadata_pending' ? 'requiere instantánea' : 'requiere prueba de conexión'}</span></div><label>Cambiar fuente<select value={selected.connection.id} onChange={(event) => onChange(Number(event.target.value))}>{sources.map((source) => <option key={source.connection.id} value={source.connection.id}>{source.connection.name} · {source.connection.database_name}</option>)}</select></label></section>
 }
 
-function Home({ session, token, connectionId, navigate }: { session: Session; token: string; connectionId: number; navigate: (path: string) => void }) {
+function Home({ session, token, connectionId, navigate, setupStep, onSetupStep }: { session: Session; token: string; connectionId: number; navigate: (path: string) => void; setupStep: number | null; onSetupStep: (step: number | null) => void }) {
   const [readiness, setReadiness] = useState<CopilotReadiness | null>(null)
-  const [setupOpen, setSetupOpen] = useState(false)
   const canReadCopilot = session.permissions.includes('copilot.proposals.read')
 
   useEffect(() => {
@@ -405,16 +493,15 @@ function Home({ session, token, connectionId, navigate }: { session: Session; to
     {canReadCopilot && readiness
       ? <>
         <div className="readiness-grid">{[readiness.source, readiness.metadata, readiness.llm].map((item) => <article className={item.ready ? 'ready' : 'pending'} key={item.label}><span className="status-dot" aria-hidden="true" /><div><h2>{item.label}</h2><p>{item.detail}</p></div></article>)}</div>
-        <section className="home-action-card"><div><p className="eyebrow">Preparación del datamart</p><h2>{readiness.ready ? 'Todo está listo' : 'Faltan prerrequisitos'}</h2><p>{readiness.ready ? 'Puede escoger un dominio y crear una propuesta BI. La aprobación no ejecutará el ETL ni creará tablas todavía.' : 'Use la preparación guiada para completar los componentes pendientes.'}</p></div><div className="form-actions">{readiness.ready && <button onClick={() => navigate('/asistente')}>Crear propuesta de datamart</button>}<button className="secondary" onClick={() => setSetupOpen((value) => !value)}>{setupOpen ? 'Cerrar preparación' : readiness.ready ? 'Revisar configuración' : 'Completar configuración inicial'}</button></div></section>
-        {setupOpen && <SetupWizard readiness={readiness} navigate={navigate} />}
+        <section className="home-action-card"><div><p className="eyebrow">Preparación del datamart</p><h2>{readiness.ready ? 'Todo está listo' : 'Faltan prerrequisitos'}</h2><p>{readiness.ready ? 'Puede escoger un dominio y crear una propuesta BI. La aprobación no ejecutará el ETL ni creará tablas todavía.' : 'Use la preparación guiada para completar los componentes pendientes.'}</p></div><div className="form-actions">{readiness.ready && <button onClick={() => navigate('/asistente')}>Crear propuesta de datamart</button>}<button className="secondary" onClick={() => onSetupStep(setupStep ? null : 1)}>{setupStep ? 'Cerrar preparación' : readiness.ready ? 'Revisar configuración' : 'Completar configuración inicial'}</button></div></section>
+        {setupStep && <SetupWizard readiness={readiness} navigate={navigate} step={setupStep} onStep={onSetupStep} />}
       </>
       : <div className="cards"><article><strong>{session.user.roles.length}</strong><span>roles asignados</span></article><article><strong>{session.permissions.length}</strong><span>permisos efectivos</span></article><article><strong>{session.menus.length}</strong><span>opciones visibles</span></article></div>}
     <p className="notice">El asistente prepara y valida la propuesta. Después de aprobarla podrá materializar el datamart desde el espacio de generación.</p>
   </>
 }
 
-function SetupWizard({ readiness, navigate }: { readiness: CopilotReadiness; navigate: (path: string) => void }) {
-  const [step, setStep] = useState(1)
+function SetupWizard({ readiness, navigate, step, onStep }: { readiness: CopilotReadiness; navigate: (path: string) => void; step: number; onStep: (step: number) => void }) {
   const items = [
     { title: 'Bienvenida y comprobación', text: 'Verificaremos el proveedor de IA, la fuente y sus metadatos.', ready: true },
     { title: 'Proveedor de IA', text: readiness.llm.detail, ready: readiness.llm.ready, path: '/llm' },
@@ -427,7 +514,7 @@ function SetupWizard({ readiness, navigate }: { readiness: CopilotReadiness; nav
     <div className="wizard-progress" aria-label={`Paso ${step} de 5`}>{items.map((item, index) => <span className={index + 1 === step ? 'current' : item.ready ? 'complete' : ''} key={item.title}>{index + 1}</span>)}</div>
     <p className="eyebrow">Paso {step} de 5</p><h2>{current.title}</h2><p>{current.text}</p>
     {current.path && <button onClick={() => navigate(current.path!)}>{step === 5 ? 'Elegir datamart' : current.ready ? 'Revisar este paso' : 'Completar este paso'}</button>}
-    <div className="wizard-actions"><button className="secondary" disabled={step === 1} onClick={() => setStep((value) => Math.max(1, value - 1))}>Atrás</button><button disabled={step === 5} onClick={() => setStep((value) => Math.min(5, value + 1))}>Continuar</button></div>
+    <div className="wizard-actions"><button className="secondary" disabled={step === 1} onClick={() => onStep(Math.max(1, step - 1))}>Atrás</button><button disabled={step === 5} onClick={() => onStep(Math.min(5, step + 1))}>Continuar</button></div>
   </section>
 }
 
@@ -436,6 +523,7 @@ const proposalStatusLabels: Record<BiProposal['status'], string> = {
 }
 const providerLabels: Record<string, string> = {
   gemini: 'Gemini Cloud',
+  'openai-cloud': 'OpenAI',
   'groq-cloud': 'Groq Cloud',
   'anthropic-cloud': 'Anthropic Claude',
   'qwen-cloud': 'Qwen Cloud',
@@ -481,16 +569,18 @@ function revisionChoices(item: BiProposal, kind: 'measure' | 'dimension' | 'kpi'
     const id = stringValue(value[key], '')
     const compiled = effectiveByKey.get(id)
     const diagnostic = diagnostics.filter((entry) => entry.kind === kind && entry.code === id).at(-1)
+    const validatedRequirement = value.decision_origin === 'validated_requirement' || diagnostic?.origin === 'validated_requirement'
     // Never merge raw source_column/calculation into a compiled measure that
     // deliberately replaced or removed them. The name/code is the stable join.
-    const result = { ...(compiled ?? value) }
+    const result: Record<string, unknown> = { ...(compiled ?? value), ...(validatedRequirement ? { decision_origin: 'validated_requirement' } : {}) }
     if (!compiled && !result.calculation && result.calculation_operation !== 'direct') {
       const inputs = stringArrayValue(result.calculation_inputs)
       if (inputs.length) result.calculation = { operation: result.calculation_operation, inputs }
     }
     const primaryMeasure = stringValue(objectValue(compiled?.formula).measure, stringArrayValue(compiled?.inputs)[0] ?? '')
     const editable = kind !== 'kpi' || !compiled || !primaryMeasure || rawMeasureNames.has(primaryMeasure)
-    return { ...result, editor_key: `${kind}:${index}:${id}`, editor_included: Boolean(compiled), editor_editable: editable, editor_reason: !editable ? 'La receta depende de una salida añadida por la validación y se conserva automáticamente.' : compiled ? '' : stringValue(diagnostic?.reason, 'Esta decisión no forma parte del contrato actual.') }
+    const reason = !editable ? 'La receta depende de una salida añadida por la validación y se conserva automáticamente.' : compiled ? '' : stringValue(diagnostic?.reason, 'Esta decisión no forma parte del contrato actual.')
+    return { ...result, editor_key: `${kind}:${index}:${id}`, editor_included: Boolean(compiled), editor_editable: editable, editor_reason: [validatedRequirement ? 'Añadido por la plataforma desde un requisito validado.' : '', reason].filter(Boolean).join(' ') }
   })
   return [...choices, ...effective.filter((value) => !rawKeys.has(stringValue(value[key], ''))).map((value, index) => ({ ...value, editor_key: `${kind}:compiled:${index}:${stringValue(value[key], '')}`, editor_included: true, editor_editable: false, editor_reason: 'Salida añadida por la validación. Se conserva automáticamente; este formulario no modifica su origen.' }))]
 }
@@ -839,13 +929,23 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
       setCatalog(null)
       return
     }
-    api.copilotReadiness(token, source.connection.id)
-      .then(async (ready) => {
+    let cancelled = false
+    let catalogRequest = 0
+    async function loadCurrentCatalog() {
+      const request = ++catalogRequest
+      try {
+        const ready = await api.copilotReadiness(token, source!.connection.id)
+        const currentCatalog = source!.latest_snapshot ? await api.copilotCatalog(token, source!.latest_snapshot.id, source!.connection.id) : null
+        if (cancelled || request !== catalogRequest) return
         setReadiness(ready)
-        if (source.latest_snapshot) setCatalog(await api.copilotCatalog(token, source.latest_snapshot.id, source.connection.id))
-        else setCatalog(null)
-      })
-      .catch((error: Error) => setFeedback({ kind: 'error', message: error.message }))
+        setCatalog(currentCatalog)
+      } catch (error) {
+        if (!cancelled && request === catalogRequest) setFeedback({ kind: 'error', message: error instanceof Error ? error.message : 'No fue posible comprobar el catálogo actual.' })
+      }
+    }
+    void loadCurrentCatalog()
+    window.addEventListener('focus', loadCurrentCatalog)
+    return () => { cancelled = true; window.removeEventListener('focus', loadCurrentCatalog) }
   }, [source, token])
 
   useEffect(() => {
@@ -858,6 +958,28 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
 
   const selectedDomain = catalog?.domains.find((domain) => domain.code === selectedDomainCode)
   const needAssistanceAuthorized = Boolean(needConsentTarget && needConsentTarget === readiness?.llm.metadata_consent_target)
+
+  useEffect(() => {
+    // A stored proposal is historical evidence. Only reconcile a new local draft.
+    if (!selectedDomain || proposal || (draftProposalId && !restoredProposal.current)) return
+    const selection = reconcileAssistantQuestions(questions, selectedDomain.questions)
+    const periods = selectedDomain.periodicities.filter((item) => item.available)
+    const currentPeriod = periods.some((item) => item.code === periodicity) ? periodicity : periods[0]?.code ?? ''
+    if (!selection.removed.length && currentPeriod === periodicity) return
+    needRequestId.current += 1
+    setQuestions(selection.questions)
+    setPeriodicity(currentPeriod)
+    setNeedFormulation(null)
+    setNeedSuggestions(null)
+    setNeedConsentTarget(null)
+    setViability(null)
+    setAcceptedLimitations([])
+    setFormulatingNeed(false)
+    setSuggestingNeeds(false)
+    setValidatingNeed(false)
+    setStep(1)
+    setFeedback({ kind: 'warning', message: 'El catálogo de esta fuente cambió. Conservamos su objetivo y las preguntas vigentes; retiramos las opciones que ya no están disponibles. Revise la selección y la periodicidad, autorice el proveedor y valide de nuevo la necesidad.' })
+  }, [draftProposalId, periodicity, proposal, questions, selectedDomain])
 
   function selectDomain(code: string) {
     const domain = catalog?.domains.find((item) => item.code === code)
@@ -1216,7 +1338,7 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
       if (selectionVersion !== proposalSelectionVersion.current) return
       setRelationCatalog(catalog)
       setRelationDimension(catalog.dimension_names[0] ?? '')
-      setRelationOptionId(catalog.options.find((option) => option.eligible)?.option_id ?? '')
+      setRelationOptionId('')
     }).catch((caught: Error) => {
       if (selectionVersion === proposalSelectionVersion.current) setFeedback({ kind: 'error', message: caught.message })
     })
@@ -1475,7 +1597,7 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
               const nextSelected = !selected
               const fallback = compatible.some((measure) => stringValue(measure.name, '') === selectedMeasure) ? selectedMeasure : stringValue(compatible[0]?.name, '')
               setRevisionDraft({ ...revisionDraft, kpi_codes: nextSelected ? [...revisionDraft.kpi_codes, code] : revisionDraft.kpi_codes.filter((value) => value !== code), kpi_measure_names: { ...revisionDraft.kpi_measure_names, [code]: fallback } })
-            }} /><span className="measure-identity"><strong>{stringValue(item.name, code)}</strong><small>{item.editor_included ? 'Función del contrato' : 'Función propuesta por IA'}</small><span>{semanticRoleLabel(role)}</span><small>Identificador técnico</small><code>{code}</code></span></label>
+            }} /><span className="measure-identity"><strong>{stringValue(item.name, code)}</strong><small>{item.editor_included ? 'Función del contrato' : item.decision_origin === 'validated_requirement' ? 'Función solicitada y validada' : 'Función propuesta por IA'}</small><span>{semanticRoleLabel(role)}</span><small>Identificador técnico</small><code>{code}</code></span></label>
             <p className="field-help">{item.editor_included ? 'Incluido en el contrato actual.' : 'Fuera del contrato actual · no ejecutable.'} {item.editor_reason}</p>
             {item.editor_included && <p><b>Regla del contrato actual:</b> <code>{currentRule}</code></p>}
             {stringArrayValue(item.inputs).length > 0 && <p><b>Entradas del contrato:</b> {stringArrayValue(item.inputs).join(' · ')}</p>}
@@ -1486,25 +1608,25 @@ function AnalysisAssistantPage({ source, token, canGenerate, canReview, canPrevi
       </fieldset>
       {(!proposalReadOnly || creatingRevision) && <section className="relation-correction-panel" aria-labelledby="relation-correction-title">
         <div className="relation-correction-heading">
-          <div><p className="eyebrow">Corrección guiada opcional</p><h3 id="relation-correction-title">Resolver una relación con evidencia</h3></div>
+          <div><p className="eyebrow">Decisión guiada del analista</p><h3 id="relation-correction-title">Resolver una relación con evidencia</h3></div>
           <span>Sin SQL libre</span>
         </div>
-        <p>Use esta herramienta sólo si una dimensión apunta al origen equivocado. La plataforma ofrece exclusivamente relaciones declaradas en la instantánea, descarta las que podrían multiplicar filas y vuelve a validar toda la propuesta.</p>
+        <p>Use esta herramienta para corregir un origen o decidir entre relaciones que representan funciones distintas, como cliente de la venta y destinatario de facturación. Seleccione primero la dimensión y después el vínculo que corresponda a la necesidad. La plataforma comprobará que pertenezca a una ruta válida y conserve el detalle del hecho.</p>
         {!relationCatalog && <p className="notice">Comprobando claves, tipos, cardinalidad y unicidad de las relaciones disponibles…</p>}
         {relationCatalog && <>
           <div className="relation-selector-grid">
-            <label>Dimensión que desea corregir<select value={relationDimension} onChange={(event) => setRelationDimension(event.target.value)}>{relationCatalog.dimension_names.map((name) => <option value={name} key={name}>{businessTechnicalLabel(name)}</option>)}</select></label>
+            <label>Dimensión que desea corregir<select value={relationDimension} onChange={(event) => { setRelationDimension(event.target.value); setRelationOptionId('') }}>{relationCatalog.dimension_names.map((name) => <option value={name} key={name}>{businessTechnicalLabel(name)}</option>)}</select></label>
             <label>Ruta de relación comprobada<select value={relationOptionId} onChange={(event) => setRelationOptionId(event.target.value)}><option value="">Seleccione una relación segura</option>{relationCatalog.options.map((option) => <option disabled={!option.eligible} value={option.option_id} key={option.option_id}>{option.left_table}.{option.left_columns.join(' + ')} → {option.right_table}.{option.right_columns.join(' + ')}{option.eligible ? '' : ' — no habilitada'}</option>)}</select></label>
           </div>
           {selectedRelationOption && <article className={`relation-evidence ${selectedRelationOption.eligible ? 'eligible' : 'blocked'}`}>
-            <div className="relation-evidence-title"><strong>{selectedRelationOption.eligible ? 'Relación apta para revalidar' : 'Relación bloqueada'}</strong><span>{selectedRelationOption.cardinality === 'many_to_one' ? 'Muchos a uno' : selectedRelationOption.cardinality === 'one_to_one' ? 'Uno a uno' : selectedRelationOption.cardinality === 'one_to_many' ? 'Uno a muchos' : 'Cardinalidad no demostrada'}</span></div>
+            <div className="relation-evidence-title"><strong>{selectedRelationOption.eligible ? 'Relación candidata para comprobar' : 'Relación bloqueada'}</strong><span>{selectedRelationOption.cardinality === 'many_to_one' ? 'Muchos a uno' : selectedRelationOption.cardinality === 'one_to_one' ? 'Uno a uno' : selectedRelationOption.cardinality === 'one_to_many' ? 'Uno a muchos' : 'Cardinalidad no demostrada'}</span></div>
             <div className="relation-evidence-grid"><div><small>Tipos de origen</small><b>{selectedRelationOption.left_types.join(', ')}</b></div><div><small>Tipos de destino</small><b>{selectedRelationOption.right_types.join(', ')}</b></div><div><small>Destino único</small><b>{selectedRelationOption.target_unique ? 'Sí' : 'No'}</b></div><div><small>Riesgo de duplicación</small><b>{selectedRelationOption.duplication_risk ? 'Bloqueante' : 'No detectado'}</b></div></div>
             <p>{selectedRelationOption.guidance}</p>
           </article>}
           {relationCatalog.options.some((option) => !option.eligible) && <details className="technical-details"><summary>Por qué otras relaciones están bloqueadas</summary>{relationCatalog.options.filter((option) => !option.eligible).map((option) => <p key={option.option_id}><strong>{option.left_table} → {option.right_table}:</strong> {option.guidance}</p>)}</details>}
           <label>Justificación de esta corrección<textarea rows={3} minLength={10} maxLength={500} value={relationComment} onChange={(event) => setRelationComment(event.target.value)} placeholder="Explique qué concepto de negocio debe representar la dimensión y por qué esta ruta es la correcta." /></label>
           <button type="button" disabled={savingRelation || !selectedRelationOption?.eligible || !relationDimension || relationComment.trim().length < 10} onClick={() => void saveControlledRelation()}>{savingRelation ? 'Creando y revalidando la versión…' : 'Crear versión con relación corregida'}</button>
-          <p className="field-help">Esta acción es independiente de los cambios generales de la sección inferior. Si la utiliza, se creará inmediatamente una nueva versión auditable.</p>
+          <p className="field-help">Esta acción crea una nueva versión y es independiente de los cambios generales de la sección inferior. Un vínculo intermedio puede precisar la ruta sin cambiar la entidad de destino. Las decisiones anteriores se conservan y toda la propuesta vuelve a validarse.</p>
         </>}
       </section>}
       <label>Justificación del ajuste<textarea required minLength={10} maxLength={500} rows={3} value={revisionDraft.comment} onChange={(event) => setRevisionDraft({ ...revisionDraft, comment: event.target.value })} placeholder="Explique por qué este ajuste representa mejor la necesidad del negocio." /></label>
@@ -1577,12 +1699,17 @@ function businessKpiLabel(code: string, fallback: string) {
   } as Record<string, string>)[code] ?? fallback
 }
 
+function genericMoneyUnit(unit: string) {
+  return unit.trim().replace(/\s+/g, ' ').match(/^(?:moneda(?: de origen)?|currency|importe|valor)((?:\s+(?:por|per)\s+.+|\/.+)?)$/i)
+}
+
 function businessKpiUnit(code: string, unit: string, currency: Record<string, unknown>) {
   const declaredUnit = unit.trim().replace(/\s+/g, ' ')
   const currencyCode = stringValue(currency.currency_code, '')
   const verifiedCurrency = currency.status === 'verified' && /^[A-Z]{3}$/.test(currencyCode) ? currencyCode : ''
-  const originUnit = declaredUnit.match(/^(?:moneda(?: de origen)?|currency)((?:\s+(?:por|per)\s+.+|\/.+)?)$/i)
-  const resolvedUnit = originUnit && verifiedCurrency ? `${verifiedCurrency}${originUnit[1]}` : declaredUnit
+  const originUnit = genericMoneyUnit(declaredUnit)
+  const unresolvedUnit = /^(?:importe|valor)$/i.test(declaredUnit) ? 'moneda de origen' : declaredUnit
+  const resolvedUnit = originUnit && verifiedCurrency ? `${verifiedCurrency}${originUnit[1]}` : unresolvedUnit
   // Older catalog recipes omitted the denominator; retain their per-unit meaning.
   if (['costo_por_unidad', 'venta_por_unidad'].includes(code) && !/(?:\s+(?:por|per)\s+|\/)/i.test(resolvedUnit)) {
     return `${/^[A-Z]{3}$/.test(resolvedUnit) ? resolvedUnit : verifiedCurrency || 'moneda de origen'} por unidad`
@@ -1886,7 +2013,7 @@ function SalesDatamartPage({ sourceId, token, canWrite, navigate }: { sourceId: 
         <div className="etl-card-actions"><button className={selectedId === item.proposal_id ? 'secondary' : ''} disabled={selectedId === item.proposal_id} onClick={() => chooseProposal(item.proposal_id)}>{selectedId === item.proposal_id ? 'Seleccionada' : 'Seleccionar'}</button><label><input type="checkbox" checked={compareIds.includes(item.proposal_id)} onChange={() => toggleCompare(item.proposal_id)} />Comparar</label></div>
       </article>)}</div>
       {compared.length > 0 && <section className="etl-comparison"><div className="etl-section-heading"><div><h3>Comparación de propuestas</h3><p>Puede contrastar hasta dos versiones antes de decidir.</p></div><button className="secondary compact" onClick={() => setCompareIds([])}>Cerrar comparación</button></div><div className="etl-comparison-grid">{compared.map((item) => <article key={item.proposal_id}><strong>Versión #{item.proposal_id}</strong><h3>{item.summary}</h3><p><b>Grano:</b> {item.grain}</p><p><b>Medidas:</b> {item.measures.map(businessTechnicalLabel).join(', ')}</p><p><b>KPI:</b> {item.kpi_recipes.map((kpi) => kpi.name).join(', ')}</p></article>)}</div></section>}
-      {catalog.blocked_items.length > 0 && <details className="blocked-versions"><summary>{catalog.blocked_items.length} versiones aprobadas fueron bloqueadas por controles actuales</summary>{catalog.blocked_items.map((item) => <article key={item.proposal_id}><h3>Versión #{item.proposal_id}</h3><ul>{item.blocking_reasons.map((reason) => <li key={reason}>{reason}</li>)}</ul></article>)}</details>}
+      {catalog.blocked_items.length > 0 && <details className="blocked-versions"><summary>{catalog.blocked_items.length} versiones anteriores no habilitadas para una nueva carga</summary><p>Esta lista se refiere a nuevas ejecuciones. Consultar el historial y los expedientes anteriores no modifica sus datos ni su aprobación conservada. Revise el motivo antes de crear una versión derivada.</p>{catalog.blocked_items.map((item) => <article key={item.proposal_id}><h3>Versión #{item.proposal_id}</h3><ul>{item.blocking_reasons.map((reason) => <li key={reason}>{reason}</li>)}</ul></article>)}</details>}
       {latestExecutionMatchesSelection && selected?.latest_execution_id && <p className="notice success"><strong>Este contrato ya fue ejecutado.</strong> La ejecución #{selected.latest_execution_id} conserva la materialización y sus validaciones. No se habilita otra ejecución idéntica.</p>}
       <div className="etl-footer-actions"><span>{selected ? latestExecutionMatchesSelection && selected.latest_execution_id ? `Versión #${selected.proposal_id} ya materializada en la ejecución #${selected.latest_execution_id}` : `Versión #${selected.proposal_id} seleccionada` : 'Seleccione una propuesta'}</span>{latestExecutionMatchesSelection && selected?.latest_execution_id ? <button onClick={() => void openLatestExecution()}>Abrir expediente #{selected.latest_execution_id}</button> : <button disabled={!selected} onClick={() => setStep(2)}>Revisar indicadores</button>}</div>
       </fieldset>
@@ -1920,7 +2047,7 @@ function SalesDatamartPage({ sourceId, token, canWrite, navigate }: { sourceId: 
       <div className={`etl-execution-receipt ${execution.status}`}><span aria-hidden="true">{execution.status === 'failed' ? '!' : '✓'}</span><div><p className="eyebrow">Ejecución #{execution.id}</p><h2>{historicalReadOnly ? 'Expediente histórico conservado' : step === 4 && execution.status === 'prepared' ? 'Contrato preparado correctamente' : step === 4 ? 'Materialización ya ejecutada' : execution.status === 'succeeded' ? 'Datamart materializado y conciliado' : execution.status === 'validation_warning' && objectValue(execution.metrics_document.reconciliation).passed === true ? 'Datamart conciliado; interpretación pendiente' : execution.status === 'validation_warning' ? 'Carga completada con diferencias' : 'La materialización fue revertida'}</h2><p>{historicalReadOnly ? 'Puede consultar la evidencia obtenida en su momento. Las reglas actuales impiden reutilizar este contrato para una ejecución nueva.' : step === 4 && execution.status === 'prepared' ? 'La selección quedó persistida con las huellas de la propuesta y la instantánea. Revise el comprobante antes de iniciar la lectura.' : step === 4 ? 'Esta etapa se conserva para explicar cómo se materializó el expediente; no vuelve a leer la fuente ni habilita otra carga.' : stringValue(execution.validation_document.message, 'Revise el expediente de la ejecución.')}</p></div><strong>{historicalReadOnly || (step === 4 && execution.status !== 'prepared') ? 'Sólo lectura' : step === 4 ? 'Preparada' : execution.status === 'succeeded' ? 'Validada' : execution.status === 'validation_warning' && objectValue(execution.metrics_document.reconciliation).passed === true ? 'Interpretar' : execution.status === 'validation_warning' ? 'Revisar' : 'Fallida'}</strong></div>
       {historicalReadOnly && <div className="analyst-guidance"><strong>No tiene que repetir el ETL</strong><p>Este expediente conserva la propuesta, las huellas y los resultados originales. Para materializar un contrato corregido, genere y apruebe una versión nueva desde el asistente.</p></div>}
       {!historicalReadOnly && <div className="etl-progress-list"><article className="complete"><span>1</span><div><strong>Contrato y fuente revalidados</strong><p>La propuesta continúa aprobada, la fuente está activa y las referencias son compatibles.</p></div></article><article className="complete"><span>2</span><div><strong>Plan determinístico fijado</strong><p>{selectedKpis.length} indicadores y {selected.transformation_plan.length} operaciones quedaron versionados.</p></div></article><article className={step === 5 && execution.status !== 'failed' ? 'complete' : ''}><span>3</span><div><strong>{running ? 'Materializando y cargando…' : 'Materialización física'}</strong><p>{step === 4 ? 'Creará las dimensiones y el hecho en una transacción; un fallo no dejará tablas parciales.' : execution.status === 'failed' ? 'La transacción se revirtió y las tablas publicadas anteriormente no fueron sustituidas.' : 'Extracción, limpieza, claves sustitutas y carga transaccional completadas.'}</p></div></article><article className={step === 5 && objectValue(execution.metrics_document.reconciliation).passed === true ? 'complete' : ''}><span>4</span><div><strong>Conciliación cuantitativa</strong><p>{step === 4 ? 'Contrastará filas, unidades, importes e indicadores con el origen.' : 'El expediente conserva conteos, diferencias, medidas e indicadores calculados.'}</p></div></article></div>}
-      {step === 4 && execution.status === 'prepared' && <div className="analyst-guidance"><strong>Antes de iniciar</strong><p>La operación leerá sólo las columnas aprobadas de SQL Server y reemplazará transaccionalmente el esquema analítico de ventas. Si un control bloqueante falla, el datamart publicado no cambia.</p></div>}
+      {step === 4 && execution.status === 'prepared' && <div className="analyst-guidance"><strong>Antes de iniciar</strong><p>La operación leerá sólo las columnas aprobadas de la fuente seleccionada y creará el esquema analítico propio de este expediente. Las ejecuciones anteriores permanecen separadas. Si un control bloqueante falla, el datamart publicado no cambia.</p></div>}
       {step === 4 && execution.status !== 'prepared' && <div className="analyst-guidance"><strong>Etapa completada</strong><p>La carga ya terminó y quedó asociada a este expediente. Consulte el paso 5 para revisar conciliación, indicadores e interpretación semántica.</p></div>}
       {step === 5 && execution.status !== 'prepared' && <EtlValidationResult execution={execution} canRetry={canWrite && !running && !historicalReadOnly} onVerifyCurrency={() => void verifyCurrency()} onRetry={() => void retrySpanishInterpretation()} onApply={(groups, analystComment) => void applySpanishInterpretation(groups, analystComment)} />}
       {step === 5 && execution.status === 'prepared' && historicalReadOnly && <p className="notice warning">Esta preparación histórica no llegó a materializarse. Se conserva para auditoría y no puede iniciarse con un contrato actualmente bloqueado.</p>}
@@ -1941,7 +2068,7 @@ function EtlValidationResult({ execution, canRetry, onVerifyCurrency, onRetry, o
   if (execution.status === 'failed') return <div className="notice error"><strong>No se publicaron cambios parciales.</strong><p>Revise la conexión, regenere la propuesta si cambió la instantánea y prepare una nueva ejecución. El código técnico queda disponible sólo en los registros del servidor.</p></div>
   const semantic = objectValue(execution.metrics_document.semantic_interpretation)
   const currency = objectValue(execution.metrics_document.currency_context)
-  const requiresCurrencyCheck = currency.status !== 'verified' && kpis.some((kpi) => /^(moneda|moneda de origen|currency)$/i.test(stringValue(kpi.unit, '')))
+  const requiresCurrencyCheck = currency.status !== 'verified' && kpis.some((kpi) => genericMoneyUnit(stringValue(kpi.unit, '')) !== null)
   return <section className="etl-validation-result"><div className="etl-section-heading"><div><p className="eyebrow">Evidencia cuantitativa</p><h2>Conciliación OLTP–datamart</h2><p>Origen y destino se consultaron de forma independiente durante la misma ejecución y quedaron asociados a este expediente.</p></div><span className={reconciliation.passed === true ? 'validation-pass' : 'validation-review'}>{reconciliation.passed === true ? 'Conciliada' : 'Revisar diferencias'}</span></div><div className="reconciliation-metrics"><article><small>Filas de origen</small><strong>{formatInteger(reconciliation.source_rows)}</strong></article><article><small>Filas cargadas</small><strong>{formatInteger(reconciliation.datamart_rows)}</strong></article><article><small>Diferencia</small><strong>{formatInteger(reconciliation.difference_rows)}</strong></article><article><small>Tablas creadas</small><strong>{formatInteger(tables.length)}</strong></article></div>{currency.status === 'verified' && <div className="currency-evidence"><div><strong>Divisa comprobada: {stringValue(currency.currency_code, '')}</strong><span>{stringValue(currency.message, 'La unidad monetaria fue verificada en la fuente.')}</span></div><small>Referencia: {stringValue(currency.source_reference, 'metadatos de la fuente')}</small></div>}{requiresCurrencyCheck && <div className="currency-evidence review"><div><strong>Divisa pendiente de comprobación</strong><span>Los importes están conciliados, pero el sistema todavía no debe asumir un símbolo o código monetario.</span></div><button type="button" className="secondary compact" disabled={!canRetry} onClick={onVerifyCurrency}>Comprobar divisa sin repetir el ETL</button></div>}<div className="etl-result-grid"><section><h3>Calidad por tabla</h3>{tables.map((table) => <article key={stringValue(table.table, '')}><strong>{businessTechnicalLabel(stringValue(table.table, 'Tabla'))}</strong><span>{formatInteger(table.loaded_rows)} cargadas de {formatInteger(table.source_rows)}</span>{Number(table.deduplicated_rows ?? 0) > 0 && <small>{formatInteger(table.deduplicated_rows)} duplicados controlados</small>}</article>)}</section><section><h3>Indicadores calculados</h3>{kpis.length === 0 ? <p>No se calculó un indicador compatible.</p> : kpis.map((kpi) => { const code = stringValue(kpi.code, ''); const unit = businessKpiUnit(code, stringValue(kpi.unit, ''), currency); const perUnit = ['costo_por_unidad', 'venta_por_unidad'].includes(code); return <article key={code}><strong>{businessKpiLabel(code, stringValue(kpi.name, 'Indicador'))}</strong><span title={`Valor exacto: ${String(kpi.value ?? '—')}`}>{formatKpiDisplay(kpi.value, unit)}</span>{perUnit && <small>Promedio ponderado: total monetario ÷ total de unidades vendidas.</small>}<small>{kpi.status === 'reconciled' ? 'Conciliado' : 'Requiere revisión'}</small></article> })}</section></div><SemanticInterpretationReview semantic={semantic} canAct={canRetry} onRetry={onRetry} onApply={onApply} /></section>
 }
 
@@ -2426,7 +2553,7 @@ function ParametersPage({ data, message, token, canWrite, onSaved, onChangePage 
   return <>
     <p className="lead">Estos son los únicos parámetros operativos aprobados. No se pueden crear claves libres ni guardar secretos aquí.</p>
     {feedback && <p className={`notice ${feedback.kind}`} role={feedback.kind === 'error' ? 'alert' : 'status'}>{feedback.message}</p>}
-    <div className="parameter-grid">{data.items.map((item) => <article className="parameter-card" key={item.id}><div><p className="eyebrow">{item.module_code}</p><h2>{item.name}</h2><p>{item.description}</p><small>{item.key}</small></div><label>Valor<input type="number" min={item.min_value} max={item.max_value} value={values[item.key] ?? item.value} disabled={!canWrite} onChange={(event) => { dirtyKeys.current.add(item.key); setValues((current) => ({ ...current, [item.key]: event.target.value })) }} /></label><p className="parameter-range">Rango: {item.min_value}–{item.max_value} · Predeterminado: {item.default_value}</p>{canWrite && <div className="row-actions"><button onClick={() => void save(item)}>Guardar</button><button className="secondary" onClick={() => void reset(item)} disabled={item.value === item.default_value}>Restaurar</button></div>}</article>)}</div>
+    <div className="parameter-grid">{data.items.map((item) => <article className="parameter-card" key={item.id}><div><p className="eyebrow">{({ security: 'Seguridad', ui: 'Interfaz', connections: 'Conexiones', llm: 'Asistente de IA', metadata: 'Metadatos' } as Record<string, string>)[item.module_code] ?? item.module_code}</p><h2>{item.name}</h2><p>{item.description}</p><small>{item.key}</small></div><label>Valor<input type="number" min={item.min_value} max={item.max_value} value={values[item.key] ?? item.value} disabled={!canWrite} onChange={(event) => { dirtyKeys.current.add(item.key); setValues((current) => ({ ...current, [item.key]: event.target.value })) }} /></label><p className="parameter-range">Rango: {item.min_value}–{item.max_value} · Predeterminado: {item.default_value}</p>{canWrite && <div className="row-actions"><button onClick={() => void save(item)}>Guardar</button><button className="secondary" onClick={() => void reset(item)} disabled={item.value === item.default_value}>Restaurar</button></div>}</article>)}</div>
     <Pagination page={data} onChange={onChangePage} />
   </>
 }
@@ -2524,6 +2651,7 @@ type Field = { key: string; label: string; placeholder?: string; secret?: boolea
 type FormConfig = { singular: string; createTitle: string; help: string; fields: Field[]; empty: Values; read: (row: Row) => Values; create: (values: Values) => Promise<unknown>; update: (row: Row, values: Values) => Promise<unknown> }
 
 const llmProviderPresets: Record<string, Partial<Values>> = {
+  'openai-cloud': { base_url: 'https://api.openai.com/v1', model_id: 'gpt-6-luna', reasoning_level: 'low' },
   gemini: { base_url: 'https://generativelanguage.googleapis.com', model_id: 'gemini-3.6-flash', reasoning_level: 'minimal' },
   'groq-cloud': { base_url: 'https://api.groq.com/openai/v1', model_id: 'openai/gpt-oss-120b', reasoning_level: 'low' },
   'anthropic-cloud': { base_url: 'https://api.anthropic.com', model_id: 'claude-haiku-4-5-20251001', reasoning_level: 'minimal' },
@@ -2578,7 +2706,7 @@ function formConfig(page: string, token: string, roles: Role[], permissions: Per
   }
   return {
     singular: 'configuración LLM', createTitle: 'Crear configuración LLM', help: 'Seleccione un proveedor para completar su URL y modelo recomendados. Después de guardar, registre aquí la credencial cloud cifrada. Puede revisar los valores antes de crear la configuración.',
-    fields: [{ key: 'name', label: 'Nombre de configuración' }, { key: 'provider_kind', label: 'Proveedor', kind: 'select', options: [{ value: '', label: 'Seleccione un proveedor' }, { value: 'anthropic-cloud', label: 'Anthropic Claude — Haiku, rápido y económico' }, { value: 'groq-cloud', label: 'Groq Cloud — rápido para análisis BI' }, { value: 'gemini', label: 'Gemini Cloud' }, { value: 'qwen-cloud', label: 'Qwen Cloud' }, { value: 'ollama-local', label: 'Ollama local — no requiere API key' }] }, { key: 'base_url', label: 'URL del servicio', placeholder: 'Se completa al seleccionar el proveedor' }, { key: 'model_id', label: 'Modelo', placeholder: 'Se completa al seleccionar el proveedor' }, { key: 'reasoning_level', label: 'Nivel de razonamiento', kind: 'select', options: llmReasoningOptions }],
+    fields: [{ key: 'name', label: 'Nombre de configuración' }, { key: 'provider_kind', label: 'Proveedor', kind: 'select', options: [{ value: '', label: 'Seleccione un proveedor' }, { value: 'openai-cloud', label: 'OpenAI — modelo configurable' }, { value: 'anthropic-cloud', label: 'Anthropic Claude — Haiku, rápido y económico' }, { value: 'groq-cloud', label: 'Groq Cloud — rápido para análisis BI' }, { value: 'gemini', label: 'Gemini Cloud' }, { value: 'qwen-cloud', label: 'Qwen Cloud' }, { value: 'ollama-local', label: 'Ollama local — no requiere API key' }] }, { key: 'base_url', label: 'URL del servicio', placeholder: 'Se completa al seleccionar el proveedor' }, { key: 'model_id', label: 'Modelo', placeholder: 'Se completa al seleccionar el proveedor' }, { key: 'reasoning_level', label: 'Nivel de razonamiento', kind: 'select', options: llmReasoningOptions }],
     empty: { name: '', provider_kind: '', base_url: '', model_id: '', reasoning_level: 'minimal' }, read: (row) => ({ name: String(row.name), provider_kind: String(row.provider_kind), base_url: String(row.base_url), model_id: String(row.model_id), reasoning_level: String(row.reasoning_level ?? 'minimal') }),
     create: (v) => api.create('/llm-configurations', token, { ...v, is_active: false }),
     update: (row, v) => api.upsert(`/llm-configurations/${row.id}`, token, { ...v, is_active: active(row) === 'true' }),

@@ -1,0 +1,2958 @@
+{
+  "titulo": "Operación del asistente de BI la carga y el análisis de ventas",
+  "tipo": "Insumo profundo para manual de aprendizaje",
+  "fecha_redaccion": "2026-11-18T 00:40:52.806707-05:00",
+  "repositorio": "/home/ceo/Proyectos/BI",
+  "commit_leido": "39383d65bda89eff123e04f28f84fd2e482909e8",
+  "alcance_de_verificacion": "Lectura del código y de evidencia documental conservada. No se ejecutó aplicación, IA, ETL, base de datos ni pruebas funcionales nuevas al redactar este insumo.",
+  "reglas_editoriales": [
+    "No presentar ejercicios propuestos como pruebas realizadas.",
+    "No garantizar generación idéntica o éxito de todos los escenarios de un LLM.",
+    "No incluir credenciales o tokens.",
+    "Mantener distinción pedido/factura, rol de entidad, moneda e identidad.",
+    "Poner los resultados históricos junto a su fecha y expediente."
+  ],
+  "secciones": [
+    {
+      "codigo": "BI01",
+      "titulo": "Antes de empezar piense qué decisión necesita apoyar",
+      "roles": [
+        "Analista de BI",
+        "Gerente comercial"
+      ],
+      "objetivo_de_aprendizaje": "Distinguir la pregunta comercial, el evento y el nivel de detalle antes de pedir un datamart.",
+      "introduccion": [
+        "Un datamart reúne datos organizados para un análisis concreto. En este proyecto el punto de partida es una necesidad de ventas escrita por una persona. La plataforma ayuda a relacionarla con la estructura disponible y conserva las decisiones que llevan hasta el tablero.",
+        "Antes de abrir el asistente, escriba qué quiere comparar, con qué indicador, por qué entidades y en qué período. Elija si observa pedidos o facturas. Un pedido representa una solicitud de venta; una factura representa otro evento. Sus importes no demuestran por sí solos cobro, entrega realizada o utilidad.",
+        "La interfaz ofrece un proceso común para fuentes distintas. La demostración comprobada utiliza dos bases SQL Server. Cambian sus tablas, claves y significados; no debe copiarse la elección técnica de una base a otra sólo porque los botones son iguales."
+      ],
+      "conceptos": [
+        {
+          "termino": "Hecho",
+          "explicacion": "Registro del evento que se analizará, por ejemplo una línea de pedido o una línea de factura."
+        },
+        {
+          "termino": "Granularidad o grano",
+          "explicacion": "Qué representa exactamente una fila del hecho. Decir una línea de factura permite comprobar qué se conserva y evita llamar factura a cada línea."
+        },
+        {
+          "termino": "Dimensión",
+          "explicacion": "Información que permite agrupar y describir el hecho: fecha, producto, cliente o territorio. Una clave identifica; un nombre ayuda a interpretar."
+        },
+        {
+          "termino": "Medida",
+          "explicacion": "Valor asociado al hecho, como cantidad, importe de línea o identificador del documento que se contará de forma distinta."
+        },
+        {
+          "termino": "Indicador",
+          "explicacion": "Cálculo con una finalidad comercial: total de unidades, facturas distintas o importe por factura. Debe tener fórmula, unidad, alcance y procedencia."
+        },
+        {
+          "termino": "Agregación",
+          "explicacion": "Forma de resumir varias filas. Sumar, contar y promediar responden preguntas distintas."
+        },
+        {
+          "termino": "Procedencia",
+          "explicacion": "Cadena que identifica fuente, instantánea de metadatos, propuesta, ejecución y relaciones empleadas."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Fuente en contexto",
+          "significado_y_criterio": "Base elegida para trabajar. Debe coincidir con la necesidad, los metadatos y el resultado consultado."
+        },
+        {
+          "campo": "Dominio Ventas",
+          "significado_y_criterio": "Perfil funcional implementado. No convierte automáticamente en ventas todas las tablas de la base."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Escriba una decisión concreta, por ejemplo priorizar productos según unidades registradas cada mes.",
+          "resultado_que_debe_observar": "Una necesidad que se puede contrastar con datos, sin pedir todavía una conclusión causal."
+        },
+        {
+          "numero": 2,
+          "accion": "Precise el evento: pedido o factura, y la fila mínima que desea conservar.",
+          "resultado_que_debe_observar": "Un grano explícito, como una línea de pedido."
+        },
+        {
+          "numero": 3,
+          "accion": "Anote los indicadores y sus unidades.",
+          "resultado_que_debe_observar": "Por ejemplo importe, unidades, pedidos distintos e importe por pedido, sin confundirlos."
+        },
+        {
+          "numero": 4,
+          "accion": "Identifique la fuente y revise su esquema antes de generar la propuesta.",
+          "resultado_que_debe_observar": "Tablas y relaciones de esa base, sin suponer que tener un nombre parecido demuestra el significado."
+        }
+      ],
+      "que_hace_la_IA": [
+        "En esta preparación la persona define el propósito. La IA podrá sugerir una redacción y un diseño, pero todavía no existe evidencia de que una propuesta haya sido aprobada o cargada."
+      ],
+      "que_valida_la_plataforma": [
+        "Los controles posteriores comprobarán referencias, relaciones y recetas. La disponibilidad de una columna no demuestra por sí sola calidad, vigencia histórica o suficiencia de registros."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "El analista decide el evento y los significados; la gerencia aporta la decisión comercial que desea apoyar."
+      ],
+      "resultado_esperado": "Una ficha de necesidad que se pueda leer y explicar antes de pulsar Generar.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "El objetivo dice analizar todas las ventas para mejorar el negocio.",
+          "accion": "Acótelo: indique evento, indicador, comparación y límite. Evite pedir que el sistema demuestre por adelantado un aumento de ventas."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "Con un pedido que tiene tres líneas, indique cuántas filas de hecho y cuántos pedidos distintos habría.",
+        "respuesta_orientativa": "Tres filas a grano de línea y un pedido distinto. Contar filas no da el número de pedidos."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿Un gráfico de importe prueba rentabilidad?",
+          "respuesta_orientativa": "No. Harían falta costos comparables y una definición de margen, entre otros datos."
+        },
+        {
+          "pregunta": "¿Una base nueva exige programar un tablero específico con su nombre?",
+          "respuesta_orientativa": "El recorrido es común; primero se configuran y comprueban sus metadatos y decisiones. La compatibilidad real requiere los adaptadores y operaciones implementados."
+        }
+      ]
+    },
+    {
+      "codigo": "BI02",
+      "titulo": "Asistente paso 1 escribir o elegir una necesidad",
+      "roles": [
+        "Analista de BI"
+      ],
+      "objetivo_de_aprendizaje": "Completar el objetivo, las preguntas, la periodicidad y la autorización de metadatos sin perder el propósito comercial.",
+      "introduccion": [
+        "Entre a Asistente de datamart con la fuente correcta y seleccione el dominio de ventas. El recorrido tiene cinco etapas: Necesidad, Conceptos, Propuesta, Personalización y Revisión.",
+        "Puede comenzar con su propio texto o pedir sugerencias con la estructura de la fuente. Las sugerencias no sustituyen el objetivo automáticamente: primero se leen su explicación, evidencia y límites; después se pulsa Usar esta necesidad."
+      ],
+      "conceptos": [
+        {
+          "termino": "Objetivo del análisis",
+          "explicacion": "Describe qué necesita conocer la persona. Debe conservar el evento y las limitaciones que importan al negocio."
+        },
+        {
+          "termino": "Preguntas de negocio",
+          "explicacion": "Orientaciones del catálogo de esta fuente. Seleccionarlas no fija por sí solo tablas, dimensiones ni fórmulas."
+        },
+        {
+          "termino": "Periodicidad",
+          "explicacion": "Forma temporal de resumir o presentar el análisis. Elegir Mensual no significa programar una recarga automática cada mes ni reducir el hecho necesariamente a una fila mensual."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Objetivo del análisis",
+          "significado_y_criterio": "Texto de 20 a 2.000 caracteres. Escriba qué comparar, indicadores, grano y límites. No escriba SQL."
+        },
+        {
+          "campo": "Destino",
+          "significado_y_criterio": "Identifica el proveedor/configuración que recibirá la necesidad y los metadatos autorizados."
+        },
+        {
+          "campo": "Autorizo enviar estos metadatos y la necesidad al proveedor indicado para esta revisión",
+          "significado_y_criterio": "Habilita la asistencia para ese destino. Si cambia el proveedor se debe revisar de nuevo el consentimiento."
+        },
+        {
+          "campo": "Preguntas de negocio disponibles",
+          "significado_y_criterio": "Casillas con etiqueta y explicación. Una pregunta no disponible no se convierte en viable por forzar su selección."
+        },
+        {
+          "campo": "Periodicidad",
+          "significado_y_criterio": "Seleccione una opción disponible del catálogo, por ejemplo Mensual."
+        },
+        {
+          "campo": "Sugerir necesidades con esta fuente",
+          "significado_y_criterio": "Solicita posibles objetivos desde los metadatos; no necesita que ya haya una propuesta."
+        },
+        {
+          "campo": "Ayúdame a formular la necesidad",
+          "significado_y_criterio": "Propone una redacción a partir del objetivo y preguntas existentes. Requiere un objetivo suficiente y preguntas seleccionadas."
+        },
+        {
+          "campo": "Usar esta redacción / Mantener mi redacción",
+          "significado_y_criterio": "Permite aceptar la propuesta textual o conservar el texto propio."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Compruebe nombre de fuente e instantánea visibles antes de redactar.",
+          "resultado_que_debe_observar": "El objetivo quedará asociado a esa estructura, no a otra base."
+        },
+        {
+          "numero": 2,
+          "accion": "Seleccione preguntas que respondan a la decisión, sin marcar todo por costumbre.",
+          "resultado_que_debe_observar": "Alcance entendible y coherente con el catálogo de esta fuente."
+        },
+        {
+          "numero": 3,
+          "accion": "Elija periodicidad y autorice el destino que aparece en pantalla.",
+          "resultado_que_debe_observar": "Asistencia habilitada para el proveedor indicado."
+        },
+        {
+          "numero": 4,
+          "accion": "Escriba la necesidad o pulse Sugerir necesidades con esta fuente.",
+          "resultado_que_debe_observar": "Texto propio o varias opciones con fundamento y limitaciones."
+        },
+        {
+          "numero": 5,
+          "accion": "Si usa Ayúdame a formular la necesidad, compare la propuesta con el original.",
+          "resultado_que_debe_observar": "La redacción conserva el evento, indicadores y límites; no añade pronósticos ni otra fuente."
+        },
+        {
+          "numero": 6,
+          "accion": "Use sólo el texto que represente su necesidad y compruebe su viabilidad.",
+          "resultado_que_debe_observar": "La plataforma inicia una revisión previa; todavía no se aprueba ni se ejecuta ETL."
+        }
+      ],
+      "que_hace_la_IA": [
+        "Sugiere objetivos y mejora redacciones con el contexto estructural autorizado. Su respuesta pasa controles de formato y de referencias antes de ofrecerse como utilizable."
+      ],
+      "que_valida_la_plataforma": [
+        "Existencia de instantánea, catálogo y proveedor utilizables; longitud y selección requeridas; destino del consentimiento; referencias y semántica admitida en la revisión de necesidad. Cambiar objetivo, preguntas o periodicidad invalida la revisión anterior."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "El analista elige si usa una sugerencia y confirma que el texto representa la necesidad. Autorizar metadatos no equivale a aprobar el diseño ni la carga."
+      ],
+      "resultado_esperado": "Una necesidad vigente, entendida y lista para la comprobación previa.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "No se habilita el botón de asistencia.",
+          "accion": "Revise permiso de generación, proveedor activo y probado, autorización, instantánea y los campos requeridos."
+        },
+        {
+          "situacion": "La IA cambió el evento o añadió costos no solicitados.",
+          "accion": "Mantenga su texto o corríjalo antes de continuar; no acepte una ampliación sólo por estar bien redactada."
+        },
+        {
+          "situacion": "No aparecen sugerencias utilizables.",
+          "accion": "Lea el aviso, redacte un alcance más sencillo y compruebe la viabilidad; no se inventan datos faltantes."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "Redacte dos versiones del mismo objetivo: una vaga y otra que precise evento, grano, indicador y comparación.",
+        "respuesta_orientativa": "La segunda debe permitir reconocer qué salida se revisará; por ejemplo unidades por producto y mes conservando cada línea de pedido."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿Usar esta necesidad ejecuta una carga?",
+          "respuesta_orientativa": "No. Sólo coloca el texto elegido; se revisan preguntas y viabilidad antes de generar."
+        },
+        {
+          "pregunta": "¿Mensual programa el ETL?",
+          "respuesta_orientativa": "No. Es periodicidad analítica; el inicio de la carga sigue siendo una acción explícita."
+        }
+      ]
+    },
+    {
+      "codigo": "BI03",
+      "titulo": "Comprender la viabilidad antes de generar",
+      "roles": [
+        "Analista de BI"
+      ],
+      "objetivo_de_aprendizaje": "Interpretar directo, derivable, ambiguo y no disponible sin confundir la estructura con datos ya comprobados.",
+      "introduccion": [
+        "La revisión actual combina un análisis de la IA con reglas de la plataforma. Su objetivo es relacionar la necesidad con nombres, tipos, claves y relaciones de la instantánea. No consulta todas las filas del negocio para demostrar resultados.",
+        "Una derivación inequívoca puede resolverse al construir la propuesta mediante una ruta declarada o una fórmula controlada. Una interpretación candidata de IA sigue pendiente de validación: su frase no se ejecuta como fórmula libre."
+      ],
+      "conceptos": [
+        {
+          "termino": "Directo",
+          "explicacion": "Existe una referencia estructural adecuada comprobada para el requisito."
+        },
+        {
+          "termino": "Derivable por relación",
+          "explicacion": "El requisito puede obtenerse recorriendo vínculos verificados sin cambiar indebidamente el grano."
+        },
+        {
+          "termino": "Derivable por fórmula",
+          "explicacion": "Puede calcularse con entradas compatibles y una operación permitida, por ejemplo precio × tasa de descuento × cantidad."
+        },
+        {
+          "termino": "Ambiguo",
+          "explicacion": "Existen opciones o significados que requieren una definición del analista; una relación válida no basta para decidir su rol comercial."
+        },
+        {
+          "termino": "No disponible",
+          "explicacion": "La revisión no encuentra respaldo suficiente para esa capacidad dentro del alcance actual."
+        },
+        {
+          "termino": "Limitación aceptada",
+          "explicacion": "Constancia de que se entiende una ausencia; no crea una fuente ni demuestra que el requisito se cumpla."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Viabilidad contra los metadatos",
+          "significado_y_criterio": "Resumen de requisitos y evidencia. Lea cada tarjeta además del total de estados."
+        },
+        {
+          "campo": "Ver evidencia técnica",
+          "significado_y_criterio": "Muestra las referencias/rutas que sustentan el requisito."
+        },
+        {
+          "campo": "Fórmula controlada",
+          "significado_y_criterio": "Receta propuesta por las reglas con entradas identificadas."
+        },
+        {
+          "campo": "Interpretación propuesta por IA no ejecutable",
+          "significado_y_criterio": "Descripción que todavía debe convertirse y validarse en un contrato permitido."
+        },
+        {
+          "campo": "Comprendo esta limitación y acepto continuar sin que el sistema invente una solución",
+          "significado_y_criterio": "Aceptación individual de requisitos ambiguos o ausentes; no debe marcarse sin leer."
+        },
+        {
+          "campo": "Generar conceptos y propuesta",
+          "significado_y_criterio": "Usa la revisión vigente y las limitaciones expresamente aceptadas para generar una propuesta."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Lea el resumen de viabilidad y abra la evidencia de cada requisito importante.",
+          "resultado_que_debe_observar": "Identifica qué está respaldado y qué requiere una decisión."
+        },
+        {
+          "numero": 2,
+          "accion": "En las derivaciones, compruebe si se trata de relación o fórmula y qué entradas usa.",
+          "resultado_que_debe_observar": "No se pide completar SQL ni buscar una columna sólo para quitar el aviso."
+        },
+        {
+          "numero": 3,
+          "accion": "Si un requisito imprescindible es ambiguo o ausente, vuelva a la necesidad y aclárelo.",
+          "resultado_que_debe_observar": "El objetivo no promete una salida imposible."
+        },
+        {
+          "numero": 4,
+          "accion": "Acepte sólo limitaciones que permitan todavía responder la pregunta útil del caso.",
+          "resultado_que_debe_observar": "Queda un alcance válido y las ausencias no se ocultan."
+        },
+        {
+          "numero": 5,
+          "accion": "Genere y después revise De la necesidad al datamart.",
+          "resultado_que_debe_observar": "Cada requisito debe aparecer cubierto, resuelto, limitado o pendiente, sin descarte silencioso."
+        }
+      ],
+      "que_hace_la_IA": [
+        "Examina la necesidad dentro del contexto de la fuente y aporta requisitos y explicaciones. La respuesta se combina con el análisis estructural y los controles de referencias."
+      ],
+      "que_valida_la_plataforma": [
+        "Referencias, relaciones, semántica admitida, alcance del evento y huella de entrada. La aprobación posterior vuelve a comprobar el contrato; aceptar una limitación no omite los controles bloqueantes."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "El analista aclara ambigüedades, reduce alcance cuando corresponde y decide qué limitaciones son aceptables."
+      ],
+      "resultado_esperado": "Una revisión vigente y un alcance defendible antes del diseño.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "La necesidad tiene respaldo estructural y luego falla la propuesta.",
+          "accion": "Son controles distintos. La viabilidad no garantiza que el proveedor entregue un contrato válido; revise el error y reintente o ajuste el diseño."
+        },
+        {
+          "situacion": "El sistema pide validar otra vez.",
+          "accion": "Compruebe si cambió el objetivo, periodicidad, preguntas, fuente o destino del proveedor; una aceptación anterior no debe reutilizarse a ciegas."
+        },
+        {
+          "situacion": "Una casilla de limitación parece desbloquear todo.",
+          "accion": "El botón puede permitir continuar con un alcance parcial, pero no fabrica la capacidad ausente ni habilita SQL libre."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "Explique qué haría si se pide margen y sólo se encuentra importe de venta.",
+        "respuesta_orientativa": "No afirmar margen; comprobar si hay costo comparable verificable, aclarar el alcance o aceptar que esa salida no estará disponible."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿Derivable significa que la alumna debe escribir una fórmula SQL?",
+          "respuesta_orientativa": "No. Las rutas/fórmulas inequívocas se resuelven mediante operaciones controladas. Una ambigüedad se decide con evidencia."
+        },
+        {
+          "pregunta": "¿Viabilidad demuestra que todas las filas están bien?",
+          "respuesta_orientativa": "No. Acredita respaldo estructural; la carga y conciliación revisarán datos concretos."
+        }
+      ]
+    },
+    {
+      "codigo": "BI04",
+      "titulo": "Asistente paso 2 revisar los conceptos",
+      "roles": [
+        "Analista de BI"
+      ],
+      "objetivo_de_aprendizaje": "Seleccionar conceptos a partir de evidencia y usar el copiloto como apoyo a una decisión explícita.",
+      "introduccion": [
+        "La pantalla Conceptos encontrados traduce la necesidad en conceptos vinculados a referencias técnicas. La confianza alta no reemplaza revisar qué tabla representa el evento. Los conceptos con evidencia débil pueden quedar excluidos preventivamente.",
+        "El copiloto de conceptos es distinto del chat del tablero: aquí explica la conveniencia de incluir una entidad en el diseño, no analiza todavía los importes cargados."
+      ],
+      "conceptos": [
+        {
+          "termino": "Concepto de negocio",
+          "explicacion": "Idea que la persona reconoce, como producto, cliente o territorio, asociada a columnas o tablas verificables."
+        },
+        {
+          "termino": "Confianza",
+          "explicacion": "Orientación de revisión; no es una medición de precisión universal del LLM."
+        },
+        {
+          "termino": "Inclusión excepcional",
+          "explicacion": "Decisión consciente de incluir un concepto cuya evidencia exige atención. Después debe superar la nueva validación."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Incluir",
+          "significado_y_criterio": "Casilla que conserva o excluye el concepto de la siguiente propuesta."
+        },
+        {
+          "campo": "Ver evidencia y cómo resolver",
+          "significado_y_criterio": "Expone origen técnico, comprobaciones y orientación."
+        },
+        {
+          "campo": "Confirmar inclusión excepcional",
+          "significado_y_criterio": "Se usa si el concepto con evidencia débil se mantiene incluido; no inventa una relación."
+        },
+        {
+          "campo": "Consultar al copiloto",
+          "significado_y_criterio": "Abre conversación del concepto con objetivo, referencias y expediente."
+        },
+        {
+          "campo": "Pregunta para el copiloto",
+          "significado_y_criterio": "Entre 10 y 500 caracteres. Pregunte qué significa la relación o qué riesgo tiene incluirla."
+        },
+        {
+          "campo": "Aplicar recomendación",
+          "significado_y_criterio": "Cambia la selección según la recomendación de incluir/excluir; exige una acción de la persona."
+        },
+        {
+          "campo": "Generar propuesta BI",
+          "significado_y_criterio": "Continúa con la selección; si cambia el alcance de conceptos puede generar otra versión con IA."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Lea nombre, descripción, confianza y estado de cada tarjeta.",
+          "resultado_que_debe_observar": "Identifica por qué una entidad está incluida o excluida."
+        },
+        {
+          "numero": 2,
+          "accion": "Abra la evidencia de los conceptos con revisión requerida.",
+          "resultado_que_debe_observar": "Relaciona el nombre comercial con las referencias reales."
+        },
+        {
+          "numero": 3,
+          "accion": "Pregunte al copiloto por riesgos, claves y consecuencias si aún no puede justificar la selección.",
+          "resultado_que_debe_observar": "Obtiene una explicación contextual con evidencia citada."
+        },
+        {
+          "numero": 4,
+          "accion": "Excluya lo que no responda al objetivo o confirme expresamente una inclusión excepcional sustentada.",
+          "resultado_que_debe_observar": "No quedan decisiones pendientes de inclusión."
+        },
+        {
+          "numero": 5,
+          "accion": "Pulse Generar propuesta BI.",
+          "resultado_que_debe_observar": "Se obtiene el contrato para revisar; se conserva trazabilidad si se generó otra versión."
+        }
+      ],
+      "que_hace_la_IA": [
+        "Explica riesgo, consecuencias de incluir/excluir y recomendación. La conversación no modifica selecciones por sí sola."
+      ],
+      "que_valida_la_plataforma": [
+        "Las referencias y el contrato resultante vuelven a validarse. No se permite continuar sin conceptos ni con decisiones de inclusión pendientes."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "El analista decide la selección y aplica o rechaza la recomendación."
+      ],
+      "resultado_esperado": "Un conjunto de conceptos que la alumna pueda justificar en lenguaje de negocio.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "La IA recomienda incluir pero la evidencia no demuestra la relación.",
+          "accion": "No aplique la recomendación sólo por su tono. Excluya o defina el negocio y revise una nueva propuesta."
+        },
+        {
+          "situacion": "Quedan conceptos por confirmar.",
+          "accion": "Confirme únicamente los que entiende y puede sostener, o desmárquelos para continuar con un alcance menor."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "Pregunte: ¿qué riesgo tendría incluir este concepto en el datamart? Registre una evidencia y una decisión.",
+        "respuesta_orientativa": "La decisión debe relacionar el concepto con la necesidad; la recomendación de IA no equivale a aprobación."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿Consultar al copiloto carga datos?",
+          "respuesta_orientativa": "No. Esta conversación usa el expediente y metadatos del diseño; no ejecuta el ETL."
+        },
+        {
+          "pregunta": "¿Excluir un concepto elimina información del origen?",
+          "respuesta_orientativa": "No. Lo retira del alcance de la propuesta."
+        }
+      ]
+    },
+    {
+      "codigo": "BI05",
+      "titulo": "Asistente paso 3 leer el diseño propuesto",
+      "roles": [
+        "Analista de BI"
+      ],
+      "objetivo_de_aprendizaje": "Explicar grano, hecho, medidas, dimensiones, indicadores y cobertura antes de personalizar o aprobar.",
+      "introduccion": [
+        "La propuesta es un contrato de diseño que responde a la necesidad. Empiece por el grano y el evento; después revise medidas y relaciones.",
+        "Una propuesta puede tener más indicadores que los cuatro de una práctica. La cantidad depende de la generación. Revise cuáles responden al objetivo y no memorice una cantidad universal de tarjetas."
+      ],
+      "conceptos": [
+        {
+          "termino": "Clave del grano",
+          "explicacion": "Columna o combinación que identifica la fila mínima. En una fuente puede ser una clave simple y en otra una combinación."
+        },
+        {
+          "termino": "Proveniencia de una medida",
+          "explicacion": "Referencias y fórmula que explican de dónde sale el valor."
+        },
+        {
+          "termino": "Identidad descriptiva",
+          "explicacion": "Nombre reconocible de la entidad y su tipo cuando corresponde. No basta mostrar sólo una clave técnica."
+        },
+        {
+          "termino": "Cobertura",
+          "explicacion": "Correspondencia entre cada requisito del objetivo y las salidas que realmente incluye el contrato."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Granularidad y Clave del grano",
+          "significado_y_criterio": "Qué conserva el hecho; no confundir periodicidad mensual con grano físico de línea."
+        },
+        {
+          "campo": "Hecho y medidas",
+          "significado_y_criterio": "Para cada medida se muestran nombre, agregación, origen y fórmula."
+        },
+        {
+          "campo": "Dimensiones y Columnas de origen",
+          "significado_y_criterio": "Atributos con los que se describirán y agruparán los hechos."
+        },
+        {
+          "campo": "Campos que creará el ETL",
+          "significado_y_criterio": "Nombres/tipos descriptivos derivados por rutas verificadas; no son columnas que ya existan necesariamente en la fuente."
+        },
+        {
+          "campo": "KPIs propuestos",
+          "significado_y_criterio": "Funciones analíticas planteadas; compare su significado con medida y denominador."
+        },
+        {
+          "campo": "De la necesidad al datamart",
+          "significado_y_criterio": "Muestra cobertura directa, resolución automática, limitación aceptada o decisión pendiente."
+        },
+        {
+          "campo": "Comprobar nombres y cobertura",
+          "significado_y_criterio": "Con permiso apropiado realiza una muestra controlada de la fuente para revisar identidad descriptiva. La muestra permanece en la plataforma y no se envía al LLM."
+        },
+        {
+          "campo": "Plan ETL declarativo",
+          "significado_y_criterio": "Explica operaciones permitidas; esta vista no ejecuta la carga."
+        },
+        {
+          "campo": "Ajustes automáticos / Validaciones y advertencias",
+          "significado_y_criterio": "Lea qué se corrigió y qué sigue exigiendo revisión."
+        },
+        {
+          "campo": "Detalles técnicos y trazabilidad",
+          "significado_y_criterio": "Instantánea, huella, proveedor/modelo y observaciones originales. Una observación del proveedor no es una comprobación de la plataforma."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Lea resumen y explicación de negocio.",
+          "resultado_que_debe_observar": "El evento coincide con lo solicitado."
+        },
+        {
+          "numero": 2,
+          "accion": "Compruebe grano y claves.",
+          "resultado_que_debe_observar": "Puede explicar qué representa una fila y cómo se identifica."
+        },
+        {
+          "numero": 3,
+          "accion": "Compare cada medida con origen y fórmula.",
+          "resultado_que_debe_observar": "Una tasa no está presentada como dinero ni un promedio de línea como promedio por pedido."
+        },
+        {
+          "numero": 4,
+          "accion": "Revise dimensiones, rutas e identidad descriptiva.",
+          "resultado_que_debe_observar": "Cliente y territorio representan el rol solicitado, con nombre y origen claros."
+        },
+        {
+          "numero": 5,
+          "accion": "Lea la cobertura requisito por requisito.",
+          "resultado_que_debe_observar": "No se promete una salida omitida."
+        },
+        {
+          "numero": 6,
+          "accion": "Revise el plan, ajustes y errores/advertencias.",
+          "resultado_que_debe_observar": "Cero errores bloqueantes antes de aprobar; los avisos se entienden."
+        },
+        {
+          "numero": 7,
+          "accion": "Elija Personalizar propuesta o Continuar a revisión.",
+          "resultado_que_debe_observar": "Pasa a una decisión humana sustentada."
+        }
+      ],
+      "que_hace_la_IA": [
+        "Propone el modelo y una explicación. Las decisiones originales se conservan para trazabilidad aunque el contrato validado haya aplicado correcciones."
+      ],
+      "que_valida_la_plataforma": [
+        "Existencia de tablas/columnas, tipos, claves, rutas de relación, coherencia del contrato y operaciones calculables; cobertura de requisitos y reglas semánticas implementadas."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "El analista decide si el modelo representa el evento comercial y si necesita ajustes."
+      ],
+      "resultado_esperado": "Un diseño comprensible y defendible, o una lista concreta de correcciones.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "Aparecen compras u otro evento en una necesidad de ventas.",
+          "accion": "No apruebe por tener referencias existentes. Revise alcance y genere una versión que corresponda al evento."
+        },
+        {
+          "situacion": "Hay nombres como Cliente 123 en lugar de identidad comprobada.",
+          "accion": "Revise nombres y cobertura con el permiso necesario; no dé por demostrada una entidad descriptiva sólo por su clave."
+        },
+        {
+          "situacion": "Error bloqueante en una fórmula.",
+          "accion": "Abra Personalización y excluya o reasigne una receta compatible; si faltan entradas, genere una propuesta nueva con alcance sustentado."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "Explique al jurado una medida sin leer sólo su nombre: indique origen, operación, unidad y grano.",
+        "respuesta_orientativa": "Por ejemplo importe registrado de línea, sumado sobre líneas de pedido; no denominarlo cobro ni utilidad."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿Todos los campos mostrados ya existen en el origen?",
+          "respuesta_orientativa": "No. Algunos son campos descriptivos que el ETL creará a partir de relaciones verificadas."
+        },
+        {
+          "pregunta": "¿Comprobar nombres y cobertura envía nombres de clientes al LLM?",
+          "respuesta_orientativa": "La muestra controlada permanece en la plataforma según la interfaz; no se remite al modelo para esa comprobación."
+        }
+      ]
+    },
+    {
+      "codigo": "BI06",
+      "titulo": "Asistente paso 4 ajustar medidas y relaciones con criterio",
+      "roles": [
+        "Analista de BI"
+      ],
+      "objetivo_de_aprendizaje": "Crear una versión corregida sin inventar estructuras ni perder las decisiones anteriores.",
+      "introduccion": [
+        "Personalizar crea una versión nueva. El contrato original conserva su historia. Compare siempre la regla del contrato actual con la regla del borrador: marcar algo en el borrador todavía no lo vuelve ejecutable.",
+        "Hay dos acciones de guardado diferentes. Guardar como nueva versión aplica los ajustes generales; Crear versión con relación corregida registra la decisión guiada de relación de manera independiente. Guarde y revise cada resultado antes de encadenar otra corrección."
+      ],
+      "conceptos": [
+        {
+          "termino": "Suma",
+          "explicacion": "Combina importes o unidades aditivos del mismo significado y alcance."
+        },
+        {
+          "termino": "Conteo",
+          "explicacion": "Cuenta valores no nulos de la columna seleccionada. A grano de línea no equivale automáticamente a documentos."
+        },
+        {
+          "termino": "Conteo distinto",
+          "explicacion": "Cuenta una vez cada identificador distinto. Un pedido con varias líneas se cuenta una vez en el universo consultado."
+        },
+        {
+          "termino": "Promedio",
+          "explicacion": "Media de los valores de las filas; AVG de importe de línea mide importe medio por línea, no por pedido."
+        },
+        {
+          "termino": "Mínimo y máximo",
+          "explicacion": "Extremos de los valores del campo. La línea de mayor importe no identifica necesariamente al producto con mayor suma de ventas."
+        },
+        {
+          "termino": "Relación muchos a uno",
+          "explicacion": "Varias filas del hecho apuntan a una fila única de dimensión; la unicidad ayuda a conservar el detalle."
+        },
+        {
+          "termino": "Rol de una relación",
+          "explicacion": "Significado del vínculo. Comprador y destinatario de facturación pueden ser clientes válidos, pero responden preguntas diferentes."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Resumen de negocio",
+          "significado_y_criterio": "Hasta 160 caracteres; describe el ajuste sin alterar lo que las fuentes pueden demostrar."
+        },
+        {
+          "campo": "Granularidad propuesta",
+          "significado_y_criterio": "Hasta 240 caracteres; el texto debe corresponder a claves y hechos reales, no basta renombrar el grano."
+        },
+        {
+          "campo": "Dimensiones incluidas / Medidas incluidas",
+          "significado_y_criterio": "Conserve al menos las necesarias para la pregunta y sus dependencias."
+        },
+        {
+          "campo": "Agregación",
+          "significado_y_criterio": "Suma, Conteo, Conteo distinto, Promedio, Mínimo o Máximo según el significado."
+        },
+        {
+          "campo": "Definir cálculo controlado",
+          "significado_y_criterio": "Permite operaciones sumar, multiplicar, restar o dividir sobre columnas numéricas disponibles."
+        },
+        {
+          "campo": "Primer valor / Segundo valor",
+          "significado_y_criterio": "En resta y división el orden cambia el resultado; no intercambie costo e importe o cantidad y precio."
+        },
+        {
+          "campo": "Factores o componentes en orden",
+          "significado_y_criterio": "Para suma/multiplicación se seleccionan entradas permitidas; el editor limita la cantidad y el servidor comprueba tipos y referencias."
+        },
+        {
+          "campo": "KPIs incluidos y medida asociada",
+          "significado_y_criterio": "La asociación requiere una medida de función semántica compatible y las entradas de la receta."
+        },
+        {
+          "campo": "Dimensión que desea corregir / Ruta de relación comprobada",
+          "significado_y_criterio": "Permite elegir entre vínculos existentes. Las opciones bloqueadas explican riesgo de duplicación, tipos o unicidad."
+        },
+        {
+          "campo": "Justificación de esta corrección / Justificación del ajuste",
+          "significado_y_criterio": "Entre 10 y 500 caracteres. Explique el concepto de negocio y por qué corresponde, no escriba sólo porque funciona."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Abra Personalizar propuesta y anote qué problema concreto va a corregir.",
+          "resultado_que_debe_observar": "Ajuste motivado por la necesidad, no por conseguir una luz verde."
+        },
+        {
+          "numero": 2,
+          "accion": "Revise cada origen y agregación; marque o desmarque dimensiones, medidas e indicadores.",
+          "resultado_que_debe_observar": "El borrador mantiene las dependencias necesarias."
+        },
+        {
+          "numero": 3,
+          "accion": "Si corrige un cálculo, seleccione sólo entradas comprobadas y respete el orden.",
+          "resultado_que_debe_observar": "Fórmula legible y controlada, sin SQL libre."
+        },
+        {
+          "numero": 4,
+          "accion": "Para una ruta ambigua elija dimensión, vínculo y justificación.",
+          "resultado_que_debe_observar": "La evidencia muestra tipos, cardinalidad, destino único y riesgo."
+        },
+        {
+          "numero": 5,
+          "accion": "Pulse Crear versión con relación corregida cuando corresponda y revise la nueva versión antes de otro ajuste.",
+          "resultado_que_debe_observar": "La corrección queda registrada; una decisión intermedia puede precisar una ruta sin cambiar la entidad final."
+        },
+        {
+          "numero": 6,
+          "accion": "Para ajustes generales complete Justificación del ajuste y pulse Guardar como nueva versión.",
+          "resultado_que_debe_observar": "Una versión derivada pasa de nuevo las reglas; la fuente y la versión original no se reescriben."
+        },
+        {
+          "numero": 7,
+          "accion": "Revise cobertura, rutas y errores del resultado y vuelva a Revisión.",
+          "resultado_que_debe_observar": "Sólo se aprueba una versión corregida comprobada."
+        }
+      ],
+      "que_hace_la_IA": [
+        "Puede haber propuesto las opciones iniciales; el ajuste general y la elección de relaciones son decisiones del analista sujetas a validadores. No hace falta pedir a la IA SQL para modificar la estructura."
+      ],
+      "que_valida_la_plataforma": [
+        "Tablas/columnas y tipos, número de entradas, dependencias de KPI, función semántica, clave destino única y conservación del grano; una relación contradictoria o multiplicadora se bloquea."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "La persona elige inclusiones, operaciones y roles comerciales, y justifica por escrito la corrección."
+      ],
+      "resultado_esperado": "Nueva versión identificable, revalidada y con decisiones acumuladas.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "Al retirar una medida desaparece un KPI.",
+          "accion": "Revise sus dependencias; no es pérdida de datos del origen. Restituya una medida compatible o acepte excluir el KPI."
+        },
+        {
+          "situacion": "El vínculo es válido pero representa facturación en lugar de comprador.",
+          "accion": "Use la decisión guiada y justifique el rol; que coincidan las filas no demuestra que el rol comercial sea correcto."
+        },
+        {
+          "situacion": "La nueva versión está bloqueada.",
+          "accion": "Lea el motivo; cancele o ajuste el borrador. No cambie reglas ni huellas a mano para forzar la aprobación."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "Un documento tiene líneas de 100 y 50 y otro una línea de 90. Calcule promedio por línea y por documento.",
+        "respuesta_orientativa": "Importe total 240; tres líneas: 80 por línea; dos documentos distintos: 120 por documento. Son indicadores diferentes."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿Editar el texto de granularidad cambia por sí solo las claves?",
+          "respuesta_orientativa": "No. El contrato debe conservar una estructura compatible y superar validación."
+        },
+        {
+          "pregunta": "¿Una relación uno a muchos desde el hecho es segura por existir?",
+          "respuesta_orientativa": "No necesariamente: puede multiplicar líneas e importes. Revise dirección, unicidad y motivo de bloqueo."
+        }
+      ]
+    },
+    {
+      "codigo": "BI07",
+      "titulo": "Asistente paso 5 aprobar y consultar versiones",
+      "roles": [
+        "Analista de BI con permiso de revisión"
+      ],
+      "objetivo_de_aprendizaje": "Distinguir validación técnica, aprobación humana, retiro de aprobación y consulta histórica.",
+      "introduccion": [
+        "La aprobación es una decisión sobre una versión concreta. La plataforma vuelve a ejecutar sus reglas y registra responsable, fecha y comentario. No crea tablas ni carga datos al pulsar Aprobar propuesta.",
+        "Consultar una versión o Verificar evidencia no debe retirar su aprobación por sí solo. Una diferencia de reconstrucción causada por el motor puede quedar como advertencia de compatibilidad; su efecto sobre nuevas cargas se comprueba por separado."
+      ],
+      "conceptos": [
+        {
+          "termino": "Lista para revisión",
+          "explicacion": "Contrato que puede recibir decisión humana si conserva las condiciones requeridas."
+        },
+        {
+          "termino": "Aprobada",
+          "explicacion": "Versión con decisión humana registrada; su aptitud para otra carga también depende de las reglas actuales y la fuente."
+        },
+        {
+          "termino": "Retirada",
+          "explicacion": "Aprobación retirada expresamente para impedir nuevas ejecuciones; no borra datamarts ya generados."
+        },
+        {
+          "termino": "Descartada",
+          "explicacion": "Fuera de las listas operativas; se conservan auditoría y trazabilidad."
+        },
+        {
+          "termino": "Huella",
+          "explicacion": "Resumen de contenido usado para detectar cambios. No se corrige editando el valor para que coincida."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Comentario de revisión",
+          "significado_y_criterio": "Hasta 500 caracteres. Para rechazar se exige un motivo suficiente, al menos 10 caracteres en la interfaz."
+        },
+        {
+          "campo": "Leí y comprendí las advertencias y las acciones indicadas",
+          "significado_y_criterio": "Aceptación requerida si hay avisos. Cero errores no significa cero aspectos que revisar."
+        },
+        {
+          "campo": "Aprobar propuesta / Rechazar propuesta",
+          "significado_y_criterio": "Decisión humana distinta de la ejecución física."
+        },
+        {
+          "campo": "Verificar evidencia",
+          "significado_y_criterio": "Comprueba instantánea, referencias, contrato y reproducción sin llamar al modelo, sin consultar filas y sin ETL."
+        },
+        {
+          "campo": "Mostrar en Versiones generadas",
+          "significado_y_criterio": "Filtra el historial; no cambia el estado de las versiones."
+        },
+        {
+          "campo": "Abrir resultado",
+          "significado_y_criterio": "Recupera la versión guardada sin volver a generar con IA."
+        },
+        {
+          "campo": "Crear versión corregida desde ésta",
+          "significado_y_criterio": "Permite derivar una corrección conservando la original."
+        },
+        {
+          "campo": "Retirar aprobación / Descartar versión",
+          "significado_y_criterio": "Acciones explícitas con motivo; no se usan para limpiar un aviso sin entenderlo."
+        },
+        {
+          "campo": "Restaurar aprobación",
+          "significado_y_criterio": "Disponible en los estados y permisos apropiados; exige justificación, advertencias revisadas y revalidación."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Lea necesidad, fuente, dominio e instantánea en Revisión.",
+          "resultado_que_debe_observar": "Está decidiendo sobre la versión correcta."
+        },
+        {
+          "numero": 2,
+          "accion": "Confirme cero errores y comprenda cada advertencia.",
+          "resultado_que_debe_observar": "Puede explicar qué está comprobado y qué límite conserva."
+        },
+        {
+          "numero": 3,
+          "accion": "Escriba comentario y apruebe si corresponde; rechace con motivo si no cumple.",
+          "resultado_que_debe_observar": "Comprobante de estado, responsable y fecha."
+        },
+        {
+          "numero": 4,
+          "accion": "Abra después el historial y consulte la misma versión.",
+          "resultado_que_debe_observar": "Se puede recorrer el diseño en modo de lectura sin regenerarlo."
+        },
+        {
+          "numero": 5,
+          "accion": "Si se necesita corregir, cree una derivada y revise su aprobación aparte.",
+          "resultado_que_debe_observar": "No cambia silenciosamente la evidencia del caso anterior."
+        }
+      ],
+      "que_hace_la_IA": [
+        "La IA no aprueba. Verificar evidencia es una comprobación determinística, no una nueva opinión del proveedor."
+      ],
+      "que_valida_la_plataforma": [
+        "Permisos, estado y reglas de aprobación vigentes; integridad de instantánea y contrato. Los errores bloqueantes no se resuelven marcando el aviso de advertencias."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "Una persona autorizada aprueba/rechaza o retira/restaura con un motivo."
+      ],
+      "resultado_esperado": "Una decisión trazable y versiones que conservan su historia.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "No ve una versión en el filtro actual.",
+          "accion": "Cambie Mostrar al estado correspondiente y compruebe la fuente. No suponga que se eliminó."
+        },
+        {
+          "situacion": "La propuesta aprobada no aparece habilitada para una nueva carga.",
+          "accion": "Consulte motivos en Datamart de ventas. Puede ser histórica o incompatible para otra ejecución aunque sus resultados anteriores sigan disponibles."
+        },
+        {
+          "situacion": "Verificar evidencia muestra compatibilidad.",
+          "accion": "Lea la explicación y distinga el registro histórico de la aptitud actual. No retire aprobación sin una decisión deliberada."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "Explique la diferencia entre aprobar propuesta, preparar materialización y materializar.",
+        "respuesta_orientativa": "Aprobar acepta un diseño; preparar fija selección y huellas; materializar lee la fuente y crea/carga el destino."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿Una aprobada puede ser consultable pero no apta para otra carga?",
+          "respuesta_orientativa": "Sí. Se conserva historia, pero nuevas ejecuciones deben superar las reglas actuales."
+        },
+        {
+          "pregunta": "¿Abrir resultado vuelve a consumir una generación IA?",
+          "respuesta_orientativa": "No. Recupera una versión persistida."
+        }
+      ]
+    },
+    {
+      "codigo": "ETL01",
+      "titulo": "Materialización paso 1 elegir una propuesta",
+      "roles": [
+        "Analista de BI"
+      ],
+      "objetivo_de_aprendizaje": "Escoger un contrato aprobado entendiendo qué puede ejecutarse y qué debe abrirse como histórico.",
+      "introduccion": [
+        "Entre a Datamart de ventas con la fuente que corresponde. El proceso muestra cinco pasos: Elegir propuesta, Revisar indicadores, Confirmar ejecución, Materializar y cargar, y Validar resultados.",
+        "La propuesta recomendada es una ayuda para elegir entre candidatas compatibles. No ejecuta nada automáticamente. Si el mismo contrato y selección ya tienen expediente, se debe abrir ese expediente en lugar de repetir la carga."
+      ],
+      "conceptos": [
+        {
+          "termino": "Propuesta elegible",
+          "explicacion": "Conserva aprobación, metadatos, fuente habilitada y probada, contrato compatible e indicadores calculables."
+        },
+        {
+          "termino": "Expediente",
+          "explicacion": "Registro de una preparación o ejecución, con selección, huellas, plan, responsable y resultados."
+        },
+        {
+          "termino": "Consulta histórica",
+          "explicacion": "Lectura de lo ocurrido en una ejecución anterior; no es una prueba nueva ni una recarga."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Tarjeta de versión",
+          "significado_y_criterio": "Resumen, necesidad, grano, cantidad de KPI y fecha de aprobación."
+        },
+        {
+          "campo": "Seleccionar",
+          "significado_y_criterio": "Elige el contrato del recorrido actual."
+        },
+        {
+          "campo": "Comparar",
+          "significado_y_criterio": "Permite contrastar hasta dos propuestas por grano, medidas e indicadores."
+        },
+        {
+          "campo": "Versiones anteriores no habilitadas para una nueva carga",
+          "significado_y_criterio": "Explica bloqueos; no significa que se hayan borrado sus datos."
+        },
+        {
+          "campo": "Abrir expediente",
+          "significado_y_criterio": "Recupera una ejecución previa sin repetir el ETL."
+        },
+        {
+          "campo": "Revisar indicadores",
+          "significado_y_criterio": "Avanza con la propuesta seleccionada."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Compruebe la fuente antes de leer las tarjetas.",
+          "resultado_que_debe_observar": "No mezcla contratos de otra base."
+        },
+        {
+          "numero": 2,
+          "accion": "Compare necesidad y grano con su ficha de análisis.",
+          "resultado_que_debe_observar": "Selecciona un modelo adecuado, no sólo la versión de número mayor."
+        },
+        {
+          "numero": 3,
+          "accion": "Use Comparar si existen dos alternativas relevantes.",
+          "resultado_que_debe_observar": "Reconoce diferencias que afectan al significado comercial."
+        },
+        {
+          "numero": 4,
+          "accion": "Si indica Ya ejecutada, abra el expediente para consultar la evidencia.",
+          "resultado_que_debe_observar": "No produce otra carga idéntica accidental."
+        },
+        {
+          "numero": 5,
+          "accion": "Si requiere una carga nueva y la candidata es compatible, pulse Revisar indicadores.",
+          "resultado_que_debe_observar": "Continúa con la versión aprobada elegida."
+        }
+      ],
+      "que_hace_la_IA": [
+        "Los indicadores fueron sugeridos en el diseño; esta selección no exige otra generación con IA."
+      ],
+      "que_valida_la_plataforma": [
+        "Reglas de compilación actuales, aprobación, instantánea existente, fuente activa en lectura, recetas y preparación dimensional. Contratos históricos anteriores pueden quedar excluidos de nuevas ejecuciones."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "La persona selecciona la versión y decide si consulta lo previo o necesita una derivada corregida."
+      ],
+      "resultado_esperado": "Un contrato correcto seleccionado o un expediente histórico abierto de forma consciente.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "No hay propuestas habilitadas.",
+          "accion": "Lea la lista de bloqueos; corrija o genere una propuesta actual. El historial puede seguir disponible."
+        },
+        {
+          "situacion": "Sólo se ve Abrir expediente.",
+          "accion": "Es la protección frente a repetición de contrato. Consulte el existente; no trate de borrar la ejecución para forzar otra."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "Elija dos propuestas y explique una diferencia de grano o indicador sin ejecutarlas.",
+        "respuesta_orientativa": "La comparación tiene sentido si cambia la pregunta o su representación; el número de versión por sí solo no mide calidad."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿Recomendada equivale a aprobada automáticamente por la IA?",
+          "respuesta_orientativa": "No. Es una recomendación operativa entre contratos que conservan aprobación y compatibilidad."
+        },
+        {
+          "pregunta": "¿Histórico bloqueado equivale a datos eliminados?",
+          "respuesta_orientativa": "No. Puede consultarse el expediente conservado."
+        }
+      ]
+    },
+    {
+      "codigo": "ETL02",
+      "titulo": "Materialización paso 2 elegir indicadores y recetas",
+      "roles": [
+        "Analista de BI"
+      ],
+      "objetivo_de_aprendizaje": "Seleccionar salidas calculables y explicar suma, diferencia, razón y participación.",
+      "introduccion": [
+        "En Revisar indicadores no se redactan fórmulas libres. Se decide cuáles de las recetas admitidas del contrato se necesitan para el objetivo. Debe quedar al menos una.",
+        "Desmarcar indicadores puede reducir la cobertura de la necesidad. La preparación registra si la selección es parcial. No presente un ejercicio de dos KPI como si hubiera materializado todos los requisitos de una necesidad avanzada."
+      ],
+      "conceptos": [
+        {
+          "termino": "Agregación",
+          "explicacion": "Suma, conteo, conteo distinto, promedio, mínimo o máximo de una medida comprobada."
+        },
+        {
+          "termino": "Diferencia",
+          "explicacion": "Resta entre dos entradas verificadas, por ejemplo importe menos costo comparable."
+        },
+        {
+          "termino": "Razón",
+          "explicacion": "Numerador dividido entre denominador. El importe por pedido usa importe total ÷ pedidos distintos del mismo alcance."
+        },
+        {
+          "termino": "Participación",
+          "explicacion": "Razón multiplicada por 100. Siempre se debe explicar el universo del denominador."
+        },
+        {
+          "termino": "Promedio ponderado por unidad",
+          "explicacion": "Total monetario ÷ total de unidades, distinto de promediar precios de filas sin ponderar."
+        },
+        {
+          "termino": "Sin valor",
+          "explicacion": "Una razón sin denominador válido no debe representarse como una división infinita ni como una venta cero demostrada."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Incluir indicador",
+          "significado_y_criterio": "Conserva o retira una receta de esta ejecución."
+        },
+        {
+          "campo": "Cálculo controlado",
+          "significado_y_criterio": "Describe operación y entradas; compruebe el denominador y la unidad."
+        },
+        {
+          "campo": "Unidad",
+          "significado_y_criterio": "Unidades, documentos, porcentaje o moneda de origen; un código monetario necesita evidencia."
+        },
+        {
+          "campo": "Período",
+          "significado_y_criterio": "Hereda o precisa la periodicidad del contrato."
+        },
+        {
+          "campo": "Ajuste de seguridad",
+          "significado_y_criterio": "Por ejemplo una tasa presentada como dinero o un promedio de línea mal nombrado."
+        },
+        {
+          "campo": "Ver trazabilidad técnica",
+          "significado_y_criterio": "Entradas verificadas, versión de definición y unidad originalmente sugerida."
+        },
+        {
+          "campo": "Revisar transformaciones",
+          "significado_y_criterio": "Avanza con las recetas seleccionadas."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Lea nombre, descripción y cálculo de cada indicador.",
+          "resultado_que_debe_observar": "Reconoce qué pregunta responde."
+        },
+        {
+          "numero": 2,
+          "accion": "Compruebe que el conteo documental sea distinto y que la razón use ese conteo.",
+          "resultado_que_debe_observar": "No confunde líneas con pedidos o facturas."
+        },
+        {
+          "numero": 3,
+          "accion": "Seleccione las salidas necesarias y revise las que retira.",
+          "resultado_que_debe_observar": "Queda al menos una receta y el alcance parcial se reconoce."
+        },
+        {
+          "numero": 4,
+          "accion": "Lea las correcciones de nombre o unidad.",
+          "resultado_que_debe_observar": "No denomina neto a precio × cantidad sin descontar una tasa ni promedio por pedido a AVG de línea."
+        },
+        {
+          "numero": 5,
+          "accion": "Pulse Revisar transformaciones.",
+          "resultado_que_debe_observar": "Continúa sin cambiar el contrato físico ni ejecutar todavía."
+        }
+      ],
+      "que_hace_la_IA": [
+        "Propuso indicadores anteriormente; el cálculo lo controla el motor de recetas. La IA no calcula a mano el total que se publicará."
+      ],
+      "que_valida_la_plataforma": [
+        "Operaciones soportadas y entradas comprobadas. Las diferencias, razones y participaciones requieren dos entradas válidas. La división con divisor cero conserva un resultado nulo/no calculable."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "El analista selecciona qué indicadores quiere materializar y acepta conscientemente un alcance parcial cuando corresponda."
+      ],
+      "resultado_esperado": "Selección de indicadores útil, con fórmula y unidad entendidas.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "Un KPI no tiene medida compatible.",
+          "accion": "Vuelva al asistente para corregir o excluir; este paso no permite inventar la entrada."
+        },
+        {
+          "situacion": "La razón aparece Sin valor.",
+          "accion": "Revise denominador y universo. No reemplace el resultado por cero para ocultar una división no definida."
+        },
+        {
+          "situacion": "Las facturas por producto no suman las facturas globales.",
+          "accion": "El conteo distinto no es aditivo: una factura puede contener varios productos."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "Tres líneas: pedido A 100 y 50; pedido B 90. Calcule total, conteo de líneas, pedidos distintos e importe por pedido.",
+        "respuesta_orientativa": "240; 3; 2; 120. Sumar los pedidos distintos de grupos de producto puede contar el mismo pedido varias veces."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿Por qué 10 % y 40 % no se promedian siempre como 25 %?",
+          "respuesta_orientativa": "Si tienen distintos denominadores, hay que usar totales compatibles o ponderar; el promedio simple puede cambiar el significado."
+        },
+        {
+          "pregunta": "¿Cambiar la etiqueta corrige una receta incorrecta?",
+          "respuesta_orientativa": "No. Debe corresponder fórmula, medida y unidad, no sólo el texto."
+        }
+      ]
+    },
+    {
+      "codigo": "ETL03",
+      "titulo": "Materialización paso 3 confirmar el plan",
+      "roles": [
+        "Analista de BI con permiso de ejecución"
+      ],
+      "objetivo_de_aprendizaje": "Leer extracción, limpieza, transformación, carga y validación antes de fijar el expediente.",
+      "introduccion": [
+        "Esta pantalla permite explicar el proceso sin escribir SQL. Revise la tabla de hechos, el grano, las dimensiones y las medidas. Luego lea cada operación de la secuencia.",
+        "Las operaciones opcionales marcadas Revisar en el paso 5 preparan candidatos de etiquetas en español. No existe una lista para aprobar etiquetas aquí: esa revisión aparecerá después de la carga si hay candidatos."
+      ],
+      "conceptos": [
+        {
+          "termino": "Extracción",
+          "explicacion": "Lectura controlada de columnas del origen autorizado."
+        },
+        {
+          "termino": "Limpieza y calidad",
+          "explicacion": "Tratamiento previsto de claves, nulos, textos o duplicados según el plan; no es una promesa de corregir cualquier dato defectuoso."
+        },
+        {
+          "termino": "Transformación",
+          "explicacion": "Derivaciones y enriquecimientos permitidos que respetan la granularidad."
+        },
+        {
+          "termino": "Clave sustituta",
+          "explicacion": "Identificador interno de la dimensión analítica, separado de la clave comercial del origen."
+        },
+        {
+          "termino": "Carga dimensional",
+          "explicacion": "Creación y carga del hecho y dimensiones del destino de la ejecución."
+        },
+        {
+          "termino": "Conciliación",
+          "explicacion": "Contraste de cantidades e importes de origen y destino del mismo alcance."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Tabla de hechos / Granularidad / Dimensiones / Medidas",
+          "significado_y_criterio": "Resumen del modelo que se va a materializar."
+        },
+        {
+          "campo": "Etapas del plan",
+          "significado_y_criterio": "Extracción, Limpieza y calidad, Transformación y enriquecimiento, Carga dimensional y Conciliación y evidencia."
+        },
+        {
+          "campo": "Advertencias heredadas",
+          "significado_y_criterio": "Avisos de la propuesta que siguen siendo relevantes para la carga."
+        },
+        {
+          "campo": "Registro de decisión",
+          "significado_y_criterio": "Comentario de 10 a 500 caracteres que explica la decisión sobre plan y KPI."
+        },
+        {
+          "campo": "Confirmo el plan de ejecución",
+          "significado_y_criterio": "Acepta el contrato y entiende que las etiquetas candidatas se revisarán después."
+        },
+        {
+          "campo": "Preparar materialización",
+          "significado_y_criterio": "Guarda selección, plan y huellas. No lee ni altera filas de la fuente en esta confirmación."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Compare el resumen con la propuesta aprobada.",
+          "resultado_que_debe_observar": "Mismo evento y grano."
+        },
+        {
+          "numero": 2,
+          "accion": "Lea las operaciones de cada etapa y advertencias.",
+          "resultado_que_debe_observar": "Puede explicar qué se leerá y qué se calculará."
+        },
+        {
+          "numero": 3,
+          "accion": "Compruebe que no se confunda una etiqueta en español con un valor original nuevo.",
+          "resultado_que_debe_observar": "Entiende la política de conservar originales."
+        },
+        {
+          "numero": 4,
+          "accion": "Escriba una decisión concreta y marque la confirmación.",
+          "resultado_que_debe_observar": "Registro humano suficiente."
+        },
+        {
+          "numero": 5,
+          "accion": "Pulse Preparar materialización una sola vez y anote el número de ejecución.",
+          "resultado_que_debe_observar": "Expediente preparado con propuesta, instantánea, responsable y huellas; aún no hay nueva carga física."
+        }
+      ],
+      "que_hace_la_IA": [
+        "No genera SQL libre en esta confirmación. La interpretación posterior de categorías puede usar IA bajo la política de valores aptos y revisión humana."
+      ],
+      "que_valida_la_plataforma": [
+        "Permiso de escritura ETL, aprobación y compatibilidad actuales, recetas seleccionadas, cobertura y duplicidad de contrato/selección."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "Una persona autorizada confirma el plan y la selección que quedará registrada."
+      ],
+      "resultado_esperado": "Un expediente preparado, trazable y aún separado de la ejecución física.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "La preparación informa que el contrato ya corresponde a otra ejecución.",
+          "accion": "Abra ese expediente; el conflicto evita repetir la carga idéntica."
+        },
+        {
+          "situacion": "El botón sigue deshabilitado.",
+          "accion": "Revise permiso, casilla de confirmación y longitud del comentario."
+        },
+        {
+          "situacion": "Faltan etiquetas para aprobar en esta pantalla.",
+          "accion": "Es normal: primero se materializa, después se revisan los candidatos en Validar resultados."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "Explique por qué preparar no significa que ya se pueda mostrar un nuevo tablero.",
+        "respuesta_orientativa": "Se guardó el contrato; faltan lectura, carga, conciliación y condiciones de publicación."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿Qué se conserva al preparar?",
+          "respuesta_orientativa": "Selección de KPI, comentario, plan, huellas de propuesta e instantánea y responsable."
+        },
+        {
+          "pregunta": "¿Quién ejecuta la lectura?",
+          "respuesta_orientativa": "El materializador controlado después del inicio explícito del paso 4."
+        }
+      ]
+    },
+    {
+      "codigo": "ETL04",
+      "titulo": "Materialización paso 4 cargar sin repetir accidentalmente",
+      "roles": [
+        "Analista de BI con permiso de ejecución"
+      ],
+      "objetivo_de_aprendizaje": "Iniciar una carga entendiendo sus efectos y recuperar el expediente ante una interrupción.",
+      "introduccion": [
+        "Antes de pulsar Materializar y cargar datamart, compruebe fuente, propuesta y número de expediente. La operación leerá columnas aprobadas de la fuente y creará un destino analítico propio de esa ejecución.",
+        "El hecho y las dimensiones se cargan con controles transaccionales. Un fallo bloqueante no debe dejar un datamart parcial publicado ni sustituir los resultados anteriores. No pulse repetidamente el botón porque tarde la respuesta."
+      ],
+      "conceptos": [
+        {
+          "termino": "Esquema por ejecución",
+          "explicacion": "Espacio analítico identificado para separar resultados de distintas ejecuciones; la base de origen no se sobrescribe."
+        },
+        {
+          "termino": "Transacción",
+          "explicacion": "Conjunto de operaciones que se confirma completo o se revierte ante un fallo."
+        },
+        {
+          "termino": "Preparada / En ejecución / Validada / Revisión pendiente / Fallida",
+          "explicacion": "Estados del expediente que se deben leer antes de intentar otra acción."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Contrato preparado correctamente",
+          "significado_y_criterio": "Confirma el registro previo; revise huellas y selección."
+        },
+        {
+          "campo": "Materializar y cargar datamart",
+          "significado_y_criterio": "Inicia extracción, transformación, creación y carga según el contrato validado."
+        },
+        {
+          "campo": "Ver trazabilidad técnica",
+          "significado_y_criterio": "Constructor, huellas, responsable y fecha."
+        },
+        {
+          "campo": "Expedientes recientes",
+          "significado_y_criterio": "Permite recuperar la ejecución para ver qué ocurrió, sin iniciar otra."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Lea el comprobante y confirme que sigue siendo el expediente esperado.",
+          "resultado_que_debe_observar": "No carga un modelo de otra fuente o versión."
+        },
+        {
+          "numero": 2,
+          "accion": "Pulse Materializar y cargar datamart una vez y mantenga la pantalla abierta.",
+          "resultado_que_debe_observar": "Estado de procesamiento; no cambia la fuente a modo escritura."
+        },
+        {
+          "numero": 3,
+          "accion": "Espere el resultado.",
+          "resultado_que_debe_observar": "Avanza al paso 5 con validación, revisión pendiente o fallo."
+        },
+        {
+          "numero": 4,
+          "accion": "Si se interrumpe el navegador, recupere sesión y abra el expediente antes de reintentar.",
+          "resultado_que_debe_observar": "Reconoce si terminó, sigue preparada o falló; no crea cargas duplicadas por incertidumbre."
+        },
+        {
+          "numero": 5,
+          "accion": "Registre identificadores y estado final.",
+          "resultado_que_debe_observar": "Evidencia de una ejecución nueva o de una consulta histórica, claramente distinguidas."
+        }
+      ],
+      "que_hace_la_IA": [
+        "El diseño puede proceder de IA, pero la lectura y carga se realizan con el materializador y operaciones permitidas. La IA no recibe autorización para ejecutar instrucciones SQL libres."
+      ],
+      "que_valida_la_plataforma": [
+        "Contrato y fuente al ejecutar, trazabilidad, claves, relaciones exactas, tipos y condiciones de carga. El destino conserva el aislamiento por ejecución."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "La persona inicia la materialización; si hay fallo investiga y prepara una corrección en lugar de alterar a mano el expediente."
+      ],
+      "resultado_esperado": "Expediente de carga con métricas o fallo controlado y resultados anteriores conservados.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "Error de conexión o sesión vencida.",
+          "accion": "Vuelva a entrar y revise Expedientes recientes antes de reenviar. El servidor puede haber terminado aunque el navegador perdiera la respuesta."
+        },
+        {
+          "situacion": "Fallida y mensaje de reversión.",
+          "accion": "Revise conexión y contrato con el administrador; si cambió la estructura capture metadatos y genere la versión correcta. Conserve el estado fallido hasta resolver la causa y comprobar la nueva ejecución."
+        },
+        {
+          "situacion": "La etapa dice Materialización ya ejecutada.",
+          "accion": "Es consulta. Pase a Validar resultados; esa pantalla no vuelve a cargar por recorrer los pasos."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "Simule sólo en la bitácora la decisión ante una pantalla que no responde: ¿qué revisa antes de volver a pulsar?",
+        "respuesta_orientativa": "Estado del expediente existente, fuente, propuesta y sesión. No ejecutar de nuevo sin conocer si la carga terminó."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿Se reemplaza AdventureWorks por el datamart?",
+          "respuesta_orientativa": "No. Se usa como fuente de lectura y el destino analítico queda separado."
+        },
+        {
+          "pregunta": "¿Abrir un paso histórico repite la lectura de origen?",
+          "respuesta_orientativa": "No. Permite consultar evidencia de la ejecución ya realizada."
+        }
+      ]
+    },
+    {
+      "codigo": "ETL05",
+      "titulo": "Materialización paso 5 revisar conciliación y calidad",
+      "roles": [
+        "Analista de BI",
+        "Gerente comercial para lectura autorizada"
+      ],
+      "objetivo_de_aprendizaje": "Comprobar cantidades y valores y distinguir una conciliación numérica de una interpretación comercial correcta.",
+      "introduccion": [
+        "Una carga no se da por buena sólo por mostrar un mensaje verde. Lea Filas de origen, Filas cargadas, Diferencia, Tablas creadas y las métricas de cada tabla. Compare también indicadores y procedencia.",
+        "La conciliación de la ejecución contrasta filas y totales de medidas de origen/destino. Un resultado de diferencia cero demuestra consistencia de ese alcance; no demuestra por sí solo que se eligió el cliente, fecha o territorio comercial correctos."
+      ],
+      "conceptos": [
+        {
+          "termino": "Duplicados controlados en dimensión",
+          "explicacion": "Repeticiones agrupadas al conformar una dimensión. Muchas facturas del mismo día pueden producir una sola fila de fecha sin eliminar líneas del hecho."
+        },
+        {
+          "termino": "Diferencia cero",
+          "explicacion": "Coinciden los controles de ese universo. Hay que comprobar además evento, rutas, unidades y criterios comerciales."
+        },
+        {
+          "termino": "Indicador conciliado",
+          "explicacion": "Valor calculado a partir de entradas y recetas del expediente; un resultado no calculable debe revisarse por separado."
+        },
+        {
+          "termino": "Revisión pendiente",
+          "explicacion": "Puede significar diferencia de carga o interpretación semántica pendiente. Lea el motivo concreto, no sólo el color."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Conciliación OLTP–datamart",
+          "significado_y_criterio": "Comprobante de filas, diferencias y medidas de la ejecución."
+        },
+        {
+          "campo": "Calidad por tabla",
+          "significado_y_criterio": "Filas de origen/carga y duplicados controlados; distinga hecho y dimensión."
+        },
+        {
+          "campo": "Indicadores calculados",
+          "significado_y_criterio": "Valores, unidad y estado. Algunos se muestran abreviados; el valor exacto y los reportes permiten contrastar decimales."
+        },
+        {
+          "campo": "Interpretación semántica",
+          "significado_y_criterio": "Estado y revisión de candidatos de etiquetas; se explica en la siguiente unidad."
+        },
+        {
+          "campo": "Comprobar divisa sin repetir el ETL",
+          "significado_y_criterio": "Acción aparte si falta evidencia del código monetario."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Revise que origen y destino correspondan al mismo expediente y grano.",
+          "resultado_que_debe_observar": "No compara el filtro de un tablero con un total global de otro caso."
+        },
+        {
+          "numero": 2,
+          "accion": "Compare filas y diferencia.",
+          "resultado_que_debe_observar": "El hecho conserva el número esperado sin rechazo o multiplicación indebida."
+        },
+        {
+          "numero": 3,
+          "accion": "Revise por tabla las agrupaciones de valores repetidos en las dimensiones.",
+          "resultado_que_debe_observar": "Entiende por qué la fecha puede tener menos filas que documentos sin perder hechos."
+        },
+        {
+          "numero": 4,
+          "accion": "Compare indicadores, unidades y razones con su fórmula.",
+          "resultado_que_debe_observar": "No hay denominador cambiado o unidad inventada."
+        },
+        {
+          "numero": 5,
+          "accion": "Revise rutas de cliente/territorio además de números.",
+          "resultado_que_debe_observar": "Se conserva el rol comercial solicitado."
+        },
+        {
+          "numero": 6,
+          "accion": "Si la conciliación y publicación cumplen, abra Analítica de ventas.",
+          "resultado_que_debe_observar": "Tablero identificado con fuente, propuesta y ejecución correctas."
+        }
+      ],
+      "que_hace_la_IA": [
+        "Puede apoyar etiquetas y explicar después resultados; el contraste numérico no se obtiene por opinión del modelo."
+      ],
+      "que_valida_la_plataforma": [
+        "En el materializador actual la conciliación requiere cero filas rechazadas, mismo conteo origen/destino y diferencias de totales de medidas iguales a cero. La condición numérica no reemplaza la revisión semántica del analista."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "La persona revisa métricas, procedencia y alcance antes de usar los resultados para una lectura comercial."
+      ],
+      "resultado_esperado": "Expediente comprendido y evidencia concreta para aceptar o investigar.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "Hay diferencia de filas o importes.",
+          "accion": "No presente el tablero como verificado sin resolverla. Registre magnitud y alcance, revise claves/uniones/entradas y corrija el contrato."
+        },
+        {
+          "situacion": "Fecha muestra miles de duplicados controlados.",
+          "accion": "Compruebe si son días repetidos en documentos; en el caso WWI 22 se conservaron 1.069 días desde 70.510 documentos sin perder 228.265 líneas."
+        },
+        {
+          "situacion": "Los totales coinciden pero cambia California entre versiones.",
+          "accion": "Compare roles de comprador/facturación y ciudad de entrega/postal. Distinta clasificación puede explicar el cambio sin mezcla entre bases."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "Conserve 100 líneas de factura sobre 10 días. ¿Es obligatorio tener 100 filas en la dimensión fecha?",
+        "respuesta_orientativa": "No. Puede haber 10 fechas únicas y 100 filas en el hecho; lo importante es que las claves y los controles expliquen esa conformación."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿Diferencia cero prueba que el territorio era históricamente el del cliente?",
+          "respuesta_orientativa": "No. Haría falta una historia de vigencias; el prototipo lee los atributos del estado disponible durante el ETL."
+        },
+        {
+          "pregunta": "¿Revisión pendiente siempre significa carga fallida?",
+          "respuesta_orientativa": "No. Puede haber conciliación correcta con etiquetas aún pendientes; lea el detalle."
+        }
+      ]
+    },
+    {
+      "codigo": "ETL06",
+      "titulo": "Revisar etiquetas en español y comprobar la moneda",
+      "roles": [
+        "Analista de BI"
+      ],
+      "objetivo_de_aprendizaje": "Publicar sólo interpretaciones revisadas y conservar el significado original y la divisa demostrable.",
+      "introduccion": [
+        "La interpretación semántica añade etiquetas españolas a categorías aptas; conserva los valores originales. No traduce identificadores, nombres de personas, direcciones, texto libre ni categorías de alta cardinalidad.",
+        "La moneda es un control diferente. Un importe conciliado no autoriza a escribir USD. Si la fuente no demuestra un código único adecuado, el resultado correcto es moneda de origen. No confunda el país del cliente con la divisa del importe."
+      ],
+      "conceptos": [
+        {
+          "termino": "Mapeo",
+          "explicacion": "Correspondencia entre categoría original y etiqueta española revisada."
+        },
+        {
+          "termino": "Publicación supervisada",
+          "explicacion": "Las etiquetas sólo se publican después de la revisión individual y la confirmación humana."
+        },
+        {
+          "termino": "Divisa comprobada",
+          "explicacion": "Código respaldado por evidencia relacional de fuente/base; no elegido por el modelo por intuición."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Publicar",
+          "significado_y_criterio": "Casilla por mapeo para conservarlo o excluirlo."
+        },
+        {
+          "campo": "Etiqueta en español",
+          "significado_y_criterio": "Texto editable, hasta 100 caracteres, que debe preservar el significado."
+        },
+        {
+          "campo": "Comentario de revisión",
+          "significado_y_criterio": "Entre 10 y 500 caracteres sobre la decisión tomada."
+        },
+        {
+          "campo": "Confirmo que revisé los mapeos que se publicarán",
+          "significado_y_criterio": "Confirmación distinta de la aprobación del diseño y de la preparación del ETL."
+        },
+        {
+          "campo": "Publicar etiquetas revisadas",
+          "significado_y_criterio": "Publica sólo los mapeos aceptados como columnas adicionales auditables."
+        },
+        {
+          "campo": "Reintentar interpretación sin repetir el ETL",
+          "significado_y_criterio": "Recupera una interpretación pendiente sin recargar el hecho."
+        },
+        {
+          "campo": "Comprobar divisa sin repetir el ETL",
+          "significado_y_criterio": "Consulta evidencia de moneda y actualiza su contexto sin otra materialización."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Lea el estado de Interpretación semántica.",
+          "resultado_que_debe_observar": "Reconoce si no hay candidatos, están pendientes, requieren revisión o ya fueron publicados."
+        },
+        {
+          "numero": 2,
+          "accion": "Compare cada original con la etiqueta, corrija lo necesario y excluya códigos que no convenga traducir.",
+          "resultado_que_debe_observar": "No cambia el valor original ni acepta una etiqueta por rutina."
+        },
+        {
+          "numero": 3,
+          "accion": "Escriba comentario, marque confirmación y publique.",
+          "resultado_que_debe_observar": "Recibo con responsable, fecha y mapeos revisados."
+        },
+        {
+          "numero": 4,
+          "accion": "Si está pendiente por proveedor, revise la configuración y use el reintento semántico.",
+          "resultado_que_debe_observar": "No se repite el ETL para corregir sólo etiquetas."
+        },
+        {
+          "numero": 5,
+          "accion": "Revise la divisa y compruébela si la acción está disponible.",
+          "resultado_que_debe_observar": "Código verificado o moneda de origen con el límite conservado."
+        }
+      ],
+      "que_hace_la_IA": [
+        "Propone etiquetas para categorías seguras dentro de la política implementada. No debería convertir códigos, nombres propios o información ausente en traducciones inventadas."
+      ],
+      "que_valida_la_plataforma": [
+        "Aptitud de categorías, formato de mapeos, conservación del original y publicación autorizada. La comprobación de moneda usa evidencia de la fuente, no una respuesta libre del LLM."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "El analista publica, corrige o excluye cada etiqueta y confirma la revisión. No elige una divisa sin evidencia para mejorar la apariencia."
+      ],
+      "resultado_esperado": "Etiquetas comprensibles con original conservado y unidad monetaria honesta.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "No aparece ninguna etiqueta para aprobar.",
+          "accion": "Si no hay candidatos aptos no existe una tarea de publicación. No hay que fabricar un mapeo."
+        },
+        {
+          "situacion": "El proveedor falla después de una carga conciliada.",
+          "accion": "Reintente sólo interpretación; antes compruebe el expediente para conservar la carga existente."
+        },
+        {
+          "situacion": "WWI no demuestra USD.",
+          "accion": "Conserve moneda de origen. Cambiar el rótulo manualmente no convierte el dato en dólares."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "En el caso AW 21 se propusieron Europe, North America, Pacific y códigos AU, CA, DE, FR, GB, US. Explique la revisión documentada.",
+        "respuesta_orientativa": "Se publicaron Europa, América del Norte y Pacífico; los seis códigos se excluyeron de traducción. Se conservaron originales."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿Publicar etiquetas altera los importes?",
+          "respuesta_orientativa": "No. Añade interpretación categórica auditada; no cambia las medidas originales."
+        },
+        {
+          "pregunta": "¿Siempre debe resolverse un código monetario?",
+          "respuesta_orientativa": "No. La ausencia de evidencia suficiente debe conservarse como límite."
+        }
+      ]
+    },
+    {
+      "codigo": "AN01",
+      "titulo": "Elegir el datamart y filtrar el análisis",
+      "roles": [
+        "Analista de BI",
+        "Gerente comercial"
+      ],
+      "objetivo_de_aprendizaje": "Leer los identificadores y usar filtros sin confundir vistas, bases ni universos.",
+      "introduccion": [
+        "Analítica de ventas consulta los datos físicos de una ejecución conciliada, no vuelve a extraer cada vez la base transaccional. Compruebe la fuente y los identificadores del encabezado antes de interpretar cifras.",
+        "Vista ejecutiva resume la información para gerencia. Vista analítica añade controles y tablas de respaldo. Cambiar de vista no otorga un rol nuevo ni añade datos que no se hayan materializado."
+      ],
+      "conceptos": [
+        {
+          "termino": "Datamart analizado",
+          "explicacion": "Ejecución concreta cuyos datos físicos se consultan; puede haber varios expedientes de la misma fuente."
+        },
+        {
+          "termino": "Filtro",
+          "explicacion": "Delimita las filas que participan en el cálculo. Año y territorio se combinan en el mismo alcance."
+        },
+        {
+          "termino": "Indicador de los gráficos",
+          "explicacion": "Métrica que explica las visualizaciones. No confundirla con todos los KPI del encabezado."
+        },
+        {
+          "termino": "Última actualización",
+          "explicacion": "Fecha de finalización del expediente o de su creación si no existe otra; no equivale a una recarga automática al abrir el panel."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Fuente en contexto",
+          "significado_y_criterio": "Selecciona la base de trabajo. Cambiarla limpia ejecución, filtros y conversación y vuelve a pedir resultados de esa fuente."
+        },
+        {
+          "campo": "Datamart analizado",
+          "significado_y_criterio": "Combobox cuando hay más de una ejecución con datos físicos consultables. Si sólo hay una se muestra Datamart activo."
+        },
+        {
+          "campo": "Vista ejecutiva / Vista analítica",
+          "significado_y_criterio": "Presentación según necesidad de lectura. En la ejecutiva se omite el visual de clientes; en la analítica se muestran controles/datos adicionales."
+        },
+        {
+          "campo": "Indicador de los gráficos",
+          "significado_y_criterio": "En vista analítica lista agregaciones que admiten visualización segura. Las recetas derivadas pueden existir como KPI sin aparecer en ese selector."
+        },
+        {
+          "campo": "Año / Territorio",
+          "significado_y_criterio": "Opciones obtenidas del datamart disponible; no inventan años futuros."
+        },
+        {
+          "campo": "Restablecer filtros",
+          "significado_y_criterio": "Retira año y territorio; no cambia la fuente ni ejecuta otro ETL."
+        },
+        {
+          "campo": "Consultar respaldo / Ver expediente técnico",
+          "significado_y_criterio": "Abre la evidencia de la ejecución que respalda el panel."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Compruebe fuente, base, propuesta, ejecución, moneda y período en el encabezado.",
+          "resultado_que_debe_observar": "Contexto correcto antes de leer tarjetas."
+        },
+        {
+          "numero": 2,
+          "accion": "Seleccione el datamart deseado si hay varios.",
+          "resultado_que_debe_observar": "El panel confirma la ejecución seleccionada. Las selecciones se conservan separadas por fuente y sólo se recuperan cuando esa ejecución sigue disponible."
+        },
+        {
+          "numero": 3,
+          "accion": "Abra Vista analítica y elija el indicador de los gráficos.",
+          "resultado_que_debe_observar": "Las gráficas representan la métrica elegida."
+        },
+        {
+          "numero": 4,
+          "accion": "Seleccione año y territorio y espere Actualizando resultados.",
+          "resultado_que_debe_observar": "KPI, gráficos y hallazgos se recalculan para ese alcance."
+        },
+        {
+          "numero": 5,
+          "accion": "Compare un valor exacto de tabla con una tarjeta abreviada.",
+          "resultado_que_debe_observar": "Comprende la diferencia de formato sin declarar un error de cálculo."
+        },
+        {
+          "numero": 6,
+          "accion": "Use Restablecer filtros y vuelva a seleccionar la otra fuente cuando termine.",
+          "resultado_que_debe_observar": "Restablecer limpia los filtros de la fuente actual. Al volver a la otra fuente se recupera su último contexto confirmado; no se cruza la conversación."
+        }
+      ],
+      "que_hace_la_IA": [
+        "No hace falta una generación LLM para consultar o filtrar el panel. Los valores se calculan mediante recetas y consultas controladas."
+      ],
+      "que_valida_la_plataforma": [
+        "Correspondencia de fuente y ejecución, disponibilidad física, recetas y filtros permitidos; el servidor comprueba procedencia además de los controles del navegador."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "La persona elige el universo e interpreta los resultados dentro del evento materializado."
+      ],
+      "resultado_esperado": "Un panel cuyo contexto y alcance puedan explicarse antes de emitir una conclusión.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "Primero complete el expediente del datamart.",
+          "accion": "No hay ejecución conciliada con datos físicos disponibles. Vuelva a Datamart de ventas y revise preparación, carga y validación."
+        },
+        {
+          "situacion": "Falta el combobox de datamart.",
+          "accion": "Puede ser correcto si sólo una ejecución tiene datos físicos; no se debe crear otra para obtener el selector."
+        },
+        {
+          "situacion": "Aparece un resultado anterior mientras carga el filtro.",
+          "accion": "Espere a que termine y confirme el contexto del encabezado antes de copiar cifras. Si persiste una fuente equivocada, registre incidencia."
+        },
+        {
+          "situacion": "El chat se vació tras cambiar año o fuente.",
+          "accion": "Es protección de contexto: la respuesta anterior no se reutiliza como si perteneciera a la nueva selección."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "Explique por qué los 109,8 millones globales de AW 21 no se comparan directamente con 6.015.174,74 del filtro 2013/Northwest.",
+        "respuesta_orientativa": "Son universos diferentes. La comparación necesita la misma ejecución y filtros."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿Cambiar Año vuelve a cargar el origen?",
+          "respuesta_orientativa": "No. Recalcula sobre el datamart."
+        },
+        {
+          "pregunta": "¿Todas las recetas pueden graficarse por entidad?",
+          "respuesta_orientativa": "No. El selector ofrece las agregaciones que admiten visualización agrupada segura en la implementación."
+        }
+      ]
+    },
+    {
+      "codigo": "AN02",
+      "titulo": "Leer gráficos y hallazgos con criterio comercial",
+      "roles": [
+        "Analista de BI",
+        "Gerente comercial"
+      ],
+      "objetivo_de_aprendizaje": "Diferenciar tendencia, ranking y distribución y explicar sus denominadores y límites.",
+      "introduccion": [
+        "Una línea temporal compara períodos; las barras ordenan entidades; una distribución muestra participaciones. Antes de decir que un producto es el mejor, precise si lo ordenó por importe o unidades y qué filtros utilizó.",
+        "Los hallazgos del panel se construyen con reglas sobre los resultados visibles. Aunque la pantalla los llame Copiloto analítico, no todos sus textos proceden de una nueva llamada LLM. La conversación inferior sí utiliza el proveedor de IA."
+      ],
+      "conceptos": [
+        {
+          "termino": "Top o ranking",
+          "explicacion": "Lista limitada de entidades ordenadas por un indicador. El máximo de una línea no equivale a la mayor suma por producto."
+        },
+        {
+          "termino": "Participación visible",
+          "explicacion": "Porcentaje respecto del total definido para esa visualización. En el panel los rankings limitados pueden usar la suma de lo mostrado; en consultas agregadas del copiloto se informa el universo filtrado completo."
+        },
+        {
+          "termino": "Asociación",
+          "explicacion": "Patrón observado en datos. No prueba por sí solo causalidad, preferencia del cliente, demanda de mercado o eficacia de una campaña."
+        },
+        {
+          "termino": "Detalle seleccionado",
+          "explicacion": "Valor y contexto de un punto, barra o categoría. Seleccionarlo no cambia filtros sin una acción adicional."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Punto, barra o categoría",
+          "significado_y_criterio": "Clic o teclado permiten ver valor exacto y participación del dato seleccionado."
+        },
+        {
+          "campo": "Filtrar tablero por territorio",
+          "significado_y_criterio": "Botón explícito en el detalle territorial. Abrir el detalle no aplica el filtro automáticamente."
+        },
+        {
+          "campo": "Cerrar detalle",
+          "significado_y_criterio": "Cierra la selección puntual sin modificar el universo."
+        },
+        {
+          "campo": "Tabla de respaldo en vista analítica",
+          "significado_y_criterio": "Permite contrastar cifras de la gráfica."
+        },
+        {
+          "campo": "Cómo se generaron",
+          "significado_y_criterio": "Explica la procedencia y reglas de los hallazgos."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Lea título, subtítulo, indicador, unidad y filtros de la gráfica.",
+          "resultado_que_debe_observar": "Identifica el universo que está comparando."
+        },
+        {
+          "numero": 2,
+          "accion": "Seleccione el dato que desee revisar.",
+          "resultado_que_debe_observar": "Detalle con valor exacto sin cambio inesperado del panel."
+        },
+        {
+          "numero": 3,
+          "accion": "Compare con la tabla de respaldo.",
+          "resultado_que_debe_observar": "La cifra representada tiene soporte verificable."
+        },
+        {
+          "numero": 4,
+          "accion": "Si desea restringir por territorio, pulse el botón de filtro explícito.",
+          "resultado_que_debe_observar": "Se recalcula el panel para ese alcance."
+        },
+        {
+          "numero": 5,
+          "accion": "Lea hallazgo, evidencia y Cómo se generaron.",
+          "resultado_que_debe_observar": "Distingue una descripción numérica de una conclusión sobre causas."
+        },
+        {
+          "numero": 6,
+          "accion": "Redacte una lectura y una comprobación comercial adicional.",
+          "resultado_que_debe_observar": "Por ejemplo revisar composición de productos antes de atribuir una caída a un proveedor."
+        }
+      ],
+      "que_hace_la_IA": [
+        "Los hallazgos automáticos del panel son determinísticos. La IA conversacional puede explicar la evidencia después, pero su prosa requiere revisión."
+      ],
+      "que_valida_la_plataforma": [
+        "Cálculo de agregados y visualizaciones sobre el datamart identificado. La gráfica no certifica hipótesis comerciales ajenas a los registros."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "La persona decide qué dato merece atención y qué comprobaciones adicionales necesita antes de actuar."
+      ],
+      "resultado_esperado": "Lectura comercial con cifra, unidad, período y límite explícitos.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "El Top 8 no suma el total global.",
+          "accion": "Es un subconjunto; revise su denominador. No ajuste la gráfica para que aparente cubrir todo."
+        },
+        {
+          "situacion": "Pedidos distintos por producto superan los pedidos globales al sumarlos.",
+          "accion": "Un pedido puede contener varios productos; el conteo distinto no es aditivo entre grupos."
+        },
+        {
+          "situacion": "La IA dice que un producto domina el mercado.",
+          "accion": "El ranking interno no demuestra cuota de mercado. Reformule como posición dentro del universo consultado."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "Un producto lidera por importe y otro por unidades. Escriba dos conclusiones válidas.",
+        "respuesta_orientativa": "Liderazgo por importe y liderazgo por unidades son distintos; ninguno demuestra automáticamente mayor margen o preferencia del mercado."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿Un gráfico por provincia demuestra dónde ocurrió físicamente la entrega?",
+          "respuesta_orientativa": "No, salvo evidencia específica. En WWI el caso usa provincia de la ciudad de entrega registrada en la ficha."
+        },
+        {
+          "pregunta": "¿Abrir una barra filtra todo el tablero?",
+          "respuesta_orientativa": "No. El filtro territorial exige su botón explícito."
+        }
+      ]
+    },
+    {
+      "codigo": "AN03",
+      "titulo": "Conversar con el copiloto y revisar su respuesta",
+      "roles": [
+        "Analista de BI",
+        "Gerente comercial"
+      ],
+      "objetivo_de_aprendizaje": "Formular preguntas respondibles y contrastar consulta interpretada, evidencia y conclusión.",
+      "introduccion": [
+        "El copiloto recibe contexto agregado y procedencia del datamart. Interpreta indicador, dimensión, filtros y Top N, y la plataforma puede ejecutar una consulta agregada permitida antes de pedir una explicación.",
+        "Una pregunta puede solicitar otro año o territorio disponible aunque no esté seleccionado en pantalla. Por eso revise Consulta interpretada: la respuesta puede corresponder a otro alcance solicitado y no al filtro actualmente visible.",
+        "Las reglas acotan formato, consultas y cautelas; no existe un validador universal de verdad para cada frase del modelo. La alumna debe verificar cifras, denominadores y límites antes de usar la respuesta.",
+        "Si cambia de fuente, ejecución, indicador o filtros mientras una respuesta está pendiente, la conversación anterior deja de corresponder al contexto visible. El sistema descarta la respuesta tardía para que no se presente como si fuera del análisis nuevo. Espere la actualización del panel y formule otra pregunta si necesita continuar."
+      ],
+      "conceptos": [
+        {
+          "termino": "Consulta interpretada",
+          "explicacion": "Indicador, agrupación, filtros, límite y orden que la plataforma entendió de la pregunta."
+        },
+        {
+          "termino": "Agregado permitido",
+          "explicacion": "Cálculo cerrado sobre dimensiones materializadas de producto, cliente o territorio, con recetas aprobadas; no SQL libre."
+        },
+        {
+          "termino": "Evidencia",
+          "explicacion": "Valores y alcance que respaldan la explicación; debe poder contrastarse con el panel o tablas."
+        },
+        {
+          "termino": "Pregunta de seguimiento",
+          "explicacion": "Sugerencia ejecutable construida desde capacidades verificadas; no debe asumirse que abre un nuevo módulo de análisis."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Escriba su pregunta",
+          "significado_y_criterio": "Entre 5 y 500 caracteres. Indique indicador, comparación, período, territorio y qué quiere comprender."
+        },
+        {
+          "campo": "Guía de preguntas sugeridas",
+          "significado_y_criterio": "Ejemplos adaptados al contexto; pueden usarse como punto de partida."
+        },
+        {
+          "campo": "Preguntar al copiloto",
+          "significado_y_criterio": "Solicita interpretación/explicación. No crea una propuesta ni ejecuta otro ETL."
+        },
+        {
+          "campo": "Consulta interpretada",
+          "significado_y_criterio": "Revise alcance y denominador antes de leer la narración."
+        },
+        {
+          "campo": "Evidencia y cautela",
+          "significado_y_criterio": "Permiten reconocer lo calculado y lo que no se ha demostrado."
+        },
+        {
+          "campo": "Proveedor y modelo",
+          "significado_y_criterio": "Identifican quién generó la respuesta; cambiar de proveedor no debe cambiar las reglas del datamart."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Confirme ejecución, indicador y filtros antes de preguntar.",
+          "resultado_que_debe_observar": "Tiene un contexto inicial claro."
+        },
+        {
+          "numero": 2,
+          "accion": "Escriba una pregunta concreta, por ejemplo Top 5 de productos por unidades con los filtros actuales.",
+          "resultado_que_debe_observar": "Solicitud respondible con capacidades presentes."
+        },
+        {
+          "numero": 3,
+          "accion": "Espere la respuesta sin enviar varias veces.",
+          "resultado_que_debe_observar": "El copiloto muestra interpretación y evidencia si la operación cumple."
+        },
+        {
+          "numero": 4,
+          "accion": "Lea Consulta interpretada y compare indicador, año, territorio, límite y denominador.",
+          "resultado_que_debe_observar": "Reconoce cuándo la pregunta pidió un alcance distinto del panel."
+        },
+        {
+          "numero": 5,
+          "accion": "Contraste al menos una cifra con tabla o consulta agregada y revise los límites comerciales.",
+          "resultado_que_debe_observar": "No acepta una redacción coherente si contradice datos."
+        },
+        {
+          "numero": 6,
+          "accion": "Pregunte de nuevo para aclarar un denominador o límite, sin atribuir causas que no se han comprobado.",
+          "resultado_que_debe_observar": "Conversación útil y controlada."
+        }
+      ],
+      "que_hace_la_IA": [
+        "Interpreta la intención y redacta respuesta con evidencia agregada. Hay dos generaciones diferenciadas: intención estructurada y explicación. La plataforma aporta seguimiento y cautelas."
+      ],
+      "que_valida_la_plataforma": [
+        "Permisos, fuente/ejecución, indicadores y dimensiones disponibles, filtros, cantidades Top N entre 1 y 20, consultas agregadas e identificadores permitidos; no acepta SQL libre del modelo."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "La persona formula, revisa y decide si la explicación permite una conclusión. Una recomendación es una comprobación por realizar, no un hecho demostrado."
+      ],
+      "resultado_esperado": "Respuesta contrastada con significado comercial y alcance reconocibles.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "El proveedor no responde o devuelve formato inválido.",
+          "accion": "Revise configuración, cuota/tiempo y credencial con el administrador. Un fallo de chat no requiere recargar el datamart."
+        },
+        {
+          "situacion": "La respuesta usa el año actual para un conjunto histórico.",
+          "accion": "Recuerde que el reloj del servidor no añade registros futuros; no acepte fechas ajenas a la disponibilidad."
+        },
+        {
+          "situacion": "Se pide un pronóstico del próximo período.",
+          "accion": "Es fuera del alcance. El resultado correcto es explicar el límite; no inventar un valor o año."
+        },
+        {
+          "situacion": "La respuesta llama facturación a los pedidos de AW.",
+          "accion": "Corrija la interpretación: no se demuestra factura emitida a partir del pedido."
+        },
+        {
+          "situacion": "La respuesta es fluida pero cambia la cifra.",
+          "accion": "No la use como evidencia. Registre pregunta, contexto y discrepancia, reintente aclaración y contraste con cálculos determinísticos."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "En AW 21 filtre 2013/Northwest, indicador unidades, y pregunte: Resume las unidades vendidas en 2013 para Northwest. Indica el total y el mes con mayor cantidad, sin atribuir causas ni mezclar importes.",
+        "respuesta_orientativa": "El control histórico del 6 noviembre registró 17.452 unidades y junio 2013 con 2.494. Una sesión nueva debe contrastar sus propios resultados; no copiar esa cifra si el alcance o la fuente cambiaron."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿Se ejecuta SQL redactado por el LLM?",
+          "respuesta_orientativa": "No. La intención se limita a consultas agregadas permitidas del servidor."
+        },
+        {
+          "pregunta": "¿El copiloto sólo puede responder el filtro visible?",
+          "respuesta_orientativa": "Puede interpretar otro filtro disponible solicitado. Debe leer la consulta interpretada y no asumir que los dos alcances coinciden."
+        },
+        {
+          "pregunta": "¿Una respuesta correcta una vez garantiza que el proveedor nunca fallará?",
+          "respuesta_orientativa": "No. Se deben revisar cada respuesta y sus controles."
+        }
+      ]
+    },
+    {
+      "codigo": "AN04",
+      "titulo": "Exportar y comprobar antes de compartir",
+      "roles": [
+        "Analista de BI",
+        "Gerente comercial con permiso de exportación"
+      ],
+      "objetivo_de_aprendizaje": "Obtener informes que conserven universo y procedencia y revisarlos contra el panel.",
+      "introduccion": [
+        "Exportar PDF produce un informe para lectura. Exportar Excel produce tablas y gráficos de respaldo de las visualizaciones visibles. Ninguno es un respaldo de contenedores, volúmenes o todas las filas de la fuente.",
+        "La exportación se genera desde el dashboard autorizado. No es una exportación automática de la conversación del chat; si desea citar una respuesta debe registrar la pregunta y su contexto como evidencia aparte."
+      ],
+      "conceptos": [
+        {
+          "termino": "Contexto exportado",
+          "explicacion": "Fuente, propuesta, ejecución, vista, métrica, filtros y unidad que permiten interpretar el archivo."
+        },
+        {
+          "termino": "Trazabilidad",
+          "explicacion": "Información para reconocer qué expediente y selección respaldan las cifras."
+        },
+        {
+          "termino": "Redondeo",
+          "explicacion": "Presentación con decimales o abreviaturas; no autoriza a cambiar valores para hacerlos coincidir visualmente."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Exportar PDF",
+          "significado_y_criterio": "Descarga el informe de la vista y selección actuales."
+        },
+        {
+          "campo": "Exportar Excel",
+          "significado_y_criterio": "Descarga el libro con datos que respaldan los gráficos exportados."
+        },
+        {
+          "campo": "Vista ejecutiva/Vista analítica",
+          "significado_y_criterio": "Afecta qué visualizaciones se comparten; revise la vista junto a los filtros."
+        },
+        {
+          "campo": "Carpeta Descargas",
+          "significado_y_criterio": "Abra el archivo recibido y revíselo, no basta con pulsar el botón."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Fije fuente, ejecución, vista, indicador, año y territorio.",
+          "resultado_que_debe_observar": "Alcance exacto que se quiere compartir."
+        },
+        {
+          "numero": 2,
+          "accion": "Exporte PDF y espere la descarga.",
+          "resultado_que_debe_observar": "Archivo con nombre de ejecución y vista."
+        },
+        {
+          "numero": 3,
+          "accion": "Exporte Excel.",
+          "resultado_que_debe_observar": "Libro de revisión, no volcado completo del origen."
+        },
+        {
+          "numero": 4,
+          "accion": "Abra ambos archivos y compare un total, una entidad y el filtro con el panel.",
+          "resultado_que_debe_observar": "Cifras y contexto congruentes."
+        },
+        {
+          "numero": 5,
+          "accion": "Revise unidad, advertencias, denominadores y procedencia.",
+          "resultado_que_debe_observar": "El informe no pierde el límite demostrado en pantalla."
+        },
+        {
+          "numero": 6,
+          "accion": "Registre fecha, nombre y contexto del archivo revisado.",
+          "resultado_que_debe_observar": "Evidencia de revisión real, no sólo descarga."
+        }
+      ],
+      "que_hace_la_IA": [
+        "No se necesita otra llamada al LLM para generar el informe del dashboard. El chat no convierte el reporte en una conclusión validada por un modelo."
+      ],
+      "que_valida_la_plataforma": [
+        "Permiso de exportación además de lectura de analítica; servidor reconstruye el mismo dashboard con filtros autorizados y registra la acción."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "La persona elige selección, vista y formato y comprueba el archivo antes de compartirlo."
+      ],
+      "resultado_esperado": "Dos archivos revisados cuyo alcance puede explicarse sin abrir o trabase.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "No hay botones de exportación.",
+          "accion": "Revise que el rol tenga permisos de lectura del panel y exportación. No se corrige cambiando de vista."
+        },
+        {
+          "situacion": "El PDF tiene menos gráficos que la Vista analítica.",
+          "accion": "Compruebe qué vista exportó; la ejecutiva omite el visual de clientes."
+        },
+        {
+          "situacion": "El porcentaje de Excel no coincide.",
+          "accion": "Compruebe si es escala 0 a 100 o fracción y qué denominador se usó; no multiplique otra vez por 100 por costumbre."
+        },
+        {
+          "situacion": "El archivo muestra moneda de origen aunque AW esté en USD.",
+          "accion": "La evidencia histórica AW 21 conservó una etiqueta genérica en una razón del PDF, pese al valor correcto. No presente ese antecedente como perfección semántica; revise el archivo nuevo."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "Explique por qué no es suficiente mostrar que se descargó un informe para probar que es correcto.",
+        "respuesta_orientativa": "Debe abrirse y comparar cifras, contexto, filtros, unidades y trazabilidad con la selección autorizada."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿Excel incluye todas las filas del OLTP?",
+          "respuesta_orientativa": "No. Incluye respaldo de las visualizaciones exportadas."
+        },
+        {
+          "pregunta": "¿Se exigen siempre seis páginas y seis hojas?",
+          "respuesta_orientativa": "No. Esas cantidades pertenecen a los casos históricos concretos; varían con la vista y las visualizaciones."
+        }
+      ]
+    },
+    {
+      "codigo": "PR01",
+      "titulo": "Practicar con las dos fuentes sin memorizar una respuesta del modelo",
+      "roles": [
+        "Analista de BI",
+        "Gerente comercial"
+      ],
+      "objetivo_de_aprendizaje": "Repetir un recorrido básico y uno avanzado en cada fuente con criterios de aceptación observables.",
+      "introduccion": [
+        "Las cuatro fichas siguientes permiten aprender desde un alcance sencillo hasta documentos distintos, razones y roles de relación. Las básicas son ejercicios propuestos. Las avanzadas conservan objetivos y resultados de la campaña comprobada del 6 de noviembre de 2026.",
+        "Las fichas avanzadas conservan como historia la campaña del 6 de noviembre: propuestas 129 y 131, ejecuciones 21 y 22. Esta edición añade una campaña del 25 de noviembre, con las propuestas 136 y 135 y las ejecuciones 24 y 23, respectivamente. Una instalación limpia recibe sus propios identificadores: no tiene que reproducir esos números.",
+        "Si desea demostrar con un caso ya conservado, anuncie que consulta un expediente histórico. Si genera desde cero, diga que está realizando una ejecución nueva y registre los resultados que realmente obtenga.",
+        "La campaña nueva valida recorridos concretos con OpenAI Sol; las fichas básicas siguen siendo ejercicios para practicar. No equivale a garantizar cualquier texto, cualquier modelo, cualquier motor ni éxito idéntico en una solicitud futura. Aprenda a reconocer también un rechazo correcto y a recuperar una operación sin duplicarla."
+      ],
+      "conceptos": [
+        {
+          "termino": "Referencia histórica",
+          "explicacion": "Dato documentado de una campaña anterior, útil para comparar si copia y alcance coinciden."
+        },
+        {
+          "termino": "Práctica nueva",
+          "explicacion": "Actividad que debe ejecutarse y registrarse; no se presenta como realizada por este manual."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Ficha de práctica",
+          "significado_y_criterio": "Necesidad copiable, preguntas, periodicidad, grano, indicadores y criterios de éxito."
+        },
+        {
+          "campo": "Bitácora de la alumna",
+          "significado_y_criterio": "Registre fecha, fuente, instantánea, proveedor/modelo, propuesta, ejecución, acciones y resultados propios."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Comience por la ruta básica de la primera fuente.",
+          "resultado_que_debe_observar": "Aprende el recorrido con pocas medidas."
+        },
+        {
+          "numero": 2,
+          "accion": "Repita la ruta básica de la segunda fuente.",
+          "resultado_que_debe_observar": "Comprueba qué se mantiene y qué cambió de evento y claves."
+        },
+        {
+          "numero": 3,
+          "accion": "Use el caso avanzado AW para conteo distinto y razones.",
+          "resultado_que_debe_observar": "Puede explicar diferencia entre línea y pedido."
+        },
+        {
+          "numero": 4,
+          "accion": "Use el caso avanzado WWI para roles de relación.",
+          "resultado_que_debe_observar": "Puede justificar comprador y ciudad de entrega y conservar su procedencia."
+        },
+        {
+          "numero": 5,
+          "accion": "Compare las dos lecturas sin sumar monedas ni eventos diferentes.",
+          "resultado_que_debe_observar": "Comprende la arquitectura común y los significados propios de cada fuente."
+        }
+      ],
+      "que_hace_la_IA": [
+        "La IA puede ofrecer diseños distintos en cada intento. Aprenderá a revisar cada resultado, justificar las decisiones y corregir lo necesario."
+      ],
+      "que_valida_la_plataforma": [
+        "Cada práctica vuelve a pasar autorizaciones, viabilidad, contrato, aprobación, preparación, carga y conciliación que correspondan."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "La alumna ejecuta y registra; el analista supervisa; la gerencia explica utilidad y límites de la lectura."
+      ],
+      "resultado_esperado": "Cuatro fichas de trabajo con resultados propios y referencias históricas separadas.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "Los identificadores difieren del manual.",
+          "accion": "Es normal en otra instalación. Compruebe fuente, objetivo y evento; no cambie números a mano."
+        },
+        {
+          "situacion": "El LLM no entrega la cantidad de KPI esperada.",
+          "accion": "Revise entradas y recetas; personalice o excluya extras y valide otra versión. No existe un número universal de indicadores."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "Registre la evidencia de una práctica y clasifique qué es generación nueva y qué es consulta histórica.",
+        "respuesta_orientativa": "La evidencia debe permitir reconocer fecha, fuente, propuesta y expediente, con resultado real y no sólo una captura antigua."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿Se deben forzar las cifras del manual?",
+          "respuesta_orientativa": "No. Son referencias de una copia y alcance concretos; su ejecución debe conciliar datos reales."
+        },
+        {
+          "pregunta": "¿La universalidad obliga a usar la misma relación en ambas bases?",
+          "respuesta_orientativa": "No. El proceso es común; las relaciones y significados dependen de metadatos y decisiones verificadas."
+        }
+      ],
+      "practicas": [
+        {
+          "codigo": "P-AW-B",
+          "titulo": "Ruta básica AdventureWorks unidades por mes y producto",
+          "nivel": "Inicio",
+          "fuente": "AdventureWorks 2022",
+          "estado": "Ejercicio nuevo propuesto para las alumnas; no ejecutado en esta revisión documental.",
+          "necesidad_para_copiar": "Conservar cada línea de pedido de venta para comparar mensualmente la suma de unidades por producto. Usar la fecha del pedido y un nombre de producto comprobable. Mantener la referencia de cada línea a su pedido. Limitar esta práctica al total de unidades y su evolución; no interpretar estos registros como facturas, cobros o pronósticos.",
+          "preguntas": "Evolución de ventas en el tiempo y desempeño por producto, según las etiquetas disponibles del catálogo de esa fuente.",
+          "periodicidad": "Mensual",
+          "grano": "Línea de pedido",
+          "indicadores": "Suma de unidades; las salidas adicionales se revisan y excluyen si no son necesarias.",
+          "criterios_de_exito": [
+            "Objetivo conservado sin ampliar el evento.",
+            "Grano de línea y fecha del pedido verificados.",
+            "Producto descriptivo y ruta sin multiplicación.",
+            "Conciliación del universo nuevo.",
+            "Panel por unidades y mes; no se exige que la IA produzca una cantidad fija de tarjetas."
+          ],
+          "referencia_numerica": "No se asigna un resultado predeterminado a una ejecución no realizada. Si la copia y alcance equivalen al caso histórico, el total global de referencia es 274.914 unidades; debe conciliarse el caso propio."
+        },
+        {
+          "codigo": "P-AW-A",
+          "titulo": "Ruta avanzada AdventureWorks documentos distintos y razón por pedido",
+          "nivel": "Intermedio",
+          "fuente": "AdventureWorks 2022",
+          "estado": "Caso histórico comprobado el 6 de noviembre de 2026: propuesta 129, ejecución 21. Repetición por las alumnas pendiente.",
+          "necesidad_para_copiar": "Conservar cada línea de pedido de venta en un datamart. Para priorizar productos y territorios, comparar mensualmente cuatro indicadores: suma del importe registrado de las líneas, suma de unidades, conteo de identificadores de pedido distintos e importe total dividido entre pedidos distintos. Usar fecha y territorio comercial del pedido, producto y cliente con nombre verificable. Los rankings comparan sumas por entidad. Mantener la trazabilidad de cada línea al pedido. La moneda se reportará sólo si se comprueba en la fuente.",
+          "preguntas": "Tiempo, producto, cliente y territorio. Revise el catálogo propio antes de seleccionarlas.",
+          "periodicidad": "Mensual",
+          "grano": "Línea de pedido",
+          "indicadores": "Importe registrado total; unidades totales; pedidos distintos; importe total/pedidos distintos.",
+          "rutas_a_comprobar": [
+            "Fecha y territorio comercial del pedido, con territorio procedente de Sales.SalesTerritory.",
+            "Producto y cliente con nombre verificable; clave de línea y pedido conservadas."
+          ],
+          "pasos_especificos": [
+            "Use el objetivo exacto y pase por los cinco pasos del asistente.",
+            "Revise que la cuenta del documento use conteo distinto y que la razón lo use como denominador.",
+            "No agregue costos o margen para igualar un número de tarjetas.",
+            "Apruebe únicamente cero errores y avisos comprendidos; complete los cinco pasos de materialización.",
+            "Consulte primero global, luego 2013/Northwest.",
+            "En Vista analítica elija unidades; lea tabla mensual; pregunte al chat por total y mes líder.",
+            "Exporte y abra PDF y Excel con ese mismo alcance."
+          ],
+          "historico": {
+            "fecha": "2026-11-06",
+            "propuesta": 129,
+            "ejecucion": 21,
+            "filas_origen": 121317,
+            "filas_destino": 121317,
+            "diferencia_filas": 0,
+            "tablas": 5,
+            "global": {
+              "importe_exacto": "109846381.399888",
+              "moneda": "USD comprobado",
+              "unidades": 274914,
+              "pedidos_distintos": 31465,
+              "importe_por_pedido_exacto": "3491.065672966407"
+            },
+            "filtro": {
+              "anio": 2013,
+              "territorio": "Northwest",
+              "importe_exacto": "6015174.735836",
+              "unidades": 17452,
+              "pedidos_distintos": 2053,
+              "importe_por_pedido_exacto": "2929.943855740867",
+              "mes_mayor_unidades": "junio de 2013",
+              "unidades_mes_lider": 2494
+            },
+            "interpretacion": "Europe, North America y Pacific publicadas como Europa, América del Norte y Pacífico; AU, CA, DE, FR, GB, US excluidos de traducción.",
+            "exportacion": "PDF de 6 páginas y Excel de 6 hojas de la Vista analítica por unidades 2013/Northwest; observación histórica de etiqueta genérica de razón monetaria conservada."
+          },
+          "pregunta_chat_para_copiar": "Resume las unidades vendidas en 2013 para Northwest. Indica el total y el mes con mayor cantidad, sin atribuir causas ni mezclar importes.",
+          "criterios_de_exito": [
+            "Mismo evento, grano y roles del caso.",
+            "Conciliación sin diferencia.",
+            "Cuatro indicadores revisados; no promedio de línea rotulado como promedio por pedido.",
+            "Unidad demostrada y límites de pedido conservados.",
+            "Valores del panel, chat y archivos contrastados con la selección."
+          ]
+        },
+        {
+          "codigo": "P-WWI-B",
+          "titulo": "Ruta básica WideWorldImporters facturas y unidades por mes",
+          "nivel": "Inicio",
+          "fuente": "WideWorldImporters",
+          "estado": "Ejercicio nuevo propuesto para las alumnas; no ejecutado en esta revisión documental.",
+          "necesidad_para_copiar": "Conservar cada línea de factura para comparar mensualmente la suma de unidades facturadas por producto. Usar la fecha de emisión y el producto con nombre verificable. Mantener el identificador de factura y el de línea para conservar la trazabilidad. Limitar la práctica a unidades y evolución; no afirmar moneda, cobro, utilidad ni entrega realizada.",
+          "preguntas": "Tiempo y producto según el catálogo propio.",
+          "periodicidad": "Mensual",
+          "grano": "Línea de factura",
+          "indicadores": "Suma de unidades; otras salidas se revisan antes de materializar.",
+          "criterios_de_exito": [
+            "La propuesta usa facturación y fecha de emisión, no pedidos como sustituto.",
+            "Producto descriptivo y línea identificable.",
+            "No se añade moneda ni utilidad por intuición.",
+            "Carga conciliada y panel en unidades."
+          ],
+          "referencia_numerica": "No se inventa un resultado para esta ejecución nueva. El caso histórico completo WWI 22 conservó 8.950.628 unidades; sólo sirve de contraste si copia y alcance son equivalentes."
+        },
+        {
+          "codigo": "P-WWI-A",
+          "titulo": "Ruta avanzada WideWorldImporters roles de cliente y territorio",
+          "nivel": "Intermedio/avanzado",
+          "fuente": "WideWorldImporters",
+          "estado": "Caso histórico comprobado el 6 de noviembre de 2026: propuesta 131, ejecución 22; dos correcciones guiadas sucesivas. Repetición por las alumnas pendiente.",
+          "necesidad_para_copiar": "Diseñar un datamart cuyo grano físico sea una línea de factura. Sobre ese detalle, resumir mensualmente el importe registrado de la línea, las unidades y las facturas distintas por producto y cliente. Usar la fecha de emisión. Para el territorio, usar la provincia de la ciudad de entrega registrada en la ficha del cliente y aclarar que no representa necesariamente su ubicación histórica. Conservar el importe de origen sin asumir moneda, utilidad ni composición fiscal. Limitar los indicadores a importe total, unidades totales, facturas distintas e importe promedio por factura. Los rankings deben comparar totales por producto; el máximo de una sola línea no identifica al producto líder.",
+          "preguntas": "Tiempo, producto, cliente y territorio en el catálogo WWI.",
+          "periodicidad": "Mensual",
+          "grano": "Línea de factura",
+          "indicadores": "Importe registrado; unidades; facturas distintas; importe total/facturas distintas.",
+          "rutas_a_comprobar": [
+            "Sales.InvoiceLines→Sales.Invoices por la relación de factura.",
+            "Cliente comprador: Invoices.CustomerID→Customers, no BillToCustomerID para esta necesidad.",
+            "Territorio: Customers.DeliveryCityID→Cities.StateProvinceID→StateProvinces, no PostalCityID para esta necesidad.",
+            "La provincia es el destino dimensional; una elección intermedia puede precisar la ruta sin reemplazarla por ciudad."
+          ],
+          "pasos_especificos": [
+            "Use el objetivo exacto y revise viabilidad.",
+            "Compruebe grano de factura, fecha de emisión, medidas y cuatro indicadores.",
+            "Si la generación usa otro rol, abra Personalización y Resolver una relación con evidencia.",
+            "Elija Cliente y Invoices.CustomerID→Customers; justifique que se analiza al comprador; cree una versión con relación corregida.",
+            "Revise el nuevo resultado; elija Territorio y Customers.DeliveryCityID→Cities; justifique ubicación registrada de entrega; cree otra versión.",
+            "Confirme que se conserva CustomerID y la provincia final de StateProvinces. No acepte una vía postal o de facturación sólo porque mantiene filas.",
+            "Apruebe y materialice si cumple; revise conciliación y divisa.",
+            "En analítica elija 2015/California, contraste cuatro indicadores; pregunte al chat sobre alcance, denominador y límites; exporte y abra archivos."
+          ],
+          "historico": {
+            "fecha": "2026-11-06",
+            "propuesta": 131,
+            "ejecucion": 22,
+            "filas_origen": 228265,
+            "filas_destino": 228265,
+            "diferencia_filas": 0,
+            "tablas": 5,
+            "global": {
+              "importe_exacto": "198043439.45",
+              "moneda": "moneda de origen; sin código único demostrado",
+              "unidades": 8950628,
+              "facturas_distintas": 70510,
+              "importe_por_factura_exacto": "2808.7283995177986"
+            },
+            "filtro": {
+              "anio": 2015,
+              "territorio": "California",
+              "lineas": 3771,
+              "importe_exacto": "3191769.11",
+              "unidades": 142247,
+              "facturas_distintas": 1179,
+              "importe_por_factura_exacto": "2707.1832994062765"
+            },
+            "fecha_dimension": {
+              "fechas_unicas": 1069,
+              "documentos_origen": 70510,
+              "duplicados_controlados": 69441
+            },
+            "exportacion": "PDF de 6 páginas y Excel de 6 hojas/4 gráficos de la vista filtrada; es un ejemplo histórico, no formato fijo."
+          },
+          "pregunta_chat_para_copiar": "Resume el importe, las unidades y las facturas distintas en 2015 para California. Explica el denominador del importe por factura y qué significa la provincia usada, sin asumir moneda ni entrega realizada.",
+          "criterios_de_exito": [
+            "Evento de facturación con fecha de emisión.",
+            "Rutas exactas de comprador y ciudad de entrega registradas.",
+            "Facturas distintas, no conteo de líneas.",
+            "La moneda no se convierte en USD sin evidencia.",
+            "No se atribuyen ubicación histórica, entrega efectiva o composición fiscal no demostradas.",
+            "No se reutiliza el filtro del expediente legado 19 como oráculo del 22."
+          ]
+        }
+      ]
+    },
+    {
+      "codigo": "BI08",
+      "titulo": "Costos descuentos y márgenes una ampliación que exige evidencia",
+      "roles": [
+        "Analista de BI",
+        "Gerente comercial"
+      ],
+      "objetivo_de_aprendizaje": "Reconocer cuándo se puede ampliar el análisis financiero y cuándo debe limitarse.",
+      "introduccion": [
+        "Los casos finales anteriores se centraron en importe, unidades, documentos y razones. No acreditan automáticamente un margen histórico. Si se necesita rentabilidad, primero se deben comprobar costos compatibles con la venta y su fecha.",
+        "Un costo unitario actual del catálogo puede servir de referencia, pero no se convierte por su nombre en el costo real histórico de cada línea vendida. Comparar ese costo con un importe de otro alcance puede producir un cálculo numérico correcto y una interpretación comercial incorrecta."
+      ],
+      "conceptos": [
+        {
+          "termino": "Descuento monetario",
+          "explicacion": "Importe derivado de una base y una tasa; la tasa por sí sola no es dinero."
+        },
+        {
+          "termino": "Venta bruta",
+          "explicacion": "Precio por cantidad antes del descuento cuando esa es la receta comprobada."
+        },
+        {
+          "termino": "Venta neta de un descuento",
+          "explicacion": "Requiere identificar qué deducción se aplica y si el importe de origen ya la contiene; no descontar dos veces."
+        },
+        {
+          "termino": "Costo total",
+          "explicacion": "Costo unitario comparable × unidades, o concepto total directo verificado; requiere una base coherente."
+        },
+        {
+          "termino": "Margen bruto",
+          "explicacion": "Diferencia entre importe de venta y costo comparable del mismo alcance."
+        },
+        {
+          "termino": "Porcentaje de margen",
+          "explicacion": "Margen ÷ importe de venta del mismo alcance × 100, con divisor cero protegido."
+        },
+        {
+          "termino": "Comparabilidad",
+          "explicacion": "Mismo evento, unidad, moneda, período y criterio de valoración para los componentes."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Fórmula y Origen",
+          "significado_y_criterio": "Deben mostrar entradas reales; no normalizar por nombre únicamente."
+        },
+        {
+          "campo": "Cobertura de necesidad",
+          "significado_y_criterio": "Reconoce si costo o margen se resuelve o queda fuera."
+        },
+        {
+          "campo": "Ajuste de seguridad",
+          "significado_y_criterio": "Puede corregir una tasa usada como importe, pero no inventa la evidencia económica ausente."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Formule el objetivo aclarando qué costo desea usar y en qué condición temporal.",
+          "resultado_que_debe_observar": "Se distingue costo real, costo estándar actual u otra referencia."
+        },
+        {
+          "numero": 2,
+          "accion": "Revise viabilidad y entradas para costo, importe, cantidad y descuento.",
+          "resultado_que_debe_observar": "Si faltan datos, la salida se limita."
+        },
+        {
+          "numero": 3,
+          "accion": "Compruebe cálculos por fila y agregados.",
+          "resultado_que_debe_observar": "Evita sumar tasas como dinero o promediar márgenes sin ponderación."
+        },
+        {
+          "numero": 4,
+          "accion": "Apruebe sólo si el significado comparable puede defenderse.",
+          "resultado_que_debe_observar": "No se maquilla un bloqueo de calidad comercial."
+        }
+      ],
+      "que_hace_la_IA": [
+        "Sugiere recetas y explicaciones dentro del contexto. No puede demostrar costos históricos no disponibles a través de un texto convincente."
+      ],
+      "que_valida_la_plataforma": [
+        "Existencia, tipo, semántica implementada, recetas y relaciones. La revisión humana sigue siendo necesaria para condiciones económicas y temporalidad no acreditadas por el modelo."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "El analista decide qué costo es aceptable y qué límite debe declararse; la gerencia no debe recibir como utilidad real un indicador referencial."
+      ],
+      "resultado_esperado": "Una ampliación justificable o un alcance financiero expresamente limitado.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "Se afirma margen sólo porque existen columnas Sales y Cost.",
+          "accion": "Compare procedencia, fecha, moneda y evento antes de usarlo."
+        },
+        {
+          "situacion": "El importe original ya incluye descuento.",
+          "accion": "No aplique la tasa dos veces. Revise la fórmula y definición de origen."
+        },
+        {
+          "situacion": "Se solicitan impuestos o utilidad fiscal sin evidencia.",
+          "accion": "Limite la necesidad; no infiera composición fiscal por el nombre importe."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "Dos líneas tienen márgenes de 10 % y 50 % con importes de 900 y 100. Calcule el margen agregado.",
+        "respuesta_orientativa": "90+50=140 sobre 1.000; 14 %. El promedio simple 30 % no representa el porcentaje global."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿La existencia de un costo comprueba su vigencia histórica?",
+          "respuesta_orientativa": "No. Requiere evidencia temporal y criterio de valoración."
+        },
+        {
+          "pregunta": "¿Qué debe hacer si no puede justificarlo?",
+          "respuesta_orientativa": "Declarar el límite y excluir rentabilidad o usar un indicador referencial correctamente rotulado."
+        }
+      ]
+    },
+    {
+      "codigo": "QA01",
+      "titulo": "Resolver problemas y reconocer un rechazo correcto",
+      "roles": [
+        "Todos según permisos"
+      ],
+      "objetivo_de_aprendizaje": "Recuperar el trabajo sin saltarse los controles y registrar incidencias útiles.",
+      "introduccion": [
+        "Que el sistema rechace una petición no siempre es un defecto. Debe rechazar estructuras inventadas, divisiones no definidas, mezclas de fuente o relaciones que contradigan el objetivo. La recuperación correcta conserva la evidencia y explica qué debe cambiar.",
+        "Ante un problema registre pantalla, fecha, fuente, propuesta, expediente, acción y mensaje. No copie contraseñas, claves API o credenciales a capturas o informes."
+      ],
+      "conceptos": [
+        {
+          "termino": "Rechazo esperado",
+          "explicacion": "Control que impide una operación fuera de sus condiciones."
+        },
+        {
+          "termino": "Regresión",
+          "explicacion": "Un comportamiento previamente correcto deja de cumplirse después de un cambio; necesita evidencia comparable."
+        },
+        {
+          "termino": "Caso no ejecutado",
+          "explicacion": "Prueba planificada que no debe marcarse aprobada sin realizarla."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Reintentar la misma solicitud",
+          "significado_y_criterio": "Para una falla de proveedor, con revisión/consentimiento vigentes; no es un atajo del contrato."
+        },
+        {
+          "campo": "Revisar necesidad",
+          "significado_y_criterio": "Permite aclarar alcance sin modificar los datos de origen."
+        },
+        {
+          "campo": "Abrir resultado / Abrir expediente",
+          "significado_y_criterio": "Recuperan evidencia persistida antes de repetir operaciones."
+        },
+        {
+          "campo": "Motivo / Justificación",
+          "significado_y_criterio": "Explicación de una decisión humana, no código para cambiar estados."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Determine en qué etapa ocurrió el problema: asistencia, diseño, aprobación, preparación, carga, semántica, panel, chat o exportación.",
+          "resultado_que_debe_observar": "No aplica el mismo remedio a todos los fallos."
+        },
+        {
+          "numero": 2,
+          "accion": "Lea el mensaje y compruebe fuente, versión y estado.",
+          "resultado_que_debe_observar": "Separa error de proveedor de una inconsistencia del contrato."
+        },
+        {
+          "numero": 3,
+          "accion": "Recupere el resultado persistido antes de reenviar.",
+          "resultado_que_debe_observar": "Evita duplicidad y consumo innecesario."
+        },
+        {
+          "numero": 4,
+          "accion": "Aplique la corrección mínima de la tabla de incidencias.",
+          "resultado_que_debe_observar": "No altera huellas, reglas o datos del origen."
+        },
+        {
+          "numero": 5,
+          "accion": "Repita el control afectado y registre resultado.",
+          "resultado_que_debe_observar": "La incidencia sólo se cierra con evidencia real."
+        }
+      ],
+      "que_hace_la_IA": [
+        "Puede fallar por formato, tiempo, cuota, capacidad o interpretación. Cambiar de proveedor puede ser una alternativa operativa, pero no debe cambiar las reglas de validación ni aprobar una respuesta inválida."
+      ],
+      "que_valida_la_plataforma": [
+        "Formato estructurado, requisitos de estado y permiso, coherencia de contrato y pertenencia de fuente. Los mensajes indican qué resultado no se usó o cuál acción quedó bloqueada."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "El operador recupera; el administrador revisa configuración; el analista corrige alcance y decisiones; la gerencia suspende conclusiones no sustentadas."
+      ],
+      "resultado_esperado": "Trabajo recuperado o incidencia documentada con un punto de corrección identificable.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "El proveedor devolvió JSON pero no cumplió el contrato.",
+          "accion": "Se descarta su uso. Reintente con la misma revisión válida o coordine proveedor probado; no cargue a mano la respuesta inválida."
+        },
+        {
+          "situacion": "La necesidad estaba respaldada pero el LLM no conserva el objetivo.",
+          "accion": "No apruebe; mantenga el texto original y reintente o corrija. Separar fallo de generación de falta de viabilidad."
+        },
+        {
+          "situacion": "Se pierde la respuesta del navegador.",
+          "accion": "Revise historial/versiones y expedientes antes de repetir; el servidor puede haber terminado."
+        },
+        {
+          "situacion": "No aparece una opción por rol.",
+          "accion": "Revise permisos con administrador; no haga que su compañera use otra identidad para simular un rol."
+        },
+        {
+          "situacion": "El filtro no da cifras.",
+          "accion": "Confirme que la combinación de año y territorio exista en el datamart; no cambie el cero a otro valor."
+        },
+        {
+          "situacion": "La respuesta del copiloto no es coherente.",
+          "accion": "Conserve pregunta, consulta interpretada, evidencia y contexto. Compare con el motor numérico y registre la corrección requerida."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "Escriba una incidencia que otra persona pueda reproducir sin conocer su contraseña.",
+        "respuesta_orientativa": "Fuente, versión, expediente, condiciones previas, pasos, resultado esperado/obtenido y captura sin secretos."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿Cambiar el modelo resuelve una ruta ambigua por sí solo?",
+          "respuesta_orientativa": "No. La elección del rol comercial requiere evidencia y decisión humana."
+        },
+        {
+          "pregunta": "¿Un rechazo por facturación cuando se pidió pedido es siempre un defecto?",
+          "respuesta_orientativa": "No. Puede ser un control correcto que protege el evento solicitado."
+        }
+      ],
+      "regresiones_para_practicar": [
+        {
+          "caso": "Cambiar AW→WWI→AW",
+          "esperado": "Fuente, ejecución, filtros, chat y panel corresponden al contexto nuevo; no se conservan datos de la otra fuente.",
+          "tipo": "Aislamiento",
+          "estado": "Planificada para repetición por alumnas; existen antecedentes documentados."
+        },
+        {
+          "caso": "Abrir versión aprobada y Verificar evidencia",
+          "esperado": "Lectura y verificación sin cambiar silenciosamente estado, huellas o datos.",
+          "tipo": "Historial",
+          "estado": "Planificada para repetición por alumnas."
+        },
+        {
+          "caso": "Elegir contrato histórico sin rutas actuales para nueva carga",
+          "esperado": "Nueva carga bloqueada con motivo; histórico sigue consultable.",
+          "tipo": "Rechazo esperado",
+          "estado": "Regla contrastada con código."
+        },
+        {
+          "caso": "Ruta WWI de BillToCustomerID en objetivo comprador",
+          "esperado": "No se acepta como sustituto; usar decisión guiada con CustomerID.",
+          "tipo": "Semántica",
+          "estado": "Antecedente histórico 6 noviembre; repetición nueva pendiente."
+        },
+        {
+          "caso": "Ruta WWI de PostalCityID en objetivo ciudad de entrega",
+          "esperado": "No se acepta como sustituto; DeliveryCityID con provincia conservada.",
+          "tipo": "Semántica",
+          "estado": "Antecedente histórico 6 noviembre; repetición nueva pendiente."
+        },
+        {
+          "caso": "Volver a preparar contrato/selección ya ejecutados",
+          "esperado": "Abre expediente o conflicto de duplicidad; no otra carga idéntica accidental.",
+          "tipo": "Rechazo esperado",
+          "estado": "Regla contrastada con código."
+        },
+        {
+          "caso": "Divisor de una razón cero",
+          "esperado": "Sin valor/no calculable; no infinito ni porcentaje inventado.",
+          "tipo": "Cálculo",
+          "estado": "Regla contrastada con código; no se modifican datos para provocarla aquí."
+        },
+        {
+          "caso": "Divisa WWI no demostrada",
+          "esperado": "Moneda de origen, con importes conservados.",
+          "tipo": "Unidad",
+          "estado": "Caso 22 documentado 6 noviembre."
+        },
+        {
+          "caso": "Pedir pronóstico para próximo período",
+          "esperado": "Explica fuera del alcance sin inventar cifra futura.",
+          "tipo": "Límite de IA",
+          "estado": "Ejercicio supervisado; no se promete que toda respuesta libre sea correcta."
+        },
+        {
+          "caso": "Exportar sin lectura del panel o sin permiso de exportación",
+          "esperado": "Operación rechazada por servidor; no archivo con datos no autorizados.",
+          "tipo": "Permisos",
+          "estado": "Regla contrastada con código; sesión manual por rol debe registrarse aparte."
+        }
+      ]
+    },
+    {
+      "codigo": "DEMO01",
+      "titulo": "Demostrar y defender el recorrido completo",
+      "roles": [
+        "Analista de BI",
+        "Gerente comercial",
+        "Programadoras"
+      ],
+      "objetivo_de_aprendizaje": "Explicar cada etapa con evidencia y responder preguntas del jurado sin prometer capacidades no implementadas.",
+      "introduccion": [
+        "Una demostración sólida no consiste en pulsar botones rápido. Explique la decisión de negocio, muestre su traducción al modelo y compruebe el resultado. Haga pausas en los puntos donde una persona acepta una decisión.",
+        "Practique primero la consulta del caso histórico y después una ejecución nueva cuando tenga tiempo y proveedor disponible. Lleve el PDF y Excel ya revisados como referencia, identificados con su fecha; no los presente como una descarga nueva si no lo es."
+      ],
+      "conceptos": [
+        {
+          "termino": "Eficacia observable",
+          "explicacion": "Cumplimiento de criterios funcionales y numéricos del caso."
+        },
+        {
+          "termino": "Eficiencia comparativa",
+          "explicacion": "Requeriría tareas equivalentes y medidas de tiempo/esfuerzo/costo frente a una referencia. No se deduce de que el prototipo funcione."
+        },
+        {
+          "termino": "Supervisión",
+          "explicacion": "Decisiones humanas explícitas entre asistencia de IA, reglas determinísticas y ejecución controlada."
+        }
+      ],
+      "campos_y_controles": [
+        {
+          "campo": "Ficha de caso",
+          "significado_y_criterio": "Propósito, fuente, objetivo, grano, indicadores, rutas, unidad y filtros."
+        },
+        {
+          "campo": "Comprobantes",
+          "significado_y_criterio": "Aprobación, preparación, carga, conciliación y publicación de etiquetas."
+        },
+        {
+          "campo": "Bitácora",
+          "significado_y_criterio": "Estado observado, hora, identificadores y archivos realmente revisados."
+        }
+      ],
+      "pasos": [
+        {
+          "numero": 1,
+          "accion": "Presente el problema como correspondencia entre necesidad comercial y datos disponibles.",
+          "resultado_que_debe_observar": "No afirma que faltaba IA en todas las empresas ni que la herramienta aumentó ventas."
+        },
+        {
+          "numero": 2,
+          "accion": "Muestre esquema y catálogo de cada fuente.",
+          "resultado_que_debe_observar": "Reconoce diferencias sin cambiar el proceso común."
+        },
+        {
+          "numero": 3,
+          "accion": "Explique necesidad y viabilidad.",
+          "resultado_que_debe_observar": "Distingue estructura, candidatos y límites."
+        },
+        {
+          "numero": 4,
+          "accion": "Lea modelo, personalización y aprobación.",
+          "resultado_que_debe_observar": "Se ven las decisiones humanas y las reglas que no pueden saltarse."
+        },
+        {
+          "numero": 5,
+          "accion": "Muestre preparación, carga y conciliación, nueva o histórica identificada.",
+          "resultado_que_debe_observar": "La audiencia reconoce de dónde salen los datos."
+        },
+        {
+          "numero": 6,
+          "accion": "Interprete el panel, use un filtro y pida una explicación al chat.",
+          "resultado_que_debe_observar": "Compara cifras y consulta interpretada sin atribuir causas."
+        },
+        {
+          "numero": 7,
+          "accion": "Exporte y abra los archivos, o muestre los históricos como tales.",
+          "resultado_que_debe_observar": "Cierra con contexto y trazabilidad."
+        },
+        {
+          "numero": 8,
+          "accion": "Explique una restricción: pronóstico fuera del alcance, moneda no comprobada o costo no comparable.",
+          "resultado_que_debe_observar": "Demuestra criterio y no infalibilidad universal."
+        }
+      ],
+      "que_hace_la_IA": [
+        "Asiste en formulación, sugerencias, diseño, consejo semántico, etiquetas aptas y conversación analítica. No reemplaza todos los cálculos ni la aprobación humana."
+      ],
+      "que_valida_la_plataforma": [
+        "Puertas de entrada, requisitos, contrato, relaciones, recetas, permisos, procedencia, carga y conciliación según el alcance implementado."
+      ],
+      "que_decide_o_aprueba_la_persona": [
+        "La persona define, selecciona, justifica, aprueba, confirma, revisa etiquetas e interpreta el significado comercial del resultado."
+      ],
+      "resultado_esperado": "Demostración que diferencia lo propuesto, lo comprobado, lo decidido y lo ejecutado.",
+      "errores_y_recuperacion": [
+        {
+          "situacion": "El proveedor falla frente al jurado.",
+          "accion": "Explique el rechazo seguro, conserve el estado y consulte el caso histórico identificado; no diga que una ejecución nueva terminó si no ocurrió."
+        },
+        {
+          "situacion": "El jurado pregunta por otro motor o idioma.",
+          "accion": "Explique arquitectura adaptable y límites comprobados. Dos fuentes SQL Server y variantes de pruebas no certifican cualquier motor, idioma o modelo."
+        }
+      ],
+      "ejercicio": {
+        "consigna": "Prepare una exposición de 10 minutos y otra de 25 minutos; en ambas identifique qué pasos consulta y qué pasos ejecuta.",
+        "respuesta_orientativa": "La corta puede usar expedientes históricos verificados; la larga puede generar un caso nuevo con margen para revisión sin prometer una respuesta fija."
+      },
+      "autoevaluacion": [
+        {
+          "pregunta": "¿Qué hace inteligente al sistema?",
+          "respuesta_orientativa": "Combina interpretación y propuestas de IA con contexto, reglas, memoria de expedientes y supervisión; no que toda acción la realice un LLM."
+        },
+        {
+          "pregunta": "¿Qué evidencia usaría para demostrar una cifra?",
+          "respuesta_orientativa": "Fuente, propuesta, ejecución, alcance, fórmula, conciliación y tabla/reporte del mismo universo."
+        },
+        {
+          "pregunta": "¿Qué no se puede prometer?",
+          "respuesta_orientativa": "Infalibilidad LLM, pronóstico, eficiencia comparativa no medida, compatibilidad de todos los motores ni efectos económicos reales no investigados."
+        }
+      ]
+    }
+  ],
+  "fuentes_verificadas": [
+    {
+      "ruta": "/home/ceo/Proyectos/BI/frontend/src/App.tsx",
+      "uso": "Asistente, editor, relaciones guiadas, aprobación, materialización y revisión semántica.",
+      "sha256": "9f52d985a353607fd0a7db452e36d6d1ed0532a57dfa3ac1091f17eea0fd514b"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/frontend/src/AnalyticsPage.tsx",
+      "uso": "Vistas, selección de ejecución, filtros, interacciones, chat y exportación.",
+      "sha256": "3824675328064d9baddbcde9d061f38132c2783027f45b054127b36b71b9ade2"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/backend/app/modules/copilot/router.py",
+      "uso": "Consentimiento, viabilidad, versiones, relaciones, verificación y aprobación.",
+      "sha256": "57d4f8a71357d8b280fe5759537aebd5783a364386da2415a23dee1c3217199b"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/backend/app/modules/copilot/needs.py",
+      "uso": "Análisis estructural de capacidades y evento.",
+      "sha256": "acc0e62ad77aee95b77245b35825d7d708ddd9958634fe4d9a08caac4127b4f4"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/backend/app/modules/copilot/need_advisor.py",
+      "uso": "Contexto de IA, validador de referencias/semántica y revisión combinada.",
+      "sha256": "82724ec300604a5dc542bb1387e1b418cf5f8bc83e6e91119a27300d7f8036b4"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/backend/app/modules/copilot/service.py",
+      "uso": "Contrato BI, normalización y validación.",
+      "sha256": "978453bf439d74d3e79627482f041f70ba930f50b0766d4cef6aa6226ce420e2"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/backend/app/modules/copilot/entity_resolution.py",
+      "uso": "Identidad y roles dimensionales.",
+      "sha256": "0c0cb5e9fa80bae215cade26c7b787770608c0545e30455245e80afcdfad6988"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/backend/app/modules/etl/router.py",
+      "uso": "Elegibilidad, preparación, duplicidad, carga, divisa y etiquetas.",
+      "sha256": "a2155e33948f4dbada145f86e3d608a8365ea1e85eea73980153b0d1ce0769c2"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/backend/app/modules/etl/service.py",
+      "uso": "Recetas permitidas, cobertura, unidades y plan.",
+      "sha256": "8781109981047c0850768edb602f4fd0dc2a286d21b36ecd5b9731085c81e077"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/backend/app/modules/etl/materializer.py",
+      "uso": "Lectura, carga, destinos por ejecución, conciliación y divisa.",
+      "sha256": "7fefb1ddddb9929646e29ebb7b9e307e5b8c74f9e9b3d9a51478926e106d05ed"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/backend/app/modules/analytics/router.py",
+      "uso": "Permisos, copiloto de intención/explicación y exportes.",
+      "sha256": "8dc56c305377a5c439a8cafe4970f612549aada516891b3f42ebf3b4f366aa66"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/backend/app/modules/analytics/service.py",
+      "uso": "Recálculo, agregados, ratios, ranking, denominadores, procedencia y calidad.",
+      "sha256": "65e1a4013df23cff0001862c77c4b24e3ee68d7a5f5310881d021ef011663274"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/backend/app/modules/reports/analytics_export.py",
+      "uso": "Construcción de archivos del dashboard autorizado.",
+      "sha256": "c6e16662f9ffa4bb9130c81893938b0bdbedec56bae3494ca268c60df0ded9f0"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/docs/manual-usuario/edicion-2026-11-06/contenido_formacion.json",
+      "uso": "Antecedentes y objetivos exactos AW 129/21 y WWI 131/22.",
+      "sha256": "89a60cdae4cc6ab6c5640f67fe9aca48ce7f2a25979016e3cdd2367b75bddd03"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/docs/testing/qa-postcierre-2026-11-06.md",
+      "uso": "Control histórico, oráculo filtrado, exportes y límites.",
+      "sha256": "ccba84752156e019ec1f6a0febd69c5e72e992eb0f97ebe669b1a75e5bfd1521"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/docs/testing/evidencia-postcierre-2026-11-06.json",
+      "uso": "Referencias numéricas y huellas de evidencias históricas.",
+      "sha256": "6508c3c520065dd9730538e74fdcbe572982ee822f2e379386d0961a3b49b2d0"
+    }
+  ]
+}

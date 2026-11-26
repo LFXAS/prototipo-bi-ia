@@ -14,6 +14,7 @@ from app.modules.copilot.need_advisor import combine_assessment
 from app.modules.copilot.service import (
     COMPILATION_RULES_VERSION,
     PROMPT_VERSION,
+    _dimension_attributes,
     _discovery_references,
     _semantic_role,
     apply_analyst_adjustments,
@@ -27,6 +28,7 @@ from app.modules.copilot.service import (
     expand_proposal_blueprint,
     proposal_blueprint_schema,
     proposal_payload,
+    safe_relationship_paths,
     semantic_advice_response_schema,
     semantic_response_schema,
     validate_proposal,
@@ -694,7 +696,7 @@ def test_controlled_relation_catalog_only_enables_unique_declared_target() -> No
     assert option["eligible"] is True
     assert len(option["option_id"]) == 64
 
-    blueprint = apply_controlled_relationship(valid_blueprint(), "dim_producto", option)
+    blueprint = apply_controlled_relationship(valid_blueprint(), "dim_producto", option, scope)
     dimension = next(item for item in blueprint["dimensions"] if item["name"] == "dim_producto")
     assert dimension["source_table"] == "Production.Product"
     assert dimension["source_locked"] is True
@@ -1133,6 +1135,16 @@ def test_new_compilation_rejects_numeric_identifiers_in_row_arithmetic(identifie
     semantic_map, _ = validated_semantic_candidates([semantic_response()], document)
     scope = derived_scope(document, semantic_map)
     blueprint = valid_blueprint()
+    # Additional opaque FK roles do not silently choose which product is intended.
+    blueprint["business_request_scope"] = {
+        "requirements": [
+            {
+                "code": "goal:product",
+                "status": "direct",
+                "evidence": ["Sales.OrderDetail.ProductID", "Production.Product.Name"],
+            }
+        ]
+    }
     blueprint["measures"].append(
         {
             "name": "Derived monetary value",
@@ -1197,6 +1209,15 @@ def test_quantity_like_name_never_overrides_declared_identity(structural_key: st
     semantic_map, _ = validated_semantic_candidates([semantic_response()], document)
     scope = derived_scope(document, semantic_map)
     blueprint = valid_blueprint()
+    blueprint["business_request_scope"] = {
+        "requirements": [
+            {
+                "code": "goal:product",
+                "status": "direct",
+                "evidence": ["Sales.OrderDetail.ProductID", "Production.Product.Name"],
+            }
+        ]
+    }
     blueprint["measures"].append(
         {
             "name": "Unidades",
@@ -2187,7 +2208,10 @@ def test_requested_date_dimension_is_completed_when_model_omits_it() -> None:
         "warnings": [],
     }
 
-    proposal = expand_proposal_blueprint(blueprint, scope, {"candidates": []})
+    # Rules 3 retain their historical expansion even without declared join paths.
+    proposal = expand_proposal_blueprint(
+        blueprint, scope, {"candidates": []}, compilation_rules_version=3
+    )
 
     assert proposal["dimensions"] == [
         {
@@ -2200,6 +2224,728 @@ def test_requested_date_dimension_is_completed_when_model_omits_it() -> None:
     ]
     assert proposal["warnings"] == []
     assert "se incorporó" in proposal["automatic_adjustments"][0]
+
+
+def _competing_dimension_scope(spanish: bool = False) -> tuple[dict, dict]:
+    """Two valid commercial/address routes; physical names must not decide intent."""
+    refs = (
+        (
+            "Comercial.LineasPedido",
+            "Comercial.Pedidos",
+            "Comercial.Territorios",
+            "Personas.EstadosProvincias",
+        )
+        if spanish
+        else (
+            "Commercial.OrderLines",
+            "Commercial.Orders",
+            "Commercial.Territory",
+            "People.StateProvince",
+        )
+    )
+    detail, header, territory, province = refs
+    order_id, area_id, state_id = (
+        ("PedidoID", "TerritorioID", "ProvinciaID")
+        if spanish
+        else ("OrderID", "TerritoryID", "StateProvinceID")
+    )
+    date, amount, quantity = (
+        ("FechaPedido", "ImporteLinea", "Cantidad")
+        if spanish
+        else ("OrderDate", "LineTotal", "Quantity")
+    )
+
+    def column(name: str, data_type: str = "int", pk: bool = False) -> dict:
+        return {"name": name, "type": data_type, "pk": pk}
+
+    def relation(local: str, target: str, remote: str) -> dict:
+        schema, table = target.split(".")
+        return {
+            "columns": [local],
+            "referenced_schema": schema,
+            "referenced_table": table,
+            "referenced_columns": [remote],
+        }
+
+    name = "Nombre" if spanish else "Name"
+    scope = {
+        "tables": [
+            {
+                "ref": detail,
+                "columns": [
+                    column("LineID", pk=True),
+                    column(order_id),
+                    column(amount, "money"),
+                    column(quantity),
+                ],
+                "foreign_keys": [relation(order_id, header, order_id)],
+            },
+            {
+                "ref": header,
+                "columns": [
+                    column(order_id, pk=True),
+                    column("OrderNumber", "nvarchar"),
+                    column("PurchaseOrderNumber", "nvarchar"),
+                    column("CustomerID"),
+                    column(area_id),
+                    column(state_id),
+                    column(date, "datetime"),
+                    column("ModifiedDate", "datetime"),
+                ],
+                "foreign_keys": [
+                    relation(area_id, territory, area_id),
+                    relation(state_id, province, state_id),
+                ],
+            },
+            {
+                "ref": territory,
+                "columns": [column(area_id, pk=True), column(name, "nvarchar")],
+                "foreign_keys": [],
+            },
+            {
+                "ref": province,
+                "columns": [
+                    column(state_id, pk=True),
+                    column("StateName", "nvarchar"),
+                    column("ProvinceName", "nvarchar"),
+                    column("CountryName", "nvarchar"),
+                ],
+                "foreign_keys": [],
+            },
+        ]
+    }
+    blueprint = {
+        "fact_source": detail,
+        "grain_description": "Una fila por línea de pedido.",
+        "summary": "Ventas por territorio comercial y fecha.",
+        "measures": [
+            {
+                "name": "importe",
+                "source_column": amount,
+                "aggregation": "sum",
+                "semantic_role": "sales_amount",
+            },
+            {
+                "name": "unidades",
+                "source_column": quantity,
+                "aggregation": "sum",
+                "semantic_role": "quantity",
+            },
+            {
+                "name": "pedidos",
+                "source_column": order_id,
+                "aggregation": "count_distinct",
+                "semantic_role": "transaction_count",
+            },
+        ],
+        "dimensions": [
+            {"name": "dim_fecha", "source_table": header},
+            {"name": "dim_territorio", "source_table": territory},
+        ],
+        "kpis": [
+            {
+                "code": "ventas",
+                "name": "Importe total",
+                "measure_index": 0,
+                "operation": "sum",
+                "semantic_role": "sales_amount",
+            },
+            {
+                "code": "cantidad",
+                "name": "Unidades totales",
+                "measure_index": 1,
+                "operation": "sum",
+                "semantic_role": "quantity",
+            },
+            {
+                "code": "documentos",
+                "name": "Pedidos distintos",
+                "measure_index": 2,
+                "operation": "count_distinct",
+                "semantic_role": "transaction_count",
+            },
+        ],
+        "assumptions": [],
+        "warnings": [],
+    }
+    return scope, blueprint
+
+
+@pytest.mark.parametrize("spanish", [False, True])
+def test_explicit_commercial_dimension_is_not_replaced_by_richer_address_names(
+    spanish: bool,
+) -> None:
+    scope, blueprint = _competing_dimension_scope(spanish)
+    proposal = expand_proposal_blueprint(blueprint, scope, {"candidates": []})
+    territory = next(dim for dim in proposal["dimensions"] if dim["name"] == "dim_territorio")
+    assert territory["source_tables"] == [scope["tables"][2]["ref"]]
+    assert territory["source_resolution"]["status"] == "preserved"
+    assert len(territory["source_resolution"]["path"]) == 2
+    assert all(edge in proposal["joins"] for edge in territory["source_resolution"]["path"])
+
+
+@pytest.mark.parametrize("spanish", [False, True])
+def test_date_attributes_exclude_document_identity_and_follow_temporal_types(spanish: bool) -> None:
+    scope, blueprint = _competing_dimension_scope(spanish)
+    proposal = expand_proposal_blueprint(blueprint, scope, {"candidates": []})
+    dimension = next(dim for dim in proposal["dimensions"] if dim["name"] == "dim_fecha")
+    assert dimension["business_key"] == ("FechaPedido" if spanish else "OrderDate")
+    assert dimension["attributes"] == []
+    assert dimension["business_key"] not in {"OrderNumber", "PurchaseOrderNumber", "CustomerID"}
+
+
+def test_dimension_fallback_requires_compatible_grain_preserving_evidence() -> None:
+    scope, blueprint = _competing_dimension_scope()
+    # The richest lexical match is disconnected; it must not win the fallback.
+    scope["tables"][1]["foreign_keys"] = scope["tables"][1]["foreign_keys"][:1]
+    blueprint["dimensions"][1]["source_table"] = "Missing.Unknown"
+    proposal = expand_proposal_blueprint(blueprint, scope, {"candidates": []})
+    territory = next(dim for dim in proposal["dimensions"] if dim["name"] == "dim_territorio")
+    assert territory["source_tables"] == ["Commercial.Territory"]
+    assert territory["source_resolution"]["status"] == "fallback"
+    assert "granularidad" in territory["source_resolution"]["reason"]
+
+
+def test_incomplete_composite_target_key_is_not_a_safe_dimension_route() -> None:
+    scope, blueprint = _competing_dimension_scope()
+    scope["tables"][2]["columns"].append({"name": "TenantID", "type": "int", "pk": True})
+    scope["tables"][1]["foreign_keys"] = scope["tables"][1]["foreign_keys"][:1]
+    proposal = expand_proposal_blueprint(blueprint, scope, {"candidates": []})
+    assert not any(dim["name"] == "dim_territorio" for dim in proposal["dimensions"])
+    assert any(
+        blocker["code"] == "dimension.composite_identity"
+        for blocker in proposal["dimension_blockers"]
+    )
+
+
+def test_reverse_many_to_one_is_not_used_to_multiply_a_header_fact() -> None:
+    scope, blueprint = _competing_dimension_scope()
+    blueprint["fact_source"] = scope["tables"][1]["ref"]
+    blueprint["dimensions"] = [{"name": "dim_producto", "source_table": scope["tables"][0]["ref"]}]
+    scope["tables"][0]["columns"].append({"name": "ProductName", "type": "nvarchar", "pk": False})
+    proposal = expand_proposal_blueprint(blueprint, scope, {"candidates": []})
+    assert proposal["dimensions"] == []
+
+
+@pytest.mark.parametrize(
+    "goal",
+    [
+        "Quiero cuatro indicadores: importe total, unidades, pedidos distintos "
+        "e importe promedio por pedido.",
+        "I need four indicators: total amount, units, distinct orders "
+        "and average amount per order.",
+    ],
+)
+def test_mislabeled_quantity_average_is_excluded_and_document_ratio_is_preserved(
+    goal: str,
+) -> None:
+    scope, blueprint = _competing_dimension_scope()
+    assessment = {
+        "requirements": [
+            {
+                "code": "ai:" + str(index),
+                "coverage_code": "goal:" + capability,
+                "status": "derivable",
+                "components": [],
+            }
+            for index, capability in enumerate(
+                ("sales_amount", "quantity", "transactions", "average_transaction")
+            )
+        ]
+    }
+    blueprint["business_request_scope"] = {"goal": goal, **deepcopy(assessment)}
+    blueprint["kpis"].extend(
+        [
+            {
+                "code": "misleading",
+                "name": "Cantidad promedio por pedido",
+                "measure_index": 1,
+                "operation": "average",
+                "semantic_role": "quantity",
+            },
+        ]
+    )
+    proposal = expand_proposal_blueprint(blueprint, scope, {"candidates": []})
+    proposal = apply_financial_requirements(proposal, assessment, scope)
+    assert len(proposal["kpis"]) == 4
+    assert {item["code"] for item in proposal["kpis"]} == {
+        "ventas",
+        "cantidad",
+        "documentos",
+        "importe_promedio_transaccion",
+    }
+    ratio = next(
+        item for item in proposal["kpis"] if item["code"] == "importe_promedio_transaccion"
+    )
+    assert ratio["formula_kind"] == "ratio"
+    assert ratio["inputs"] == ["importe", "pedidos"]
+    assert any(
+        item["code"] == "misleading" and item["status"] == "excluded"
+        for item in proposal["decision_diagnostics"]
+    )
+
+
+@pytest.mark.parametrize("data_type", ["time", "timestamp", "rowversion", "binary(8)"])
+def test_non_calendar_types_cannot_become_a_date_dimension(data_type: str) -> None:
+    scope, blueprint = _competing_dimension_scope()
+    header = scope["tables"][1]
+    for column in header["columns"]:
+        if column["name"] in {"OrderDate", "ModifiedDate"}:
+            column["type"] = data_type
+    proposal = expand_proposal_blueprint(blueprint, scope, {"candidates": []})
+    assert not any(dim["name"] == "dim_fecha" for dim in proposal["dimensions"])
+    assert any(
+        item["code"] == "dimension.source_unresolved" for item in proposal["dimension_blockers"]
+    )
+
+
+def test_complete_composite_dimension_identity_is_blocked_without_changing_entity() -> None:
+    scope, blueprint = _competing_dimension_scope()
+    territory = scope["tables"][2]
+    territory["columns"].append({"name": "TenantID", "type": "int", "pk": True})
+    header = scope["tables"][1]
+    header["columns"].append({"name": "TenantID", "type": "int", "pk": False})
+    header["foreign_keys"][0]["columns"].append("TenantID")
+    header["foreign_keys"][0]["referenced_columns"].append("TenantID")
+    scope["tables"][0]["columns"][1]["pk"] = True
+    proposal = expand_proposal_blueprint(blueprint, scope, {"candidates": []})
+    # Both columns can share a first-key value across tenants. No scalar identity
+    # or alternative address geography is allowed to silently collapse those rows.
+    assert not any(dim["name"] == "dim_territorio" for dim in proposal["dimensions"])
+    assert any(
+        item["code"] == "dimension.composite_identity" for item in proposal["dimension_blockers"]
+    )
+    assert len(proposal["fact"]["business_keys"]) == 2
+
+
+def test_reviewed_date_reference_preserves_the_requested_event_with_neutral_names() -> None:
+    scope, blueprint = _competing_dimension_scope()
+    header = scope["tables"][1]
+    header["columns"][-2:] = [
+        {"name": "FechaCreacion", "type": "datetime2", "pk": False},
+        {"name": "FechaEmision", "type": "datetime2", "pk": False},
+    ]
+    blueprint["business_request_scope"] = {
+        "goal": "Usar fecha de emisión.",
+        "requirements": [
+            {
+                "code": "ai:fecha",
+                "coverage_code": "goal:date",
+                "status": "direct",
+                "evidence": [f"{header['ref']}.FechaEmision"],
+            }
+        ],
+    }
+    proposal = expand_proposal_blueprint(blueprint, scope, {"candidates": []})
+    date_dimension = next(dim for dim in proposal["dimensions"] if dim["name"] == "dim_fecha")
+    assert date_dimension["business_key"] == "FechaEmision"
+    assert date_dimension["source_resolution"]["business_key_reference"].endswith(".FechaEmision")
+
+
+def test_financial_margin_percentage_retains_its_valid_dependency() -> None:
+    scope, blueprint = _competing_dimension_scope()
+    scope["tables"].append(
+        {
+            "ref": "Commercial.Product",
+            "columns": [
+                {"name": "ProductID", "type": "int", "pk": True},
+                {"name": "Name", "type": "nvarchar", "pk": False},
+                {"name": "UnitCost", "type": "money", "pk": False},
+            ],
+            "foreign_keys": [],
+        }
+    )
+    detail = scope["tables"][0]
+    detail["columns"].append({"name": "ProductID", "type": "int", "pk": False})
+    detail["foreign_keys"].append(
+        {
+            "columns": ["ProductID"],
+            "referenced_schema": "Commercial",
+            "referenced_table": "Product",
+            "referenced_columns": ["ProductID"],
+        }
+    )
+    blueprint["dimensions"].append({"name": "dim_producto", "source_table": "Commercial.Product"})
+    assessment = {
+        "requirements": [
+            {
+                "code": "goal:total_cost",
+                "status": "derivable",
+                "components": ["unit_cost", "quantity"],
+            },
+            {
+                "code": "goal:gross_margin",
+                "status": "derivable",
+                "components": ["sales_amount", "unit_cost", "quantity"],
+            },
+        ]
+    }
+    blueprint["business_request_scope"] = {
+        "goal": "Necesito porcentaje de margen y costo total.",
+        **deepcopy(assessment),
+    }
+    proposal = expand_proposal_blueprint(blueprint, scope, {"candidates": []})
+    proposal = apply_financial_requirements(proposal, assessment, scope)
+    codes = {item["code"] for item in proposal["kpis"]}
+    assert {"costo_total", "margen_bruto", "margen_porcentaje"} <= codes
+    percentage = next(item for item in proposal["kpis"] if item["code"] == "margen_porcentaje")
+    assert percentage["formula_kind"] == "share"
+    assert percentage["inputs"] == ["margen_bruto", "importe"]
+
+
+def test_an_open_request_retains_valid_additional_metrics() -> None:
+    scope, blueprint = _competing_dimension_scope()
+    blueprint["business_request_scope"] = {
+        "goal": "Explorar ventas y unidades por territorio.",
+        "requirements": [],
+    }
+    blueprint["kpis"].append(
+        {
+            "code": "maximum",
+            "name": "Cantidad máxima por línea",
+            "measure_index": 1,
+            "operation": "max",
+            "semantic_role": "quantity",
+        }
+    )
+    proposal = expand_proposal_blueprint(blueprint, scope, {"candidates": []})
+    assert any(item["code"] == "maximum" for item in proposal["kpis"])
+
+
+@pytest.mark.parametrize("label", ["Cantidad promedio por pedido", "Average units per order"])
+def test_document_average_cannot_bypass_validation_as_an_average_of_fact_rows(label: str) -> None:
+    scope, blueprint = _competing_dimension_scope()
+    proposal = expand_proposal_blueprint(blueprint, scope, {"candidates": []})
+    proposal["kpis"].append(
+        {
+            "code": "incorrect_document_average",
+            "name": label,
+            "semantic_role": "quantity",
+            "formula": {"operation": "average", "measure": "unidades"},
+        }
+    )
+    validation = validate_proposal(proposal, scope, DOCUMENT)
+    assert any(
+        issue["code"] == "kpi.document_average_requires_ratio" for issue in validation["issues"]
+    )
+
+
+def _role_path_scope(spanish: bool = False) -> tuple[dict, dict]:
+    names = (
+        (
+            "Comercial.Eventos",
+            "Comercial.Documentos",
+            "Comercial.Clientes",
+            "Geografia.Ciudades",
+            "Geografia.Regiones",
+        )
+        if spanish
+        else (
+            "Commerce.Events",
+            "Commerce.Documents",
+            "Commerce.Customers",
+            "Geography.Cities",
+            "Geography.Regions",
+        )
+    )
+    event, document, customer, city, region = names
+    ids = (
+        ("ClienteID", "ClienteFacturacionID", "CiudadEntregaID", "CiudadPostalID")
+        if spanish
+        else ("CustomerID", "BillingCustomerID", "DeliveryCityID", "PostalCityID")
+    )
+    client_id, billing_id, delivery_id, postal_id = ids
+
+    def col(name: str, pk: bool = False, data_type: str = "int") -> dict:
+        return {"name": name, "pk": pk, "type": data_type}
+
+    def fk(column: str, target: str, key: str) -> dict:
+        schema, table = target.split(".")
+        return {
+            "columns": [column],
+            "referenced_schema": schema,
+            "referenced_table": table,
+            "referenced_columns": [key],
+        }
+
+    tables = [
+        {
+            "ref": event,
+            "columns": [col("EventID", True), col("DocumentID"), col("Amount", data_type="money")],
+            "foreign_keys": [fk("DocumentID", document, "DocumentID")],
+        },
+        {
+            "ref": document,
+            "columns": [
+                col("DocumentID", True),
+                col(client_id),
+                col(billing_id),
+                col("EventDate", data_type="date"),
+            ],
+            "foreign_keys": [
+                fk(billing_id, customer, client_id),
+                fk(client_id, customer, client_id),
+            ],
+        },
+        {
+            "ref": customer,
+            "columns": [
+                col(client_id, True),
+                col("Name", data_type="nvarchar"),
+                col(delivery_id),
+                col(postal_id),
+            ],
+            "foreign_keys": [fk(postal_id, city, "CityID"), fk(delivery_id, city, "CityID")],
+        },
+        {
+            "ref": city,
+            "columns": [col("CityID", True), col("RegionID"), col("Name", data_type="nvarchar")],
+            "foreign_keys": [fk("RegionID", region, "RegionID")],
+        },
+        {
+            "ref": region,
+            "columns": [col("RegionID", True), col("Name", data_type="nvarchar")],
+            "foreign_keys": [],
+        },
+    ]
+    blueprint = {
+        "fact_source": event,
+        "grain_description": "Una fila por evento.",
+        "summary": "Importes por cliente y región.",
+        "measures": [
+            {
+                "name": "importe",
+                "source_column": "Amount",
+                "aggregation": "sum",
+                "semantic_role": "sales_amount",
+            }
+        ],
+        "dimensions": [
+            {"name": "dim_fecha", "source_table": document},
+            {"name": "dim_cliente", "source_table": customer},
+            {"name": "dim_territorio", "source_table": region},
+        ],
+        "kpis": [
+            {
+                "code": "importe_total",
+                "name": "Importe total",
+                "measure_index": 0,
+                "operation": "sum",
+                "semantic_role": "sales_amount",
+            }
+        ],
+        "business_request_scope": {
+            "goal": "Por cliente y ciudad de entrega actual.",
+            "requirements": [
+                {
+                    "code": "goal:customer",
+                    "status": "direct",
+                    "evidence": [f"{document}.{client_id}", f"{customer}.Name"],
+                },
+                {
+                    "code": "goal:territory",
+                    "status": "derivable",
+                    "evidence": [f"{customer}.{delivery_id}", f"{city}.RegionID", f"{region}.Name"],
+                },
+                {"code": "goal:date", "status": "direct", "evidence": [f"{document}.EventDate"]},
+            ],
+        },
+        "assumptions": [],
+        "warnings": [],
+    }
+    return {"tables": tables}, blueprint
+
+
+@pytest.mark.parametrize("spanish", [False, True])
+def test_reviewed_link_columns_resolve_roles_independently_of_foreign_key_order(
+    spanish: bool,
+) -> None:
+    scope, blueprint = _role_path_scope(spanish)
+    first = expand_proposal_blueprint(blueprint, scope, {"candidates": []})
+    reordered = deepcopy(scope)
+    for table in reordered["tables"]:
+        table["foreign_keys"].reverse()
+    second = expand_proposal_blueprint(blueprint, reordered, {"candidates": []})
+    first_paths = {x["name"]: x["source_resolution"]["path"] for x in first["dimensions"]}
+    second_paths = {x["name"]: x["source_resolution"]["path"] for x in second["dimensions"]}
+    assert first_paths == second_paths
+    assert first_paths["dim_cliente"][-1]["left_columns"] == [
+        "ClienteID" if spanish else "CustomerID"
+    ]
+    assert first_paths["dim_territorio"][2]["left_columns"] == [
+        "CiudadEntregaID" if spanish else "DeliveryCityID"
+    ]
+    assert "dimension_blockers" not in first
+
+
+def test_human_relationship_decisions_accumulate_without_replacing_the_dimension() -> None:
+    scope, blueprint = _role_path_scope()
+    blueprint["business_request_scope"]["requirements"] = []
+    initial = expand_proposal_blueprint(blueprint, scope, {"candidates": []})
+    assert any(
+        x["code"] == "dimension.relationship_ambiguous" for x in initial["dimension_blockers"]
+    )
+    options = controlled_relation_catalog(scope)
+    client = next(x for x in options if x["left_columns"] == ["CustomerID"])
+    delivery = next(x for x in options if x["left_columns"] == ["DeliveryCityID"])
+    first = apply_controlled_relationship(blueprint, "dim_territorio", client, scope)
+    second = apply_controlled_relationship(first, "dim_territorio", delivery, scope)
+    territory = next(x for x in second["dimensions"] if x["name"] == "dim_territorio")
+    assert territory["source_table"] == "Geography.Regions"
+    assert len(second["controlled_relations"]) == 2
+    final = expand_proposal_blueprint(second, scope, {"candidates": []})
+    assert "dimension_blockers" not in final
+
+
+def test_human_relation_must_lie_on_the_dimension_route_and_match_reviewed_scope() -> None:
+    scope, blueprint = _role_path_scope()
+    options = controlled_relation_catalog(scope)
+    city = next(x for x in options if x["left_columns"] == ["DeliveryCityID"])
+    billing = next(x for x in options if x["left_columns"] == ["BillingCustomerID"])
+    with pytest.raises(ValueError, match="dimensión|necesidad"):
+        apply_controlled_relationship(blueprint, "dim_fecha", city, scope)
+    with pytest.raises(ValueError, match="necesidad"):
+        apply_controlled_relationship(blueprint, "dim_cliente", billing, scope)
+
+
+def test_safe_paths_do_not_treat_the_shortest_route_as_the_only_business_role() -> None:
+    scope, blueprint = _role_path_scope()
+    events, *_, regions = scope["tables"]
+    events["columns"].append({"name": "DirectRegionID", "type": "int", "pk": False})
+    events["foreign_keys"].append(
+        {
+            "columns": ["DirectRegionID"],
+            "referenced_schema": "Geography",
+            "referenced_table": "Regions",
+            "referenced_columns": ["RegionID"],
+        }
+    )
+    tables = {x["ref"]: x for x in scope["tables"]}
+    paths = safe_relationship_paths(tables, events["ref"], regions["ref"])
+    assert {len(path) for path in paths} == {1, 4}
+    compiled = expand_proposal_blueprint(blueprint, scope, {"candidates": []})
+    region = next(x for x in compiled["dimensions"] if x["name"] == "dim_territorio")
+    assert len(region["source_resolution"]["path"]) == 4
+
+
+def test_reviewed_customer_link_also_constrains_the_territory_prefix() -> None:
+    scope, blueprint = _role_path_scope()
+    document = scope["tables"][1]
+    document["columns"].append({"name": "OriginalOrderID", "pk": False, "type": "int"})
+    document["foreign_keys"].append(
+        {
+            "columns": ["OriginalOrderID"],
+            "referenced_schema": "Commerce",
+            "referenced_table": "Orders",
+            "referenced_columns": ["OrderID"],
+        }
+    )
+    scope["tables"].append(
+        {
+            "ref": "Commerce.Orders",
+            "columns": [
+                {"name": "OrderID", "pk": True, "type": "int"},
+                {"name": "CustomerID", "pk": False, "type": "int"},
+            ],
+            "foreign_keys": [
+                {
+                    "columns": ["CustomerID"],
+                    "referenced_schema": "Commerce",
+                    "referenced_table": "Customers",
+                    "referenced_columns": ["CustomerID"],
+                }
+            ],
+        }
+    )
+    compiled = expand_proposal_blueprint(blueprint, scope, {"candidates": []})
+    region = next(x for x in compiled["dimensions"] if x["name"] == "dim_territorio")
+    path = region["source_resolution"]["path"]
+    assert len(path) == 4
+    assert path[1]["left_columns"] == ["CustomerID"]
+    assert all(edge["right_table"] != "Commerce.Orders" for edge in path)
+    assert "dimension_blockers" not in compiled
+
+
+@pytest.mark.parametrize("account_code", ["AccountNumber", "NumeroCuenta"])
+def test_commercial_account_codes_remain_available_without_contact_or_index_text(
+    account_code: str,
+) -> None:
+    columns = [
+        {"name": "CustomerID", "type": "int", "pk": True},
+        {"name": account_code, "type": "nvarchar", "pk": False},
+        {"name": "FaxNumber", "type": "nvarchar", "pk": False},
+        {"name": "SearchDetails", "type": "nvarchar", "pk": False},
+    ]
+    assert _dimension_attributes("dim_cliente", columns, "CustomerID", rules_version=5) == [
+        account_code
+    ]
+
+
+def test_path_enumeration_fails_closed_when_ambiguity_exceeds_its_budget() -> None:
+    tables = {
+        "Demo.Events": {
+            "columns": [{"name": f"Role{n}ID", "pk": False} for n in range(33)],
+            "foreign_keys": [
+                {
+                    "columns": [f"Role{n}ID"],
+                    "referenced_schema": "Demo",
+                    "referenced_table": "Customers",
+                    "referenced_columns": ["CustomerID"],
+                }
+                for n in range(33)
+            ],
+        },
+        "Demo.Customers": {"columns": [{"name": "CustomerID", "pk": True}], "foreign_keys": []},
+    }
+    with pytest.raises(ValueError, match="32"):
+        safe_relationship_paths(tables, "Demo.Events", "Demo.Customers")
+
+
+def test_version_five_avoids_unrequested_contact_and_search_blob_attributes() -> None:
+    scope, blueprint = _role_path_scope()
+    customer = scope["tables"][2]
+    customer["columns"].extend(
+        [
+            {"name": "FaxNumber", "type": "nvarchar", "pk": False},
+            {"name": "SearchDetails", "type": "nvarchar", "pk": False},
+            {"name": "CorreoContacto", "type": "nvarchar", "pk": False},
+        ]
+    )
+    current = expand_proposal_blueprint(blueprint, scope, {"candidates": []})
+    old = expand_proposal_blueprint(
+        blueprint, scope, {"candidates": []}, compilation_rules_version=4
+    )
+    attributes = next(x for x in current["dimensions"] if x["name"] == "dim_cliente")["attributes"]
+    old_attributes = next(x for x in old["dimensions"] if x["name"] == "dim_cliente")["attributes"]
+    assert attributes == ["Name"]
+    assert "FaxNumber" in old_attributes and "SearchDetails" in old_attributes
+
+
+@pytest.mark.parametrize(
+    "spanish, expected_hash",
+    [
+        (False, "19426e5fbf997317724efce12e4a4c2961450b43be86a438d0bf47cbb6494bff"),
+        (True, "b91c29315af24d66dfb1104d95d53fbe02d0911c7650e166d9b8da3aff7ff6ec"),
+    ],
+)
+def test_legacy_compilation_retains_its_original_dimensions_and_kpi_boundary(
+    spanish: bool,
+    expected_hash: str,
+) -> None:
+    scope, blueprint = _competing_dimension_scope(spanish)
+    legacy = expand_proposal_blueprint(
+        blueprint, scope, {"candidates": []}, compilation_rules_version=3
+    )
+    assert all("source_resolution" not in dim for dim in legacy["dimensions"])
+    legacy_date = next(dim for dim in legacy["dimensions"] if dim["name"] == "dim_fecha")
+    assert legacy_date["attributes"] == [
+        "PedidoID" if spanish else "OrderID",
+        "OrderNumber",
+        "PurchaseOrderNumber",
+        "CustomerID",
+    ]
+    # Output generated independently from origin/develop before this correction.
+    assert canonical_hash(legacy) == expected_hash
 
 
 def test_invented_table_and_free_sql_block_approval() -> None:

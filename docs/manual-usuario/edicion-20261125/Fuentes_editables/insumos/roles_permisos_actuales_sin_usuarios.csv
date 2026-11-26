@@ -1,0 +1,53 @@
+codigo_rol,nombre_rol,rol_activo,registro_protegido,codigo_permiso,permiso_activo
+administrator,Administrador,True,True,analytics.dashboard.read,True
+administrator,Administrador,True,True,audit.read,True
+administrator,Administrador,True,True,connections.read,True
+administrator,Administrador,True,True,connections.test,True
+administrator,Administrador,True,True,connections.write,True
+administrator,Administrador,True,True,copilot.catalog.read,True
+administrator,Administrador,True,True,copilot.catalog.write,True
+administrator,Administrador,True,True,copilot.proposals.generate,True
+administrator,Administrador,True,True,copilot.proposals.read,True
+administrator,Administrador,True,True,copilot.proposals.review,True
+administrator,Administrador,True,True,etl.executions.read,True
+administrator,Administrador,True,True,etl.executions.write,True
+administrator,Administrador,True,True,metadata.read,True
+administrator,Administrador,True,True,metadata.refresh,True
+administrator,Administrador,True,True,metadata.semantic_resolution.manage,True
+administrator,Administrador,True,True,metadata.semantic_resolution.read,True
+administrator,Administrador,True,True,parameters.llm.read,True
+administrator,Administrador,True,True,parameters.llm.write,True
+administrator,Administrador,True,True,parameters.read,True
+administrator,Administrador,True,True,parameters.write,True
+administrator,Administrador,True,True,reports.analytics.export,True
+administrator,Administrador,True,True,security.menus.read,True
+administrator,Administrador,True,True,security.menus.write,True
+administrator,Administrador,True,True,security.permissions.read,True
+administrator,Administrador,True,True,security.permissions.write,True
+administrator,Administrador,True,True,security.roles.read,True
+administrator,Administrador,True,True,security.roles.write,True
+administrator,Administrador,True,True,security.users.read,True
+administrator,Administrador,True,True,security.users.write,True
+operador,Operador,True,False,connections.test,True
+operador,Operador,True,False,parameters.llm.read,True
+operador,Operador,True,False,parameters.llm.write,True
+operador,Operador,True,False,parameters.write,True
+analista-bi,Analista BI,True,False,analytics.dashboard.read,True
+analista-bi,Analista BI,True,False,audit.read,True
+analista-bi,Analista BI,True,False,connections.read,True
+analista-bi,Analista BI,True,False,copilot.catalog.read,True
+analista-bi,Analista BI,True,False,copilot.catalog.write,True
+analista-bi,Analista BI,True,False,copilot.proposals.generate,True
+analista-bi,Analista BI,True,False,copilot.proposals.read,True
+analista-bi,Analista BI,True,False,copilot.proposals.review,True
+analista-bi,Analista BI,True,False,etl.executions.read,True
+analista-bi,Analista BI,True,False,etl.executions.write,True
+analista-bi,Analista BI,True,False,metadata.read,True
+analista-bi,Analista BI,True,False,metadata.refresh,True
+analista-bi,Analista BI,True,False,metadata.semantic_resolution.manage,True
+analista-bi,Analista BI,True,False,metadata.semantic_resolution.read,True
+analista-bi,Analista BI,True,False,reports.analytics.export,True
+gerente-comercial,Gerente comercial,True,False,analytics.dashboard.read,True
+gerente-comercial,Gerente comercial,True,False,connections.read,True
+gerente-comercial,Gerente comercial,True,False,metadata.read,True
+gerente-comercial,Gerente comercial,True,False,reports.analytics.export,True

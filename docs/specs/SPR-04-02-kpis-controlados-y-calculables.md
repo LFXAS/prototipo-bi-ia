@@ -156,7 +156,7 @@ resultado efectivo se registran en
 
 ### 5.3. Precisión de identificadores y replay con reglas 3
 
-El corte vigente usa compilation_rules_version=3 y mantiene sales-bi-v7. Number o
+El cierre del 4–5 de noviembre usó `compilation_rules_version=3` y `sales-bi-v7`; la sección 5.4 documenta el corte intermedio de reglas 4 y la evolución vigente a reglas 5 con `sales-bi-v8`. Number o
 Numero no basta por sí solo para excluir una magnitud: la señal nominal exige
 semántica documental o de entidad y se conservan las PK/FK declaradas. NumberOfUnits
 y NumeroDeUnidades sin tales claves son cantidades compatibles con SUM; una PK/FK
@@ -167,7 +167,7 @@ Ausencia de marcador reproduce 1; un 2 reproduce 2. El check proposal.replay.pas
 depende de la igualdad real de hashes, aunque las versiones difieran. El detalle
 declara prompt/reglas persistidos y actuales, y compatibility_warning se informa por
 separado. Sin decisiones guardadas se declara que no puede reconstruirse; no se
-simula igualdad. La puerta de aprobación nueva exige las reglas actuales 3.
+simula igualdad. En aquel corte, la puerta de aprobación nueva exigía reglas 3; la aprobación nueva actual exige reglas 5 y el prompt vigente.
 
 La lectura de seis aprobadas 91/98/117/120/122/124 conservó documentos, validaciones y
 approval_safe sin mutación. 122/124 mantienen reglas 2 y hash exacto. Cinco replays
@@ -175,6 +175,20 @@ coinciden; 91 conserva la discrepancia preexistente, con check false y aviso sep
 no una modificación del contrato. La versión histórica de revisión de necesidad no
 se inventa desde el código actual: no existe un campo explícito persistido en esos
 documentos. El expediente externo conserva el informe sanitizado de compatibilidad.
+
+### 5.4. Promedios por documento y coherencia de la receta
+
+La operación de un indicador debe corresponder a lo que afirma su nombre. El promedio de importes por línea de detalle es diferente del importe promedio por pedido, factura o documento. Este último exige una razón entre el importe agregado y los documentos distintos del mismo contexto. AVG sobre filas del hecho no conserva ese denominador.
+
+Cuando existen un importe sumable y un conteo de documentos distintos verificables, la normalización puede construir una razón controlada. Si no existe evidencia suficiente, debe excluir el indicador incompatible o informar el impedimento, según la receta admitida. Para una cantidad o función distinta del importe, no se transforma AVG de líneas en un promedio por documento por el solo rótulo. La validación rechaza esa incompatibilidad y conserva el diagnóstico.
+
+La cantidad de KPI continúa siendo variable y el analista puede seleccionar y revisar indicadores antes de aprobar. Las recetas válidas adicionales y las dependencias financieras compatibles no se eliminan para alcanzar una cantidad predeterminada. La selección requiere revisión comercial, además de validación técnica.
+
+Las reglas son comunes a fuentes y proveedores admitidos. Los casos de prueba varían nombres ES/EN, comprueban denominadores distintos, fórmulas financieras y métricas adicionales compatibles. No se afirma interpretación exhaustiva de todo lenguaje natural ni soporte de otros motores.
+
+El corte intermedio identificó reglas 4; desde la adenda de rutas los contratos nuevos identifican reglas 5, manteniendo sales-bi-v8; los documentos con reglas 1, 2 o 3 conservan reproducción y huellas históricas. Los expedientes 18 y 19 mantienen su corte anterior y no se convierten en evidencia de esta corrección.
+
+Las regresiones cubren exclusión del promedio de cantidad por documento basado en AVG de líneas, conservación del importe promedio por documento como razón verificable, permanencia de métricas adicionales válidas y de dependencias financieras, reconstrucción nueva y consulta histórica sin mutación. La evidencia del corte final se registra en [QA del 6 de noviembre](../testing/qa-postcierre-2026-11-06.md); el corte intermedio, anterior al ajuste de rutas de reglas 5, concluyó con salida 0 y 475 backend/48 frontend, con frontend reutilizado de caché del mismo árbol. Ese resultado no acredita el integral de reglas 5 ni sustituye el cierre operativo nuevo por fuente.
 
 ## 6. Validación y evidencia
 
@@ -220,6 +234,8 @@ en pantallas de hasta 760 px. El cierre `8f1c7d1` aprobó `make verify` V6 con c
 Ese resultado se registra separado del corte previo `bf50172` (454/46) en el
 [acta QA](../testing/qa-postcierre-2026-11-04.md). Esta corrección no modifica el
 contrato, valores, aprobaciones, origen, destino ni ETL persistidos.
+
+La revisión del 6 de noviembre extendió la presentación monetaria a los alias comunes `importe` y `valor`, además de `moneda`/`currency` y sus denominadores. La interfaz los comunica como moneda de origen mientras no exista ISO verificado y mantiene disponible la comprobación de divisa; no cambia unidades personalizadas históricas ni inventa USD. El cierre definitivo aprobó 530 backend/50 frontend. El expediente WWI 22 volvió a comprobar divisa sin otro ETL, conservó estado no resuelto y cifras, y la propuesta 131 no cambió de huella.
 
 ## 7. Criterios de aceptación
 

@@ -1,0 +1,189 @@
+[
+  {
+    "id": "01_casos_uso",
+    "titulo": "Casos de uso y responsabilidades",
+    "tipo": "Diagrama UML de casos de uso",
+    "fuente_editable": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/01_casos_uso.puml",
+    "svg": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/01_casos_uso.svg",
+    "png": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/01_casos_uso.png",
+    "pie": "Vista de responsabilidades funcionales agrupadas. Los permisos se comprueban en el servidor; el proveedor de inteligencia artificial no aprueba ni ejecuta cargas. Los casos detallados se presentan en sus tablas.",
+    "fuentes_verificacion": [
+      "docs/specs/SPR-02-01-seguridad-rbac.md",
+      "docs/specs/SPR-03-02-propuesta-bi-asistida-por-ia.md",
+      "backend/app/modules/copilot/router.py"
+    ],
+    "ancho_px": 1280,
+    "alto_px": 1701,
+    "sha256": {
+      "png": "edac9ad2e25e6654e60f2b221e61ad3fdf089c44efe47466ad889e370d9b21e2",
+      "svg": "7563e8136385ed4553e6aa6c7cdcc6b8c90388c3421ddb88fb7b3f4f59b2576e",
+      "fuente_editable": "d8dfb4507e4a22e4d64f326504b42138506b48e2b17c288a2abab7a20452d5ae"
+    }
+  },
+  {
+    "id": "02_actividad_supervision",
+    "titulo": "Actividad del ciclo de análisis supervisado",
+    "tipo": "Diagrama UML de actividad",
+    "fuente_editable": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/02_actividad_supervision.puml",
+    "svg": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/02_actividad_supervision.svg",
+    "png": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/02_actividad_supervision.png",
+    "pie": "El flujo distingue la comprobación de la necesidad, la generación, la aprobación y la ejecución. Una respuesta inválida o una diferencia bloqueante no se presenta como resultado publicado.",
+    "fuentes_verificacion": [
+      "docs/specs/SPR-03-02-propuesta-bi-asistida-por-ia.md",
+      "docs/specs/SPR-04-01-seleccion-propuesta-y-validacion-etl.md"
+    ],
+    "ancho_px": 1788,
+    "alto_px": 2748,
+    "sha256": {
+      "png": "f00d20e86aa13d303157a92605b04273923d46a87d5fe7fa96b6853d079eb362",
+      "svg": "2fe7e2e81e2ebd3e3ea65cdb53df1742e3d4f408bad8c284083768d3c3d5e473",
+      "fuente_editable": "3c1081099d84f96d8702e4caf747cae00370d1ae33df4a183c3007a7a47ceeb9"
+    }
+  },
+  {
+    "id": "03_secuencia_propuesta",
+    "titulo": "Generación y aprobación de una propuesta",
+    "tipo": "Diagrama UML de secuencia",
+    "fuente_editable": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/03_secuencia_propuesta.puml",
+    "svg": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/03_secuencia_propuesta.svg",
+    "png": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/03_secuencia_propuesta.png",
+    "pie": "La secuencia conserva el objetivo de negocio y la procedencia de los metadatos. Los bloqueos no se omiten y la aprobación permanece bajo control humano.",
+    "fuentes_verificacion": [
+      "backend/app/modules/copilot/router.py",
+      "backend/app/modules/copilot/service.py",
+      "backend/app/modules/copilot/models.py"
+    ],
+    "ancho_px": 1543,
+    "alto_px": 2218,
+    "sha256": {
+      "png": "00329849bc38192399a9104fc67569b6ff8d69dfb68fc07cc389795a12653f34",
+      "svg": "08267dcbfd6cae6e46619ca48d0fbc9b6d15c66920266b985fed61d3b5c6d522",
+      "fuente_editable": "70ab7e285b50706e9edaa078bb28a91d5c759f1b9921f3e4df2b25a2dbf4da65"
+    }
+  },
+  {
+    "id": "04_secuencia_etl",
+    "titulo": "Carga y conciliación de un datamart",
+    "tipo": "Diagrama UML de secuencia",
+    "fuente_editable": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/04_secuencia_etl.puml",
+    "svg": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/04_secuencia_etl.svg",
+    "png": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/04_secuencia_etl.png",
+    "pie": "El servicio construye operaciones controladas y registra las diferencias. La existencia de tablas no sustituye la conciliación entre cantidades e importes del origen y del destino.",
+    "fuentes_verificacion": [
+      "backend/app/modules/etl/router.py",
+      "backend/app/modules/etl/service.py",
+      "backend/app/modules/etl/materializer.py"
+    ],
+    "ancho_px": 1536,
+    "alto_px": 2193,
+    "sha256": {
+      "png": "604e57d067bd37d6c356fa1ca023c5990bcf2a4137fcdad72c2b76a166d736ed",
+      "svg": "74a602fa0ba12225fbca736f603c875adf738bd1c0727c3b19871f6fd389608b",
+      "fuente_editable": "66257a9169dd087c210c0eaf741347d31c9741fd047a17da082cde4350af6a43"
+    }
+  },
+  {
+    "id": "05_componentes",
+    "titulo": "Componentes del sistema",
+    "tipo": "Diagrama UML de componentes",
+    "fuente_editable": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/05_componentes.puml",
+    "svg": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/05_componentes.svg",
+    "png": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/05_componentes.png",
+    "pie": "Los componentes separan presentación, acceso, fuentes, propuesta, carga y consumo analítico. Las reglas comunes evitan depender de nombres de una única base o de un único proveedor.",
+    "fuentes_verificacion": [
+      "docs/architecture.md",
+      "docs/specs/SPR-06-01-contexto-multifuente-sqlserver.md",
+      "compose.yaml"
+    ],
+    "ancho_px": 2111,
+    "alto_px": 1816,
+    "sha256": {
+      "png": "c816f2f19f117453c252f0866bf530bb9d5c1158442d9eb2b625a17e9c4cf84f",
+      "svg": "18a2092b9338d76e588b61baf561f9588400b280fd6e2d451e069b25bac9d181",
+      "fuente_editable": "d860f506c6635c3100fe567bbc9808d7f5d5e7169300dcf3cf47cf9671990199"
+    }
+  },
+  {
+    "id": "06_despliegue",
+    "titulo": "Despliegue local de la demostración",
+    "tipo": "Diagrama UML de despliegue",
+    "fuente_editable": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/06_despliegue.puml",
+    "svg": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/06_despliegue.svg",
+    "png": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/06_despliegue.png",
+    "pie": "Los contenedores de datos conservan su información en volúmenes. La clave maestra se mantiene separada de las credenciales cifradas y las tareas de inicio no son servicios de uso permanente.",
+    "fuentes_verificacion": [
+      "compose.yaml",
+      "compose.release.yaml",
+      "infra/postgres/initdb/001-schemas.sql"
+    ],
+    "ancho_px": 2529,
+    "alto_px": 1791,
+    "sha256": {
+      "png": "4742bc2f1c4fc000f5cb89bd5400baf9650dd6d47f7cf9440a80d05701ea57c2",
+      "svg": "65ca7273f64a9689811d10742e17bda10d5909d79c782c8f148186c580b50955",
+      "fuente_editable": "575c96c18da844426afa8bb933a104d73f799b228d5be1a5d30eadf8972fd441"
+    }
+  },
+  {
+    "id": "07_clases_dominio",
+    "titulo": "Entidades del ciclo de diseño y carga",
+    "tipo": "Diagrama UML de clases conceptuales",
+    "fuente_editable": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/07_clases_dominio.puml",
+    "svg": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/07_clases_dominio.svg",
+    "png": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/07_clases_dominio.png",
+    "pie": "Vista conceptual verificada con las entidades persistentes de la aplicación. Las multiplicidades expresan las relaciones conservadas; la identidad de una propuesta corregida remite a su versión de origen.",
+    "fuentes_verificacion": [
+      "backend/app/modules/parameters/models.py",
+      "backend/app/modules/metadata/models.py",
+      "backend/app/modules/copilot/models.py",
+      "backend/app/modules/etl/models.py"
+    ],
+    "ancho_px": 2042,
+    "alto_px": 1826,
+    "sha256": {
+      "png": "bef4ef0dc12abbb50a00efeaec702b35eafd1b23f7140277821ef6016e9dd7e3",
+      "svg": "457fbb8ec06828035ca2b289434e80451d4cadb5ef03ee364bef846dc9e447e5",
+      "fuente_editable": "b755e94b1805b2cbc956274a80d8a562ba2edfed6c6d6ad895b6e95013531ead"
+    }
+  },
+  {
+    "id": "08_estados_propuesta",
+    "titulo": "Estados y decisiones de una propuesta",
+    "tipo": "Diagrama UML de estados",
+    "fuente_editable": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/08_estados_propuesta.puml",
+    "svg": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/08_estados_propuesta.svg",
+    "png": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/08_estados_propuesta.png",
+    "pie": "Los estados traducen los valores implementados. La consulta de evidencia no cambia una aprobación; retirar, restaurar o descartar exige una acción autorizada.",
+    "fuentes_verificacion": [
+      "backend/app/modules/copilot/router.py",
+      "backend/app/modules/copilot/models.py"
+    ],
+    "ancho_px": 1424,
+    "alto_px": 1219,
+    "sha256": {
+      "png": "671b9ad87b1aa5e9b85066bccb4fccd665e35dcc9f432a28ca46c7edc41d69b4",
+      "svg": "895a3d381ce8be2018189e81587c8cfb9e2abe1793fe59706c0ce67bef5cb015",
+      "fuente_editable": "2471dad8f3a0ae4a40c4bbd935500fefa2a92fcd76f766b8b02b477324323637"
+    }
+  },
+  {
+    "id": "09_modelo_estrella_logico",
+    "titulo": "Modelo dimensional lógico de ventas",
+    "tipo": "Modelo lógico dimensional de referencia",
+    "fuente_editable": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/09_modelo_estrella_logico.puml",
+    "svg": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/09_modelo_estrella_logico.svg",
+    "png": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/capitulo3-revision-ejemplos-20261106/ingenieria/diagramas/09_modelo_estrella_logico.png",
+    "pie": "Esquema lógico ilustrativo, no un diseño físico fijo para todas las fuentes. Cada ejecución determina sus dimensiones, atributos y medidas a partir del contrato aprobado. Las posibles ausencias de coincidencia se controlan durante la carga.",
+    "fuentes_verificacion": [
+      "backend/app/modules/etl/materializer.py",
+      "docs/specs/SPR-04-02-kpis-controlados-y-calculables.md"
+    ],
+    "ancho_px": 905,
+    "alto_px": 1477,
+    "sha256": {
+      "png": "59be4301e563a19a1a2a545e18fc4a59604cae8636906df934d54de81e6f0695",
+      "svg": "4780da9f1f3ba7b159a27897db8a4c2b2393cd1b76aaff15f6155b75f71de510",
+      "fuente_editable": "001ce244cbcb2e11284ffec774b58fbe5d453e666061ff91bd29b82ee4e96b59"
+    }
+  }
+]

@@ -46,6 +46,7 @@ from app.modules.security.service import (
     generated_role_code,
     hash_password,
     require_permission,
+    session_duration_minutes,
     user_permission_codes,
     verify_password,
 )
@@ -93,9 +94,10 @@ async def login(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Correo o contraseña incorrectos."
         )
+    duration = await session_duration_minutes(session)
     await add_audit_event(session, user.id, "auth.login", "session", str(user.id))
     await session.commit()
-    return TokenResponse(access_token=create_access_token(user.id))
+    return TokenResponse(access_token=create_access_token(user.id, minutes=duration))
 
 
 @router.get("/auth/me", response_model=SessionRead)

@@ -227,6 +227,40 @@ analítica.
   cualquier otra forma; sólo se acepta la ruta que conserva el significado y permite
   resolver una etiqueta descriptiva verificable.
 
+### HBI-015 — Conservación de decisiones verificadas durante la expansión
+
+- La expansión de decisiones compactas debe conservar una fuente dimensional explícita cuando existe en la instantánea, cumple la función requerida y dispone de una ruta declarada segura desde el hecho. Una mayor coincidencia léxica de otra tabla no autoriza sustituirla.
+- La similitud nominal ayuda a descubrir candidatos todavía no resueltos; no prueba equivalencia comercial entre territorio del pedido, provincia del cliente u otra ubicación. Si se utiliza una alternativa compatible, debe quedar registrado el origen propuesto, el elegido, la ruta y el motivo.
+- Las rutas deben conservar el nivel de detalle del hecho. No se recorre una relación inversa que multiplique filas ni se reduce una identidad dimensional compuesta a su primera columna. Si el constructor no admite esa identidad, la propuesta registra un impedimento; no cambia silenciosamente la entidad por otra.
+- La comprobación actual de unicidad dimensional se apoya en las claves primarias capturadas. La falta de exportación de restricciones UNIQUE alternativas es un límite estructural, no una garantía universal de soporte de todas las claves o motores.
+- La fecha de negocio se selecciona por referencia temporal revisada y tipos de calendario compatibles. Si coexisten fechas de evento sin una elección inequívoca, se registra la ambigüedad y se impide la aprobación. No se toman las primeras columnas por posición; time, timestamp y rowversion de SQL Server no constituyen fechas de calendario.
+- Los atributos descriptivos se justifican por la función de la dimensión y conservan su procedencia. Una etiqueta no transforma una provincia actual en territorio comercial ni en una dirección histórica.
+- Las reglas son comunes a proveedores y fuentes admitidas: no usan excepciones por nombres de una base de demostración o un modelo. Las regresiones deben variar nombres, idioma y orden de columnas sin ampliar el alcance a motores no implementados.
+
+### HBI-016 — Evidencia del servidor y coherencia comercial de indicadores
+
+- El objetivo y los requisitos adoptados se conservan como evidencia del servidor ligada a la revisión de la necesidad, la fuente y la instantánea. La generación y las revisiones utilizan esa evidencia; una representación enviada por el navegador no puede fabricar cobertura ni reemplazar el alcance custodiado.
+- La operación y el denominador de un indicador deben corresponder a su rótulo. AVG sobre líneas de detalle no representa un promedio por pedido, factura o documento. Un importe promedio por documento requiere un importe agregado y un conteo de documentos distintos verificable; una receta incompatible se corrige de forma demostrable o se excluye y explica.
+- La cantidad de KPI permanece variable. El analista conserva la selección y revisión de resultados antes de aprobar. Esta adenda no impone un número de indicadores ni una interpretación automática exhaustiva de toda petición textual.
+- Los cálculos financieros y las razones mantienen sus dependencias válidas. La corrección de un rótulo o de un denominador no debe eliminar indicadores adicionales cuya receta sí es compatible y que el analista puede revisar.
+- El corte intermedio del 6 de noviembre reservó las reglas 4 a sus contratos nuevos; HBI-017 establece la evolución vigente a reglas 5. Los históricos mantienen sus reglas y huellas; consultarlos no recompila ni sobrescribe una aprobación existente. El marcador de instrucciones es `sales-bi-v8`; la evidencia de verificación del corte del 6 de noviembre se registra por separado del cierre anterior.
+- El cierre exige regresiones de preservación dimensional, fechas, rutas y grano, promedios por documento, integridad de evidencia del servidor y reproducción histórica. El ensayo 125 se conserva como incidente detenido por revisión humana antes de aprobación, sin atribuirle un ETL exitoso.
+
+Estado del primer corte del 6 de noviembre: make verify aprobó 475 backend/48 frontend con salida 0 y caché frontend del mismo árbol. Ese corte precede a HBI-017; su integral y recorrido nuevo están pendientes. La evidencia separada se registra en [QA del 6 de noviembre](../testing/qa-postcierre-2026-11-06.md). No modificar retrospectivamente los resultados 122/18 y 124/19.
+
+### HBI-017 — Ruta exacta y rol de cada relación
+
+- Las reglas de compilación 5 conservan no sólo la tabla dimensional, sino la secuencia exacta de FK aprobables: tablas izquierda/derecha y listas completas de columnas. No eligen la primera FK del catálogo ni la ruta más corta como autoridad de negocio.
+- La exploración enumera rutas simples dirigidas hacia claves primarias completas. Si supera 32 rutas o 4096 estados, se detiene con limitación explícita; no presenta la primera alternativa como única. Las relaciones de auditoría y recorridos inversos que multipliquen el grano no son rutas de ejecución.
+- La evidencia primaria revisada de la dimensión y la evidencia relacionada del mismo objetivo delimitan los roles. Si persisten rutas diferentes, la propuesta registra ambigüedad. La herramienta existente de relaciones permite una elección explícita sin opción predeterminada, pero no habilita cambiar el significado custodiado por el servidor. Un cambio de alcance requiere revisar otra vez la necesidad.
+- Dos dimensiones no pueden utilizar prefijos incompatibles hacia la misma tabla mientras el constructor no implemente alias separados por rol. Se bloquea ese conflicto; no se simula que comprador y destinatario de facturación, o ubicación postal y de entrega, sean equivalentes.
+- Antes del ETL se verifican las aristas persistidas contra la instantánea, continuidad, PK completas y claves de negocio admitidas. El materializador ejecuta esa misma evidencia. Las medidas externas reutilizan una ruta persistida o requieren una única ruta dirigida segura compatible; no reabren una búsqueda libre por orden de metadatos.
+- La procedencia analítica reutiliza el mismo comprobador de rutas persistidas. Si esa evidencia es inválida, no comunica otra ruta descubierta por búsqueda como si hubiera sido la materializada.
+- Las reglas 1, 2, 3 y 4 quedan congeladas para reconstrucción y consulta histórica. AW 126 conserva sus reglas 4 y su ejecución 20; una prueba bajo reglas 5 requiere una versión derivada y un ETL propios. La instrucción permanece sales-bi-v8.
+- Las propuestas WWI 127/128 se conservaron sin aprobación al detectar la ambigüedad. No constituyen otra ejecución correcta. El cierre definitivo de reglas 5 aprobó 530 backend/50 frontend, incluidas las correcciones de título y unidades genéricas. Una nueva preparación o ejecución exige reglas 5, mientras historial y analítica anteriores siguen consultables sin mutación. AW 129/21 y WWI 131/22 completaron recorridos nuevos y sus exportes se verificaron; las 67 focales de materializador/procedencia son subconjunto del integral y no prueban por sí solas toda operación futura.
+
+Los alias monetarios generales `moneda`, `currency`, `importe` y `valor`, con sus denominadores admitidos, mantienen visible el aviso y la comprobación de divisa. Una etiqueta monetaria genérica no acredita USD: sin evidencia única se conserva moneda de origen. El ajuste es común a modelos y fuentes y mantiene unidades personalizadas históricas; no cambia contratos ni requiere otro ETL.
+
 ## 3. Experiencia guiada para el analista
 
 1. **Describir**: redacta o aprueba una necesidad reformulada.
@@ -386,3 +420,5 @@ decisión y cuál es el efecto de cada alternativa.
   opcional inválida se excluye con diagnóstico y sus KPI dependientes no se publican.
   Si la medida cubre un requisito obligatorio, la cobertura posterior debe bloquear
   la propuesta en vez de inventar procedencia.
+
+- 06/11/2026: HBI-015 y HBI-016 preservan fuentes dimensionales seguras, fecha revisada, evidencia del servidor y correspondencia entre promedio por documento y denominador. Cantidad variable y selección humana sin un límite numérico nuevo; reglas 4 y sales-bi-v8 en el corte intermedio. HBI-017 añade reglas 5 para rutas exactas; el integral y los recorridos nuevos quedan separados. El ensayo 125 se detuvo por revisión humana antes de aprobar. Estado final en el reporte QA del mismo corte.

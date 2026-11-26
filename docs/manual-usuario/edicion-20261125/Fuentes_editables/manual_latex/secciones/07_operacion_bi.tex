@@ -1,0 +1,1138 @@
+\chapter{Del objetivo comercial a una propuesta supervisada}
+\section{Antes de empezar: piense qué decisión necesita apoyar}
+\label{unidad:BI01}
+\textbf{Para quién:} Analista de BI, Gerente comercial\par
+\textbf{Al terminar podrá:} Distinguir la pregunta comercial, el evento y el nivel de detalle antes de pedir un datamart.
+
+Un datamart reúne datos organizados para un análisis concreto. En este proyecto el punto de partida es una necesidad de ventas escrita por una persona. La plataforma ayuda a relacionarla con la estructura disponible y conserva las decisiones que llevan hasta el tablero.
+
+Antes de abrir el asistente, escriba qué quiere comparar, con qué indicador, por qué entidades y en qué período. Elija si observa pedidos o facturas. Un pedido representa una solicitud de venta; una factura representa otro evento. Sus importes no demuestran por sí solos cobro, entrega realizada o utilidad.
+
+La interfaz ofrece un proceso común para fuentes distintas. La demostración comprobada utiliza dos bases SQL Server. Cambian sus tablas, claves y significados; no debe copiarse la elección técnica de una base a otra sólo porque los botones son iguales.
+
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Hecho} Registro del evento que se analizará, por ejemplo una línea de pedido o una línea de factura.
+
+\paragraph{Granularidad o grano} Qué representa exactamente una fila del hecho. Decir una línea de factura permite comprobar qué se conserva y evita llamar factura a cada línea.
+
+\paragraph{Dimensión} Información que permite agrupar y describir el hecho: fecha, producto, cliente o territorio. Una clave identifica; un nombre ayuda a interpretar.
+
+\paragraph{Medida} Valor asociado al hecho, como cantidad, importe de línea o identificador del documento que se contará de forma distinta.
+
+\paragraph{Indicador} Cálculo con una finalidad comercial: total de unidades, facturas distintas o importe por factura. Debe tener fórmula, unidad, alcance y procedencia.
+
+\paragraph{Agregación} Forma de resumir varias filas. Sumar, contar y promediar responden preguntas distintas.
+
+\paragraph{Procedencia} Cadena que identifica fuente, instantánea de metadatos, propuesta, ejecución y relaciones empleadas.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Fuente en contexto & Base elegida para trabajar. Debe coincidir con la necesidad, los metadatos y el resultado consultado. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Fuente en contexto & Base elegida para trabajar. Debe coincidir con la necesidad, los metadatos y el resultado consultado. \\
+\addlinespace[3pt]
+Dominio Ventas & Perfil funcional implementado. No convierte automáticamente en ventas todas las tablas de la base. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Escriba una decisión concreta, por ejemplo priorizar productos según unidades registradas cada mes.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Una necesidad que se puede contrastar con datos, sin pedir todavía una conclusión causal.}
+\item Precise el evento: pedido o factura, y la fila mínima que desea conservar.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Un grano explícito, como una línea de pedido.}
+\item Anote los indicadores y sus unidades.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Por ejemplo importe, unidades, pedidos distintos e importe por pedido, sin confundirlos.}
+\item Identifique la fuente y revise su esquema antes de generar la propuesta.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Tablas y relaciones de esa base, sin suponer que tener un nombre parecido demuestra el significado.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+En esta preparación la persona define el propósito. La IA podrá sugerir una redacción y un diseño, pero todavía no existe evidencia de que una propuesta haya sido aprobada o cargada.
+
+\subsection{Qué comprueba la plataforma}
+Los controles posteriores comprobarán referencias, relaciones y recetas. La disponibilidad de una columna no demuestra por sí sola calidad, vigencia histórica o suficiencia de registros.
+
+\subsection{Qué decide la persona}
+El analista decide el evento y los significados; la gerencia aporta la decisión comercial que desea apoyar.
+
+\paragraph{Resultado esperado} Una ficha de necesidad que se pueda leer y explicar antes de pulsar Generar.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+El objetivo dice analizar todas las ventas para mejorar el negocio. & Acótelo: indique evento, indicador, comparación y límite. Evite pedir que el sistema demuestre por adelantado un aumento de ventas. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+El objetivo dice analizar todas las ventas para mejorar el negocio. & Acótelo: indique evento, indicador, comparación y límite. Evite pedir que el sistema demuestre por adelantado un aumento de ventas. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+Con un pedido que tiene tres líneas, indique cuántas filas de hecho y cuántos pedidos distintos habría.
+
+\textbf{Respuesta orientativa.} Tres filas a grano de línea y un pedido distinto. Contar filas no da el número de pedidos.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿Un gráfico de importe prueba rentabilidad?} No. Harían falta costos comparables y una definición de margen, entre otros datos.
+
+\paragraph{¿Una base nueva exige programar un tablero específico con su nombre?} El recorrido es común; primero se configuran y comprueban sus metadatos y decisiones. La compatibilidad real requiere los adaptadores y operaciones implementados.
+
+\pantalla{recursos/pantallas/19_dominio_ventas.jpg}{Elegir el dominio de ventas}{El dominio habilitado es ventas. La pantalla no anuncia dominios que no tengan perfil y validadores implementados. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/BI01.tex}{\input{capturas/BI01.tex}}{}
+\section{Asistente, paso 1: escribir o elegir una necesidad}
+\label{unidad:BI02}
+\textbf{Para quién:} Analista de BI\par
+\textbf{Al terminar podrá:} Completar el objetivo, las preguntas, la periodicidad y la autorización de metadatos sin perder el propósito comercial.
+
+Entre a Asistente de datamart con la fuente correcta y seleccione el dominio de ventas. El recorrido tiene cinco etapas: Necesidad, Conceptos, Propuesta, Personalización y Revisión.
+
+Puede comenzar con su propio texto o pedir sugerencias con la estructura de la fuente. Las sugerencias no sustituyen el objetivo automáticamente: primero se leen su explicación, evidencia y límites; después se pulsa Usar esta necesidad.
+
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Objetivo del análisis} Describe qué necesita conocer la persona. Debe conservar el evento y las limitaciones que importan al negocio.
+
+\paragraph{Preguntas de negocio} Orientaciones del catálogo de esta fuente. Seleccionarlas no fija por sí solo tablas, dimensiones ni fórmulas.
+
+\paragraph{Periodicidad} Forma temporal de resumir o presentar el análisis. Elegir Mensual no significa programar una recarga automática cada mes ni reducir el hecho necesariamente a una fila mensual.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Objetivo del análisis & Texto de 20 a 2.000 caracteres. Escriba qué comparar, indicadores, grano y límites. No escriba SQL. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Objetivo del análisis & Texto de 20 a 2.000 caracteres. Escriba qué comparar, indicadores, grano y límites. No escriba SQL. \\
+\addlinespace[3pt]
+Destino & Identifica el proveedor/configuración que recibirá la necesidad y los metadatos autorizados. \\
+\addlinespace[3pt]
+Autorizo enviar estos metadatos y la necesidad al proveedor indicado para esta revisión & Habilita la asistencia para ese destino. Si cambia el proveedor se debe revisar de nuevo el consentimiento. \\
+\addlinespace[3pt]
+Preguntas de negocio disponibles & Casillas con etiqueta y explicación. Una pregunta no disponible no se convierte en viable por forzar su selección. \\
+\addlinespace[3pt]
+Periodicidad & Seleccione una opción disponible del catálogo, por ejemplo Mensual. \\
+\addlinespace[3pt]
+Sugerir necesidades con esta fuente & Solicita posibles objetivos desde los metadatos; no necesita que ya haya una propuesta. \\
+\addlinespace[3pt]
+Ayúdame a formular la necesidad & Propone una redacción a partir del objetivo y preguntas existentes. Requiere un objetivo suficiente y preguntas seleccionadas. \\
+\addlinespace[3pt]
+Usar esta redacción / Mantener mi redacción & Permite aceptar la propuesta textual o conservar el texto propio. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Compruebe nombre de fuente e instantánea visibles antes de redactar.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} El objetivo quedará asociado a esa estructura, no a otra base.}
+\item Seleccione preguntas que respondan a la decisión, sin marcar todo por costumbre.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Alcance entendible y coherente con el catálogo de esta fuente.}
+\item Elija periodicidad y autorice el destino que aparece en pantalla.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Asistencia habilitada para el proveedor indicado.}
+\item Escriba la necesidad o pulse Sugerir necesidades con esta fuente.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Texto propio o varias opciones con fundamento y limitaciones.}
+\item Si usa Ayúdame a formular la necesidad, compare la propuesta con el original.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} La redacción conserva el evento, indicadores y límites; no añade pronósticos ni otra fuente.}
+\item Use sólo el texto que represente su necesidad y compruebe su viabilidad.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} La plataforma inicia una revisión previa; todavía no se aprueba ni se ejecuta ETL.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+Sugiere objetivos y mejora redacciones con el contexto estructural autorizado. Su respuesta pasa controles de formato y de referencias antes de ofrecerse como utilizable.
+
+\subsection{Qué comprueba la plataforma}
+Existencia de instantánea, catálogo y proveedor utilizables; longitud y selección requeridas; destino del consentimiento; referencias y semántica admitida en la revisión de necesidad. Cambiar objetivo, preguntas o periodicidad invalida la revisión anterior.
+
+\subsection{Qué decide la persona}
+El analista elige si usa una sugerencia y confirma que el texto representa la necesidad. Autorizar metadatos no equivale a aprobar el diseño ni la carga.
+
+\paragraph{Resultado esperado} Una necesidad vigente, entendida y lista para la comprobación previa.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+No se habilita el botón de asistencia. & Revise permiso de generación, proveedor activo y probado, autorización, instantánea y los campos requeridos. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+No se habilita el botón de asistencia. & Revise permiso de generación, proveedor activo y probado, autorización, instantánea y los campos requeridos. \\
+\addlinespace[3pt]
+La IA cambió el evento o añadió costos no solicitados. & Mantenga su texto o corríjalo antes de continuar; no acepte una ampliación sólo por estar bien redactada. \\
+\addlinespace[3pt]
+No aparecen sugerencias utilizables. & Lea el aviso, redacte un alcance más sencillo y compruebe la viabilidad; no se inventan datos faltantes. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+Redacte dos versiones del mismo objetivo: una vaga y otra que precise evento, grano, indicador y comparación.
+
+\textbf{Respuesta orientativa.} La segunda debe permitir reconocer qué salida se revisará; por ejemplo unidades por producto y mes conservando cada línea de pedido.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿Usar esta necesidad ejecuta una carga?} No. Sólo coloca el texto elegido; se revisan preguntas y viabilidad antes de generar.
+
+\paragraph{¿Mensual programa el ETL?} No. Es periodicidad analítica; el inicio de la carga sigue siendo una acción explícita.
+
+\pantalla{recursos/pantallas/20_necesidad_y_autorizacion.jpg}{Escribir el objetivo del análisis}{Objetivo del análisis en un formulario nuevo. Describa la decisión, los indicadores, el detalle y las comparaciones; no escriba SQL. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/20b_consentimiento_IA.jpg}{Autorizar la revisión con IA}{Destino y alcance del envío de metadatos, ayudas de redacción y preguntas del catálogo. El consentimiento está desmarcado; no se envió una nueva solicitud. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/BI02.tex}{\input{capturas/BI02.tex}}{}
+\section{Comprender la viabilidad antes de generar}
+\label{unidad:BI03}
+\textbf{Para quién:} Analista de BI\par
+\textbf{Al terminar podrá:} Interpretar directo, derivable, ambiguo y no disponible sin confundir la estructura con datos ya comprobados.
+
+La revisión actual combina un análisis de la IA con reglas de la plataforma. Su objetivo es relacionar la necesidad con nombres, tipos, claves y relaciones de la instantánea. No consulta todas las filas del negocio para demostrar resultados.
+
+Una derivación inequívoca puede resolverse al construir la propuesta mediante una ruta declarada o una fórmula controlada. Una interpretación candidata de IA sigue pendiente de validación: su frase no se ejecuta como fórmula libre.
+
+\subsection{Del respaldo estructural a una respuesta analítica útil}
+Derivable significa que una relación declarada o una receta controlada puede resolver el requisito a partir de referencias existentes. No significa que deba escribir SQL, ni que la IA tenga permiso para inventar una columna o ejecutar una fórmula libre. Lea las entradas, el grano y la ruta de relación.
+
+La propuesta nueva debe conservar todos los requisitos revisados de la necesidad. No basta con encontrar una columna Quantity u OrderQty si se pidió analizar unidades y después el panel no ofrece ese indicador. Medida física es el dato de la línea; indicador es la operación que el usuario podrá seleccionar y explicar.
+
+En los contratos nuevos, la plataforma sólo completa un indicador requerido cuando existe una receta segura y única a partir de las medidas admitidas. Su procedencia queda diferenciada de la sugerencia del modelo. Si hay varias interpretaciones posibles, corresponde revisar el caso; no elegir una en silencio. Si la persona excluye después un indicador requerido, se conserva su decisión y se muestra cobertura parcial.
+
+\begin{enumerate}
+\item Identifique las palabras de la necesidad que definen resultados obligatorios: importe, unidades, pedidos o facturas, por ejemplo.
+\item En la propuesta, contraste cada requisito con su indicador, fórmula y unidad.
+\item Compruebe que las unidades no se confundan con número de líneas y que los pedidos o facturas utilicen el conteo documental adecuado.
+\item Si un requisito queda parcial, aclárelo o acepte explícitamente un alcance menor defendible. No apruebe sólo porque no hay errores de JSON.
+\end{enumerate}
+
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Directo} Existe una referencia estructural adecuada comprobada para el requisito.
+
+\paragraph{Derivable por relación} El requisito puede obtenerse recorriendo vínculos verificados sin cambiar indebidamente el grano.
+
+\paragraph{Derivable por fórmula} Puede calcularse con entradas compatibles y una operación permitida, por ejemplo precio \(\times\) tasa de descuento \(\times\) cantidad.
+
+\paragraph{Ambiguo} Existen opciones o significados que requieren una definición del analista; una relación válida no basta para decidir su rol comercial.
+
+\paragraph{No disponible} La revisión no encuentra respaldo suficiente para esa capacidad dentro del alcance actual.
+
+\paragraph{Limitación aceptada} Constancia de que se entiende una ausencia; no crea una fuente ni demuestra que el requisito se cumpla.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Viabilidad contra los metadatos & Resumen de requisitos y evidencia. Lea cada tarjeta además del total de estados. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Viabilidad contra los metadatos & Resumen de requisitos y evidencia. Lea cada tarjeta además del total de estados. \\
+\addlinespace[3pt]
+Ver evidencia técnica & Muestra las referencias/rutas que sustentan el requisito. \\
+\addlinespace[3pt]
+Fórmula controlada & Receta propuesta por las reglas con entradas identificadas. \\
+\addlinespace[3pt]
+Interpretación propuesta por IA no ejecutable & Descripción que todavía debe convertirse y validarse en un contrato permitido. \\
+\addlinespace[3pt]
+Comprendo esta limitación y acepto continuar sin que el sistema invente una solución & Aceptación individual de requisitos ambiguos o ausentes; no debe marcarse sin leer. \\
+\addlinespace[3pt]
+Generar conceptos y propuesta & Usa la revisión vigente y las limitaciones expresamente aceptadas para generar una propuesta. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Lea el resumen de viabilidad y abra la evidencia de cada requisito importante.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Identifica qué está respaldado y qué requiere una decisión.}
+\item En las derivaciones, compruebe si se trata de relación o fórmula y qué entradas usa.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} No se pide completar SQL ni buscar una columna sólo para quitar el aviso.}
+\item Si un requisito imprescindible es ambiguo o ausente, vuelva a la necesidad y aclárelo.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} El objetivo no promete una salida imposible.}
+\item Acepte sólo limitaciones que permitan todavía responder la pregunta útil del caso.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Queda un alcance válido y las ausencias no se ocultan.}
+\item Genere y después revise De la necesidad al datamart.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Cada requisito debe aparecer cubierto, resuelto, limitado o pendiente, sin descarte silencioso.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+Examina la necesidad dentro del contexto de la fuente y aporta requisitos y explicaciones. La respuesta se combina con el análisis estructural y los controles de referencias.
+
+\subsection{Qué comprueba la plataforma}
+Referencias, relaciones, semántica admitida, alcance del evento y huella de entrada. La aprobación posterior vuelve a comprobar el contrato; aceptar una limitación no omite los controles bloqueantes.
+
+\subsection{Qué decide la persona}
+El analista aclara ambigüedades, reduce alcance cuando corresponde y decide qué limitaciones son aceptables.
+
+\paragraph{Resultado esperado} Una revisión vigente y un alcance defendible antes del diseño.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+La necesidad tiene respaldo estructural y luego falla la propuesta. & Son controles distintos. La viabilidad no garantiza que el proveedor entregue un contrato válido; revise el error y reintente o ajuste el diseño. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+La necesidad tiene respaldo estructural y luego falla la propuesta. & Son controles distintos. La viabilidad no garantiza que el proveedor entregue un contrato válido; revise el error y reintente o ajuste el diseño. \\
+\addlinespace[3pt]
+El sistema pide validar otra vez. & Compruebe si cambió el objetivo, periodicidad, preguntas, fuente o destino del proveedor; una aceptación anterior no debe reutilizarse a ciegas. \\
+\addlinespace[3pt]
+Una casilla de limitación parece desbloquear todo. & El botón puede permitir continuar con un alcance parcial, pero no fabrica la capacidad ausente ni habilita SQL libre. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+Explique qué haría si se pide margen y sólo se encuentra importe de venta.
+
+\textbf{Respuesta orientativa.} No afirmar margen; comprobar si hay costo comparable verificable, aclarar el alcance o aceptar que esa salida no estará disponible.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿Derivable significa que la alumna debe escribir una fórmula SQL?} No. Las rutas/fórmulas inequívocas se resuelven mediante operaciones controladas. Una ambigüedad se decide con evidencia.
+
+\paragraph{¿Viabilidad demuestra que todas las filas están bien?} No. Acredita respaldo estructural; la carga y conciliación revisarán datos concretos.
+
+
+\IfFileExists{capturas/BI03.tex}{\input{capturas/BI03.tex}}{}
+\section{Asistente, paso 2: revisar los conceptos}
+\label{unidad:BI04}
+\textbf{Para quién:} Analista de BI\par
+\textbf{Al terminar podrá:} Seleccionar conceptos a partir de evidencia y usar el copiloto como apoyo a una decisión explícita.
+
+La pantalla Conceptos encontrados traduce la necesidad en conceptos vinculados a referencias técnicas. La confianza alta no reemplaza revisar qué tabla representa el evento. Los conceptos con evidencia débil pueden quedar excluidos preventivamente.
+
+El copiloto de conceptos es distinto del chat del tablero: aquí explica la conveniencia de incluir una entidad en el diseño, no analiza todavía los importes cargados.
+
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Concepto de negocio} Idea que la persona reconoce, como producto, cliente o territorio, asociada a columnas o tablas verificables.
+
+\paragraph{Confianza} Orientación de revisión; no es una medición de precisión universal del LLM.
+
+\paragraph{Inclusión excepcional} Decisión consciente de incluir un concepto cuya evidencia exige atención. Después debe superar la nueva validación.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Incluir & Casilla que conserva o excluye el concepto de la siguiente propuesta. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Incluir & Casilla que conserva o excluye el concepto de la siguiente propuesta. \\
+\addlinespace[3pt]
+Ver evidencia y cómo resolver & Expone origen técnico, comprobaciones y orientación. \\
+\addlinespace[3pt]
+Confirmar inclusión excepcional & Se usa si el concepto con evidencia débil se mantiene incluido; no inventa una relación. \\
+\addlinespace[3pt]
+Consultar al copiloto & Abre conversación del concepto con objetivo, referencias y expediente. \\
+\addlinespace[3pt]
+Pregunta para el copiloto & Entre 10 y 500 caracteres. Pregunte qué significa la relación o qué riesgo tiene incluirla. \\
+\addlinespace[3pt]
+Aplicar recomendación & Cambia la selección según la recomendación de incluir/excluir; exige una acción de la persona. \\
+\addlinespace[3pt]
+Generar propuesta BI & Continúa con la selección; si cambia el alcance de conceptos puede generar otra versión con IA. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Lea nombre, descripción, confianza y estado de cada tarjeta.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Identifica por qué una entidad está incluida o excluida.}
+\item Abra la evidencia de los conceptos con revisión requerida.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Relaciona el nombre comercial con las referencias reales.}
+\item Pregunte al copiloto por riesgos, claves y consecuencias si aún no puede justificar la selección.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Obtiene una explicación contextual con evidencia citada.}
+\item Excluya lo que no responda al objetivo o confirme expresamente una inclusión excepcional sustentada.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} No quedan decisiones pendientes de inclusión.}
+\item Pulse Generar propuesta BI.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Se obtiene el contrato para revisar; se conserva trazabilidad si se generó otra versión.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+Explica riesgo, consecuencias de incluir/excluir y recomendación. La conversación no modifica selecciones por sí sola.
+
+\subsection{Qué comprueba la plataforma}
+Las referencias y el contrato resultante vuelven a validarse. No se permite continuar sin conceptos ni con decisiones de inclusión pendientes.
+
+\subsection{Qué decide la persona}
+El analista decide la selección y aplica o rechaza la recomendación.
+
+\paragraph{Resultado esperado} Un conjunto de conceptos que la alumna pueda justificar en lenguaje de negocio.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+La IA recomienda incluir pero la evidencia no demuestra la relación. & No aplique la recomendación sólo por su tono. Excluya o defina el negocio y revise una nueva propuesta. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+La IA recomienda incluir pero la evidencia no demuestra la relación. & No aplique la recomendación sólo por su tono. Excluya o defina el negocio y revise una nueva propuesta. \\
+\addlinespace[3pt]
+Quedan conceptos por confirmar. & Confirme únicamente los que entiende y puede sostener, o desmárquelos para continuar con un alcance menor. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+Pregunte: ¿qué riesgo tendría incluir este concepto en el datamart? Registre una evidencia y una decisión.
+
+\textbf{Respuesta orientativa.} La decisión debe relacionar el concepto con la necesidad; la recomendación de IA no equivale a aprobación.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿Consultar al copiloto carga datos?} No. Esta conversación usa el expediente y metadatos del diseño; no ejecuta el ETL.
+
+\paragraph{¿Excluir un concepto elimina información del origen?} No. Lo retira del alcance de la propuesta.
+
+\pantalla{recursos/pantallas/22_conceptos.jpg}{Conceptos y niveles de evidencia}{Conceptos revisados de la propuesta 129. La confianza semántica y la existencia técnica son comprobaciones diferentes. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/BI04.tex}{\input{capturas/BI04.tex}}{}
+\section{Asistente, paso 3: leer el diseño propuesto}
+\label{unidad:BI05}
+\textbf{Para quién:} Analista de BI\par
+\textbf{Al terminar podrá:} Explicar grano, hecho, medidas, dimensiones, indicadores y cobertura antes de personalizar o aprobar.
+
+La propuesta es un contrato de diseño que responde a la necesidad. Empiece por el grano y el evento; después revise medidas y relaciones.
+
+Una propuesta puede tener más indicadores que los cuatro de una práctica. La cantidad depende de la generación. Revise cuáles responden al objetivo y no memorice una cantidad universal de tarjetas.
+
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Clave del grano} Columna o combinación que identifica la fila mínima. En una fuente puede ser una clave simple y en otra una combinación.
+
+\paragraph{Proveniencia de una medida} Referencias y fórmula que explican de dónde sale el valor.
+
+\paragraph{Identidad descriptiva} Nombre reconocible de la entidad y su tipo cuando corresponde. No basta mostrar sólo una clave técnica.
+
+\paragraph{Cobertura} Correspondencia entre cada requisito del objetivo y las salidas que realmente incluye el contrato.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Granularidad y Clave del grano & Qué conserva el hecho; no confundir periodicidad mensual con grano físico de línea. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Granularidad y Clave del grano & Qué conserva el hecho; no confundir periodicidad mensual con grano físico de línea. \\
+\addlinespace[3pt]
+Hecho y medidas & Para cada medida se muestran nombre, agregación, origen y fórmula. \\
+\addlinespace[3pt]
+Dimensiones y Columnas de origen & Atributos con los que se describirán y agruparán los hechos. \\
+\addlinespace[3pt]
+Campos que creará el ETL & Nombres/tipos descriptivos derivados por rutas verificadas; no son columnas que ya existan necesariamente en la fuente. \\
+\addlinespace[3pt]
+KPIs propuestos & Funciones analíticas planteadas; compare su significado con medida y denominador. \\
+\addlinespace[3pt]
+De la necesidad al datamart & Muestra cobertura directa, resolución automática, limitación aceptada o decisión pendiente. \\
+\addlinespace[3pt]
+Comprobar nombres y cobertura & Con permiso apropiado realiza una muestra controlada de la fuente para revisar identidad descriptiva. La muestra permanece en la plataforma y no se envía al LLM. \\
+\addlinespace[3pt]
+Plan ETL declarativo & Explica operaciones permitidas; esta vista no ejecuta la carga. \\
+\addlinespace[3pt]
+Ajustes automáticos / Validaciones y advertencias & Lea qué se corrigió y qué sigue exigiendo revisión. \\
+\addlinespace[3pt]
+Detalles técnicos y trazabilidad & Instantánea, huella, proveedor/modelo y observaciones originales. Una observación del proveedor no es una comprobación de la plataforma. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Lea resumen y explicación de negocio.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} El evento coincide con lo solicitado.}
+\item Compruebe grano y claves.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Puede explicar qué representa una fila y cómo se identifica.}
+\item Compare cada medida con origen y fórmula.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Una tasa no está presentada como dinero ni un promedio de línea como promedio por pedido.}
+\item Revise dimensiones, rutas e identidad descriptiva.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Cliente y territorio representan el rol solicitado, con nombre y origen claros.}
+\item Lea la cobertura requisito por requisito.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} No se promete una salida omitida.}
+\item Revise el plan, ajustes y errores/advertencias.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Cero errores bloqueantes antes de aprobar; los avisos se entienden.}
+\item Elija Personalizar propuesta o Continuar a revisión.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Pasa a una decisión humana sustentada.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+Propone el modelo y una explicación. Las decisiones originales se conservan para trazabilidad aunque el contrato validado haya aplicado correcciones.
+
+\subsection{Qué comprueba la plataforma}
+Existencia de tablas/columnas, tipos, claves, rutas de relación, coherencia del contrato y operaciones calculables; cobertura de requisitos y reglas semánticas implementadas.
+
+\subsection{Qué decide la persona}
+El analista decide si el modelo representa el evento comercial y si necesita ajustes.
+
+\paragraph{Resultado esperado} Un diseño comprensible y defendible, o una lista concreta de correcciones.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+Aparecen compras u otro evento en una necesidad de ventas. & No apruebe por tener referencias existentes. Revise alcance y genere una versión que corresponda al evento. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Aparecen compras u otro evento en una necesidad de ventas. & No apruebe por tener referencias existentes. Revise alcance y genere una versión que corresponda al evento. \\
+\addlinespace[3pt]
+Hay nombres como Cliente 123 en lugar de identidad comprobada. & Revise nombres y cobertura con el permiso necesario; no dé por demostrada una entidad descriptiva sólo por su clave. \\
+\addlinespace[3pt]
+Error bloqueante en una fórmula. & Abra Personalización y excluya o reasigne una receta compatible; si faltan entradas, genere una propuesta nueva con alcance sustentado. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+Explique al jurado una medida sin leer sólo su nombre: indique origen, operación, unidad y grano.
+
+\textbf{Respuesta orientativa.} Por ejemplo importe registrado de línea, sumado sobre líneas de pedido; no denominarlo cobro ni utilidad.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿Todos los campos mostrados ya existen en el origen?} No. Algunos son campos descriptivos que el ETL creará a partir de relaciones verificadas.
+
+\paragraph{¿Comprobar nombres y cobertura envía nombres de clientes al LLM?} La muestra controlada permanece en la plataforma según la interfaz; no se remite al modelo para esa comprobación.
+
+\pantalla{recursos/pantallas/23_grano_y_medidas.jpg}{Granularidad, hecho y medidas verificables}{El grano se define antes de sumar. En este caso, la clave identifica cada línea de pedido. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/24_cobertura_necesidad.jpg}{Cobertura y decisiones de la necesidad}{La matriz relaciona requisitos con salidas, decisiones y limitaciones. Una limitación aceptada debe explicarse al presentar el análisis. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/BI05.tex}{\input{capturas/BI05.tex}}{}
+\section{Asistente, paso 4: ajustar medidas y relaciones con criterio}
+\label{unidad:BI06}
+\textbf{Para quién:} Analista de BI\par
+\textbf{Al terminar podrá:} Crear una versión corregida sin inventar estructuras ni perder las decisiones anteriores.
+
+Personalizar crea una versión nueva. El contrato original conserva su historia. Compare siempre la regla del contrato actual con la regla del borrador: marcar algo en el borrador todavía no lo vuelve ejecutable.
+
+Hay dos acciones de guardado diferentes. Guardar como nueva versión aplica los ajustes generales; Crear versión con relación corregida registra la decisión guiada de relación de manera independiente. Guarde y revise cada resultado antes de encadenar otra corrección.
+
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Suma} Combina importes o unidades aditivos del mismo significado y alcance.
+
+\paragraph{Conteo} Cuenta valores no nulos de la columna seleccionada. A grano de línea no equivale automáticamente a documentos.
+
+\paragraph{Conteo distinto} Cuenta una vez cada identificador distinto. Un pedido con varias líneas se cuenta una vez en el universo consultado.
+
+\paragraph{Promedio} Media de los valores de las filas; AVG de importe de línea mide importe medio por línea, no por pedido.
+
+\paragraph{Mínimo y máximo} Extremos de los valores del campo. La línea de mayor importe no identifica necesariamente al producto con mayor suma de ventas.
+
+\paragraph{Relación muchos a uno} Varias filas del hecho apuntan a una fila única de dimensión; la unicidad ayuda a conservar el detalle.
+
+\paragraph{Rol de una relación} Significado del vínculo. Comprador y destinatario de facturación pueden ser clientes válidos, pero responden preguntas diferentes.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Resumen de negocio & Hasta 160 caracteres; describe el ajuste sin alterar lo que las fuentes pueden demostrar. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Resumen de negocio & Hasta 160 caracteres; describe el ajuste sin alterar lo que las fuentes pueden demostrar. \\
+\addlinespace[3pt]
+Granularidad propuesta & Hasta 240 caracteres; el texto debe corresponder a claves y hechos reales, no basta renombrar el grano. \\
+\addlinespace[3pt]
+Dimensiones incluidas / Medidas incluidas & Conserve al menos las necesarias para la pregunta y sus dependencias. \\
+\addlinespace[3pt]
+Agregación & Suma, Conteo, Conteo distinto, Promedio, Mínimo o Máximo según el significado. \\
+\addlinespace[3pt]
+Definir cálculo controlado & Permite operaciones sumar, multiplicar, restar o dividir sobre columnas numéricas disponibles. \\
+\addlinespace[3pt]
+Primer valor / Segundo valor & En resta y división el orden cambia el resultado; no intercambie costo e importe o cantidad y precio. \\
+\addlinespace[3pt]
+Factores o componentes en orden & Para suma/multiplicación se seleccionan entradas permitidas; el editor limita la cantidad y el servidor comprueba tipos y referencias. \\
+\addlinespace[3pt]
+KPIs incluidos y medida asociada & La asociación requiere una medida de función semántica compatible y las entradas de la receta. \\
+\addlinespace[3pt]
+Dimensión que desea corregir / Ruta de relación comprobada & Permite elegir entre vínculos existentes. Las opciones bloqueadas explican riesgo de duplicación, tipos o unicidad. \\
+\addlinespace[3pt]
+Justificación de esta corrección / Justificación del ajuste & Entre 10 y 500 caracteres. Explique el concepto de negocio y por qué corresponde, no escriba sólo porque funciona. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Abra Personalizar propuesta y anote qué problema concreto va a corregir.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Ajuste motivado por la necesidad, no por conseguir una luz verde.}
+\item Revise cada origen y agregación; marque o desmarque dimensiones, medidas e indicadores.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} El borrador mantiene las dependencias necesarias.}
+\item Si corrige un cálculo, seleccione sólo entradas comprobadas y respete el orden.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Fórmula legible y controlada, sin SQL libre.}
+\item Para una ruta ambigua elija dimensión, vínculo y justificación.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} La evidencia muestra tipos, cardinalidad, destino único y riesgo.}
+\item Pulse Crear versión con relación corregida cuando corresponda y revise la nueva versión antes de otro ajuste.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} La corrección queda registrada; una decisión intermedia puede precisar una ruta sin cambiar la entidad final.}
+\item Para ajustes generales complete Justificación del ajuste y pulse Guardar como nueva versión.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Una versión derivada pasa de nuevo las reglas; la fuente y la versión original no se reescriben.}
+\item Revise cobertura, rutas y errores del resultado y vuelva a Revisión.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Sólo se aprueba una versión corregida comprobada.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+Puede haber propuesto las opciones iniciales; el ajuste general y la elección de relaciones son decisiones del analista sujetas a validadores. No hace falta pedir a la IA SQL para modificar la estructura.
+
+\subsection{Qué comprueba la plataforma}
+Tablas/columnas y tipos, número de entradas, dependencias de KPI, función semántica, clave destino única y conservación del grano; una relación contradictoria o multiplicadora se bloquea.
+
+\subsection{Qué decide la persona}
+La persona elige inclusiones, operaciones y roles comerciales, y justifica por escrito la corrección.
+
+\paragraph{Resultado esperado} Nueva versión identificable, revalidada y con decisiones acumuladas.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+Al retirar una medida desaparece un KPI. & Revise sus dependencias; no es pérdida de datos del origen. Restituya una medida compatible o acepte excluir el KPI. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Al retirar una medida desaparece un KPI. & Revise sus dependencias; no es pérdida de datos del origen. Restituya una medida compatible o acepte excluir el KPI. \\
+\addlinespace[3pt]
+El vínculo es válido pero representa facturación en lugar de comprador. & Use la decisión guiada y justifique el rol; que coincidan las filas no demuestra que el rol comercial sea correcto. \\
+\addlinespace[3pt]
+La nueva versión está bloqueada. & Lea el motivo; cancele o ajuste el borrador. No cambie reglas ni huellas a mano para forzar la aprobación. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+Un documento tiene líneas de 100 y 50 y otro una línea de 90. Calcule promedio por línea y por documento.
+
+\textbf{Respuesta orientativa.} Importe total 240; tres líneas: 80 por línea; dos documentos distintos: 120 por documento. Son indicadores diferentes.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿Editar el texto de granularidad cambia por sí solo las claves?} No. El contrato debe conservar una estructura compatible y superar validación.
+
+\paragraph{¿Una relación uno a muchos desde el hecho es segura por existir?} No necesariamente: puede multiplicar líneas e importes. Revise dirección, unicidad y motivo de bloqueo.
+
+\pantalla{recursos/pantallas/25_medidas_agregaciones.jpg}{Medidas y reglas del contrato conservado}{Contrato conservado en modo de consulta. Se muestran función, origen y regla para comparar conceptos y agregaciones. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/27_calculo_controlado.jpg}{Editor de cálculo: ejemplo abierto sin guardar}{Editor abierto como borrador sin guardar: no se eligieron factores ni se creó una versión. Este ejemplo enseña el control, no una fórmula aprobada. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/28_relacion_guiada.jpg}{Corrección de relaciones declaradas}{Corrección guiada de una relación. La justificación debe expresar el rol comercial; una FK existente por sí sola no lo demuestra. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/BI06.tex}{\input{capturas/BI06.tex}}{}
+\section{Asistente, paso 5: aprobar y consultar versiones}
+\label{unidad:BI07}
+\textbf{Para quién:} Analista de BI con permiso de revisión\par
+\textbf{Al terminar podrá:} Distinguir validación técnica, aprobación humana, retiro de aprobación y consulta histórica.
+
+La aprobación es una decisión sobre una versión concreta. La plataforma vuelve a ejecutar sus reglas y registra responsable, fecha y comentario. No crea tablas ni carga datos al pulsar Aprobar propuesta.
+
+Consultar una versión o Verificar evidencia no debe retirar su aprobación por sí solo. Una diferencia de reconstrucción causada por el motor puede quedar como advertencia de compatibilidad; su efecto sobre nuevas cargas se comprueba por separado.
+
+\subsection{Versiones históricas y nuevas reglas de composición}
+Los contratos nuevos de esta edición emplean la composición 6 y el prompt sales-bi-v9. Son identificadores técnicos para reproducir el proceso; no son una calificación de la propuesta. Las versiones históricas compuestas con reglas 1 a 5 conservan sus datos y huellas originales.
+
+Una comprobación de compatibilidad no debe reescribir el expediente histórico ni borrar una aprobación al consultarlo. Para una nueva carga se revisan las reglas y compatibilidad que correspondan. Si necesita un diseño nuevo, cree y apruebe una versión nueva, conservando la evidencia anterior.
+
+En la campaña intermedia existió una propuesta que tenía cero errores estructurales, pero omitía el indicador requerido de unidades. No se aprobó ni se presenta aquí como caso final exitoso. La ausencia llevó a reforzar la cobertura. Los casos actuales de referencia son 135 y 136.
+
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Lista para revisión} Contrato que puede recibir decisión humana si conserva las condiciones requeridas.
+
+\paragraph{Aprobada} Versión con decisión humana registrada; su aptitud para otra carga también depende de las reglas actuales y la fuente.
+
+\paragraph{Retirada} Aprobación retirada expresamente para impedir nuevas ejecuciones; no borra datamarts ya generados.
+
+\paragraph{Descartada} Fuera de las listas operativas; se conservan auditoría y trazabilidad.
+
+\paragraph{Huella} Resumen de contenido usado para detectar cambios. No se corrige editando el valor para que coincida.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Comentario de revisión & Hasta 500 caracteres. Para rechazar se exige un motivo suficiente, al menos 10 caracteres en la interfaz. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Comentario de revisión & Hasta 500 caracteres. Para rechazar se exige un motivo suficiente, al menos 10 caracteres en la interfaz. \\
+\addlinespace[3pt]
+Leí y comprendí las advertencias y las acciones indicadas & Aceptación requerida si hay avisos. Cero errores no significa cero aspectos que revisar. \\
+\addlinespace[3pt]
+Aprobar propuesta / Rechazar propuesta & Decisión humana distinta de la ejecución física. \\
+\addlinespace[3pt]
+Verificar evidencia & Comprueba instantánea, referencias, contrato y reproducción sin llamar al modelo, sin consultar filas y sin ETL. \\
+\addlinespace[3pt]
+Mostrar en Versiones generadas & Filtra el historial; no cambia el estado de las versiones. \\
+\addlinespace[3pt]
+Abrir resultado & Recupera la versión guardada sin volver a generar con IA. \\
+\addlinespace[3pt]
+Crear versión corregida desde ésta & Permite derivar una corrección conservando la original. \\
+\addlinespace[3pt]
+Retirar aprobación / Descartar versión & Acciones explícitas con motivo; no se usan para limpiar un aviso sin entenderlo. \\
+\addlinespace[3pt]
+Restaurar aprobación & Disponible en los estados y permisos apropiados; exige justificación, advertencias revisadas y revalidación. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Lea necesidad, fuente, dominio e instantánea en Revisión.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Está decidiendo sobre la versión correcta.}
+\item Confirme cero errores y comprenda cada advertencia.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Puede explicar qué está comprobado y qué límite conserva.}
+\item Escriba comentario y apruebe si corresponde; rechace con motivo si no cumple.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Comprobante de estado, responsable y fecha.}
+\item Abra después el historial y consulte la misma versión.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Se puede recorrer el diseño en modo de lectura sin regenerarlo.}
+\item Si se necesita corregir, cree una derivada y revise su aprobación aparte.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} No cambia silenciosamente la evidencia del caso anterior.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+La IA no aprueba. Verificar evidencia es una comprobación determinística, no una nueva opinión del proveedor.
+
+\subsection{Qué comprueba la plataforma}
+Permisos, estado y reglas de aprobación vigentes; integridad de instantánea y contrato. Los errores bloqueantes no se resuelven marcando el aviso de advertencias.
+
+\subsection{Qué decide la persona}
+Una persona autorizada aprueba/rechaza o retira/restaura con un motivo.
+
+\paragraph{Resultado esperado} Una decisión trazable y versiones que conservan su historia.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+No ve una versión en el filtro actual. & Cambie Mostrar al estado correspondiente y compruebe la fuente. No suponga que se eliminó. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+No ve una versión en el filtro actual. & Cambie Mostrar al estado correspondiente y compruebe la fuente. No suponga que se eliminó. \\
+\addlinespace[3pt]
+La propuesta aprobada no aparece habilitada para una nueva carga. & Consulte motivos en Datamart de ventas. Puede ser histórica o incompatible para otra ejecución aunque sus resultados anteriores sigan disponibles. \\
+\addlinespace[3pt]
+Verificar evidencia muestra compatibilidad. & Lea la explicación y distinga el registro histórico de la aptitud actual. No retire aprobación sin una decisión deliberada. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+Explique la diferencia entre aprobar propuesta, preparar materialización y materializar.
+
+\textbf{Respuesta orientativa.} Aprobar acepta un diseño; preparar fija selección y huellas; materializar lee la fuente y crea/carga el destino.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿Una aprobada puede ser consultable pero no apta para otra carga?} Sí. Se conserva historia, pero nuevas ejecuciones deben superar las reglas actuales.
+
+\paragraph{¿Abrir resultado vuelve a consumir una generación IA?} No. Recupera una versión persistida.
+
+\pantalla{recursos/pantallas/21_revision_aprobada.jpg}{Aprobación humana y versión conservada}{Aprobación histórica de la propuesta 129. Consultar el resultado conserva la decisión y no ejecuta el ETL. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/26_evidencia_estructural.jpg}{Cuatro controles estructurales y huellas coincidentes}{Reverificación del 18 de noviembre: cuatro controles cumplen y las huellas coinciden. Es validación estructural, no una nueva carga. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/BI07.tex}{\input{capturas/BI07.tex}}{}

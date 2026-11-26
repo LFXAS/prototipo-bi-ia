@@ -1,0 +1,18 @@
+{
+  "estado": "Fuente editorial verificada contra código; no constituye una ejecución operativa nueva. Complemento de eliminación física del rol incorporado en la segunda candidata.",
+  "fecha": "2026-11-18",
+  "json_sha256": "05fcb4de6847612d8144466dec9af358381c3fbbd3f3d716ebb09715ef5dad53",
+  "md_sha256": "729c22e6e793ada4b4df2787f63ef67b22a9ecf044dc172a42d7bf48f646bb4d",
+  "unidades": 14,
+  "controles": 91,
+  "pasos": 93,
+  "practicas_propuestas": 15,
+  "problemas_documentados": 45,
+  "respuestas_defensa": 27,
+  "fuentes": 22,
+  "preguntas_ejemplo": 6,
+  "se_modifico_repositorio": false,
+  "se_modifico_db": false,
+  "se_uso_CUA": false,
+  "eliminacion_roles_verificada_solo_en_codigo": true
+}

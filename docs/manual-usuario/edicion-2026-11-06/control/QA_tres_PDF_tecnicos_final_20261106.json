@@ -1,0 +1,60 @@
+{
+  "estado": "validado_para_entrega",
+  "fecha": "2026-11-06T04:04:27.077100-05:00",
+  "revisado_visualmente": true,
+  "paginas_finales_totales": 140,
+  "hallazgos_bloqueantes": [],
+  "archivos": [
+    {
+      "ruta": "/home/ceo/Proyectos/BI/docs/manual-tecnico/manual-tecnico.pdf",
+      "sha256": "2c87f61e67a6fcb8c503803dfdc004cb32321ddfa33d65955535d58428398c66",
+      "revisado_visualmente": true,
+      "paginas": 59,
+      "version": "5.2.2"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/docs/logbook/bitacora.pdf",
+      "sha256": "404d4d35486dd908650032af25acdd918ac8dbc4727fbd18dee569eb560c3e9a",
+      "revisado_visualmente": true,
+      "paginas": 68,
+      "version": "0.6.9"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/docs/sprints/sprint-06-multifuente-universal.pdf",
+      "sha256": "2918e2d49f2cec8a82ebdd7871d95d4543efd72ad6910aa604e9587d1d0c57d7",
+      "revisado_visualmente": true,
+      "paginas": 13,
+      "version": "1.2.2"
+    }
+  ],
+  "fuentes": [
+    {
+      "ruta": "/home/ceo/Proyectos/BI/docs/manual-tecnico/manual-tecnico.tex",
+      "sha256": "2fc10d2cd2b14ccce5458bef33a68e738136a41520333c03ae4cfe2e2c0a42f4"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/docs/logbook/bitacora.tex",
+      "sha256": "c46bc2042104d685b454db1c983a382b1148bbf384e9b4a79f5cbfbf10714cfc"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/docs/sprints/sprint-06-multifuente-universal.tex",
+      "sha256": "70914d5acf357a8fa370541ec4f4045efc468337859d2783047fda9f5e4003b0"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/docs/manual-tecnico/referencia-devops-sprint1.tex",
+      "sha256": "3b62c7eac1c337b87cdbe576aafd9cf58663e8d3c9577b95edebc5507ef7a00b"
+    }
+  ],
+  "metodo": "Revisión de cada página final completa en resolución nativa. En el manual se reutilizan exclusivamente21 páginas ya vistas cuyo SHA256 de PNG es idéntico; se reabrieron las38 diferentes. Bitácora68 y Sprint13 abiertos íntegramente. Sin revisión basada sólo en miniaturas o extracción de texto.",
+  "actas": [
+    "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/QA_manual_tecnico_final_20261106.json",
+    "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/QA_bitacora_final_20261106.json",
+    "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/QA_sprint6_final_20261106.json"
+  ],
+  "compilacion": {
+    "resultado": "Los tres PDF se generaron con Docker; salida0.",
+    "overfull_hbox": 0,
+    "observaciones": "Persisten avisos de espaciado y sustitución tipográfica no bloqueantes; fueron contrastados con la lectura visual de todas las páginas."
+  },
+  "limite": "La revisión documental no sustituye los controles del software ni acredita despliegue, fusión o aprobación de PR."
+}

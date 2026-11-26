@@ -1,0 +1,243 @@
+{
+  "checked_at_utc": "2026-11-26T01:39:43.384491+00:00",
+  "mode": "read_only_pure_recompilation_not_a_saved_child_no_llm_no_etl",
+  "source_proposal_id": 133,
+  "persisted_rules": 5,
+  "current_rules": 6,
+  "parent_unchanged": true,
+  "new_kpis": [
+    {
+      "code": "importe_registrado",
+      "role": "sales_amount",
+      "formula": {
+        "operation": "sum",
+        "measure": "Importe registrado"
+      }
+    },
+    {
+      "code": "facturas_distintas",
+      "role": "transaction_count",
+      "formula": {
+        "operation": "count_distinct",
+        "measure": "Facturas distintas"
+      }
+    },
+    {
+      "code": "importe_promedio_por_factura",
+      "role": "sales_amount",
+      "formula": {
+        "operation": "average",
+        "measure": "Importe registrado"
+      }
+    },
+    {
+      "code": "requested_quantity_sum",
+      "role": "quantity",
+      "formula": {
+        "operation": "sum",
+        "measure": "Unidades registradas"
+      }
+    }
+  ],
+  "platform_additions": [
+    {
+      "code": "requested_quantity_sum",
+      "name": "Unidades registradas",
+      "measure_name": "Unidades registradas",
+      "operation": "sum",
+      "requirement_codes": [
+        "ai:1",
+        "ai:11",
+        "goal:quantity",
+        "question:top_products"
+      ],
+      "source_references": [
+        "Sales.InvoiceLines.Quantity"
+      ]
+    }
+  ],
+  "validation": {
+    "contract_version": 1,
+    "valid": true,
+    "errors": 0,
+    "warnings": 6,
+    "issues": [
+      {
+        "code": "coverage.human_decision",
+        "level": "warning",
+        "path": "requirement_coverage.25",
+        "message": "La ausencia fue confirmada; no se inventará una fuente o cálculo."
+      },
+      {
+        "code": "coverage.human_decision",
+        "level": "warning",
+        "path": "requirement_coverage.26",
+        "message": "La ausencia fue confirmada; no se inventará una fuente o cálculo."
+      },
+      {
+        "code": "coverage.human_decision",
+        "level": "warning",
+        "path": "requirement_coverage.27",
+        "message": "La ambigüedad y su alcance fueron aceptados por el analista."
+      },
+      {
+        "code": "coverage.human_decision",
+        "level": "warning",
+        "path": "requirement_coverage.28",
+        "message": "La ambigüedad y su alcance fueron aceptados por el analista."
+      },
+      {
+        "code": "coverage.human_decision",
+        "level": "warning",
+        "path": "requirement_coverage.29",
+        "message": "La ambigüedad y su alcance fueron aceptados por el analista."
+      },
+      {
+        "code": "coverage.human_decision",
+        "level": "warning",
+        "path": "requirement_coverage.30",
+        "message": "La ambigüedad y su alcance fueron aceptados por el analista."
+      }
+    ]
+  },
+  "replay": {
+    "verified": true,
+    "approval_safe": true,
+    "compatibility_warning": false,
+    "checks": [
+      {
+        "code": "snapshot.integrity",
+        "label": "Integridad de los metadatos",
+        "passed": true,
+        "detail": "La huella coincide con la instantánea estructural persistida."
+      },
+      {
+        "code": "references.current",
+        "label": "Referencias técnicas comprobadas",
+        "passed": true,
+        "detail": "9 referencias técnicas válidas; 0 descartadas."
+      },
+      {
+        "code": "validation.consistency",
+        "label": "Consistencia del contrato BI",
+        "passed": true,
+        "detail": "La validación vigente conserva un contrato válido: 0 errores y 6 advertencias."
+      },
+      {
+        "code": "proposal.replay",
+        "label": "Reproducción determinística del contrato",
+        "passed": true,
+        "detail": "Las decisiones persistidas reconstruyen exactamente el mismo contrato con sus reglas de compilación persistidas. Instrucciones persistidas: sales-bi-v9; actuales: sales-bi-v9. Reglas de compilación persistidas: 6; actuales: 6."
+      }
+    ],
+    "snapshot_hash": "008c4832c216f0024770cc9a078d599daa625122a4928147ff604fb399cb1d50",
+    "proposal_hash": "8a1c5d9553237306425dda26a5e3a1103919f609f68a5bc57f220a873a19c9f7",
+    "replay_hash": "8a1c5d9553237306425dda26a5e3a1103919f609f68a5bc57f220a873a19c9f7",
+    "validated_reference_count": 9,
+    "rejected_reference_count": 0,
+    "validation_errors": 0,
+    "validation_warnings": 6,
+    "pending_validations": [
+      "Contraste de cifras mediante consultas de referencia después de materializar el datamart.",
+      "Evaluación formal de utilidad mediante juicio de expertos."
+    ]
+  },
+  "selection_all": {
+    "status": "complete",
+    "required_kpi_codes": [
+      "facturas_distintas",
+      "importe_registrado",
+      "requested_quantity_sum"
+    ],
+    "missing_kpi_codes": [],
+    "message": "La selección conserva los resultados solicitados."
+  },
+  "selection_without_quantity": {
+    "status": "partial",
+    "required_kpi_codes": [
+      "facturas_distintas",
+      "importe_registrado",
+      "requested_quantity_sum"
+    ],
+    "missing_kpi_codes": [
+      "requested_quantity_sum"
+    ],
+    "message": "La selección omite indicadores solicitados y se publicará como parcial.",
+    "missing_requirements": [
+      "Orden de productos por unidades",
+      "Productos con mayor desempeño",
+      "Unidades registradas",
+      "Unidades vendidas"
+    ]
+  },
+  "historical_contracts": [
+    {
+      "proposal_id": 129,
+      "status": "approved",
+      "rules": 5,
+      "unchanged": true,
+      "approval_safe": true,
+      "compatibility_warning": true,
+      "checks": [
+        {
+          "code": "snapshot.integrity",
+          "label": "Integridad de los metadatos",
+          "passed": true,
+          "detail": "La huella coincide con la instantánea estructural persistida."
+        },
+        {
+          "code": "references.current",
+          "label": "Referencias técnicas comprobadas",
+          "passed": true,
+          "detail": "7 referencias técnicas válidas; 0 descartadas."
+        },
+        {
+          "code": "validation.consistency",
+          "label": "Consistencia del contrato BI",
+          "passed": true,
+          "detail": "La validación vigente conserva un contrato válido: 0 errores y 9 advertencias."
+        },
+        {
+          "code": "proposal.replay",
+          "label": "Reproducción determinística del contrato",
+          "passed": true,
+          "detail": "Las decisiones persistidas reconstruyen exactamente el mismo contrato con sus reglas de compilación persistidas. Instrucciones persistidas: sales-bi-v8; actuales: sales-bi-v9. Reglas de compilación persistidas: 5; actuales: 6."
+        }
+      ]
+    },
+    {
+      "proposal_id": 131,
+      "status": "approved",
+      "rules": 5,
+      "unchanged": true,
+      "approval_safe": true,
+      "compatibility_warning": true,
+      "checks": [
+        {
+          "code": "snapshot.integrity",
+          "label": "Integridad de los metadatos",
+          "passed": true,
+          "detail": "La huella coincide con la instantánea estructural persistida."
+        },
+        {
+          "code": "references.current",
+          "label": "Referencias técnicas comprobadas",
+          "passed": true,
+          "detail": "7 referencias técnicas válidas; 0 descartadas."
+        },
+        {
+          "code": "validation.consistency",
+          "label": "Consistencia del contrato BI",
+          "passed": true,
+          "detail": "La validación vigente conserva un contrato válido: 0 errores y 7 advertencias."
+        },
+        {
+          "code": "proposal.replay",
+          "label": "Reproducción determinística del contrato",
+          "passed": true,
+          "detail": "Las decisiones persistidas reconstruyen exactamente el mismo contrato con sus reglas de compilación persistidas. Instrucciones persistidas: sales-bi-v8; actuales: sales-bi-v9. Reglas de compilación persistidas: 5; actuales: 6."
+        }
+      ]
+    }
+  ]
+}

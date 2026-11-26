@@ -1,4 +1,4 @@
-.PHONY: help env bootstrap build up seed delivery-preview-up ollama-up ollama-pull ollama-status ollama-down release-up release-down down logs ps test lint format-check compose-check workflow-test doctor docs-image logbook sprint-report sprint2-report sprint3-report sprint4-report sprint5-report sprint6-report multisource-test-report qa-audit-report training-guide thesis-chapter3 technical-manual docs verify
+.PHONY: help env bootstrap build up seed delivery-preview-up ollama-up ollama-pull ollama-status ollama-down release-up release-down down logs ps test lint format-check compose-check workflow-test doctor docs-image logbook sprint-report sprint2-report sprint3-report sprint4-report sprint5-report sprint6-report multisource-test-report qa-audit-report training-guide thesis-chapter3 technical-manual user-addendum docs verify
 
 COMPOSE := docker compose
 
@@ -191,6 +191,13 @@ technical-manual: docs-image
 		-v "$$(pwd)/docs:/workspace" -w /workspace/manual-tecnico \
 		bi-ia-docs:local -pdf -interaction=nonstopmode -halt-on-error manual-tecnico.tex
 
-docs: logbook sprint-report sprint2-report sprint3-report sprint4-report sprint5-report sprint6-report multisource-test-report qa-audit-report training-guide thesis-chapter3 technical-manual
+user-addendum: docs-image
+	docker run --rm --user "$$(id -u):$$(id -g)" \
+		-e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts \
+		-v "$$(pwd)/docs:/workspace" -w /workspace/manual-usuario/adenda-2026-11-25 \
+		bi-ia-docs:local -pdf -jobname=Adenda_operacion_BI_OpenAI_2026-11-25 \
+		-interaction=nonstopmode -halt-on-error adenda_operacion.tex
+
+docs: logbook sprint-report sprint2-report sprint3-report sprint4-report sprint5-report sprint6-report multisource-test-report qa-audit-report training-guide thesis-chapter3 technical-manual user-addendum
 
 verify: compose-check workflow-test test docs

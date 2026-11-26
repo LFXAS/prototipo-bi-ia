@@ -1,0 +1,1190 @@
+[
+  {
+    "section_file": "01_fundamentos.tex",
+    "type": "table",
+    "level": "section",
+    "title": "Dónde encontrar cada opción"
+  },
+  {
+    "section_file": "01_fundamentos.tex",
+    "type": "table",
+    "level": "section",
+    "title": "Responsabilidades durante la operación"
+  },
+  {
+    "section_file": "01_fundamentos.tex",
+    "type": "table",
+    "level": "section",
+    "title": "Tres niveles de práctica"
+  },
+  {
+    "section_file": "02_fundamentos.tex",
+    "type": "table",
+    "level": "section",
+    "title": "Vocabulario básico para seguir el recorrido"
+  },
+  {
+    "section_file": "02_fundamentos.tex",
+    "type": "table",
+    "level": "section",
+    "title": "Un ejemplo pequeño de tres líneas y dos pedidos"
+  },
+  {
+    "section_file": "02_fundamentos.tex",
+    "type": "table",
+    "level": "section",
+    "title": "Elegir la agregación y el denominador"
+  },
+  {
+    "section_file": "03_fundamentos.tex",
+    "type": "table",
+    "level": "section",
+    "title": "Qué ocurre en cada etapa"
+  },
+  {
+    "section_file": "04_configuracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y botones"
+  },
+  {
+    "section_file": "04_configuracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Si aparece un problema"
+  },
+  {
+    "section_file": "04_configuracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y botones"
+  },
+  {
+    "section_file": "04_configuracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Si aparece un problema"
+  },
+  {
+    "section_file": "04_configuracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y botones"
+  },
+  {
+    "section_file": "04_configuracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Si aparece un problema"
+  },
+  {
+    "section_file": "05_configuracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y botones"
+  },
+  {
+    "section_file": "05_configuracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Si aparece un problema"
+  },
+  {
+    "section_file": "05_configuracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y botones"
+  },
+  {
+    "section_file": "05_configuracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Si aparece un problema"
+  },
+  {
+    "section_file": "05_configuracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Opciones OpenAI y qué se comprobó realmente"
+  },
+  {
+    "section_file": "05_configuracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y botones"
+  },
+  {
+    "section_file": "05_configuracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Si aparece un problema"
+  },
+  {
+    "section_file": "05_configuracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y botones"
+  },
+  {
+    "section_file": "05_configuracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Si aparece un problema"
+  },
+  {
+    "section_file": "06_configuracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y botones"
+  },
+  {
+    "section_file": "06_configuracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Si aparece un problema"
+  },
+  {
+    "section_file": "06_configuracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y botones"
+  },
+  {
+    "section_file": "06_configuracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Si aparece un problema"
+  },
+  {
+    "section_file": "07_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "07_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "07_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "07_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "07_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "07_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "07_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "07_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "07_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "07_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "07_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "07_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "07_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "07_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "08_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "08_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "08_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "08_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "08_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "08_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "08_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "08_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "08_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Casos comprobados del 25 de noviembre de 2026"
+  },
+  {
+    "section_file": "08_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "08_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "08_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "08_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "09_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "09_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "09_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "09_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "09_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "09_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "09_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "09_operacion_bi.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "10_administracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y botones"
+  },
+  {
+    "section_file": "10_administracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Si aparece un problema"
+  },
+  {
+    "section_file": "10_administracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Roles y permisos observados en la instalación de referencia"
+  },
+  {
+    "section_file": "10_administracion.tex",
+    "type": "table",
+    "level": "paragraph",
+    "title": "Administrador"
+  },
+  {
+    "section_file": "10_administracion.tex",
+    "type": "table",
+    "level": "paragraph",
+    "title": "Operador"
+  },
+  {
+    "section_file": "10_administracion.tex",
+    "type": "table",
+    "level": "paragraph",
+    "title": "Analista BI"
+  },
+  {
+    "section_file": "10_administracion.tex",
+    "type": "table",
+    "level": "paragraph",
+    "title": "Gerente comercial"
+  },
+  {
+    "section_file": "10_administracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y botones"
+  },
+  {
+    "section_file": "10_administracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Si aparece un problema"
+  },
+  {
+    "section_file": "10_administracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y botones"
+  },
+  {
+    "section_file": "10_administracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Si aparece un problema"
+  },
+  {
+    "section_file": "10_administracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y botones"
+  },
+  {
+    "section_file": "10_administracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Si aparece un problema"
+  },
+  {
+    "section_file": "10_administracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y botones"
+  },
+  {
+    "section_file": "10_administracion.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Si aparece un problema"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Preparación de los dos ejercicios vigentes"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsubsection",
+    "title": "Ruta básica AdventureWorks unidades por mes y producto"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsubsection",
+    "title": "Ruta avanzada AdventureWorks documentos distintos y razón por pedido"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "paragraph",
+    "title": "Resultados del caso histórico"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "paragraph",
+    "title": "Selección completa"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "paragraph",
+    "title": "Selección filtrada"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsubsection",
+    "title": "Ruta básica WideWorldImporters facturas y unidades por mes"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsubsection",
+    "title": "Ruta avanzada WideWorldImporters roles de cliente y territorio"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "paragraph",
+    "title": "Resultados del caso histórico"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "paragraph",
+    "title": "Selección completa"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "paragraph",
+    "title": "Selección filtrada"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "paragraph",
+    "title": "Fecha dimension"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Cómo actuar sin crear otro problema"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Escenarios de comprobación y rechazo esperado"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Campos y controles"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Errores y recuperación"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Tiempo previsto y alternativas"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Tiempo previsto y alternativas"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Tiempo previsto y alternativas"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Reconocer la situación y actuar con criterio"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "section",
+    "title": "Rúbrica de aprendizaje: veinte puntos"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Cómo asignar los puntos"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Datos de contexto de su práctica"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Registro de comprobaciones"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Registro de autoevaluación"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "AdventureWorks 2022"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "paragraph",
+    "title": "Necesidad de referencia"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "paragraph",
+    "title": "Selección filtrada"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "WideWorldImporters"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "paragraph",
+    "title": "Necesidad de referencia"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "table",
+    "level": "paragraph",
+    "title": "Selección filtrada"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Criterios de éxito"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Rutas que deben comprobarse"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Pasos específicos"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Criterios de éxito"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Criterios de éxito"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Rutas que deben comprobarse"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Pasos específicos"
+  },
+  {
+    "section_file": "11_practica.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Criterios de éxito"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "table",
+    "level": "section",
+    "title": "Roles observados y alcance de la comprobación"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "table",
+    "level": "section",
+    "title": "Diccionario de las tablas de la aplicación"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "table",
+    "level": "section",
+    "title": "Diccionario histórico de dos datamarts de demostración"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Índices únicos"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Índices únicos"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Índices únicos"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Índices únicos"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Índices únicos"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Índices únicos"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Índices únicos"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Índices únicos"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Índices únicos"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Índices únicos"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Índices únicos"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Índices únicos"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Índices únicos"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Índices únicos"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Índices únicos"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Índices únicos"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Índices únicos"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Índices únicos"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "12_base_datos.tex",
+    "type": "list",
+    "level": "paragraph",
+    "title": "Restricciones físicas observadas"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Consultar usuarios"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Administrar usuarios"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Consultar roles"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Administrar roles"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Consultar permisos"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Administrar permisos"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Consultar menús"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Administrar menús"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Consultar parámetros"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Administrar parámetros"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Consultar configuración LLM"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Administrar configuración LLM"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Consultar conexiones"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Administrar conexiones"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Probar conexiones"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Consultar metadatos"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Actualizar metadatos"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Revisar identidad de dimensiones"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Resolver identidad de dimensiones"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Consultar propuestas BI"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Generar propuestas BI"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Revisar propuestas BI"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Consultar catálogo analítico"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Administrar catálogo analítico"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Consultar materializaciones"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Preparar materializaciones"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Consultar análisis visual"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Exportar reportes analíticos"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "subsection",
+    "title": "Consultar auditoría"
+  },
+  {
+    "section_file": "13_permisos_precision.tex",
+    "type": "table",
+    "level": "section",
+    "title": "Dependencias que deben comprobarse"
+  }
+]

@@ -11,6 +11,14 @@ export type AssistantDraft = {
   proposalId?: number
 }
 
+export function reconcileAssistantQuestions(questions: string[], available: Array<{ code: string; available: boolean }>) {
+  const allowed = new Set(available.filter((item) => item.available).map((item) => item.code))
+  return {
+    questions: [...new Set(questions.filter((code) => allowed.has(code)))],
+    removed: questions.filter((code) => !allowed.has(code)),
+  }
+}
+
 export function readAssistantDraft(): AssistantDraft | null {
   try {
     const parsed = JSON.parse(localStorage.getItem(assistantDraftKey) ?? 'null') as Partial<AssistantDraft> | null

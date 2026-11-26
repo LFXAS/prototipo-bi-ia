@@ -1,12 +1,12 @@
 # Índice de documentación técnica
 
-La documentación forma parte del producto versionado. Las fuentes Markdown y LaTeX se revisan mediante pull request; los doce PDF LaTeX se regeneran dentro de Docker y CI comprueba que coincidan con sus fuentes. El manual de usuario en Word y PDF tiene un flujo de composición y revisión visual propio.
+La documentación forma parte del producto versionado. Las fuentes Markdown y LaTeX se revisan mediante pull request; los trece PDF LaTeX se regeneran dentro de Docker y CI comprueba que coincidan con sus fuentes. El manual de usuario en Word y PDF tiene un flujo de composición y revisión visual propio.
 
 ## Entregables oficiales del proyecto
 
-Los diez documentos técnicos conservan el detalle del producto y sus evidencias. El Capítulo III es una versión académica independiente preparada para integrarse en la plantilla general del trabajo de titulación. El manual de usuario de noviembre amplía el recorrido didáctico desde cero; la guía de formación de octubre se conserva como complemento con su propio corte.
+Los diez documentos técnicos conservan el detalle del producto y sus evidencias. El Capítulo III es una versión académica independiente preparada para integrarse en la plantilla general del trabajo de titulación. Los dos manuales de usuario del 6 de noviembre presentan un recorrido de formación y otro universitario breve desde cero. Las ediciones previas se conservan identificadas con su propio corte.
 
-- [`manual-usuario/LEEME_MANUAL.md`](manual-usuario/LEEME_MANUAL.md): manual de usuario y entrenamiento desde cero, Word editable, PDF, 18 capítulos, 76 procedimientos y 140 capturas originales incorporadas en regiones legibles. Incluye conceptos, configuración, catálogo, propuestas, ETL, analítica, copiloto, casos comprobados, incidencias y preparación de la sustentación.
+- [`manual-usuario/LEEME_MANUAL.md`](manual-usuario/LEEME_MANUAL.md): manual de formación y manual universitario breve en Word/PDF, capturas nuevas completas y arquitectura compartida. Incluyen conceptos, configuración, catálogo, propuestas, ETL, analítica, copiloto, casos 129/21 y131/22, incidencias y preparación de la sustentación.
 - [`manual-tecnico/manual-tecnico.pdf`](manual-tecnico/manual-tecnico.pdf): instalación, operación, reconstrucción, uso del asistente y explicación detallada del ciclo Docker, Git y CI/CD.
 - [`sprints/sprint-03-metadatos-y-propuesta-bi.pdf`](sprints/sprint-03-metadatos-y-propuesta-bi.pdf): alcance, arquitectura, revisión previa de necesidades con evidencia estructural y asistente supervisado del Sprint 3.
 - [`sprints/sprint-04-materializacion-etl.pdf`](sprints/sprint-04-materializacion-etl.pdf): materialización controlada, KPI variables, conciliación, interpretación española y evidencia real de la ejecución 6.
@@ -15,7 +15,7 @@ Los diez documentos técnicos conservan el detalle del producto y sus evidencias
 - [`sprints/sprint-01-entorno.pdf`](sprints/sprint-01-entorno.pdf): objetivo, backlog, ejecución, trazabilidad, evidencias, incidentes, revisión y retrospectiva del Sprint 1.
 - [`sprints/sprint-02-seguridad-y-parametros.pdf`](sprints/sprint-02-seguridad-y-parametros.pdf): objetivo, especificaciones SDD, incremento administrativo, controles RBAC/LLM, evidencias y límites del Sprint 2.
 - [`logbook/bitacora.pdf`](logbook/bitacora.pdf): registro cronológico de decisiones, cambios, verificaciones, incidentes y pendientes.
-- [`tesis/capitulo-03-propuesta-tecnologica.pdf`](tesis/capitulo-03-propuesta-tecnologica.pdf): versión académica consolidada de la propuesta tecnológica, factibilidad, ingeniería de software, UML, casos de uso, sprints y validación.
+- [`tesis/revision-2026-11-06/LEEME_CAPITULO_III.md`](tesis/revision-2026-11-06/LEEME_CAPITULO_III.md): capítulo III revisado en Word,102 respuestas reales con barras, presupuesto estimado, ingeniería de software, Scrum, sprints, UML, arquitectura y casos verificados. La versión LaTeX[anterior](tesis/capitulo-03-propuesta-tecnologica.pdf) conserva su propio corte histórico.
 - [`testing/Informe_pruebas_integrales_multifuente.pdf`](testing/Informe_pruebas_integrales_multifuente.pdf): protocolo y evidencia reproducible de los escenarios integrales ejecutados con AdventureWorks y WideWorldImporters, incluidas conciliaciones, capturas, incidencias y límites de la validación.
 - [`testing/Auditoria_operativa_2026-10-03.pdf`](testing/Auditoria_operativa_2026-10-03.pdf): auditoría operativa posterior, escenarios por perfiles, facturación/pedidos, asesoría de necesidades basada en metadatos, resultados, capturas y límites; distingue pruebas simuladas y ensayos reales.
 - [`formacion/guia_formacion_bi_ia.pdf`](formacion/guia_formacion_bi_ia.pdf): formación desde cero en BI + IA, uso paso a paso, criterios comerciales, doce escenarios para las dos fuentes, doce capturas y resolución de problemas. Su fuente LaTeX y figuras están en el mismo directorio.
@@ -39,6 +39,7 @@ explicación semántica; incidentes y límites se conservan, sin presentar éxit
 - [`experiments/2026-09-27-groq-vs-claude.md`](experiments/2026-09-27-groq-vs-claude.md): comparativa integral y decisión de proveedor para la generación de propuestas BI.
 - [`testing/auditoria-operativa-2026-10-03.md`](testing/auditoria-operativa-2026-10-03.md): registro editable de escenarios QA y resultados obtenidos, incluida la revisión previa IA/reglas de necesidades con consentimiento por destino.
 - [`testing/qa-postcierre-2026-11-04.md`](testing/qa-postcierre-2026-11-04.md): revisión del 4–5 de noviembre, incidentes de formación, contratos versionados, 454 pruebas backend/48 frontend y recorridos nuevos 122/18 y 124/19. Conserva las limitaciones y el estado de cada exportación; no constituye un sprint nuevo.
+- [`testing/qa-postcierre-2026-11-06.md`](testing/qa-postcierre-2026-11-06.md): rutas exactas revisadas, protección histórica,530 pruebas backend y 50 frontend y recorridos reales129/21 y131/22.
 - [`sdd-workflow.md`](sdd-workflow.md) y [`specs/`](specs/README.md): proceso y contratos SDD desde el Sprint 2.
 
 ## Regeneración y verificación
@@ -50,10 +51,49 @@ make docs
 make verify
 ```
 
-El manual de usuario conserva `crear_manual.py`, contenidos editables, capturas originales y evidencias. Su PDF procede de la composición del Word y de la revisión de todas sus páginas; `make docs` no reconstruye ese Word.
+La edición vigente de los manuales conserva `crear_manuales.py`, sus contenidos editables, las capturas completas y sus manifiestos en la carpeta de edición. Los PDF proceden de los mismos Word renderizados y revisados página por página; `make docs` no reconstruye los documentos Word. La versión anterior conserva sus propias fuentes y evidencias.
 
-`make docs` compila los doce PDF con la imagen LaTeX del proyecto. `make verify` agrega validación Compose, política de ramas y pruebas de frontend/backend. Un cambio documental no se considera terminado hasta que las fuentes y los PDF estén actualizados y legibles.
+`make docs` compila los trece PDF con la imagen LaTeX del proyecto. `make verify` agrega validación Compose, política de ramas y pruebas de frontend/backend. Un cambio documental no se considera terminado hasta que las fuentes y los PDF estén actualizados y legibles.
 
 ## Separación de material externo
 
 Los manuales docentes genéricos o anónimos no pertenecen a este repositorio público. Deben mantenerse en una ubicación independiente para evitar asociar materiales de clase con las estudiantes, cuentas o detalles del prototipo.
+
+## Corte operativo del 25 de noviembre de 2026
+
+- [Adenda de operación y OpenAI](manual-usuario/adenda-2026-11-25/LEEME.md), con
+  fuente editable y PDF reproducible mediante `make user-addendum`. Complementa
+  los manuales anteriores sin atribuirles una reescritura completa.
+- [Continuidad y OpenAI](specs/SPR-06-02-continuidad-operativa-y-openai.md): módulo
+  persistido, regreso guiado, sesión parametrizable y sexto adaptador LLM.
+- [Contexto y cobertura operativa](specs/SPR-06-03-preservacion-contexto-y-cobertura-analitica.md):
+  prompt v9, reglas 6 para contratos nuevos y conservación de históricos 1–5.
+- [Auditoría del corte](testing/qa-continuidad-openai-2026-11-25.md): distingue
+  intentos rechazados, regresiones simuladas, oráculos de origen y recorridos reales.
+
+La selección analítica confirmada se conserva por conexión dentro de la pestaña;
+volver a una fuente recupera su propia ejecución, indicador, año, territorio y vista.
+No se guardan cifras ni conversaciones. La duración de sesión se ajusta desde
+Parámetros, con 60 minutos iniciales y rango 15–240, aplicable al siguiente login.
+Los paquetes portables previamente entregados conservan su corte de código: este
+incremento no equivale a reconstruir sus imágenes ni a migrar sus volúmenes.
+
+El preset económico final de OpenAI es Luna con razonamiento bajo. La
+[tabla de modelos y evidencia de uso](manual-usuario/adenda-2026-11-25/Tabla_modelos_OpenAI_2026-11-25.md)
+distingue su prueba de conexión de los recorridos completos realizados con Sol medio.
+
+## Manual completo y traslado actualizados
+
+- [Manual completo de operación y aprendizaje, edición 2.0, 272 páginas](manual-usuario/edicion-20261125/LEEME_PRIMERO.md):
+  incorpora las mejoras dentro de los trece capítulos, los casos 136/24 y 135/23,
+  arquitectura, PostgreSQL, costos y prácticas. No obliga a estudiar una adenda aparte.
+- [Guía del próximo traslado portable, 15 páginas](instalacion/portable-20261125/Guia_actualizacion_BI_portable.pdf),
+  con [comandos Ubuntu](instalacion/portable-20261125/Comandos_Ubuntu_BI_portable.txt)
+  y [Windows/WSL](instalacion/portable-20261125/Comandos_Windows_WSL_BI_portable.txt).
+  El paquete nuevo está pendiente de construcción y verificación; la guía no
+  convierte el portable del 17 de noviembre en una versión actualizada.
+
+Estos dos documentos se compilaron y revisaron por separado del conjunto de trece
+PDF de `make docs`/CI. Sus fuentes y sus actas indican los requisitos de autoría y
+los controles efectivos. La guía de traslado contiene órdenes manuales, no un
+instalador, y no acredita que ya se haya actualizado un equipo remoto.

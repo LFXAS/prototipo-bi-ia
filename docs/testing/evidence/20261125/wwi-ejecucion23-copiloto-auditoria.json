@@ -1,0 +1,64 @@
+{
+  "method": "Revisión QA de la respuesta real visible conservada por root; se contrasta con el oráculo independiente y con la procedencia de la ejecución23. No se invoca otro LLM ni se corrige la respuesta.",
+  "source_text": "wwi-ejecucion23-copiloto.txt",
+  "source_text_sha256": "5e737e1611d650c80f4069ac89fa1636c6e026010891c53ae81e8363aff27698",
+  "proposal_id": 135,
+  "execution_id": 23,
+  "question_scope": {
+    "year": 2015,
+    "territory": "California",
+    "event": "invoice_lines",
+    "location_role": "current_customer_delivery_city_state"
+  },
+  "checks": [
+    {
+      "criterion": "Importe observado",
+      "source_expected": "3191769.11",
+      "visible_claim": "3.191.769,11",
+      "passed": true
+    },
+    {
+      "criterion": "Unidades observadas",
+      "source_expected": 142247,
+      "visible_claim": "142.247",
+      "passed": true
+    },
+    {
+      "criterion": "Documentos distintos",
+      "source_expected": 1179,
+      "visible_claim": "1.179",
+      "passed": true
+    },
+    {
+      "criterion": "Promedio documental redondeado",
+      "source_expected": "2707.18",
+      "visible_claim": "2.707,18",
+      "passed": true
+    },
+    {
+      "criterion": "Denominador conservado",
+      "passed": true
+    },
+    {
+      "criterion": "Moneda sin ISO inventado",
+      "passed": true
+    },
+    {
+      "criterion": "Composición fiscal y rentabilidad no inferidas",
+      "passed": true
+    },
+    {
+      "criterion": "Fecha comercial correcta",
+      "passed": true
+    },
+    {
+      "criterion": "Ubicación actual no convertida en hecho histórico",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "limitations": [
+    "Una respuesta coherente acredita este caso y no todas las preguntas posibles.",
+    "La exactitud del copiado de cifras no prueba causas comerciales, demanda, utilidad pedagógica o calidad general del modelo."
+  ]
+}

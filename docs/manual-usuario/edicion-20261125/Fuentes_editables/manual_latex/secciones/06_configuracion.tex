@@ -1,0 +1,445 @@
+\chapter{Configurar el catálogo con criterio comercial}
+\section{Construir un catálogo de preguntas con criterio de negocio}
+\label{unidad:operacion_13}
+\textbf{Para quién:} Analista responsable del catálogo con permiso de administración, Administración, Consulta para comprender el alcance\par
+\textbf{Opción:} Diseño y transformación BI > Catálogo analítico > Preguntas de negocio\par
+
+El catálogo es un conjunto de orientaciones comerciales que el analista podrá seleccionar al formular una necesidad. No es el datamart, no es una consulta SQL y no determina automáticamente qué tablas se cargarán. Su función es describir qué decisiones interesa apoyar con esa fuente.
+
+La pantalla separa dos planos. Cobertura técnica de la fuente muestra qué referencias se descubren en la instantánea. Preguntas de negocio contiene las orientaciones que una persona autorizada administra. La IA utiliza el alcance y los metadatos en las etapas de necesidad y propuesta; la pantalla del catálogo no tiene un botón que genere libremente su configuración mediante la IA.
+
+La línea base del producto contiene cuatro preguntas: evolución temporal, productos, clientes y territorio. No fueron creadas por un LLM en cada base. En el entorno histórico de AdventureWorks se incorporaron otras dos orientaciones, sobre costos y rentabilidad y sobre ventas y costos por unidad, por decisión del analista a partir de una recomendación conversacional. Ver seis preguntas en una fuente no significa que la plataforma deba copiar seis a todas las demás.
+
+Cada catálogo pertenece a una conexión y a un dominio. Antes de editar, confirme el nombre en Fuente en contexto. Guardar un catálogo de AdventureWorks no debe modificar WideWorldImporters. Una nueva fuente comienza con las orientaciones del perfil y requiere su propio criterio comercial; la evidencia técnica se obtiene de su estructura, no de la fuente anterior.
+
+Verificable significa que el descubrimiento dispone de referencias que pueden revisarse; Por validar conserva una orientación cuya evidencia tendrá que comprobarse antes de aprobar una propuesta; No disponible informa insuficiencia técnica. Ninguno de esos rótulos demuestra que ya se calcularon ventas o que la interpretación comercial sea incuestionable. Abra Referencias detectadas y lea su alcance.
+
+Redacte una pregunta para una decisión concreta. Productos con mayor desempeño es una orientación; una instrucción útil especifica si se comparan sumas de importe o de unidades y advierte que un ranking no prueba preferencias del consumidor. No introduzca nombres de columnas inventadas ni convierta una limitación en una orden para que la IA la ignore.
+
+Habilitada conserva la pregunta y controla si se ofrece para nuevos análisis. Retirar pregunta la quita del borrador de catálogo y el cambio se hace persistente al Guardar catálogo. Deshabilitar es adecuado cuando quiere conservar la redacción para un uso futuro. No utilice retirar como si fuera una aprobación o rechazo de las propuestas que ya existen.
+
+Restaurar catálogo validado aplica inmediatamente la configuración predeterminada del perfil a la fuente elegida; no es un historial de deshacer ni recupera automáticamente las últimas preguntas personalizadas. En este corte puede sustituir las dos preguntas adicionales de AdventureWorks por las cuatro iniciales. Antes de utilizarlo, conserve por escrito las orientaciones que desea volver a incorporar y confirme que está trabajando en la fuente adecuada.
+
+\subsection{Si una pregunta fue retirada del catálogo}
+Un borrador local puede conservar preguntas que ya no existen en el catálogo de esa fuente. Esto ocurrió con una necesidad restaurada de WideWorldImporters. El rechazo se produjo antes de llamar al modelo: no era evidencia de corrupción del datamart ni prueba de un fallo específico de Claude.
+
+Ahora el sistema conserva el objetivo y las preguntas que siguen disponibles, retira del borrador las que ya no están y muestra un aviso. La viabilidad anterior deja de servir para esa selección modificada: revise otra vez el alcance y la autorización antes de generar. No sustituye una pregunta retirada por otra con un nombre parecido.
+
+Consultar una propuesta histórica conserva sus preguntas y decisiones de entonces. No se modifica ni se retira su aprobación sólo porque el catálogo actual haya cambiado. Un borrador nuevo y una versión aprobada son objetos diferentes.
+
+\begin{enumerate}
+\item Si aparece un aviso de preguntas retiradas, lea cuáles cambiaron y compruebe la fuente.
+\item Vuelva a la necesidad; conserve o ajuste el objetivo y elija sólo preguntas disponibles que realmente correspondan.
+\item Repita la comprobación de viabilidad. Lea las limitaciones antes de continuar.
+\item Si desea estudiar el caso aprobado anterior, ábralo en consulta: no lo regenere para intentar recuperar el catálogo.
+\end{enumerate}
+
+\subsection{Conceptos para comprender la opción}
+\paragraph{Pregunta de negocio} Tema comercial que orienta una necesidad, sin fijar por sí mismo el diseño físico. Comparar el importe vendido por producto y mes.
+
+\paragraph{Etiqueta} Nombre breve que el analista reconocerá en la selección de preguntas.
+
+\paragraph{Explicación para el analista} Describe para qué decisión resulta útil la pregunta.
+
+\paragraph{Instrucción funcional para la IA} Precisa el resultado y sus límites en términos comerciales; no habilita SQL ni referencias inexistentes.
+
+\paragraph{Cobertura técnica} Respaldo estructural detectado para las orientaciones del dominio.
+
+\paragraph{Personalización por fuente} Configuración independiente que pertenece a una conexión concreta.
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Abra Catálogo analítico y confirme Fuente en contexto y Dominio habilitado.
+\item Lea Cobertura técnica de la fuente. Abra Referencias detectadas en las tarjetas que la ofrezcan.
+\item Revise las preguntas existentes antes de añadir otra: puede bastar con mejorar su explicación.
+\item Pulse Agregar pregunta. Sustituya la redacción de ejemplo de los tres campos por una orientación comercial concreta.
+\item Escriba Etiqueta, Explicación para el analista e Instrucción funcional para la IA. Revise Habilitada.
+\item Pulse Guardar catálogo y espere el mensaje de actualización.
+\item Vuelva al catálogo y compruebe los textos. Después, abra un análisis nuevo para comprobar qué orientaciones ofrece el asistente.
+\item Cambie a la otra fuente y confirme que sus preguntas se mantienen propias.
+\item Si necesita retirar una orientación, considere primero desmarcar Habilitada. Si elige Retirar pregunta, revise el borrador restante y pulse Guardar catálogo.
+\item No utilice Restaurar catálogo validado como prueba de aprendizaje sobre un catálogo con personalizaciones que necesite conservar.
+\end{enumerate}
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y botones\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+Dominio habilitado & Selecciona un perfil analítico implementado. & \textbf{Ejemplo:} Datamart de ventas, único dominio operativo del corte.\par\smallskip\textbf{Resultado:} No crea inventario, compras u otro dominio por cambiar una etiqueta. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y botones}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Dominio habilitado & Selecciona un perfil analítico implementado. & \textbf{Ejemplo:} Datamart de ventas, único dominio operativo del corte.\par\smallskip\textbf{Resultado:} No crea inventario, compras u otro dominio por cambiar una etiqueta. \\
+\addlinespace[3pt]
+Cobertura técnica de la fuente & Presenta el descubrimiento de referencias de la instantánea vigente. & \textbf{Ejemplo:} Comprobar qué estructura respalda análisis temporal o territorial.\par\smallskip\textbf{Resultado:} Distingue evidencia técnica de una preferencia comercial escrita. \\
+\addlinespace[3pt]
+Verificable / Por validar / No disponible & Resume el respaldo de una orientación. & \textbf{Ejemplo:} Una pregunta personalizada puede permanecer Por validar.\par\smallskip\textbf{Resultado:} Guía la revisión; no acredita una cifra calculada. \\
+\addlinespace[3pt]
+Referencias detectadas & Despliega las referencias que sustentan una tarjeta. & \textbf{Ejemplo:} Leer las tablas o columnas citadas y su pertenencia al origen.\par\smallskip\textbf{Resultado:} Permite una comprobación explícita del respaldo. \\
+\addlinespace[3pt]
+Agregar pregunta & Añade un borrador de orientación. & \textbf{Ejemplo:} Una orientación sobre documentos e importe promedio.\par\smallskip\textbf{Resultado:} Genera un identificador interno; máximo doce preguntas en total, no doce adicionales. \\
+\addlinespace[3pt]
+Habilitada & Ofrece o retira de las selecciones futuras sin eliminar el texto. & \textbf{Ejemplo:} Deshabilitar temporalmente una orientación de costos.\par\smallskip\textbf{Resultado:} Conserva la redacción al guardar, pero no la ofrece como pregunta habilitada. \\
+\addlinespace[3pt]
+Etiqueta & Nombre reconocible de la orientación; de 3 a 120 caracteres. & \textbf{Ejemplo:} Costos y rentabilidad de las ventas.\par\smallskip\textbf{Resultado:} Se muestra en el catálogo y en las selecciones que correspondan. \\
+\addlinespace[3pt]
+Explicación para el analista & Explica utilidad y decisión; de 10 a 300 caracteres. & \textbf{Ejemplo:} Permite comparar el importe vendido con costos respaldados para revisar diferencias por producto.\par\smallskip\textbf{Resultado:} La persona comprende para qué seleccionar esa orientación. \\
+\addlinespace[3pt]
+Instrucción funcional para la IA & Delimita la interpretación comercial; de 10 a 500 caracteres. & \textbf{Ejemplo:} Usar únicamente costos verificables; declarar si son actuales y no atribuirles validez histórica.\par\smallskip\textbf{Resultado:} Orienta las solicitudes futuras sin sustituir los validadores. \\
+\addlinespace[3pt]
+Identificador interno & Mantiene la identidad de la pregunta. & \textbf{Ejemplo:} Código automático custom\_\allowbreak{}… de una pregunta nueva.\par\smallskip\textbf{Resultado:} No es un campo que deba inventar ni editar la operadora. \\
+\addlinespace[3pt]
+Retirar pregunta & Quita la tarjeta del borrador. & \textbf{Ejemplo:} Retirar una orientación duplicada con autorización.\par\smallskip\textbf{Resultado:} Necesita Guardar catálogo para persistir; no permite retirar la última tarjeta por ese botón. \\
+\addlinespace[3pt]
+Guardar catálogo & Persiste preguntas y periodicidades de la fuente. & \textbf{Ejemplo:} Guardar una pregunta aclarada en WideWorldImporters.\par\smallskip\textbf{Resultado:} Los nuevos análisis usan la configuración actualizada; no reescribe propuestas previas. \\
+\addlinespace[3pt]
+Restaurar catálogo validado & Reaplica la línea base del perfil a la fuente actual. & \textbf{Ejemplo:} Recuperar las cuatro orientaciones estándar en un entorno limpio.\par\smallskip\textbf{Resultado:} Sustituye personalizaciones del catálogo; no revierte una propuesta ni una ejecución. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Examinar el catálogo sin modificarlo}
+Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.
+
+\begin{enumerate}
+\item Seleccione AdventureWorks y cuente las orientaciones que realmente conserva la instalación.
+\item Identifique las cuatro estándar y las personalizadas si existen.
+\item Cambie a WideWorldImporters y compare etiquetas, instrucciones y cobertura.
+\end{enumerate}
+
+\textbf{Qué debe obtener.} Se reconoce la configuración propia de cada origen. No se asume que la cantidad seis sea obligatoria o generada por IA.
+
+\textbf{Cómo comprobarlo.} Puede explicar quién redacta las preguntas y de dónde procede la evidencia técnica.
+
+\subsection{Añadir una orientación comercial acotada}
+Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.
+
+\begin{enumerate}
+\item En el entorno de capacitación, seleccione una fuente y conserve los textos iniciales.
+\item Agregue una pregunta sobre importe por documento, indicando conteo distinto de pedidos o facturas según el evento real.
+\item Guarde el catálogo y compruebe la nueva tarjeta.
+\item Consulte la otra fuente para verificar que no recibió la tarjeta.
+\item En la etapa de necesidad, someta cualquier nueva solicitud a su evaluación de viabilidad.
+\end{enumerate}
+
+\textbf{Qué debe obtener.} La pregunta queda guardada únicamente en la fuente elegida. La tarjeta no crea automáticamente una medida, propuesta o ETL. Una cobertura Por validar no se describe como fallo si aún no se ha construido una propuesta.
+
+\textbf{Cómo comprobarlo.} La estudiante distingue guardar orientación de demostrar su factibilidad sobre metadatos.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Si aparece un problema\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+La pregunta aparece Por validar. & No tiene evidencia técnica suficiente en el descubrimiento inicial o es una orientación personalizada. & Revise sus términos y referencias; formule una necesidad concreta y utilice la evaluación de viabilidad. No la fuerce como Verificable por cambiar su etiqueta.\par\smallskip\textbf{Comprobación:} La factibilidad se acredita mediante referencias y reglas, o se informa una limitación. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Si aparece un problema}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+La pregunta aparece Por validar. & No tiene evidencia técnica suficiente en el descubrimiento inicial o es una orientación personalizada. & Revise sus términos y referencias; formule una necesidad concreta y utilice la evaluación de viabilidad. No la fuerce como Verificable por cambiar su etiqueta.\par\smallskip\textbf{Comprobación:} La factibilidad se acredita mediante referencias y reglas, o se informa una limitación. \\
+\addlinespace[3pt]
+No se puede guardar el catálogo. & Campos fuera de longitud, tarjetas inválidas, fuente no habilitada o falta de permiso. & Lea el mensaje, complete los tres campos de cada pregunta y revise la fuente. Compruebe también las periodicidades del mismo formulario.\par\smallskip\textbf{Comprobación:} Aparece El catálogo analítico fue actualizado y una nueva consulta conserva los textos. \\
+\addlinespace[3pt]
+Faltan las dos preguntas adicionales después de restaurar. & Restaurar sustituyó la personalización por la línea base de cuatro preguntas. & Recupere los textos conservados o una evidencia histórica y vuelva a incorporarlos en la fuente correcta; no anuncie una recuperación automática inexistente.\par\smallskip\textbf{Comprobación:} Las orientaciones adicionales vuelven a estar guardadas y habilitadas solo donde corresponde. \\
+\addlinespace[3pt]
+La pregunta pide costos, pero no hay un costo confiable. & El deseo comercial supera la evidencia del origen o solo existe un costo actual. & Acote la necesidad a las medidas disponibles o declare el alcance del costo actual. No llame costo histórico de la venta a un atributo actual sin respaldo.\par\smallskip\textbf{Comprobación:} La propuesta no publica un margen supuesto ni confunde factibilidad estructural con criterio contable. \\
+\addlinespace[3pt]
+Agregar pregunta está deshabilitado. & Ya existen doce tarjetas. & Revise duplicados y retire o reformule una orientación si corresponde. Deshabilitar una tarjeta no reduce el número total.\par\smallskip\textbf{Comprobación:} El catálogo cumple el máximo de doce, con las preguntas necesarias. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Para explicar durante la sustentación}
+\paragraph{¿La IA construyó las cuatro preguntas iniciales?} No. Proceden del perfil del producto. Una persona autorizada puede ampliarlas; la IA interviene al sugerir o revisar necesidades y al proponer el diseño a partir de los metadatos.
+
+\paragraph{¿Por qué una pregunta guardada no demuestra que puede responderse?} Porque el catálogo expresa intención. La evaluación de viabilidad y los validadores deben comprobar referencias, relaciones, grano y cálculos para esa necesidad.
+
+\paragraph{¿Por qué el catálogo no fija las tablas?} Para separar el propósito comercial del esquema físico. El mismo objetivo puede requerir estructuras diferentes en cada fuente.
+
+\paragraph{¿Qué ocurre al restaurar?} Se aplica la configuración predeterminada del perfil en esa fuente; las personalizaciones del catálogo pueden sustituirse. Las propuestas y ejecuciones previas no se reescriben.
+
+\pantalla{recursos/pantallas/15_catalogo_WWI_contexto.jpg}{Catálogo separado para WideWorldImporters}{Catálogo en el contexto de WideWorldImporters. Cada fuente conserva sus propias preguntas y periodicidades. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/16_catalogo_cobertura_AW.jpg}{Cobertura potencial de las preguntas según metadatos}{Cobertura técnica calculada sobre AdventureWorks. Esta comprobación orienta el diseño y no sustituye la conciliación numérica. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/17_catalogo_preguntas.jpg}{Etiqueta, explicación e instrucción funcional de cada pregunta}{Etiqueta, explicación e instrucción funcional tienen fines distintos. La pregunta orienta a la IA sin fijar SQL ni tablas inventadas. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/operacion_13.tex}{\input{capturas/operacion_13.tex}}{}
+\begingroup
+\setlength{\parskip}{4pt plus 1pt minus 1pt}
+\setlist[enumerate]{itemsep=3pt,topsep=4pt}
+\titlespacing*{\paragraph}{0pt}{4pt}{0.5em}
+\section{Elegir periodicidades sin confundirlas con el detalle de los datos}
+\label{unidad:operacion_14}
+\textbf{Para quién:} Analista responsable del catálogo, Administración, Personas en formación BI\par
+\textbf{Opción:} Diseño y transformación BI > Catálogo analítico > Periodicidades\par
+
+Periodicidad indica cómo se agrupan temporalmente los resultados: día, semana, mes, trimestre o año. Granularidad indica qué representa una fila del hecho, como una línea de pedido o una línea de factura. Frecuencia de actualización indica cuándo se ejecutaría otra carga. Son tres decisiones distintas y no deben utilizarse como sinónimos.
+
+Un caso puede conservar cada línea de venta y presentar sus importes agrupados mensualmente. En ese caso, Mensual no reduce por sí sola el hecho a una fila por mes. Tampoco agenda una carga mensual: el prototipo realiza cargas completas confirmadas por una persona; no implementa un calendario de refresco automático por habilitar esta opción.
+
+La etiqueta temporal debe corresponder al evento de negocio. En AdventureWorks puede usarse la fecha del pedido cuando esa es la elegida y validada; en WideWorldImporters puede ser la fecha de la factura. Una comparación mensual de pedidos no debe llamarse facturación mensual solo porque ambas usan meses. La propuesta y su expediente conservan la fecha de evento y el alcance.
+
+Las estrategias están implementadas como un catálogo cerrado de cinco opciones. Se pueden ofrecer varias y retirar alguna, pero escribir Bimestral como etiqueta de Mensual no crea una agregación bimestral. La etiqueta ayuda a leer la opción; no cambia el código de cálculo que la plataforma admite.
+
+En un análisis particular se selecciona una de las periodicidades habilitadas. Los KPI pueden declarar una periodicidad explícita o heredar la de la propuesta; el lector analítico resuelve esa configuración al agrupar los resultados. Cambiar la configuración de un catálogo no debe reetiquetar una ejecución histórica que ya conserva su propio contrato.
+
+\subsection{Conceptos para comprender la opción}
+\paragraph{Granularidad} Significado de una fila del hecho. Una línea de pedido puede contener cantidad e importe.
+
+\paragraph{Periodicidad} Agrupación temporal usada para presentar un resultado. Sumar importes de las líneas correspondientes a un mes.
+
+\paragraph{Fecha de evento} Fecha cuyo significado comercial organiza el análisis. Fecha del pedido frente a fecha de factura.
+
+\paragraph{Actualización} Obtención de datos mediante otra ejecución. No es un efecto de habilitar Mensual en el catálogo.
+
+\paragraph{Herencia de periodicidad} Un indicador utiliza la periodicidad de su propuesta cuando así lo declara su receta.
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Revise primero qué fecha comercial respalda la fuente y la necesidad.
+\item En Periodicidades lea cada opción y su Explicación.
+\item Conserve habilitadas las que desea ofrecer al analista y desmarque las que no correspondan.
+\item Para reincorporar una estrategia retirada, selecciónela en Agregar periodicidad y pulse Agregar.
+\item Revise la Etiqueta y Explicación sin cambiar su significado temporal.
+\item Pulse Guardar catálogo y compruebe las opciones disponibles al iniciar una necesidad nueva.
+\item En la propuesta, confirme aparte la granularidad. En el expediente y el panel, compruebe la periodicidad efectiva de la serie.
+\end{enumerate}
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y botones\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+Habilitada & Ofrece una periodicidad para nuevas selecciones. & \textbf{Ejemplo:} Mantener Mensual habilitada para una comparación comercial.\par\smallskip\textbf{Resultado:} Conserva la estrategia y controla su disponibilidad. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y botones}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Habilitada & Ofrece una periodicidad para nuevas selecciones. & \textbf{Ejemplo:} Mantener Mensual habilitada para una comparación comercial.\par\smallskip\textbf{Resultado:} Conserva la estrategia y controla su disponibilidad. \\
+\addlinespace[3pt]
+Etiqueta & Nombre legible de la periodicidad; de 3 a 100 caracteres. & \textbf{Ejemplo:} Mensual.\par\smallskip\textbf{Resultado:} No altera por sí mismo la agrupación implementada. \\
+\addlinespace[3pt]
+Explicación & Describe cuándo y para qué usar la opción; de 10 a 240 caracteres. & \textbf{Ejemplo:} Agrupa por mes usando una fecha comercial verificable.\par\smallskip\textbf{Resultado:} Orienta la selección del analista. \\
+\addlinespace[3pt]
+Retirar periodicidad & Quita una estrategia del borrador de configuración. & \textbf{Ejemplo:} Retirar temporalmente Diaria si no se ofrecerá.\par\smallskip\textbf{Resultado:} No permite retirar la última tarjeta desde ese botón; el cambio necesita guardarse. \\
+\addlinespace[3pt]
+Agregar periodicidad & Permite elegir una de las estrategias implementadas ausentes. & \textbf{Ejemplo:} Seleccionar Trimestral cuando no figura entre las tarjetas.\par\smallskip\textbf{Resultado:} No acepta una frecuencia arbitraria. \\
+\addlinespace[3pt]
+Agregar & Inserta la estrategia seleccionada en el borrador. & \textbf{Ejemplo:} Reincorporar Anual.\par\smallskip\textbf{Resultado:} La tarjeta aparece y se conserva al Guardar catálogo. \\
+\addlinespace[3pt]
+Guardar catálogo & Persiste también las opciones temporales del formulario. & \textbf{Ejemplo:} Guardar Mensual y Trimestral habilitadas.\par\smallskip\textbf{Resultado:} Las nuevas necesidades ofrecen esa configuración. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Explicar un datamart de líneas con análisis mensual}
+Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.
+
+\begin{enumerate}
+\item Seleccione una propuesta histórica de líneas en el recorrido de formación.
+\item Lea su granularidad y su periodicidad.
+\item Explique qué se suma durante un mes y qué representa cada fila almacenada.
+\item Repita la explicación para la otra fuente con su propio evento comercial.
+\end{enumerate}
+
+\textbf{Qué debe obtener.} Se distingue nivel de detalle, fecha de negocio y agrupación. La estudiante no afirma que habilitar Mensual ejecute un ETL mensual automático.
+
+\textbf{Cómo comprobarlo.} Puede responder qué representa una fila y qué representa un punto mensual del gráfico sin confundirlos.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Si aparece un problema\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+No aparece una periodicidad en el asistente. & Está retirada o deshabilitada en el catálogo de esa fuente. & Revise las tarjetas y guarde la configuración correspondiente; confirme que inicia una necesidad nueva de la misma fuente.\par\smallskip\textbf{Comprobación:} La opción habilitada se ofrece en el contexto correcto. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Si aparece un problema}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+No aparece una periodicidad en el asistente. & Está retirada o deshabilitada en el catálogo de esa fuente. & Revise las tarjetas y guarde la configuración correspondiente; confirme que inicia una necesidad nueva de la misma fuente.\par\smallskip\textbf{Comprobación:} La opción habilitada se ofrece en el contexto correcto. \\
+\addlinespace[3pt]
+Se desea una frecuencia que no aparece. & La estrategia no está implementada. & Utilice una opción admitida si responde a la necesidad o registre una ampliación de desarrollo. No renombre Mensual para simular Bimestral.\par\smallskip\textbf{Comprobación:} El título temporal coincide con la agrupación realmente ejecutada. \\
+\addlinespace[3pt]
+No hay fecha de negocio verificable. & La estructura no respalda la agrupación solicitada o la fecha pertenece a otro evento. & Revise metadatos y delimite la necesidad. La etiqueta temporal no reemplaza una fecha ausente.\par\smallskip\textbf{Comprobación:} La propuesta usa una fecha respaldada o informa la limitación. \\
+\addlinespace[3pt]
+Se supone que cambiar el catálogo cambió el panel histórico. & Se confundió la configuración futura con el contrato de una ejecución ya materializada. & Consulte la periodicidad y la propuesta de esa ejecución. Cree o revise un nuevo diseño solo cuando se requiera y se autorice.\par\smallskip\textbf{Comprobación:} La procedencia histórica permanece identificada. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Para explicar durante la sustentación}
+\paragraph{¿Mensual es la granularidad?} No necesariamente. En los casos de líneas, el hecho conserva líneas y el análisis agrupa sus importes por mes.
+
+\paragraph{¿Por qué no usar siempre la fecha de modificación del registro?} Porque suele indicar una acción administrativa. La fecha del evento comercial debe corresponder al pedido, factura u otro evento solicitado.
+
+\paragraph{¿Se puede refrescar automáticamente al marcar Semanal?} No. La opción agrupa resultados por semana; no programa una nueva carga.
+
+\endgroup
+\pantalla{recursos/pantallas/18_catalogo_periodicidades.jpg}{Habilitar periodicidades y guardar el catálogo de la fuente}{Periodicidades habilitadas. Agrupar por mes no transforma una línea física en una fila mensual. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/operacion_14.tex}{\input{capturas/operacion_14.tex}}{}
+\section{Seis orientaciones comerciales y cómo redactarlas}
+Estos textos son ejemplos de capacitación. No se aplicaron a ningún catálogo durante la redacción; revíselos según el respaldo de la fuente antes de incorporarlos.
+
+\subsection{Evolución de ventas en el tiempo}
+Orientación estándar, redacción de capacitación; revisar antes de sustituir el texto local.
+
+\textbf{Explicación para el analista.} Permite comparar el importe registrado y las unidades entre periodos de un mismo evento comercial.
+
+\textbf{Instrucción funcional para la IA.} Comparar sumas por periodos usando la fecha de negocio verificable. Distinguir pedido de factura; no afirmar una tendencia causal ni comparar periodos incompletos como equivalentes.
+
+\subsection{Productos con mayor desempeño}
+Orientación estándar, ejemplo de instrucción más concreta.
+
+\textbf{Explicación para el analista.} Permite identificar productos con mayor importe o unidades dentro de la selección analizada.
+
+\textbf{Instrucción funcional para la IA.} Ordenar productos por sumas de importe o unidades respaldadas. Mostrar el alcance de la selección; el ranking no demuestra preferencias, demanda futura ni causalidad.
+
+\subsection{Desempeño por cliente}
+Orientación estándar.
+
+\textbf{Explicación para el analista.} Permite comparar ventas atribuidas al cliente mediante relaciones de negocio comprobadas.
+
+\textbf{Instrucción funcional para la IA.} Usar la identidad descriptiva del cliente obtenida mediante rutas verificadas. No sustituir cliente por vendedor, empleado que editó el registro o contacto sin respaldo.
+
+\subsection{Desempeño por territorio}
+Orientación estándar; el territorio efectivo depende de la fuente y la propuesta.
+
+\textbf{Explicación para el analista.} Permite comparar resultados según la ubicación o el territorio comercial respaldado por la fuente.
+
+\textbf{Instrucción funcional para la IA.} Declarar el rol territorial usado y conservar la ruta revisada. Una dirección actual de cliente no acredita lugar de entrega realizado ni ubicación histórica del evento.
+
+\subsection{Costos y rentabilidad de las ventas}
+Orientación personalizada histórica de AdventureWorks; no se garantiza aplicabilidad a otra fuente.
+
+\textbf{Explicación para el analista.} Permite revisar la diferencia entre ventas y costos cuando los componentes tienen respaldo y alcance explícitos.
+
+\textbf{Instrucción funcional para la IA.} Usar únicamente costos e importes verificables y declarar su fecha y significado. No presentar un costo actual de producto como costo histórico de cada venta ni inventar margen cuando falten componentes.
+
+\subsection{Ventas y costos por unidad}
+Orientación personalizada histórica; precisa revisión de factibilidad y denominadores.
+
+\textbf{Explicación para el analista.} Permite comparar importes por unidad conservando un denominador de unidades y el alcance de los costos disponibles.
+
+\textbf{Instrucción funcional para la IA.} Calcular razones entre sumas compatibles de importe y unidades, con denominador verificable y tratamiento de cero. Distinguir promedio por unidad, por línea y por documento; declarar costos actuales cuando corresponda.

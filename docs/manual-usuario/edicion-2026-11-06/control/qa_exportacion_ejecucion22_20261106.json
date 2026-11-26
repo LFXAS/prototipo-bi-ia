@@ -1,0 +1,202 @@
+{
+  "fecha_revision": "2026-11-06T03:31:36.532298-05:00",
+  "metodo": "Lectura de los originales con runtime bundled pypdf/openpyxl y XML de gráficos; render Poppler e inspección visual de las 6 páginas PDF. Sin editar originales ni ejecutar ETL.",
+  "archivos": [
+    {
+      "ruta": "/home/ceo/Descargas/ventas-ejecucion-22-analyst.pdf",
+      "bytes": 10682,
+      "sha256": "da15ae4df58c0683a13a9ec2ec08661f018fa0e43cdc6e6a7462b92a68f88192"
+    },
+    {
+      "ruta": "/home/ceo/Descargas/ventas-ejecucion-22-analyst.xlsx",
+      "bytes": 23502,
+      "sha256": "650f9343a000f5d327bc34b54c8fe64dee471abb6edd5b9ade6bc657f3ffd8af"
+    }
+  ],
+  "contexto": {
+    "propuesta": 131,
+    "ejecucion": 22,
+    "fuente": "WideWorldImporters local",
+    "base": "WideWorldImporters",
+    "vista": "Analítica",
+    "anio": 2015,
+    "territorio": "California",
+    "indicador_graficos": "Ventas totales mensuales",
+    "moneda": "moneda de origen; no ISO comprobado"
+  },
+  "pdf": {
+    "paginas": 6,
+    "paginas_revisadas_visualmente": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "titulo": "Análisis de ventas",
+    "descripcion": "Datamart de líneas de factura con métricas mensuales por producto, cliente y territorio de entrega.",
+    "contexto_confirmado": true,
+    "cuatro_tarjetas_kpi": true,
+    "presentacion": [
+      "Portada con contexto y cuatro KPI",
+      "Gráfico mensual del importe",
+      "Tabla Top8 productos",
+      "Tabla territorial California",
+      "Tabla Top8 clientes",
+      "Hallazgos con cautela de vigencia y conciliación global"
+    ],
+    "revision_visual": "Sin solapes, filas cortadas ni pérdida de etiquetas en las seis páginas. No se afirma verificación visual nativa de XLS.",
+    "render_qa": [
+      "/tmp/bi-export22-qa-20261106/pagina-1.png",
+      "/tmp/bi-export22-qa-20261106/pagina-2.png",
+      "/tmp/bi-export22-qa-20261106/pagina-3.png",
+      "/tmp/bi-export22-qa-20261106/pagina-4.png",
+      "/tmp/bi-export22-qa-20261106/pagina-5.png",
+      "/tmp/bi-export22-qa-20261106/pagina-6.png"
+    ]
+  },
+  "xlsx": {
+    "hojas": [
+      "Resumen",
+      "Evolución en el tiempo",
+      "Productos líderes",
+      "Distribución territorial",
+      "Clientes principales",
+      "Trazabilidad"
+    ],
+    "cantidad_hojas": 6,
+    "cantidad_graficos": 4,
+    "metricas_resumen": [
+      {
+        "indicador": "importe",
+        "hoja": "Resumen",
+        "celda": "B14",
+        "obtenido": "3191769.11",
+        "esperado_oraculo": "3191769.11",
+        "diferencia_absoluta": "0.00",
+        "coincide_tolerancia_0_000001": true,
+        "formato": "#,##0.00"
+      },
+      {
+        "indicador": "unidades",
+        "hoja": "Resumen",
+        "celda": "E14",
+        "obtenido": "142247",
+        "esperado_oraculo": "142247",
+        "diferencia_absoluta": "0",
+        "coincide_tolerancia_0_000001": true,
+        "formato": "#,##0.00"
+      },
+      {
+        "indicador": "facturas",
+        "hoja": "Resumen",
+        "celda": "H14",
+        "obtenido": "1179",
+        "esperado_oraculo": "1179",
+        "diferencia_absoluta": "0",
+        "coincide_tolerancia_0_000001": true,
+        "formato": "#,##0"
+      },
+      {
+        "indicador": "promedio_por_factura",
+        "hoja": "Resumen",
+        "celda": "B17",
+        "obtenido": "2707.183299406277",
+        "esperado_oraculo": "2707.183299406276505513146735",
+        "diferencia_absoluta": "4.94486853265E-13",
+        "coincide_tolerancia_0_000001": true,
+        "formato": "#,##0.00"
+      }
+    ],
+    "hojas_visuales": [
+      {
+        "hoja": "Evolución en el tiempo",
+        "graficos": 1,
+        "descripcion": "Ventas totales mensuales por mes",
+        "categorias": 12,
+        "suma_valores": "3191769.11",
+        "suma_participaciones": null
+      },
+      {
+        "hoja": "Productos líderes",
+        "graficos": 1,
+        "descripcion": "Ventas totales mensuales; principales 8 categorías",
+        "categorias": 8,
+        "suma_valores": "901671.3",
+        "suma_participaciones": 0.9999999999999999
+      },
+      {
+        "hoja": "Distribución territorial",
+        "graficos": 1,
+        "descripcion": "Ventas totales mensuales; principales 1 categorías",
+        "categorias": 1,
+        "suma_valores": "3191769.11",
+        "suma_participaciones": 1
+      },
+      {
+        "hoja": "Clientes principales",
+        "graficos": 1,
+        "descripcion": "Ventas totales mensuales; principales 8 categorías",
+        "categorias": 8,
+        "suma_valores": "1044988.48",
+        "suma_participaciones": 0.9999999999999999
+      }
+    ],
+    "referencias_graficos": [
+      {
+        "objeto": "xl/charts/chart1.xml",
+        "referencias": [
+          "'Evolución en el tiempo'!$B$6:$B$17",
+          "'Evolución en el tiempo'!$C$6:$C$17"
+        ]
+      },
+      {
+        "objeto": "xl/charts/chart2.xml",
+        "referencias": [
+          "'Productos líderes'!$B$6:$B$13",
+          "'Productos líderes'!$C$6:$C$13"
+        ]
+      },
+      {
+        "objeto": "xl/charts/chart3.xml",
+        "referencias": [
+          "'Distribución territorial'!$B$6",
+          "'Distribución territorial'!$C$6"
+        ]
+      },
+      {
+        "objeto": "xl/charts/chart4.xml",
+        "referencias": [
+          "'Clientes principales'!$B$6:$B$13",
+          "'Clientes principales'!$C$6:$C$13"
+        ]
+      }
+    ],
+    "errores_celda_observados": [],
+    "alcance": "Resumen contiene los cuatro KPI; las cuatro hojas de visuales respaldan sólo el indicador de importe seleccionado. Trazabilidad describe la ejecución global, no las 3771 filas del filtro."
+  },
+  "controles": {
+    "suma_meses_igual_oraculo": true,
+    "total_territorio_igual_oraculo": true,
+    "filas_filtradas_segun_oraculo_independiente": 3771,
+    "filas_globales_origen": 228265,
+    "filas_globales_destino": 228265,
+    "diferencia_global": 0,
+    "tablas": 5,
+    "sin_menciones_AdventureWorks": true,
+    "sin_asignacion_USD": true
+  },
+  "oraculo": {
+    "ruta": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/qa/oracle_WWI2015_California_cliente_entrega_20261106.json",
+    "sha256": "de39987a1f68001cbf341265691e6c5f12dd8513a259b17b92b3c64ef0c922fb",
+    "criterio": "Consulta independiente sólo SELECT sobre InvoiceLines→Invoices.CustomerID→Customers.DeliveryCityID→Cities.StateProvinceID, InvoiceDate de2015 y California. No usar facturación BillTo del expediente19 como oráculo territorial."
+  },
+  "limites": [
+    "La provincia corresponde a la ubicación de entrega registrada en la ficha del cliente durante el ETL. No demuestra vigencia histórica ni una entrega real.",
+    "Las participaciones Top8 se refieren al subconjunto mostrado, no automáticamente al total anual territorial.",
+    "Los exportes preservan Importe como etiqueta monetaria genérica del contrato. La cabecera identifica moneda de origen y no inventa USD; no se afirma mejora retrospectiva de los archivos21/20.",
+    "La concordancia de los exportes no garantiza que toda frase futura de IA sea verdadera. La conversación se verifica por separado."
+  ],
+  "conclusion": "Valores y contexto de131/22 coinciden con el oráculo independiente del rol comprador/ciudad de entrega. PDF6p legible; XLS6hojas/4gráficos, cuatro KPI exactos y sumas mensual/territorial correctas. Sin evidencia observable de cruce conAdventureWorks ni atribución deISO no comprobado."
+}

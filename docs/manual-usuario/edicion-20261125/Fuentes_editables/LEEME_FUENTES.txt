@@ -1,0 +1,51 @@
+MANUAL DE OPERACIÓN Y APRENDIZAJE — EDICIÓN DE FORMACIÓN 2.0
+25 de noviembre de 2026
+
+El PDF vigente es Manual_operacion_y_aprendizaje_BI_IA_2026-11-25.pdf.
+Esta revisión integra las mejoras en los capítulos correspondientes; no requiere
+leer una adenda aparte para aprender la operación actual. Conserva los trece
+capítulos, los conceptos de BI, la arquitectura, los modelos de datos, el
+diccionario, las prácticas y las capturas de referencia de la edición anterior.
+
+QUÉ ES VIGENTE Y QUÉ ES HISTÓRICO
+- Operación vigente: sesiones de 60 minutos por defecto (15–240), recuperación
+  por fuente, OpenAI, selección revisada del catálogo y cobertura de requisitos.
+- Casos completos comprobados con OpenAI Sol medio el 25 de noviembre:
+  AdventureWorks propuesta 136/ejecución 24 y WideWorldImporters 135/23.
+- OpenAI Luna bajo es la opción económica activa; sólo se probó una conexión y
+  salida estructurada mínima. No se acredita un recorrido BI completo con Luna.
+- Los casos 129/21 y 131/22 y sus 52 capturas se conservan como historia fechada.
+  Tres vistas reales del 25 de noviembre se añaden con su proporción original. No se afirman
+  nuevas capturas de escritorio completo ni nuevas pruebas de todos los roles.
+- El inventario 93 tablas/860 columnas es local y acumulado; un portable limpio
+  no debe reproducir ese número, las API keys privadas ni esos identificadores.
+
+EDITAR Y COMPILAR
+1. Fuente principal: manual_latex/main.tex. Capítulos: manual_latex/secciones/.
+2. Recursos relativos: manual_latex/recursos/. Mantener el conjunto unido.
+3. Las fuentes TeX Gyre están incluidas, con licencia GUST, en recursos/fuentes/.
+4. Para compilar con TeX Live completo y XeLaTeX, desde manual_latex ejecute:
+
+   latexmk -xelatex -interaction=nonstopmode -halt-on-error main.tex
+
+   O ejecute xelatex dos veces. No se necesita la aplicación ni una API key.
+5. El resultado de compilación es main.pdf; el PDF con nombre de entrega es una
+   copia de ese resultado final, comprobada por SHA-256.
+
+REGENERAR DE FORMA ESTABLE
+- El contenido principal se edita en los JSON de insumos/.
+- Las ampliaciones vigentes por unidad están en
+  insumos/actualizacion_20261125/actualizaciones_operacion.json.
+- El capítulo 12 auditado se conserva como insumo editorial completo en
+  insumos/actualizacion_20261125/12_base_datos.tex. El generador lo integra.
+- Desde la raíz de estas fuentes: python3 fuentes/generar_manual.py
+- Regenerar sobrescribe main.tex y secciones/: cambie primero los insumos o el
+  generador. Los guiones redactar_* del 18 de noviembre se conservan como antecedentes y
+  tienen una protección para no sobrescribir los JSON de la edición 2.0.
+- Las figuras SVG y PDF existentes son los recursos editables autorizados. Sus
+  antiguos programas de extracción/generación conservan rutas de la auditoría
+  original; no se requieren para compilar o regenerar el texto del manual.
+
+Las evidencias seguras, el alcance, la revisión visual, la integridad y las
+huellas de entrega constan en INFORME_QA_MANUAL_2026-11-25.md y su JSON.
+No se incluyen secretos, bases de datos, volúmenes ni registros de compilación.

@@ -127,7 +127,7 @@ añade una capacidad al catálogo. `invoice_event` exige intención positiva en 
 solicitud original (objetivo y preguntas, respetando exclusiones) y una cabecera que es el propio hecho, con PK completa declarada y referencias exactas, o una ruta FK
 completa hacia la cabecera de factura, no una coincidencia nominal del ID.
 La aceptación de límites no habilita una
-clasificación persistente incompatible. Las nuevas propuestas declaran
+clasificación persistente incompatible. Las propuestas del cierre del 4–5 de noviembre declararon
 `sales-bi-v7` y `compilation_rules_version=3`: los identificadores no son operandos
 monetarios, el promedio documental usa razón de agregados y las líneas no se renombran
 silenciosamente como pedidos. El verificador selecciona la versión de expansión del
@@ -179,10 +179,58 @@ casos de herencia del catálogo, sin modificar filas ni ejecutar otro ETL.
 La revisión vigente normaliza tildes y puntuación del ranking y distingue exclusiones
 de operaciones: «sin percentiles» no elimina agrupar/ordenar sumas. «No excluir» y
 «do not exclude» conservan petición positiva. Son reglas léxicas acotadas, no una
-garantía de interpretación exhaustiva. La compilación 3 limita Number/Numero como
+garantía de interpretación exhaustiva. La compilación 3 del corte anterior limita Number/Numero como
 señal de identificador a su semántica documental o de entidad y conserva PK/FK
 declaradas; NumberOfUnits/NumeroDeUnidades sin esas claves vuelve a ser una cantidad
 apta para SUM. Los casos 122/124 siguen reglas 2 sin mutación.
+
+### Conservación semántica: adenda del 6 de noviembre
+
+El corte intermedio del 6 de noviembre usó `sales-bi-v8` y `compilation_rules_version=4`. La expansión
+conserva fuentes dimensionales explícitas verificadas y rutas declaradas que mantienen
+el grano; una candidata con mayor puntaje léxico no sustituye una elección segura.
+`source_resolution` registra procedencia, clave y ruta. Una identidad dimensional
+compuesta no admitida o una fecha de evento ambigua se conservan como impedimentos,
+no se reducen ni se reemplazan por otra entidad. La comprobación de unicidad actual
+usa las claves primarias capturadas; las restricciones UNIQUE alternativas no
+exportadas siguen siendo un límite de evidencia.
+
+`business_request_scope` conserva el objetivo y requisitos adoptados bajo autoridad
+del servidor. La referencia temporal revisada y los tipos de calendario guían la
+fecha y sus atributos. El promedio por documento requiere una razón con documentos
+distintos; AVG de líneas no acredita ese resultado. Se mantienen cantidad variable
+de KPI, selección humana y dependencias financieras válidas. No se añaden componentes,
+motores ni permisos. Las reglas históricas 1, 2 y 3 conservan su reproducción y huellas.
+El contexto de intención y explicación analítica incorpora `calendar_reference`,
+fecha ISO UTC del servidor separada de selección histórica, catálogo y ventana ETL.
+La instrucción no introduce años o categorías ajenos a la evidencia y evita inventar
+un año al rechazar pronóstico relativo. No amplía filtros ni ejecuta otra consulta;
+la prosa sigue supervisada, sin un validador universal de exactitud.
+
+La verificación intermedia de código del 6 de noviembre, anterior al ajuste de rutas de reglas 5, aprobó make verify con salida 0,
+475 backend y 48 frontend, esta última etapa reutilizada de caché del mismo árbol.
+El cierre operativo y documental se registra por separado en
+[QA del 6 de noviembre](testing/qa-postcierre-2026-11-06.md).
+
+### Rutas exactas y roles: reglas 5
+
+Los contratos nuevos usan `compilation_rules_version=5` y conservan `sales-bi-v8`.
+La ruta ordenada de `source_resolution.path`, con columnas exactas de cada arista,
+se verifica contra la instantánea y gobierna la extracción. No se sustituye por
+la primera FK ni por una ruta más corta. La evidencia revisada y las relaciones
+controladas delimitan los roles; ambigüedad o prefijos incompatibles bloquean la
+propuesta en lugar de introducir alias por rol no implementados.
+
+`persisted_relationship_paths` es compartido por materialización y procedencia
+analítica. Las medidas externas reutilizan rutas custodiadas o una única ruta
+dirigida segura compatible. La enumeración de todas las rutas simples se detiene
+si supera sus límites; no simula unicidad. La ejecución y reconstrucción de reglas
+1–4 permanecen congeladas. No cambian componentes, permisos ni motores. La puerta ETL exige reglas 5 para preparar o ejecutar otra carga, conservando
+lectura y resultados históricos. El cierre definitivo de reglas 5 aprobó 530 backend y
+50 frontend; las 67 focales de materializador/procedencia y 27 de router son
+subconjuntos. Ese corte incluye título y unidades monetarias comunes. AW 129/21 y WWI 131/22
+completaron recorridos nuevos con rutas exactas y conciliación, sin reetiquetar
+los contratos históricos ni usar otro rol territorial como oráculo.
 
 ## Contrato de configuración LLM
 
@@ -242,3 +290,70 @@ La separación física en bases distintas no es necesaria para la prueba de conc
 Los volúmenes Docker contienen estado local y no se comparten por GitHub. Cada cambio de esquema se incorpora mediante una migración Alembic inmutable y versionada. Después de aplicar las migraciones, el servicio Compose `seed` ejecuta el catálogo base aprobado de manera idempotente: permisos, menús, rol administrador y cuenta inicial de recuperación.
 
 El sembrado sólo crea o actualiza registros protegidos del sistema y no duplica catálogos. Tampoco distribuye cuentas temporales, eventos de auditoría, claves, tokens, configuraciones LLM ni datos de negocio. Los datos demostrativos futuros deberán declararse como semillas opcionales, anonimizadas y aprobadas por su especificación; nunca como copias de un volumen local.
+
+## Continuidad operativa y OpenAI: adenda del 25 de noviembre
+
+La navegación conserva por pestaña el módulo y el origen de una entrada guiada.
+Recargar vuelve a cargar datos autorizados del mismo módulo; no recupera desde el
+cliente una copia de la base. Atrás retorna al paso de preparación de Inicio o al
+análisis que abrió el respaldo. La entrada directa desde el menú lateral no genera
+un retorno artificial. Las rutas restauradas se contrastan con los menús autorizados.
+
+Los JWT nuevos incluyen emisión y vencimiento. El login consulta el parámetro
+`AUTH_SESSION_MINUTES`, mostrado como Duración de la sesión (minutos), con valor
+inicial 60 y rango 15–240. El cambio rige al autenticar otra vez; no modifica el
+`exp` de tokens emitidos ni renueva sesiones por actividad. Un respaldo de entorno
+se utiliza sólo si falta un parámetro activo utilizable. React informa al vencer
+y permite retomar el borrador después de autenticar; FastAPI conserva la autoridad
+sobre expiración y permisos. La migración `20261125_20` agrega la fila de configuración
+sin cambiar los valores de otros parámetros, catálogos, propuestas o destinos.
+
+El borrador de necesidad se reconcilia con preguntas y periodicidad vigentes de
+su fuente. Eliminar o deshabilitar una pregunta invalida la revisión reutilizable;
+no autoriza a reinterpretar ese código como otra pregunta. Esta recuperación sólo
+afecta al formulario mutable, nunca reescribe propuestas aprobadas o datos publicados.
+El servidor conserva la comprobación previa a cualquier llamada del proveedor.
+
+`openai-cloud` es un adaptador distinto de Groq: usa sólo
+`https://api.openai.com/v1/responses`, Bearer con secreto cifrado, `store: false` y
+`text.format` estructurado. Las propiedades opcionales se representan como anulables
+en el transporte estricto y se recuperan como ausencia antes de comprobar el esquema
+canónico. No se infieren campos de negocio. La API rechaza resultados incompletos,
+negativas y falta de saldo; no cambia de proveedor automáticamente.
+
+Responses cuenta razonamiento y texto en el mismo presupuesto. El adaptador reserva
+un máximo explícito para las familias de razonamiento reconocidas: mínimo de 4096
+tokens para automático/bajo/mínimo, 8192 para medio y 16384 para alto, con techo de
+32768. Esto es un límite de salida, no una cantidad que se deba consumir ni una
+garantía de finalización; el presupuesto no aumenta tras un truncamiento. Los
+modelos sin razonamiento conservan el presupuesto recibido. El mismo adaptador
+atiende asesoría, propuestas, interpretación semántica y chat; los módulos BI no
+implementan reglas particulares por nombre de base o modelo.
+
+Especificación: [SPR-06-02](specs/SPR-06-02-continuidad-operativa-y-openai.md).
+Pruebas: [QA del 25 de noviembre](testing/qa-continuidad-openai-2026-11-25.md).
+
+Las entradas de propuesta `sales-bi-v9` conservan tablas y columnas verificadas
+en la revisión previa, incluso cuando aparecen al final de tablas anchas o fuera
+del recorte habitual. Las claves existentes se ofrecen para conteos distintos,
+con validación semántica que impide sumarlas como magnitudes. En compilación 6,
+un requisito de métrica no queda cubierto sólo por una columna del hecho: debe
+existir un KPI agregado seleccionable. Cuando hay una única receta segura solicitada,
+la expansión puede incorporarla antes de la revisión con procedencia de plataforma
+explícita; no crea un catálogo fijo ni un indicador para cada medida intermedia.
+La exclusión posterior por el analista se respeta y se informa como cobertura
+pendiente o parcial. Las reglas 1–5 conservan su reproducción histórica.
+
+La recuperación analítica usa un mapa de selecciones confirmadas por conexión
+dentro de la pestaña, con lectura compatible del formato anterior. Volver a una
+fuente recupera incluso una ejecución anterior elegida por el usuario; la API
+comprueba que siga disponible. Restablecer una selección afecta sólo esa fuente;
+cerrar sesión elimina todas las selecciones. No almacena datos ni conversaciones.
+
+La presentación de unidades monetarias usa exclusivamente la divisa comprobada
+del origen, también en razones por documento o unidad. Una etiqueta ISO propuesta
+por el modelo no acredita esa moneda. Si la fuente no la demuestra, se mantiene
+moneda de origen; si la demuestra, se aplica ese código y se conserva el denominador.
+Las unidades físicas no se convierten en divisas. El catálogo estático de etiquetas
+SIX/ISO es de reconocimiento, no una conversión FX ni una consulta de red en operación.
+Contratos, fórmulas y valores persistidos permanecen intactos.

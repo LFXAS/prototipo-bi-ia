@@ -1,0 +1,159 @@
+{
+  "fecha": "2026-11-25",
+  "edicion": "Formación 2.0",
+  "resultado": "APROBADO para entrega documental; límites de pruebas expresos",
+  "paginas_pdf": 272,
+  "sha256_pdf": "2f44fbbd4c288dfb5dddf79418ef4ecf7b61acacf00f03ff93359737bde2b0a7",
+  "base_original_pdf_sha256": "491ec69d0a24ef9a6b4d99309bfb35cf8b39fdf92df8f3071d742c5dfb15aee3",
+  "capitulos": [
+    "Cómo aprender con este manual",
+    "Comprender una venta antes de calcular indicadores",
+    "Entender la arquitectura y el papel de la IA",
+    "Ingresar, orientarse y elegir la fuente",
+    "Preparar las fuentes y el asistente de IA",
+    "Configurar el catálogo con criterio comercial",
+    "Del objetivo comercial a una propuesta supervisada",
+    "Materializar, conciliar y revisar los resultados",
+    "Analizar, conversar y exportar con contexto",
+    "Administrar cuentas, permisos y trazabilidad",
+    "Practicar, resolver incidencias y preparar la defensa",
+    "Comprender la base de datos y el linaje",
+    "Responsabilidades, permisos y precisión de esta edición"
+  ],
+  "capitulos_conservados": 13,
+  "unidades_base_renderizadas": 90,
+  "columnas_diccionario_renderizadas": 251,
+  "capturas_originales_conservadas_sin_cambio": 52,
+  "capturas_actuales": 3,
+  "total_capturas": 55,
+  "diagramas_vectoriales": 8,
+  "er_originales_sin_cambio": 7,
+  "referencias_recursos": 63,
+  "recursos_faltantes": [],
+  "fuentes_otf_incluidas": 12,
+  "avisos_finales_latex": [],
+  "paginas_qa_poppler": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    14,
+    16,
+    17,
+    26,
+    35,
+    36,
+    42,
+    43,
+    44,
+    45,
+    63,
+    86,
+    103,
+    123,
+    128,
+    132,
+    133,
+    178,
+    179,
+    180,
+    181,
+    190,
+    191,
+    219,
+    220,
+    221,
+    222,
+    223,
+    224,
+    225,
+    226,
+    227,
+    229,
+    230,
+    272
+  ],
+  "qa_visual": "Inspección de cinco contactos y arquitectura ampliada; proporciones conservadas; sin recortes, bandas blancas, solapamientos o tablas fuera de margen en las páginas revisadas.",
+  "contenido_vigente_paginas": {
+    "Qué hacer si la sesión vence": [
+      17
+    ],
+    "Volver al punto correcto": [
+      26
+    ],
+    "Práctica guiada: preparar": [
+      35
+    ],
+    "Parámetros: duración": [
+      36
+    ],
+    "Configurar OpenAI paso": [
+      42
+    ],
+    "Opciones OpenAI": [
+      43
+    ],
+    "Configuración activa: OpenAI": [
+      45
+    ],
+    "Si una pregunta fue retirada": [
+      63
+    ],
+    "Del respaldo estructural": [
+      86
+    ],
+    "Versiones históricas": [
+      103
+    ],
+    "Casos comprobados del 25": [
+      123
+    ],
+    "Entender moneda y razones": [
+      128
+    ],
+    "Ejercicio actual": [
+      132
+    ],
+    "AdventureWorks: ejecución 24": [
+      133
+    ],
+    "Ruta recomendada de estudio": [
+      178
+    ],
+    "Incidencias de esta edición": [
+      190
+    ],
+    "Relación comprobada entre los casos": [
+      5,
+      223
+    ],
+    "Fuentes para consultar modelos": [
+      5,
+      272
+    ],
+    "Preparación de los dos ejercicios": [
+      179
+    ],
+    "Necesidad comprobada de AdventureWorks": [
+      179
+    ]
+  },
+  "casos_actuales": {
+    "AdventureWorks": "136/24;Sol medio;mensual;4KPI",
+    "WideWorldImporters": "135/23;Sol medio;mensual;4KPI"
+  },
+  "limite_luna": "Una prueba real mínima de conexión y JSON estructurado. No se acredita flujo BI completo con Luna.",
+  "compilacion": {
+    "imagen": "bi-ia-docs:local",
+    "engine": "XeLaTeX TeX Live2026",
+    "runtime": "/usr/local/texlive montado sólo lectura; no viene incluido en esa imagen",
+    "network": "none",
+    "pasadas_finales": 2,
+    "codigo_salida": 0,
+    "contendedores_aplicacion": "Sin cambios ni reinicios"
+  },
+  "integridad_fuentes": "Copias de entrega cotejadas por SHA-256; original18Nov preservado.",
+  "limites_qa": "Se revisaron visualmente40 páginas seleccionadas; no se vuelve a presentar como prueba de cada rol, motor, modelo ni necesidad. Las52 capturas base son históricas, no pantallas nuevas de escritorio completo.",
+  "regeneracion_desde_insumos": "Comprobada estable: main.tex y los 13 capítulos conservan sus SHA-256 tras regenerar."
+}

@@ -2,7 +2,7 @@
 
 - Estado: **implementada para los proveedores y modelos registrados**
 - Dependencia: configuración LLM del Sprint 2 y proveedores del Sprint 3
-- Proveedores actuales: Gemini Cloud, Groq Cloud, Anthropic Claude, Qwen Cloud y Ollama local
+- Proveedores actuales: OpenAI, Gemini Cloud, Groq Cloud, Anthropic Claude, Qwen Cloud y Ollama local
 
 ## 1. Problema y objetivo
 
@@ -136,3 +136,14 @@ advertencias. La expansión determinística siguió dos relaciones de identidad 
 y resolvió el cliente mediante `Person.Person` y `Sales.Store`; también conservó medidas
 de ventas, unidades, descuento monetario y costo. La propuesta quedó lista para revisión,
 sin aprobación ni ejecución ETL automática.
+
+## Adenda del 25 de noviembre: OpenAI
+
+Se añade `openai-cloud` con Responses API y contrato estricto. Su adaptación de
+opcionales, reserva de razonamiento y errores no modifica las reglas BI. La
+configuración final propone `gpt-6-luna`/bajo por costo; `gpt-6.2-sol`/medio
+se conserva como modelo de los ensayos completos. No impide elegir otro modelo
+compatible habilitado para la organización. Los ensayos simulados del adaptador
+no equivalen a resultados operativos con una API key real. Véanse
+[SPR-06-02](SPR-06-02-continuidad-operativa-y-openai.md) y la
+[auditoría](../testing/qa-continuidad-openai-2026-11-25.md).

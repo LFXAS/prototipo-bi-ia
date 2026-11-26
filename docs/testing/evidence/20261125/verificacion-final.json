@@ -1,0 +1,42 @@
+{
+  "fecha": "2026-11-25T21:26:37.765867-05:00",
+  "comando": "make verify",
+  "salida": 0,
+  "entorno": "Docker; sin llamadas reales a LLM desde los tests automatizados",
+  "backend": {
+    "pytest": 656,
+    "ruff": "correcto",
+    "formato": "correcto",
+    "mypy": "57 archivos, correcto",
+    "ejecucion": "Capa Docker idéntica al corte final de 656; reutilizada por caché porque backend no cambió."
+  },
+  "frontend": {
+    "vitest": 80,
+    "archivos": 6,
+    "eslint": "correcto",
+    "vite_build": "correcto"
+  },
+  "compose": "correcto",
+  "politica_ramas": "correcta",
+  "pdf_latex": 13,
+  "advertencias": [
+    {
+      "componente": "Starlette/AnyIO",
+      "tipo": "DeprecationWarning externo",
+      "bloqueante": false
+    }
+  ],
+  "pruebas_operativas": {
+    "AdventureWorks": "136/24, 121317 filas,4 KPI conciliados",
+    "WideWorldImporters": "135/23,228265 filas,4 KPI conciliados",
+    "copiloto": "Dos consultas reales con Sol;9 y10 criterios satisfechos",
+    "exportaciones": "48 comprobaciones correctas,4 archivos reales",
+    "Luna": "Una conexión real y salida estructurada;sin propuesta ni ETL nuevos"
+  },
+  "limites": [
+    "No demuestra compatibilidad con todos los motores o modelos.",
+    "No reconstruye el BI Portable anterior.",
+    "Sin medición de costo real por llamada; tarifas documentales no son facturas."
+  ],
+  "registro_de_trabajo": "La salida completa se revisó localmente; se excluyen logs de compilación de los entregables."
+}
