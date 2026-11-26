@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from app.modules.copilot.service import canonical_hash, metadata_tables
+from app.modules.copilot.service import build_requirement_coverage, canonical_hash, metadata_tables
 
 BUILDER_VERSION = "sales-etl-v1"
 SUPPORTED_AGGREGATIONS = {"sum", "count", "count_distinct", "average", "min", "max"}
@@ -48,14 +48,41 @@ def assess_selection_coverage(
     )
     selected = set(selected_kpi_codes)
     missing = [code for code in required_codes if code not in selected]
+    missing_requirements: list[str] = []
+    if proposal.get("compilation_rules_version", 1) >= 6:
+        assessment = proposal.get("need_assessment", {})
+        for requirement in build_requirement_coverage(proposal, assessment):
+            if (
+                requirement.get("request_status") in {"direct", "derivable"}
+                and requirement.get("coverage_status") != "covered"
+            ):
+                missing_requirements.append(str(requirement["label"]))
+            for metric in requirement.get("required_metrics", []):
+                alternatives = set(metric.get("kpi_codes", [])) & proposal_codes
+                required_codes.extend(sorted(alternatives))
+                if not alternatives or not alternatives & selected:
+                    missing.extend(sorted(alternatives))
+                    missing_requirements.append(str(requirement["label"]))
+        required_codes = sorted(set(required_codes))
+        missing = sorted(set(missing))
+    incomplete = bool(missing or missing_requirements)
     return {
-        "status": "complete" if not missing else "partial",
+        "status": "partial" if incomplete else "complete",
         "required_kpi_codes": required_codes,
         "missing_kpi_codes": missing,
         "message": (
-            "La selección conserva los resultados financieros solicitados."
-            if not missing
+            (
+                "La selección conserva los resultados solicitados."
+                if proposal.get("compilation_rules_version", 1) >= 6
+                else "La selección conserva los resultados financieros solicitados."
+            )
+            if not incomplete
             else "La selección omite indicadores solicitados y se publicará como parcial."
+        ),
+        **(
+            {"missing_requirements": sorted(set(missing_requirements))}
+            if missing_requirements
+            else {}
         ),
     }
 

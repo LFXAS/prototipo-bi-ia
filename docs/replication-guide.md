@@ -66,7 +66,7 @@ Abre <http://localhost:5173> y <http://localhost:8000/docs>.
 
 ### Registrar una credencial LLM cloud
 
-Las API keys de Gemini, Groq, Anthropic y Qwen no se escriben en `.env`. Inicia sesión como una persona con `parameters.llm.write`, abre **Preparación del entorno > Configuración LLM**, guarda el proveedor, modelo y nivel de razonamiento, y usa **Registrar credencial**. Después de guardarla, la interfaz sólo mostrará **Credencial configurada** y permitirá reemplazarla, nunca consultarla. Para continuar con baja latencia se recomienda **Groq Cloud**, URL `https://api.groq.com/openai/v1`, modelo `openai/gpt-oss-120b` y razonamiento **bajo**. Si se usará Anthropic, seleccione **Anthropic Claude**: la pantalla propone `https://api.anthropic.com`, `claude-haiku-4-5-20251001` y razonamiento **mínimo**, adecuados para administrar un saldo reducido. Registre la clave prestada sólo en su instalación, pruebe la conexión y actívela; nunca comparta la clave en Git, capturas o documentos. El identificador puede cambiarse a `claude-sonnet-4-5-20250929` si la cuenta aún lo autoriza y la tarea justifica mayor costo. Para Gemini se recomienda comenzar con razonamiento **mínimo**.
+Las API keys de OpenAI, Gemini, Groq, Anthropic y Qwen no se escriben en `.env`. Inicia sesión como una persona con `parameters.llm.write`, abre **Preparación del entorno > Configuración LLM**, guarda el proveedor, modelo y nivel de razonamiento, y usa **Registrar credencial**. Después de guardarla, la interfaz sólo mostrará **Credencial configurada** y permitirá reemplazarla, nunca consultarla. Para continuar con baja latencia se recomienda **Groq Cloud**, URL `https://api.groq.com/openai/v1`, modelo `openai/gpt-oss-120b` y razonamiento **bajo**. Si se usará Anthropic, seleccione **Anthropic Claude**: la pantalla propone `https://api.anthropic.com`, `claude-haiku-4-5-20251001` y razonamiento **mínimo**, adecuados para administrar un saldo reducido. Registre la clave prestada sólo en su instalación, pruebe la conexión y actívela; nunca comparta la clave en Git, capturas o documentos. El identificador puede cambiarse a `claude-sonnet-4-5-20250929` si la cuenta aún lo autoriza y la tarea justifica mayor costo. Para Gemini se recomienda comenzar con razonamiento **mínimo**.
 
 FastAPI cifra el valor en PostgreSQL y genera automáticamente la raíz criptográfica en el volumen `secret_key_data`. Ambos elementos son necesarios para recuperar la credencial después de reiniciar. No copies ese volumen entre equipos ni lo publiques; cada instalación debe registrar sus propias claves desde la web. Gemini, Groq, Anthropic y Qwen requieren una API key propia por instalación; Ollama local no requiere credencial.
 
@@ -236,7 +236,7 @@ git commit -m "feat: descripcion breve"
 git push -u origin feature/nombre-cambio
 ```
 
-Abre un pull request hacia `develop`. CI valida Compose, código, pruebas y los doce PDF versionados: diez entregables técnicos y de evidencia, el Capítulo III académico y la guía de formación. Para publicar una entrega, abre otro pull request de `develop` hacia `main`; sólo esa fusión activa CD y publica las cinco imágenes con las etiquetas `main` y `sha-*`. Una etiqueta Git `v1.0.0` produce además la imagen `v1.0.0`. Consulta `docs/git-workflow.md` para el procedimiento completo y las reglas de protección.
+Abre un pull request hacia `develop`. CI valida Compose, código, pruebas y los trece PDF versionados: los entregables técnicos y de evidencia, el Capítulo III académico, la guía de formación y la adenda operativa de OpenAI. Para publicar una entrega, abre otro pull request de `develop` hacia `main`; sólo esa fusión activa CD y publica las cinco imágenes con las etiquetas `main` y `sha-*`. Una etiqueta Git `v1.0.0` produce además la imagen `v1.0.0`. Consulta `docs/git-workflow.md` para el procedimiento completo y las reglas de protección.
 
 ## 6. Levantar el entorno publicado en otra máquina (sin compilar)
 
@@ -398,3 +398,40 @@ Flujo previsto:
 7. apagar o desasignar la VM cuando no se use para proteger el crédito.
 
 La activación de la cuenta, creación de recursos y configuración OIDC están pendientes. No se incorporará un workflow que falle por secretos inexistentes antes de completar esos prerrequisitos.
+
+## Configurar OpenAI desde la plataforma
+
+1. Abrir Preparación del entorno > Configuración LLM con permiso de administración.
+2. Crear una configuración de proveedor **OpenAI**, URL
+   `https://api.openai.com/v1`, modelo `gpt-6-luna`, razonamiento **Bajo**.
+   Es el preset económico final; Sol medio se usó en los dos ensayos completos.
+   Consulte la tabla de costos y evidencia antes de cambiar a un modelo más caro.
+3. Registrar la API key directamente en el panel de credencial. No pegarla en
+   documentación, terminales compartidos, Git, capturas o chats.
+4. Probar conexión: se realiza una solicitud mínima sin datos del negocio. La
+   credencial configurada por sí sola no demuestra acceso al modelo ni saldo.
+5. Activar cuando la prueba sea satisfactoria. Esta acción sustituye al proveedor
+   activo para toda la aplicación; las propuestas y datamarts existentes se conservan.
+6. En el asistente, autorizar de nuevo el destino y validar la necesidad con los
+   metadatos de la fuente seleccionada antes de generar.
+
+El modelo se puede editar según acceso de la organización. `gpt-6.2-astra` es una
+alternativa de mayor capacidad y costo; no se activa automáticamente tras un error.
+El uso de Responses no requiere Assistants API, embeddings, un índice vectorial ni
+acceso de escritura al origen. Los créditos de suscripción elegibles deben estar
+vinculados a la organización de esa API key. Revisar saldo, vencimiento y consumo
+en el panel de OpenAI: la aplicación BI no consulta información de facturación.
+
+La sesión nueva dura 60 minutos por defecto. Desde **Parámetros > Duración de la
+sesión (minutos)** una persona autorizada puede elegir de 15 a 240 minutos. El
+valor se consulta en cada inicio de sesión y sólo afecta tokens nuevos. No hay
+renovación por actividad. `JWT_ACCESS_TOKEN_MINUTES=60` es el respaldo de entorno;
+el parámetro web activo tiene precedencia. No hace falta editar el archivo privado
+de entorno para operar esta opción.
+
+Para actualizar una instalación existente con estos cambios, aplicar
+`docker compose exec -T backend alembic upgrade head` antes del uso. La migración
+`20261125_20` sólo agrega el parámetro si no existe y conserva el valor elegido
+previamente. El seed incluye la misma definición para instalaciones limpias.
+No se borran volúmenes ni se reemplazan claves. Los tokens ya emitidos conservan
+su vencimiento anterior; cerrar e iniciar sesión permite usar la duración nueva.

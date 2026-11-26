@@ -9,8 +9,8 @@ from typing import Any
 from app.modules.copilot.domains import SALES_PROFILE
 from app.modules.copilot.entity_resolution import enrich_dimension_labels
 
-PROMPT_VERSION = "sales-bi-v8"
-COMPILATION_RULES_VERSION = 5
+PROMPT_VERSION = "sales-bi-v9"
+COMPILATION_RULES_VERSION = 6
 CONTRACT_VERSION = 1
 ALLOWED_OPERATIONS = {"extract", "join", "filter", "derive", "aggregate", "load"}
 ALLOWED_AGGREGATIONS = {"sum", "count", "count_distinct", "average", "min", "max"}
@@ -377,6 +377,11 @@ PROPOSAL_BLUEPRINT_SYSTEM_INSTRUCTION = (
     "Para un importe promedio por documento declara una medida de importe total con sum "
     "y otra de documentos con count_distinct; el compilador construirá su razón de agregados. "
     "No dividas el importe de cada fila por el valor de un identificador. "
+    "Conserva todos los requisitos directos o derivables y sus referencias comprobadas: "
+    "las limitaciones aceptadas se aplican sólo al requisito señalado, no autorizan a "
+    "omitir otros importes, fechas, dimensiones o conteos viables. La moneda desconocida "
+    "no impide sumar un importe registrado en moneda de origen. El alcance contiene las "
+    "columnas disponibles; no declares ausente una columna que aparece en él. "
     "Conserva columnas monetarias específicas: precio usa price, descuento usa discount y el "
     "importe de venta usa amount o total. Asocia producto, "
     "cliente y territorio con la tabla técnica cuyo nombre corresponda. No inventes "
@@ -489,7 +494,10 @@ def proposal_blueprint_schema(
             for column in item.get("columns", [])
             if isinstance(column, dict)
             and column.get("name")
-            and bool(_search_tokens(column.get("name")) & measure_terms)
+            and (
+                bool(_search_tokens(column.get("name")) & measure_terms)
+                or str(column.get("name")) in _identifier_columns(item)
+            )
         }
     )
     if not measure_columns:
@@ -932,6 +940,7 @@ def compact_metadata_blocks(
     document: dict[str, Any], business_request: dict[str, Any], max_items: int
 ) -> list[dict[str, Any]]:
     tables = metadata_tables(document)
+    reviewed_columns = _reviewed_column_references(business_request)
     selected_references = _discovery_references(tables, business_request)
     compact: list[dict[str, Any]] = []
     for reference in selected_references:
@@ -939,7 +948,9 @@ def compact_metadata_blocks(
         compact.append(
             {
                 "ref": reference,
-                "columns": _compact_columns(table),
+                "columns": _compact_columns(
+                    table, required_columns=reviewed_columns.get(reference, set())
+                ),
                 "foreign_keys": [
                     {
                         "columns": relation.get("columns", []),
@@ -1061,7 +1072,25 @@ def _identifier_columns(
     return result
 
 
-def _compact_columns(table: dict[str, Any], limit: int = 8) -> list[dict[str, object]]:
+def _reviewed_column_references(business_request: dict[str, Any]) -> dict[str, set[str]]:
+    """Keep exact references already checked during viability in every later context."""
+    assessment = business_request.get("viability_assessment", {})
+    if not isinstance(assessment, dict):
+        return {}
+    result: dict[str, set[str]] = {}
+    for item in assessment.get("requirements", []):
+        if not isinstance(item, dict) or item.get("status") not in {"direct", "derivable"}:
+            continue
+        for value in [*item.get("evidence", []), *item.get("identity_references", [])]:
+            match = re.fullmatch(r"([^\s.]+\.[^\s.]+)\.([^\s.]+)", str(value))
+            if match:
+                result.setdefault(match.group(1), set()).add(match.group(2))
+    return result
+
+
+def _compact_columns(
+    table: dict[str, Any], limit: int = 8, *, required_columns: set[str] | None = None
+) -> list[dict[str, object]]:
     foreign_key_columns = {
         str(column)
         for relation in table.get("foreign_keys", [])
@@ -1074,10 +1103,10 @@ def _compact_columns(table: dict[str, Any], limit: int = 8) -> list[dict[str, ob
         if not isinstance(column, dict):
             continue
         name = str(column.get("name", ""))
-        data_type = str(column.get("data_type", ""))
+        data_type = str(column.get("data_type", column.get("type", "")))
         tokens = _search_tokens(name)
         score = (
-            (20 if bool(column.get("primary_key", False)) else 0)
+            (20 if bool(column.get("primary_key", column.get("pk", False))) else 0)
             + (16 if name in foreign_key_columns else 0)
             + 6 * len(tokens & SALES_PROFILE.discovery_terms)
             + 10 * len(tokens & descriptive_terms)
@@ -1090,12 +1119,15 @@ def _compact_columns(table: dict[str, Any], limit: int = 8) -> list[dict[str, ob
                 {
                     "name": name,
                     "type": data_type,
-                    "pk": bool(column.get("primary_key", False)),
+                    "pk": bool(column.get("primary_key", column.get("pk", False))),
                     "nullable": bool(column.get("nullable", False)),
                 },
             )
         )
-    selected = sorted(ranked)[:limit]
+    required = required_columns or set()
+    mandatory = [item for item in ranked if str(item[2]["name"]) in required]
+    remaining = [item for item in ranked if str(item[2]["name"]) not in required]
+    selected = [*mandatory, *sorted(remaining)[: max(0, limit - len(mandatory))]]
     return [item for _, _, item in sorted(selected, key=lambda entry: entry[1])]
 
 
@@ -1166,6 +1198,13 @@ def _discovery_references(
             best = min(matching, key=lambda ref: (len(_search_tokens(ref)), -scores[ref], ref))
             if best not in selected:
                 selected.append(best)
+    # A prior review has already checked these references against the full snapshot.
+    # A lexical shortlist may add context, but must not silently remove that evidence.
+    reviewed_references = _reviewed_column_references(business_request)
+    for reference in ranked:
+        if reference in reviewed_references and reference not in selected:
+            selected.append(reference)
+    shortlist_limit = max(scope_limit, len(selected))
     for reference in ranked:
         if invoice_required and invoice_lines:
             reference_tokens = _search_tokens(reference)
@@ -1175,9 +1214,9 @@ def _discovery_references(
                 continue
         if reference not in selected:
             selected.append(reference)
-        if len(selected) >= scope_limit:
+        if len(selected) >= shortlist_limit:
             break
-    return selected[:scope_limit]
+    return selected[:shortlist_limit]
 
 
 def validated_semantic_candidates(
@@ -1610,13 +1649,16 @@ def derived_scope(
                         identity_queue.append((target, depth + 1))
     # Never discard an LLM candidate merely because a connector path consumed the limit.
     expanded.update(selected_set)
+    reviewed_columns = _reviewed_column_references(business_request or {})
     scope_tables = []
     for reference in sorted(expanded):
         table = tables[reference]
         scope_tables.append(
             {
                 "ref": reference,
-                "columns": _compact_columns(table, limit=12),
+                "columns": _compact_columns(
+                    table, limit=12, required_columns=reviewed_columns.get(reference, set())
+                ),
                 "foreign_keys": [
                     relation
                     for relation in table.get("foreign_keys", [])
@@ -1636,6 +1678,17 @@ def proposal_payload(
 ) -> dict[str, Any]:
     assessment = business_request.get("viability_assessment", {})
     assessment = assessment if isinstance(assessment, dict) else {}
+    reviewed_columns = _reviewed_column_references(business_request)
+    scoped_column_references = {
+        f"{table.get('ref')}.{column.get('name')}"
+        for table in scope.get("tables", [])
+        if isinstance(table, dict)
+        for column in table.get("columns", [])
+        if isinstance(column, dict)
+    }
+    reviewed_references = {
+        f"{table}.{column}" for table, columns in reviewed_columns.items() for column in columns
+    } & scoped_column_references
     compact_request = {
         "domain": business_request.get("domain"),
         "goal": business_request.get("goal"),
@@ -1658,6 +1711,21 @@ def proposal_payload(
                 "status": item.get("status"),
                 "components": item.get("components", []),
                 "formula": item.get("formula"),
+                **(
+                    {
+                        "references": [
+                            reference
+                            for reference in item.get("evidence", [])
+                            if str(reference) in reviewed_references
+                        ]
+                    }
+                    if item.get("status") in {"direct", "derivable"}
+                    and any(
+                        str(reference) in reviewed_references
+                        for reference in item.get("evidence", [])
+                    )
+                    else {}
+                ),
                 **({"coverage_code": item["coverage_code"]} if item.get("coverage_code") else {}),
                 **(
                     {"identity_references": deepcopy(item["identity_references"])}
@@ -1693,7 +1761,10 @@ def proposal_payload(
         "tables": [
             {
                 "ref": table.get("ref"),
-                "columns": list(table.get("columns", []))[:8],
+                "columns": _compact_columns(
+                    table,
+                    required_columns=reviewed_columns.get(str(table.get("ref")), set()),
+                ),
                 "foreign_keys": [
                     relation
                     for relation in table.get("foreign_keys", [])
@@ -2307,6 +2378,236 @@ def _dimension_attributes(
     return [attribute for _, attribute in sorted(ranked)[:4]]
 
 
+_AGGREGATE_COMPONENTS = {
+    "sales_amount": ("sales_amount", "sum", "moneda de origen"),
+    "quantity": ("quantity", "sum", "Unidades"),
+    "transactions": ("transaction_count", "count_distinct", "Documentos"),
+}
+
+
+def _requested_aggregate_components(requirement: dict[str, Any]) -> set[str]:
+    """Distinguish requested results from operands of a more complex calculation."""
+    if requirement.get("status") not in {"direct", "derivable"}:
+        return set()
+    code = str(requirement.get("coverage_code") or requirement.get("code", ""))
+    explicit = {
+        "goal:sales_amount": "sales_amount",
+        "goal:quantity": "quantity",
+        "goal:transactions": "transactions",
+    }.get(code)
+    if explicit:
+        return {explicit}
+    components = set(map(str, requirement.get("components", [])))
+    simple_axes = {"date", "product", "customer", "territory", "invoice_event"}
+    if isinstance(requirement.get("analytical_operation"), dict) or (
+        code.startswith("question:") and components <= simple_axes | _AGGREGATE_COMPONENTS.keys()
+    ):
+        return components & _AGGREGATE_COMPONENTS.keys()
+    return set()
+
+
+def _matching_aggregate_kpis(
+    kpis: list[dict[str, Any]], measure_name: str, operation: str
+) -> list[dict[str, Any]]:
+    return [
+        item
+        for item in kpis
+        if item.get("formula_kind", "aggregate") == "aggregate"
+        and isinstance(item.get("formula"), dict)
+        and item["formula"].get("measure") == measure_name
+        and item["formula"].get("operation") == operation
+    ]
+
+
+def _derived_metric_bindings(
+    coverage_code: str, measures: list[dict[str, Any]], kpis: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Bind requested derived outcomes to verified recipes, independently of model labels."""
+    aggregate_roles = {
+        "goal:discount_amount": "discount_amount",
+        "goal:total_cost": "cost_amount",
+    }
+    ratio_roles = {
+        "goal:average_transaction": ("sales_amount", "transaction_count"),
+        "goal:sales_per_unit": ("sales_amount", "quantity"),
+        "goal:cost_per_unit": ("cost_amount", "quantity"),
+    }
+    by_name = {str(item.get("name")): item for item in measures}
+
+    def has_role(reference: object, role: str) -> bool:
+        measure = by_name.get(str(reference), {})
+        return measure.get("semantic_role") == role and measure.get("aggregation") == (
+            "count_distinct" if role == "transaction_count" else "sum"
+        )
+
+    def is_margin(item: dict[str, Any]) -> bool:
+        inputs = item.get("inputs", [])
+        return (
+            item.get("formula_kind") == "difference"
+            and isinstance(inputs, list)
+            and len(inputs) == 2
+            and has_role(inputs[0], "sales_amount")
+            and has_role(inputs[1], "cost_amount")
+        )
+
+    groups: dict[str, list[str]] = {}
+    for item in kpis:
+        code = str(item.get("code", ""))
+        if not code:
+            continue
+        kind = item.get("formula_kind", "aggregate")
+        formula = item.get("formula", {})
+        inputs = item.get("inputs", [])
+        supported = False
+        if coverage_code in aggregate_roles:
+            supported = (
+                kind == "aggregate"
+                and isinstance(formula, dict)
+                and formula.get("operation") == "sum"
+                and has_role(formula.get("measure"), aggregate_roles[coverage_code])
+            )
+        elif coverage_code in ratio_roles:
+            numerator, denominator = ratio_roles[coverage_code]
+            supported = (
+                kind == "ratio"
+                and isinstance(inputs, list)
+                and len(inputs) == 2
+                and has_role(inputs[0], numerator)
+                and has_role(inputs[1], denominator)
+            )
+        elif coverage_code == "goal:gross_margin":
+            supported = is_margin(item)
+            if kind == "share" and isinstance(inputs, list) and len(inputs) == 2:
+                supported = has_role(inputs[1], "sales_amount") and any(
+                    str(candidate.get("code")) == str(inputs[0]) and is_margin(candidate)
+                    for candidate in kpis
+                )
+        if supported:
+            signature = canonical_hash(
+                {
+                    "kind": kind,
+                    "formula": formula if kind == "aggregate" else {},
+                    "inputs": inputs if kind != "aggregate" else [],
+                }
+            )
+            groups.setdefault(signature, []).append(code)
+    return [
+        {"component": coverage_code, "kpi_codes": sorted(set(codes))}
+        for _, codes in sorted(groups.items())
+    ]
+
+
+def _complete_requested_aggregate_decisions(
+    blueprint: dict[str, Any],
+    measures: list[dict[str, Any]],
+    measure_index_map: dict[int, int],
+    tables: dict[str, dict[str, Any]],
+) -> None:
+    """Expose only unambiguous, already-proven aggregates explicitly requested by the analyst."""
+    requirements = blueprint.get("business_request_scope", {}).get("requirements", [])
+    requested: dict[str, list[str]] = {}
+    for requirement in requirements:
+        if isinstance(requirement, dict):
+            for component in _requested_aggregate_components(requirement):
+                requested.setdefault(component, []).append(str(requirement.get("code", "")))
+    decisions = [item for item in blueprint.get("kpis", []) if isinstance(item, dict)]
+    exclusions = blueprint.get("analyst_excluded_aggregate_metrics", [])
+    additions = list(blueprint.get("platform_kpi_additions", []))
+    fact_source = str(blueprint.get("fact_source", ""))
+    columns = {
+        f"{ref}.{col.get('name')}": col
+        for ref, table in tables.items()
+        for col in table.get("columns", [])
+        if isinstance(col, dict)
+    }
+    identifiers = {
+        f"{ref}.{name}" for ref, table in tables.items() for name in _identifier_columns(table)
+    }
+    for component in sorted(requested):
+        role, operation, unit = _AGGREGATE_COMPONENTS[component]
+        candidates = [
+            (index, measure)
+            for index, measure in enumerate(measures)
+            if measure.get("semantic_role") == role and measure.get("aggregation") == operation
+        ]
+        if len(candidates) != 1:
+            continue
+        effective_index, measure = candidates[0]
+        name = str(measure.get("name", ""))
+        source_index = next(
+            (
+                index
+                for index, effective in measure_index_map.items()
+                if effective == effective_index
+            ),
+            None,
+        )
+        references = [
+            str(value) if "." in str(value) else f"{fact_source}.{value}"
+            for value in measure.get("provenance", {}).get(
+                "source_references", measure.get("source_columns", [])
+            )
+        ]
+        if source_index is None or not references or any(ref not in columns for ref in references):
+            continue
+        if operation == "sum" and (
+            set(references) & identifiers
+            or any(
+                not re.fullmatch(
+                    r"tinyint|smallint|int|bigint|decimal|numeric|money|smallmoney|float|real",
+                    str(columns[ref].get("type", "")).casefold().split("(")[0],
+                )
+                for ref in references
+            )
+        ):
+            continue
+        if any(
+            isinstance(item, dict)
+            and item.get("measure_name") == name
+            and item.get("semantic_role") == role
+            and item.get("operation") == operation
+            for item in exclusions
+        ):
+            continue
+        if (
+            any(
+                item.get("measure_index", 0) == source_index and item.get("operation") == operation
+                for item in decisions
+            )
+            or len(decisions) >= 12
+        ):
+            continue
+        code = f"requested_{role}_{operation}"
+        if any(str(item.get("code")) == code for item in decisions):
+            code += f"_{canonical_hash({'measure': name, 'references': references})[:8]}"
+        if "provider_kpis" not in blueprint:
+            blueprint["provider_kpis"] = deepcopy(decisions)
+        decisions.append(
+            {
+                "code": code,
+                "name": name,
+                "measure_index": source_index,
+                "operation": operation,
+                "unit": unit,
+                "semantic_role": role,
+                "decision_origin": "validated_requirement",
+            }
+        )
+        additions.append(
+            {
+                "code": code,
+                "name": name,
+                "measure_name": name,
+                "operation": operation,
+                "requirement_codes": sorted(set(requested[component])),
+                "source_references": references,
+            }
+        )
+    blueprint["kpis"] = decisions
+    if additions:
+        blueprint["platform_kpi_additions"] = additions
+
+
 def expand_proposal_blueprint(
     blueprint: dict[str, Any],
     scope: dict[str, Any],
@@ -2315,6 +2616,9 @@ def expand_proposal_blueprint(
     compilation_rules_version: int = COMPILATION_RULES_VERSION,
 ) -> dict[str, Any]:
     """Expand compact AI decisions into a deterministic, auditable proposal contract."""
+    if compilation_rules_version >= 6:
+        # Platform additions must never alter the provider's object or a stored parent.
+        blueprint = deepcopy(blueprint)
     scoped = {
         str(item.get("ref")): item
         for item in scope.get("tables", [])
@@ -3225,6 +3529,9 @@ def expand_proposal_blueprint(
                     "AVG sobre una tabla de detalle no calcula el promedio por transacción."
                 )
 
+    if compilation_rules_version >= 6:
+        _complete_requested_aggregate_decisions(blueprint, measures, measure_index_map, scoped)
+
     kpis: list[dict[str, Any]] = []
     for item in blueprint.get("kpis", []):
         if not isinstance(item, dict):
@@ -3460,6 +3767,36 @@ def expand_proposal_blueprint(
         normalized_kpis.append(kpi)
     kpis = normalized_kpis
 
+    if compilation_rules_version >= 6:
+        for addition in blueprint.get("platform_kpi_additions", []):
+            if not isinstance(addition, dict):
+                continue
+            code = str(addition.get("code", ""))
+            included = any(str(kpi.get("code")) == code for kpi in kpis)
+            reason = (
+                "La plataforma añadió una agregación seleccionable de una medida solicitada "
+                "y comprobada; conserva la misma receta y requiere revisión humana."
+                if included
+                else "El indicador añadido por la plataforma fue retirado de la selección; "
+                "el requisito seguirá sin cubrir hasta revisar la necesidad o la selección."
+            )
+            decision_diagnostics.append(
+                {
+                    "kind": "kpi",
+                    "code": code,
+                    "status": "included" if included else "excluded",
+                    "origin": "validated_requirement",
+                    "reason": reason,
+                    "requirement_codes": list(addition.get("requirement_codes", [])),
+                    "compatible_measures": [str(addition.get("measure_name", ""))],
+                }
+            )
+            if included:
+                automatic_adjustments.append(
+                    f"El KPI {addition.get('name', code)} se incorporó para permitir "
+                    "analizar una medida solicitada mediante su agregación comprobada."
+                )
+
     included_destinations = {str(item.get("name", "")) for item in dimensions}
     for missing in sorted(requested_destinations - included_destinations):
         proposal_warnings.append(
@@ -3624,6 +3961,27 @@ def apply_analyst_adjustments(
     requested_kpis = list(adjustments.get("kpi_codes", []))
     if not requested_kpis or not set(requested_kpis).issubset(source_kpis):
         raise ValueError("Seleccione únicamente KPIs incluidos en la propuesta de origen.")
+    # Only choices actually offered in the parent can be intentional exclusions.
+    # A v5 parent lacking a quantity KPI must not suppress its first v6 completion.
+    exclusions = list(blueprint.get("analyst_excluded_aggregate_metrics", []))
+    for code, item in source_kpis.items():
+        if code in requested_kpis:
+            continue
+        index = item.get("measure_index", 0)
+        if not isinstance(index, int) or not 0 <= index < len(source_measures):
+            continue
+        operation = str(item.get("operation", ""))
+        if operation not in {"sum", "count_distinct"}:
+            continue
+        exclusion = {
+            "measure_name": str(source_measures[index].get("name", "")),
+            "semantic_role": _semantic_role(item),
+            "operation": operation,
+        }
+        if exclusion not in exclusions:
+            exclusions.append(exclusion)
+    if exclusions:
+        blueprint["analyst_excluded_aggregate_metrics"] = exclusions
     selected_kpis: list[dict[str, Any]] = []
     kpi_measure_names = adjustments.get("kpi_measure_names", {})
     for code in requested_kpis:
@@ -4002,7 +4360,19 @@ def build_requirement_coverage(
                 outputs.extend(matches)
             else:
                 component_gaps.append(component)
-        explicit_derived = derived_outputs(coverage_code)
+        rules_version = proposal.get("compilation_rules_version", 1)
+        modern_coverage = isinstance(rules_version, int) and rules_version >= 6
+        derived_bindings = (
+            _derived_metric_bindings(coverage_code, measures, kpis) if modern_coverage else []
+        )
+        derived_codes = {
+            code for metric in derived_bindings for code in metric.get("kpi_codes", [])
+        }
+        explicit_derived = (
+            [f"kpi:{kpi.get('name')}" for kpi in kpis if kpi.get("code") in derived_codes]
+            if modern_coverage and coverage_code in derived_term_groups
+            else derived_outputs(coverage_code)
+        )
         if explicit_derived:
             outputs.extend(explicit_derived)
             component_gaps = []
@@ -4011,6 +4381,24 @@ def build_requirement_coverage(
             # ratio or other requested result. Keep its original requirement ID
             # while requiring a concrete derived measure/KPI in the proposal.
             component_gaps.append(str(requirement.get("label") or coverage_code))
+        required_metrics: list[dict[str, Any]] = list(derived_bindings)
+        if modern_coverage:
+            for component in sorted(_requested_aggregate_components(requirement)):
+                role, operation, _ = _AGGREGATE_COMPONENTS[component]
+                matching_kpis = [
+                    kpi
+                    for measure in measures
+                    if measure.get("semantic_role") == role
+                    and measure.get("aggregation") == operation
+                    for kpi in _matching_aggregate_kpis(
+                        kpis, str(measure.get("name", "")), operation
+                    )
+                ]
+                codes = sorted({str(kpi.get("code")) for kpi in matching_kpis if kpi.get("code")})
+                required_metrics.append({"component": component, "kpi_codes": codes})
+                if not matching_kpis:
+                    component_gaps.append(f"indicador seleccionable de {component}")
+                outputs.extend(f"kpi:{kpi.get('name')}" for kpi in matching_kpis)
         identity_gaps: list[str] = []
         if "identity_references" in requirement:
             identity_references = requirement.get("identity_references")
@@ -4058,6 +4446,7 @@ def build_requirement_coverage(
                 "coverage_status": coverage_status,
                 "outputs": list(dict.fromkeys(outputs)),
                 "explanation": explanation,
+                **({"required_metrics": required_metrics} if modern_coverage else {}),
                 **(
                     {"analytical_operation": deepcopy(requirement["analytical_operation"])}
                     if "analytical_operation" in requirement

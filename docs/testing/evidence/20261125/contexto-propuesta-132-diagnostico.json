@@ -1,0 +1,67 @@
+{
+  "checked_at_utc": "2026-11-26T01:27:53.962612+00:00",
+  "mode": "pure_context_reconstruction_no_llm_no_etl_no_writes",
+  "proposal_id": 132,
+  "snapshot_id": 3,
+  "prompt_new": "sales-bi-v9",
+  "persisted_prompt": "sales-bi-v8",
+  "persisted_status": "validation_failed",
+  "persisted_error_count": 18,
+  "persisted_warning_count": 7,
+  "original_status_and_contract_unchanged": true,
+  "references": [
+    {
+      "reference": "Sales.InvoiceLines.ExtendedPrice",
+      "visible_in_prior_payload_first_eight": false,
+      "visible_in_current_discovery": true,
+      "visible_in_current_proposal_context": true
+    },
+    {
+      "reference": "Sales.InvoiceLines.InvoiceID",
+      "visible_in_prior_payload_first_eight": true,
+      "visible_in_current_discovery": true,
+      "visible_in_current_proposal_context": true
+    },
+    {
+      "reference": "Sales.Invoices.InvoiceDate",
+      "visible_in_prior_payload_first_eight": false,
+      "visible_in_current_discovery": true,
+      "visible_in_current_proposal_context": true
+    },
+    {
+      "reference": "Sales.Customers.DeliveryCityID",
+      "visible_in_prior_payload_first_eight": false,
+      "visible_in_current_discovery": true,
+      "visible_in_current_proposal_context": true
+    },
+    {
+      "reference": "Application.Cities.StateProvinceID",
+      "visible_in_prior_payload_first_eight": true,
+      "visible_in_current_discovery": true,
+      "visible_in_current_proposal_context": true
+    },
+    {
+      "reference": "Application.StateProvinces.StateProvinceName",
+      "visible_in_prior_payload_first_eight": true,
+      "visible_in_current_discovery": true,
+      "visible_in_current_proposal_context": true
+    }
+  ],
+  "source_columns_current_schema": [
+    "ExtendedPrice",
+    "InvoiceID",
+    "InvoiceLineID",
+    "PackageTypeID",
+    "Quantity",
+    "StockItemID",
+    "TaxAmount",
+    "TaxRate",
+    "UnitPrice"
+  ],
+  "accepted_limitations_preserved": true,
+  "notes": [
+    "The prior payload column list is reconstructed exactly from the persisted scope and its former first-eight slicing.",
+    "No provider request or corrected proposal is claimed by this deterministic reconstruction.",
+    "Numeric and commercial validation rules remain unchanged; prompt version changed to preserve checked context."
+  ]
+}

@@ -1,6 +1,6 @@
 # Índice de documentación técnica
 
-La documentación forma parte del producto versionado. Las fuentes Markdown y LaTeX se revisan mediante pull request; los doce PDF LaTeX se regeneran dentro de Docker y CI comprueba que coincidan con sus fuentes. El manual de usuario en Word y PDF tiene un flujo de composición y revisión visual propio.
+La documentación forma parte del producto versionado. Las fuentes Markdown y LaTeX se revisan mediante pull request; los trece PDF LaTeX se regeneran dentro de Docker y CI comprueba que coincidan con sus fuentes. El manual de usuario en Word y PDF tiene un flujo de composición y revisión visual propio.
 
 ## Entregables oficiales del proyecto
 
@@ -53,8 +53,31 @@ make verify
 
 La edición vigente de los manuales conserva `crear_manuales.py`, sus contenidos editables, las capturas completas y sus manifiestos en la carpeta de edición. Los PDF proceden de los mismos Word renderizados y revisados página por página; `make docs` no reconstruye los documentos Word. La versión anterior conserva sus propias fuentes y evidencias.
 
-`make docs` compila los doce PDF con la imagen LaTeX del proyecto. `make verify` agrega validación Compose, política de ramas y pruebas de frontend/backend. Un cambio documental no se considera terminado hasta que las fuentes y los PDF estén actualizados y legibles.
+`make docs` compila los trece PDF con la imagen LaTeX del proyecto. `make verify` agrega validación Compose, política de ramas y pruebas de frontend/backend. Un cambio documental no se considera terminado hasta que las fuentes y los PDF estén actualizados y legibles.
 
 ## Separación de material externo
 
 Los manuales docentes genéricos o anónimos no pertenecen a este repositorio público. Deben mantenerse en una ubicación independiente para evitar asociar materiales de clase con las estudiantes, cuentas o detalles del prototipo.
+
+## Corte operativo del 25 de noviembre de 2026
+
+- [Adenda de operación y OpenAI](manual-usuario/adenda-2026-11-25/LEEME.md), con
+  fuente editable y PDF reproducible mediante `make user-addendum`. Complementa
+  los manuales anteriores sin atribuirles una reescritura completa.
+- [Continuidad y OpenAI](specs/SPR-06-02-continuidad-operativa-y-openai.md): módulo
+  persistido, regreso guiado, sesión parametrizable y sexto adaptador LLM.
+- [Contexto y cobertura operativa](specs/SPR-06-03-preservacion-contexto-y-cobertura-analitica.md):
+  prompt v9, reglas 6 para contratos nuevos y conservación de históricos 1–5.
+- [Auditoría del corte](testing/qa-continuidad-openai-2026-11-25.md): distingue
+  intentos rechazados, regresiones simuladas, oráculos de origen y recorridos reales.
+
+La selección analítica confirmada se conserva por conexión dentro de la pestaña;
+volver a una fuente recupera su propia ejecución, indicador, año, territorio y vista.
+No se guardan cifras ni conversaciones. La duración de sesión se ajusta desde
+Parámetros, con 60 minutos iniciales y rango 15–240, aplicable al siguiente login.
+Los paquetes portables previamente entregados conservan su corte de código: este
+incremento no equivale a reconstruir sus imágenes ni a migrar sus volúmenes.
+
+El preset económico final de OpenAI es Luna con razonamiento bajo. La
+[tabla de modelos y evidencia de uso](manual-usuario/adenda-2026-11-25/Tabla_modelos_OpenAI_2026-11-25.md)
+distingue su prueba de conexión de los recorridos completos realizados con Sol medio.

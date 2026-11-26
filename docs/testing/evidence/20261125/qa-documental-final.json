@@ -1,0 +1,98 @@
+{
+  "reviewed_at_utc": "2026-11-26T02:27:58.114249+00:00",
+  "method": "Complete selected pages rendered by Poppler and inspected; pypdf extraction/structure and resource checks.",
+  "verdict": "No blocking layout or factual defect found in the reviewed pages.",
+  "documents": {
+    "adenda": {
+      "path": "docs/manual-usuario/adenda-2026-11-25/Adenda_operacion_BI_OpenAI_2026-11-25.pdf",
+      "source": "docs/manual-usuario/adenda-2026-11-25/adenda_operacion.tex",
+      "page_count": 7,
+      "reviewed_pdf_pages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "sha256": "5eb2d8aa4576d8acf3255fcac25ec78ee75913008affcc9237fb32a7d0b1c77d",
+      "source_sha256": "67cf24db3f7e8f31cb56e31247ad078f4ce65c86f657adafe98bd7ff073d86aa",
+      "source_mtime_utc": "2026-11-26T02:25:12.761775+00:00",
+      "pdf_mtime_utc": "2026-11-26T02:25:13.666786+00:00",
+      "resource": {
+        "path": "docs/manual-usuario/adenda-2026-11-25/recursos/parametros-sesion-60.jpg",
+        "sha256": "c7c313c7cc25637164bfe5a3a6205e580bcaf13dff5023c64923f9f24527b8ef",
+        "original_proportions_retained": true
+      }
+    },
+    "manual_tecnico": {
+      "path": "docs/manual-tecnico/manual-tecnico.pdf",
+      "source": "docs/manual-tecnico/manual-tecnico.tex",
+      "page_count": 61,
+      "reviewed_pdf_pages": [
+        56,
+        57,
+        58
+      ],
+      "sha256": "be6bf6a1700c34d0a917dd627d86ace50dede7de239289456e866682bfacfefa",
+      "source_sha256": "b1854e5f78ca01f4c7587b0e571ebabe89c153f3da92feee69dac0c32849e516",
+      "source_mtime_utc": "2026-11-26T02:25:12.763775+00:00",
+      "pdf_mtime_utc": "2026-11-26T02:25:20.522877+00:00"
+    },
+    "sprint6": {
+      "path": "docs/sprints/sprint-06-multifuente-universal.pdf",
+      "source": "docs/sprints/sprint-06-multifuente-universal.tex",
+      "page_count": 14,
+      "reviewed_pdf_pages": [
+        12,
+        13,
+        14
+      ],
+      "sha256": "70630974281bb0adf41e820d8022df6238f5851ef5c6c0b65c086231575d99f4",
+      "source_sha256": "91e559401c1fc8104bf326b90496d7fb8937791a3686090d06218cf78d57c654",
+      "source_mtime_utc": "2026-11-26T01:43:52.184534+00:00",
+      "pdf_mtime_utc": "2026-11-26T01:55:59.819798+00:00"
+    },
+    "bitacora": {
+      "path": "docs/logbook/bitacora.pdf",
+      "source": "docs/logbook/bitacora.tex",
+      "reviewed_pdf_pages": [
+        59,
+        60,
+        61
+      ],
+      "sha256": "886a5be7720b1e33b758b539d14f24c7c8a5cd5fa68312e2177b8dbd23954016",
+      "verdict": "Texto y cierre legibles; sin cortes en las páginas nuevas."
+    }
+  },
+  "content_checks": {
+    "session_default60_range15_240": true,
+    "per_connection_recovery_and_historical_contracts_retained": true,
+    "luna_only_connection_json_no_viability_proposal_etl_claimed": true,
+    "sol_aw136_24_wwi135_23_identified": true,
+    "five_models_standard_rates_and_10k_2k_estimate_distinct_from_measured_cost": true,
+    "no_whole_balance_change_attributed_without_ledger": true,
+    "no_orphaned_comparison_page_tables_cut_or_image_distortion": true,
+    "sprint_signatures_not_fabricated": true
+  },
+  "provider_readonly_review": {
+    "verdict": "No new critical credential, transport or local-contract issue identified in inspected integration; not an exhaustive penetration test.",
+    "checks": [
+      "Official endpoint whitelist; redirects disabled",
+      "Encrypted registration; secret cleared on provider change",
+      "Responses store:false; bounded shared reasoning/output budget",
+      "Strict transport schema then original local validation",
+      "Refusal/incomplete/malformed JSON safely rejected",
+      "Quota exhaustion not retried; other retries bounded",
+      "No automatic model upgrade or fallback to Sol",
+      "Luna low effort compatible with official model documentation"
+    ],
+    "application_or_tests_modified": false
+  },
+  "adenda_compilacion_limpia_reproducible": {
+    "sha256": "5eb2d8aa4576d8acf3255fcac25ec78ee75913008affcc9237fb32a7d0b1c77d",
+    "igual_copia_compilada_desde_cero": true,
+    "jobname": "Adenda_operacion_BI_OpenAI_2026-11-25"
+  }
+}

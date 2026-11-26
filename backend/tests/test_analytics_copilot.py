@@ -277,7 +277,8 @@ def test_provider_response_contract_does_not_ask_for_free_followup_questions() -
 @pytest.mark.asyncio
 @pytest.mark.parametrize("provider_metric_code", ["metric_7", "metric_7'; DROP TABLE mart; --"])
 @pytest.mark.parametrize(
-    "provider", ["ollama-local", "gemini", "groq-cloud", "anthropic-cloud", "qwen-cloud"]
+    "provider",
+    ["ollama-local", "gemini", "groq-cloud", "anthropic-cloud", "qwen-cloud", "openai-cloud"],
 )
 async def test_copilot_replaces_provider_questions_and_passes_only_closed_query_arguments(
     monkeypatch, provider_metric_code: str, provider: str

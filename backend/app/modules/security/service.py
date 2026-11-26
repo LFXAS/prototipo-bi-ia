@@ -14,6 +14,7 @@ from sqlalchemy.orm import selectinload
 
 from app.core.config import settings
 from app.db.session import get_session
+from app.modules.parameters.models import Parameter
 from app.modules.security.models import AuditEvent, Menu, Permission, Role, User
 
 password_hash = PasswordHash.recommended()
@@ -209,10 +210,25 @@ def verify_password(password: str, encoded_password: str) -> bool:
     return password_hash.verify(password, encoded_password)
 
 
-def create_access_token(user_id: int) -> str:
-    expires_at = datetime.now(UTC) + timedelta(minutes=settings.jwt_access_token_minutes)
+async def session_duration_minutes(session: AsyncSession) -> int:
+    value = await session.scalar(
+        select(Parameter.value).where(
+            Parameter.key == "AUTH_SESSION_MINUTES", Parameter.is_active.is_(True)
+        )
+    )
+    try:
+        minutes = int(value) if value is not None else settings.jwt_access_token_minutes
+    except (TypeError, ValueError):
+        minutes = settings.jwt_access_token_minutes
+    return max(15, min(minutes, 240))
+
+
+def create_access_token(user_id: int, *, minutes: int | None = None) -> str:
+    issued_at = datetime.now(UTC)
+    duration = settings.jwt_access_token_minutes if minutes is None else minutes
+    expires_at = issued_at + timedelta(minutes=max(15, min(duration, 240)))
     return jwt.encode(
-        {"sub": str(user_id), "exp": expires_at},
+        {"sub": str(user_id), "iat": issued_at, "exp": expires_at},
         settings.jwt_secret.get_secret_value(),
         algorithm=settings.jwt_algorithm,
     )

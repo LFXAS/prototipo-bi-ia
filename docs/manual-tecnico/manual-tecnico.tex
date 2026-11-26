@@ -91,11 +91,11 @@
   \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Código documental & MAN-TEC-01 \\
-    Versión del manual & 5.2.2 \\
+    Versión del manual & 5.3.0 \\
     Línea base & Ramas \file{develop} y \file{main} \\
     Repositorio & \href{https://github.com/LFXAS/prototipo-bi-ia}{LFXAS/prototipo-bi-ia} \\
     Clasificación & Documentación técnica - repositorio público \\
-    Fecha & 6 de noviembre de 2026 \\
+    Fecha & 25 de noviembre de 2026 \\
   \end{tabularx}
 
   \vfill
@@ -1679,6 +1679,134 @@ make verify
 
 \warningbox{La recuperación elimina los volúmenes del proyecto actual. No ejecutarla como diagnóstico rutinario ni en una carpeta cuya identidad Compose no haya sido confirmada.}
 
+
+\section{Continuidad operativa y OpenAI: 25 de noviembre de 2026}
+
+\subsection{Conservar el punto de trabajo}
+
+Recargar el navegador mantiene el módulo autorizado de esa pestaña. El servidor
+vuelve a comprobar permisos; el estado de navegación no concede acceso a otra ruta.
+Desde Inicio, \textbf{Revisar configuración} conserva su paso de preparación al
+entrar a \textbf{Revisar este paso} o \textbf{Elegir datamart}. El botón
+\textbf{Atrás} vuelve a ese origen. También aparece al entrar por
+\textbf{Crear propuesta de datamart} y al consultar el respaldo desde Analítica.
+La entrada directa por el menú lateral conserva la operación normal sin un retorno
+artificial. Estos cambios no repiten un ETL ni cambian una aprobación.
+
+Los tokens nuevos duran 60 minutos por defecto. En \textbf{Parámetros > Duración
+de la sesión (minutos)}, una persona con permiso de administración puede elegir
+entre 15 y 240 minutos. El login consulta el valor activo en cada emisión. El
+cambio rige para el siguiente inicio de sesión, no renueva un token existente ni
+convierte el plazo en un temporizador de inactividad. La interfaz avisa al vencer
+y conserva sólo el borrador mínimo recuperable después de autenticar.
+
+La migración \file{20261125\_20} añade el parámetro
+\file{AUTH\_SESSION\_MINUTES} sin restablecer otras configuraciones. La semilla
+mantiene el valor elegido por administración; la variable de entorno queda como
+respaldo cuando falta el parámetro activo. Se aplica la migración antes de utilizar
+la actualización, sin borrar bases ni volúmenes. Esta decisión sustituye el máximo
+de diez minutos del PDF inicial, por indicación posterior expresa del usuario.
+
+\subsection{Resolver un borrador con preguntas retiradas}
+
+La incidencia de WideWorldImporters aportada el 25 de noviembre contenía preguntas
+personalizadas antiguas que ya no aparecían en el catálogo de la captura. El rechazo
+ocurría antes de llamar al LLM; no demostraba corrupción de metadatos ni un fallo
+de Claude. El formulario debe contrastar su selección mutable con el catálogo
+actual de la fuente, conservar el texto y las preguntas vigentes, informar las
+retiradas y exigir otra revisión de viabilidad. No se sustituye un identificador
+por otro de nombre parecido. El servidor mantiene su propia comprobación y no
+acepta una selección obsoleta enviada por un cliente anterior. Las propuestas
+históricas mantienen su contrato y se consultan de forma inmutable.
+
+\subsection{Registrar y utilizar OpenAI}
+
+\begin{enumerate}
+\item Abrir \textbf{Preparación del entorno > Configuración LLM}.
+\item Crear un registro \textbf{OpenAI}, con URL \url{https://api.openai.com/v1},
+modelo económico \file{gpt-6-luna} y razonamiento \textbf{Bajo}. La referencia validada
+en recorridos completos es \file{gpt-6.2-sol} con razonamiento \textbf{Medio}.
+El modelo elegido debe estar habilitado para la cuenta.
+\item Usar \textbf{Registrar credencial}; ingresar y guardar la API key directamente
+en la aplicación. La clave se almacena cifrada y no vuelve a mostrarse.
+\item Pulsar \textbf{Probar conexión}. El ensayo usa una solicitud mínima con el
+mismo adaptador, sin metadatos ni filas de negocio.
+\item Activar únicamente después de una prueba satisfactoria. La configuración
+activa es global; las propuestas y cargas previas no se regeneran.
+\item Seleccionar la fuente y volver a autorizar el destino en el asistente.
+Validar la necesidad antes de generar otra propuesta.
+\end{enumerate}
+
+El adaptador usa Responses API, \file{store: false} y una salida estructurada.
+El resultado continúa sujeto a referencias, tipos, relaciones, fórmulas y decisión
+humana. El proveedor no recibe autorización para ejecutar SQL ni herramientas
+remotas. OpenAI y Groq son servicios distintos, con claves y facturación distintas.
+\file{store: false} no acredita por sí solo Zero Data Retention en la organización.
+
+Responses incluye razonamiento y texto en el mismo límite de salida. Para familias
+de razonamiento reconocidas, el adaptador reserva al menos 4096 tokens con esfuerzo
+automático, mínimo o bajo; 8192 con medio y 16384 con alto, con techo de 32768.
+Este máximo no equivale al consumo real ni asegura finalización. No aumenta de forma
+automática tras una respuesta truncada. Los modelos sin razonamiento conservan el
+presupuesto solicitado. Si falta saldo, se revisan crédito y proyecto en el panel
+de OpenAI: la plataforma BI no consulta facturación ni activa otro proveedor sola.
+
+Por el presupuesto disponible, se recomienda Luna con esfuerzo bajo como alternativa
+económica compatible con Responses y salidas estructuradas. Sol con esfuerzo medio
+se comprobó en flujos completos sobre ambas fuentes. Con Luna únicamente se realizó
+una prueba técnica de conexión y JSON estructurado: no se ensayaron viabilidad,
+propuesta ni ETL. No se le atribuye la misma calidad ni otro recorrido completo.
+
+\begin{tabularx}{\textwidth}{@{}Xrr@{}}
+  \toprule
+  \textbf{Modelo: tarifa Standard de texto} & \textbf{Entrada} & \textbf{Salida} \\
+  \midrule
+  GPT-6 Luna & USD 0,10 & USD 0,50 \\
+  GPT-6.2 Sol & USD 2,00 & USD 10,00 \\
+  \bottomrule
+\end{tabularx}
+
+Precios por millón de tokens para contexto corto, consultados el 25 de noviembre
+de 2026. Las tarifas de Luna son un 95\% menores, pero eso no garantiza igual ahorro
+por respuesta ni igual calidad: el consumo y los reintentos pueden diferir.
+Fuentes oficiales:
+\url{https://developers.openai.com/api/docs/models/gpt-6-luna},
+\url{https://developers.openai.com/api/docs/models/gpt-6.2-sol} y
+\url{https://developers.openai.com/api/docs/guides/structured-outputs}.
+El informe \path{docs/testing/qa-continuidad-openai-2026-11-25.md} distingue los
+resultados observados, pruebas simuladas y actividades pendientes.
+
+
+\subsection{Cobertura de indicadores antes de publicar}
+
+El paquete de generación conserva las tablas y columnas que la revisión previa
+comprobó. No elimina esas referencias por su posición en una tabla ancha ni por
+un recorte posterior del contexto. Las claves documentales existentes se ofrecen
+para conteos distintos, sin permitir sumarlas como importes.
+
+Los contratos nuevos usan \file{sales-bi-v9} y compilación 6. Si la necesidad pide
+una métrica y existe una única agregación segura, la expansión puede incorporar
+el KPI faltante con origen de plataforma explícito antes de revisar. Conservar
+una columna como Quantity no basta si el analista necesita seleccionar su indicador
+en el panel. No se añade un KPI a cada medida intermedia ni se impone una cantidad
+fija. Si el analista excluye después un indicador requerido, el sistema conserva
+su decisión y refleja la cobertura pendiente o parcial. Las versiones de reglas
+1 a 5 mantienen contratos, huellas y lecturas previas.
+
+
+La selección analítica confirmada se conserva por conexión dentro de la pestaña:
+ejecución, indicador, año, territorio y vista. Volver a una fuente recupera su
+selección propia; la API comprueba su disponibilidad. Restablecer sólo afecta esa
+fuente y cerrar sesión elimina todas las selecciones. No se conservan cifras,
+filas ni conversaciones en ese estado.
+
+La divisa comprobada del origen gobierna las unidades monetarias, incluidos los
+promedios por documento y unidad. Una etiqueta del modelo no prueba un código ISO.
+Sin comprobación se mantiene moneda de origen; con comprobación se aplica el código
+verificado, conservando el denominador. No cambia valores ni convierte divisas.
+Las unidades físicas se conservan. Este ajuste afecta presentación, consultas
+analíticas y reportes; no modifica recetas ni huellas persistidas.
+
 \section{Control del manual}
 
 \begin{tabularx}{\textwidth}{@{}>{\bfseries}p{0.26\textwidth}X@{}}
@@ -1747,6 +1875,7 @@ make verify
   5.2.0 & 05-11-2026 & Revisión posterior al cierre del 4--5 de noviembre: trazabilidad documental, necesidad positiva de factura, compilación versionada para IDs, razones y conteos, periodicidad efectiva y límites de interpretación del chat. Evidencia previa y regresión posterior separadas. \\
   5.2.1 & 05-11-2026 & Ajuste adicional de presentación: unidad monetaria completa y denominador conservado, precisión de cantidades y conteos, y conciliación sin superposición. Verificación posterior separada del corte V4; originales anteriores intactos. \\
   5.2.2 & 06-11-2026 & Preservación de fuentes y rutas dimensionales seguras, fecha revisada, evidencia del servidor y coherencia del promedio por documento; reglas 4 como corte intermedio y reglas 5 para rutas exactas con sales-bi-v8. Cierre definitivo 530/50, rutas exactas y cargas nuevas 129/21 y 131/22 conciliadas; límites semánticos y narrativos documentados. \\
+  5.3.0 & 25-11-2026 & Continuidad de navegación, retorno contextual, sesión configurable de 15 a 240 minutos, recuperación de selección por catálogo e integración OpenAI Responses con validación local. Evidencia del 25 de noviembre separada de los casos históricos. \\
   \bottomrule
 \end{longtable}
 

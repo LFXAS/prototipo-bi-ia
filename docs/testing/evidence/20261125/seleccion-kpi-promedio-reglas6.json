@@ -1,0 +1,86 @@
+{
+  "checked_at_utc": "2026-11-26T01:44:44.694238+00:00",
+  "mode": "read_only_selection_and_ephemeral_recompilation_no_llm_no_etl",
+  "source_proposal_id": 134,
+  "persisted_rules": 6,
+  "persisted_state": "ready_for_review",
+  "kpi_codes": [
+    "importe_registrado",
+    "facturas_distintas",
+    "importe_promedio_por_factura",
+    "requested_quantity_sum"
+  ],
+  "document_average_kpi": "importe_promedio_por_factura",
+  "selection_all": {
+    "status": "complete",
+    "required_kpi_codes": [
+      "facturas_distintas",
+      "importe_promedio_por_factura",
+      "importe_registrado",
+      "requested_quantity_sum"
+    ],
+    "missing_kpi_codes": [],
+    "message": "La selección conserva los resultados solicitados."
+  },
+  "selection_without_document_average": {
+    "status": "partial",
+    "required_kpi_codes": [
+      "facturas_distintas",
+      "importe_promedio_por_factura",
+      "importe_registrado",
+      "requested_quantity_sum"
+    ],
+    "missing_kpi_codes": [
+      "importe_promedio_por_factura"
+    ],
+    "message": "La selección omite indicadores solicitados y se publicará como parcial.",
+    "missing_requirements": [
+      "Importe promedio por factura",
+      "Importe promedio por transacción"
+    ]
+  },
+  "current_document_average_bindings": [
+    {
+      "requirement_code": "goal:average_transaction",
+      "label": "Importe promedio por transacción",
+      "request_status": "derivable",
+      "coverage_status": "covered",
+      "outputs": [
+        "medida:Importe registrado",
+        "medida:Facturas distintas",
+        "kpi:Importe promedio por factura"
+      ],
+      "explanation": "Resuelto automáticamente y vuelto a validar mediante ventas totales ÷ documentos comerciales distintos.",
+      "required_metrics": [
+        {
+          "component": "goal:average_transaction",
+          "kpi_codes": [
+            "importe_promedio_por_factura"
+          ]
+        }
+      ]
+    },
+    {
+      "requirement_code": "ai:8",
+      "label": "Importe promedio por factura",
+      "request_status": "derivable",
+      "coverage_status": "covered",
+      "outputs": [
+        "medida:Importe registrado",
+        "medida:Facturas distintas",
+        "kpi:Importe promedio por factura"
+      ],
+      "explanation": "Resuelto automáticamente y vuelto a validar mediante Dividir la suma del importe registrado de las líneas del grupo por el número de facturas distintas representadas en esas mismas líneas..",
+      "required_metrics": [
+        {
+          "component": "goal:average_transaction",
+          "kpi_codes": [
+            "importe_promedio_por_factura"
+          ]
+        }
+      ]
+    }
+  ],
+  "stored_proposal_unchanged": true,
+  "note": "The parent was created during rules-6 implementation. A newly saved child is needed to persist the final coverage bindings; this reconstruction does not claim a saved child."
+}

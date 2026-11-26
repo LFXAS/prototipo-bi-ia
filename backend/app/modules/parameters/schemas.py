@@ -9,6 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 ProviderKind = Literal[
     "gemini",
     "groq-cloud",
+    "openai-cloud",
     "anthropic-cloud",
     "qwen-cloud",
     "ollama-local",
@@ -65,6 +66,7 @@ class LlmConfigurationCreate(BaseModel):
         expected: dict[ProviderKind, set[tuple[str, str, int | None, str]]] = {
             "gemini": {("https", "generativelanguage.googleapis.com", None, "")},
             "groq-cloud": {("https", "api.groq.com", None, "/openai/v1")},
+            "openai-cloud": {("https", "api.openai.com", None, "/v1")},
             "anthropic-cloud": {("https", "api.anthropic.com", None, "")},
             "qwen-cloud": {
                 ("https", "dashscope.aliyuncs.com", None, ""),

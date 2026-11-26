@@ -1,0 +1,54 @@
+{
+  "fecha": "2026-11-25T21:23:17.914937-05:00",
+  "metodo": "Operación real en interfaz y lectura del resultado visible; no se leyó la API key.",
+  "configuracion_activa": {
+    "nombre": "OpenAI BI — Luna económico",
+    "modelo": "gpt-6-luna",
+    "razonamiento": "low",
+    "credencial": "Existente conservada cifrada"
+  },
+  "prueba_real_luna": {
+    "cantidad": 1,
+    "operacion": "Probar conexión",
+    "resultado_visible": "Conexión con OpenAI y salida estructurada validada sin datos del negocio."
+  },
+  "limite": "No se repitió el flujo de propuesta y ETL con Luna para cuidar el saldo. Los ensayos completos corresponden a Sol medio.",
+  "saldo_usuario": {
+    "observacion": "El usuario informó una reducción de crédito y solicitó disminuir costos.",
+    "atribucion": "No auditada contra facturación; no se atribuye una diferencia de saldo completa a las pruebas del prototipo.",
+    "privacidad": "Los saldos de la cuenta no se incluyen en esta evidencia pública."
+  },
+  "recuperacion_por_fuente": {
+    "secuencia": [
+      "WWI23/2015/California",
+      "AW24/2013/Northwest",
+      "WWI23/2015/California restaurado",
+      "AW24/2013/Northwest restaurado"
+    ],
+    "resultado": "Satisfactorio; las selecciones confirmadas se conservan por conexión."
+  },
+  "evidencias_capturas": [
+    {
+      "archivo": "capturas/aw24-filtros-restaurados.jpg",
+      "sha256": "1bb39e7c0659789b1e715e7c72542c76b02e348cd9eb025f392ab31963a1c495"
+    },
+    {
+      "archivo": "capturas/luna-conexion-validada.jpg",
+      "sha256": "16feed81d678f81b06ac4b654bf920ede140ba5c2bccf131a20116a27313982f"
+    },
+    {
+      "archivo": "capturas/luna-modelo-bajo.jpg",
+      "sha256": "66dba4e478f4511aaa96ee31cd2750a2810a44f605553adb73923737af02ae95"
+    },
+    {
+      "archivo": "capturas/parametros-sesion-60.jpg",
+      "sha256": "c7c313c7cc25637164bfe5a3a6205e580bcaf13dff5023c64923f9f24527b8ef"
+    }
+  ],
+  "precios_fuente": "https://developers.openai.com/api/docs/models/gpt-6-luna",
+  "precios_luna_usd_millon": {
+    "entrada": 0.1,
+    "salida": 0.5
+  },
+  "no_renovacion_silenciosa_jwt": true
+}

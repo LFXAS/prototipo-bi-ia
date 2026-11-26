@@ -170,6 +170,13 @@ jobs:
           -e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts
           -v "$PWD/docs:/workspace" -w /workspace/tesis
           bi-ia-docs:test -pdf -interaction=nonstopmode -halt-on-error capitulo-03-propuesta-tecnologica.tex
+      - name: Compile user operations addendum
+        run: >-
+          docker run --rm --user "$(id -u):$(id -g)"
+          -e HOME=/tmp -e TEXMFVAR=/tmp/texmf-var -e VARTEXFONTS=/tmp/texfonts
+          -v "$PWD/docs:/workspace" -w /workspace/manual-usuario/adenda-2026-11-25
+          bi-ia-docs:test -pdf -jobname=Adenda_operacion_BI_OpenAI_2026-11-25
+          -interaction=nonstopmode -halt-on-error adenda_operacion.tex
       - name: Ensure versioned PDFs are current
         run: >-
           git diff --exit-code --
@@ -185,6 +192,7 @@ jobs:
           docs/formacion/guia_formacion_bi_ia.pdf
           docs/tesis/capitulo-03-propuesta-tecnologica.pdf
           docs/manual-tecnico/manual-tecnico.pdf
+          docs/manual-usuario/adenda-2026-11-25/Adenda_operacion_BI_OpenAI_2026-11-25.pdf
       - uses: actions/upload-artifact@v7
         with:
           name: documentacion-tecnica
@@ -201,3 +209,4 @@ jobs:
             docs/formacion/guia_formacion_bi_ia.pdf
             docs/tesis/capitulo-03-propuesta-tecnologica.pdf
             docs/manual-tecnico/manual-tecnico.pdf
+            docs/manual-usuario/adenda-2026-11-25/Adenda_operacion_BI_OpenAI_2026-11-25.pdf

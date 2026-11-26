@@ -592,6 +592,43 @@ La categoría de entrega corresponde a la ficha leída durante ETL, no a una ent
 real ni a una dirección históricamente vigente. El acta QA conserva estas fronteras,
 la observación de unidad genérica de la razón AW y la revisión documental final.
 
+
+\section{Incremento correctivo del 25 de noviembre de 2026}
+
+Este incremento responde a incidencias operativas posteriores al cierre; no se
+presenta como otro sprint ejecutado con fechas o ceremonias inventadas. La
+especificación \path{docs/specs/SPR-06-02-continuidad-operativa-y-openai.md}
+conserva el requerimiento y sus condiciones de aceptación.
+
+\begin{itemize}
+\item Continuidad del módulo al recargar y retorno contextual desde la preparación
+de Inicio y el respaldo analítico, conservando la autorización del servidor.
+\item Sesiones nuevas configurables desde Parámetros, con valor inicial de sesenta
+minutos y rango de quince a doscientos cuarenta; aviso de expiración y recuperación
+de borrador después de autenticar.
+\item Selección de preguntas contrastada con el catálogo vigente de cada fuente.
+El objetivo se conserva; una pregunta retirada no se sustituye silenciosamente y
+la revisión previa debe repetirse si cambia el alcance.
+\item Nuevo adaptador OpenAI Responses con credencial cifrada, configuración de
+modelo y esfuerzo, salida estructurada, presupuesto acotado de razonamiento y
+validación BI independiente del proveedor.
+\end{itemize}
+
+El contraste físico volvió a comprobar ambas instantáneas. La lectura de las
+propuestas 129 y 131 y de los destinos 21 y 22 mantuvo contratos, estados y
+conciliación; esa lectura no equivale a otro ETL. Los nuevos ensayos de proveedor,
+la navegación y las regresiones se detallan con su estado real en
+\path{docs/testing/qa-continuidad-openai-2026-11-25.md}. No se exige un nombre de
+base ni de modelo en los validadores de negocio para resolver estas incidencias.
+
+
+Durante el ensayo se detectó que la compactación perdía referencias ya revisadas
+y que una medida solicitada podía existir físicamente sin un KPI seleccionable.
+El prompt v9 conserva la evidencia y la compilación 6 comprueba la cobertura
+operativa. El completado previo a revisión sólo usa recetas agregadas únicas y
+seguras; una retirada posterior del analista no se deshace automáticamente.
+Las reglas 1 a 5 conservan sus contratos y huellas históricas.
+
 \section{Revisión y retrospectiva}
 
 El contraste entre dos modelos OLTP demostró que universalidad no significa reconocer

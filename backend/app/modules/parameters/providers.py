@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 _TRANSIENT_STATUS_CODES = frozenset({429, 500, 502, 503, 504})
 _MAX_PROVIDER_ATTEMPTS = 3
+_OPENAI_REASONING_PREFIXES = ("gpt-5", "gpt-6", "o1", "o3", "o4")
 
 
 @dataclass(frozen=True)
@@ -112,6 +113,128 @@ def _anthropic_text(payload: object) -> str | None:
         if isinstance(block, dict) and block.get("type") == "text" and block.get("text")
     ]
     return "".join(text_blocks) or None
+
+
+def _openai_reasoning_options(model_id: str, reasoning_level: str) -> dict[str, object]:
+    """Only send effort to known reasoning families; minimal maps to supported low."""
+    reasoning_model = model_id.startswith(_OPENAI_REASONING_PREFIXES)
+    if reasoning_level == "automatic" or not reasoning_model:
+        return {}
+    effort = "low" if reasoning_level == "minimal" else reasoning_level
+    return {"reasoning": {"effort": effort}}
+
+
+def _openai_output_budget(model_id: str, reasoning_level: str, requested: int) -> int:
+    """Translate JSON output allowance to Responses' shared reasoning/output budget.
+
+    OpenAI counts hidden reasoning inside max_output_tokens. Keep this transport
+    reservation central so small intent/connection requests and full proposals use
+    the same explicit policy. This is a ceiling, not an estimate of billed tokens;
+    no failed or truncated response increases it through retries.
+    """
+    reasoning_reserve = 0
+    if model_id.startswith(_OPENAI_REASONING_PREFIXES):
+        reasoning_reserve = {"medium": 8192, "high": 16384}.get(reasoning_level, 4096)
+    return min(32768, max(requested, reasoning_reserve))
+
+
+def _openai_output_schema(schema: dict[str, Any]) -> dict[str, Any]:
+    """Represent optional fields as nullable for OpenAI's strict transport schema.
+
+    The canonical application schema remains unchanged and is enforced after
+    removing transport-only nulls. No business value is inferred or fabricated.
+    """
+
+    def strict(node: object) -> object:
+        if isinstance(node, list):
+            return [strict(item) for item in node]
+        if not isinstance(node, dict):
+            return node
+        result = {key: strict(value) for key, value in node.items() if key != "default"}
+        if node.get("type") == "array" and node.get("maxItems") == 0 and "items" not in node:
+            # An empty-only canonical array still needs an items schema in the API.
+            # maxItems=0 makes the item type irrelevant and permits only the same [].
+            result["items"] = {"type": "string"}
+        if node.get("type") == "object":
+            original_properties = node.get("properties", {})
+            if isinstance(original_properties, dict):
+                original_required = set(node.get("required", []))
+                result["properties"] = {
+                    key: strict(child)
+                    if key in original_required
+                    else {"anyOf": [strict(child), {"type": "null"}]}
+                    for key, child in original_properties.items()
+                }
+                result["required"] = list(original_properties)
+            result["additionalProperties"] = False
+        return result
+
+    output = strict(schema)
+    assert isinstance(output, dict)
+    return output
+
+
+def _openai_restore_optional_fields(value: object, schema: dict[str, Any]) -> object:
+    """Restore omitted optional fields, preserving missing/invalid required fields."""
+    if isinstance(value, list) and isinstance(schema.get("items"), dict):
+        return [_openai_restore_optional_fields(item, schema["items"]) for item in value]
+    if isinstance(value, dict) and isinstance(schema.get("properties"), dict):
+        properties = schema["properties"]
+        required = set(schema.get("required", []))
+        return {
+            key: _openai_restore_optional_fields(child, properties[key])
+            if key in properties and isinstance(properties[key], dict)
+            else child
+            for key, child in value.items()
+            if not (key in properties and key not in required and child is None)
+        }
+    return value
+
+
+def _openai_text(payload: object) -> str:
+    """Read the raw Responses envelope, never treating reasoning/refusals as output."""
+    if not isinstance(payload, dict):
+        raise ProviderGenerationError("OpenAI no devolvió una respuesta utilizable.")
+    if payload.get("status") == "incomplete":
+        details = payload.get("incomplete_details")
+        reason = details.get("reason") if isinstance(details, dict) else None
+        if reason == "max_output_tokens":
+            raise ProviderGenerationError(
+                "OpenAI agotó el presupuesto de salida antes de completar el JSON. "
+                "La respuesta incompleta fue descartada; reduzca la complejidad o "
+                "el razonamiento antes de reintentar.",
+                category="token_budget",
+            )
+        raise ProviderGenerationError(
+            "OpenAI interrumpió la respuesta y no se utilizó ningún resultado incompleto.",
+            category="structured_output",
+        )
+    if payload.get("status") != "completed":
+        raise ProviderGenerationError(
+            "OpenAI no completó la respuesta solicitada.", category="provider_error"
+        )
+    blocks: list[str] = []
+    output = payload.get("output", [])
+    for item in output if isinstance(output, list) else []:
+        if not isinstance(item, dict) or item.get("type") != "message":
+            continue
+        content = item.get("content", [])
+        for block in content if isinstance(content, list) else []:
+            if not isinstance(block, dict):
+                continue
+            if block.get("type") == "refusal":
+                raise ProviderGenerationError(
+                    "OpenAI no aceptó generar la respuesta solicitada; no se utilizó "
+                    "ninguna propuesta parcial.",
+                    category="refusal",
+                )
+            if block.get("type") == "output_text" and isinstance(block.get("text"), str):
+                blocks.append(block["text"])
+    if not blocks:
+        raise ProviderGenerationError(
+            "OpenAI respondió sin contenido JSON utilizable.", category="structured_output"
+        )
+    return "".join(blocks)
 
 
 def _anthropic_output_schema(schema: dict[str, Any]) -> dict[str, Any]:
@@ -298,9 +421,15 @@ def _retry_delay_seconds(response: Any, attempt: int) -> float:
 
 def _is_transient_response(response: Any) -> bool:
     status_code = int(getattr(response, "status_code", 0))
+    details = _provider_error_details(response)
+    if details.code in {
+        "insufficient_quota",
+        "credit_balance_exhausted",
+        "billing_hard_limit_reached",
+    }:
+        return False
     if status_code in _TRANSIENT_STATUS_CODES:
         return True
-    details = _provider_error_details(response)
     normalized = f"{details.code} {details.message}".casefold()
     if status_code == 400 and details.code == "json_validate_failed":
         # A model can miss a valid structured contract nondeterministically. Retrying
@@ -435,6 +564,35 @@ def _generation_error(
             "El modelo Claude configurado no está disponible para esta cuenta.",
             "model_unavailable",
         )
+    if provider_kind == "openai-cloud":
+        if provider_code in {
+            "insufficient_quota",
+            "credit_balance_exhausted",
+            "billing_hard_limit_reached",
+        }:
+            return error(
+                "OpenAI no dispone de saldo o cuota de facturación para esta solicitud. "
+                "Revise el crédito y el proyecto asociados a la API key antes de reintentar.",
+                "quota_exhausted",
+            )
+        if status_code == 401:
+            return error("La API key de OpenAI no es válida o fue revocada.", "authentication")
+        if status_code == 403:
+            return error(
+                "El proyecto de OpenAI no tiene acceso al modelo o a esta operación.",
+                "authorization",
+            )
+        if status_code == 404:
+            return error(
+                "El modelo configurado no está disponible para este proyecto de OpenAI.",
+                "model_unavailable",
+            )
+        if status_code == 400:
+            return error(
+                "OpenAI rechazó un parámetro o esquema. Revise el modelo y su compatibilidad "
+                "con Responses y salidas estructuradas.",
+                "invalid_parameter",
+            )
     if status_code == 429 or (
         status_code == 413
         and any(
@@ -674,6 +832,59 @@ async def generate_json(
                     raise _response_error(configuration.provider_kind, response)
                 choices = response.json().get("choices", [])
                 content = choices[0].get("message", {}).get("content") if choices else None
+            elif configuration.provider_kind == "openai-cloud":
+                output_format: dict[str, Any] = {"type": "json_object"}
+                if response_schema is not None:
+                    output_format = {
+                        "type": "json_schema",
+                        "name": "bi_structured_response",
+                        "strict": True,
+                        "schema": _openai_output_schema(response_schema),
+                    }
+                response = await _post_with_retry(
+                    client,
+                    f"{base_url}/responses",
+                    provider_kind=configuration.provider_kind,
+                    model_id=configuration.model_id,
+                    headers={"Authorization": f"Bearer {credential}"},
+                    json={
+                        "model": configuration.model_id,
+                        "store": False,
+                        "input": [
+                            {
+                                "role": "developer",
+                                "content": (
+                                    f"{system_instruction.strip()}\n\n"
+                                    "Devuelve exclusivamente un objeto JSON válido. "
+                                    "En campos opcionales sin información, usa null."
+                                ),
+                            },
+                            {"role": "user", "content": user_content},
+                        ],
+                        "max_output_tokens": _openai_output_budget(
+                            configuration.model_id, configuration.reasoning_level, max_output_tokens
+                        ),
+                        "text": {"format": output_format},
+                        **_openai_reasoning_options(
+                            configuration.model_id, configuration.reasoning_level
+                        ),
+                    },
+                )
+                if not 200 <= response.status_code < 300:
+                    raise _response_error(configuration.provider_kind, response)
+                try:
+                    openai_payload = response.json()
+                except ValueError as exc:
+                    raise ProviderGenerationError(
+                        "OpenAI devolvió una respuesta no interpretable y fue descartada.",
+                        category="structured_output",
+                    ) from exc
+                content = _openai_text(openai_payload)
+                if response_schema is not None:
+                    document = _openai_restore_optional_fields(
+                        _json_object(content), response_schema
+                    )
+                    content = json.dumps(document, ensure_ascii=False)
             elif configuration.provider_kind == "anthropic-cloud":
                 anthropic_body: dict[str, Any] = {
                     "model": configuration.model_id,
@@ -829,6 +1040,32 @@ async def test_provider(
     if configuration.provider_kind != "ollama-local" and not credential:
         return ProviderTestResult(
             False, "Registre una credencial desde la plataforma antes de probar la conexión."
+        )
+    if configuration.provider_kind == "openai-cloud":
+        # Exercise the same request/envelope/schema path used by the BI workflow.
+        # The prompt contains no source metadata or business rows.
+        try:
+            document = await generate_json(
+                configuration,
+                "Comprobación técnica: devuelve el objeto JSON solicitado sin texto adicional.",
+                {"request": 'Devuelve {"ok":true}.'},
+                credential=credential,
+                timeout_seconds=timeout_seconds,
+                max_output_tokens=1024,
+                response_schema={
+                    "type": "object",
+                    "properties": {"ok": {"type": "boolean"}},
+                    "required": ["ok"],
+                    "additionalProperties": False,
+                },
+                _allow_contract_retry=False,
+            )
+        except ProviderGenerationError as exc:
+            return ProviderTestResult(False, str(exc))
+        if document.get("ok") is not True:
+            return ProviderTestResult(False, "OpenAI no confirmó la comprobación solicitada.")
+        return ProviderTestResult(
+            True, "Conexión con OpenAI y salida estructurada validada sin datos del negocio."
         )
     try:
         async with httpx.AsyncClient(timeout=timeout_seconds, follow_redirects=False) as client:

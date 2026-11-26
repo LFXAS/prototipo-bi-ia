@@ -43,7 +43,7 @@ Desarrollar un prototipo web de inteligencia de negocios asistido por IA que per
 
 ## Excluido por el anteproyecto
 
-- Implementación funcional de múltiples motores, fuentes simultáneas, alta disponibilidad y despliegue empresarial; la interfaz queda preparada para adaptadores futuros.
+- Implementación funcional de múltiples motores, consultas federadas o mezcla de fuentes en un mismo datamart, alta disponibilidad y despliegue empresarial; la interfaz queda preparada para adaptadores futuros.
 - CDC, cargas incrementales y dimensiones lentamente cambiantes complejas.
 - Pronóstico de ventas y selección de modelos predictivos. El tutor retiró este componente porque el problema de investigación es la construcción semiautomatizada y supervisada del datamart, no el pronóstico.
 - SQL del LLM ejecutado sin revisión humana.
@@ -59,7 +59,7 @@ El Sprint 2 implementó autenticación, usuarios, roles, permisos, menús autori
 
 ## Aclaración sobre el LLM configurable
 
-El anteproyecto requiere un LLM que proponga artefactos BI, siempre con validación determinística y aprobación humana. Para evitar depender de un único proveedor, la plataforma permite elegir una sola conexión activa entre Gemini Cloud, Groq Cloud, Anthropic Claude, Qwen Cloud y Ollama local. Groq se integra mediante su endpoint compatible con OpenAI y el modelo recomendado `openai/gpt-oss-120b`; Anthropic usa exclusivamente la API Messages oficial y propone `claude-haiku-4-5-20251001` como alternativa económica. Las credenciales cloud se registran o reemplazan desde la web y se conservan cifradas, sin editar `.env` durante la operación ordinaria. Esta parametrización no permite enviar datos crudos ni ejecutar SQL del modelo.
+El anteproyecto requiere un LLM que proponga artefactos BI, siempre con validación determinística y aprobación humana. Para evitar depender de un único proveedor, la plataforma permite elegir una sola conexión activa entre Gemini Cloud, OpenAI, Groq Cloud, Anthropic Claude, Qwen Cloud y Ollama local. Groq se integra mediante su endpoint compatible con OpenAI y el modelo recomendado `openai/gpt-oss-120b`; Anthropic usa exclusivamente la API Messages oficial y propone `claude-haiku-4-5-20251001` como alternativa económica. Las credenciales cloud se registran o reemplazan desde la web y se conservan cifradas, sin editar `.env` durante la operación ordinaria. OpenAI incorpora Responses API, modelo configurable y el mismo contrato validado localmente; su opción inicial es `gpt-6.2-sol` con esfuerzo medio, sujeta a prueba y acceso de la cuenta. Esta parametrización no permite enviar datos crudos ni ejecutar SQL del modelo.
 
 ## Objetivo histórico del Sprint 1
 

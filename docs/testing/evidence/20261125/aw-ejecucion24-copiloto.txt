@@ -1,0 +1,27 @@
+CONSULTA CONTEXTUAL
+
+Preguntar sobre estos resultados
+IA
+
+El copiloto interpreta indicador, dimensión, filtros y Top N. Puede consultar agregados permitidos aunque el filtro no esté seleccionado en pantalla; nunca recibe filas, credenciales ni SQL libre.
+
+Guía de preguntas sugeridas
+Tu pregunta
+
+Resume el importe registrado, las unidades y los pedidos distintos de 2013 en Northwest. Explica el importe promedio por pedido y por qué no se obtiene promediando las líneas. Indica la moneda comprobada y distingue el territorio comercial del pedido de una entrega física.
+
+Copiloto analítico
+
+En 2013, los pedidos asociados al territorio comercial Northwest registraron un importe total de 6.015.174,74 USD y 17.452 unidades en 2.053 pedidos distintos. La moneda comprobada es el dólar estadounidense (USD). El importe corresponde a pedidos registrados, no a facturas emitidas. El importe promedio fue de 2.929,94 USD por pedido: se suman los importes de todas las líneas y se divide el total entre los 2.053 pedidos distintos. Como un pedido puede tener varias líneas, promediar las líneas usaría como divisor el número de líneas y daría un importe medio por línea, no por pedido. Northwest es el territorio comercial asociado a la cabecera del pedido según el origen al momento de la carga. La fecha del pedido no acredita que esa asignación estuviera vigente entonces ni que se realizara una entrega física en Northwest.
+
+Indicadores conciliados para 2013 en Northwest: 6.015.174,74 USD de importe registrado, 17.452 unidades y 2.053 pedidos distintos.
+Los datos tienen una fila por línea de pedido. El promedio conciliado divide el importe total entre los pedidos distintos y da 2.929,94 USD por pedido.
+La cabecera del pedido proporciona la fecha y la asociación al territorio comercial. No se verificaron la vigencia histórica de esa asociación ni las entregas físicas.
+Los atributos dimensionales reflejan el estado disponible en el origen durante el ETL. No se verifica que esos atributos fueran vigentes en la fecha del hecho ni que representen una entrega realizada; la fecha del hecho no demuestra esas condiciones. Los agregados no prueban causas, preferencias ni demanda de mercado.
+¿Cuál es el Top 5 de «Importe total registrado» por producto con los filtros actuales?
+¿Cuál es el Top 5 de «Pedidos distintos» por cliente con los filtros actuales?
+¿Cuál es el Top 5 de «Unidades totales» por territorio con los filtros actuales?
+openai-cloud · gpt-6.2-sol
+Escriba su pregunta
+Una buena pregunta menciona el indicador, la comparación esperada y la decisión que desea apoyar.
+Preguntar al copiloto

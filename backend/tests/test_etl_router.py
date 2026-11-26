@@ -10,7 +10,7 @@ from fastapi import HTTPException
 
 from app.modules.analytics import router as analytics_router
 from app.modules.copilot.models import BiProposal
-from app.modules.copilot.service import canonical_hash
+from app.modules.copilot.service import COMPILATION_RULES_VERSION, canonical_hash
 from app.modules.etl import router
 from app.modules.etl.materializer import build_materialization_plan
 from app.modules.etl.models import EtlExecution
@@ -22,7 +22,44 @@ from app.modules.parameters.models import DataConnection, Secret
 pytestmark = pytest.mark.asyncio
 
 
-def _fixture(rules: int | None = 5):
+async def test_openai_category_localization_uses_schema_and_preserves_the_value_whitelist(
+    monkeypatch,
+) -> None:
+    configuration = SimpleNamespace(
+        provider_kind="openai-cloud", model_id="gpt-6.2-sol", secret_id=99
+    )
+    session = SimpleNamespace(
+        execute=AsyncMock(return_value=Mock(scalar_one_or_none=Mock(return_value=configuration))),
+        get=AsyncMock(return_value=SimpleNamespace(ciphertext="test-only-encrypted")),
+    )
+    monkeypatch.setattr(router, "_secret_cipher", SimpleNamespace(decrypt=lambda _: "test-only"))
+    generate = AsyncMock(
+        return_value={
+            "groups": [
+                {
+                    "dimension": "dim_territorio",
+                    "target_column": "region_es",
+                    "mappings": [
+                        {"original": "North", "label_es": "Norte", "language": "en"},
+                        {"original": "Unknown", "label_es": "Inventado", "language": "en"},
+                    ],
+                }
+            ]
+        }
+    )
+    monkeypatch.setattr(router, "generate_json", generate)
+
+    groups, provider, model = await router._localize_categories(
+        [{"dimension": "dim_territorio", "target_column": "region_es", "values": ["North"]}],
+        session,
+    )
+
+    assert generate.await_args.kwargs["response_schema"] == router._LOCALIZATION_SCHEMA
+    assert provider == "openai-cloud" and model == "gpt-6.2-sol"
+    assert [item["original"] for item in groups[0]["mappings"]] == ["North"]
+
+
+def _fixture(rules: int | None = COMPILATION_RULES_VERSION):
     now = datetime(2026, 11, 6, tzinfo=UTC)
     path = {
         "left_table": "Commerce.Lines",
@@ -195,7 +232,7 @@ def _trust_other_preflight_checks(monkeypatch):
     monkeypatch.setattr(router, "add_audit_event", AsyncMock())
 
 
-@pytest.mark.parametrize("rules", [None, 1, 2, 3, 4])
+@pytest.mark.parametrize("rules", [None, 1, 2, 3, 4, 5])
 async def test_legacy_candidate_is_read_only_without_withdrawing_approval(monkeypatch, rules):
     proposal, snapshot, connection, execution = _fixture(rules)
     before = deepcopy(vars(proposal))
@@ -214,7 +251,7 @@ async def test_legacy_candidate_is_read_only_without_withdrawing_approval(monkey
     session.add.assert_not_called()
 
 
-@pytest.mark.parametrize("rules", [None, 1, 2, 3, 4])
+@pytest.mark.parametrize("rules", [None, 1, 2, 3, 4, 5])
 async def test_legacy_preparation_is_rejected_before_creating_an_execution(monkeypatch, rules):
     proposal, snapshot, connection, execution = _fixture(rules)
     before = deepcopy(vars(proposal))
@@ -240,7 +277,7 @@ async def test_legacy_preparation_is_rejected_before_creating_an_execution(monke
     router.add_audit_event.assert_not_awaited()
 
 
-@pytest.mark.parametrize("rules", [None, 1, 2, 3, 4])
+@pytest.mark.parametrize("rules", [None, 1, 2, 3, 4, 5])
 async def test_pending_legacy_execution_cannot_start_or_change_its_receipt(monkeypatch, rules):
     proposal, snapshot, connection, execution = _fixture(rules)
     execution.status = "prepared"

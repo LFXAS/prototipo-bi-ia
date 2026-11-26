@@ -290,3 +290,70 @@ La separación física en bases distintas no es necesaria para la prueba de conc
 Los volúmenes Docker contienen estado local y no se comparten por GitHub. Cada cambio de esquema se incorpora mediante una migración Alembic inmutable y versionada. Después de aplicar las migraciones, el servicio Compose `seed` ejecuta el catálogo base aprobado de manera idempotente: permisos, menús, rol administrador y cuenta inicial de recuperación.
 
 El sembrado sólo crea o actualiza registros protegidos del sistema y no duplica catálogos. Tampoco distribuye cuentas temporales, eventos de auditoría, claves, tokens, configuraciones LLM ni datos de negocio. Los datos demostrativos futuros deberán declararse como semillas opcionales, anonimizadas y aprobadas por su especificación; nunca como copias de un volumen local.
+
+## Continuidad operativa y OpenAI: adenda del 25 de noviembre
+
+La navegación conserva por pestaña el módulo y el origen de una entrada guiada.
+Recargar vuelve a cargar datos autorizados del mismo módulo; no recupera desde el
+cliente una copia de la base. Atrás retorna al paso de preparación de Inicio o al
+análisis que abrió el respaldo. La entrada directa desde el menú lateral no genera
+un retorno artificial. Las rutas restauradas se contrastan con los menús autorizados.
+
+Los JWT nuevos incluyen emisión y vencimiento. El login consulta el parámetro
+`AUTH_SESSION_MINUTES`, mostrado como Duración de la sesión (minutos), con valor
+inicial 60 y rango 15–240. El cambio rige al autenticar otra vez; no modifica el
+`exp` de tokens emitidos ni renueva sesiones por actividad. Un respaldo de entorno
+se utiliza sólo si falta un parámetro activo utilizable. React informa al vencer
+y permite retomar el borrador después de autenticar; FastAPI conserva la autoridad
+sobre expiración y permisos. La migración `20261125_20` agrega la fila de configuración
+sin cambiar los valores de otros parámetros, catálogos, propuestas o destinos.
+
+El borrador de necesidad se reconcilia con preguntas y periodicidad vigentes de
+su fuente. Eliminar o deshabilitar una pregunta invalida la revisión reutilizable;
+no autoriza a reinterpretar ese código como otra pregunta. Esta recuperación sólo
+afecta al formulario mutable, nunca reescribe propuestas aprobadas o datos publicados.
+El servidor conserva la comprobación previa a cualquier llamada del proveedor.
+
+`openai-cloud` es un adaptador distinto de Groq: usa sólo
+`https://api.openai.com/v1/responses`, Bearer con secreto cifrado, `store: false` y
+`text.format` estructurado. Las propiedades opcionales se representan como anulables
+en el transporte estricto y se recuperan como ausencia antes de comprobar el esquema
+canónico. No se infieren campos de negocio. La API rechaza resultados incompletos,
+negativas y falta de saldo; no cambia de proveedor automáticamente.
+
+Responses cuenta razonamiento y texto en el mismo presupuesto. El adaptador reserva
+un máximo explícito para las familias de razonamiento reconocidas: mínimo de 4096
+tokens para automático/bajo/mínimo, 8192 para medio y 16384 para alto, con techo de
+32768. Esto es un límite de salida, no una cantidad que se deba consumir ni una
+garantía de finalización; el presupuesto no aumenta tras un truncamiento. Los
+modelos sin razonamiento conservan el presupuesto recibido. El mismo adaptador
+atiende asesoría, propuestas, interpretación semántica y chat; los módulos BI no
+implementan reglas particulares por nombre de base o modelo.
+
+Especificación: [SPR-06-02](specs/SPR-06-02-continuidad-operativa-y-openai.md).
+Pruebas: [QA del 25 de noviembre](testing/qa-continuidad-openai-2026-11-25.md).
+
+Las entradas de propuesta `sales-bi-v9` conservan tablas y columnas verificadas
+en la revisión previa, incluso cuando aparecen al final de tablas anchas o fuera
+del recorte habitual. Las claves existentes se ofrecen para conteos distintos,
+con validación semántica que impide sumarlas como magnitudes. En compilación 6,
+un requisito de métrica no queda cubierto sólo por una columna del hecho: debe
+existir un KPI agregado seleccionable. Cuando hay una única receta segura solicitada,
+la expansión puede incorporarla antes de la revisión con procedencia de plataforma
+explícita; no crea un catálogo fijo ni un indicador para cada medida intermedia.
+La exclusión posterior por el analista se respeta y se informa como cobertura
+pendiente o parcial. Las reglas 1–5 conservan su reproducción histórica.
+
+La recuperación analítica usa un mapa de selecciones confirmadas por conexión
+dentro de la pestaña, con lectura compatible del formato anterior. Volver a una
+fuente recupera incluso una ejecución anterior elegida por el usuario; la API
+comprueba que siga disponible. Restablecer una selección afecta sólo esa fuente;
+cerrar sesión elimina todas las selecciones. No almacena datos ni conversaciones.
+
+La presentación de unidades monetarias usa exclusivamente la divisa comprobada
+del origen, también en razones por documento o unidad. Una etiqueta ISO propuesta
+por el modelo no acredita esa moneda. Si la fuente no la demuestra, se mantiene
+moneda de origen; si la demuestra, se aplica ese código y se conserva el denominador.
+Las unidades físicas no se convierten en divisas. El catálogo estático de etiquetas
+SIX/ISO es de reconocimiento, no una conversión FX ni una consulta de red en operación.
+Contratos, fórmulas y valores persistidos permanecen intactos.

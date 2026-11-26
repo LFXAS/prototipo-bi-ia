@@ -35,6 +35,191 @@ from .schemas import (
 MART_SCHEMA = "mart_ventas"
 _IDENTIFIER = re.compile(r"^[a-z_][a-z0-9_]{0,62}$")
 _MART_SCHEMA = re.compile(r"^mart_ventas(?:_e[1-9][0-9]*)?$")
+# Label recognition only, never evidence of a source currency or an exchange rate.
+# SIX ISO 4217 List One, published 2026-09-17, checked 2026-11-25:
+# https://www.six-group.com/dam/download/financial-information/data-center/
+# iso-currrency/lists/list-one.xml (exclude XTS testing and XXX no-currency).
+_CURRENCY_LABEL_CODES = frozenset(
+    [
+        "AED",
+        "AFN",
+        "ALL",
+        "AMD",
+        "AOA",
+        "ARS",
+        "AUD",
+        "AWG",
+        "AZN",
+        "BAM",
+        "BBD",
+        "BDT",
+        "BHD",
+        "BIF",
+        "BMD",
+        "BND",
+        "BOB",
+        "BOV",
+        "BRL",
+        "BSD",
+        "BTN",
+        "BWP",
+        "BYN",
+        "BZD",
+        "CAD",
+        "CDF",
+        "CHE",
+        "CHF",
+        "CHW",
+        "CLF",
+        "CLP",
+        "CNY",
+        "COP",
+        "COU",
+        "CRC",
+        "CUP",
+        "CVE",
+        "CZK",
+        "DJF",
+        "DKK",
+        "DOP",
+        "DZD",
+        "EGP",
+        "ERN",
+        "ETB",
+        "EUR",
+        "FJD",
+        "FKP",
+        "GBP",
+        "GEL",
+        "GHS",
+        "GIP",
+        "GMD",
+        "GNF",
+        "GTQ",
+        "GYD",
+        "HKD",
+        "HNL",
+        "HTG",
+        "HUF",
+        "IDR",
+        "ILS",
+        "INR",
+        "IQD",
+        "IRR",
+        "ISK",
+        "JMD",
+        "JOD",
+        "JPY",
+        "KES",
+        "KGS",
+        "KHR",
+        "KMF",
+        "KPW",
+        "KRW",
+        "KWD",
+        "KYD",
+        "KZT",
+        "LAK",
+        "LBP",
+        "LKR",
+        "LRD",
+        "LSL",
+        "LYD",
+        "MAD",
+        "MDL",
+        "MGA",
+        "MKD",
+        "MMK",
+        "MNT",
+        "MOP",
+        "MRU",
+        "MUR",
+        "MVR",
+        "MWK",
+        "MXN",
+        "MXV",
+        "MYR",
+        "MZN",
+        "NAD",
+        "NGN",
+        "NIO",
+        "NOK",
+        "NPR",
+        "NZD",
+        "OMR",
+        "PAB",
+        "PEN",
+        "PGK",
+        "PHP",
+        "PKR",
+        "PLN",
+        "PYG",
+        "QAR",
+        "RON",
+        "RSD",
+        "RUB",
+        "RWF",
+        "SAR",
+        "SBD",
+        "SCR",
+        "SDG",
+        "SEK",
+        "SGD",
+        "SHP",
+        "SLE",
+        "SOS",
+        "SRD",
+        "SSP",
+        "STN",
+        "SVC",
+        "SYP",
+        "SZL",
+        "THB",
+        "TJS",
+        "TMT",
+        "TND",
+        "TOP",
+        "TRY",
+        "TTD",
+        "TWD",
+        "TZS",
+        "UAH",
+        "UGX",
+        "USD",
+        "USN",
+        "UYI",
+        "UYU",
+        "UYW",
+        "UZS",
+        "VED",
+        "VES",
+        "VND",
+        "VUV",
+        "WST",
+        "XAD",
+        "XAF",
+        "XAG",
+        "XAU",
+        "XBA",
+        "XBB",
+        "XBC",
+        "XBD",
+        "XCD",
+        "XCG",
+        "XDR",
+        "XOF",
+        "XPD",
+        "XPF",
+        "XPT",
+        "XSU",
+        "XUA",
+        "YER",
+        "ZAR",
+        "ZMW",
+        "ZWG",
+    ]
+)
+_GENERIC_CURRENCY_LABELS = frozenset({"moneda de origen", "currency", "moneda", "importe", "valor"})
 
 
 class AnalyticsUnavailableError(RuntimeError):
@@ -571,13 +756,27 @@ def _display_name_for_recipe(recipe: dict[str, Any]) -> str:
 
 def _display_unit_for_recipe(execution: EtlExecution, recipe: dict[str, Any]) -> str:
     unit = _unit_for_recipe(execution, recipe)
+    currency = execution.metrics_document.get("currency_context", {})
+    currency = currency if isinstance(currency, dict) else {}
+    currency_code = str(currency.get("currency_code", "")).upper()
     if str(recipe.get("code", "")) in {"costo_por_unidad", "venta_por_unidad"}:
-        currency = execution.metrics_document.get("currency_context", {})
-        currency = currency if isinstance(currency, dict) else {}
-        currency_code = str(currency.get("currency_code", ""))
-        if currency.get("status") == "verified" and len(currency_code) == 3:
-            return f"{currency_code.upper()} por unidad"
-        return "moneda de origen por unidad"
+        unit = "moneda de origen por unidad"
+    labeled_unit = re.fullmatch(
+        r"(moneda de origen|currency|moneda|importe|valor|[A-Z]{3})"
+        r"((?:\s+(?:por|per)\s+|\s*/\s*)\S.*)?",
+        unit.strip(),
+        re.IGNORECASE,
+    )
+    if labeled_unit:
+        base, denominator = labeled_unit.group(1), labeled_unit.group(2) or ""
+        declared_currency = base.upper() in _CURRENCY_LABEL_CODES
+        if declared_currency or base.casefold() in _GENERIC_CURRENCY_LABELS:
+            # Currency authority is the verified source, never a model's unit label.
+            # Presentation does not convert values or modify persisted evidence.
+            if currency.get("status") == "verified" and currency_code in _CURRENCY_LABEL_CODES:
+                return currency_code + denominator
+            if declared_currency:
+                return "moneda de origen" + denominator
     if unit.casefold() not in {"count", "conteo"}:
         return unit
     semantic_text = f"{recipe.get('code', '')} {recipe.get('name', '')}".casefold()

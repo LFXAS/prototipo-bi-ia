@@ -53,8 +53,8 @@ async function openNeedAssistant() {
   render(<App />)
   fireEvent.click(await screen.findByRole('button', { name: 'Diseño y transformación BI' }))
   fireEvent.click(screen.getByRole('button', { name: 'Asistente de datamart' }))
-  fireEvent.click(await screen.findByRole('button', { name: 'Crear propuesta' }))
-  return screen.getByRole('textbox', { name: /Objetivo del análisis/ })
+  if (!readAssistantDraft()?.domainCode) fireEvent.click(await screen.findByRole('button', { name: 'Crear propuesta' }))
+  return screen.findByRole('textbox', { name: /Objetivo del análisis/ })
 }
 
 function correctedEditorProposal(): BiProposal {
@@ -130,6 +130,7 @@ describe('App', () => {
   afterEach(() => {
     cleanup()
     localStorage.clear()
+    sessionStorage.clear()
     vi.restoreAllMocks()
     vi.unstubAllGlobals()
   })
@@ -208,6 +209,21 @@ describe('App', () => {
     expect(screen.getByRole('checkbox', { name: /Importe promedio por documento/ })).not.toBeChecked()
     expect(screen.getByRole('checkbox', { name: /Importe promedio por documento/ })).toBeDisabled()
     expect(screen.getByText(/faltan las medidas de la receta: documentos_distintos/)).toBeInTheDocument()
+  })
+
+  it.each(['decision', 'diagnostic'])('identifica un KPI agregado por un requisito validado desde %s y conserva su selección supervisada', async (origin) => {
+    const proposal = correctedEditorProposal()
+    const decisions = proposal.proposal_document.ai_decisions as { kpis: Array<Record<string, unknown>> }
+    if (origin === 'decision') decisions.kpis[0].decision_origin = 'validated_requirement'
+    else (proposal.proposal_document.decision_diagnostics as Array<Record<string, unknown>>).push({ kind: 'kpi', code: 'docs', origin: 'validated_requirement', status: 'included' })
+    await openStoredEditor(proposal)
+    const group = within(screen.getByRole('group', { name: 'KPIs incluidos y medida asociada' }))
+    const documents = group.getByRole('checkbox', { name: /Documentos emitidos/ })
+    expect(within(documents.closest('article')!).getByText(/Añadido por la plataforma desde un requisito validado/)).toBeInTheDocument()
+    expect(documents).toBeEnabled()
+    expect(documents).toBeChecked()
+    fireEvent.click(documents)
+    expect(documents).not.toBeChecked()
   })
 
   it('muestra el correo de edición sólo para lectura y envía únicamente los campos admitidos', async () => {
@@ -385,6 +401,63 @@ describe('App', () => {
     expect(validate).not.toHaveBeenCalled()
     expect(screen.queryByRole('heading', { name: 'Necesidades propuestas para revisar' })).not.toBeInTheDocument()
     expect(screen.getByText(/Necesidad elegida. Revise las preguntas/)).toBeInTheDocument()
+  })
+
+  it('reconcilia preguntas eliminadas de un borrador sin perder el objetivo ni enviar selecciones invisibles', async () => {
+    const originalGoal = 'Comparar el importe de las ventas por mes para revisar su evolución.'
+    localStorage.setItem('bi_ia_assistant_draft_v2', JSON.stringify({ version: 2, sourceId: 1, domainCode: 'ventas', step: 2, goal: originalGoal, questions: ['custom_1795629214911', 'sales_over_time', 'custom_1795629691223'], periodicity: 'month' }))
+    const suggest = vi.spyOn(api, 'suggestNeeds').mockResolvedValue(groundedSuggestions)
+    const goal = await openNeedAssistant()
+    expect(goal).toHaveValue(originalGoal)
+    expect(await screen.findByText(/El catálogo de esta fuente cambió/)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Evolución de ventas/)).toBeChecked()
+    expect(screen.getByLabelText(/Autorizo enviar estos metadatos/)).not.toBeChecked()
+    expect(screen.queryByRole('button', { name: /Generar propuesta y resolver/ })).not.toBeInTheDocument()
+    fireEvent.click(screen.getByLabelText(/Autorizo enviar estos metadatos/))
+    fireEvent.click(screen.getByRole('button', { name: 'Sugerir necesidades con esta fuente' }))
+    await waitFor(() => expect(suggest).toHaveBeenCalledWith('test-token', expect.objectContaining({ business_questions: ['sales_over_time'] })))
+    expect(readAssistantDraft()?.questions).toEqual(['sales_over_time'])
+  })
+
+  it('vuelve a comprobar el catálogo al recuperar foco e invalida la viabilidad si retiraron una pregunta', async () => {
+    vi.spyOn(api, 'validateNeed').mockResolvedValue({ assessment_hash: 'current', requirements: [], counts: {}, requires_acknowledgement: [], can_continue: true, summary: 'Respaldo comprobado.' })
+    const goal = await openNeedAssistant()
+    fireEvent.change(goal, { target: { value: 'Comparar las ventas mensuales para revisar su evolución.' } })
+    fireEvent.click(screen.getByLabelText(/Evolución de ventas/))
+    fireEvent.click(screen.getByLabelText(/Autorizo enviar estos metadatos/))
+    fireEvent.click(screen.getByRole('button', { name: 'Validar viabilidad' }))
+    expect(await screen.findByRole('button', { name: /Generar propuesta y resolver/ })).toBeInTheDocument()
+    vi.spyOn(api, 'copilotCatalog').mockResolvedValue({ metadata_snapshot_id: 4, domains: [{ code: 'ventas', label: 'Datamart de ventas', description: 'Análisis comercial.', available: true, reason: 'Disponible.', questions: [], periodicities: [{ code: 'month', label: 'Mensual', description: 'Mes.', available: true, reason: 'Disponible.', evidence: [] }] }] })
+    act(() => window.dispatchEvent(new Event('focus')))
+    expect(await screen.findByText(/El catálogo de esta fuente cambió/)).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Viabilidad contra los metadatos' })).not.toBeInTheDocument()
+    expect(screen.getByLabelText(/Autorizo enviar estos metadatos/)).not.toBeChecked()
+    expect(screen.getByRole('button', { name: 'Validar viabilidad' })).toBeDisabled()
+  })
+
+  it('conserva las preguntas históricas al consultar una propuesta aunque hayan sido retiradas del catálogo', async () => {
+    const proposal = { ...correctedEditorProposal(), status: 'approved' as const, business_questions: ['custom_retired'], warnings_confirmed: true }
+    await openStoredEditor(proposal, false)
+    expect(readAssistantDraft()?.questions).toEqual(['custom_retired'])
+    expect(screen.queryByText(/El catálogo de esta fuente cambió/)).not.toBeInTheDocument()
+  })
+
+  it('descarta una respuesta de catálogo anterior que termina después de la actualización vigente', async () => {
+    await openNeedAssistant()
+    const previousCatalog = await api.copilotCatalog('test-token', 4, 1)
+    let finishOld!: (value: typeof previousCatalog) => void
+    let finishCurrent!: (value: typeof previousCatalog) => void
+    const load = vi.spyOn(api, 'copilotCatalog')
+      .mockImplementationOnce(() => new Promise((resolve) => { finishOld = resolve }))
+      .mockImplementationOnce(() => new Promise((resolve) => { finishCurrent = resolve }))
+    act(() => window.dispatchEvent(new Event('focus')))
+    await waitFor(() => expect(load).toHaveBeenCalledTimes(1))
+    act(() => window.dispatchEvent(new Event('focus')))
+    await waitFor(() => expect(load).toHaveBeenCalledTimes(2))
+    await act(async () => finishCurrent({ ...previousCatalog, domains: previousCatalog.domains.map((domain) => ({ ...domain, questions: [] })) }))
+    expect(screen.queryByLabelText(/Evolución de ventas/)).not.toBeInTheDocument()
+    await act(async () => finishOld(previousCatalog))
+    expect(screen.queryByLabelText(/Evolución de ventas/)).not.toBeInTheDocument()
   })
 
   it.each(['texto', 'preguntas', 'periodicidad', 'autorización'])('descarta sugerencias antiguas al cambiar %s durante la consulta', async (change) => {
@@ -1147,8 +1220,6 @@ describe('App', () => {
     await waitFor(() => expect(readAssistantDraft()?.proposalId).toBe(14))
     cleanup()
     render(<App />)
-    fireEvent.click(await screen.findByRole('button', { name: 'Diseño y transformación BI' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Asistente de datamart' }))
     fireEvent.click(await screen.findByRole('button', { name: 'Volver a validar y reintentar' }))
     expect(screen.getByText(/Confirme el proveedor, autorice los metadatos/)).toBeInTheDocument()
     expect(screen.getByLabelText(/Autorizo enviar estos metadatos/)).not.toBeChecked()

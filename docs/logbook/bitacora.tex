@@ -69,7 +69,7 @@
     Responsables & Emily Dayan Robles Alvarado y Lesly Samay Velásquez Anchundia \\
     Tema & Construcción asistida de un datamart, KPI, analítica explicable y reportería \\
     Repositorio local & \file{/home/ceo/Proyectos/BI} \\
-    Versión de la bitácora & 0.6.9 \\
+    Versión de la bitácora & 0.6.10 \\
     Fecha de apertura & 24 de agosto de 2026 \\
   \end{tabularx}
 
@@ -1659,6 +1659,100 @@ acertó cifras y cautelas, pero su prosa permanece supervisada: no se afirma
 precisión perfecta ni vigencia histórica o entrega real demostradas.
 La compilación y revisión final de los tres PDF se registra en el acta QA.
 
+
+\subsection{25 de noviembre de 2026 - Continuidad, contexto y OpenAI}
+
+\textbf{Solicitud.} El tutor aportó un PDF con cinco incidencias: recarga que
+volvía a Inicio, ausencia de retorno desde la preparación y el respaldo, plazo de
+sesión y selección obsoleta de preguntas en WideWorldImporters. Solicitó además
+integrar OpenAI usando una API key propia y sus créditos disponibles.
+
+\textbf{Decisiones.} Se preservan módulo y origen por pestaña y se revalidan sus
+permisos. El retorno analítico conserva sólo selección confirmada, sin resultados
+ni conversaciones. El usuario sustituyó el máximo de diez minutos del PDF por un plazo mayor
+y parametrizable. Los JWT nuevos incluyen emisión y expiración según el parámetro
+web de duración, inicial de sesenta minutos y rango de quince a doscientos cuarenta.
+El cambio se aplica al siguiente login, sin renovación automática de tokens existentes. No se
+modificó el archivo privado de entorno ni se reinicializaron volúmenes.
+
+\textbf{Causa de la selección.} Un borrador conservaba preguntas ya retiradas del
+catálogo. La interfaz reconcilia el formulario mutable con su propia fuente e
+invalida viabilidad y consentimiento; el servidor mantiene el rechazo previo al
+LLM. No se borran personalizaciones actuales ni se cambian contratos históricos.
+
+\textbf{OpenAI.} Se añadió \file{openai-cloud}, Responses API oficial y
+\file{store: false}, con adaptación estricta del esquema y comprobación local
+canónica. El modelo inicial es \file{gpt-6.2-sol}, esfuerzo medio, editable según
+acceso de la cuenta. El usuario ingresó y guardó su clave desde el panel protegido;
+la prueba real de conexión y esquema fue satisfactoria. Se activó esta configuración
+sin borrar las anteriores. El adaptador reserva razonamiento dentro de un máximo
+explícito de salida y no reintenta una falta de saldo como saturación temporal.
+
+\textbf{Incidencias detectadas durante las pruebas.} La revisión previa con Claude
+rechazó una derivación inválida de fecha e importe; el bloqueo se conservó. OpenAI
+completó la revisión, pero la propuesta 132 quedó bloqueada. Se identificaron
+recortes internos que eliminaban columnas ya comprobadas y un catálogo de medidas
+que omitía identificadores necesarios para conteos distintos. La corrección
+conserva referencias revisadas, habilita claves existentes para seleccionar conteos
+y mantiene prohibida su suma como importe. Las entradas nuevas usan
+\file{sales-bi-v9}. La compilación 6 exige cobertura operativa: una medida
+solicitada necesita un KPI seleccionable y puede completarse antes de la revisión
+sólo cuando existe una receta agregada única y segura. Una exclusión posterior
+se respeta como cobertura parcial o pendiente. Las reglas 1 a 5 y los contratos
+anteriores permanecen inmutables.
+
+También se corrigieron respuestas de chat tardías que podían cruzarse con otro
+filtro y el guardado de filtros pendientes como si fueran confirmados. Las
+regresiones reprodujeron ambos problemas antes del arreglo. Una respuesta tardía de
+la comprobación de permisos tampoco puede reemplazar otra navegación posterior.
+
+\textbf{Trazabilidad.} \path{docs/specs/SPR-06-02-continuidad-operativa-y-openai.md}
+y \path{docs/testing/qa-continuidad-openai-2026-11-25.md} registran contratos,
+resultados efectivos y límites. Se actualizan arquitectura, alcance, replicación,
+ADR de proveedores, manual técnico e informe del Sprint 6. No se inventa otro sprint
+con ceremonias o fechas no documentadas. La clave no forma parte de los entregables.
+
+\textbf{Verificación del corte.} Las regresiones focales de contexto y aprobación
+completaron 158 pruebas; OpenAI/proveedores/secretos completaron 83 y las 56 de
+ETL/copiloto también aprobaron. El parámetro nuevo de sesión tiene regresiones
+propias del valor elegido, sus límites y la emisión desde login. Son subconjuntos solapables,
+no un total acumulable. Navegación, recuperación de sesión y retorno a California 2015 se comprobaron
+en navegador. La verificación integral final y los ensayos posteriores al arreglo
+se consignan en el informe QA y en el cierre de esta entrada.
+
+
+\textbf{Cierre operativo del recorrido.} La propuesta 135 de WideWorldImporters
+originó la ejecución 23: 228265 filas de origen y destino, diferencia cero,
+cinco tablas y cuatro KPI conciliados. La propuesta 136 de AdventureWorks originó
+la ejecución 24: 121317 filas en ambos lados, diferencia cero, cinco tablas y
+cuatro KPI. Se revisaron y publicaron nueve mapeos territoriales de AdventureWorks
+sin sustituir los originales. Los resultados completos y filtrados coinciden con
+cuatro consultas independientes de SQL Server. Los copilotos explicaron cantidades,
+denominadores y límites sobre moneda y territorio sin confundir pedidos, facturas
+y entregas. Los contratos históricos 129 y 131 permanecen aprobados e inmutables.
+
+La normalización monetaria se generalizó para razones sin depender del código del
+KPI: sólo la divisa comprobada del origen gobierna la etiqueta, sin conversión FX
+ni cambios de contrato. La selección analítica se conserva por conexión dentro de
+la pestaña; no incluye datos ni conversaciones. La adenda de usuario se integra
+como decimotercer PDF reproducible en Make y CI. El informe QA publica por separado
+el corte inicial de 634/73 pruebas y el cierre final: \file{make verify} terminó
+con salida cero, 656 pruebas backend, 80 frontend, Ruff, formato, MyPy, Compose,
+política de ramas, build y trece PDF. La capa backend idéntica se reutilizó desde
+la caché Docker; frontend se reconstruyó tras el cambio económico. Se revisaron
+cuarenta y ocho controles de las cuatro exportaciones reales, con coincidencia de
+cifras, filtros y procedencia. La advertencia externa de Starlette/AnyIO no fue bloqueante.
+
+\textbf{Ajuste de costo solicitado.} Después de los ensayos completos con Sol
+medio, el usuario pidió reducir gasto. Se guardó \file{gpt-6-luna}, razonamiento
+bajo, en la configuración activa y se verificó una conexión breve con salida
+estructurada. Se conservó la credencial cifrada. No se repitieron propuestas ni
+ETL con Luna; los casos 135/23 y 136/24 continúan atribuidos a Sol. El preset
+nuevo es económico y editable. La tabla de cinco modelos distingue tarifas
+oficiales por token, cálculos ilustrativos y evidencia de uso. Sin detalle de
+facturación no se asigna una diferencia de saldo a un ensayo concreto. No existe
+escalamiento automático hacia un modelo más caro.
+
 \section{Matriz de verificación de la fase}
 
 Los resultados V6 siguientes corresponden al cierre del 5 de noviembre. El
@@ -1790,6 +1884,7 @@ cierre operativo y documental todavía pendiente, mediante filas y reporte propi
   0.6.7 & 05-11-2026 & Cierre correctivo 4--5 de noviembre: revisión 6/reglas 3, compatibilidad histórica, formularios y editor hijo, analítica/exports con procedencia, 454 backend/46 frontend y casos 122/18 y 124/19. PR 57 abierto en borrador. \\
   0.6.8 & 05-11-2026 & Ajuste UI adicional \file{8f1c7d1}: unidad completa y conciliación adaptable; V6 con salida 0 y 454/48, UI 18/19 a dos anchos sin solapes. V4 y originales conservados; sin otro ETL ni LLM. \\
   0.6.9 & 06-11-2026 & Preservación dimensional y temporal, evidencia del servidor y coherencia del promedio por documento; reglas 4 y sales-bi-v8. Corte intermedio 475/48 aprobado; reglas 5 para rutas exactas con focal 67. Cierre definitivo 530/50 y recorridos 129/21 y 131/22 conciliados; unidades genéricas y límites narrativos documentados. Sin ETL atribuido a 125/127/128. \\
+  0.6.10 & 25-11-2026 & Continuidad de navegación y sesión, selección por catálogo, corrección del contexto enviado al LLM y adaptador OpenAI. Prompt v9 con reglas 6, históricos preservados, sesión parametrizable y preset Luna económico; auditoría del corte separada. \\
   \bottomrule
 \end{longtable}
 
