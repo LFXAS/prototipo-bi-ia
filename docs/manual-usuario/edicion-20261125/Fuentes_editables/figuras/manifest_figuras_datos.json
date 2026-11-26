@@ -1,0 +1,1704 @@
+[
+  {
+    "archivo_svg": "ER_01_seguridad.svg",
+    "archivo_png": "ER_01_seguridad.png",
+    "titulo": "Modelo físico de seguridad y navegación",
+    "nota": "Se muestran las ocho tablas de seguridad y siete relaciones físicas. Campos principales; el diccionario enumera todas las columnas. La auditoría conserva actor opcional y una etiqueta histórica separada.",
+    "ancho_cm": 23,
+    "alto_cm": 12.266666666666667,
+    "tamano_minimo_pt": 10.87,
+    "fuente": "Times New Roman",
+    "etiquetas": [
+      {
+        "texto": "app.users",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "email [único]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "full_name",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "password_hash",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "is_active",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "is_system_protected",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.roles",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "code [único]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "name [único]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "is_active",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "is_system_protected",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.permissions",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "code [único]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "name",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "is_active",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "is_system_protected",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.user_roles",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "user_id [PK, FK users.id]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "role_id [PK, FK roles.id]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.role_permissions",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "role_id [PK, FK roles.id]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "permission_id [PK, FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.menus",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "code [único]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "label / path [path único]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "module_code / position",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.menu_permissions",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "menu_id [PK, FK menus.id]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "permission_id [PK, FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.audit_events",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "actor_user_id [FK opcional]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "action / resource_type",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "detail [JSON]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "Líneas: FK reales. PK: clave primaria. Las tres tablas de asociación tienen PK compuesta.",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      }
+    ],
+    "sha256_svg": "490ecb31ab2bfc45ed06b457fef8e05455b7f78287df23edb716f61a90015217",
+    "archivo_pdf": "ER_01_seguridad.pdf",
+    "png_dimensiones_px": [
+      2717,
+      1449
+    ],
+    "png_rgb": true,
+    "sha256_png": "8b765fb51c6406fda3e98e3a2ebe04a54740b7c965e0dc776077bf0ccd3e6140",
+    "sha256_pdf": "fa34af35512f633f9ea421eae44952b44d1d17bb56ed774a1838e0303e6c56e3"
+  },
+  {
+    "archivo_svg": "ER_02_configuracion_metadatos.svg",
+    "archivo_png": "ER_02_configuracion_metadatos.png",
+    "titulo": "Modelo físico de configuración y metadatos",
+    "nota": "Seis tablas de configuración y metadatos. Cuatro relaciones físicas; las dos FK de autoría aparecen en el esquema separado de responsables. Catálogo único por conexión y dominio; instantánea única por conexión, versión de contrato y huella.",
+    "ancho_cm": 23,
+    "alto_cm": 12.266666666666667,
+    "tamano_minimo_pt": 10.87,
+    "fuente": "Times New Roman",
+    "etiquetas": [
+      {
+        "texto": "app.secrets",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "kind",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "ciphertext [valor cifrado]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.data_connections",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "connector_kind / database_name",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "secret_id [FK, único]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "name / host / port",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "is_active / last_test_status",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.metadata_snapshots",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "data_connection_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "schema_document [JSONB]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "content_hash / contract_version",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "captured_by_user_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.llm_configurations",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "provider_kind / model_id",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "secret_id [FK opcional, único]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "is_active / last_test_status",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "reasoning_level",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.parameters",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "key [único] / module_code",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "value_type / value",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "default_value / min_value",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "max_value / is_active",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.analysis_catalogs",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "data_connection_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "domain_code / version",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "configuration_document [JSONB]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "updated_by_user_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "Las FK de autoría hacia users se muestran en ER_04. No se muestran valores de conexión ni credenciales.",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      }
+    ],
+    "sha256_svg": "c79071c97d5cbd9193affc7b3be2e05af4879b6856f2bdf29936b1922b296d63",
+    "archivo_pdf": "ER_02_configuracion_metadatos.pdf",
+    "png_dimensiones_px": [
+      2717,
+      1449
+    ],
+    "png_rgb": true,
+    "sha256_png": "09b896110549b6fc8725a693b91473af7e2fa6f3fb47f972b3ba41517f08c5d3",
+    "sha256_pdf": "aea970980db5beef0aad7b88ccd128ebb3859e89ee765901904c91b97018cb44"
+  },
+  {
+    "archivo_svg": "ER_03_propuestas_ejecuciones.svg",
+    "archivo_png": "ER_03_propuestas_ejecuciones.png",
+    "titulo": "Modelo físico de necesidades, propuestas y ejecuciones",
+    "nota": "Cuatro entidades operativas y referencia a metadatos; seis FK físicas, incluida la relación de versiones derivadas de bi_proposals. Las revisiones previas se comprueban con contexto y huellas por lógica del servidor; no existe una FK review_id en bi_proposals.",
+    "ancho_cm": 23,
+    "alto_cm": 12.266666666666667,
+    "tamano_minimo_pt": 10.87,
+    "fuente": "Times New Roman",
+    "etiquetas": [
+      {
+        "texto": "app.metadata_snapshots",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "data_connection_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "content_hash",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "schema_document [JSONB]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.business_need_reviews",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "metadata_snapshot_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "input_hash / assessment_hash",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "assessment_document [JSONB]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.bi_proposals",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "metadata_snapshot_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "source_proposal_id [FK propia]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "business_goal / status",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "proposal_document [JSONB]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "validation_document [JSONB]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "autoría: ver ER_04 (*)",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.etl_executions",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "proposal_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "metadata_snapshot_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "status / builder_version",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "plan_document [JSONB]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "metrics_document [JSONB]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.semantic_advice",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "proposal_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "concept_code / question",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "response_document [JSONB]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "(*) Autoría: ER_04. La revisión previa y la propuesta NO tienen una FK directa entre sí.",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      }
+    ],
+    "sha256_svg": "2c06c94635208b32b5fe20e0915b1f7f5156c4b1ad51059394d71806ff75dd6f",
+    "archivo_pdf": "ER_03_propuestas_ejecuciones.pdf",
+    "png_dimensiones_px": [
+      2717,
+      1449
+    ],
+    "png_rgb": true,
+    "sha256_png": "9dc6eebe48d0ce38a771fc4e332c270a32ed54cc003e9ae90fd663842ebbe393",
+    "sha256_pdf": "6f81a4be1b0c02918afeb0ca8c613f6da9ba7cf9157293733e2349f4f73a81ac"
+  },
+  {
+    "archivo_svg": "ER_04_autoria.svg",
+    "archivo_png": "ER_04_autoria.png",
+    "titulo": "Relaciones físicas con la persona que realiza cada acción",
+    "nota": "Siete FK de autoría hacia users. La opcionalidad se obtiene del catálogo real: la eliminación de una cuenta preserva el expediente anulando la referencia. Las reglas del servidor y las etiquetas históricas complementan la FK.",
+    "ancho_cm": 23,
+    "alto_cm": 12.266666666666667,
+    "tamano_minimo_pt": 10.87,
+    "fuente": "Times New Roman",
+    "etiquetas": [
+      {
+        "texto": "app.users",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "email [único]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "full_name",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "is_active",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "is_system_protected",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.metadata_snapshots",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "captured_by_user_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.analysis_catalogs",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "updated_by_user_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.business_need_reviews",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "created_by_user_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.bi_proposals",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "created_by_user_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "reviewed_by_user_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.semantic_advice",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "created_by_user_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.etl_executions",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "created_by_user_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "Siete FK opcionales con ON DELETE SET NULL. No significa que la interfaz permita omitir la sesión.",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "Las etiquetas históricas guardadas en varias entidades no son nuevas FK ni usuarios duplicados.",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      }
+    ],
+    "sha256_svg": "a05606ef7fca95fa06278191c76ba633ec3f60f3636103c43f25f3a5025b4ca0",
+    "archivo_pdf": "ER_04_autoria.pdf",
+    "png_dimensiones_px": [
+      2717,
+      1449
+    ],
+    "png_rgb": true,
+    "sha256_png": "0d03fa692490d5f87b805d715c32986c43e220ff902cd37c0dd799d3e9ed22fa",
+    "sha256_pdf": "2a8e37daa02bf657254b3b33e96fa31a33d5b7a32f2149c46c36795f24390c05"
+  },
+  {
+    "archivo_svg": "ER_00_recorrido_identidades.svg",
+    "archivo_png": "ER_00_recorrido_identidades.png",
+    "titulo": "Identidades principales que conectan fuente, diseño y ejecución",
+    "nota": "Vista inicial de las identidades principales; no incluye todas las FK. El inventario y los cuatro esquemas de área contienen las 18 entidades de app y las 24 relaciones físicas, sin deducir relaciones por parecido de nombres.",
+    "ancho_cm": 23,
+    "alto_cm": 12.266666666666667,
+    "tamano_minimo_pt": 10.87,
+    "fuente": "Times New Roman",
+    "etiquetas": [
+      {
+        "texto": "app.data_connections",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "database_name",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.metadata_snapshots",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "data_connection_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.bi_proposals",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "metadata_snapshot_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "source_proposal_id [FK propia]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.analysis_catalogs",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "data_connection_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "configuration_document [JSONB]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.business_need_reviews",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "metadata_snapshot_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "assessment_document [JSONB]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "app.etl_executions",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "id [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "proposal_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "metadata_snapshot_id [FK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "0..*",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "1",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "Vista de las FK principales; seguridad, secretos, asesoría y autoría se detallan en ER_01 a ER_04.",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "Una propuesta aprobada y una ejecución son registros distintos. El datamart físico no es el documento JSON.",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      }
+    ],
+    "sha256_svg": "4620ffdd9a7ec54ded066cf94cb57f3ef1d0a67f9dc8f75c46a46a3b02530ad8",
+    "archivo_pdf": "ER_00_recorrido_identidades.pdf",
+    "png_dimensiones_px": [
+      2717,
+      1449
+    ],
+    "png_rgb": true,
+    "sha256_png": "d7eb8071939bac401951fdcd313edc8e5fd33d11b45572976dc84264e2c2e904",
+    "sha256_pdf": "209c9e23381d1906c0efe15ce5658d1b7b1ee4ecb55e11ffedf3170440d14013"
+  },
+  {
+    "archivo_svg": "ER_05_datamart_e21.svg",
+    "archivo_png": "ER_05_datamart_e21.png",
+    "titulo": "Estructura física conservada del datamart, ejecución 21",
+    "nota": "Todas las columnas de las cinco tablas físicas observadas. Los nombres y atributos corresponden a esta ejecución, no son un modelo fijo universal. Las líneas discontinuas representan la unión que efectúa el motor entre dim_*_sk y surrogate_key; la base no las impone como FK. No se atribuyen cardinalidades garantizadas a esas líneas.",
+    "ancho_cm": 23,
+    "alto_cm": 12.266666666666667,
+    "tamano_minimo_pt": 10.87,
+    "fuente": "Times New Roman",
+    "etiquetas": [
+      {
+        "texto": "dim_producto",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "surrogate_key [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "productid",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "name",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "sizeunitmeasurecode",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "productnumber",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "weightunitmeasurecode",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "nombre_producto",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "tipo_producto",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "etl_execution_id",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "dim_cliente",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "surrogate_key [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "customerid",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "accountnumber",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "nombre_cliente",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "tipo_cliente",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "etl_execution_id",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "dim_fecha",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "surrogate_key [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "orderdate",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "anio",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "trimestre",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "mes",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "dia",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "etl_execution_id",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "dim_territorio",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "surrogate_key [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "territoryid",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "countryregioncode",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "group",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "name",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "nombre_territory_dimension",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "tipo_territory_dimension",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "etl_execution_id",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "group_es",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "fact_ventas",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "salesorderid",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "salesorderdetailid",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "importe_total_de_l_neas",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "cantidad_de_unidades",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "n_mero_de_pedidos_distintos",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "dim_fecha_sk",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "dim_producto_sk",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "dim_cliente_sk",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "dim_territorio_sk",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "etl_execution_id",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "mart_ventas_e21: líneas discontinuas = enlaces lógicos; NO son restricciones FK de PostgreSQL.",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "Las dimensiones tienen PK; fact_ventas no tiene PK ni FK. etl_execution_id tampoco tiene FK a app.",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      }
+    ],
+    "sha256_svg": "db0328b546cc373ae1b7dfbd8771c5b95bffdf592bfbf8cd4aee14700cb99182",
+    "archivo_pdf": "ER_05_datamart_e21.pdf",
+    "png_dimensiones_px": [
+      2717,
+      1449
+    ],
+    "png_rgb": true,
+    "sha256_png": "91e07883b25485d71d1a80b1b35ceade515fa99b5868abe73c80c620b664f34c",
+    "sha256_pdf": "cdefeb2099d83e77d2e5753248419959754bbad89c88b9a05d0619345b03fad7"
+  },
+  {
+    "archivo_svg": "ER_05_datamart_e22.svg",
+    "archivo_png": "ER_05_datamart_e22.png",
+    "titulo": "Estructura física conservada del datamart, ejecución 22",
+    "nota": "Todas las columnas de las cinco tablas físicas observadas. Los nombres y atributos corresponden a esta ejecución, no son un modelo fijo universal. Las líneas discontinuas representan la unión que efectúa el motor entre dim_*_sk y surrogate_key; la base no las impone como FK. No se atribuyen cardinalidades garantizadas a esas líneas.",
+    "ancho_cm": 23,
+    "alto_cm": 12.266666666666667,
+    "tamano_minimo_pt": 10.87,
+    "fuente": "Times New Roman",
+    "etiquetas": [
+      {
+        "texto": "dim_producto",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "surrogate_key [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "stockitemid",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "stockitemname",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "nombre_producto",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "tipo_producto",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "etl_execution_id",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "dim_cliente",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "surrogate_key [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "customerid",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "customername",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "nombre_cliente",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "tipo_cliente",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "etl_execution_id",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "dim_fecha",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "surrogate_key [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "invoicedate",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "anio",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "trimestre",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "mes",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "dia",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "etl_execution_id",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "dim_territorio",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "surrogate_key [PK]",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "stateprovinceid",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "stateprovincename",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "stateprovincecode",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "salesterritory",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "nombre_territorio",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "tipo_territorio",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "etl_execution_id",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "fact_ventas",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "invoicelineid",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "importe_total_de_l_nea",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "unidades_totales",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "facturas_distintas",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "dim_fecha_sk",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "dim_producto_sk",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "dim_cliente_sk",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "dim_territorio_sk",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "etl_execution_id",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "mart_ventas_e22: líneas discontinuas = enlaces lógicos; NO son restricciones FK de PostgreSQL.",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      },
+      {
+        "texto": "Las dimensiones tienen PK; fact_ventas no tiene PK ni FK. etl_execution_id tampoco tiene FK a app.",
+        "tamano_svg": 15,
+        "tamano_a_23cm_pt": 10.87
+      }
+    ],
+    "sha256_svg": "a22cd042cdc3a561fa9dfe9f39a997b63f148f122892a6b844cf0fe35988d587",
+    "archivo_pdf": "ER_05_datamart_e22.pdf",
+    "png_dimensiones_px": [
+      2717,
+      1449
+    ],
+    "png_rgb": true,
+    "sha256_png": "31177afb17cb6749d93edbdc1cbdbd39c3169a499ad2550e9e2a5b46a1e53014",
+    "sha256_pdf": "d53e006da2fd51dc074cd9a0a4f24509e594ef218142cf2f26f1c9c518cc38db"
+  },
+  {
+    "archivo_svg": "Arquitectura_plataforma.svg",
+    "archivo_png": "Arquitectura_plataforma.png",
+    "titulo": "Arquitectura de la plataforma inteligente de datamarts de ventas",
+    "nota": "Arquitectura reutilizada desde la revisión final legible: interfaz React, servidor FastAPI, fuentes SQL Server de solo lectura, PostgreSQL y proveedor de IA configurable. La IA propone y explica; el servidor comprueba y una persona autorizada aprueba. La carga se confirma por separado.",
+    "ancho_cm": 23,
+    "alto_cm": 12.266666666666667,
+    "tamano_minimo_pt": 10.87,
+    "fuente": "Times New Roman",
+    "origen": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/revision-capitulo3-20261117/nueva_revision/arquitectura",
+    "sha256_svg": "3dae56272339bdebed9dcd3d4823dc32d30a0edaa1cbc0b59b245f35c56081a3",
+    "archivo_pdf": "Arquitectura_plataforma.pdf",
+    "png_dimensiones_px": [
+      2717,
+      1449
+    ],
+    "png_rgb": true,
+    "sha256_png": "42e0cf4be4db1f9e29257cbe1525f8a74fef83c0b78ac27851dc200dfb0ace78",
+    "sha256_pdf": "74a1d3d7db7717e47ae61204ab90a4ce39ab8651c3696d3cd1edf78fd4979eaf"
+  }
+]

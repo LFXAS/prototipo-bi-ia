@@ -1,0 +1,230 @@
+\chapter{Comprender una venta antes de calcular indicadores}
+Una operación comercial puede incluir un pedido, una factura, una entrega, un pago y una devolución. Son hechos relacionados, pero no equivalentes. La pregunta de negocio debe señalar qué evento se analiza y qué fecha corresponde a ese evento. Un sistema puede conservar el pedido sin disponer de una prueba de entrega o de cobro.
+
+Una cabecera representa el documento comercial y suele reunir su fecha y cliente. Sus líneas representan productos o servicios y cantidades. Un documento con tres líneas sigue siendo un documento. Esta diferencia determina la granularidad del datamart y la fórmula del número de transacciones.
+
+Los ejemplos numéricos de este capítulo son didácticos e inventados para practicar en papel. Los resultados comprobados de AdventureWorks y WideWorldImporters se presentan por separado en los casos del sistema.
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\RaggedRight\sffamily\bfseries\large\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000 Vocabulario básico para seguir el recorrido\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Concepto} & \textbf{Explicación práctica} & \textbf{Ejemplo de decisión} \\
+\midrule
+Inteligencia de negocios o BI & Proceso de transformar datos en información comprensible para analizar una actividad. & Comparar el importe y las unidades por producto para decidir qué resultados revisar. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\section{Vocabulario básico para seguir el recorrido}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Concepto} & \textbf{Explicación práctica} & \textbf{Ejemplo de decisión} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Concepto} & \textbf{Explicación práctica} & \textbf{Ejemplo de decisión} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Inteligencia de negocios o BI & Proceso de transformar datos en información comprensible para analizar una actividad. & Comparar el importe y las unidades por producto para decidir qué resultados revisar. \\
+\addlinespace[3pt]
+Base operacional u OLTP & Base que registra las operaciones del negocio y sus relaciones. & Identificar qué tabla conserva una línea y cuál conserva la fecha de su documento. \\
+\addlinespace[3pt]
+Datamart & Conjunto de datos preparado para analizar un dominio concreto, aquí ventas. & Conservar las líneas y organizar fecha, producto, cliente y territorio para consultar indicadores. \\
+\addlinespace[3pt]
+Hecho & Registro del evento que se medirá. & Una línea de pedido o una línea de factura, según la necesidad. \\
+\addlinespace[3pt]
+Granularidad o grano & Significado exacto de una fila del hecho. & Una fila por línea evita confundir el número de líneas con el número de pedidos. \\
+\addlinespace[3pt]
+Dimensión & Eje que describe o agrupa el hecho. & Fecha, producto, cliente o territorio comercial. \\
+\addlinespace[3pt]
+Atributo & Característica de una dimensión. & Nombre, categoría o tipo, cuando la fuente y sus relaciones lo respaldan. \\
+\addlinespace[3pt]
+Medida & Dato numérico asociado al hecho y una regla de cálculo o agregación. & Cantidad, importe registrado y número de documentos distintos. \\
+\addlinespace[3pt]
+Indicador o KPI & Resultado calculado para responder una pregunta comercial. & Importe promedio por pedido calculado con el importe total y los pedidos distintos. \\
+\addlinespace[3pt]
+ETL & Extracción, transformación y carga de los datos hacia el modelo analítico. & Leer el origen, resolver claves y cargar tablas antes de conciliar los resultados. \\
+\addlinespace[3pt]
+Conciliación & Comparación de resultados equivalentes entre el origen y el destino. & Comprobar filas, unidades e importes bajo las mismas reglas. \\
+\addlinespace[3pt]
+Trazabilidad & Enlaces que permiten conocer de dónde procede un resultado y qué decisiones lo produjeron. & Relacionar una tarjeta con fuente, instantánea, propuesta y ejecución. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\RaggedRight\sffamily\bfseries\large\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000 Un ejemplo pequeño de tres líneas y dos pedidos\par}
+
+En este ejemplo el descuento es una tasa. El valor 0,10 representa 10 \%, no diez unidades monetarias. El importe bruto de una línea es precio por cantidad; su descuento monetario es precio por cantidad por tasa. Si el origen ya conserva el importe después del descuento, restarlo otra vez produciría un resultado incorrecto.
+
+La primera línea tiene importe bruto de 20,00, descuento de 2,00 e importe neto de 18,00. Las otras dos líneas tienen importes de 20,00 y 30,00. El total neto es 68,00 y la cantidad total es seis unidades. Existen tres líneas, dos pedidos distintos y dos productos.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Pedido y línea} & \textbf{Descripción} & \textbf{Datos del ejemplo} \\
+\midrule
+A, línea 1 & \textbf{Producto:} P1\par\smallskip\textbf{Cantidad:} 2 & \textbf{Precio unitario:} 10,00\par\smallskip\textbf{Tasa de descuento:} 0,10\par\smallskip\textbf{Costo unitario:} 6,00 \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\section{Un ejemplo pequeño de tres líneas y dos pedidos}
+En este ejemplo el descuento es una tasa. El valor 0,10 representa 10 \%, no diez unidades monetarias. El importe bruto de una línea es precio por cantidad; su descuento monetario es precio por cantidad por tasa. Si el origen ya conserva el importe después del descuento, restarlo otra vez produciría un resultado incorrecto.
+
+La primera línea tiene importe bruto de 20,00, descuento de 2,00 e importe neto de 18,00. Las otras dos líneas tienen importes de 20,00 y 30,00. El total neto es 68,00 y la cantidad total es seis unidades. Existen tres líneas, dos pedidos distintos y dos productos.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Pedido y línea} & \textbf{Descripción} & \textbf{Datos del ejemplo} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Pedido y línea} & \textbf{Descripción} & \textbf{Datos del ejemplo} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+A, línea 1 & \textbf{Producto:} P1\par\smallskip\textbf{Cantidad:} 2 & \textbf{Precio unitario:} 10,00\par\smallskip\textbf{Tasa de descuento:} 0,10\par\smallskip\textbf{Costo unitario:} 6,00 \\
+\addlinespace[3pt]
+A, línea 2 & \textbf{Producto:} P2\par\smallskip\textbf{Cantidad:} 1 & \textbf{Precio unitario:} 20,00\par\smallskip\textbf{Tasa de descuento:} 0,00\par\smallskip\textbf{Costo unitario:} 12,00 \\
+\addlinespace[3pt]
+B, línea 1 & \textbf{Producto:} P1\par\smallskip\textbf{Cantidad:} 3 & \textbf{Precio unitario:} 10,00\par\smallskip\textbf{Tasa de descuento:} 0,00\par\smallskip\textbf{Costo unitario:} 6,00 \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\RaggedRight\sffamily\bfseries\large\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000 Elegir la agregación y el denominador\par}
+
+Sumar sirve para magnitudes aditivas como cantidades o importes compatibles. Conteo cuenta registros con la regla definida; conteo distinto cuenta identificadores sin repetirlos dentro del grupo o filtro. Promedio divide una suma entre una cantidad de observaciones. Antes de elegirlo debe explicar qué representa una observación.
+
+Un promedio por documento o por unidad es una razón de agregados. No se obtiene tomando el promedio simple de los promedios de cada producto o territorio. Al cambiar un filtro, el sistema debe volver a calcular numerador y denominador sobre esa selección.
+
+El conteo distinto no siempre puede sumarse entre categorías. Un pedido puede contener más de un producto y aparecer en varias categorías. Tampoco debe promediar porcentajes de margen de grupos con tamaños diferentes para obtener el margen global.
+
+Si el denominador es cero, el indicador carece de un cociente válido para esa selección. No lo reemplace por uno ni confunda la ausencia de resultado con una venta cero. Revise qué información existe y cómo comunica ese estado la pantalla.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Pregunta} & \textbf{Cálculo del ejemplo} & \textbf{Resultado e interpretación} \\
+\midrule
+¿Cuánto se vendió según el importe neto del ejemplo? & 18 + 20 + 30 & 68,00 unidades monetarias. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\section{Elegir la agregación y el denominador}
+Sumar sirve para magnitudes aditivas como cantidades o importes compatibles. Conteo cuenta registros con la regla definida; conteo distinto cuenta identificadores sin repetirlos dentro del grupo o filtro. Promedio divide una suma entre una cantidad de observaciones. Antes de elegirlo debe explicar qué representa una observación.
+
+Un promedio por documento o por unidad es una razón de agregados. No se obtiene tomando el promedio simple de los promedios de cada producto o territorio. Al cambiar un filtro, el sistema debe volver a calcular numerador y denominador sobre esa selección.
+
+El conteo distinto no siempre puede sumarse entre categorías. Un pedido puede contener más de un producto y aparecer en varias categorías. Tampoco debe promediar porcentajes de margen de grupos con tamaños diferentes para obtener el margen global.
+
+Si el denominador es cero, el indicador carece de un cociente válido para esa selección. No lo reemplace por uno ni confunda la ausencia de resultado con una venta cero. Revise qué información existe y cómo comunica ese estado la pantalla.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Pregunta} & \textbf{Cálculo del ejemplo} & \textbf{Resultado e interpretación} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Pregunta} & \textbf{Cálculo del ejemplo} & \textbf{Resultado e interpretación} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+¿Cuánto se vendió según el importe neto del ejemplo? & 18 + 20 + 30 & 68,00 unidades monetarias. \\
+\addlinespace[3pt]
+¿Cuántas unidades se vendieron? & 2 + 1 + 3 & 6 unidades físicas. \\
+\addlinespace[3pt]
+¿Cuántos pedidos hubo? & Contar los identificadores distintos A y B & 2 pedidos; contar las filas daría 3 líneas. \\
+\addlinespace[3pt]
+¿Cuál es el importe promedio por pedido? & 68 / 2 & 34,00 por pedido. \\
+\addlinespace[3pt]
+¿Cuál es el importe promedio por línea? & 68 / 3 & 22,67 por línea; responde una pregunta diferente. \\
+\addlinespace[3pt]
+¿Cuál es la venta promedio por unidad física? & 68 / 6 & 11,33 por unidad; utiliza cantidades como ponderación. \\
+\addlinespace[3pt]
+¿Cuántos pedidos contienen cada producto? & P1 aparece en A y B; P2 aparece en A & 2 para P1 y 1 para P2. Su suma 3 no sustituye los 2 pedidos totales. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\section{Descuento, costo y margen necesitan significado comprobado}
+Descuento porcentual y descuento monetario son medidas diferentes. Precio de venta y costo unitario también lo son. Una columna numérica no puede intercambiarse por otra únicamente porque permita una multiplicación.
+
+En el ejemplo didáctico, el costo total sería 2 por 6,00 más 1 por 12,00 más 3 por 6,00: 42,00. Si esos costos fueran pertinentes para las ventas analizadas, el margen bruto sería 68,00 menos 42,00, es decir 26,00. El porcentaje de margen sería 26,00 dividido entre 68,00 por 100: aproximadamente 38,24 \%.
+
+Este cálculo no autoriza a llamar utilidad al margen bruto: todavía pueden faltar gastos, impuestos, devoluciones u otros componentes. Tampoco convierte un costo estándar actual en el costo histórico de una venta antigua. Primero hay que comprobar la procedencia, la fecha y el significado del costo.
+
+En una fuente distinta, un importe registrado puede incluir componentes diferentes. Mantenga un nombre neutral como importe de líneas mientras no se compruebe si corresponde a ventas netas, bruto, impuestos o descuento. La IA puede proponer una interpretación; el analista debe exigir respaldo.
+
+\section{Relacionar tablas sin multiplicar las ventas}
+Una clave primaria identifica una fila de una tabla. Una clave foránea declara que un valor apunta a otra tabla. Una clave compuesta necesita todas sus columnas. Si se omite parte de ella al relacionar tablas, pueden aparecer coincidencias múltiples.
+
+Una línea normalmente puede apuntar a una cabecera y a un producto. Al unirla con esas entidades, se espera conservar la cantidad de líneas. Si una línea encuentra dos filas en una dimensión y se duplica, también pueden duplicarse su importe y su cantidad. El aspecto correcto de un gráfico no revela ese error por sí solo.
+
+No elija una relación por la semejanza de dos nombres. Cliente comprador, cliente de facturación, ciudad de entrega y ciudad postal pueden representar papeles diferentes. Compare el objetivo comercial, la ruta declarada y el efecto sobre el grano.
+
+La fecha del hecho indica cuándo ocurrió el evento elegido. Un atributo dimensional actual no demuestra cómo era el cliente o el territorio en esa fecha. Un domicilio de entrega registrado tampoco demuestra que la mercancía haya sido entregada.
+
+\section{Periodicidad, filtros, moneda y ausencia de datos}
+La periodicidad define cómo se agrupan los resultados en el tiempo: día, semana, mes, trimestre o año. Conservar una fila por línea y mostrar ventas mensuales es compatible: el detalle físico permanece y la consulta agrupa sus valores. Elegir mensual no autoriza a eliminar la trazabilidad de las líneas.
+
+Un filtro cambia la selección sobre la que se consulta un indicador. Un ranking ordena el resultado de esa selección y puede mostrar sólo las primeras categorías. Un porcentaje calculado sobre las categorías visibles no debe presentarse como participación en toda la empresa si el universo es más amplio.
+
+La moneda debe estar comprobada. El punto o la coma decimal, un nombre en inglés o la nacionalidad de la base de demostración no prueban que el importe esté en USD. Cuando la aplicación indica moneda de origen, conserve esa identificación y explique la limitación.
+
+Un nulo significa un valor ausente o desconocido según el contexto; cero es un valor conocido. Una vista sin resultados puede deberse a filtros sin coincidencias, ausencia de una ejecución conciliada o falta de cobertura. Revise el mensaje antes de concluir que no hubo ventas.
+
+
+\IfFileExists{capturas/fundamentos_02.tex}{\input{capturas/fundamentos_02.tex}}{}

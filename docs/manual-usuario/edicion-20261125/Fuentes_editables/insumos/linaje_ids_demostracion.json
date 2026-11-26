@@ -1,0 +1,2 @@
+[{"proposal_id":129,"proposal_status":"approved","metadata_snapshot_id":2,"execution_id":21,"execution_status":"succeeded","execution_snapshot_id":2,"same_snapshot":true,"data_connection_id":1,"database_name":"AdventureWorks2022","connector_kind":"sqlserver"},
+ {"proposal_id":131,"proposal_status":"approved","metadata_snapshot_id":3,"execution_id":22,"execution_status":"succeeded","execution_snapshot_id":3,"same_snapshot":true,"data_connection_id":2,"database_name":"WideWorldImporters","connector_kind":"sqlserver"}]

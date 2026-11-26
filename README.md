@@ -199,3 +199,8 @@ La [tabla de modelos, tarifas y pruebas](docs/manual-usuario/adenda-2026-11-25/T
 identifica qué modelo se utilizó en cada caso y cómo preparar una demostración sin
 regenerar resultados publicados. Luna pasó una prueba breve de conexión; no se le
 atribuye el recorrido completo de Sol ni un costo real no medido por solicitud.
+
+El [manual completo actualizado de 272 páginas](docs/manual-usuario/edicion-20261125/LEEME_PRIMERO.md)
+integra estas funciones en la formación. La [guía de sustitución portable](docs/instalacion/portable-20261125/Guia_actualizacion_BI_portable.pdf)
+explica el próximo traslado limpio a Ubuntu y Windows/WSL. El paquete nuevo aún
+requiere construcción y verificación desde el corte elegido.

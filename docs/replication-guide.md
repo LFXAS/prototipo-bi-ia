@@ -435,3 +435,13 @@ Para actualizar una instalación existente con estos cambios, aplicar
 previamente. El seed incluye la misma definición para instalaciones limpias.
 No se borran volúmenes ni se reemplazan claves. Los tokens ya emitidos conservan
 su vencimiento anterior; cerrar e iniciar sesión permite usar la duración nueva.
+
+### Capacitación y sustitución de una instalación portable
+
+El [manual completo de 272 páginas](manual-usuario/edicion-20261125/LEEME_PRIMERO.md)
+incorpora los cambios del 25 de noviembre. Para un traslado limpio posterior, usar
+la [guía de comandos manuales](instalacion/portable-20261125/Guia_actualizacion_BI_portable.pdf)
+y los TXT separados de Ubuntu y Windows/WSL. Se distinguen imágenes, código montado,
+volúmenes, cifrado y configuración privada; las retiradas se limitan al BI antiguo
+del equipo receptor identificado. La guía no construye el paquete ni acredita una
+instalación remota. El paquete del 17 de noviembre conserva su corte anterior.

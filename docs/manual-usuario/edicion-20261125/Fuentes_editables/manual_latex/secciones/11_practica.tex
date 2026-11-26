@@ -1,0 +1,3980 @@
+\chapter{Practicar, resolver incidencias y preparar la defensa}
+\section{Practicar con las dos fuentes sin memorizar una respuesta del modelo}
+\label{unidad:PR01}
+\textbf{Para quién:} Analista de BI, Gerente comercial\par
+\textbf{Al terminar podrá:} Repetir un recorrido básico y uno avanzado en cada fuente con criterios de aceptación observables.
+
+Las cuatro fichas siguientes permiten aprender desde un alcance sencillo hasta documentos distintos, razones y roles de relación. Las básicas son ejercicios propuestos. Las avanzadas conservan objetivos y resultados de la campaña comprobada del 6 de noviembre de 2026.
+
+Las fichas avanzadas conservan como historia la campaña del 6 de noviembre: propuestas 129 y 131, ejecuciones 21 y 22. Esta edición añade una campaña del 25 de noviembre, con las propuestas 136 y 135 y las ejecuciones 24 y 23, respectivamente. Una instalación limpia recibe sus propios identificadores: no tiene que reproducir esos números.
+
+Si desea demostrar con un caso ya conservado, anuncie que consulta un expediente histórico. Si genera desde cero, diga que está realizando una ejecución nueva y registre los resultados que realmente obtenga.
+
+La campaña nueva valida recorridos concretos con OpenAI Sol; las fichas básicas siguen siendo ejercicios para practicar. No equivale a garantizar cualquier texto, cualquier modelo, cualquier motor ni éxito idéntico en una solicitud futura. Aprenda a reconocer también un rechazo correcto y a recuperar una operación sin duplicarla.
+
+\subsection{Ruta recomendada de estudio con los casos actuales}
+Primero aprenda a consultar un expediente comprobado. Después repita su formulación en una propuesta nueva, sin exigir que el modelo use las mismas palabras o que el sistema asigne el mismo número. Evalúe el significado, los requisitos y la conciliación. Los casos históricos del 6 de noviembre se conservan a continuación como material de comparación.
+
+\begin{enumerate}
+\item Fase 1, lectura sin nueva generación: consulte 136/24 de AdventureWorks y explique grano, unidades, pedidos e importe.
+\item Fase 2, contraste: consulte 135/23 de WideWorldImporters y explique la diferencia entre factura y pedido, y entre moneda de origen y USD.
+\item Fase 3, navegación: reproduzca el cambio de fuentes, filtros y retorno al respaldo.
+\item Fase 4, práctica nueva: escriba una necesidad breve con importe, unidades y documentos distintos por período y territorio. Confirme que el catálogo de esa fuente respalda el objetivo.
+\item Fase 5, supervisión: revise viabilidad, conceptos, diseño, cobertura e indicadores. Apruebe únicamente la nueva versión que cumpla.
+\item Fase 6, carga: prepare y confirme el ETL una vez; compruebe estado final, conciliación, publicación y panel. Registre los identificadores reales que obtenga.
+\item Fase 7, explicación: formule una pregunta concreta al copiloto, contraste su evidencia y exporte el mismo contexto. Registre cualquier rechazo correcto o limitación.
+\end{enumerate}
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Preparación de los dos ejercicios vigentes\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Opción} & \textbf{AdventureWorks} & \textbf{WideWorldImporters} \\
+\midrule
+Periodicidad & Mensual & Mensual \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Preparación de los dos ejercicios vigentes}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Opción} & \textbf{AdventureWorks} & \textbf{WideWorldImporters} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Opción} & \textbf{AdventureWorks} & \textbf{WideWorldImporters} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Periodicidad & Mensual & Mensual \\
+\addlinespace[3pt]
+Preguntas de negocio & Evolución temporal, productos, clientes y territorio. & Evolución temporal, productos, clientes y territorio. \\
+\addlinespace[3pt]
+Evento y granularidad & Una línea de pedido, conservando identificador del pedido. & Una línea de factura, conservando identificador de factura. \\
+\addlinespace[3pt]
+Indicadores imprescindibles & Importe total; unidades totales; pedidos distintos; importe promedio por pedido. & Importe total; unidades totales; facturas distintas; importe promedio por factura. \\
+\addlinespace[3pt]
+Límites del ejercicio & Sin costos, margen ni impuestos. USD sólo con evidencia de la fuente. & Sin costos, impuestos ni rentabilidad. Moneda de origen; ubicación actual del maestro del cliente. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+Necesidad comprobada de AdventureWorks, para copiar y revisar: Analizar mensualmente el importe registrado y las unidades de las líneas de pedidos por producto, cliente y territorio comercial. Los indicadores deben incluir importe total, unidades totales, pedidos distintos e importe promedio por pedido. Usar la fecha del pedido y el territorio comercial asociado al pedido. Identificar los clientes con nombres descriptivos de personas u organizaciones mediante relaciones declaradas. Conservar el detalle de cada línea y la trazabilidad del pedido. No calcular costos, margen ni impuestos.
+
+Necesidad comprobada de WideWorldImporters, para copiar y revisar: Analizar mensualmente el importe registrado y las unidades de las líneas de factura por producto y cliente, con el número de facturas distintas y el importe promedio por factura. Usar la fecha de emisión y, para el territorio, la provincia de la ciudad de entrega registrada del cliente. Mantener la trazabilidad de cada línea y aclarar que esa ubicación corresponde a la ficha actual del cliente. Conservar la moneda de origen sin asumir impuestos, costos ni rentabilidad.
+
+Antes de aprobar, compruebe los cuatro indicadores. Las recetas esperadas son suma del importe, suma de unidades, conteo distinto del documento e importe dividido por documentos distintos. En la campaña vigente, la plataforma completó de manera trazable el KPI de unidades a partir de una receta inequívoca. No copie un número de advertencias como criterio de aprobación: lea y justifique las que presente su nueva versión.
+
+Las rutas y los campos pueden cambiar en otra fuente. Estas fichas prueban dos aplicaciones del mismo proceso; no autorizan a fijar sus tablas, nombres ni fórmulas como lógica exclusiva de la plataforma. Para una nueva base, vuelva al esquema y al catálogo antes de reutilizar una necesidad.
+
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Referencia histórica} Dato documentado de una campaña anterior, útil para comparar si copia y alcance coinciden.
+
+\paragraph{Práctica nueva} Actividad que debe ejecutarse y registrarse; no se presenta como realizada por este manual.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Ficha de práctica & Necesidad copiable, preguntas, periodicidad, grano, indicadores y criterios de éxito. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Ficha de práctica & Necesidad copiable, preguntas, periodicidad, grano, indicadores y criterios de éxito. \\
+\addlinespace[3pt]
+Bitácora de la alumna & Registre fecha, fuente, instantánea, proveedor/modelo, propuesta, ejecución, acciones y resultados propios. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Comience por la ruta básica de la primera fuente.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Aprende el recorrido con pocas medidas.}
+\item Repita la ruta básica de la segunda fuente.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Comprueba qué se mantiene y qué cambió de evento y claves.}
+\item Use el caso avanzado AW para conteo distinto y razones.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Puede explicar diferencia entre línea y pedido.}
+\item Use el caso avanzado WWI para roles de relación.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Puede justificar comprador y ciudad de entrega y conservar su procedencia.}
+\item Compare las dos lecturas sin sumar monedas ni eventos diferentes.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Comprende la arquitectura común y los significados propios de cada fuente.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+La IA puede ofrecer diseños distintos en cada intento. Aprenderá a revisar cada resultado, justificar las decisiones y corregir lo necesario.
+
+\subsection{Qué comprueba la plataforma}
+Cada práctica vuelve a pasar autorizaciones, viabilidad, contrato, aprobación, preparación, carga y conciliación que correspondan.
+
+\subsection{Qué decide la persona}
+La alumna ejecuta y registra; el analista supervisa; la gerencia explica utilidad y límites de la lectura.
+
+\paragraph{Resultado esperado} Cuatro fichas de trabajo con resultados propios y referencias históricas separadas.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+Los identificadores difieren del manual. & Es normal en otra instalación. Compruebe fuente, objetivo y evento; no cambie números a mano. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Los identificadores difieren del manual. & Es normal en otra instalación. Compruebe fuente, objetivo y evento; no cambie números a mano. \\
+\addlinespace[3pt]
+El LLM no entrega la cantidad de KPI esperada. & Revise entradas y recetas; personalice o excluya extras y valide otra versión. No existe un número universal de indicadores. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+Registre la evidencia de una práctica y clasifique qué es generación nueva y qué es consulta histórica.
+
+\textbf{Respuesta orientativa.} La evidencia debe permitir reconocer fecha, fuente, propuesta y expediente, con resultado real y no sólo una captura antigua.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿Se deben forzar las cifras del manual?} No. Son referencias de una copia y alcance concretos; su ejecución debe conciliar datos reales.
+
+\paragraph{¿La universalidad obliga a usar la misma relación en ambas bases?} No. El proceso es común; las relaciones y significados dependen de metadatos y decisiones verificadas.
+
+\subsection{Casos para practicar}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000 Ruta básica AdventureWorks unidades por mes y producto\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+Identificación de práctica & P-AW-B \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsubsection{Ruta básica AdventureWorks unidades por mes y producto}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Identificación de práctica & P-AW-B \\
+\addlinespace[3pt]
+Nivel & Inicio \\
+\addlinespace[3pt]
+Fuente & AdventureWorks 2022 \\
+\addlinespace[3pt]
+Estado de la evidencia & Ejercicio nuevo propuesto para las alumnas; no ejecutado en esta revisión documental. \\
+\addlinespace[3pt]
+Preguntas de negocio & Evolución de ventas en el tiempo y desempeño por producto, según las etiquetas disponibles del catálogo de esa fuente. \\
+\addlinespace[3pt]
+Periodicidad & Mensual \\
+\addlinespace[3pt]
+Granularidad & Línea de pedido \\
+\addlinespace[3pt]
+Indicadores & Suma de unidades; las salidas adicionales se revisan y excluyen si no son necesarias. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\paragraph{Necesidad para la práctica} Conservar cada línea de pedido de venta para comparar mensualmente la suma de unidades por producto. Usar la fecha del pedido y un nombre de producto comprobable. Mantener la referencia de cada línea a su pedido. Limitar esta práctica al total de unidades y su evolución; no interpretar estos registros como facturas, cobros o pronósticos.
+
+\paragraph{Referencia numérica} No se asigna un resultado predeterminado a una ejecución no realizada. Si la copia y alcance equivalen al caso histórico, el total global de referencia es 274.914 unidades; debe conciliarse el caso propio.
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Criterios de éxito\par}
+\begin{itemize}
+\item Objetivo conservado sin ampliar el evento.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Criterios de éxito}
+\begin{itemize}
+\item Objetivo conservado sin ampliar el evento.
+\item Grano de línea y fecha del pedido verificados.
+\item Producto descriptivo y ruta sin multiplicación.
+\item Conciliación del universo nuevo.
+\item Panel por unidades y mes; no se exige que la IA produzca una cantidad fija de tarjetas.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000 Ruta avanzada AdventureWorks documentos distintos y razón por pedido\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+Identificación de práctica & P-AW-A \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsubsection{Ruta avanzada AdventureWorks documentos distintos y razón por pedido}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Identificación de práctica & P-AW-A \\
+\addlinespace[3pt]
+Nivel & Intermedio \\
+\addlinespace[3pt]
+Fuente & AdventureWorks 2022 \\
+\addlinespace[3pt]
+Estado de la evidencia & Caso histórico comprobado el 6 de noviembre de 2026: propuesta 129, ejecución 21. Repetición por las alumnas pendiente. \\
+\addlinespace[3pt]
+Preguntas de negocio & Tiempo, producto, cliente y territorio. Revise el catálogo propio antes de seleccionarlas. \\
+\addlinespace[3pt]
+Periodicidad & Mensual \\
+\addlinespace[3pt]
+Granularidad & Línea de pedido \\
+\addlinespace[3pt]
+Indicadores & Importe registrado total; unidades totales; pedidos distintos; importe total/pedidos distintos. \\
+\addlinespace[3pt]
+Pregunta para el copiloto & Resume las unidades vendidas en 2013 para Northwest. Indica el total y el mes con mayor cantidad, sin atribuir causas ni mezclar importes. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\paragraph{Necesidad para la práctica} Conservar cada línea de pedido de venta en un datamart. Para priorizar productos y territorios, comparar mensualmente cuatro indicadores: suma del importe registrado de las líneas, suma de unidades, conteo de identificadores de pedido distintos e importe total dividido entre pedidos distintos. Usar fecha y territorio comercial del pedido, producto y cliente con nombre verificable. Los rankings comparan sumas por entidad. Mantener la trazabilidad de cada línea al pedido. La moneda se reportará sólo si se comprueba en la fuente.
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Rutas que deben comprobarse\par}
+\begin{itemize}
+\item Fecha y territorio comercial del pedido, con territorio procedente de Sales.SalesTerritory.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Rutas que deben comprobarse}
+\begin{itemize}
+\item Fecha y territorio comercial del pedido, con territorio procedente de Sales.SalesTerritory.
+\item Producto y cliente con nombre verificable; clave de línea y pedido conservadas.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Pasos específicos\par}
+\begin{itemize}
+\item Use el objetivo exacto y pase por los cinco pasos del asistente.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Pasos específicos}
+\begin{itemize}
+\item Use el objetivo exacto y pase por los cinco pasos del asistente.
+\item Revise que la cuenta del documento use conteo distinto y que la razón lo use como denominador.
+\item No agregue costos o margen para igualar un número de tarjetas.
+\item Apruebe únicamente cero errores y avisos comprendidos; complete los cinco pasos de materialización.
+\item Consulte primero global, luego 2013/Northwest.
+\item En Vista analítica elija unidades; lea tabla mensual; pregunte al chat por total y mes líder.
+\item Exporte y abra PDF y Excel con ese mismo alcance.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\normalfont\normalsize\bfseries\hyphenpenalty=10000\exhyphenpenalty=10000 Resultados del caso histórico\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+Fecha & 2026-11-06 \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\paragraph{Resultados del caso histórico}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Fecha & 2026-11-06 \\
+\addlinespace[3pt]
+Propuesta & 129 \\
+\addlinespace[3pt]
+Ejecución & 21 \\
+\addlinespace[3pt]
+Filas de origen & 121317 \\
+\addlinespace[3pt]
+Filas de destino & 121317 \\
+\addlinespace[3pt]
+Diferencia de filas & 0 \\
+\addlinespace[3pt]
+Tablas & 5 \\
+\addlinespace[3pt]
+Interpretación de etiquetas & Europe, North America y Pacific publicadas como Europa, América del Norte y Pacífico; AU, CA, DE, FR, GB, US excluidos de traducción. \\
+\addlinespace[3pt]
+Exportación & PDF de 6 páginas y Excel de 6 hojas de la Vista analítica por unidades 2013/Northwest; observación histórica de etiqueta genérica de razón monetaria conservada. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\normalfont\normalsize\bfseries\hyphenpenalty=10000\exhyphenpenalty=10000 Selección completa\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+Importe exacto & 109846381.399888 \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\paragraph{Selección completa}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Importe exacto & 109846381.399888 \\
+\addlinespace[3pt]
+Moneda & USD comprobado \\
+\addlinespace[3pt]
+Unidades & 274914 \\
+\addlinespace[3pt]
+Pedidos distintos & 31465 \\
+\addlinespace[3pt]
+Importe por pedido exacto & 3491.065672966407 \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\normalfont\normalsize\bfseries\hyphenpenalty=10000\exhyphenpenalty=10000 Selección filtrada\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+Año & 2013 \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\paragraph{Selección filtrada}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Año & 2013 \\
+\addlinespace[3pt]
+Territorio & Northwest \\
+\addlinespace[3pt]
+Importe exacto & 6015174.735836 \\
+\addlinespace[3pt]
+Unidades & 17452 \\
+\addlinespace[3pt]
+Pedidos distintos & 2053 \\
+\addlinespace[3pt]
+Importe por pedido exacto & 2929.943855740867 \\
+\addlinespace[3pt]
+Mes de mayor cantidad & junio de 2013 \\
+\addlinespace[3pt]
+Unidades del mes de mayor cantidad & 2494 \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Criterios de éxito\par}
+\begin{itemize}
+\item Mismo evento, grano y roles del caso.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Criterios de éxito}
+\begin{itemize}
+\item Mismo evento, grano y roles del caso.
+\item Conciliación sin diferencia.
+\item Cuatro indicadores revisados; no promedio de línea rotulado como promedio por pedido.
+\item Unidad demostrada y límites de pedido conservados.
+\item Valores del panel, chat y archivos contrastados con la selección.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000 Ruta básica WideWorldImporters facturas y unidades por mes\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+Identificación de práctica & P-WWI-B \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsubsection{Ruta básica WideWorldImporters facturas y unidades por mes}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Identificación de práctica & P-WWI-B \\
+\addlinespace[3pt]
+Nivel & Inicio \\
+\addlinespace[3pt]
+Fuente & WideWorldImporters \\
+\addlinespace[3pt]
+Estado de la evidencia & Ejercicio nuevo propuesto para las alumnas; no ejecutado en esta revisión documental. \\
+\addlinespace[3pt]
+Preguntas de negocio & Tiempo y producto según el catálogo propio. \\
+\addlinespace[3pt]
+Periodicidad & Mensual \\
+\addlinespace[3pt]
+Granularidad & Línea de factura \\
+\addlinespace[3pt]
+Indicadores & Suma de unidades; otras salidas se revisan antes de materializar. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\paragraph{Necesidad para la práctica} Conservar cada línea de factura para comparar mensualmente la suma de unidades facturadas por producto. Usar la fecha de emisión y el producto con nombre verificable. Mantener el identificador de factura y el de línea para conservar la trazabilidad. Limitar la práctica a unidades y evolución; no afirmar moneda, cobro, utilidad ni entrega realizada.
+
+\paragraph{Referencia numérica} No se inventa un resultado para esta ejecución nueva. El caso histórico completo WWI 22 conservó 8.950.628 unidades; sólo sirve de contraste si copia y alcance son equivalentes.
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Criterios de éxito\par}
+\begin{itemize}
+\item La propuesta usa facturación y fecha de emisión, no pedidos como sustituto.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Criterios de éxito}
+\begin{itemize}
+\item La propuesta usa facturación y fecha de emisión, no pedidos como sustituto.
+\item Producto descriptivo y línea identificable.
+\item No se añade moneda ni utilidad por intuición.
+\item Carga conciliada y panel en unidades.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000 Ruta avanzada WideWorldImporters roles de cliente y territorio\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+Identificación de práctica & P-WWI-A \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsubsection{Ruta avanzada WideWorldImporters roles de cliente y territorio}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Identificación de práctica & P-WWI-A \\
+\addlinespace[3pt]
+Nivel & Intermedio/avanzado \\
+\addlinespace[3pt]
+Fuente & WideWorldImporters \\
+\addlinespace[3pt]
+Estado de la evidencia & Caso histórico comprobado el 6 de noviembre de 2026: propuesta 131, ejecución 22; dos correcciones guiadas sucesivas. Repetición por las alumnas pendiente. \\
+\addlinespace[3pt]
+Preguntas de negocio & Tiempo, producto, cliente y territorio en el catálogo WWI. \\
+\addlinespace[3pt]
+Periodicidad & Mensual \\
+\addlinespace[3pt]
+Granularidad & Línea de factura \\
+\addlinespace[3pt]
+Indicadores & Importe registrado; unidades; facturas distintas; importe total/facturas distintas. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\paragraph{Necesidad para la práctica} Diseñar un datamart cuyo grano físico sea una línea de factura. Sobre ese detalle, resumir mensualmente el importe registrado de la línea, las unidades y las facturas distintas por producto y cliente. Usar la fecha de emisión. Para el territorio, usar la provincia de la ciudad de entrega registrada en la ficha del cliente y aclarar que no representa necesariamente su ubicación histórica. Conservar el importe de origen sin asumir moneda, utilidad ni composición fiscal. Limitar los indicadores a importe total, unidades totales, facturas distintas e importe promedio por factura. Los rankings deben comparar totales por producto; el máximo de una sola línea no identifica al producto líder.
+
+\paragraph{Pregunta para el copiloto} Resume el importe, las unidades y las facturas distintas en 2015 para California. Explica el denominador del importe por factura y qué significa la provincia usada, sin asumir moneda ni entrega realizada.
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Rutas que deben comprobarse\par}
+\begin{itemize}
+\item Sales.InvoiceLines\(\rightarrow\)Sales.Invoices por la relación de factura.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Rutas que deben comprobarse}
+\begin{itemize}
+\item Sales.InvoiceLines\(\rightarrow\)Sales.Invoices por la relación de factura.
+\item Cliente comprador: Invoices.CustomerID\(\rightarrow\)Customers, no BillToCustomerID para esta necesidad.
+\item Territorio: Customers.DeliveryCityID\(\rightarrow\)Cities.StateProvinceID\(\rightarrow\)StateProvinces, no PostalCityID para esta necesidad.
+\item La provincia es el destino dimensional; una elección intermedia puede precisar la ruta sin reemplazarla por ciudad.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Pasos específicos\par}
+\begin{itemize}
+\item Use el objetivo exacto y revise viabilidad.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Pasos específicos}
+\begin{itemize}
+\item Use el objetivo exacto y revise viabilidad.
+\item Compruebe grano de factura, fecha de emisión, medidas y cuatro indicadores.
+\item Si la generación usa otro rol, abra Personalización y Resolver una relación con evidencia.
+\item Elija Cliente y Invoices.CustomerID\(\rightarrow\)Customers; justifique que se analiza al comprador; cree una versión con relación corregida.
+\item Revise el nuevo resultado; elija Territorio y Customers.DeliveryCityID\(\rightarrow\)Cities; justifique ubicación registrada de entrega; cree otra versión.
+\item Confirme que se conserva CustomerID y la provincia final de StateProvinces. No acepte una vía postal o de facturación sólo porque mantiene filas.
+\item Apruebe y materialice si cumple; revise conciliación y divisa.
+\item En analítica elija 2015/California, contraste cuatro indicadores; pregunte al chat sobre alcance, denominador y límites; exporte y abra archivos.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\normalfont\normalsize\bfseries\hyphenpenalty=10000\exhyphenpenalty=10000 Resultados del caso histórico\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+Fecha & 2026-11-06 \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\paragraph{Resultados del caso histórico}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Fecha & 2026-11-06 \\
+\addlinespace[3pt]
+Propuesta & 131 \\
+\addlinespace[3pt]
+Ejecución & 22 \\
+\addlinespace[3pt]
+Filas de origen & 228265 \\
+\addlinespace[3pt]
+Filas de destino & 228265 \\
+\addlinespace[3pt]
+Diferencia de filas & 0 \\
+\addlinespace[3pt]
+Tablas & 5 \\
+\addlinespace[3pt]
+Exportación & PDF de 6 páginas y Excel de 6 hojas/4 gráficos de la vista filtrada; es un ejemplo histórico, no formato fijo. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\normalfont\normalsize\bfseries\hyphenpenalty=10000\exhyphenpenalty=10000 Selección completa\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+Importe exacto & 198043439.45 \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\paragraph{Selección completa}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Importe exacto & 198043439.45 \\
+\addlinespace[3pt]
+Moneda & moneda de origen; sin código único demostrado \\
+\addlinespace[3pt]
+Unidades & 8950628 \\
+\addlinespace[3pt]
+Facturas distintas & 70510 \\
+\addlinespace[3pt]
+Importe por factura exacto & 2808.7283995177986 \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\normalfont\normalsize\bfseries\hyphenpenalty=10000\exhyphenpenalty=10000 Selección filtrada\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+Año & 2015 \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\paragraph{Selección filtrada}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Año & 2015 \\
+\addlinespace[3pt]
+Territorio & California \\
+\addlinespace[3pt]
+Lineas & 3771 \\
+\addlinespace[3pt]
+Importe exacto & 3191769.11 \\
+\addlinespace[3pt]
+Unidades & 142247 \\
+\addlinespace[3pt]
+Facturas distintas & 1179 \\
+\addlinespace[3pt]
+Importe por factura exacto & 2707.1832994062765 \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\normalfont\normalsize\bfseries\hyphenpenalty=10000\exhyphenpenalty=10000 Fecha dimension\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+Fechas unicas & 1069 \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\paragraph{Fecha dimension}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Fechas unicas & 1069 \\
+\addlinespace[3pt]
+Documentos origen & 70510 \\
+\addlinespace[3pt]
+Duplicados controlados & 69441 \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Criterios de éxito\par}
+\begin{itemize}
+\item Evento de facturación con fecha de emisión.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Criterios de éxito}
+\begin{itemize}
+\item Evento de facturación con fecha de emisión.
+\item Rutas exactas de comprador y ciudad de entrega registradas.
+\item Facturas distintas, no conteo de líneas.
+\item La moneda no se convierte en USD sin evidencia.
+\item No se atribuyen ubicación histórica, entrega efectiva o composición fiscal no demostradas.
+\item No se reutiliza el filtro del expediente legado 19 como oráculo del 22.
+\end{itemize}
+
+
+\IfFileExists{capturas/PR01.tex}{\input{capturas/PR01.tex}}{}
+\section{Costos, descuentos y márgenes: una ampliación que exige evidencia}
+\label{unidad:BI08}
+\textbf{Para quién:} Analista de BI, Gerente comercial\par
+\textbf{Al terminar podrá:} Reconocer cuándo se puede ampliar el análisis financiero y cuándo debe limitarse.
+
+Los casos finales anteriores se centraron en importe, unidades, documentos y razones. No acreditan automáticamente un margen histórico. Si se necesita rentabilidad, primero se deben comprobar costos compatibles con la venta y su fecha.
+
+Un costo unitario actual del catálogo puede servir de referencia, pero no se convierte por su nombre en el costo real histórico de cada línea vendida. Comparar ese costo con un importe de otro alcance puede producir un cálculo numérico correcto y una interpretación comercial incorrecta.
+
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Descuento monetario} Importe derivado de una base y una tasa; la tasa por sí sola no es dinero.
+
+\paragraph{Venta bruta} Precio por cantidad antes del descuento cuando esa es la receta comprobada.
+
+\paragraph{Venta neta de un descuento} Requiere identificar qué deducción se aplica y si el importe de origen ya la contiene; no descontar dos veces.
+
+\paragraph{Costo total} Costo unitario comparable \(\times\) unidades, o concepto total directo verificado; requiere una base coherente.
+
+\paragraph{Margen bruto} Diferencia entre importe de venta y costo comparable del mismo alcance.
+
+\paragraph{Porcentaje de margen} Margen \(\div\) importe de venta del mismo alcance \(\times\) 100, con divisor cero protegido.
+
+\paragraph{Comparabilidad} Mismo evento, unidad, moneda, período y criterio de valoración para los componentes.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Fórmula y Origen & Deben mostrar entradas reales; no normalizar por nombre únicamente. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Fórmula y Origen & Deben mostrar entradas reales; no normalizar por nombre únicamente. \\
+\addlinespace[3pt]
+Cobertura de necesidad & Reconoce si costo o margen se resuelve o queda fuera. \\
+\addlinespace[3pt]
+Ajuste de seguridad & Puede corregir una tasa usada como importe, pero no inventa la evidencia económica ausente. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Formule el objetivo aclarando qué costo desea usar y en qué condición temporal.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Se distingue costo real, costo estándar actual u otra referencia.}
+\item Revise viabilidad y entradas para costo, importe, cantidad y descuento.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Si faltan datos, la salida se limita.}
+\item Compruebe cálculos por fila y agregados.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Evita sumar tasas como dinero o promediar márgenes sin ponderación.}
+\item Apruebe sólo si el significado comparable puede defenderse.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} No se maquilla un bloqueo de calidad comercial.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+Sugiere recetas y explicaciones dentro del contexto. No puede demostrar costos históricos no disponibles a través de un texto convincente.
+
+\subsection{Qué comprueba la plataforma}
+Existencia, tipo, semántica implementada, recetas y relaciones. La revisión humana sigue siendo necesaria para condiciones económicas y temporalidad no acreditadas por el modelo.
+
+\subsection{Qué decide la persona}
+El analista decide qué costo es aceptable y qué límite debe declararse; la gerencia no debe recibir como utilidad real un indicador referencial.
+
+\paragraph{Resultado esperado} Una ampliación justificable o un alcance financiero expresamente limitado.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+Se afirma margen sólo porque existen columnas Sales y Cost. & Compare procedencia, fecha, moneda y evento antes de usarlo. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Se afirma margen sólo porque existen columnas Sales y Cost. & Compare procedencia, fecha, moneda y evento antes de usarlo. \\
+\addlinespace[3pt]
+El importe original ya incluye descuento. & No aplique la tasa dos veces. Revise la fórmula y definición de origen. \\
+\addlinespace[3pt]
+Se solicitan impuestos o utilidad fiscal sin evidencia. & Limite la necesidad; no infiera composición fiscal por el nombre importe. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+Dos líneas tienen márgenes de 10 \% y 50 \% con importes de 900 y 100. Calcule el margen agregado.
+
+\textbf{Respuesta orientativa.} 90+50=140 sobre 1.000; 14 \%. El promedio simple 30 \% no representa el porcentaje global.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿La existencia de un costo comprueba su vigencia histórica?} No. Requiere evidencia temporal y criterio de valoración.
+
+\paragraph{¿Qué debe hacer si no puede justificarlo?} Declarar el límite y excluir rentabilidad o usar un indicador referencial correctamente rotulado.
+
+
+\IfFileExists{capturas/BI08.tex}{\input{capturas/BI08.tex}}{}
+\section{Resolver problemas y reconocer un rechazo correcto}
+\label{unidad:QA01}
+\textbf{Para quién:} Todos según permisos\par
+\textbf{Al terminar podrá:} Recuperar el trabajo sin saltarse los controles y registrar incidencias útiles.
+
+Que el sistema rechace una petición no siempre es un defecto. Debe rechazar estructuras inventadas, divisiones no definidas, mezclas de fuente o relaciones que contradigan el objetivo. La recuperación correcta conserva la evidencia y explica qué debe cambiar.
+
+Ante un problema registre pantalla, fecha, fuente, propuesta, expediente, acción y mensaje. No copie contraseñas, claves API o credenciales a capturas o informes.
+
+\subsection{Incidencias de esta edición: diagnóstico sencillo}
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Cómo actuar sin crear otro problema\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué significa o revisar} & \textbf{Acción segura} \\
+\midrule
+Preguntas retiradas en un borrador & El catálogo de esa fuente cambió. No es una prueba de fallo del modelo. & Revise selección, repita viabilidad y confirme el alcance antes de generar. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Cómo actuar sin crear otro problema}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué significa o revisar} & \textbf{Acción segura} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué significa o revisar} & \textbf{Acción segura} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Preguntas retiradas en un borrador & El catálogo de esa fuente cambió. No es una prueba de fallo del modelo. & Revise selección, repita viabilidad y confirme el alcance antes de generar. \\
+\addlinespace[3pt]
+Sesión vencida & Terminó su duración absoluta. La tarea del servidor puede haber continuado. & Vuelva a ingresar; consulte estado y expediente antes de repetir una carga. \\
+\addlinespace[3pt]
+Respuesta estructurada inválida o incompleta & No cumple el contrato o alcanzó un límite. No se debe usar como propuesta válida. & Conserve la necesidad; revise aviso, modelo y presupuesto. Un reintento es una nueva llamada con posible costo. \\
+\addlinespace[3pt]
+Cuota o saldo insuficiente & La cuenta del proveedor no admite otra solicitud. & Revise Usage/Billing y el proyecto API. No cambie las bases ni repita solicitudes en bucle. \\
+\addlinespace[3pt]
+Una cifra no coincide con el otro panel & Puede haber distinto origen, ejecución, año, territorio, unidad o denominador. & Compare primero el encabezado y la tabla exacta; no sume ambas fuentes para ocultar la diferencia. \\
+\addlinespace[3pt]
+No aparece un KPI obligatorio & Encontrar la columna no demuestra cobertura analítica. & Revise cobertura y receta antes de aprobar. Si quedó parcial, corrija el alcance o el diseño. \\
+\addlinespace[3pt]
+Respuesta de chat pendiente al cambiar contexto & La respuesta anterior ya no corresponde al panel actual. & Espere los datos del contexto nuevo y formule la pregunta allí. No copie la respuesta vieja como si perteneciera a la nueva fuente. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Rechazo esperado} Control que impide una operación fuera de sus condiciones.
+
+\paragraph{Regresión} Un comportamiento previamente correcto deja de cumplirse después de un cambio; necesita evidencia comparable.
+
+\paragraph{Caso no ejecutado} Prueba planificada que no debe marcarse aprobada sin realizarla.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Reintentar la misma solicitud & Para una falla de proveedor, con revisión/consentimiento vigentes; no es un atajo del contrato. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Reintentar la misma solicitud & Para una falla de proveedor, con revisión/consentimiento vigentes; no es un atajo del contrato. \\
+\addlinespace[3pt]
+Revisar necesidad & Permite aclarar alcance sin modificar los datos de origen. \\
+\addlinespace[3pt]
+Abrir resultado / Abrir expediente & Recuperan evidencia persistida antes de repetir operaciones. \\
+\addlinespace[3pt]
+Motivo / Justificación & Explicación de una decisión humana, no código para cambiar estados. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Determine en qué etapa ocurrió el problema: asistencia, diseño, aprobación, preparación, carga, semántica, panel, chat o exportación.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} No aplica el mismo remedio a todos los fallos.}
+\item Lea el mensaje y compruebe fuente, versión y estado.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Separa error de proveedor de una inconsistencia del contrato.}
+\item Recupere el resultado persistido antes de reenviar.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Evita duplicidad y consumo innecesario.}
+\item Aplique la corrección mínima de la tabla de incidencias.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} No altera huellas, reglas o datos del origen.}
+\item Repita el control afectado y registre resultado.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} La incidencia sólo se cierra con evidencia real.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+Puede fallar por formato, tiempo, cuota, capacidad o interpretación. Cambiar de proveedor puede ser una alternativa operativa, pero no debe cambiar las reglas de validación ni aprobar una respuesta inválida.
+
+\subsection{Qué comprueba la plataforma}
+Formato estructurado, requisitos de estado y permiso, coherencia de contrato y pertenencia de fuente. Los mensajes indican qué resultado no se usó o cuál acción quedó bloqueada.
+
+\subsection{Qué decide la persona}
+El operador recupera; el administrador revisa configuración; el analista corrige alcance y decisiones; la gerencia suspende conclusiones no sustentadas.
+
+\paragraph{Resultado esperado} Trabajo recuperado o incidencia documentada con un punto de corrección identificable.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+El proveedor devolvió JSON pero no cumplió el contrato. & Se descarta su uso. Reintente con la misma revisión válida o coordine proveedor probado; no cargue a mano la respuesta inválida. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+El proveedor devolvió JSON pero no cumplió el contrato. & Se descarta su uso. Reintente con la misma revisión válida o coordine proveedor probado; no cargue a mano la respuesta inválida. \\
+\addlinespace[3pt]
+La necesidad estaba respaldada pero el LLM no conserva el objetivo. & No apruebe; mantenga el texto original y reintente o corrija. Separar fallo de generación de falta de viabilidad. \\
+\addlinespace[3pt]
+Se pierde la respuesta del navegador. & Revise historial/versiones y expedientes antes de repetir; el servidor puede haber terminado. \\
+\addlinespace[3pt]
+No aparece una opción por rol. & Revise permisos con administrador; no haga que su compañera use otra identidad para simular un rol. \\
+\addlinespace[3pt]
+El filtro no da cifras. & Confirme que la combinación de año y territorio exista en el datamart; no cambie el cero a otro valor. \\
+\addlinespace[3pt]
+La respuesta del copiloto no es coherente. & Conserve pregunta, consulta interpretada, evidencia y contexto. Compare con el motor numérico y registre la corrección requerida. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+Escriba una incidencia que otra persona pueda reproducir sin conocer su contraseña.
+
+\textbf{Respuesta orientativa.} Fuente, versión, expediente, condiciones previas, pasos, resultado esperado/obtenido y captura sin secretos.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿Cambiar el modelo resuelve una ruta ambigua por sí solo?} No. La elección del rol comercial requiere evidencia y decisión humana.
+
+\paragraph{¿Un rechazo por facturación cuando se pidió pedido es siempre un defecto?} No. Puede ser un control correcto que protege el evento solicitado.
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Escenarios de comprobación y rechazo esperado\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+Caso & Cambiar AW\(\rightarrow\)WWI\(\rightarrow\)AW \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Escenarios de comprobación y rechazo esperado}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Caso & Cambiar AW\(\rightarrow\)WWI\(\rightarrow\)AW \\
+\addlinespace[3pt]
+Resultado esperado & Fuente, ejecución, filtros, chat y panel corresponden al contexto nuevo; no se conservan datos de la otra fuente. \\
+\addlinespace[3pt]
+Tipo de comprobación & Aislamiento \\
+\addlinespace[3pt]
+Estado de la evidencia & Planificada para repetición por alumnas; existen antecedentes documentados. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Caso & Abrir versión aprobada y Verificar evidencia \\
+\addlinespace[3pt]
+Resultado esperado & Lectura y verificación sin cambiar silenciosamente estado, huellas o datos. \\
+\addlinespace[3pt]
+Tipo de comprobación & Historial \\
+\addlinespace[3pt]
+Estado de la evidencia & Planificada para repetición por alumnas. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Caso & Elegir contrato histórico sin rutas actuales para nueva carga \\
+\addlinespace[3pt]
+Resultado esperado & Nueva carga bloqueada con motivo; histórico sigue consultable. \\
+\addlinespace[3pt]
+Tipo de comprobación & Rechazo esperado \\
+\addlinespace[3pt]
+Estado de la evidencia & Regla contrastada con código. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Caso & Ruta WWI de BillToCustomerID en objetivo comprador \\
+\addlinespace[3pt]
+Resultado esperado & No se acepta como sustituto; usar decisión guiada con CustomerID. \\
+\addlinespace[3pt]
+Tipo de comprobación & Semántica \\
+\addlinespace[3pt]
+Estado de la evidencia & Antecedente histórico 6 noviembre; repetición nueva pendiente. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Caso & Ruta WWI de PostalCityID en objetivo ciudad de entrega \\
+\addlinespace[3pt]
+Resultado esperado & No se acepta como sustituto; DeliveryCityID con provincia conservada. \\
+\addlinespace[3pt]
+Tipo de comprobación & Semántica \\
+\addlinespace[3pt]
+Estado de la evidencia & Antecedente histórico 6 noviembre; repetición nueva pendiente. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Caso & Volver a preparar contrato/selección ya ejecutados \\
+\addlinespace[3pt]
+Resultado esperado & Abre expediente o conflicto de duplicidad; no otra carga idéntica accidental. \\
+\addlinespace[3pt]
+Tipo de comprobación & Rechazo esperado \\
+\addlinespace[3pt]
+Estado de la evidencia & Regla contrastada con código. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Caso & Divisor de una razón cero \\
+\addlinespace[3pt]
+Resultado esperado & Sin valor/no calculable; no infinito ni porcentaje inventado. \\
+\addlinespace[3pt]
+Tipo de comprobación & Cálculo \\
+\addlinespace[3pt]
+Estado de la evidencia & Regla contrastada con código; no se modifican datos para provocarla aquí. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Caso & Divisa WWI no demostrada \\
+\addlinespace[3pt]
+Resultado esperado & Moneda de origen, con importes conservados. \\
+\addlinespace[3pt]
+Tipo de comprobación & Unidad \\
+\addlinespace[3pt]
+Estado de la evidencia & Caso 22 documentado 6 noviembre. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Caso & Pedir pronóstico para próximo período \\
+\addlinespace[3pt]
+Resultado esperado & Explica fuera del alcance sin inventar cifra futura. \\
+\addlinespace[3pt]
+Tipo de comprobación & Límite de IA \\
+\addlinespace[3pt]
+Estado de la evidencia & Ejercicio supervisado; no se promete que toda respuesta libre sea correcta. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Caso & Exportar sin lectura del panel o sin permiso de exportación \\
+\addlinespace[3pt]
+Resultado esperado & Operación rechazada por servidor; no archivo con datos no autorizados. \\
+\addlinespace[3pt]
+Tipo de comprobación & Permisos \\
+\addlinespace[3pt]
+Estado de la evidencia & Regla contrastada con código; sesión manual por rol debe registrarse aparte. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+
+\IfFileExists{capturas/QA01.tex}{\input{capturas/QA01.tex}}{}
+\section{Demostrar y defender el recorrido completo}
+\label{unidad:DEMO01}
+\textbf{Para quién:} Analista de BI, Gerente comercial, Programadoras\par
+\textbf{Al terminar podrá:} Explicar cada etapa con evidencia y responder preguntas del jurado sin prometer capacidades no implementadas.
+
+Una demostración sólida no consiste en pulsar botones rápido. Explique la decisión de negocio, muestre su traducción al modelo y compruebe el resultado. Haga pausas en los puntos donde una persona acepta una decisión.
+
+Practique primero la consulta del caso histórico y después una ejecución nueva cuando tenga tiempo y proveedor disponible. Lleve el PDF y Excel ya revisados como referencia, identificados con su fecha; no los presente como una descarga nueva si no lo es.
+
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Eficacia observable} Cumplimiento de criterios funcionales y numéricos del caso.
+
+\paragraph{Eficiencia comparativa} Requeriría tareas equivalentes y medidas de tiempo/esfuerzo/costo frente a una referencia. No se deduce de que el prototipo funcione.
+
+\paragraph{Supervisión} Decisiones humanas explícitas entre asistencia de IA, reglas determinísticas y ejecución controlada.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Ficha de caso & Propósito, fuente, objetivo, grano, indicadores, rutas, unidad y filtros. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Ficha de caso & Propósito, fuente, objetivo, grano, indicadores, rutas, unidad y filtros. \\
+\addlinespace[3pt]
+Comprobantes & Aprobación, preparación, carga, conciliación y publicación de etiquetas. \\
+\addlinespace[3pt]
+Bitácora & Estado observado, hora, identificadores y archivos realmente revisados. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Presente el problema como correspondencia entre necesidad comercial y datos disponibles.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} No afirma que faltaba IA en todas las empresas ni que la herramienta aumentó ventas.}
+\item Muestre esquema y catálogo de cada fuente.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Reconoce diferencias sin cambiar el proceso común.}
+\item Explique necesidad y viabilidad.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Distingue estructura, candidatos y límites.}
+\item Lea modelo, personalización y aprobación.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Se ven las decisiones humanas y las reglas que no pueden saltarse.}
+\item Muestre preparación, carga y conciliación, nueva o histórica identificada.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} La audiencia reconoce de dónde salen los datos.}
+\item Interprete el panel, use un filtro y pida una explicación al chat.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Compara cifras y consulta interpretada sin atribuir causas.}
+\item Exporte y abra los archivos, o muestre los históricos como tales.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Cierra con contexto y trazabilidad.}
+\item Explique una restricción: pronóstico fuera del alcance, moneda no comprobada o costo no comparable.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Demuestra criterio y no infalibilidad universal.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+Asiste en formulación, sugerencias, diseño, consejo semántico, etiquetas aptas y conversación analítica. No reemplaza todos los cálculos ni la aprobación humana.
+
+\subsection{Qué comprueba la plataforma}
+Puertas de entrada, requisitos, contrato, relaciones, recetas, permisos, procedencia, carga y conciliación según el alcance implementado.
+
+\subsection{Qué decide la persona}
+La persona define, selecciona, justifica, aprueba, confirma, revisa etiquetas e interpreta el significado comercial del resultado.
+
+\paragraph{Resultado esperado} Demostración que diferencia lo propuesto, lo comprobado, lo decidido y lo ejecutado.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+El proveedor falla frente al jurado. & Explique el rechazo seguro, conserve el estado y consulte el caso histórico identificado; no diga que una ejecución nueva terminó si no ocurrió. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+El proveedor falla frente al jurado. & Explique el rechazo seguro, conserve el estado y consulte el caso histórico identificado; no diga que una ejecución nueva terminó si no ocurrió. \\
+\addlinespace[3pt]
+El jurado pregunta por otro motor o idioma. & Explique arquitectura adaptable y límites comprobados. Dos fuentes SQL Server y variantes de pruebas no certifican cualquier motor, idioma o modelo. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+Prepare una exposición de 10 minutos y otra de 25 minutos; en ambas identifique qué pasos consulta y qué pasos ejecuta.
+
+\textbf{Respuesta orientativa.} La corta puede usar expedientes históricos verificados; la larga puede generar un caso nuevo con margen para revisión sin prometer una respuesta fija.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿Qué hace inteligente al sistema?} Combina interpretación y propuestas de IA con contexto, reglas, memoria de expedientes y supervisión; no que toda acción la realice un LLM.
+
+\paragraph{¿Qué evidencia usaría para demostrar una cifra?} Fuente, propuesta, ejecución, alcance, fórmula, conciliación y tabla/reporte del mismo universo.
+
+\paragraph{¿Qué no se puede prometer?} Infalibilidad LLM, pronóstico, eficiencia comparativa no medida, compatibilidad de todos los motores ni efectos económicos reales no investigados.
+
+
+\IfFileExists{capturas/DEMO01.tex}{\input{capturas/DEMO01.tex}}{}
+\section{Preguntas para explicarlo con sus propias palabras}
+\textbf{Al terminar podrá:} Defender el propósito y las decisiones del sistema sin memorizar frases.
+
+Conteste primero sin mirar la respuesta; luego señale una pantalla, cálculo o diagrama que sostenga su explicación. Las respuestas son orientativas y deben relacionarse con el contexto realmente observado.
+
+\paragraph{¿Qué problema atiende el proyecto y cómo demostraría que lo atiende?} Ayuda a relacionar una necesidad comercial con fuentes, grano y cálculos verificables mediante un recorrido supervisado. Se demuestra siguiendo un caso y contrastando sus resultados. Que funcione no demuestra que aumente ventas ni que sea más rápido que otro método; esa comparación exigiría mediciones equivalentes.
+
+\textbf{Cómo sostener la respuesta:} Explique una decisión comercial y señale propuesta, ejecución y conciliación del caso correspondiente.
+
+\paragraph{Si un pedido tiene tres líneas, ¿cuántas filas del hecho y cuántos pedidos distintos representa?} A grano de línea son tres filas y un pedido distinto. Contar filas o sumar el identificador del pedido no da la cantidad de pedidos.
+
+\textbf{Cómo sostener la respuesta:} Dibuje un pedido con tres productos y escriba ambos conteos.
+
+\paragraph{¿Elegir Mensual cambia el detalle físico o programa una carga mensual?} Mensual indica cómo agrupar el análisis. Las filas pueden seguir siendo líneas de pedido o factura y la carga se confirma por separado. No significa que exista un programador automático.
+
+\textbf{Cómo sostener la respuesta:} Compare el grano declarado en la propuesta con la agrupación temporal del panel.
+
+\paragraph{¿Qué aprende la IA al recibir metadatos y qué todavía no está demostrado?} Recibe estructura autorizada: nombres, tipos, claves y relaciones. Esto puede respaldar una ruta o receta, pero no prueba que los valores estén completos, que un costo sea histórico o que una dirección represente una entrega realizada.
+
+\textbf{Cómo sostener la respuesta:} Abra una tabla y una relación del explorador; explique su alcance sin consultar filas de ventas.
+
+\paragraph{¿La IA arma por sí sola el catálogo de preguntas y lo copia a todas las bases?} El perfil del producto aporta cuatro orientaciones base; la persona autorizada administra preguntas y periodicidades por conexión y dominio. Las dos preguntas de costos de AdventureWorks fueron adiciones humanas históricas. Las sugerencias de necesidades del asistente no sustituyen automáticamente ese catálogo.
+
+\textbf{Cómo sostener la respuesta:} Compare ambos catálogos y justifique una pregunta apropiada para cada fuente.
+
+\paragraph{¿Qué haría con un requisito marcado como derivable?} Leer si depende de una relación declarada o de una fórmula controlada, comprobar sus entradas y conservar el grano. Una explicación candidata de IA no se convierte por sí sola en cálculo ejecutable. Si falta una decisión de negocio, hay que aclararla antes de aprobar.
+
+\textbf{Cómo sostener la respuesta:} Explique una derivación posible y sus entradas; no escriba SQL libre para quitar el aviso.
+
+\paragraph{¿Que la necesidad tenga respaldo estructural garantiza que la propuesta se genere correctamente?} No. La revisión de viabilidad y la generación son controles distintos. El proveedor puede fallar en formato, cuota o interpretación. Aceptar una limitación tampoco crea datos ausentes ni elimina los errores bloqueantes.
+
+\textbf{Cómo sostener la respuesta:} Distinga una revisión válida de una generación rechazada y registre cada estado por separado.
+
+\paragraph{¿Qué hacen la IA, la plataforma y la persona en el mismo caso?} La IA puede sugerir, interpretar y explicar. La plataforma valida referencias y contratos, construye consultas controladas y calcula. La persona define el propósito, resuelve ambigüedades, aprueba el diseño, confirma la carga y revisa el resultado.
+
+\textbf{Cómo sostener la respuesta:} Señale una acción concreta de cada participante en el asistente y en el panel.
+
+\paragraph{¿Puede llamar facturas, cobros o utilidades a las cifras de un datamart de pedidos?} Debe conservar el evento demostrado. Un pedido no prueba facturación ni cobro; un importe de venta no prueba utilidad. En WideWorldImporters el caso de referencia usa líneas de factura y en AdventureWorks líneas de pedido.
+
+\textbf{Cómo sostener la respuesta:} Lea el evento y el grano de ambas necesidades antes de comparar sus tarjetas.
+
+\paragraph{¿Por qué importan comprador, destinatario de facturación y ciudad de entrega?} Pueden representar funciones distintas aunque las relaciones sean válidas y los totales coincidan. El caso WWI pide comprador y provincia de la ciudad de entrega de su ficha actual: no sustituir por destinatario de facturación o dirección postal ni afirmar ubicación histórica.
+
+\textbf{Cómo sostener la respuesta:} Explique la ruta revisada de WWI: CustomerID, DeliveryCityID y StateProvinceID, usando las etiquetas de la interfaz.
+
+\paragraph{¿Cómo obtiene el importe promedio por pedido o factura?} Divide el importe total entre documentos distintos del mismo filtro. No usa el promedio de importes de línea ni un denominador de unidades. Si el denominador es cero, debe quedar sin valor calculable; no inventar cero, infinito o un porcentaje.
+
+\textbf{Cómo sostener la respuesta:} Compruebe numerador, denominador, unidad y filtro de una razón visible.
+
+\paragraph{¿Por qué el importe de WWI no se presenta automáticamente como dólares?} El caso conservado no demuestra un código de moneda único. Debe decir moneda de origen y conservar el importe. En AdventureWorks el caso de referencia sí comprobó USD. No se suman ambos importes como si compartieran unidad y evento.
+
+\textbf{Cómo sostener la respuesta:} Lea la unidad de las dos ejecuciones y explique el límite antes de emitir una comparación monetaria.
+
+\paragraph{¿Qué debe revisar antes de interpretar un producto líder o una participación?} Fuente, ejecución, indicador y filtros. Un ranking por sumas del conjunto no equivale al máximo de una sola línea. La participación utiliza el universo filtrado completo; el Top N no convierte al subconjunto mostrado en el total del negocio.
+
+\textbf{Cómo sostener la respuesta:} Cambie un filtro y compruebe que tarjeta, gráfico, tabla y explicación correspondan al nuevo alcance.
+
+\paragraph{¿Qué se obtiene al aprobar y qué exige cargar el datamart?} La aprobación conserva un contrato revisado. La carga necesita preparar la selección, revisar el plan, confirmar la ejecución y comprobar la conciliación. Tener una propuesta aprobada no significa que ya existan datos analíticos.
+
+\textbf{Cómo sostener la respuesta:} Muestre las identidades separadas de propuesta y ejecución sin volver a ejecutar un expediente histórico.
+
+\paragraph{¿Puede consultar o verificar una versión aprobada sin retirarla?} La consulta y la verificación deben conservar el estado. Una decisión de retiro o restauración es explícita y auditada. Si las reglas actuales requieren una versión nueva para otra carga, el histórico no se corrige sobrescribiéndolo.
+
+\textbf{Cómo sostener la respuesta:} Anote el estado antes y después de una consulta autorizada; si cambia sin decisión, registre la incidencia.
+
+\paragraph{¿Qué debe ocurrir al pasar de AdventureWorks a WideWorldImporters?} Debe cambiar el contexto de fuente y seleccionarse un resultado de esa base. Filtros, ejecución y conversación anteriores no deben interpretarse como pertenecientes a la nueva fuente. Cambiar fuente no mezcla ni desactiva ambas conexiones.
+
+\textbf{Cómo sostener la respuesta:} Repita el recorrido de ida y vuelta y lea los identificadores del encabezado antes de copiar cifras.
+
+\paragraph{¿Un menú visible concede permisos? ¿Qué puede hacer el Gerente comercial observado?} FastAPI autoriza cada operación; el menú sólo refleja permisos. El rol observado puede consultar el panel, conexiones y metadatos y exportar análisis. Consultar metadatos ayuda al selector y permite el explorador; no da escritura, aprobación ni ETL. Una cuenta con varios roles puede acumular permisos.
+
+\textbf{Cómo sostener la respuesta:} Revise la matriz de roles. Si prueba una cuenta, registre su identidad de práctica y sus roles reales; no simule gerencia usando una sesión administrativa.
+
+\paragraph{¿Qué distingue una FK real de un enlace dentro de JSON o del datamart?} La FK es una restricción del motor. Los documentos JSONB guardan diseños y evidencia y requieren validación de aplicación. En e21/e22 las dimensiones tienen PK, pero fact\_\allowbreak{}ventas no tiene PK ni FK físicas; sus enlaces a dimensiones y etl\_\allowbreak{}execution\_\allowbreak{}id son lógicos. No dibuje restricciones inexistentes.
+
+\textbf{Cómo sostener la respuesta:} Explique una línea continua de app y una discontinua de los datamarts en los diagramas.
+
+\paragraph{¿Una instalación limpia debe tener 83 tablas y las propuestas 129 y 131?} No. Ese inventario describe historial acumulado local. La estructura inicial de app se crea con migraciones y las tablas analíticas aparecen al cargar. Las propuestas y ejecuciones reciben identificadores propios; los casos 129/21 y 131/22 son referencias de una instalación, no valores que haya que forzar.
+
+\textbf{Cómo sostener la respuesta:} Registre los identificadores propios y diferencie consulta histórica de ejecución nueva.
+
+\paragraph{¿Qué dice y hace si falla el proveedor frente al jurado?} Conserva el mensaje, comprueba si la solicitud terminó y evita reenviarla mientras siga pendiente. No aprueba una respuesta inválida. Puede consultar evidencia histórica anunciándola como tal o continuar después con un proveedor autorizado y nueva revisión del destino. Un rechazo correcto no es una carga exitosa ni una prueba de que cualquier modelo funcionará.
+
+\textbf{Cómo sostener la respuesta:} Ensaye una explicación verbal de contingencia y complete un registro con estado real, sin secretos ni resultados inventados.
+
+\section{Diez minutos: leer y explicar ventas como gerente}
+\textbf{Al terminar podrá:} Explicar una decisión comercial con resultados de ambas fuentes, mostrando el contexto y sus límites.
+
+Guion de aprendizaje propuesto; no ejecutado durante esta redacción.
+
+Consulta de datos conservados y, si se realiza, chat y exportación nuevos. No genera propuestas ni ejecuta ETL.
+
+Plataforma ya preparada, con acceso autorizado y datamarts conciliados físicamente disponibles de ambas fuentes. Esta ruta no parte de una aplicación vacía.
+
+Identificar los expedientes de referencia disponibles o sus equivalentes comprobados. En la instalación documentada son AW 129/21 y WWI 131/22; en otra pueden cambiar.
+
+Usar una cuenta de demostración con rol y permisos realmente asignados. La matriz observada describe el rol; este guion no acredita una prueba previa de login con esa cuenta.
+
+Para chat nuevo, proveedor ya activo y probado y consumo autorizado. Conservar como respaldo archivos históricos revisados y rotulados con su fecha.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Tiempo previsto y alternativas\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Condición} & \textbf{Cómo organizarse} \\
+\midrule
+Tiempo total & 10 minutos de exposición; no garantiza disponibilidad del servicio externo. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Tiempo previsto y alternativas}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Condición} & \textbf{Cómo organizarse} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Condición} & \textbf{Cómo organizarse} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Tiempo total & 10 minutos de exposición; no garantiza disponibilidad del servicio externo. \\
+\addlinespace[3pt]
+Intentos chat manuales & 1 \\
+\addlinespace[3pt]
+Espera chat dentro del bloque & Como máximo el tiempo del bloque de dos minutos; no modificar el timeout técnico ni reenviar mientras siga pendiente. \\
+\addlinespace[3pt]
+Alternativa & Explicar la falla y consultar un archivo histórico identificado. Eso no completa una consulta de IA nueva. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\dimexpr\linewidth-1.7em\relax
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 0-1.} Presente la decisión: comparar unidades y documentos dentro de cada fuente. Lea la cuenta y el contexto de trabajo.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 1 minuto.\par}
+\textbf{Qué debe observar:} La audiencia entiende el propósito y sabe con qué rol real se trabaja.
+
+\textbf{Qué registrar:} Fuente y rol observados; indicar que los datos cargados son de un expediente conservado.
+
+\textbf{Si no se cumple:} Si sólo hay una sesión administrativa disponible, diga que usa administración para la lectura; no la presente como validación del rol gerente.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+4\baselineskip\relax
+\ifdim\dimen0<\textheight\Needspace{\dimen0}\fi
+\endgroup
+\subsection{Guion paso a paso}
+\begin{enumerate}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 0-1.} Presente la decisión: comparar unidades y documentos dentro de cada fuente. Lea la cuenta y el contexto de trabajo.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 1 minuto.\par}
+\textbf{Qué debe observar:} La audiencia entiende el propósito y sabe con qué rol real se trabaja.
+
+\textbf{Qué registrar:} Fuente y rol observados; indicar que los datos cargados son de un expediente conservado.
+
+\textbf{Si no se cumple:} Si sólo hay una sesión administrativa disponible, diga que usa administración para la lectura; no la presente como validación del rol gerente.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 0-1.} Presente la decisión: comparar unidades y documentos dentro de cada fuente. Lea la cuenta y el contexto de trabajo.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 1 minuto.\par}
+\textbf{Qué debe observar:} La audiencia entiende el propósito y sabe con qué rol real se trabaja.
+
+\textbf{Qué registrar:} Fuente y rol observados; indicar que los datos cargados son de un expediente conservado.
+
+\textbf{Si no se cumple:} Si sólo hay una sesión administrativa disponible, diga que usa administración para la lectura; no la presente como validación del rol gerente.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 0-1.} Presente la decisión: comparar unidades y documentos dentro de cada fuente. Lea la cuenta y el contexto de trabajo.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 1 minuto.\par}
+\textbf{Qué debe observar:} La audiencia entiende el propósito y sabe con qué rol real se trabaja.
+
+\textbf{Qué registrar:} Fuente y rol observados; indicar que los datos cargados son de un expediente conservado.
+
+\textbf{Si no se cumple:} Si sólo hay una sesión administrativa disponible, diga que usa administración para la lectura; no la presente como validación del rol gerente.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 1-3.} Abra Analítica de ventas de AdventureWorks. Seleccione el expediente correcto y el filtro 2013/Northwest; espere que termine la actualización.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} En el caso histórico equivalente: 17.452 unidades y 2.053 pedidos; el importe se expresa como USD comprobado. Las tarjetas abreviadas se contrastan con su respaldo exacto.
+
+\textbf{Qué registrar:} Captura del contexto y al menos una cifra exacta. Referencia histórica: 6.015.174,74 USD; 2.929,94 USD por pedido.
+
+\textbf{Si no se cumple:} Si el alcance o la copia no coincide, no fuerce esas cifras. Registre la diferencia o limite la lectura a lo que realmente esté disponible.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 1-3.} Abra Analítica de ventas de AdventureWorks. Seleccione el expediente correcto y el filtro 2013/Northwest; espere que termine la actualización.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} En el caso histórico equivalente: 17.452 unidades y 2.053 pedidos; el importe se expresa como USD comprobado. Las tarjetas abreviadas se contrastan con su respaldo exacto.
+
+\textbf{Qué registrar:} Captura del contexto y al menos una cifra exacta. Referencia histórica: 6.015.174,74 USD; 2.929,94 USD por pedido.
+
+\textbf{Si no se cumple:} Si el alcance o la copia no coincide, no fuerce esas cifras. Registre la diferencia o limite la lectura a lo que realmente esté disponible.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 1-3.} Abra Analítica de ventas de AdventureWorks. Seleccione el expediente correcto y el filtro 2013/Northwest; espere que termine la actualización.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} En el caso histórico equivalente: 17.452 unidades y 2.053 pedidos; el importe se expresa como USD comprobado. Las tarjetas abreviadas se contrastan con su respaldo exacto.
+
+\textbf{Qué registrar:} Captura del contexto y al menos una cifra exacta. Referencia histórica: 6.015.174,74 USD; 2.929,94 USD por pedido.
+
+\textbf{Si no se cumple:} Si el alcance o la copia no coincide, no fuerce esas cifras. Registre la diferencia o limite la lectura a lo que realmente esté disponible.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 3-5.} Cambie a WideWorldImporters y seleccione la ejecución de esa fuente. Aplique 2015/California y lea la unidad.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} En el caso histórico equivalente: 142.247 unidades y 1.179 facturas; 3.191.769,11 en moneda de origen y 2.707,18 por factura. El territorio procede de la ficha actual del comprador.
+
+\textbf{Qué registrar:} Fuente, ejecución y filtros nuevos. Señalar que pedido y factura son eventos distintos.
+
+\textbf{Si no se cumple:} Si sigue mostrando el contexto anterior al terminar la carga de pantalla, suspenda la conclusión y registre incidencia de aislamiento.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 3-5.} Cambie a WideWorldImporters y seleccione la ejecución de esa fuente. Aplique 2015/California y lea la unidad.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} En el caso histórico equivalente: 142.247 unidades y 1.179 facturas; 3.191.769,11 en moneda de origen y 2.707,18 por factura. El territorio procede de la ficha actual del comprador.
+
+\textbf{Qué registrar:} Fuente, ejecución y filtros nuevos. Señalar que pedido y factura son eventos distintos.
+
+\textbf{Si no se cumple:} Si sigue mostrando el contexto anterior al terminar la carga de pantalla, suspenda la conclusión y registre incidencia de aislamiento.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 3-5.} Cambie a WideWorldImporters y seleccione la ejecución de esa fuente. Aplique 2015/California y lea la unidad.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} En el caso histórico equivalente: 142.247 unidades y 1.179 facturas; 3.191.769,11 en moneda de origen y 2.707,18 por factura. El territorio procede de la ficha actual del comprador.
+
+\textbf{Qué registrar:} Fuente, ejecución y filtros nuevos. Señalar que pedido y factura son eventos distintos.
+
+\textbf{Si no se cumple:} Si sigue mostrando el contexto anterior al terminar la carga de pantalla, suspenda la conclusión y registre incidencia de aislamiento.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 5-7.} Muestre una tabla de respaldo o exporte el alcance visible y abra el archivo. Explique por qué los datos no son una predicción ni demuestran utilidad.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} El archivo y la lectura tienen la misma fuente, ejecución, filtro, indicador y unidad.
+
+\textbf{Qué registrar:} Nombre del archivo realmente abierto y su contexto. Si utiliza un archivo anterior, indicarlo como histórico.
+
+\textbf{Si no se cumple:} Si no se puede exportar o abrir, marque el paso no completado. Una captura antigua no se anuncia como una exportación nueva.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 5-7.} Muestre una tabla de respaldo o exporte el alcance visible y abra el archivo. Explique por qué los datos no son una predicción ni demuestran utilidad.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} El archivo y la lectura tienen la misma fuente, ejecución, filtro, indicador y unidad.
+
+\textbf{Qué registrar:} Nombre del archivo realmente abierto y su contexto. Si utiliza un archivo anterior, indicarlo como histórico.
+
+\textbf{Si no se cumple:} Si no se puede exportar o abrir, marque el paso no completado. Una captura antigua no se anuncia como una exportación nueva.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 5-7.} Muestre una tabla de respaldo o exporte el alcance visible y abra el archivo. Explique por qué los datos no son una predicción ni demuestran utilidad.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} El archivo y la lectura tienen la misma fuente, ejecución, filtro, indicador y unidad.
+
+\textbf{Qué registrar:} Nombre del archivo realmente abierto y su contexto. Si utiliza un archivo anterior, indicarlo como histórico.
+
+\textbf{Si no se cumple:} Si no se puede exportar o abrir, marque el paso no completado. Una captura antigua no se anuncia como una exportación nueva.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 7-9.} Haga una pregunta concreta al copiloto sobre WWI 2015/California. Lea Consulta interpretada y contraste una cifra con el panel.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} La explicación conserva alcance, denominador y cautelas; el texto no atribuye cobro, entrega efectiva ni causalidad no demostrada.
+
+\textbf{Qué registrar:} Pregunta, estado de respuesta y una comparación numérica. Puede usar la pregunta de referencia del caso WWI.
+
+\textbf{Si no se cumple:} Un intento manual. Si falla o permanece pendiente al terminar el bloque, registre el estado y explique la contingencia; el panel sigue siendo una evidencia independiente del chat.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 7-9.} Haga una pregunta concreta al copiloto sobre WWI 2015/California. Lea Consulta interpretada y contraste una cifra con el panel.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} La explicación conserva alcance, denominador y cautelas; el texto no atribuye cobro, entrega efectiva ni causalidad no demostrada.
+
+\textbf{Qué registrar:} Pregunta, estado de respuesta y una comparación numérica. Puede usar la pregunta de referencia del caso WWI.
+
+\textbf{Si no se cumple:} Un intento manual. Si falla o permanece pendiente al terminar el bloque, registre el estado y explique la contingencia; el panel sigue siendo una evidencia independiente del chat.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 7-9.} Haga una pregunta concreta al copiloto sobre WWI 2015/California. Lea Consulta interpretada y contraste una cifra con el panel.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} La explicación conserva alcance, denominador y cautelas; el texto no atribuye cobro, entrega efectiva ni causalidad no demostrada.
+
+\textbf{Qué registrar:} Pregunta, estado de respuesta y una comparación numérica. Puede usar la pregunta de referencia del caso WWI.
+
+\textbf{Si no se cumple:} Un intento manual. Si falla o permanece pendiente al terminar el bloque, registre el estado y explique la contingencia; el panel sigue siendo una evidencia independiente del chat.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 9-10.} Cierre con una conclusión comercial acotada y un límite. Explique qué tendría que pedir al analista para otra pregunta.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 1 minuto.\par}
+\textbf{Qué debe observar:} Se interpreta el dato observado sin afirmar aumento de ventas, moneda común o compatibilidad universal.
+
+\textbf{Qué registrar:} Conclusión breve y una limitación explícita.
+
+\textbf{Si no se cumple:} No convierta una impresión en un resultado medido ni sume importes de ambas fuentes.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 9-10.} Cierre con una conclusión comercial acotada y un límite. Explique qué tendría que pedir al analista para otra pregunta.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 1 minuto.\par}
+\textbf{Qué debe observar:} Se interpreta el dato observado sin afirmar aumento de ventas, moneda común o compatibilidad universal.
+
+\textbf{Qué registrar:} Conclusión breve y una limitación explícita.
+
+\textbf{Si no se cumple:} No convierta una impresión en un resultado medido ni sume importes de ambas fuentes.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 9-10.} Cierre con una conclusión comercial acotada y un límite. Explique qué tendría que pedir al analista para otra pregunta.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 1 minuto.\par}
+\textbf{Qué debe observar:} Se interpreta el dato observado sin afirmar aumento de ventas, moneda común o compatibilidad universal.
+
+\textbf{Qué registrar:} Conclusión breve y una limitación explícita.
+
+\textbf{Si no se cumple:} No convierta una impresión en un resultado medido ni sume importes de ambas fuentes.
+
+\fi
+\end{enumerate}
+\subsection{Antes de dar por terminado el ejercicio}
+\begin{itemize}
+\item Se identificaron las dos fuentes y sus contextos.
+\item Se contrastó al menos una cifra por fuente con su alcance.
+\item Se diferenció una operación nueva de un expediente o archivo histórico.
+\item Las fallas o pasos omitidos quedaron registrados con su estado real.
+\end{itemize}
+
+\section{Veinticinco minutos: construir y justificar un caso como analista}
+\textbf{Al terminar podrá:} Recorrer un caso nuevo de una fuente, desde la lectura del esquema hasta la conciliación y su lectura analítica.
+
+Guion de aprendizaje propuesto; no ejecutado durante esta redacción.
+
+Una generación y una carga nuevas de una fuente si superan sus controles; la consulta histórica es una alternativa de exposición y no reemplaza su resultado.
+
+Administrador preparó conexiones, permisos y proveedor activo probado. El analista no necesita ni recibe claves técnicas para operar.
+
+Elegir una sola fuente para la ejecución nueva. Repetir el mismo guion en otra sesión para la segunda; no prometer dos cargas nuevas dentro de 25 minutos.
+
+Utilizar la necesidad avanzada de referencia de AW o WWI, con sus límites, o acordar un alcance sencillo explícito. Las cifras históricas sólo sirven si copia, filtros y contrato son equivalentes.
+
+Disponer de permiso de generación, revisión, materialización, consulta y exportación; aceptar el envío al destino mostrado cuando el flujo lo solicite.
+
+Tener un expediente histórico comprobado como respaldo, identificado como consulta y no como salida de la generación actual.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Tiempo previsto y alternativas\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Condición} & \textbf{Cómo organizarse} \\
+\midrule
+Tiempo total & 25 minutos de práctica guiada; las demoras de proveedor o carga pueden obligar a continuar en otra sesión. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Tiempo previsto y alternativas}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Condición} & \textbf{Cómo organizarse} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Condición} & \textbf{Cómo organizarse} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Tiempo total & 25 minutos de práctica guiada; las demoras de proveedor o carga pueden obligar a continuar en otra sesión. \\
+\addlinespace[3pt]
+Generaciones nuevas planificadas & 1 \\
+\addlinespace[3pt]
+Reintentos manuales & Como máximo uno después de un error definitivo y si hay tiempo; nunca reenviar una operación pendiente. \\
+\addlinespace[3pt]
+Regla de corte & Al agotar el bloque, anotar estado, conservar evidencia y consultar el historial antes de decidir un nuevo intento. El reloj de la exposición no cambia el timeout del producto. \\
+\addlinespace[3pt]
+Segunda fuente & Repetir el guion en otra sesión con su propio catálogo y metadatos. Las referencias de ambas fuentes se incluyen para preparar esa repetición. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\dimexpr\linewidth-1.7em\relax
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 0-2.} Explique evento y grano. En el explorador compruebe fuente, instantánea, fecha de negocio y una relación relevante.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} El caso distingue línea de pedido o factura y conoce su procedencia.
+
+\textbf{Qué registrar:} Fuente, instantánea y relación elegida; no es necesario escribir SQL.
+
+\textbf{Si no se cumple:} Si la estructura no respalda una capacidad imprescindible, aclare el objetivo o detenga ese caso.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+4\baselineskip\relax
+\ifdim\dimen0<\textheight\Needspace{\dimen0}\fi
+\endgroup
+\subsection{Guion paso a paso}
+\begin{enumerate}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 0-2.} Explique evento y grano. En el explorador compruebe fuente, instantánea, fecha de negocio y una relación relevante.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} El caso distingue línea de pedido o factura y conoce su procedencia.
+
+\textbf{Qué registrar:} Fuente, instantánea y relación elegida; no es necesario escribir SQL.
+
+\textbf{Si no se cumple:} Si la estructura no respalda una capacidad imprescindible, aclare el objetivo o detenga ese caso.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 0-2.} Explique evento y grano. En el explorador compruebe fuente, instantánea, fecha de negocio y una relación relevante.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} El caso distingue línea de pedido o factura y conoce su procedencia.
+
+\textbf{Qué registrar:} Fuente, instantánea y relación elegida; no es necesario escribir SQL.
+
+\textbf{Si no se cumple:} Si la estructura no respalda una capacidad imprescindible, aclare el objetivo o detenga ese caso.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 0-2.} Explique evento y grano. En el explorador compruebe fuente, instantánea, fecha de negocio y una relación relevante.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} El caso distingue línea de pedido o factura y conoce su procedencia.
+
+\textbf{Qué registrar:} Fuente, instantánea y relación elegida; no es necesario escribir SQL.
+
+\textbf{Si no se cumple:} Si la estructura no respalda una capacidad imprescindible, aclare el objetivo o detenga ese caso.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 2-4.} Revise el catálogo propio y escriba la necesidad. Seleccione sólo las preguntas pertinentes y Mensual.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} Texto, preguntas y período representan el mismo propósito; no se restauran catálogos sólo para igualar una captura.
+
+\textbf{Qué registrar:} Objetivo definitivo y opciones seleccionadas.
+
+\textbf{Si no se cumple:} Si falta una orientación, revise con una persona autorizada. No copie relaciones de la otra base por parecido de nombres.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 2-4.} Revise el catálogo propio y escriba la necesidad. Seleccione sólo las preguntas pertinentes y Mensual.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} Texto, preguntas y período representan el mismo propósito; no se restauran catálogos sólo para igualar una captura.
+
+\textbf{Qué registrar:} Objetivo definitivo y opciones seleccionadas.
+
+\textbf{Si no se cumple:} Si falta una orientación, revise con una persona autorizada. No copie relaciones de la otra base por parecido de nombres.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 2-4.} Revise el catálogo propio y escriba la necesidad. Seleccione sólo las preguntas pertinentes y Mensual.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} Texto, preguntas y período representan el mismo propósito; no se restauran catálogos sólo para igualar una captura.
+
+\textbf{Qué registrar:} Objetivo definitivo y opciones seleccionadas.
+
+\textbf{Si no se cumple:} Si falta una orientación, revise con una persona autorizada. No copie relaciones de la otra base por parecido de nombres.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 4-8.} Autorice el destino mostrado y revise la viabilidad. Abra la evidencia de requisitos directos o derivables; aclare las ambigüedades importantes.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 4 minutos.\par}
+\textbf{Qué debe observar:} Existe una revisión vigente del texto y contexto definitivo. Aceptar un límite no fabrica una capacidad.
+
+\textbf{Qué registrar:} Estado de viabilidad, límites leídos y decisión humana.
+
+\textbf{Si no se cumple:} Si la IA cambia el propósito, conserve el texto original. Ante falla use el protocolo; no continúe como si la revisión hubiera terminado.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 4-8.} Autorice el destino mostrado y revise la viabilidad. Abra la evidencia de requisitos directos o derivables; aclare las ambigüedades importantes.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 4 minutos.\par}
+\textbf{Qué debe observar:} Existe una revisión vigente del texto y contexto definitivo. Aceptar un límite no fabrica una capacidad.
+
+\textbf{Qué registrar:} Estado de viabilidad, límites leídos y decisión humana.
+
+\textbf{Si no se cumple:} Si la IA cambia el propósito, conserve el texto original. Ante falla use el protocolo; no continúe como si la revisión hubiera terminado.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 4-8.} Autorice el destino mostrado y revise la viabilidad. Abra la evidencia de requisitos directos o derivables; aclare las ambigüedades importantes.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 4 minutos.\par}
+\textbf{Qué debe observar:} Existe una revisión vigente del texto y contexto definitivo. Aceptar un límite no fabrica una capacidad.
+
+\textbf{Qué registrar:} Estado de viabilidad, límites leídos y decisión humana.
+
+\textbf{Si no se cumple:} Si la IA cambia el propósito, conserve el texto original. Ante falla use el protocolo; no continúe como si la revisión hubiera terminado.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 8-12.} Genere conceptos y propuesta. Revise las cinco etapas, los nombres descriptivos, las medidas y las rutas que preservan el grano.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 4 minutos.\par}
+\textbf{Qué debe observar:} Contrato revisable que conserva el objetivo. En WWI se distingue comprador de destinatario de facturación y entrega de dirección postal.
+
+\textbf{Qué registrar:} Identificador propio de la propuesta, proveedor/modelo y aspectos comprobados.
+
+\textbf{Si no se cumple:} Si no aparece un contrato válido dentro del bloque, marque generación pendiente o bloqueada y pase a consultar un histórico anunciado. No lo apruebe para ahorrar tiempo.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 8-12.} Genere conceptos y propuesta. Revise las cinco etapas, los nombres descriptivos, las medidas y las rutas que preservan el grano.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 4 minutos.\par}
+\textbf{Qué debe observar:} Contrato revisable que conserva el objetivo. En WWI se distingue comprador de destinatario de facturación y entrega de dirección postal.
+
+\textbf{Qué registrar:} Identificador propio de la propuesta, proveedor/modelo y aspectos comprobados.
+
+\textbf{Si no se cumple:} Si no aparece un contrato válido dentro del bloque, marque generación pendiente o bloqueada y pase a consultar un histórico anunciado. No lo apruebe para ahorrar tiempo.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 8-12.} Genere conceptos y propuesta. Revise las cinco etapas, los nombres descriptivos, las medidas y las rutas que preservan el grano.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 4 minutos.\par}
+\textbf{Qué debe observar:} Contrato revisable que conserva el objetivo. En WWI se distingue comprador de destinatario de facturación y entrega de dirección postal.
+
+\textbf{Qué registrar:} Identificador propio de la propuesta, proveedor/modelo y aspectos comprobados.
+
+\textbf{Si no se cumple:} Si no aparece un contrato válido dentro del bloque, marque generación pendiente o bloqueada y pase a consultar un histórico anunciado. No lo apruebe para ahorrar tiempo.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 12-15.} Personalice sólo decisiones permitidas y justifique el cambio si hace falta. Apruebe únicamente cuando no haya errores bloqueantes y comprenda las advertencias.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 3 minutos.\par}
+\textbf{Qué debe observar:} La aprobación conserva una versión; una personalización crea otra ligada a su origen sin sobrescribirla.
+
+\textbf{Qué registrar:} Propuesta aprobada o motivo real de no aprobación; justificar las advertencias aceptadas.
+
+\textbf{Si no se cumple:} No marque advertencias a ciegas. Si el significado no se puede justificar, mantenga la propuesta sin aprobar.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 12-15.} Personalice sólo decisiones permitidas y justifique el cambio si hace falta. Apruebe únicamente cuando no haya errores bloqueantes y comprenda las advertencias.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 3 minutos.\par}
+\textbf{Qué debe observar:} La aprobación conserva una versión; una personalización crea otra ligada a su origen sin sobrescribirla.
+
+\textbf{Qué registrar:} Propuesta aprobada o motivo real de no aprobación; justificar las advertencias aceptadas.
+
+\textbf{Si no se cumple:} No marque advertencias a ciegas. Si el significado no se puede justificar, mantenga la propuesta sin aprobar.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 12-15.} Personalice sólo decisiones permitidas y justifique el cambio si hace falta. Apruebe únicamente cuando no haya errores bloqueantes y comprenda las advertencias.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 3 minutos.\par}
+\textbf{Qué debe observar:} La aprobación conserva una versión; una personalización crea otra ligada a su origen sin sobrescribirla.
+
+\textbf{Qué registrar:} Propuesta aprobada o motivo real de no aprobación; justificar las advertencias aceptadas.
+
+\textbf{Si no se cumple:} No marque advertencias a ciegas. Si el significado no se puede justificar, mantenga la propuesta sin aprobar.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 15-19.} En Datamart de ventas elija esa propuesta, revise indicadores y denominadores, confirme el plan e inicie una sola carga.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 4 minutos.\par}
+\textbf{Qué debe observar:} Se prepara y ejecuta un expediente propio. Generación, aprobación e inicio de carga son decisiones distintas.
+
+\textbf{Qué registrar:} Identificador de ejecución, estado y selección; registrar hora sin reenviar por una respuesta lenta.
+
+\textbf{Si no se cumple:} Si la pantalla pierde respuesta, consulte el expediente antes de repetir. Si sigue en curso al terminar el bloque, no anuncie carga completada.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 15-19.} En Datamart de ventas elija esa propuesta, revise indicadores y denominadores, confirme el plan e inicie una sola carga.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 4 minutos.\par}
+\textbf{Qué debe observar:} Se prepara y ejecuta un expediente propio. Generación, aprobación e inicio de carga son decisiones distintas.
+
+\textbf{Qué registrar:} Identificador de ejecución, estado y selección; registrar hora sin reenviar por una respuesta lenta.
+
+\textbf{Si no se cumple:} Si la pantalla pierde respuesta, consulte el expediente antes de repetir. Si sigue en curso al terminar el bloque, no anuncie carga completada.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 15-19.} En Datamart de ventas elija esa propuesta, revise indicadores y denominadores, confirme el plan e inicie una sola carga.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 4 minutos.\par}
+\textbf{Qué debe observar:} Se prepara y ejecuta un expediente propio. Generación, aprobación e inicio de carga son decisiones distintas.
+
+\textbf{Qué registrar:} Identificador de ejecución, estado y selección; registrar hora sin reenviar por una respuesta lenta.
+
+\textbf{Si no se cumple:} Si la pantalla pierde respuesta, consulte el expediente antes de repetir. Si sigue en curso al terminar el bloque, no anuncie carga completada.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 19-22.} Revise conciliación, cobertura y estado de publicación. Abra el panel con esa ejecución y aplique el filtro de contraste.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 3 minutos.\par}
+\textbf{Qué debe observar:} Filas y cálculos se contrastan con el mismo universo; no basta que se vea un gráfico. Moneda y fecha tienen fundamento.
+
+\textbf{Qué registrar:} Resultado de conciliación y al menos una suma, conteo distinto y razón si existen en la selección.
+
+\textbf{Si no se cumple:} Si hay diferencias sin explicar, el resultado no se declara aprobado. Un filtro nuevo se compara con su propio denominador.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 19-22.} Revise conciliación, cobertura y estado de publicación. Abra el panel con esa ejecución y aplique el filtro de contraste.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 3 minutos.\par}
+\textbf{Qué debe observar:} Filas y cálculos se contrastan con el mismo universo; no basta que se vea un gráfico. Moneda y fecha tienen fundamento.
+
+\textbf{Qué registrar:} Resultado de conciliación y al menos una suma, conteo distinto y razón si existen en la selección.
+
+\textbf{Si no se cumple:} Si hay diferencias sin explicar, el resultado no se declara aprobado. Un filtro nuevo se compara con su propio denominador.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 19-22.} Revise conciliación, cobertura y estado de publicación. Abra el panel con esa ejecución y aplique el filtro de contraste.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 3 minutos.\par}
+\textbf{Qué debe observar:} Filas y cálculos se contrastan con el mismo universo; no basta que se vea un gráfico. Moneda y fecha tienen fundamento.
+
+\textbf{Qué registrar:} Resultado de conciliación y al menos una suma, conteo distinto y razón si existen en la selección.
+
+\textbf{Si no se cumple:} Si hay diferencias sin explicar, el resultado no se declara aprobado. Un filtro nuevo se compara con su propio denominador.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 22-24.} Pida una explicación breve al copiloto y, si el tiempo lo permite, exporte y abra el archivo con el mismo alcance.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} Se revisa la interpretación y una cifra; sólo se marca lo que realmente se obtuvo y abrió.
+
+\textbf{Qué registrar:} Respuesta o error del chat; archivo y contexto comprobados, o paso no ejecutado.
+
+\textbf{Si no se cumple:} Cuando no alcance el tiempo, registre el paso pendiente para otra práctica; no use un archivo histórico como si fuera una descarga nueva.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 22-24.} Pida una explicación breve al copiloto y, si el tiempo lo permite, exporte y abra el archivo con el mismo alcance.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} Se revisa la interpretación y una cifra; sólo se marca lo que realmente se obtuvo y abrió.
+
+\textbf{Qué registrar:} Respuesta o error del chat; archivo y contexto comprobados, o paso no ejecutado.
+
+\textbf{Si no se cumple:} Cuando no alcance el tiempo, registre el paso pendiente para otra práctica; no use un archivo histórico como si fuera una descarga nueva.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 22-24.} Pida una explicación breve al copiloto y, si el tiempo lo permite, exporte y abra el archivo con el mismo alcance.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} Se revisa la interpretación y una cifra; sólo se marca lo que realmente se obtuvo y abrió.
+
+\textbf{Qué registrar:} Respuesta o error del chat; archivo y contexto comprobados, o paso no ejecutado.
+
+\textbf{Si no se cumple:} Cuando no alcance el tiempo, registre el paso pendiente para otra práctica; no use un archivo histórico como si fuera una descarga nueva.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 24-25.} Explique quién propuso, quién validó, quién aprobó y qué cálculo respalda la conclusión. Complete el registro.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 1 minuto.\par}
+\textbf{Qué debe observar:} La persona puede defender el caso con evidencia y sus límites.
+
+\textbf{Qué registrar:} Conclusión, estado de cada etapa y siguiente paso.
+
+\textbf{Si no se cumple:} Si se usó la contingencia histórica, separar claramente la ejecución nueva incompleta del resultado conservado.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 24-25.} Explique quién propuso, quién validó, quién aprobó y qué cálculo respalda la conclusión. Complete el registro.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 1 minuto.\par}
+\textbf{Qué debe observar:} La persona puede defender el caso con evidencia y sus límites.
+
+\textbf{Qué registrar:} Conclusión, estado de cada etapa y siguiente paso.
+
+\textbf{Si no se cumple:} Si se usó la contingencia histórica, separar claramente la ejecución nueva incompleta del resultado conservado.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 24-25.} Explique quién propuso, quién validó, quién aprobó y qué cálculo respalda la conclusión. Complete el registro.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 1 minuto.\par}
+\textbf{Qué debe observar:} La persona puede defender el caso con evidencia y sus límites.
+
+\textbf{Qué registrar:} Conclusión, estado de cada etapa y siguiente paso.
+
+\textbf{Si no se cumple:} Si se usó la contingencia histórica, separar claramente la ejecución nueva incompleta del resultado conservado.
+
+\fi
+\end{enumerate}
+\subsection{Antes de dar por terminado el ejercicio}
+\begin{itemize}
+\item Objetivo, evento, grano y fuente conservados.
+\item Aprobación y carga identificadas de forma separada.
+\item Conciliación y contexto numérico revisados antes de concluir.
+\item Ninguna propuesta inválida fue aprobada para cumplir el tiempo.
+\item Las etapas que no terminaron se registran y no se convierten en éxitos por la existencia de un histórico.
+\end{itemize}
+
+\section{Sesenta minutos: empezar en una aplicación limpia y aprender el recorrido}
+\textbf{Al terminar podrá:} Configurar desde la web un entorno de práctica ya instalado y realizar dos ejercicios básicos, uno por fuente, registrando el resultado real de cada etapa.
+
+Guion de aprendizaje propuesto; no ejecutado durante esta redacción.
+
+Configuración funcional desde la web y dos ejecuciones básicas nuevas condicionadas a sus controles. Sin instalación, parada, limpieza ni migración de infraestructura durante la práctica.
+
+La infraestructura ya fue levantada por el responsable: aplicación accesible, contenedores saludables, migraciones y administrador inicial disponibles y las dos bases demostrativas restauradas. No se instalan ni se eliminan contenedores en este guion.
+
+Usar una instancia de práctica limpia dispuesta por el responsable. No borrar una instalación con trabajo anterior para simular limpieza.
+
+Tener acceso administrativo autorizado y, por un canal privado, credenciales de lectura de ambas fuentes y una credencial de IA propia autorizada cuando corresponda. No escribirlas en el manual ni en la hoja de práctica.
+
+Acordar un presupuesto de consumo y tiempo. Las dos rutas básicas son ejercicios propuestos; su repetición no se presenta como ya realizada por este manual.
+
+Conservar las necesidades de referencia y la hoja de registro. Los IDs de las nuevas propuestas y ejecuciones serán los que genere esta instalación.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Tiempo previsto y alternativas\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Condición} & \textbf{Cómo organizarse} \\
+\midrule
+Tiempo total & 60 minutos de aprendizaje. Es una agenda orientativa, no una garantía de duración del proveedor o de las cargas. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Tiempo previsto y alternativas}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Condición} & \textbf{Cómo organizarse} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Condición} & \textbf{Cómo organizarse} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Tiempo total & 60 minutos de aprendizaje. Es una agenda orientativa, no una garantía de duración del proveedor o de las cargas. \\
+\addlinespace[3pt]
+Dos fuentes & Doce minutos de trabajo guiado por fuente; ampliar a otra sesión cuando una fase siga pendiente. \\
+\addlinespace[3pt]
+Reintentos manuales & Máximo uno tras un error definitivo dentro del bloque; no repetir una carga en curso ni consumir cuota para forzar un caso. \\
+\addlinespace[3pt]
+Si falta ia & Completar preparación, catálogo, esquema, roles y explicación. Registrar las generaciones como no ejecutadas y retomarlas cuando haya un destino autorizado utilizable. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\dimexpr\linewidth-1.7em\relax
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 0-4.} Abra Inicio e identifique lo que falta. Explique navegador, servidor, SQL Server de origen y PostgreSQL de configuración y resultados.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 4 minutos.\par}
+\textbf{Qué debe observar:} Se reconoce una aplicación preparada para configurar, no un panel de ventas ya cargado.
+
+\textbf{Qué registrar:} Estado inicial, entorno y rol real. Explicar que las 83 tablas del inventario histórico no son un requisito del portable limpio.
+
+\textbf{Si no se cumple:} Si no inicia sesión o la aplicación no está disponible, registrar bloqueo y volver con el responsable de infraestructura; no gastar la sesión inventando resultados.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+4\baselineskip\relax
+\ifdim\dimen0<\textheight\Needspace{\dimen0}\fi
+\endgroup
+\subsection{Guion paso a paso}
+\begin{enumerate}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 0-4.} Abra Inicio e identifique lo que falta. Explique navegador, servidor, SQL Server de origen y PostgreSQL de configuración y resultados.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 4 minutos.\par}
+\textbf{Qué debe observar:} Se reconoce una aplicación preparada para configurar, no un panel de ventas ya cargado.
+
+\textbf{Qué registrar:} Estado inicial, entorno y rol real. Explicar que las 83 tablas del inventario histórico no son un requisito del portable limpio.
+
+\textbf{Si no se cumple:} Si no inicia sesión o la aplicación no está disponible, registrar bloqueo y volver con el responsable de infraestructura; no gastar la sesión inventando resultados.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 0-4.} Abra Inicio e identifique lo que falta. Explique navegador, servidor, SQL Server de origen y PostgreSQL de configuración y resultados.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 4 minutos.\par}
+\textbf{Qué debe observar:} Se reconoce una aplicación preparada para configurar, no un panel de ventas ya cargado.
+
+\textbf{Qué registrar:} Estado inicial, entorno y rol real. Explicar que las 83 tablas del inventario histórico no son un requisito del portable limpio.
+
+\textbf{Si no se cumple:} Si no inicia sesión o la aplicación no está disponible, registrar bloqueo y volver con el responsable de infraestructura; no gastar la sesión inventando resultados.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 0-4.} Abra Inicio e identifique lo que falta. Explique navegador, servidor, SQL Server de origen y PostgreSQL de configuración y resultados.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 4 minutos.\par}
+\textbf{Qué debe observar:} Se reconoce una aplicación preparada para configurar, no un panel de ventas ya cargado.
+
+\textbf{Qué registrar:} Estado inicial, entorno y rol real. Explicar que las 83 tablas del inventario histórico no son un requisito del portable limpio.
+
+\textbf{Si no se cumple:} Si no inicia sesión o la aplicación no está disponible, registrar bloqueo y volver con el responsable de infraestructura; no gastar la sesión inventando resultados.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 4-12.} Registre, pruebe y habilite cada fuente con sus datos privados. Capture metadatos de AW y WWI y observe que cada explorador cambia con el selector.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 8 minutos.\par}
+\textbf{Qué debe observar:} Dos conexiones de solo lectura identificadas y sus instantáneas propias; obtener metadatos no extrae ventas.
+
+\textbf{Qué registrar:} Nombre de base, conector y resultado de prueba; no guardar contraseña ni nombre técnico de usuario en una captura.
+
+\textbf{Si no se cumple:} Si una prueba no confirma lectura autorizada, no habilitar por omisión ni usar una cuenta administrativa de SQL para saltar el control.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 4-12.} Registre, pruebe y habilite cada fuente con sus datos privados. Capture metadatos de AW y WWI y observe que cada explorador cambia con el selector.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 8 minutos.\par}
+\textbf{Qué debe observar:} Dos conexiones de solo lectura identificadas y sus instantáneas propias; obtener metadatos no extrae ventas.
+
+\textbf{Qué registrar:} Nombre de base, conector y resultado de prueba; no guardar contraseña ni nombre técnico de usuario en una captura.
+
+\textbf{Si no se cumple:} Si una prueba no confirma lectura autorizada, no habilitar por omisión ni usar una cuenta administrativa de SQL para saltar el control.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 4-12.} Registre, pruebe y habilite cada fuente con sus datos privados. Capture metadatos de AW y WWI y observe que cada explorador cambia con el selector.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 8 minutos.\par}
+\textbf{Qué debe observar:} Dos conexiones de solo lectura identificadas y sus instantáneas propias; obtener metadatos no extrae ventas.
+
+\textbf{Qué registrar:} Nombre de base, conector y resultado de prueba; no guardar contraseña ni nombre técnico de usuario en una captura.
+
+\textbf{Si no se cumple:} Si una prueba no confirma lectura autorizada, no habilitar por omisión ni usar una cuenta administrativa de SQL para saltar el control.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 12-18.} Configure el proveedor y modelo acordados, registre la credencial de manera privada si hace falta y ejecute su prueba.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 6 minutos.\par}
+\textbf{Qué debe observar:} Proveedor probado con credencial configurada, sin mostrar su valor. Configurar un proveedor no valida todavía cada propuesta que produzca.
+
+\textbf{Qué registrar:} Proveedor/modelo y resultado de prueba sin secretos; registro de consumo sólo si se informa realmente.
+
+\textbf{Si no se cumple:} Si no hay cuota o conectividad, registrar la limitación y continuar con esquema, catálogo y explicación del flujo. Una práctica sin proveedor utilizable no se declara ciclo BI completo.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 12-18.} Configure el proveedor y modelo acordados, registre la credencial de manera privada si hace falta y ejecute su prueba.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 6 minutos.\par}
+\textbf{Qué debe observar:} Proveedor probado con credencial configurada, sin mostrar su valor. Configurar un proveedor no valida todavía cada propuesta que produzca.
+
+\textbf{Qué registrar:} Proveedor/modelo y resultado de prueba sin secretos; registro de consumo sólo si se informa realmente.
+
+\textbf{Si no se cumple:} Si no hay cuota o conectividad, registrar la limitación y continuar con esquema, catálogo y explicación del flujo. Una práctica sin proveedor utilizable no se declara ciclo BI completo.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 12-18.} Configure el proveedor y modelo acordados, registre la credencial de manera privada si hace falta y ejecute su prueba.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 6 minutos.\par}
+\textbf{Qué debe observar:} Proveedor probado con credencial configurada, sin mostrar su valor. Configurar un proveedor no valida todavía cada propuesta que produzca.
+
+\textbf{Qué registrar:} Proveedor/modelo y resultado de prueba sin secretos; registro de consumo sólo si se informa realmente.
+
+\textbf{Si no se cumple:} Si no hay cuota o conectividad, registrar la limitación y continuar con esquema, catálogo y explicación del flujo. Una práctica sin proveedor utilizable no se declara ciclo BI completo.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 18-24.} Abra el catálogo de cada fuente. Lea las cuatro orientaciones base y elija tiempo y producto para las rutas básicas. Revise las periodicidades.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 6 minutos.\par}
+\textbf{Qué debe observar:} Preguntas y períodos pertenecen a cada conexión. El catálogo no fija por adelantado el hecho y las dimensiones ni se genera automáticamente con una llamada de IA.
+
+\textbf{Qué registrar:} Etiquetas e instrucciones utilizadas y Mensual habilitado por fuente.
+
+\textbf{Si no se cumple:} No pulsar Restaurar catálogo si se quieren conservar cambios. No copiar las preguntas de costos a otra base sin comprobar su sentido.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 18-24.} Abra el catálogo de cada fuente. Lea las cuatro orientaciones base y elija tiempo y producto para las rutas básicas. Revise las periodicidades.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 6 minutos.\par}
+\textbf{Qué debe observar:} Preguntas y períodos pertenecen a cada conexión. El catálogo no fija por adelantado el hecho y las dimensiones ni se genera automáticamente con una llamada de IA.
+
+\textbf{Qué registrar:} Etiquetas e instrucciones utilizadas y Mensual habilitado por fuente.
+
+\textbf{Si no se cumple:} No pulsar Restaurar catálogo si se quieren conservar cambios. No copiar las preguntas de costos a otra base sin comprobar su sentido.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 18-24.} Abra el catálogo de cada fuente. Lea las cuatro orientaciones base y elija tiempo y producto para las rutas básicas. Revise las periodicidades.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 6 minutos.\par}
+\textbf{Qué debe observar:} Preguntas y períodos pertenecen a cada conexión. El catálogo no fija por adelantado el hecho y las dimensiones ni se genera automáticamente con una llamada de IA.
+
+\textbf{Qué registrar:} Etiquetas e instrucciones utilizadas y Mensual habilitado por fuente.
+
+\textbf{Si no se cumple:} No pulsar Restaurar catálogo si se quieren conservar cambios. No copiar las preguntas de costos a otra base sin comprobar su sentido.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 24-29.} Revise roles y permisos con la matriz. Si el ejercicio incluye crearlos, prepare Analista BI y Gerente comercial y asigne sólo cuentas de práctica autorizadas.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 5 minutos.\par}
+\textbf{Qué debe observar:} Se distingue crear un rol, asignarle permisos y asociarlo a una cuenta. Gerencia puede leer y exportar, sin aprobar o ejecutar ETL.
+
+\textbf{Qué registrar:} Definiciones y asignaciones realizadas o paso no ejecutado. Registrar aparte cualquier prueba de login realmente realizada.
+
+\textbf{Si no se cumple:} Si sigue usando la cuenta administrativa, indicarlo. Revisar definiciones no acredita haber operado toda la plataforma como analista o gerente.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 24-29.} Revise roles y permisos con la matriz. Si el ejercicio incluye crearlos, prepare Analista BI y Gerente comercial y asigne sólo cuentas de práctica autorizadas.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 5 minutos.\par}
+\textbf{Qué debe observar:} Se distingue crear un rol, asignarle permisos y asociarlo a una cuenta. Gerencia puede leer y exportar, sin aprobar o ejecutar ETL.
+
+\textbf{Qué registrar:} Definiciones y asignaciones realizadas o paso no ejecutado. Registrar aparte cualquier prueba de login realmente realizada.
+
+\textbf{Si no se cumple:} Si sigue usando la cuenta administrativa, indicarlo. Revisar definiciones no acredita haber operado toda la plataforma como analista o gerente.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 24-29.} Revise roles y permisos con la matriz. Si el ejercicio incluye crearlos, prepare Analista BI y Gerente comercial y asigne sólo cuentas de práctica autorizadas.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 5 minutos.\par}
+\textbf{Qué debe observar:} Se distingue crear un rol, asignarle permisos y asociarlo a una cuenta. Gerencia puede leer y exportar, sin aprobar o ejecutar ETL.
+
+\textbf{Qué registrar:} Definiciones y asignaciones realizadas o paso no ejecutado. Registrar aparte cualquier prueba de login realmente realizada.
+
+\textbf{Si no se cumple:} Si sigue usando la cuenta administrativa, indicarlo. Revisar definiciones no acredita haber operado toda la plataforma como analista o gerente.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 29-41.} En AdventureWorks utilice la necesidad básica de unidades por producto y mes. Revise viabilidad, conceptos y modelo; apruebe sólo lo válido, confirme la carga y revise conciliación.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 12 minutos.\par}
+\textbf{Qué debe observar:} Un caso propio de línea de pedido y unidades. El proveedor puede proponer otras etiquetas; se revisan significado y receta, no una captura idéntica.
+
+\textbf{Qué registrar:} Texto usado, instantánea, propuesta, ejecución, avisos comprendidos y resultado de conciliación, o la etapa precisa donde se interrumpió.
+
+\textbf{Si no se cumple:} Si falla un control, detener ese caso y registrarlo. No sustituir el diseño por SQL libre ni completar a mano la hoja con las cifras de referencia.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 29-41.} En AdventureWorks utilice la necesidad básica de unidades por producto y mes. Revise viabilidad, conceptos y modelo; apruebe sólo lo válido, confirme la carga y revise conciliación.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 12 minutos.\par}
+\textbf{Qué debe observar:} Un caso propio de línea de pedido y unidades. El proveedor puede proponer otras etiquetas; se revisan significado y receta, no una captura idéntica.
+
+\textbf{Qué registrar:} Texto usado, instantánea, propuesta, ejecución, avisos comprendidos y resultado de conciliación, o la etapa precisa donde se interrumpió.
+
+\textbf{Si no se cumple:} Si falla un control, detener ese caso y registrarlo. No sustituir el diseño por SQL libre ni completar a mano la hoja con las cifras de referencia.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 29-41.} En AdventureWorks utilice la necesidad básica de unidades por producto y mes. Revise viabilidad, conceptos y modelo; apruebe sólo lo válido, confirme la carga y revise conciliación.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 12 minutos.\par}
+\textbf{Qué debe observar:} Un caso propio de línea de pedido y unidades. El proveedor puede proponer otras etiquetas; se revisan significado y receta, no una captura idéntica.
+
+\textbf{Qué registrar:} Texto usado, instantánea, propuesta, ejecución, avisos comprendidos y resultado de conciliación, o la etapa precisa donde se interrumpió.
+
+\textbf{Si no se cumple:} Si falla un control, detener ese caso y registrarlo. No sustituir el diseño por SQL libre ni completar a mano la hoja con las cifras de referencia.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 41-53.} Cambie a WideWorldImporters y repita el recorrido básico de unidades por producto y mes, conservando línea de factura y fecha de emisión.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 12 minutos.\par}
+\textbf{Qué debe observar:} Segundo caso con contexto propio. No reutiliza las claves de AW ni afirma cobro, margen, moneda o entrega efectiva.
+
+\textbf{Qué registrar:} Los identificadores propios de WWI y el resultado de cada control; contraste entre ambos eventos.
+
+\textbf{Si no se cumple:} Si no alcanza el tiempo o el proveedor falla, dejar la etapa como pendiente o bloqueada y continuar en otra sesión. No completar una carga ficticia para cerrar la hora.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 41-53.} Cambie a WideWorldImporters y repita el recorrido básico de unidades por producto y mes, conservando línea de factura y fecha de emisión.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 12 minutos.\par}
+\textbf{Qué debe observar:} Segundo caso con contexto propio. No reutiliza las claves de AW ni afirma cobro, margen, moneda o entrega efectiva.
+
+\textbf{Qué registrar:} Los identificadores propios de WWI y el resultado de cada control; contraste entre ambos eventos.
+
+\textbf{Si no se cumple:} Si no alcanza el tiempo o el proveedor falla, dejar la etapa como pendiente o bloqueada y continuar en otra sesión. No completar una carga ficticia para cerrar la hora.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 41-53.} Cambie a WideWorldImporters y repita el recorrido básico de unidades por producto y mes, conservando línea de factura y fecha de emisión.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 12 minutos.\par}
+\textbf{Qué debe observar:} Segundo caso con contexto propio. No reutiliza las claves de AW ni afirma cobro, margen, moneda o entrega efectiva.
+
+\textbf{Qué registrar:} Los identificadores propios de WWI y el resultado de cada control; contraste entre ambos eventos.
+
+\textbf{Si no se cumple:} Si no alcanza el tiempo o el proveedor falla, dejar la etapa como pendiente o bloqueada y continuar en otra sesión. No completar una carga ficticia para cerrar la hora.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 53-58.} Consulte los resultados que sí quedaron conciliados. Cambie de fuente, aplique un filtro, compruebe una cifra y formule una pregunta breve al copiloto. Abra una exportación si se realizó.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 5 minutos.\par}
+\textbf{Qué debe observar:} Se entiende el alcance de los datos propios. La referencia de 274.914 unidades AW o 8.950.628 WWI sólo sirve si la copia y selección equivalen al histórico y la conciliación lo confirma.
+
+\textbf{Qué registrar:} Fuente, filtros, cálculo propio y respuesta o fallo del chat. Archivos realmente abiertos con su contexto.
+
+\textbf{Si no se cumple:} No compare como equivalentes dos eventos o monedas diferentes. Si sólo una fuente quedó completada, describa ese resultado parcial.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 53-58.} Consulte los resultados que sí quedaron conciliados. Cambie de fuente, aplique un filtro, compruebe una cifra y formule una pregunta breve al copiloto. Abra una exportación si se realizó.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 5 minutos.\par}
+\textbf{Qué debe observar:} Se entiende el alcance de los datos propios. La referencia de 274.914 unidades AW o 8.950.628 WWI sólo sirve si la copia y selección equivalen al histórico y la conciliación lo confirma.
+
+\textbf{Qué registrar:} Fuente, filtros, cálculo propio y respuesta o fallo del chat. Archivos realmente abiertos con su contexto.
+
+\textbf{Si no se cumple:} No compare como equivalentes dos eventos o monedas diferentes. Si sólo una fuente quedó completada, describa ese resultado parcial.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 53-58.} Consulte los resultados que sí quedaron conciliados. Cambie de fuente, aplique un filtro, compruebe una cifra y formule una pregunta breve al copiloto. Abra una exportación si se realizó.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 5 minutos.\par}
+\textbf{Qué debe observar:} Se entiende el alcance de los datos propios. La referencia de 274.914 unidades AW o 8.950.628 WWI sólo sirve si la copia y selección equivalen al histórico y la conciliación lo confirma.
+
+\textbf{Qué registrar:} Fuente, filtros, cálculo propio y respuesta o fallo del chat. Archivos realmente abiertos con su contexto.
+
+\textbf{Si no se cumple:} No compare como equivalentes dos eventos o monedas diferentes. Si sólo una fuente quedó completada, describa ese resultado parcial.
+
+\fi
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+\everypar{}\csname @newlistfalse\endcsname
+\textbf{Minutos 58-60.} Complete la hoja y responda qué hizo la IA, qué controló el servidor y qué aprobó una persona. Elija la próxima práctica.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} Queda una bitácora reproducible con avances, límites e incidencias, incluso si no concluyeron las dos cargas.
+
+\textbf{Qué registrar:} Estado de cada fuente y tareas pendientes específicas.
+
+\textbf{Si no se cumple:} No calificar todo el recorrido como exitoso si falta evidencia de alguna etapa.
+
+\par
+}
+\dimen0=\dimexpr\ht0+\dp0+2\baselineskip\relax
+\ifdim\dimen0<\textheight
+\Needspace{\dimen0}
+\endgroup
+\item \begin{samepage}
+\textbf{Minutos 58-60.} Complete la hoja y responda qué hizo la IA, qué controló el servidor y qué aprobó una persona. Elija la próxima práctica.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} Queda una bitácora reproducible con avances, límites e incidencias, incluso si no concluyeron las dos cargas.
+
+\textbf{Qué registrar:} Estado de cada fuente y tareas pendientes específicas.
+
+\textbf{Si no se cumple:} No calificar todo el recorrido como exitoso si falta evidencia de alguna etapa.
+
+\end{samepage}
+\else
+\endgroup
+\item \textbf{Minutos 58-60.} Complete la hoja y responda qué hizo la IA, qué controló el servidor y qué aprobó una persona. Elija la próxima práctica.
+
+{\small\textbf{Tiempo máximo previsto de este bloque:} 2 minutos.\par}
+\textbf{Qué debe observar:} Queda una bitácora reproducible con avances, límites e incidencias, incluso si no concluyeron las dos cargas.
+
+\textbf{Qué registrar:} Estado de cada fuente y tareas pendientes específicas.
+
+\textbf{Si no se cumple:} No calificar todo el recorrido como exitoso si falta evidencia de alguna etapa.
+
+\fi
+\end{enumerate}
+\subsection{Antes de dar por terminado el ejercicio}
+\begin{itemize}
+\item Las fuentes e instantáneas se mantuvieron separadas.
+\item Cada generación/carga realizada tiene contexto e identificadores propios.
+\item Se registró cuál de los dos ejercicios terminó y cuál no.
+\item La configuración de roles se distinguió de una prueba de sesión por perfil.
+\item No se usaron números del histórico como resultados obtenidos de una instalación limpia.
+\end{itemize}
+
+\subsection{Necesidades básicas para la práctica}
+\paragraph{AdventureWorks 2022} Conservar cada línea de pedido de venta para comparar mensualmente la suma de unidades por producto. Usar la fecha del pedido y un nombre de producto comprobable. Mantener la referencia de cada línea a su pedido. Limitar esta práctica al total de unidades y su evolución; no interpretar estos registros como facturas, cobros o pronósticos.
+
+Ejercicio nuevo propuesto; resultado propio pendiente de ejecución.
+
+\paragraph{WideWorldImporters} Conservar cada línea de factura para comparar mensualmente la suma de unidades facturadas por producto. Usar la fecha de emisión y el producto con nombre verificable. Mantener el identificador de factura y el de línea para conservar la trazabilidad. Limitar la práctica a unidades y evolución; no afirmar moneda, cobro, utilidad ni entrega realizada.
+
+Ejercicio nuevo propuesto; resultado propio pendiente de ejecución.
+
+\section{Qué hacer cuando una etapa no termina}
+El protocolo protege el aprendizaje y la evidencia. No requiere que la demostración parezca perfecta. Hay que distinguir un rechazo correcto, un fallo externo y una inconsistencia del producto.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Reconocer la situación y actuar con criterio\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué ocurre} & \textbf{Qué hacer} & \textbf{Qué no debe afirmarse} \\
+\midrule
+Respuesta de IA pendiente o demasiado lenta & Conservar la pantalla y el contexto. No pulsar varias veces. Si termina el tiempo del bloque, anotar pendiente y comprobar historial antes de reintentar. & No decir que se generó, aprobó o cargó algo sin el comprobante correspondiente. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Reconocer la situación y actuar con criterio}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué ocurre} & \textbf{Qué hacer} & \textbf{Qué no debe afirmarse} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Qué ocurre} & \textbf{Qué hacer} & \textbf{Qué no debe afirmarse} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Respuesta de IA pendiente o demasiado lenta & Conservar la pantalla y el contexto. No pulsar varias veces. Si termina el tiempo del bloque, anotar pendiente y comprobar historial antes de reintentar. & No decir que se generó, aprobó o cargó algo sin el comprobante correspondiente. \\
+\addlinespace[3pt]
+El proveedor informa cuota, capacidad o conectividad insuficiente & Registrar el mensaje y la etapa. Una persona autorizada puede revisar la configuración o acordar otro proveedor; si cambia el destino, revisar su prueba y autorización de envío. & No cambiar silenciosamente de modelo ni atribuir éxito a un intento interrumpido. \\
+\addlinespace[3pt]
+La respuesta no cumple el formato o contrato & Aceptar el rechazo de la plataforma; revisar la solicitud o hacer un único reintento manual si el error es definitivo y queda tiempo. & No pegar una respuesta inválida a mano ni desactivar validaciones para continuar. \\
+\addlinespace[3pt]
+La propuesta cambia el objetivo, evento o rol de una relación & Mantener el propósito original, aclarar la ambigüedad y revisar una versión nueva cuando corresponda. Si no puede justificarse, no aprobar. & No afirmar que una FK válida demuestra por sí sola la interpretación comercial. \\
+\addlinespace[3pt]
+Advertencia o requisito no disponible & Leer la limitación y decidir si el alcance restante sigue siendo útil. Si falta un requisito esencial, corregir la necesidad. & Aceptar el aviso no hace que exista la capacidad ausente. \\
+\addlinespace[3pt]
+Se pierde la respuesta durante una carga & Recuperar el expediente y leer su estado antes de iniciar cualquier otra operación. Registrar si terminó, falló o sigue en curso. & No reenviar por reflejo ni anunciar conciliación por el mero paso del tiempo. \\
+\addlinespace[3pt]
+Hay diferencia numérica, fuente equivocada o denominador incoherente & Suspender la conclusión, guardar contexto y comparar universos equivalentes. Registrar esperado y obtenido sin alterar filas ni la evidencia anterior. & No ajustar las cifras para que coincidan con la guía ni sumar monedas sin evidencia. \\
+\addlinespace[3pt]
+Se muestra una explicación o un archivo histórico como respaldo & Anunciar fuente, fecha, propuesta y ejecución histórica. Separarlo del estado del intento nuevo. & Un respaldo histórico no prueba que la operación nueva se completó. \\
+\addlinespace[3pt]
+El rol no tiene permiso o no aparece una opción & Pedir revisión a administración y registrar el permiso faltante. Continuar sólo las operaciones autorizadas. & No presentar una sesión administrativa como prueba de un perfil con menos permisos. \\
+\addlinespace[3pt]
+El chat explica algo que las cifras no sostienen & Conservar pregunta, interpretación, evidencia, respuesta y filtros. Contrastar números y cautelas antes de usar la narración. & Una frase fluida no demuestra causalidad, rentabilidad, pronóstico o precisión universal. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\RaggedRight\sffamily\bfseries\large\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000 Rúbrica de aprendizaje: veinte puntos\par}
+
+Guía orientativa para autoevaluación o acompañamiento docente; no es un instrumento validado de usabilidad ni una medición de la eficacia del producto.
+
+\textbf{Puntuación máxima:} 20 puntos.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Criterio} & \textbf{Puntos máximos} & \textbf{Evidencia que se espera} \\
+\midrule
+Comprender la decisión comercial & 4 & Explica evento, grano, indicadores, unidades y comparación sin confundir pedido, factura o cobro. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\section{Rúbrica de aprendizaje: veinte puntos}
+Guía orientativa para autoevaluación o acompañamiento docente; no es un instrumento validado de usabilidad ni una medición de la eficacia del producto.
+
+\textbf{Puntuación máxima:} 20 puntos.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Criterio} & \textbf{Puntos máximos} & \textbf{Evidencia que se espera} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Criterio} & \textbf{Puntos máximos} & \textbf{Evidencia que se espera} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Comprender la decisión comercial & 4 & Explica evento, grano, indicadores, unidades y comparación sin confundir pedido, factura o cobro. \\
+\addlinespace[3pt]
+Preparar el contexto de cada fuente & 4 & Distingue conexión, instantánea y catálogo; conserva sus identidades y usa preguntas y período apropiados. \\
+\addlinespace[3pt]
+Supervisar y recuperar con criterio & 4 & Distingue IA, reglas y decisión humana; revisa advertencias, no aprueba errores y registra con honestidad una interrupción. \\
+\addlinespace[3pt]
+Comprobar e interpretar los resultados & 4 & Contrasta conciliación, filtros, moneda, sumas, documentos distintos y denominadores de una razón; o explica correctamente qué control no pudo ejecutar. \\
+\addlinespace[3pt]
+Cuidar acceso, evidencia y comunicación & 4 & Trabaja con la identidad autorizada, evita exponer secretos y presenta contexto, archivos y procedencia sin confundir lo histórico con lo nuevo. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Cómo asignar los puntos\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Puntos} & \textbf{Descripción} \\
+\midrule
+4 & Lo realiza o explica con autonomía, evidencia suficiente y sin errores sustantivos. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Cómo asignar los puntos}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Puntos} & \textbf{Descripción} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Puntos} & \textbf{Descripción} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+4 & Lo realiza o explica con autonomía, evidencia suficiente y sin errores sustantivos. \\
+\addlinespace[3pt]
+3 & Lo realiza de forma correcta con una aclaración menor. \\
+\addlinespace[3pt]
+2 & Comprensión parcial; necesita apoyo para completar o justificar una decisión. \\
+\addlinespace[3pt]
+1 & Reconoce parte del concepto, pero requiere acompañamiento continuo. \\
+\addlinespace[3pt]
+0 & No presenta evidencia de aprendizaje o mantiene una interpretación incorrecta después de revisarla. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+Marcar No evaluado cuando no hubo oportunidad de observar el criterio. No asignar cuatro puntos por un paso no realizado ni publicar un total sobre veinte como si todos se hubieran evaluado. Puede registrarse por separado una explicación verbal correcta y una operación bloqueada.
+
+Con los cinco criterios evaluados, dieciséis puntos o más puede utilizarse como orientación para repetir el caso con menor ayuda. El umbral es didáctico y no representa una validación estadística del producto.
+
+\subsection{Condiciones que obligan a detenerse y corregir}
+\begin{itemize}
+\item Exponer una credencial, aprobar una propuesta con error no resuelto, mezclar deliberadamente fuentes/monedas o declarar una carga inexistente requiere detener y corregir la práctica, aunque la suma de otros criterios sea alta.
+\item Un fallo externo de cuota no se convierte en una falta de aprendizaje si se interpreta y registra correctamente; la operación continúa como bloqueada o no ejecutada, sin calificarse como ciclo funcional terminado.
+\end{itemize}
+
+\section{Hoja de registro de una práctica nueva}
+Copiar una hoja por fuente y ejecución. Completar el resultado esperado antes de ejecutar y el obtenido después.
+
+Dejar sin valor lo que no se obtuvo y marcar su estado. No copiar las cifras históricas en la columna de resultado obtenido.
+
+Usar alias de práctica y el rol real; no escribir contraseñas, API keys, tokens ni datos personales innecesarios.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Datos de contexto de su práctica\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato que debe registrar} & \textbf{Valor de su ejecución} \\
+\midrule
+Fecha y hora &          \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Datos de contexto de su práctica}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato que debe registrar} & \textbf{Valor de su ejecución} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato que debe registrar} & \textbf{Valor de su ejecución} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Fecha y hora &          \\
+\addlinespace[3pt]
+Participante o alias &          \\
+\addlinespace[3pt]
+Persona que acompana &          \\
+\addlinespace[3pt]
+Objetivo de aprendizaje &          \\
+\addlinespace[3pt]
+Tipo de actividad &          \\
+\addlinespace[3pt]
+Entorno o version visible &          \\
+\addlinespace[3pt]
+Rol y permisos reales &          \\
+\addlinespace[3pt]
+Fuente y base &          \\
+\addlinespace[3pt]
+Conexion local &          \\
+\addlinespace[3pt]
+Instantanea local &          \\
+\addlinespace[3pt]
+Proveedor modelo si se usa &          \\
+\addlinespace[3pt]
+Destino de envio autorizado &          \\
+\addlinespace[3pt]
+Necesidad textual &          \\
+\addlinespace[3pt]
+Preguntas de catalogo &          \\
+\addlinespace[3pt]
+Periodicidad &          \\
+\addlinespace[3pt]
+Evento y grano &          \\
+\addlinespace[3pt]
+Indicadores y unidades &          \\
+\addlinespace[3pt]
+Limitaciones aceptadas y motivo &          \\
+\addlinespace[3pt]
+Propuesta local &          \\
+\addlinespace[3pt]
+Propuesta origen si hay derivacion &          \\
+\addlinespace[3pt]
+Estado de revision &          \\
+\addlinespace[3pt]
+Ejecucion local &          \\
+\addlinespace[3pt]
+Estado de ejecucion &          \\
+\addlinespace[3pt]
+Contexto del filtro &          \\
+\addlinespace[3pt]
+Formula y denominador a comprobar &          \\
+\addlinespace[3pt]
+Resultado esperado y fuente del criterio &          \\
+\addlinespace[3pt]
+Resultado obtenido &          \\
+\addlinespace[3pt]
+Diferencia y explicacion &          \\
+\addlinespace[3pt]
+Archivo o captura sin secretos &          \\
+\addlinespace[3pt]
+Naturaleza y fecha de la evidencia &          \\
+\addlinespace[3pt]
+Incidencia y recuperacion &          \\
+\addlinespace[3pt]
+Pasos no ejecutados o pendientes &          \\
+\addlinespace[3pt]
+Conclusion con limites &          \\
+\addlinespace[3pt]
+Proxima accion &          \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Tipos de actividad}
+\begin{itemize}
+\item Consulta de expediente histórico
+\item Generación y ejecución nuevas
+\item Ejercicio propuesto aún no ejecutado
+\item Prueba de acceso bajo un perfil realmente autenticado
+\end{itemize}
+
+\subsection{Estados que puede registrar}
+\begin{itemize}
+\item No ejecutado
+\item En curso
+\item Terminado y comprobado para el alcance indicado
+\item Rechazo esperado observado
+\item Bloqueado por proveedor
+\item Bloqueado por permisos o preparación
+\item Interrumpido
+\item Resultado inconsistente por revisar
+\end{itemize}
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Registro de comprobaciones\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Etapa o indicador} & \textbf{Descripción} & \textbf{Datos del ejemplo} \\
+\midrule
+Viabilidad de la necesidad & \textbf{Fuente/propuesta/ejecución y filtros:} \par\smallskip\textbf{Fórmula o criterio esperado:} \par\smallskip\textbf{Resultado esperado antes de ejecutar:}  & \textbf{Resultado obtenido:} \par\smallskip\textbf{Estado:} \par\smallskip\textbf{Evidencia:}  \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Registro de comprobaciones}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Etapa o indicador} & \textbf{Descripción} & \textbf{Datos del ejemplo} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Etapa o indicador} & \textbf{Descripción} & \textbf{Datos del ejemplo} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Viabilidad de la necesidad & \textbf{Fuente/propuesta/ejecución y filtros:} \par\smallskip\textbf{Fórmula o criterio esperado:} \par\smallskip\textbf{Resultado esperado antes de ejecutar:}  & \textbf{Resultado obtenido:} \par\smallskip\textbf{Estado:} \par\smallskip\textbf{Evidencia:}  \\
+\addlinespace[3pt]
+Contrato y revisión humana & \textbf{Fuente/propuesta/ejecución y filtros:} \par\smallskip\textbf{Fórmula o criterio esperado:} \par\smallskip\textbf{Resultado esperado antes de ejecutar:}  & \textbf{Resultado obtenido:} \par\smallskip\textbf{Estado:} \par\smallskip\textbf{Evidencia:}  \\
+\addlinespace[3pt]
+Preparación y ejecución de carga & \textbf{Fuente/propuesta/ejecución y filtros:} \par\smallskip\textbf{Fórmula o criterio esperado:} \par\smallskip\textbf{Resultado esperado antes de ejecutar:}  & \textbf{Resultado obtenido:} \par\smallskip\textbf{Estado:} \par\smallskip\textbf{Evidencia:}  \\
+\addlinespace[3pt]
+Conciliación de filas e importes & \textbf{Fuente/propuesta/ejecución y filtros:} \par\smallskip\textbf{Fórmula o criterio esperado:} \par\smallskip\textbf{Resultado esperado antes de ejecutar:}  & \textbf{Resultado obtenido:} \par\smallskip\textbf{Estado:} \par\smallskip\textbf{Evidencia:}  \\
+\addlinespace[3pt]
+Panel y filtro & \textbf{Fuente/propuesta/ejecución y filtros:} \par\smallskip\textbf{Fórmula o criterio esperado:} \par\smallskip\textbf{Resultado esperado antes de ejecutar:}  & \textbf{Resultado obtenido:} \par\smallskip\textbf{Estado:} \par\smallskip\textbf{Evidencia:}  \\
+\addlinespace[3pt]
+Conteo distinto y razón, si aplican & \textbf{Fuente/propuesta/ejecución y filtros:} \par\smallskip\textbf{Fórmula o criterio esperado:} \par\smallskip\textbf{Resultado esperado antes de ejecutar:}  & \textbf{Resultado obtenido:} \par\smallskip\textbf{Estado:} \par\smallskip\textbf{Evidencia:}  \\
+\addlinespace[3pt]
+Copiloto y cautelas & \textbf{Fuente/propuesta/ejecución y filtros:} \par\smallskip\textbf{Fórmula o criterio esperado:} \par\smallskip\textbf{Resultado esperado antes de ejecutar:}  & \textbf{Resultado obtenido:} \par\smallskip\textbf{Estado:} \par\smallskip\textbf{Evidencia:}  \\
+\addlinespace[3pt]
+Exportación abierta & \textbf{Fuente/propuesta/ejecución y filtros:} \par\smallskip\textbf{Fórmula o criterio esperado:} \par\smallskip\textbf{Resultado esperado antes de ejecutar:}  & \textbf{Resultado obtenido:} \par\smallskip\textbf{Estado:} \par\smallskip\textbf{Evidencia:}  \\
+\addlinespace[3pt]
+Acceso con el rol de práctica & \textbf{Fuente/propuesta/ejecución y filtros:} \par\smallskip\textbf{Fórmula o criterio esperado:} \par\smallskip\textbf{Resultado esperado antes de ejecutar:}  & \textbf{Resultado obtenido:} \par\smallskip\textbf{Estado:} \par\smallskip\textbf{Evidencia:}  \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Registro de autoevaluación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Criterio} & \textbf{Puntuación 0-4 o No evaluado} & \textbf{Evidencia o apoyo requerido} \\
+\midrule
+Comprender la decisión comercial &  &  \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Registro de autoevaluación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Criterio} & \textbf{Puntuación 0-4 o No evaluado} & \textbf{Evidencia o apoyo requerido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Criterio} & \textbf{Puntuación 0-4 o No evaluado} & \textbf{Evidencia o apoyo requerido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Comprender la decisión comercial &  &  \\
+\addlinespace[3pt]
+Preparar el contexto de cada fuente &  &  \\
+\addlinespace[3pt]
+Supervisar y recuperar con criterio &  &  \\
+\addlinespace[3pt]
+Comprobar e interpretar los resultados &  &  \\
+\addlinespace[3pt]
+Cuidar acceso, evidencia y comunicación &  &  \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Conclusión de la práctica}
+Un registro con fases bloqueadas o no ejecutadas sigue siendo útil si permite reconocer qué se hizo y qué falta. No demuestra un ciclo completo hasta contar con sus evidencias.
+
+\section{Referencias históricas para contrastar los casos}
+Estos valores corresponden a la campaña del 6 de noviembre de 2026. Los IDs y resultados no se fuerzan en una instalación nueva. Antes de comparar cifras se comprueban fuente, copia, contrato, período, filtros y receta. En WWI la unidad permanece como moneda de origen.
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 AdventureWorks 2022\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+Fecha evidencia & 2026-11-06 \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{AdventureWorks 2022}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Fecha evidencia & 2026-11-06 \\
+\addlinespace[3pt]
+Propuesta local & 129 \\
+\addlinespace[3pt]
+Ejecucion local & 21 \\
+\addlinespace[3pt]
+Granularidad & Línea de pedido \\
+\addlinespace[3pt]
+Filas de origen & 121317 \\
+\addlinespace[3pt]
+Filas de destino & 121317 \\
+\addlinespace[3pt]
+Diferencia de filas & 0 \\
+\addlinespace[3pt]
+Pregunta chat & Resume las unidades vendidas en 2013 para Northwest. Indica el total y el mes con mayor cantidad, sin atribuir causas ni mezclar importes. \\
+\addlinespace[3pt]
+Alcance & Evidencia histórica comprobada en esa campaña. No es un resultado nuevo obtenido al redactar este material ni el contenido garantizado de un portable limpio. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\normalfont\normalsize\bfseries\hyphenpenalty=10000\exhyphenpenalty=10000 Necesidad de referencia\par}
+ Conservar cada línea de pedido de venta en un datamart. Para priorizar productos y territorios, comparar mensualmente cuatro indicadores: suma del importe registrado de las líneas, suma de unidades, conteo de identificadores de pedido distintos e importe total dividido entre pedidos distintos. Usar fecha y territorio comercial del pedido, producto y cliente con nombre verificable. Los rankings comparan sumas por entidad. Mantener la trazabilidad de cada línea al pedido. La moneda se reportará sólo si se comprueba en la fuente.
+
+\par\vspace{6pt}\noindent\textbf{Selección completa}\hspace{0.5em}
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+Importe exacto & 109846381.399888 \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\paragraph{Necesidad de referencia} Conservar cada línea de pedido de venta en un datamart. Para priorizar productos y territorios, comparar mensualmente cuatro indicadores: suma del importe registrado de las líneas, suma de unidades, conteo de identificadores de pedido distintos e importe total dividido entre pedidos distintos. Usar fecha y territorio comercial del pedido, producto y cliente con nombre verificable. Los rankings comparan sumas por entidad. Mantener la trazabilidad de cada línea al pedido. La moneda se reportará sólo si se comprueba en la fuente.
+
+\paragraph{Selección completa}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Importe exacto & 109846381.399888 \\
+\addlinespace[3pt]
+Moneda & USD comprobado \\
+\addlinespace[3pt]
+Unidades & 274914 \\
+\addlinespace[3pt]
+Pedidos distintos & 31465 \\
+\addlinespace[3pt]
+Importe por pedido exacto & 3491.065672966407 \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\normalfont\normalsize\bfseries\hyphenpenalty=10000\exhyphenpenalty=10000 Selección filtrada\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+Año & 2013 \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\paragraph{Selección filtrada}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Año & 2013 \\
+\addlinespace[3pt]
+Territorio & Northwest \\
+\addlinespace[3pt]
+Importe exacto & 6015174.735836 \\
+\addlinespace[3pt]
+Unidades & 17452 \\
+\addlinespace[3pt]
+Pedidos distintos & 2053 \\
+\addlinespace[3pt]
+Importe por pedido exacto & 2929.943855740867 \\
+\addlinespace[3pt]
+Mes de mayor cantidad & junio de 2013 \\
+\addlinespace[3pt]
+Unidades del mes de mayor cantidad & 2494 \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 WideWorldImporters\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+Fecha evidencia & 2026-11-06 \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{WideWorldImporters}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Fecha evidencia & 2026-11-06 \\
+\addlinespace[3pt]
+Propuesta local & 131 \\
+\addlinespace[3pt]
+Ejecucion local & 22 \\
+\addlinespace[3pt]
+Granularidad & Línea de factura \\
+\addlinespace[3pt]
+Filas de origen & 228265 \\
+\addlinespace[3pt]
+Filas de destino & 228265 \\
+\addlinespace[3pt]
+Diferencia de filas & 0 \\
+\addlinespace[3pt]
+Alcance & Evidencia histórica comprobada en esa campaña. No es un resultado nuevo obtenido al redactar este material ni el contenido garantizado de un portable limpio. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\normalfont\normalsize\bfseries\hyphenpenalty=10000\exhyphenpenalty=10000 Necesidad de referencia\par}
+ Diseñar un datamart cuyo grano físico sea una línea de factura. Sobre ese detalle, resumir mensualmente el importe registrado de la línea, las unidades y las facturas distintas por producto y cliente. Usar la fecha de emisión. Para el territorio, usar la provincia de la ciudad de entrega registrada en la ficha del cliente y aclarar que no representa necesariamente su ubicación histórica. Conservar el importe de origen sin asumir moneda, utilidad ni composición fiscal. Limitar los indicadores a importe total, unidades totales, facturas distintas e importe promedio por factura. Los rankings deben comparar totales por producto; el máximo de una sola línea no identifica al producto líder.
+
+\par\vspace{6pt}\noindent\textbf{Pregunta chat}\hspace{0.5em} Resume el importe, las unidades y las facturas distintas en 2015 para California. Explica el denominador del importe por factura y qué significa la provincia usada, sin asumir moneda ni entrega realizada.
+
+\par\vspace{6pt}\noindent\textbf{Selección completa}\hspace{0.5em}
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+Importe exacto & 198043439.45 \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\paragraph{Necesidad de referencia} Diseñar un datamart cuyo grano físico sea una línea de factura. Sobre ese detalle, resumir mensualmente el importe registrado de la línea, las unidades y las facturas distintas por producto y cliente. Usar la fecha de emisión. Para el territorio, usar la provincia de la ciudad de entrega registrada en la ficha del cliente y aclarar que no representa necesariamente su ubicación histórica. Conservar el importe de origen sin asumir moneda, utilidad ni composición fiscal. Limitar los indicadores a importe total, unidades totales, facturas distintas e importe promedio por factura. Los rankings deben comparar totales por producto; el máximo de una sola línea no identifica al producto líder.
+
+\paragraph{Pregunta chat} Resume el importe, las unidades y las facturas distintas en 2015 para California. Explica el denominador del importe por factura y qué significa la provincia usada, sin asumir moneda ni entrega realizada.
+
+\paragraph{Selección completa}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Importe exacto & 198043439.45 \\
+\addlinespace[3pt]
+Moneda & moneda de origen; sin código único demostrado \\
+\addlinespace[3pt]
+Unidades & 8950628 \\
+\addlinespace[3pt]
+Facturas distintas & 70510 \\
+\addlinespace[3pt]
+Importe por factura exacto & 2808.7283995177986 \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\normalfont\normalsize\bfseries\hyphenpenalty=10000\exhyphenpenalty=10000 Selección filtrada\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+Año & 2015 \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\paragraph{Selección filtrada}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Contenido} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Año & 2015 \\
+\addlinespace[3pt]
+Territorio & California \\
+\addlinespace[3pt]
+Lineas & 3771 \\
+\addlinespace[3pt]
+Importe exacto & 3191769.11 \\
+\addlinespace[3pt]
+Unidades & 142247 \\
+\addlinespace[3pt]
+Facturas distintas & 1179 \\
+\addlinespace[3pt]
+Importe por factura exacto & 2707.1832994062765 \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup

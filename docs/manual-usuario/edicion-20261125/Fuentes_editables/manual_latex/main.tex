@@ -1,0 +1,156 @@
+\documentclass[11pt,a4paper,oneside,openany]{book}
+\usepackage[spanish,es-nodecimaldot,es-noquoting]{babel}
+\usepackage{fontspec}
+\setmainfont{texgyrepagella-regular.otf}[Path=recursos/fuentes/,BoldFont=texgyrepagella-bold.otf,ItalicFont=texgyrepagella-italic.otf,BoldItalicFont=texgyrepagella-bolditalic.otf]
+\setsansfont{texgyreheros-regular.otf}[Path=recursos/fuentes/,BoldFont=texgyreheros-bold.otf,ItalicFont=texgyreheros-italic.otf,BoldItalicFont=texgyreheros-bolditalic.otf]
+\setmonofont{texgyrecursor-regular.otf}[Path=recursos/fuentes/,BoldFont=texgyrecursor-bold.otf,ItalicFont=texgyrecursor-italic.otf,BoldItalicFont=texgyrecursor-bolditalic.otf,Scale=MatchLowercase]
+\usepackage[a4paper,margin=2.1cm,headheight=15pt,headsep=0.6cm,footskip=1cm]{geometry}
+\usepackage{xcolor}
+\definecolor{Azul}{HTML}{16324F}
+\definecolor{Teal}{HTML}{007E80}
+\definecolor{Gris}{HTML}{526171}
+\usepackage{graphicx,booktabs,longtable,array,ragged2e,enumitem,pdflscape,needspace,titlesec,fancyhdr,microtype,seqsplit}
+\usepackage[unicode,colorlinks=true,linkcolor=Azul,urlcolor=Teal,citecolor=Azul,bookmarksnumbered=true,pdfdisplaydoctitle=true]{hyperref}
+\usepackage{bookmark}
+\hypersetup{pdftitle={Manual de operación y aprendizaje de la plataforma BI con IA},pdfauthor={Proyecto académico BI - Universidad de Guayaquil},pdfsubject={Formación y operación supervisada de datamarts de ventas}}
+\setcounter{tocdepth}{1}
+\setcounter{secnumdepth}{1}
+\renewcommand{\baselinestretch}{1.13}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 1pt minus 1pt}
+\setlength{\emergencystretch}{3em}
+\tolerance=1800
+\widowpenalty=10000
+\clubpenalty=10000
+\displaywidowpenalty=10000
+\raggedbottom
+\setlist[itemize]{leftmargin=1.5em,itemsep=3pt,topsep=4pt,parsep=2pt}
+\setlist[enumerate]{leftmargin=1.7em,label=\textcolor{Teal}{\bfseries\arabic*.},itemsep=5pt,topsep=5pt,parsep=3pt}
+\titleformat{\chapter}[display]{\RaggedRight\sffamily\bfseries\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000}{\fontsize{11}{13}\selectfont CAPÍTULO \thechapter}{5pt}{\fontsize{24}{28}\selectfont}
+\titlespacing*{\chapter}{0pt}{-8pt}{18pt}
+\titleformat{\section}{\RaggedRight\sffamily\bfseries\large\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\sffamily\bfseries\normalsize\color{Teal}}{}{0pt}{}
+\titleformat{\subsubsection}{\sffamily\bfseries\normalsize\color{Azul}}{}{0pt}{}
+\titleformat{\paragraph}[runin]{\bfseries}{}{0pt}{}
+\titlespacing*{\section}{0pt}{16pt}{7pt}
+\titlespacing*{\subsection}{0pt}{11pt}{5pt}
+\titlespacing*{\subsubsection}{0pt}{9pt}{4pt}
+\titlespacing*{\paragraph}{0pt}{6pt}{0.5em}
+\usepackage{etoolbox}
+\makeatletter
+\renewcommand*{\l@section}{\@dottedtocline{1}{1.5em}{3.3em}}
+\makeatother
+\pretocmd{\section}{\Needspace{5\baselineskip}}{}{}
+\pretocmd{\subsection}{\Needspace{4\baselineskip}}{}{}
+\pretocmd{\subsubsection}{\Needspace{4\baselineskip}}{}{}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\sffamily\footnotesize\color{Gris} PLATAFORMA BI + IA}
+\fancyhead[R]{\sffamily\footnotesize\color{Gris} Operación y aprendizaje}
+\fancyfoot[L]{\sffamily\footnotesize\color{Gris} Edición de formación 2.0 - 25 de noviembre de 2026}
+\fancyfoot[R]{\sffamily\small\color{Azul}\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[L]{\sffamily\footnotesize\color{Gris} Manual de operación y aprendizaje}\fancyfoot[R]{\sffamily\small\thepage}\renewcommand{\headrulewidth}{0pt}}
+\newcounter{pantallas}
+\newcounter{diagramas}
+\newcommand{\pantalla}[3]{%
+  \clearpage\begin{landscape}\thispagestyle{empty}\begingroup
+  \setlength{\parskip}{0pt}\phantomsection
+  {\sffamily\bfseries\fontsize{14}{17}\selectfont\color{Azul}#2\par}
+  \vspace{0.22cm}
+  {\centering\includegraphics[width=25cm,height=13.8cm,keepaspectratio]{#1}\par}
+  \vspace{0.18cm}\refstepcounter{pantallas}
+  {\fontsize{10}{12}\selectfont\textbf{Pantalla \thepantallas.} #3\par}
+  \vfill{\hfill\sffamily\footnotesize\thepage\par}
+  \endgroup\end{landscape}%
+}
+\newcommand{\pantallaactual}[3]{%
+  \clearpage\thispagestyle{plain}\begingroup
+  {\sffamily\bfseries\large\color{Azul}#2\par}
+  \vspace{0.3cm}
+  {\centering\includegraphics[width=10.1cm,height=16.5cm,keepaspectratio]{#1}\par}
+  \vspace{0.3cm}\refstepcounter{pantallas}
+  {\small\textbf{Pantalla \thepantallas.} #3\par}
+  \endgroup\clearpage
+}
+\newcommand{\diagramasistema}[3]{%
+  \clearpage\begin{landscape}\thispagestyle{empty}\begingroup
+  \setlength{\parskip}{0pt}\phantomsection
+  {\sffamily\bfseries\fontsize{14}{17}\selectfont\color{Azul}#2\par}
+  \vspace{0.22cm}
+  {\centering\includegraphics[width=25cm,height=13.6cm,keepaspectratio]{#1}\par}
+  \vspace{0.18cm}\refstepcounter{diagramas}
+  {\fontsize{10}{12}\selectfont\textbf{Diagrama \thediagramas.} #3\par}
+  \vfill{\hfill\sffamily\footnotesize\thepage\par}
+  \endgroup\end{landscape}%
+}
+\begin{document}
+\begin{titlepage}
+\thispagestyle{empty}
+{\sffamily\bfseries\color{Teal} UNIVERSIDAD DE GUAYAQUIL\par}
+\vspace{0.35cm}
+{\sffamily\color{Gris} Proyecto académico de inteligencia de negocios\par}
+\vspace{2.0cm}
+{\sffamily\bfseries\fontsize{30}{35}\selectfont\color{Azul} Manual de operación\par y aprendizaje\par}
+\vspace{0.6cm}
+{\sffamily\fontsize{20}{25}\selectfont\color{Teal} Plataforma BI con IA\par}
+\vspace{0.8cm}
+{\large Construcción supervisada de datamarts de ventas\par}
+\vspace{0.5cm}
+{\large Comprender, configurar, practicar y explicar\par}
+\vspace{1cm}
+{\color{Teal}\rule{\textwidth}{1.2pt}\par}
+\vspace{0.6cm}
+Para administración, analistas de BI, gerencia comercial\par
+y programadoras del prototipo funcional.\par
+\vfill
+{\sffamily\color{Gris} Edición de formación 2.0\par 25 de noviembre de 2026\par}
+\end{titlepage}
+\frontmatter
+\section*{Alcance de esta edición}
+Esta edición de formación 2.0, del 25 de noviembre de 2026, integra las mejoras
+operativas de navegación, sesiones, catálogo y cobertura de las propuestas,
+así como la configuración de OpenAI y el criterio de costo de sus modelos.
+Conserva los trece capítulos de la edición anterior, sus explicaciones,
+sus 52 capturas de referencia del 18 de noviembre y sus ocho diagramas.
+Añade tres vistas actuales, sin deformarlas ni presentarlas como capturas
+de escritorio completo.
+
+Las propuestas 129 y 131 y las ejecuciones 21 y 22 se mantienen como historia
+de la campaña del 6 de noviembre. Los casos nuevos comprobados el 25 de
+noviembre son AdventureWorks 136/24 y WideWorldImporters 135/23, con OpenAI
+Sol y razonamiento Medio. La opción económica activa, OpenAI Luna con
+razonamiento Bajo, sólo tiene una prueba mínima de conexión y salida
+estructurada: su calidad BI completa sigue pendiente de una campaña propia.
+
+Este manual permite estudiar y repetir el proceso, sin garantizar que
+cualquier texto, modelo o motor produzca siempre una propuesta aprobable.
+Las reglas verifican estructura y cálculos; la persona conserva la decisión
+sobre significado comercial, alcance y uso del resultado. Los identificadores
+son propios de cada instalación y cambian en un entorno limpio.
+
+Las funciones de IA dependen de la disponibilidad del proveedor y pueden
+consumir su cuota. El manual permite aprender con los expedientes conservados;
+no exige generar otra propuesta ni repetir una carga para comprender el flujo.
+
+\clearpage
+\begingroup
+\setlength{\parskip}{0pt}
+\tableofcontents
+\endgroup
+\mainmatter
+\input{secciones/01_fundamentos.tex}
+\input{secciones/02_fundamentos.tex}
+\input{secciones/03_fundamentos.tex}
+\input{secciones/04_configuracion.tex}
+\input{secciones/05_configuracion.tex}
+\input{secciones/06_configuracion.tex}
+\input{secciones/07_operacion_bi.tex}
+\input{secciones/08_operacion_bi.tex}
+\input{secciones/09_operacion_bi.tex}
+\input{secciones/10_administracion.tex}
+\input{secciones/11_practica.tex}
+\input{secciones/12_base_datos.tex}
+\input{secciones/13_permisos_precision.tex}
+\end{document}

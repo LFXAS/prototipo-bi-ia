@@ -1,0 +1,780 @@
+\chapter{Preparar las fuentes y el asistente de IA}
+\section{Registrar, probar y habilitar fuentes de datos}
+\label{unidad:operacion_09}
+\textbf{Para quién:} Administración\par
+\textbf{Opción:} Preparación del entorno > Conexiones de datos\par
+
+Una conexión identifica dónde se encuentra una base de datos y con qué cuenta de lectura puede consultarla la aplicación. En este corte, Motor muestra SQL Server y no es una opción libre para escoger otros motores. El sistema reutiliza el mismo flujo para diferentes bases SQL Server; registrar el nombre de MySQL no incorpora un conector que no existe.
+
+Servidor se interpreta desde el contenedor del backend. En una instalación Compose del proyecto, sqlserver es el nombre interno del servicio y 1433 su puerto interno. No lo sustituya por localhost ni por el puerto publicado del host por costumbre: localhost dentro de un contenedor se refiere a ese mismo contenedor. Para un servidor externo, la administración proporciona el host y puerto accesibles desde el backend.
+
+AdventureWorks2022 y WideWorldImporters pueden compartir servidor y puerto, pero llevan conexiones distintas porque cambia Base de datos y pueden cambiar sus credenciales. Nunca use una cuenta administrativa de escritura para el flujo BI. La prueba verifica acceso de lectura y ausencia de privilegios de escritura relevantes; una prueba rechazada por tener escritura exige corregir el usuario del origen.
+
+Registrar conserva una configuración deshabilitada; Probar conexión comprueba sus condiciones; Habilitar la ofrece en el selector. Son tres acciones diferentes. Varias fuentes pueden estar habilitadas a la vez. Una fila habilitada muestra Probar conexión, Leer metadatos y Deshabilitar cuando la cuenta tiene los permisos correspondientes; no muestra Editar. El código ofrece edición solo para una conexión deshabilitada. No elimine una conexión que tiene expedientes para intentar corregir una captura: el servidor controla sus dependencias.
+
+\subsection{Conceptos para comprender la opción}
+\paragraph{Servidor y base} El servidor aloja una o varias bases; la base selecciona el origen concreto.
+
+\paragraph{Solo lectura} Cuenta destinada a consultar el origen sin modificar sus tablas.
+
+\paragraph{Cifrar transporte} Protección de la conexión hacia el servidor.
+
+\paragraph{Confiar en certificado local} Aceptación del certificado de la instalación local prevista; no equivale a validar públicamente su identidad.
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Abra Conexiones de datos y revise si la conexión ya está registrada.
+\item Si necesita una nueva, complete Nombre visible, Servidor, Puerto, Base de datos y Usuario de sólo lectura con los datos de la instalación.
+\item Introduzca la contraseña suministrada para ese usuario. Revise Cifrar transporte y Confiar en certificado local con la administración.
+\item Pulse Registrar conexión y compruebe su fila.
+\item Pulse Probar conexión; continúe cuando Validación indique Sólo lectura validada.
+\item Pulse Habilitar para que aparezca en Cambiar fuente.
+\item Pulse Leer metadatos si tiene permiso de actualización, o continúe desde el Explorador.
+\item No busque Editar en una fila habilitada. Si la administración necesita cambiar esa conexión, debe planificar su deshabilitación; la edición está prevista para el estado deshabilitado. No deshabilite una fuente solo para reproducir una captura del manual.
+\end{enumerate}
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y botones\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+Nombre visible & Distingue la fuente en los módulos. & \textbf{Ejemplo:} AdventureWorks local o WideWorldImporters local.\par\smallskip\textbf{Resultado:} Se reconoce el origen sin depender del orden del selector. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y botones}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Nombre visible & Distingue la fuente en los módulos. & \textbf{Ejemplo:} AdventureWorks local o WideWorldImporters local.\par\smallskip\textbf{Resultado:} Se reconoce el origen sin depender del orden del selector. \\
+\addlinespace[3pt]
+Motor & Indica el conector implementado. & \textbf{Ejemplo:} SQL Server, deshabilitado para edición.\par\smallskip\textbf{Resultado:} Evita presentar soporte de un motor inexistente. \\
+\addlinespace[3pt]
+Servidor / Puerto & Determina el destino de red visto por el backend. & \textbf{Ejemplo:} sqlserver y 1433 en Compose, cuando corresponde a esa instalación.\par\smallskip\textbf{Resultado:} Se intenta conectar al servidor definido. \\
+\addlinespace[3pt]
+Base de datos & Selecciona la base dentro del servidor. & \textbf{Ejemplo:} AdventureWorks2022 o WideWorldImporters.\par\smallskip\textbf{Resultado:} Los metadatos posteriores se capturan de esa base. \\
+\addlinespace[3pt]
+Usuario de sólo lectura / Contraseña & Acredita el acceso de consulta al origen. & \textbf{Ejemplo:} Usuario preparado por la administración de la instalación.\par\smallskip\textbf{Resultado:} La contraseña se guarda cifrada y no se devuelve al navegador. \\
+\addlinespace[3pt]
+Cifrar transporte / Confiar en certificado local & Configura las condiciones de transporte admitidas. & \textbf{Ejemplo:} Certificado local del contenedor de demostración.\par\smallskip\textbf{Resultado:} Permite la conexión prevista sin confundir certificado local con identidad pública. \\
+\addlinespace[3pt]
+Probar conexión & Comprueba lectura y permisos relevantes. & \textbf{Ejemplo:} Probar cada una de las dos fuentes.\par\smallskip\textbf{Resultado:} Registra estado y fecha de la prueba. \\
+\addlinespace[3pt]
+Habilitar / Deshabilitar & Ofrece o retira la fuente del contexto seleccionable. & \textbf{Ejemplo:} Mantener ambas habilitadas para alternar análisis.\par\smallskip\textbf{Resultado:} No fusiona bases ni borra sus expedientes. \\
+\addlinespace[3pt]
+Leer metadatos & Captura la estructura de una fuente habilitada. & \textbf{Ejemplo:} Crear la instantánea inicial de WideWorldImporters.\par\smallskip\textbf{Resultado:} Genera o reutiliza una instantánea, sin enviar filas a la IA. \\
+\addlinespace[3pt]
+Eliminar & Retira una conexión deshabilitada sin dependencias que lo impidan. & \textbf{Ejemplo:} Conexión temporal creada por error, con autorización.\par\smallskip\textbf{Resultado:} No sirve para borrar indiscriminadamente el historial BI. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Reconocer dos bases en un mismo servidor}
+Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.
+
+\begin{enumerate}
+\item Consulte las dos conexiones existentes.
+\item Compare servidor, puerto y Base de datos.
+\item Seleccione cada una desde Cambiar fuente y compruebe su nombre.
+\end{enumerate}
+
+\textbf{Qué debe obtener.} Pueden coincidir servidor y puerto, pero las bases y sus contextos son diferentes.
+
+\textbf{Cómo comprobarlo.} La estudiante distingue conexión, servidor y base sin cambiar credenciales para la práctica.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Si aparece un problema\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+No se puede conectar al servidor. & Host o puerto incorrectos desde el backend, servicio apagado o red no disponible. & Revise los datos con la guía de instalación. En Compose, compruebe el nombre interno del servicio; no cambie a localhost por ensayo sin criterio.\par\smallskip\textbf{Comprobación:} Probar conexión responde y registra una fecha actual. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Si aparece un problema}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+No se puede conectar al servidor. & Host o puerto incorrectos desde el backend, servicio apagado o red no disponible. & Revise los datos con la guía de instalación. En Compose, compruebe el nombre interno del servicio; no cambie a localhost por ensayo sin criterio.\par\smallskip\textbf{Comprobación:} Probar conexión responde y registra una fecha actual. \\
+\addlinespace[3pt]
+La prueba detecta permisos de escritura. & El usuario del origen tiene privilegios superiores a los admitidos. & Solicite un usuario de lectura o ajuste sus permisos en SQL Server mediante la administración. No se corrige desmarcando Cifrar transporte.\par\smallskip\textbf{Comprobación:} La prueba acredita solo lectura antes de habilitar. \\
+\addlinespace[3pt]
+Habilitar no está disponible. & No hay prueba satisfactoria vigente. & Corrija la causa y use Probar conexión.\par\smallskip\textbf{Comprobación:} La fila pasa a Sólo lectura validada y permite habilitar. \\
+\addlinespace[3pt]
+Eliminar es rechazado. & La conexión está activa o tiene dependencias. & Deshabilite solo si corresponde y lea las dependencias. Mantenga los registros que respaldan propuestas o ejecuciones.\par\smallskip\textbf{Comprobación:} No se destruye el origen de los expedientes para resolver un problema de configuración. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Para explicar durante la sustentación}
+\paragraph{¿Registrar ya lee todas las ventas?} No. Conserva la conexión. La prueba consulta condiciones de acceso, la introspección lee estructura y la ejecución ETL posterior obtiene las filas autorizadas.
+
+\paragraph{¿Habilitar WideWorldImporters apaga AdventureWorks?} No. Las fuentes se habilitan independientemente y la sesión elige con cuál trabajar.
+
+\pantalla{recursos/pantallas/02_conexiones_formulario.jpg}{Registro y edición de una conexión SQL Server}{Formulario de conexión vacío. Host y puerto se refieren al acceso desde el backend, que puede estar dentro de Docker. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/03_conexiones_registradas.jpg}{Fuentes de ejemplo habilitadas y validadas como lectura}{Cada registro representa una fuente independiente. No deshabilite una fuente sólo para pasar a otra. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/operacion_09.tex}{\input{capturas/operacion_09.tex}}{}
+\section{Ajustar parámetros con un propósito concreto}
+\label{unidad:operacion_10}
+\textbf{Para quién:} Administración\par
+\textbf{Opción:} Preparación del entorno > Parámetros\par
+
+Los parámetros son ajustes operativos aprobados, no un lugar para guardar claves, contraseñas o fórmulas del negocio. La pantalla muestra el nombre, una explicación, el valor actual, el rango admitido y el predeterminado. Modifique un parámetro cuando pueda explicar qué problema operativo intenta resolver.
+
+Duración de la sesión (minutos) está en la categoría Seguridad. Su valor predeterminado es 60 y admite de 15 a 240 minutos. Para una capacitación larga pueden acordarse 60 o 120 minutos. El permiso Administrar parámetros es necesario para modificarlo. Guardarlo no renueva las sesiones ya emitidas; ingrese otra vez para recibir la nueva duración.
+
+Tiempo máximo del asistente expresa cuánto esperará la aplicación una solicitud; no concede más capacidad semántica al modelo. Si un proveedor devuelve un contrato inválido, aumentar el tiempo no vuelve correcto ese contrato. Elementos por bloque de metadatos controla la organización del contexto técnico; no selecciona cuántas filas de ventas se cargarán.
+
+Cada tarjeta tiene su propio Guardar y Restaurar. Guardar una tarjeta no debe darse por entendido como guardar todas las demás. Anote el valor anterior y cambie una cosa a la vez para poder observar el efecto. Restaurar recupera el predeterminado de ese parámetro, no la configuración completa de la aplicación.
+
+En el código de este corte, los listados de la pantalla principal solicitan diez registros de forma explícita. Aunque Registros por página puede guardarse, no se debe prometer que cambie todos los listados inmediatamente. La capacitación debe comprobar el efecto visible antes de utilizarlo como demostración de parametrización.
+
+\subsection{Práctica guiada: preparar tiempo suficiente para la capacitación}
+Con una cuenta autorizada, busque la tarjeta Duración de la sesión (minutos). La imagen muestra el valor 60 de la instalación revisada. En un equipo diferente puede verse otro valor válido. No cambie todos los parámetros para intentar resolver una sola incidencia.
+
+\begin{enumerate}
+\item Anote el valor actual. Para una demostración habitual puede conservar 60.
+\item Si necesita una práctica más larga, acuerde 120 con la administración, escriba 120 y pulse Guardar en esa tarjeta.
+\item Compruebe el mensaje y el valor guardado. El rango es de 15 a 240 minutos.
+\item Vuelva a iniciar sesión antes de la práctica para utilizar la nueva duración. Registre el ajuste si forma parte de una prueba.
+\end{enumerate}
+
+\pantallaactual{recursos/pantallas/parametros-sesion-60.jpg}{Parámetros: duración de la sesión}{Captura real del 25 de noviembre de 2026. La sesión nueva dura 60 minutos por defecto. El cambio no renueva una sesión que ya estaba abierta.}
+\subsection{Conceptos para comprender la opción}
+\paragraph{Tiempo máximo} Límite de espera de una operación, expresado en segundos.
+
+\paragraph{Predeterminado} Valor de referencia que se recupera al restaurar la tarjeta.
+
+\paragraph{Bloque de metadatos} Grupo de elementos estructurales usado para organizar el contexto del asistente; no es un lote de ventas.
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Abra Parámetros y lea la tarjeta que desea ajustar.
+\item Anote valor actual, unidad, rango y motivo del cambio.
+\item Introduzca un entero dentro del rango.
+\item Pulse Guardar en esa tarjeta y compruebe el mensaje de actualización.
+\item Repita la lectura del valor. Si el cambio no se justifica, utilice Restaurar en esa misma tarjeta.
+\item Verifique el efecto real en la operación correspondiente; no infiera eficacia por el solo hecho de que se guardó.
+\end{enumerate}
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y botones\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+Tiempo máximo de conexión & Limita la espera al probar una fuente. & \textbf{Ejemplo:} Predeterminado 8 segundos; rango 3-30.\par\smallskip\textbf{Resultado:} Afecta el límite de espera de la prueba, no los permisos SQL. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y botones}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Tiempo máximo de conexión & Limita la espera al probar una fuente. & \textbf{Ejemplo:} Predeterminado 8 segundos; rango 3-30.\par\smallskip\textbf{Resultado:} Afecta el límite de espera de la prueba, no los permisos SQL. \\
+\addlinespace[3pt]
+Tiempo máximo del asistente & Limita la espera de la solicitud al proveedor. & \textbf{Ejemplo:} Predeterminado 600 segundos; rango 10-900.\par\smallskip\textbf{Resultado:} Permite acotar la espera sin garantizar éxito. \\
+\addlinespace[3pt]
+Elementos por bloque de metadatos & Organiza la cantidad de elementos técnicos por bloque. & \textbf{Ejemplo:} Predeterminado 100; rango 25-200.\par\smallskip\textbf{Resultado:} Cambia el tamaño operativo del contexto, no las filas del ETL. \\
+\addlinespace[3pt]
+Registros por página & Conserva el ajuste de tamaño predeterminado de listados. & \textbf{Ejemplo:} Predeterminado 10; rango 10-100.\par\smallskip\textbf{Resultado:} El efecto depende del consumidor; los paginadores actuales envían 10 explícitamente. \\
+\addlinespace[3pt]
+Guardar & Persiste el valor de esa tarjeta. & \textbf{Ejemplo:} Guardar un tiempo acordado para una prueba.\par\smallskip\textbf{Resultado:} Muestra un mensaje con el nombre del parámetro actualizado. \\
+\addlinespace[3pt]
+Restaurar & Recupera el predeterminado de la tarjeta. & \textbf{Ejemplo:} Volver Tiempo máximo de conexión a 8.\par\smallskip\textbf{Resultado:} Se deshabilita si ya coincide con el predeterminado. \\
+\addlinespace[3pt]
+Duración de la sesión (minutos) & Fija la duración absoluta de los siguientes inicios de sesión. & \textbf{Ejemplo:} 60 para el uso habitual; 120 si se acuerda una práctica extensa.\par\smallskip\textbf{Resultado:} Guardar aplica el valor a sesiones nuevas, dentro del rango 15-240. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Cambiar y recuperar un parámetro sin llamar a la IA}
+Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.
+
+\begin{enumerate}
+\item En un entorno de capacitación, anote Tiempo máximo de conexión.
+\item Guarde un valor permitido distinto y compruebe el mensaje.
+\item Pulse Restaurar y compruebe el predeterminado.
+\end{enumerate}
+
+\textbf{Qué debe obtener.} Se conserva el dato operativo y se puede volver al valor de referencia. No se cambian catálogos, fuentes ni propuestas.
+
+\textbf{Cómo comprobarlo.} La estudiante explica qué cambió y qué no demuestra este ejercicio.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Si aparece un problema\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+El valor es rechazado. & Está fuera del rango o no es un entero admitido. & Utilice el rango visible; no agregue una clave nueva.\par\smallskip\textbf{Comprobación:} Se guarda un valor válido y legible. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Si aparece un problema}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+El valor es rechazado. & Está fuera del rango o no es un entero admitido. & Utilice el rango visible; no agregue una clave nueva.\par\smallskip\textbf{Comprobación:} Se guarda un valor válido y legible. \\
+\addlinespace[3pt]
+El modelo sigue fallando tras aumentar el tiempo. & El problema puede ser cuota, clave, modelo o contrato estructurado. & Revise el mensaje del proveedor y su prueba de configuración. No atribuya todos los fallos a tiempo insuficiente.\par\smallskip\textbf{Comprobación:} La reparación se dirige a la causa observada. \\
+\addlinespace[3pt]
+Guardar Registros por página no cambia el listado. & El componente utiliza su tamaño explícito del corte actual. & Registre esta limitación; conserve el valor de referencia si no hay una prueba de efecto.\par\smallskip\textbf{Comprobación:} La demostración no promete un cambio que el navegador no muestra. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Para explicar durante la sustentación}
+\paragraph{¿Subir el tiempo hace más inteligente a la IA?} No. Solo modifica el límite de espera. La calidad de una propuesta sigue dependiendo del contexto, del proveedor y de las reglas de validación.
+
+\pantalla{recursos/pantallas/04_parametros.jpg}{Parámetros operativos y rangos admitidos}{Los parámetros explican límites operativos. Un plazo mayor no corrige una credencial o un contrato inválido. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/05_parametros_detalle.jpg}{Bloques de metadatos y paginación configurables}{Revise el alcance de cada parámetro antes de guardar. La paginación de algunos listados conserva un tamaño fijado por la interfaz. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/operacion_10.tex}{\input{capturas/operacion_10.tex}}{}
+\section{Configurar y comprobar el asistente de IA}
+\label{unidad:operacion_11}
+\textbf{Para quién:} Administración\par
+\textbf{Opción:} Preparación del entorno > Configuración LLM\par
+
+El modelo de lenguaje interpreta y explica; no autentica usuarios ni ejecuta SQL libre sobre las bases. La plataforma mantiene proveedores como configuraciones separadas y una sola configuración activa a la vez. Cambiar la activa afecta las nuevas solicitudes de la aplicación, por lo que debe coordinarse antes de una demostración compartida.
+
+Seleccione el Proveedor para completar la URL y el modelo sugeridos por el producto. Son valores del corte de software, no una garantía permanente de disponibilidad comercial. El identificador debe existir y estar autorizado en la cuenta del proveedor. La URL se valida contra destinos permitidos; no se usa esta pantalla para enviar datos a un servicio arbitrario.
+
+Para un proveedor cloud, el flujo consiste en crear el registro, registrar la credencial, probar la conexión y activar la configuración prevista. La prueba hace una solicitud mínima, sin el contexto comercial de la demostración. Un resultado satisfactorio acredita ese acceso básico, pero no demuestra todavía la calidad de una propuesta de BI.
+
+Ollama local no necesita API key, pero sí requiere el servicio local y el modelo descargado en la instalación. La pantalla no descarga modelos por escribir su nombre. Si se cambia proveedor, URL, modelo o razonamiento, se invalida la prueba previa; vuelva a probar antes de usar el asistente. Cambiar de tipo de proveedor en un registro activo exige desactivarlo primero.
+
+Nivel de razonamiento es una opción común que los adaptadores traducen a las capacidades admitidas. La modalidad de Claude de este corte ofrece Automático, Mínimo o Bajo; no habilita pensamiento extendido con Medio o Alto. Una opción más alta puede cambiar tiempo y consumo en proveedores compatibles, pero no garantiza mejores respuestas ni sustituye la supervisión.
+
+La edición del 25 de noviembre incorpora OpenAI como proveedor propio. La recomendación económica actual es gpt-6-luna con razonamiento Bajo. Su conexión y una respuesta estructurada mínima fueron comprobadas. Los recorridos nuevos completos con ambas fuentes se comprobaron con gpt-6.2-sol y razonamiento Medio; esto no acredita todavía un recorrido completo con Luna. Una prueba de conexión satisfactoria no reemplaza la revisión de cada propuesta.
+
+\subsection{Configurar OpenAI paso a paso y controlar el consumo}
+Una suscripción de ChatGPT y el uso de la API son servicios con facturación y disponibilidad propias. Un crédito promocional sólo debe darse por confirmado al consultar la cuenta API que lo recibió. La plataforma utiliza la API key de esa cuenta; no emplea automáticamente el modelo o la suscripción de este chat.
+
+OpenAI se conecta al servicio oficial https://api.openai.com/v1 mediante Responses API. La credencial se introduce en Registrar credencial y se almacena cifrada; no se vuelve a mostrar. No la copie en el objetivo comercial, el catálogo, una captura ni este manual. La configuración no permite elegir cualquier destino de Internet.
+
+Groq y OpenAI son proveedores distintos. Un modelo cuyo nombre contenga openai dentro de Groq sigue consumiendo la cuenta y cuota de Groq. Para utilizar su crédito API de OpenAI debe elegir el proveedor OpenAI.
+
+La plataforma solicita una respuesta estructurada y vuelve a comprobarla localmente. Si hay rechazo del modelo, respuesta incompleta, cuota agotada o contrato inválido, el fallo debe quedar visible. No se cambia a un modelo más caro de manera automática para ocultarlo.
+
+\begin{enumerate}
+\item Abra Configuración LLM y revise si ya existe una configuración OpenAI. Evite crear duplicados.
+\item Para crearla, escriba un nombre reconocible, por ejemplo OpenAI capacitación, y elija Proveedor: OpenAI.
+\item Revise la URL oficial. Para la opción económica escriba gpt-6-luna y seleccione razonamiento Bajo. El modelo debe estar disponible para su cuenta.
+\item Pulse Crear registro. Luego, en su fila, abra Registrar credencial, introduzca la API key privadamente y guárdela.
+\item Pulse Probar conexión una sola vez. Una respuesta válida demuestra acceso básico y salida estructurada mínima, no calidad de toda la propuesta BI.
+\item Pulse Activar sobre la configuración que utilizará el grupo. Sólo una queda activa para las nuevas solicitudes de toda la aplicación.
+\item Antes de enviar la necesidad, revise el aviso sobre el contexto que se transferirá. Para diseño se utilizan necesidad y metadatos permitidos; no se envían contraseñas de las bases.
+\item Si cambia modelo, URL, proveedor, razonamiento o credencial, repita la prueba. Si falla por cuota no reintente sin revisar primero su cuenta.
+\end{enumerate}
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Opciones OpenAI y qué se comprobó realmente\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Modelo y nivel} & \textbf{Tarifa estándar por millón de tokens} & \textbf{Evidencia de esta edición} \\
+\midrule
+GPT-6 Luna; Bajo & Entrada USD 0,10; salida USD 0,50 & Opción económica actual. Una prueba real de conexión y JSON estructurado; sin recorrido BI completo con Luna. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Opciones OpenAI y qué se comprobó realmente}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Modelo y nivel} & \textbf{Tarifa estándar por millón de tokens} & \textbf{Evidencia de esta edición} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Modelo y nivel} & \textbf{Tarifa estándar por millón de tokens} & \textbf{Evidencia de esta edición} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+GPT-6 Luna; Bajo & Entrada USD 0,10; salida USD 0,50 & Opción económica actual. Una prueba real de conexión y JSON estructurado; sin recorrido BI completo con Luna. \\
+\addlinespace[3pt]
+GPT-5.4 mini & Entrada USD 0,75; salida USD 4,50 & Alternativa disponible según cuenta. No ensayada en esta campaña. \\
+\addlinespace[3pt]
+GPT-6.1 Terra & Entrada USD 1; salida USD 5 & No ensayada en esta campaña. \\
+\addlinespace[3pt]
+GPT-6.2 Sol; Medio & Entrada USD 2; salida USD 10 & Modelo utilizado en los dos recorridos nuevos completos: AdventureWorks 136/24 y WideWorldImporters 135/23. \\
+\addlinespace[3pt]
+GPT-6.2 Astra & Entrada USD 8; salida USD 40 & No ensayada. No se recomienda para este presupuesto de demostración. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+Tarifas de texto estándar consultadas el 25 de noviembre de 2026, sin caché ni otros descuentos. Con un supuesto idéntico de 10.000 tokens de entrada y 2.000 de salida, el costo base sería USD 0,002; 0,0165; 0,020; 0,040 y 0,160, respectivamente. Es una comparación estimada, no el costo medido del proyecto. El supuesto no incluye razonamiento adicional, reintentos, herramientas ni llamadas extras.
+
+Las tarifas de entrada y salida de Luna son 95 \% menores que las de Sol. Esto no demuestra igual calidad ni un ahorro real idéntico por tarea: cambian la longitud, el razonamiento y el número de llamadas. No se conservó un registro de costos por solicitud de las pruebas, por lo que el consumo real debe consultarse en Usage/Billing de la cuenta API.
+
+En modelos de razonamiento, la salida disponible comparte presupuesto con el razonamiento interno. El adaptador reserva un límite mínimo según el nivel: 4.096 tokens en Automático, Mínimo o Bajo; 8.192 en Medio; 16.384 en Alto, con techo de 32.768. Es un límite permitido, no una cantidad que siempre se facture. Un proceso puede realizar más de una llamada.
+
+Para gastar menos durante la sustentación, consulte propuestas aprobadas, expedientes y paneles publicados. Abrirlos no vuelve a generar la propuesta con IA. Sugerir una necesidad, verificar viabilidad mediante IA, generar una propuesta o conversar con el copiloto sí puede consumir la API. Use sólo la operación que necesita y no repita clics mientras espera.
+
+\pantallaactual{recursos/pantallas/luna-modelo-bajo.jpg}{Configuración activa: OpenAI económico}{Captura real del 25 de noviembre de 2026. La fila OpenAI BI - Luna económico muestra razonamiento bajo y credencial configurada. No se muestra la clave ni debe copiarse al manual.}
+\subsection{Conceptos para comprender la opción}
+\paragraph{Proveedor} Servicio que ofrece el modelo, local o cloud.
+
+\paragraph{Modelo} Identificador concreto de la capacidad solicitada dentro de ese proveedor.
+
+\paragraph{Credencial} Clave que autoriza al proveedor; se almacena cifrada y no se vuelve a mostrar.
+
+\paragraph{Activa} Configuración seleccionada para nuevas solicitudes; no significa que todas sus respuestas serán válidas.
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Abra Configuración LLM y revise los registros existentes para no duplicarlos innecesariamente.
+\item En Crear configuración LLM, escriba Nombre de configuración y seleccione Proveedor.
+\item Revise URL del servicio, Modelo y Nivel de razonamiento. Use valores autorizados para la instalación.
+\item Pulse Crear registro. En cloud, pulse Registrar credencial en su fila, introduzca la API key y pulse Guardar credencial.
+\item Pulse Probar conexión y lea el resultado. Corrija clave, cuota, modelo o disponibilidad si falla.
+\item Pulse Activar sobre la configuración prevista y compruebe cuál queda activa.
+\item Vuelva a Inicio para revisar el asistente preparado. Antes de enviar una necesidad, atienda la autorización de transferencia del contexto que corresponda al destino elegido.
+\item Para una clave renovada, use Reemplazar credencial y repita la prueba. No necesita borrar la propuesta histórica para cambiar una configuración de futuras solicitudes.
+\end{enumerate}
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y botones\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+Nombre de configuración & Distingue el registro. & \textbf{Ejemplo:} Claude demostración o Groq capacitación.\par\smallskip\textbf{Resultado:} Permite reconocer la configuración que se prueba y activa. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y botones}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Nombre de configuración & Distingue el registro. & \textbf{Ejemplo:} Claude demostración o Groq capacitación.\par\smallskip\textbf{Resultado:} Permite reconocer la configuración que se prueba y activa. \\
+\addlinespace[3pt]
+Proveedor & Selecciona el adaptador implementado. & \textbf{Ejemplo:} OpenAI, Anthropic Claude, Groq Cloud, Gemini Cloud, Qwen Cloud u Ollama local.\par\smallskip\textbf{Resultado:} Completa valores recomendados de URL, modelo y nivel. \\
+\addlinespace[3pt]
+URL del servicio & Identifica el destino permitido. & \textbf{Ejemplo:} URL completada al seleccionar el proveedor.\par\smallskip\textbf{Resultado:} Se valida su correspondencia; no admite un destino arbitrario. \\
+\addlinespace[3pt]
+Modelo & Especifica el identificador que el servicio debe reconocer. & \textbf{Ejemplo:} Modelo autorizado de la cuenta y del adaptador.\par\smallskip\textbf{Resultado:} La prueba puede detectar ausencia, acceso o incompatibilidad. \\
+\addlinespace[3pt]
+Nivel de razonamiento & Elige una modalidad admitida. & \textbf{Ejemplo:} Mínimo para una solicitud breve en la modalidad de Claude disponible.\par\smallskip\textbf{Resultado:} Se conserva en la configuración y forma parte de lo que debe volver a probarse si cambia. \\
+\addlinespace[3pt]
+Registrar credencial / Reemplazar credencial & Abre el formulario de la clave cloud. & \textbf{Ejemplo:} Registrar una clave nueva sin imprimirla ni pegarla en documentación.\par\smallskip\textbf{Resultado:} El servidor conserva el secreto cifrado. \\
+\addlinespace[3pt]
+Guardar credencial / Cancelar & Confirma o abandona el envío de la clave. & \textbf{Ejemplo:} Cancelar si se abrió la fila equivocada.\par\smallskip\textbf{Resultado:} La clave no vuelve a mostrarse en el listado. \\
+\addlinespace[3pt]
+Probar conexión & Realiza la comprobación mínima del proveedor y modelo. & \textbf{Ejemplo:} Comprobar un modelo local instalado.\par\smallskip\textbf{Resultado:} Devuelve un resultado básico, sin generar un datamart. \\
+\addlinespace[3pt]
+Activar / Desactivar & Selecciona la configuración operativa. & \textbf{Ejemplo:} Cambiar de proveedor con conocimiento de quienes usan la plataforma.\par\smallskip\textbf{Resultado:} Solo una queda activa para nuevas solicitudes. \\
+\addlinespace[3pt]
+Eliminar & Retira una configuración inactiva cuando el servidor lo permite. & \textbf{Ejemplo:} Limpiar un registro temporal autorizado.\par\smallskip\textbf{Resultado:} No sirve para reparar automáticamente un proveedor indisponible. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Identificar los componentes de una configuración existente}
+Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.
+
+\begin{enumerate}
+\item Consulte un registro sin mostrar la clave.
+\item Identifique proveedor, modelo, nivel y estado.
+\item Explique cuál usaría la próxima solicitud y qué ocurriría al cambiar el modelo.
+\end{enumerate}
+
+\textbf{Qué debe obtener.} Se distingue registro, prueba, credencial y activación. No se envía una solicitud comercial por consultar el listado.
+
+\textbf{Cómo comprobarlo.} La estudiante explica por qué una prueba básica exitosa no es una evaluación completa de las propuestas BI.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Si aparece un problema\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+Credencial pendiente o rechazo de autenticación. & No se registró una clave válida para ese proveedor. & Registre o reemplace la clave en la fila correcta y pruebe otra vez. No la escriba en Parámetros ni en el objetivo de negocio.\par\smallskip\textbf{Comprobación:} La prueba básica resulta satisfactoria sin exponer el secreto. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Si aparece un problema}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Credencial pendiente o rechazo de autenticación. & No se registró una clave válida para ese proveedor. & Registre o reemplace la clave en la fila correcta y pruebe otra vez. No la escriba en Parámetros ni en el objetivo de negocio.\par\smallskip\textbf{Comprobación:} La prueba básica resulta satisfactoria sin exponer el secreto. \\
+\addlinespace[3pt]
+Modelo no disponible o sin acceso. & Identificador incorrecto, no instalado o no autorizado para la cuenta. & Revise el modelo con la administración; en Ollama compruebe servicio y descarga mediante la guía técnica.\par\smallskip\textbf{Comprobación:} El servicio reconoce el modelo configurado. \\
+\addlinespace[3pt]
+Cuota, límite de servicio o tiempo agotado. & Restricción externa o recursos insuficientes. & Lea la causa y espere o cambie a una configuración previamente preparada con autorización. No describa un cambio silencioso de proveedor como comportamiento del sistema.\par\smallskip\textbf{Comprobación:} La nueva configuración queda identificada y probada. \\
+\addlinespace[3pt]
+El proveedor devuelve JSON, pero el contrato es rechazado. & La salida no cumple los campos, tipos o reglas que exige la plataforma. & Mantenga la necesidad guardada y revise el diagnóstico de recuperación del asistente. Reintente de forma controlada o elija un proveedor probado; no apruebe una respuesta inválida para continuar.\par\smallskip\textbf{Comprobación:} Se obtiene una versión válida y revisable o un fallo explicado; no se materializa contenido inválido. \\
+\addlinespace[3pt]
+Activar no devuelve un estado de preparación correcto. & La clave puede existir, pero la prueba es inválida o quedó obsoleta tras un cambio. & Pruebe exactamente la combinación que está activa y revise Inicio.\par\smallskip\textbf{Comprobación:} La preparación reconoce proveedor y modelo comprobados. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Para explicar durante la sustentación}
+\paragraph{¿Se reemplaza la IA sin cambiar el proceso BI?} Los adaptadores permiten cambiar de proveedor manteniendo los contratos de la aplicación. Cada combinación requiere prueba y validación; no se garantiza que todos los modelos produzcan la misma calidad.
+
+\paragraph{¿La prueba mínima autoriza enviar datos de ventas completos?} No. La prueba utiliza una solicitud mínima. Las solicitudes posteriores respetan su propósito y autorización: el diseño usa contexto estructural y el copiloto analítico utiliza agregados permitidos.
+
+\pantalla{recursos/pantallas/06_llm_formulario.jpg}{Proveedor, URL, modelo y razonamiento}{Configuración del proveedor, servicio, modelo y razonamiento. Seleccione opciones compatibles con el servicio disponible. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/07_llm_registros.jpg}{Configuraciones disponibles y proveedor activo}{Configuraciones registradas: una aparece activa. No se promete una salida idéntica entre proveedores. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/08_llm_credencial_vacia.jpg}{Formulario de credencial vacío y cancelación}{Panel de sustitución abierto con el campo vacío y cancelado. La credencial se introduce de forma privada; nunca se copia al manual. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/operacion_11.tex}{\input{capturas/operacion_11.tex}}{}
+\begingroup
+\setlength{\parskip}{4pt plus 1pt minus 1pt}
+\setlist[enumerate]{itemsep=3pt,topsep=4pt}
+\titlespacing*{\paragraph}{0pt}{4pt}{0.5em}
+\section{Leer y comprender el esquema antes de diseñar}
+\label{unidad:operacion_12}
+\textbf{Para quién:} Analista de BI, Administración, Gerencia con consulta de metadatos\par
+\textbf{Opción:} Preparación del entorno > Explorador de esquema\par
+
+El Explorador muestra una fotografía estructural de la fuente: esquemas, tablas, columnas, tipos, claves principales y relaciones declaradas. Es el primer paso para comprobar qué información existe y cómo puede relacionarse. No muestra las filas del negocio ni demuestra por sí solo que un atributo tenga el significado comercial que usted necesita.
+
+Un esquema es una agrupación de objetos dentro de la base. Una tabla reúne registros de una entidad o evento; una columna representa un atributo. La clave principal identifica una fila de la tabla. Una relación declarada vincula columnas de tablas mediante una clave foránea. Dos columnas con el mismo nombre no prueban una relación válida si el esquema no la respalda.
+
+La instantánea conserva versión, fecha y huella de contenido. Si la estructura no cambió, una actualización puede reutilizar la captura existente; no es obligatorio que aumente el número de versión. Versionar metadatos permite saber con qué estructura se revisó una propuesta histórica. Actualizar metadatos no actualiza las filas del datamart ni repite el ETL.
+
+En AdventureWorks, una línea de pedido y su cabecera permiten distinguir la cantidad de líneas de la cantidad de pedidos. En WideWorldImporters, la línea de factura corresponde a otro evento comercial. Estos son ejemplos de lectura del esquema: el programa no exige esos nombres a una fuente nueva, pero sí necesita relaciones y tipos compatibles con la necesidad.
+
+Para la demostración, encuentre al menos el detalle comercial, su fecha de evento y una relación hacia producto, cliente o territorio. Explique qué significa cada enlace antes de usarlo. Una relación hacia la persona que creó o modificó un registro no demuestra quién compró ni dónde se realizó la operación.
+
+\subsection{Conceptos para comprender la opción}
+\paragraph{Tabla} Conjunto de filas del mismo tipo de entidad o evento.
+
+\paragraph{Columna} Atributo con un nombre y un tipo de dato.
+
+\paragraph{PK} Clave principal; identifica una fila de la tabla. Puede incluir más de una columna.
+
+\paragraph{Relación saliente} Enlace desde la tabla consultada hacia otra mediante sus columnas.
+
+\paragraph{Relación entrante} Enlace de otra tabla hacia la tabla que se consulta.
+
+\paragraph{Huella} Resumen calculado del contenido estructural para comprobar si la captura cambió.
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Seleccione la fuente correcta en Cambiar fuente.
+\item Si no hay metadatos, pulse Crear primera instantánea si tiene permiso de actualización.
+\item Lea el resumen de esquemas, tablas, columnas y relaciones y la versión vigente.
+\item Use Versión de metadatos para una captura histórica cuando exista más de una.
+\item En Buscar tabla o columna escriba parte del nombre; opcionalmente escriba el nombre exacto del esquema en Esquema y pulse Buscar.
+\item Seleccione una tabla de la lista y revise Columna, Tipo, Permite nulos y Clave.
+\item Lea Relaciones salientes y Relaciones entrantes. Anote las columnas del enlace y la tabla relacionada.
+\item Para quitar un filtro, vacíe los campos y pulse Buscar. Al cambiar de fuente, compruebe que se cargan su propia instantánea y tablas.
+\end{enumerate}
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y botones\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+Crear primera instantánea & Captura estructura cuando aún no existe una versión. & \textbf{Ejemplo:} Preparar una fuente SQL Server nueva.\par\smallskip\textbf{Resultado:} Conserva tablas, columnas y relaciones, sin filas ni credenciales. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y botones}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Crear primera instantánea & Captura estructura cuando aún no existe una versión. & \textbf{Ejemplo:} Preparar una fuente SQL Server nueva.\par\smallskip\textbf{Resultado:} Conserva tablas, columnas y relaciones, sin filas ni credenciales. \\
+\addlinespace[3pt]
+Actualizar metadatos & Vuelve a consultar la estructura de la fuente. & \textbf{Ejemplo:} Se agregó una tabla o cambió una relación declarada.\par\smallskip\textbf{Resultado:} Crea una versión si hay cambios o reutiliza la equivalente. \\
+\addlinespace[3pt]
+Versión de metadatos & Permite revisar una captura conservada. & \textbf{Ejemplo:} Abrir la estructura de una propuesta histórica.\par\smallskip\textbf{Resultado:} Con una única versión, el selector está deshabilitado y lo explica. \\
+\addlinespace[3pt]
+Buscar tabla o columna & Filtra por un texto de estructura. & \textbf{Ejemplo:} SalesOrderDetail o InvoiceLines en los ejemplos instalados.\par\smallskip\textbf{Resultado:} Presenta coincidencias, no filas comerciales. \\
+\addlinespace[3pt]
+Esquema & Acota la búsqueda por agrupación estructural. & \textbf{Ejemplo:} Sales, si corresponde a la fuente.\par\smallskip\textbf{Resultado:} No es un selector de base de datos. \\
+\addlinespace[3pt]
+Buscar & Aplica los campos escritos. & \textbf{Ejemplo:} Buscar InvoiceLines dentro de Sales.\par\smallskip\textbf{Resultado:} Actualiza la lista desde la instantánea elegida. \\
+\addlinespace[3pt]
+Tablas & Permite elegir el objeto que se examina. & \textbf{Ejemplo:} Detalle de una venta o factura.\par\smallskip\textbf{Resultado:} Presenta columnas y relaciones de la tabla seleccionada. \\
+\addlinespace[3pt]
+Relaciones salientes / Relaciones entrantes & Explica los enlaces declarados. & \textbf{Ejemplo:} Detalle hacia cabecera; otra tabla hacia cliente.\par\smallskip\textbf{Resultado:} Permite reconocer el sentido y columnas de una relación sin inventarla. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Comparar pedido y factura}
+Ejercicio de consulta propuesto; los nombres corresponden a las dos fuentes públicas de demostración y deben comprobarse en la instalación.
+
+\begin{enumerate}
+\item Seleccione AdventureWorks y busque SalesOrderDetail; revise sus claves y un enlace con SalesOrderHeader.
+\item Cambie a WideWorldImporters y busque InvoiceLines; revise sus claves y un enlace con Invoices.
+\item Explique por qué una línea no es un pedido ni una factura completa.
+\end{enumerate}
+
+\textbf{Qué debe obtener.} Se distinguen las estructuras de dos eventos comerciales. La estudiante identifica las referencias de la fuente sin proponer todavía un ETL.
+
+\textbf{Cómo comprobarlo.} Puede justificar un conteo distinto de documentos frente a un conteo de líneas.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Si aparece un problema\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+No aparecen coincidencias. & Texto o esquema no coinciden con la instantánea. & Vacíe los filtros, pulse Buscar y localice una tabla de la lista. No concluya que faltan las ventas por una búsqueda mal escrita.\par\smallskip\textbf{Comprobación:} La lista vuelve a mostrar objetos de la fuente correcta. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Si aparece un problema}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+No aparecen coincidencias. & Texto o esquema no coinciden con la instantánea. & Vacíe los filtros, pulse Buscar y localice una tabla de la lista. No concluya que faltan las ventas por una búsqueda mal escrita.\par\smallskip\textbf{Comprobación:} La lista vuelve a mostrar objetos de la fuente correcta. \\
+\addlinespace[3pt]
+Versión de metadatos aparece deshabilitada. & Solo existe una captura disponible. & Lea la nota y consulte esa versión. No necesita generar versiones artificiales.\par\smallskip\textbf{Comprobación:} Se reconoce la única instantánea sin interpretarla como un fallo. \\
+\addlinespace[3pt]
+No hay una relación de negocio que el analista esperaba. & El origen no la declara o enlaza otro rol del negocio. & Registre la limitación y formule una necesidad compatible. No una tablas por nombres parecidos para forzar cobertura.\par\smallskip\textbf{Comprobación:} La propuesta posterior usa enlaces respaldados o informa la insuficiencia. \\
+\addlinespace[3pt]
+Actualizar no cambia el número de versión. & La huella estructural es equivalente. & Compruebe el mensaje y la estructura; una captura reutilizada es un resultado válido.\par\smallskip\textbf{Comprobación:} No se confunde ausencia de cambio de estructura con error de actualización de ventas. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Para explicar durante la sustentación}
+\paragraph{¿La instantánea permite comprobar que los importes están bien?} Permite comprobar estructura y referencias. La comprobación numérica corresponde a la conciliación posterior a una carga.
+
+\paragraph{¿Por qué conservar nombres técnicos en inglés?} Identifican las referencias reales del origen. La explicación puede estar en español, pero no debe cambiar los nombres que permiten rastrear tablas y columnas.
+
+\endgroup
+\pantalla{recursos/pantallas/09_metadatos_AdventureWorks.jpg}{Instantáneas y resumen de metadatos de AdventureWorks}{AdventureWorks: instantánea estructural con seis esquemas y 71 tablas. Los recuentos no son cantidades de ventas. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/10_metadatos_AW_columnas.jpg}{Tipos, nulos y clave del detalle de pedidos}{SalesOrderDetail: claves y tipos de las columnas. El nombre de una columna es una pista que debe contrastarse con su significado. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/11_metadatos_AW_relaciones.jpg}{Relaciones de la línea con pedido y producto}{Las relaciones declaradas sustentan rutas seguras. Observe las columnas de origen y destino, no sólo el nombre de la tabla. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/12_metadatos_WWI.jpg}{Instantánea independiente de WideWorldImporters}{WideWorldImporters: cuatro esquemas y 48 tablas. Una única instantánea deja el selector visible sin alternativas. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/13_metadatos_WWI_columnas.jpg}{Columnas de InvoiceLines y significado de sus importes}{InvoiceLines: detalle físico de las facturas. No confunda una línea con una factura completa. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/14_metadatos_WWI_relaciones.jpg}{Rutas declaradas de InvoiceLines a sus entidades}{Relaciones de InvoiceLines con sus entidades. La ruta comercial se revisa según la necesidad, aunque exista una FK. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/operacion_12.tex}{\input{capturas/operacion_12.tex}}{}

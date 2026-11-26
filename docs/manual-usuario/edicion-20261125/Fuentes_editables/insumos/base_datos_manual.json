@@ -1,0 +1,4921 @@
+{
+  "titulo": "Base de datos real explicada para el manual operativo",
+  "fecha": "2026-11-18T00:22:25.051768-05:00",
+  "fuente_inventario": "inventario_postgresql_real.json",
+  "sha256_inventario": "c33753c92d62520bab320986d147c1840e5b381a9cbc6981141f962a56678fed",
+  "estadisticas": {
+    "tablas": 83,
+    "columnas": 782,
+    "tablas_app": 18,
+    "columnas_app": 174,
+    "tablas_analiticas": 64,
+    "fk_app": 24,
+    "fk_analiticas": 0,
+    "migraciones": 19
+  },
+  "secciones": [
+    {
+      "titulo": "Dos bases de datos con trabajos diferentes",
+      "texto": "SQL Server conserva las bases de demostración de origen. PostgreSQL conserva cuentas, configuración, metadatos, propuestas, expedientes y las tablas analíticas cargadas. Registrar una conexión no copia toda la base origen; obtener metadatos tampoco copia ventas. La aplicación lee datos autorizados cuando se confirma la carga. Cada ejecución nueva conserva su propio destino analítico."
+    },
+    {
+      "titulo": "Base de datos, esquema, tabla y fila",
+      "texto": "bi_prototype es la base PostgreSQL auditada. Un esquema es un espacio de nombres dentro de esa base: app agrupa el estado de la plataforma; mart_ventas_e21 y mart_ventas_e22 separan resultados de ejecuciones. Una tabla contiene columnas y filas. Un esquema llamado mart_ventas_e22 no es otra base SQL Server ni un catálogo de preguntas."
+    },
+    {
+      "titulo": "Qué se comprobó realmente",
+      "texto": "Se leyeron catálogos PostgreSQL en modo de solo lectura, no filas comerciales ni contenidos JSON. El inventario incluye 83 tablas y 782 columnas: 18 tablas de app con 174 columnas, 64 tablas analíticas y public.alembic_version. Hay 24 FK físicas, todas en app. Los nombres de columna de las 18 tablas coinciden con el ORM actual. Se cotejaron 19 archivos de migración; la tabla técnica informa la revisión aplicada 20261003_19. Esto describe la estructura observada, no acredita por sí solo conciliación o exactitud de todas las cargas históricas."
+    },
+    {
+      "titulo": "Claves primarias y claves foráneas",
+      "texto": "Una PK identifica una fila dentro de una tabla. Las tablas user_roles, role_permissions y menu_permissions usan PK de dos columnas: la pareja es única. Una FK comprueba que un valor hijo exista en una tabla padre. Por ejemplo, una ejecución debe referir una propuesta existente. No se deduce una FK porque una columna termine en _id."
+    },
+    {
+      "titulo": "Cómo leer las cardinalidades",
+      "texto": "1 junto a la tabla padre significa que cada fila hija necesita un padre; 0..1 permite que la referencia sea nula. 0..* junto a la hija indica que un padre puede tener ninguna o muchas hijas. No se deduce que todos los padres ya tengan hijos. Un índice único completo sobre la FK limita a una hija por padre. Por eso secret_id es uno a uno opcional por cada tabla de configuración, pero la unicidad de data_connections y de llm_configurations no es una exclusión global entre ambas tablas."
+    },
+    {
+      "titulo": "Autoría, roles y permisos",
+      "texto": "app.users identifica a la persona de la aplicación. user_roles la relaciona con uno o varios roles, y role_permissions relaciona esos roles con operaciones. menu_permissions vincula navegación con permisos. No existe una FK directa entre roles y menus. La persona puede ver una opción en React únicamente según sus permisos; FastAPI vuelve a comprobarlos antes de operar. Las FK de autoría son opcionales y usan SET NULL para preservar evidencia si se retira una cuenta; las reglas de sesión del servidor siguen siendo obligatorias."
+    },
+    {
+      "titulo": "JSON y JSONB no son tablas separadas",
+      "texto": "JSONB almacena un documento estructurado en una columna: por ejemplo la definición de un catálogo o el contrato de una propuesta. JSON almacena el documento de detalle de auditoría. Estos documentos no se descomponen automáticamente en tablas con FK. Los nombres de tablas, rutas, identificadores o esquemas guardados dentro del documento se comprueban mediante reglas del servidor. No deben dibujarse como FK físicas. El inventario registra únicamente el tipo y nombre de esas columnas, sin leer su contenido."
+    },
+    {
+      "titulo": "La revisión previa no está unida por una FK directa a la propuesta",
+      "texto": "business_need_reviews y bi_proposals apuntan a metadata_snapshots. El servidor comprueba entradas, huellas, actor y contexto al generar. No existe review_id en bi_proposals ni una FK que materialice la correspondencia entre ambos documentos. Esa parte de la trazabilidad es una regla de aplicación, complementaria a las restricciones SQL."
+    },
+    {
+      "titulo": "Una propuesta y una ejecución no son lo mismo",
+      "texto": "bi_proposals guarda el diseño conservado y su decisión. etl_executions guarda un expediente que apunta por FK a esa propuesta y a sus metadatos. Una propuesta puede fundamentar cero o varias ejecuciones. Aprobar el diseño no llena fact_ventas; la materialización requiere la confirmación posterior y controles de conciliación."
+    },
+    {
+      "titulo": "Cómo se conservan los resultados físicos",
+      "texto": "Los esquemas mart_ventas_e21 y mart_ventas_e22 existen en el catálogo y contienen dim_fecha, dim_producto, dim_cliente, dim_territorio y fact_ventas. Las dimensiones tienen PK surrogate_key. En la estructura observada, fact_ventas no tiene PK ni FK declaradas. Sus dim_*_sk se unen lógicamente con surrogate_key, y etl_execution_id es una etiqueta de ejecución sin FK a app.etl_executions. Las líneas discontinuas de sus diagramas no prometen restricciones que PostgreSQL no impone. El constructor y la conciliación deben comprobar esas correspondencias; la PK de una dimensión no demuestra por sí sola que todos los hechos tengan miembro válido."
+    },
+    {
+      "titulo": "Por qué las columnas de ventas cambian entre fuentes",
+      "texto": "Los nombres y atributos físicos dependen del contrato aprobado. AdventureWorks conserva la identidad de pedido y detalle; WideWorldImporters conserva la identidad de línea de factura. Las dos demostraciones comparten el motor general, sin exigir nombres de tablas fuente iguales. Los esquemas físicos de ejecuciones anteriores son evidencia histórica; su mera existencia no garantiza que estén publicados o disponibles en el selector analítico."
+    },
+    {
+      "titulo": "Cómo interpretar medidas y conteos",
+      "texto": "Una columna física llamada numero de pedidos o facturas distintas puede conservar el identificador documental de cada línea para que el lector calcule COUNT DISTINCT en el conjunto filtrado. No se debe sumar ese identificador ni sumar conteos de grupos que pueden repetir documentos. Para el importe promedio por documento, se divide el importe total entre los documentos distintos del filtro. Agrupar por mes no transforma la fila física en un resumen mensual."
+    },
+    {
+      "titulo": "Asesoría del diseño y conversación analítica",
+      "texto": "semantic_advice conserva consultas sobre conceptos de una propuesta. El copiloto analítico conversa sobre agregados de una ejecución y sus filtros. La arquitectura documenta que no conserva el historial completo de chat en una tabla de mensajes: la auditoría registra huella y contexto mínimo. No debe presentarse semantic_advice como un almacén de todos los mensajes analíticos."
+    },
+    {
+      "titulo": "Qué garantiza y qué no garantiza este inventario",
+      "texto": "La coincidencia entre ORM y catálogo acredita los nombres de columnas de app observados. Las FK físicas acreditan integridad referencial de esas relaciones SQL, no el significado comercial de cada importe o territorio. Los documentos JSON, el plan, la selección y los enlaces analíticos necesitan controles de aplicación. El manual debe enseñar a revisar tanto estructura como conciliación, contexto, moneda y denominadores, sin pedir a la persona usuaria que modifique estas tablas con SQL."
+    },
+    {
+      "titulo": "Una fotografía local, no un requisito del portable",
+      "texto": "Los 83 registros de tablas describen esta instalación con resultados históricos acumulados. Las 64 tablas analíticas no son un catálogo fijo que deba venir con el portable limpio: aparecen al materializar ejecuciones. El portable limpio conserva la estructura de app y el control de migraciones; los esquemas analíticos se generan después. Los identificadores de propuestas, instantáneas y ejecuciones también se asignan en cada instalación."
+    },
+    {
+      "titulo": "Roles observados y alcance de la comprobación",
+      "texto": "Se consultaron únicamente definiciones de roles y permisos, sin cuentas ni asignaciones de personas. En este corte existen Administrador, Operador, Analista BI y Gerente comercial. Gerente comercial tiene lectura analítica, lectura de conexiones, consulta de metadatos y exportación analítica. Consultar metadatos permite cargar el selector de fuentes y también abrir el explorador; no concede escritura ni ETL. Esta lectura de permisos no acredita que se haya iniciado sesión y completado el recorrido con cada perfil."
+    }
+  ],
+  "esquemas_observados": [
+    {
+      "name": "app",
+      "table_count": 18
+    },
+    {
+      "name": "mart",
+      "table_count": 0
+    },
+    {
+      "name": "mart_ventas",
+      "table_count": 5
+    },
+    {
+      "name": "mart_ventas_e11",
+      "table_count": 5
+    },
+    {
+      "name": "mart_ventas_e12",
+      "table_count": 5
+    },
+    {
+      "name": "mart_ventas_e13",
+      "table_count": 5
+    },
+    {
+      "name": "mart_ventas_e14",
+      "table_count": 5
+    },
+    {
+      "name": "mart_ventas_e15",
+      "table_count": 5
+    },
+    {
+      "name": "mart_ventas_e16",
+      "table_count": 5
+    },
+    {
+      "name": "mart_ventas_e17",
+      "table_count": 4
+    },
+    {
+      "name": "mart_ventas_e18",
+      "table_count": 5
+    },
+    {
+      "name": "mart_ventas_e19",
+      "table_count": 5
+    },
+    {
+      "name": "mart_ventas_e20",
+      "table_count": 5
+    },
+    {
+      "name": "mart_ventas_e21",
+      "table_count": 5
+    },
+    {
+      "name": "mart_ventas_e22",
+      "table_count": 5
+    },
+    {
+      "name": "public",
+      "table_count": 1
+    }
+  ],
+  "linaje_verificado_sin_json": [
+    {
+      "proposal_id": 129,
+      "proposal_status": "approved",
+      "metadata_snapshot_id": 2,
+      "execution_id": 21,
+      "execution_status": "succeeded",
+      "execution_snapshot_id": 2,
+      "same_snapshot": true,
+      "data_connection_id": 1,
+      "database_name": "AdventureWorks2022",
+      "connector_kind": "sqlserver"
+    },
+    {
+      "proposal_id": 131,
+      "proposal_status": "approved",
+      "metadata_snapshot_id": 3,
+      "execution_id": 22,
+      "execution_status": "succeeded",
+      "execution_snapshot_id": 3,
+      "same_snapshot": true,
+      "data_connection_id": 2,
+      "database_name": "WideWorldImporters",
+      "connector_kind": "sqlserver"
+    }
+  ],
+  "tablas_app": [
+    {
+      "tabla": "app.analysis_catalogs",
+      "area": "Configuración y metadatos",
+      "que_guarda": "Guarda orientación funcional por conexión y dominio, con versión.",
+      "como_se_usa": "Catálogo analítico: preguntas de negocio y periodicidades. No define un modelo dimensional físico fijo. La combinación conexión/dominio es única.",
+      "numero_columnas": 8,
+      "columnas": [
+        {
+          "position": 1,
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Identificador interno de esta entidad; su PK distingue cada registro.",
+          "clave_primaria": true,
+          "relaciones_fk": []
+        },
+        {
+          "position": 2,
+          "name": "data_connection_id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK a app.data_connections.id; preserva el contexto de fuente.",
+          "clave_primaria": false,
+          "relaciones_fk": [
+            {
+              "constraint": "analysis_catalogs_data_connection_id_fkey",
+              "child": "app.analysis_catalogs",
+              "child_columns": [
+                "data_connection_id"
+              ],
+              "parent": "app.data_connections",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "c"
+            }
+          ]
+        },
+        {
+          "position": 3,
+          "name": "domain_code",
+          "type": "character varying(40)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Dominio analítico; ventas es el dominio implementado.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 4,
+          "name": "version",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Versión de configuración del catálogo; no representa un expediente de ejecución.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 5,
+          "name": "configuration_document",
+          "type": "jsonb",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "JSONB de preguntas de negocio y periodicidades administradas para esta conexión y dominio.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 6,
+          "name": "updated_by_user_id",
+          "type": "integer",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK opcional al usuario que actualizó el catálogo.",
+          "clave_primaria": false,
+          "relaciones_fk": [
+            {
+              "constraint": "analysis_catalogs_updated_by_user_id_fkey",
+              "child": "app.analysis_catalogs",
+              "child_columns": [
+                "updated_by_user_id"
+              ],
+              "parent": "app.users",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "0..1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "n"
+            }
+          ]
+        },
+        {
+          "position": 7,
+          "name": "updated_by_label",
+          "type": "character varying(320)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Etiqueta histórica de la persona que actualizó el catálogo.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 8,
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Fecha de actualización del registro; su opcionalidad física consta en el inventario.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "analysis_catalogs_data_connection_id_fkey",
+          "kind": "f",
+          "columns": [
+            "data_connection_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "data_connections",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "c",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "analysis_catalogs_updated_by_user_id_fkey",
+          "kind": "f",
+          "columns": [
+            "updated_by_user_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "users",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "n",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "analysis_catalogs_pkey",
+          "kind": "p",
+          "columns": [
+            "id"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        },
+        {
+          "name": "uq_app_analysis_catalog_source_domain",
+          "kind": "u",
+          "columns": [
+            "data_connection_id",
+            "domain_code"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ],
+      "indices_unicos": [
+        {
+          "name": "analysis_catalogs_pkey",
+          "primary": true,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "uq_app_analysis_catalog_source_domain",
+          "primary": false,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "data_connection_id",
+            "domain_code"
+          ]
+        }
+      ]
+    },
+    {
+      "tabla": "app.audit_events",
+      "area": "Seguridad",
+      "que_guarda": "Registra quién realizó una acción y sobre qué recurso, conservando contexto técnico.",
+      "como_se_usa": "Auditoría de operaciones. La columna detail es JSON, no JSONB; actor_user_id es la FK de usuario, pero resource_id es una referencia textual, no una FK universal.",
+      "numero_columnas": 8,
+      "columnas": [
+        {
+          "position": 1,
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Identificador interno de esta entidad; su PK distingue cada registro.",
+          "clave_primaria": true,
+          "relaciones_fk": []
+        },
+        {
+          "position": 2,
+          "name": "actor_user_id",
+          "type": "integer",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK opcional al usuario que realizó la acción; ON DELETE SET NULL conserva el evento si se retira la cuenta.",
+          "clave_primaria": false,
+          "relaciones_fk": [
+            {
+              "constraint": "fk_audit_events_actor_user_id_users",
+              "child": "app.audit_events",
+              "child_columns": [
+                "actor_user_id"
+              ],
+              "parent": "app.users",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "0..1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "n"
+            }
+          ]
+        },
+        {
+          "position": 3,
+          "name": "action",
+          "type": "character varying(120)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Código de la operación registrada en auditoría.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 4,
+          "name": "resource_type",
+          "type": "character varying(100)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Clase de recurso afectado por la operación.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 5,
+          "name": "resource_id",
+          "type": "character varying(100)",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Identidad del recurso guardada como texto; PostgreSQL no la impone como FK a todas las tablas.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 6,
+          "name": "detail",
+          "type": "json",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Documento JSON con detalle de auditoría; no se leyó su contenido.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 7,
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Fecha de creación del registro; su opcionalidad física consta en el inventario.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 8,
+          "name": "actor_label",
+          "type": "character varying(320)",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Etiqueta histórica del actor. Es texto de evidencia y no otra FK.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "fk_audit_events_actor_user_id_users",
+          "kind": "f",
+          "columns": [
+            "actor_user_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "users",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "n",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "audit_events_pkey",
+          "kind": "p",
+          "columns": [
+            "id"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ],
+      "indices_unicos": [
+        {
+          "name": "audit_events_pkey",
+          "primary": true,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "tabla": "app.bi_proposals",
+      "area": "Propuestas y ejecución",
+      "que_guarda": "Conserva versiones del diseño BI, sus documentos, proveedor, validación y revisión humana.",
+      "como_se_usa": "Asistente de datamart: conceptos, propuesta, personalización y revisión. Aprobar no ejecuta la carga. Una versión derivada enlaza con su origen mediante source_proposal_id.",
+      "numero_columnas": 26,
+      "columnas": [
+        {
+          "position": 1,
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Identificador interno de esta entidad; su PK distingue cada registro.",
+          "clave_primaria": true,
+          "relaciones_fk": []
+        },
+        {
+          "position": 2,
+          "name": "metadata_snapshot_id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK a app.metadata_snapshots.id; enlaza el artefacto a una estructura de origen conservada.",
+          "clave_primaria": false,
+          "relaciones_fk": [
+            {
+              "constraint": "bi_proposals_metadata_snapshot_id_fkey",
+              "child": "app.bi_proposals",
+              "child_columns": [
+                "metadata_snapshot_id"
+              ],
+              "parent": "app.metadata_snapshots",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "r"
+            }
+          ]
+        },
+        {
+          "position": 3,
+          "name": "business_goal",
+          "type": "text",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Necesidad comercial redactada o adoptada por la persona analista.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 4,
+          "name": "business_questions",
+          "type": "jsonb",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "JSONB de las preguntas seleccionadas para esa necesidad.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 5,
+          "name": "requested_dimensions",
+          "type": "jsonb",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Campo JSONB conservado en el contrato histórico; no implica que el catálogo actual fije dimensiones predeterminadas.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 6,
+          "name": "periodicity",
+          "type": "character varying(20)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Agrupación temporal solicitada; no cambia por sí sola el grano físico de las filas.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 7,
+          "name": "scope_document",
+          "type": "jsonb",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "JSONB del alcance y contexto verificados para el diseño.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 8,
+          "name": "semantic_map_document",
+          "type": "jsonb",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "JSONB de conceptos, explicaciones y correspondencias con la estructura.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 9,
+          "name": "status",
+          "type": "character varying(40)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Estado del ciclo de vida del artefacto. Una propuesta aprobada no equivale a una ejecución terminada.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 10,
+          "name": "input_hash",
+          "type": "character varying(64)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Huella de entradas y contexto de la solicitud; no es el hash de contraseña de una persona.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 11,
+          "name": "prompt_version",
+          "type": "character varying(30)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Versión de las instrucciones utilizadas para preparar el artefacto.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 12,
+          "name": "contract_version",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Versión del contrato estructural guardado; no es el número de propuesta ni de ejecución.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 13,
+          "name": "provider_kind",
+          "type": "character varying(40)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Tipo de proveedor de IA. En los expedientes conserva la procedencia como texto, sin FK a la configuración que después puede cambiar.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 14,
+          "name": "model_id",
+          "type": "character varying(160)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Identificador del modelo utilizado o configurado, distinto de una API key.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 15,
+          "name": "proposal_document",
+          "type": "jsonb",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "JSONB del diseño BI declarativo: hechos, dimensiones, medidas, indicadores y plan propuesto. No es el datamart cargado.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 16,
+          "name": "validation_document",
+          "type": "jsonb",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "JSONB de comprobaciones, errores o advertencias del artefacto o ejecución.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 17,
+          "name": "review_comment",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Justificación o comentario de la revisión humana.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 18,
+          "name": "warnings_confirmed",
+          "type": "boolean",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Indica si se confirmaron las advertencias sujetas a decisión humana.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 19,
+          "name": "created_by_user_id",
+          "type": "integer",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK opcional a la persona que creó el artefacto o expediente.",
+          "clave_primaria": false,
+          "relaciones_fk": [
+            {
+              "constraint": "bi_proposals_created_by_user_id_fkey",
+              "child": "app.bi_proposals",
+              "child_columns": [
+                "created_by_user_id"
+              ],
+              "parent": "app.users",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "0..1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "n"
+            }
+          ]
+        },
+        {
+          "position": 20,
+          "name": "created_by_label",
+          "type": "character varying(320)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Etiqueta histórica de la persona creadora.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 21,
+          "name": "reviewed_by_user_id",
+          "type": "integer",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK opcional a la persona que revisó la propuesta; puede diferir de quien la creó.",
+          "clave_primaria": false,
+          "relaciones_fk": [
+            {
+              "constraint": "bi_proposals_reviewed_by_user_id_fkey",
+              "child": "app.bi_proposals",
+              "child_columns": [
+                "reviewed_by_user_id"
+              ],
+              "parent": "app.users",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "0..1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "n"
+            }
+          ]
+        },
+        {
+          "position": 22,
+          "name": "reviewed_by_label",
+          "type": "character varying(320)",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Etiqueta histórica de la persona revisora.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 23,
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Fecha de creación del registro; su opcionalidad física consta en el inventario.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 24,
+          "name": "reviewed_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Fecha de la decisión de revisión.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 25,
+          "name": "domain_code",
+          "type": "character varying(40)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Dominio analítico; ventas es el dominio implementado.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 26,
+          "name": "source_proposal_id",
+          "type": "integer",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK opcional a otra fila de app.bi_proposals; registra el origen de una versión derivada.",
+          "clave_primaria": false,
+          "relaciones_fk": [
+            {
+              "constraint": "fk_bi_proposals_source_proposal_id",
+              "child": "app.bi_proposals",
+              "child_columns": [
+                "source_proposal_id"
+              ],
+              "parent": "app.bi_proposals",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "0..1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "n"
+            }
+          ]
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "bi_proposals_created_by_user_id_fkey",
+          "kind": "f",
+          "columns": [
+            "created_by_user_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "users",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "n",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "bi_proposals_metadata_snapshot_id_fkey",
+          "kind": "f",
+          "columns": [
+            "metadata_snapshot_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "metadata_snapshots",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "r",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "bi_proposals_reviewed_by_user_id_fkey",
+          "kind": "f",
+          "columns": [
+            "reviewed_by_user_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "users",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "n",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "fk_bi_proposals_source_proposal_id",
+          "kind": "f",
+          "columns": [
+            "source_proposal_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "bi_proposals",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "n",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "bi_proposals_pkey",
+          "kind": "p",
+          "columns": [
+            "id"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ],
+      "indices_unicos": [
+        {
+          "name": "bi_proposals_pkey",
+          "primary": true,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "tabla": "app.business_need_reviews",
+      "area": "Propuestas y ejecución",
+      "que_guarda": "Conserva la evaluación previa de una necesidad, contexto y huellas.",
+      "como_se_usa": "Paso Necesidad. La revisión evalúa viabilidad antes de generar; no crea tablas ni garantiza la calidad de todos los datos.",
+      "numero_columnas": 9,
+      "columnas": [
+        {
+          "position": 1,
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Identificador interno de esta entidad; su PK distingue cada registro.",
+          "clave_primaria": true,
+          "relaciones_fk": []
+        },
+        {
+          "position": 2,
+          "name": "metadata_snapshot_id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK a app.metadata_snapshots.id; enlaza el artefacto a una estructura de origen conservada.",
+          "clave_primaria": false,
+          "relaciones_fk": [
+            {
+              "constraint": "business_need_reviews_metadata_snapshot_id_fkey",
+              "child": "app.business_need_reviews",
+              "child_columns": [
+                "metadata_snapshot_id"
+              ],
+              "parent": "app.metadata_snapshots",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "r"
+            }
+          ]
+        },
+        {
+          "position": 3,
+          "name": "input_hash",
+          "type": "character varying(64)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Huella de entradas y contexto de la solicitud; no es el hash de contraseña de una persona.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 4,
+          "name": "assessment_hash",
+          "type": "character varying(64)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Huella del resultado de la revisión previa.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 5,
+          "name": "assessment_document",
+          "type": "jsonb",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "JSONB de la evaluación de viabilidad, sus requisitos y límites; no se ejecuta como SQL.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 6,
+          "name": "provider_kind",
+          "type": "character varying(40)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Tipo de proveedor de IA. En los expedientes conserva la procedencia como texto, sin FK a la configuración que después puede cambiar.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 7,
+          "name": "model_id",
+          "type": "character varying(160)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Identificador del modelo utilizado o configurado, distinto de una API key.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 8,
+          "name": "created_by_user_id",
+          "type": "integer",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK opcional a la persona que creó el artefacto o expediente.",
+          "clave_primaria": false,
+          "relaciones_fk": [
+            {
+              "constraint": "business_need_reviews_created_by_user_id_fkey",
+              "child": "app.business_need_reviews",
+              "child_columns": [
+                "created_by_user_id"
+              ],
+              "parent": "app.users",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "0..1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "n"
+            }
+          ]
+        },
+        {
+          "position": 9,
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Fecha de creación del registro; su opcionalidad física consta en el inventario.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "business_need_reviews_created_by_user_id_fkey",
+          "kind": "f",
+          "columns": [
+            "created_by_user_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "users",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "n",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "business_need_reviews_metadata_snapshot_id_fkey",
+          "kind": "f",
+          "columns": [
+            "metadata_snapshot_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "metadata_snapshots",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "r",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "business_need_reviews_pkey",
+          "kind": "p",
+          "columns": [
+            "id"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ],
+      "indices_unicos": [
+        {
+          "name": "business_need_reviews_pkey",
+          "primary": true,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "tabla": "app.data_connections",
+      "area": "Configuración y metadatos",
+      "que_guarda": "Identifica una fuente de datos, sus propiedades de conexión y la referencia a una credencial cifrada.",
+      "como_se_usa": "Pantalla Conexiones de datos y selector de fuente. Ambas conexiones pueden estar habilitadas; seleccionar una no fusiona sus datos.",
+      "numero_columnas": 16,
+      "columnas": [
+        {
+          "position": 1,
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Identificador interno de esta entidad; su PK distingue cada registro.",
+          "clave_primaria": true,
+          "relaciones_fk": []
+        },
+        {
+          "position": 2,
+          "name": "name",
+          "type": "character varying(120)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Nombre o denominación visible en el módulo.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 3,
+          "name": "connector_kind",
+          "type": "character varying(40)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Tipo de conector de la fuente; las dos fuentes ensayadas usan el adaptador SQL Server.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 4,
+          "name": "host",
+          "type": "character varying(255)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Servidor de origen configurado; no se extrajo su valor.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 5,
+          "name": "port",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Puerto de la conexión de origen; no se extrajo su valor.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 6,
+          "name": "database_name",
+          "type": "character varying(128)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Nombre de la base de origen. En una instantánea conserva la identidad de la captura.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 7,
+          "name": "username",
+          "type": "character varying(128)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Cuenta técnica de lectura de la fuente; no es la cuenta con la que una persona entra a la aplicación. No se extrajo su valor.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 8,
+          "name": "encrypt",
+          "type": "boolean",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Opción de cifrado de transporte hacia la fuente.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 9,
+          "name": "trust_server_certificate",
+          "type": "boolean",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Opción de validación del certificado de la conexión de origen.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 10,
+          "name": "secret_id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK a app.secrets.id. La credencial se recupera y descifra sólo bajo controles del servidor.",
+          "clave_primaria": false,
+          "relaciones_fk": [
+            {
+              "constraint": "data_connections_secret_id_fkey",
+              "child": "app.data_connections",
+              "child_columns": [
+                "secret_id"
+              ],
+              "parent": "app.secrets",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "1",
+              "children_per_parent": "0..1",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "r"
+            }
+          ]
+        },
+        {
+          "position": 11,
+          "name": "is_active",
+          "type": "boolean",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Estado de habilitación del registro; su efecto depende de las reglas del módulo.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 12,
+          "name": "last_test_status",
+          "type": "character varying(40)",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Resultado de la última prueba de conexión del registro.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 13,
+          "name": "last_test_message",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Descripción del resultado de la última prueba; no se extrajo su texto.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 14,
+          "name": "last_tested_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Fecha de la última prueba de conectividad.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 15,
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Fecha de creación del registro; su opcionalidad física consta en el inventario.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 16,
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Fecha de actualización del registro; su opcionalidad física consta en el inventario.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "data_connections_secret_id_fkey",
+          "kind": "f",
+          "columns": [
+            "secret_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "secrets",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "r",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "data_connections_pkey",
+          "kind": "p",
+          "columns": [
+            "id"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        },
+        {
+          "name": "data_connections_secret_id_key",
+          "kind": "u",
+          "columns": [
+            "secret_id"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ],
+      "indices_unicos": [
+        {
+          "name": "data_connections_pkey",
+          "primary": true,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "data_connections_secret_id_key",
+          "primary": false,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "secret_id"
+          ]
+        }
+      ]
+    },
+    {
+      "tabla": "app.etl_executions",
+      "area": "Propuestas y ejecución",
+      "que_guarda": "Conserva el expediente de preparación y ejecución: selección, plan, validación, métricas y fechas.",
+      "como_se_usa": "Datamart de ventas e historial de ejecuciones. El registro del expediente no es la tabla de hechos; los datos cargados viven en el esquema analítico de esa ejecución.",
+      "numero_columnas": 17,
+      "columnas": [
+        {
+          "position": 1,
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Identificador interno de esta entidad; su PK distingue cada registro.",
+          "clave_primaria": true,
+          "relaciones_fk": []
+        },
+        {
+          "position": 2,
+          "name": "proposal_id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK a app.bi_proposals.id; vincula la asesoría o ejecución con una propuesta concreta.",
+          "clave_primaria": false,
+          "relaciones_fk": [
+            {
+              "constraint": "etl_executions_proposal_id_fkey",
+              "child": "app.etl_executions",
+              "child_columns": [
+                "proposal_id"
+              ],
+              "parent": "app.bi_proposals",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "r"
+            }
+          ]
+        },
+        {
+          "position": 3,
+          "name": "metadata_snapshot_id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK a app.metadata_snapshots.id; enlaza el artefacto a una estructura de origen conservada.",
+          "clave_primaria": false,
+          "relaciones_fk": [
+            {
+              "constraint": "etl_executions_metadata_snapshot_id_fkey",
+              "child": "app.etl_executions",
+              "child_columns": [
+                "metadata_snapshot_id"
+              ],
+              "parent": "app.metadata_snapshots",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "r"
+            }
+          ]
+        },
+        {
+          "position": 4,
+          "name": "status",
+          "type": "character varying(40)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Estado del ciclo de vida del artefacto. Una propuesta aprobada no equivale a una ejecución terminada.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 5,
+          "name": "domain_code",
+          "type": "character varying(40)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Dominio analítico; ventas es el dominio implementado.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 6,
+          "name": "builder_version",
+          "type": "character varying(40)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Versión del constructor determinístico que preparó el plan de ejecución.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 7,
+          "name": "proposal_hash",
+          "type": "character varying(64)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Huella del contrato de propuesta usado para la ejecución.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 8,
+          "name": "snapshot_hash",
+          "type": "character varying(64)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Huella de los metadatos conservados utilizados para la ejecución.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 9,
+          "name": "selection_document",
+          "type": "jsonb",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "JSONB de indicadores y decisiones seleccionados para materializar.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 10,
+          "name": "plan_document",
+          "type": "jsonb",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "JSONB del plan compilado y su destino; el nombre de un esquema en un documento no constituye una FK de PostgreSQL.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 11,
+          "name": "validation_document",
+          "type": "jsonb",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "JSONB de comprobaciones, errores o advertencias del artefacto o ejecución.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 12,
+          "name": "metrics_document",
+          "type": "jsonb",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "JSONB de métricas y comprobaciones de la carga; no contiene la tabla física de hechos.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 13,
+          "name": "created_by_user_id",
+          "type": "integer",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK opcional a la persona que creó el artefacto o expediente.",
+          "clave_primaria": false,
+          "relaciones_fk": [
+            {
+              "constraint": "etl_executions_created_by_user_id_fkey",
+              "child": "app.etl_executions",
+              "child_columns": [
+                "created_by_user_id"
+              ],
+              "parent": "app.users",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "0..1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "n"
+            }
+          ]
+        },
+        {
+          "position": 14,
+          "name": "created_by_label",
+          "type": "character varying(320)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Etiqueta histórica de la persona creadora.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 15,
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Fecha de creación del registro; su opcionalidad física consta en el inventario.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 16,
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Fecha de comienzo de la ejecución.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 17,
+          "name": "finished_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Fecha de finalización de la ejecución.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "etl_executions_created_by_user_id_fkey",
+          "kind": "f",
+          "columns": [
+            "created_by_user_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "users",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "n",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "etl_executions_metadata_snapshot_id_fkey",
+          "kind": "f",
+          "columns": [
+            "metadata_snapshot_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "metadata_snapshots",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "r",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "etl_executions_proposal_id_fkey",
+          "kind": "f",
+          "columns": [
+            "proposal_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "bi_proposals",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "r",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "etl_executions_pkey",
+          "kind": "p",
+          "columns": [
+            "id"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ],
+      "indices_unicos": [
+        {
+          "name": "etl_executions_pkey",
+          "primary": true,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "tabla": "app.llm_configurations",
+      "area": "Configuración y metadatos",
+      "que_guarda": "Configura proveedor, modelo, endpoint, razonamiento y prueba de conectividad.",
+      "como_se_usa": "Pantalla Configuración IA. secret_id es opcional y único dentro de esta tabla; un proveedor local puede no necesitar API key.",
+      "numero_columnas": 14,
+      "columnas": [
+        {
+          "position": 1,
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Identificador interno de esta entidad; su PK distingue cada registro.",
+          "clave_primaria": true,
+          "relaciones_fk": []
+        },
+        {
+          "position": 2,
+          "name": "name",
+          "type": "character varying(120)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Nombre o denominación visible en el módulo.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 3,
+          "name": "provider_kind",
+          "type": "character varying(40)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Tipo de proveedor de IA. En los expedientes conserva la procedencia como texto, sin FK a la configuración que después puede cambiar.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 4,
+          "name": "base_url",
+          "type": "character varying(300)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Dirección del servicio de IA configurado; no se extrajo su valor.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 5,
+          "name": "model_id",
+          "type": "character varying(160)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Identificador del modelo utilizado o configurado, distinto de una API key.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 6,
+          "name": "credential_reference",
+          "type": "character varying(80)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Referencia técnica de la credencial; no equivale a una clave en texto.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 7,
+          "name": "is_active",
+          "type": "boolean",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Estado de habilitación del registro; su efecto depende de las reglas del módulo.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 8,
+          "name": "last_test_status",
+          "type": "character varying(40)",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Resultado de la última prueba de conexión del registro.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 9,
+          "name": "last_test_message",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Descripción del resultado de la última prueba; no se extrajo su texto.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 10,
+          "name": "last_tested_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Fecha de la última prueba de conectividad.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 11,
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Fecha de creación del registro; su opcionalidad física consta en el inventario.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 12,
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Fecha de actualización del registro; su opcionalidad física consta en el inventario.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 13,
+          "name": "secret_id",
+          "type": "integer",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK a app.secrets.id. La credencial se recupera y descifra sólo bajo controles del servidor.",
+          "clave_primaria": false,
+          "relaciones_fk": [
+            {
+              "constraint": "fk_llm_configurations_secret_id_secrets",
+              "child": "app.llm_configurations",
+              "child_columns": [
+                "secret_id"
+              ],
+              "parent": "app.secrets",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "0..1",
+              "children_per_parent": "0..1",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "n"
+            }
+          ]
+        },
+        {
+          "position": 14,
+          "name": "reasoning_level",
+          "type": "character varying(20)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Nivel de razonamiento admitido por la configuración y el adaptador.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "fk_llm_configurations_secret_id_secrets",
+          "kind": "f",
+          "columns": [
+            "secret_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "secrets",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "n",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "llm_configurations_pkey",
+          "kind": "p",
+          "columns": [
+            "id"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        },
+        {
+          "name": "uq_llm_configurations_secret_id",
+          "kind": "u",
+          "columns": [
+            "secret_id"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ],
+      "indices_unicos": [
+        {
+          "name": "llm_configurations_pkey",
+          "primary": true,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "uq_llm_configurations_secret_id",
+          "primary": false,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "secret_id"
+          ]
+        }
+      ]
+    },
+    {
+      "tabla": "app.menu_permissions",
+      "area": "Seguridad",
+      "que_guarda": "Relaciona entradas de navegación con permisos.",
+      "como_se_usa": "Determina qué requisito de permiso acompaña a una entrada del menú; no es una asignación directa de menú a rol.",
+      "numero_columnas": 2,
+      "columnas": [
+        {
+          "position": 1,
+          "name": "menu_id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK a app.menus.id; identifica una entrada de navegación.",
+          "clave_primaria": true,
+          "relaciones_fk": [
+            {
+              "constraint": "menu_permissions_menu_id_fkey",
+              "child": "app.menu_permissions",
+              "child_columns": [
+                "menu_id"
+              ],
+              "parent": "app.menus",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "c"
+            }
+          ]
+        },
+        {
+          "position": 2,
+          "name": "permission_id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK a app.permissions.id; identifica una operación autorizable.",
+          "clave_primaria": true,
+          "relaciones_fk": [
+            {
+              "constraint": "menu_permissions_permission_id_fkey",
+              "child": "app.menu_permissions",
+              "child_columns": [
+                "permission_id"
+              ],
+              "parent": "app.permissions",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "c"
+            }
+          ]
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "menu_permissions_menu_id_fkey",
+          "kind": "f",
+          "columns": [
+            "menu_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "menus",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "c",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "menu_permissions_permission_id_fkey",
+          "kind": "f",
+          "columns": [
+            "permission_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "permissions",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "c",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "menu_permissions_pkey",
+          "kind": "p",
+          "columns": [
+            "menu_id",
+            "permission_id"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ],
+      "indices_unicos": [
+        {
+          "name": "menu_permissions_pkey",
+          "primary": true,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "menu_id",
+            "permission_id"
+          ]
+        }
+      ]
+    },
+    {
+      "tabla": "app.menus",
+      "area": "Seguridad",
+      "que_guarda": "Define entradas de navegación, ruta, agrupación y orden.",
+      "como_se_usa": "La barra lateral muestra las opciones permitidas. La autorización efectiva se comprueba en FastAPI.",
+      "numero_columnas": 9,
+      "columnas": [
+        {
+          "position": 1,
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Identificador interno de esta entidad; su PK distingue cada registro.",
+          "clave_primaria": true,
+          "relaciones_fk": []
+        },
+        {
+          "position": 2,
+          "name": "code",
+          "type": "character varying(100)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Código estable de la entidad; no depende de su etiqueta visible.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 3,
+          "name": "label",
+          "type": "character varying(120)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Etiqueta de navegación que se presenta a la persona usuaria.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 4,
+          "name": "path",
+          "type": "character varying(160)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Ruta de la pantalla; no es una credencial ni una regla de autorización.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 5,
+          "name": "position",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Orden de presentación dentro de la navegación.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 6,
+          "name": "is_active",
+          "type": "boolean",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Estado de habilitación del registro; su efecto depende de las reglas del módulo.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 7,
+          "name": "module_code",
+          "type": "character varying(80)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Código del módulo o agrupación funcional.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 8,
+          "name": "module_label",
+          "type": "character varying(120)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Nombre visible de la agrupación de menús.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 9,
+          "name": "is_system_protected",
+          "type": "boolean",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Marca de un registro base protegido para conservar administración y navegación esenciales.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "menus_pkey",
+          "kind": "p",
+          "columns": [
+            "id"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        },
+        {
+          "name": "uq_menus_code",
+          "kind": "u",
+          "columns": [
+            "code"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        },
+        {
+          "name": "uq_menus_path",
+          "kind": "u",
+          "columns": [
+            "path"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ],
+      "indices_unicos": [
+        {
+          "name": "ix_app_menus_code",
+          "primary": false,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "code"
+          ]
+        },
+        {
+          "name": "menus_pkey",
+          "primary": true,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "uq_menus_code",
+          "primary": false,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "code"
+          ]
+        },
+        {
+          "name": "uq_menus_path",
+          "primary": false,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "path"
+          ]
+        }
+      ]
+    },
+    {
+      "tabla": "app.metadata_snapshots",
+      "area": "Configuración y metadatos",
+      "que_guarda": "Guarda una captura estructural inmutable de una fuente y sus huellas.",
+      "como_se_usa": "Explorador de esquema. El JSONB describe tablas, columnas y relaciones declaradas de la fuente, no contiene filas de ventas.",
+      "numero_columnas": 14,
+      "columnas": [
+        {
+          "position": 1,
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Identificador interno de esta entidad; su PK distingue cada registro.",
+          "clave_primaria": true,
+          "relaciones_fk": []
+        },
+        {
+          "position": 2,
+          "name": "data_connection_id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK a app.data_connections.id; preserva el contexto de fuente.",
+          "clave_primaria": false,
+          "relaciones_fk": [
+            {
+              "constraint": "metadata_snapshots_data_connection_id_fkey",
+              "child": "app.metadata_snapshots",
+              "child_columns": [
+                "data_connection_id"
+              ],
+              "parent": "app.data_connections",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "r"
+            }
+          ]
+        },
+        {
+          "position": 3,
+          "name": "connector_code",
+          "type": "character varying(40)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Código del adaptador que realizó la captura estructural.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 4,
+          "name": "database_name",
+          "type": "character varying(128)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Nombre de la base de origen. En una instantánea conserva la identidad de la captura.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 5,
+          "name": "contract_version",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Versión del contrato estructural guardado; no es el número de propuesta ni de ejecución.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 6,
+          "name": "content_hash",
+          "type": "character varying(64)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Huella del documento estructural canónico; permite detectar cambios y evitar duplicar capturas iguales.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 7,
+          "name": "schema_document",
+          "type": "jsonb",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "JSONB de los metadatos de origen: estructura, tipos, claves y relaciones declaradas. No son filas de negocio.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 8,
+          "name": "schema_count",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Número de esquemas descritos en la instantánea de origen.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 9,
+          "name": "table_count",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Número de tablas descritas en la instantánea de origen.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 10,
+          "name": "column_count",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Número de columnas descritas en la instantánea de origen.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 11,
+          "name": "relationship_count",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Número de relaciones declaradas descritas; no cuenta ventas ni coincidencias de datos.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 12,
+          "name": "captured_by_user_id",
+          "type": "integer",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK opcional al usuario que obtuvo la instantánea.",
+          "clave_primaria": false,
+          "relaciones_fk": [
+            {
+              "constraint": "metadata_snapshots_captured_by_user_id_fkey",
+              "child": "app.metadata_snapshots",
+              "child_columns": [
+                "captured_by_user_id"
+              ],
+              "parent": "app.users",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "0..1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "n"
+            }
+          ]
+        },
+        {
+          "position": 13,
+          "name": "captured_by_label",
+          "type": "character varying(320)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Etiqueta histórica de la persona que obtuvo la instantánea.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 14,
+          "name": "captured_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Fecha de captura de los metadatos.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "metadata_snapshots_captured_by_user_id_fkey",
+          "kind": "f",
+          "columns": [
+            "captured_by_user_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "users",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "n",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "metadata_snapshots_data_connection_id_fkey",
+          "kind": "f",
+          "columns": [
+            "data_connection_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "data_connections",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "r",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "metadata_snapshots_pkey",
+          "kind": "p",
+          "columns": [
+            "id"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        },
+        {
+          "name": "uq_metadata_snapshots_source_contract_hash",
+          "kind": "u",
+          "columns": [
+            "data_connection_id",
+            "contract_version",
+            "content_hash"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ],
+      "indices_unicos": [
+        {
+          "name": "metadata_snapshots_pkey",
+          "primary": true,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "uq_metadata_snapshots_source_contract_hash",
+          "primary": false,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "data_connection_id",
+            "contract_version",
+            "content_hash"
+          ]
+        }
+      ]
+    },
+    {
+      "tabla": "app.parameters",
+      "area": "Configuración y metadatos",
+      "que_guarda": "Conserva parámetros del producto, su tipo y límites configurados.",
+      "como_se_usa": "Pantalla Parámetros. value se conserva como texto; el servidor interpreta el tipo y valida los límites.",
+      "numero_columnas": 12,
+      "columnas": [
+        {
+          "position": 1,
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Identificador interno de esta entidad; su PK distingue cada registro.",
+          "clave_primaria": true,
+          "relaciones_fk": []
+        },
+        {
+          "position": 2,
+          "name": "key",
+          "type": "character varying(100)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Clave única de un parámetro del producto.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 3,
+          "name": "value",
+          "type": "text",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Valor del parámetro guardado como texto; no se extrajo su contenido.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 4,
+          "name": "description",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Explicación de la entidad o parámetro.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 5,
+          "name": "is_active",
+          "type": "boolean",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Estado de habilitación del registro; su efecto depende de las reglas del módulo.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 6,
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Fecha de actualización del registro; su opcionalidad física consta en el inventario.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 7,
+          "name": "name",
+          "type": "character varying(160)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Nombre o denominación visible en el módulo.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 8,
+          "name": "module_code",
+          "type": "character varying(80)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Código del módulo o agrupación funcional.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 9,
+          "name": "value_type",
+          "type": "character varying(30)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Tipo lógico con el que el servidor interpreta el valor textual.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 10,
+          "name": "default_value",
+          "type": "text",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Valor previsto por defecto para el parámetro; no se extrajo su contenido.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 11,
+          "name": "min_value",
+          "type": "integer",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Límite inferior configurado para valores numéricos compatibles.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 12,
+          "name": "max_value",
+          "type": "integer",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Límite superior configurado para valores numéricos compatibles.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "parameters_pkey",
+          "kind": "p",
+          "columns": [
+            "id"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        },
+        {
+          "name": "uq_parameters_key",
+          "kind": "u",
+          "columns": [
+            "key"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ],
+      "indices_unicos": [
+        {
+          "name": "ix_app_parameters_key",
+          "primary": false,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "key"
+          ]
+        },
+        {
+          "name": "parameters_pkey",
+          "primary": true,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "uq_parameters_key",
+          "primary": false,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "key"
+          ]
+        }
+      ]
+    },
+    {
+      "tabla": "app.permissions",
+      "area": "Seguridad",
+      "que_guarda": "Catálogo de operaciones que el servidor autoriza.",
+      "como_se_usa": "Permisos de lectura, escritura, revisión o ejecución según el módulo. Un menú visible no concede el permiso.",
+      "numero_columnas": 6,
+      "columnas": [
+        {
+          "position": 1,
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Identificador interno de esta entidad; su PK distingue cada registro.",
+          "clave_primaria": true,
+          "relaciones_fk": []
+        },
+        {
+          "position": 2,
+          "name": "code",
+          "type": "character varying(120)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Código estable de la entidad; no depende de su etiqueta visible.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 3,
+          "name": "name",
+          "type": "character varying(160)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Nombre o denominación visible en el módulo.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 4,
+          "name": "description",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Explicación de la entidad o parámetro.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 5,
+          "name": "is_active",
+          "type": "boolean",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Estado de habilitación del registro; su efecto depende de las reglas del módulo.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 6,
+          "name": "is_system_protected",
+          "type": "boolean",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Marca de un registro base protegido para conservar administración y navegación esenciales.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "permissions_pkey",
+          "kind": "p",
+          "columns": [
+            "id"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        },
+        {
+          "name": "uq_permissions_code",
+          "kind": "u",
+          "columns": [
+            "code"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ],
+      "indices_unicos": [
+        {
+          "name": "ix_app_permissions_code",
+          "primary": false,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "code"
+          ]
+        },
+        {
+          "name": "permissions_pkey",
+          "primary": true,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "uq_permissions_code",
+          "primary": false,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "code"
+          ]
+        }
+      ]
+    },
+    {
+      "tabla": "app.role_permissions",
+      "area": "Seguridad",
+      "que_guarda": "Relaciona roles con permisos mediante dos FK y una PK compuesta.",
+      "como_se_usa": "Conceder a un rol las operaciones autorizadas.",
+      "numero_columnas": 2,
+      "columnas": [
+        {
+          "position": 1,
+          "name": "role_id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK a app.roles.id; identifica un rol en la tabla de asociación.",
+          "clave_primaria": true,
+          "relaciones_fk": [
+            {
+              "constraint": "role_permissions_role_id_fkey",
+              "child": "app.role_permissions",
+              "child_columns": [
+                "role_id"
+              ],
+              "parent": "app.roles",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "c"
+            }
+          ]
+        },
+        {
+          "position": 2,
+          "name": "permission_id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK a app.permissions.id; identifica una operación autorizable.",
+          "clave_primaria": true,
+          "relaciones_fk": [
+            {
+              "constraint": "role_permissions_permission_id_fkey",
+              "child": "app.role_permissions",
+              "child_columns": [
+                "permission_id"
+              ],
+              "parent": "app.permissions",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "c"
+            }
+          ]
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "role_permissions_permission_id_fkey",
+          "kind": "f",
+          "columns": [
+            "permission_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "permissions",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "c",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "role_permissions_role_id_fkey",
+          "kind": "f",
+          "columns": [
+            "role_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "roles",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "c",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "role_permissions_pkey",
+          "kind": "p",
+          "columns": [
+            "role_id",
+            "permission_id"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ],
+      "indices_unicos": [
+        {
+          "name": "role_permissions_pkey",
+          "primary": true,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "role_id",
+            "permission_id"
+          ]
+        }
+      ]
+    },
+    {
+      "tabla": "app.roles",
+      "area": "Seguridad",
+      "que_guarda": "Agrupa responsabilidades de acceso, como administración, análisis o gerencia.",
+      "como_se_usa": "Administración de roles; el nombre visible no sustituye los permisos asignados.",
+      "numero_columnas": 6,
+      "columnas": [
+        {
+          "position": 1,
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Identificador interno de esta entidad; su PK distingue cada registro.",
+          "clave_primaria": true,
+          "relaciones_fk": []
+        },
+        {
+          "position": 2,
+          "name": "code",
+          "type": "character varying(80)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Código estable de la entidad; no depende de su etiqueta visible.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 3,
+          "name": "name",
+          "type": "character varying(120)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Nombre o denominación visible en el módulo.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 4,
+          "name": "description",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Explicación de la entidad o parámetro.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 5,
+          "name": "is_active",
+          "type": "boolean",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Estado de habilitación del registro; su efecto depende de las reglas del módulo.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 6,
+          "name": "is_system_protected",
+          "type": "boolean",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Marca de un registro base protegido para conservar administración y navegación esenciales.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "roles_pkey",
+          "kind": "p",
+          "columns": [
+            "id"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        },
+        {
+          "name": "uq_roles_code",
+          "kind": "u",
+          "columns": [
+            "code"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        },
+        {
+          "name": "uq_roles_name",
+          "kind": "u",
+          "columns": [
+            "name"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ],
+      "indices_unicos": [
+        {
+          "name": "ix_app_roles_code",
+          "primary": false,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "code"
+          ]
+        },
+        {
+          "name": "roles_pkey",
+          "primary": true,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "uq_roles_code",
+          "primary": false,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "code"
+          ]
+        },
+        {
+          "name": "uq_roles_name",
+          "primary": false,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "name"
+          ]
+        }
+      ]
+    },
+    {
+      "tabla": "app.secrets",
+      "area": "Configuración y metadatos",
+      "que_guarda": "Conserva valores cifrados de credenciales mediante ciphertext.",
+      "como_se_usa": "No se consultan sus valores desde la interfaz ni desde este inventario. La raíz de cifrado está en un volumen separado de PostgreSQL.",
+      "numero_columnas": 5,
+      "columnas": [
+        {
+          "position": 1,
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Identificador interno de esta entidad; su PK distingue cada registro.",
+          "clave_primaria": true,
+          "relaciones_fk": []
+        },
+        {
+          "position": 2,
+          "name": "kind",
+          "type": "character varying(40)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Clase de credencial cifrada.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 3,
+          "name": "ciphertext",
+          "type": "text",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Contenido cifrado del secreto; no se leyó ni se incluye en los documentos.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 4,
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Fecha de creación del registro; su opcionalidad física consta en el inventario.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 5,
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Fecha de actualización del registro; su opcionalidad física consta en el inventario.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "secrets_pkey",
+          "kind": "p",
+          "columns": [
+            "id"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ],
+      "indices_unicos": [
+        {
+          "name": "secrets_pkey",
+          "primary": true,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "tabla": "app.semantic_advice",
+      "area": "Propuestas y ejecución",
+      "que_guarda": "Conserva asesoría contextual sobre un concepto de una propuesta.",
+      "como_se_usa": "Ayuda para una decisión semántica del diseño. No es una tabla de conversaciones completas del copiloto analítico.",
+      "numero_columnas": 10,
+      "columnas": [
+        {
+          "position": 1,
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Identificador interno de esta entidad; su PK distingue cada registro.",
+          "clave_primaria": true,
+          "relaciones_fk": []
+        },
+        {
+          "position": 2,
+          "name": "proposal_id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK a app.bi_proposals.id; vincula la asesoría o ejecución con una propuesta concreta.",
+          "clave_primaria": false,
+          "relaciones_fk": [
+            {
+              "constraint": "semantic_advice_proposal_id_fkey",
+              "child": "app.semantic_advice",
+              "child_columns": [
+                "proposal_id"
+              ],
+              "parent": "app.bi_proposals",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "c"
+            }
+          ]
+        },
+        {
+          "position": 3,
+          "name": "concept_code",
+          "type": "character varying(80)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Identificador del concepto sobre el que se pidió asesoría.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 4,
+          "name": "question",
+          "type": "text",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Consulta contextual sobre un concepto del diseño.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 5,
+          "name": "response_document",
+          "type": "jsonb",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "JSONB de la asesoría semántica; no se leyó su contenido.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 6,
+          "name": "provider_kind",
+          "type": "character varying(40)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Tipo de proveedor de IA. En los expedientes conserva la procedencia como texto, sin FK a la configuración que después puede cambiar.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 7,
+          "name": "model_id",
+          "type": "character varying(160)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Identificador del modelo utilizado o configurado, distinto de una API key.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 8,
+          "name": "created_by_user_id",
+          "type": "integer",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK opcional a la persona que creó el artefacto o expediente.",
+          "clave_primaria": false,
+          "relaciones_fk": [
+            {
+              "constraint": "semantic_advice_created_by_user_id_fkey",
+              "child": "app.semantic_advice",
+              "child_columns": [
+                "created_by_user_id"
+              ],
+              "parent": "app.users",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "0..1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "n"
+            }
+          ]
+        },
+        {
+          "position": 9,
+          "name": "created_by_label",
+          "type": "character varying(320)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Etiqueta histórica de la persona creadora.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 10,
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Fecha de creación del registro; su opcionalidad física consta en el inventario.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "semantic_advice_created_by_user_id_fkey",
+          "kind": "f",
+          "columns": [
+            "created_by_user_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "users",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "n",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "semantic_advice_proposal_id_fkey",
+          "kind": "f",
+          "columns": [
+            "proposal_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "bi_proposals",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "c",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "semantic_advice_pkey",
+          "kind": "p",
+          "columns": [
+            "id"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ],
+      "indices_unicos": [
+        {
+          "name": "semantic_advice_pkey",
+          "primary": true,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "tabla": "app.user_roles",
+      "area": "Seguridad",
+      "que_guarda": "Relaciona cuentas con roles mediante dos FK y una PK compuesta.",
+      "como_se_usa": "Asignar uno o varios roles a una cuenta; un rol puede pertenecer a varias cuentas.",
+      "numero_columnas": 2,
+      "columnas": [
+        {
+          "position": 1,
+          "name": "user_id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK a app.users.id; identifica una cuenta en la tabla de asociación.",
+          "clave_primaria": true,
+          "relaciones_fk": [
+            {
+              "constraint": "user_roles_user_id_fkey",
+              "child": "app.user_roles",
+              "child_columns": [
+                "user_id"
+              ],
+              "parent": "app.users",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "c"
+            }
+          ]
+        },
+        {
+          "position": 2,
+          "name": "role_id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "FK a app.roles.id; identifica un rol en la tabla de asociación.",
+          "clave_primaria": true,
+          "relaciones_fk": [
+            {
+              "constraint": "user_roles_role_id_fkey",
+              "child": "app.user_roles",
+              "child_columns": [
+                "role_id"
+              ],
+              "parent": "app.roles",
+              "parent_columns": [
+                "id"
+              ],
+              "parents_per_child": "1",
+              "children_per_parent": "0..*",
+              "derived_only_from": "FK, nullability and non-partial unique index",
+              "delete_action": "c"
+            }
+          ]
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "user_roles_role_id_fkey",
+          "kind": "f",
+          "columns": [
+            "role_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "roles",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "c",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "user_roles_user_id_fkey",
+          "kind": "f",
+          "columns": [
+            "user_id"
+          ],
+          "reference_schema": "app",
+          "reference_table": "users",
+          "reference_columns": [
+            "id"
+          ],
+          "delete_action": "c",
+          "update_action": "a",
+          "deferrable": false
+        },
+        {
+          "name": "user_roles_pkey",
+          "kind": "p",
+          "columns": [
+            "user_id",
+            "role_id"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ],
+      "indices_unicos": [
+        {
+          "name": "user_roles_pkey",
+          "primary": true,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "user_id",
+            "role_id"
+          ]
+        }
+      ]
+    },
+    {
+      "tabla": "app.users",
+      "area": "Seguridad",
+      "que_guarda": "La cuenta de una persona: identidad, estado de acceso y hash de contraseña.",
+      "como_se_usa": "Administración y acceso a la plataforma. No confundir al usuario de la aplicación con el usuario técnico de PostgreSQL o SQL Server.",
+      "numero_columnas": 8,
+      "columnas": [
+        {
+          "position": 1,
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Identificador interno de esta entidad; su PK distingue cada registro.",
+          "clave_primaria": true,
+          "relaciones_fk": []
+        },
+        {
+          "position": 2,
+          "name": "email",
+          "type": "character varying(255)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Identificador de inicio de sesión; su índice único impide cuentas duplicadas con el mismo valor.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 3,
+          "name": "full_name",
+          "type": "character varying(160)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Nombre visible de la persona de la cuenta.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 4,
+          "name": "password_hash",
+          "type": "character varying(255)",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Hash de contraseña, no contraseña en texto ni credencial recuperable. Este inventario sólo lee el nombre y tipo de la columna.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 5,
+          "name": "is_active",
+          "type": "boolean",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Estado de habilitación del registro; su efecto depende de las reglas del módulo.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 6,
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Fecha de creación del registro; su opcionalidad física consta en el inventario.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 7,
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Fecha de actualización del registro; su opcionalidad física consta en el inventario.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        },
+        {
+          "position": 8,
+          "name": "is_system_protected",
+          "type": "boolean",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": true,
+          "explicacion": "Marca de un registro base protegido para conservar administración y navegación esenciales.",
+          "clave_primaria": false,
+          "relaciones_fk": []
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "users_pkey",
+          "kind": "p",
+          "columns": [
+            "id"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        },
+        {
+          "name": "uq_users_email",
+          "kind": "u",
+          "columns": [
+            "email"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ],
+      "indices_unicos": [
+        {
+          "name": "ix_app_users_email",
+          "primary": false,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "email"
+          ]
+        },
+        {
+          "name": "uq_users_email",
+          "primary": false,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "email"
+          ]
+        },
+        {
+          "name": "users_pkey",
+          "primary": true,
+          "unique": true,
+          "partial": false,
+          "expression": false,
+          "columns": [
+            "id"
+          ]
+        }
+      ]
+    }
+  ],
+  "tablas_fisicas_demostracion": [
+    {
+      "tabla": "mart_ventas_e21.dim_cliente",
+      "columnas": [
+        {
+          "position": 1,
+          "name": "surrogate_key",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Clave sustituta interna de la dimensión; PK física."
+        },
+        {
+          "position": 2,
+          "name": "customerid",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 3,
+          "name": "accountnumber",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 4,
+          "name": "nombre_cliente",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 5,
+          "name": "tipo_cliente",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 6,
+          "name": "etl_execution_id",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Etiqueta de ejecución obligatoria; no tiene FK física a app.etl_executions."
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "__next_21_dim_cliente_pkey",
+          "kind": "p",
+          "columns": [
+            "surrogate_key"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ]
+    },
+    {
+      "tabla": "mart_ventas_e21.dim_fecha",
+      "columnas": [
+        {
+          "position": 1,
+          "name": "surrogate_key",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Clave sustituta interna de la dimensión; PK física."
+        },
+        {
+          "position": 2,
+          "name": "orderdate",
+          "type": "timestamp without time zone",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 3,
+          "name": "anio",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Componente de calendario derivado de la fecha seleccionada."
+        },
+        {
+          "position": 4,
+          "name": "trimestre",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Componente de calendario derivado de la fecha seleccionada."
+        },
+        {
+          "position": 5,
+          "name": "mes",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Componente de calendario derivado de la fecha seleccionada."
+        },
+        {
+          "position": 6,
+          "name": "dia",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Componente de calendario derivado de la fecha seleccionada."
+        },
+        {
+          "position": 7,
+          "name": "etl_execution_id",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Etiqueta de ejecución obligatoria; no tiene FK física a app.etl_executions."
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "__next_21_dim_fecha_pkey",
+          "kind": "p",
+          "columns": [
+            "surrogate_key"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ]
+    },
+    {
+      "tabla": "mart_ventas_e21.dim_producto",
+      "columnas": [
+        {
+          "position": 1,
+          "name": "surrogate_key",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Clave sustituta interna de la dimensión; PK física."
+        },
+        {
+          "position": 2,
+          "name": "productid",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 3,
+          "name": "name",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 4,
+          "name": "sizeunitmeasurecode",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 5,
+          "name": "productnumber",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 6,
+          "name": "weightunitmeasurecode",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 7,
+          "name": "nombre_producto",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 8,
+          "name": "tipo_producto",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 9,
+          "name": "etl_execution_id",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Etiqueta de ejecución obligatoria; no tiene FK física a app.etl_executions."
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "__next_21_dim_producto_pkey",
+          "kind": "p",
+          "columns": [
+            "surrogate_key"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ]
+    },
+    {
+      "tabla": "mart_ventas_e21.dim_territorio",
+      "columnas": [
+        {
+          "position": 1,
+          "name": "surrogate_key",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Clave sustituta interna de la dimensión; PK física."
+        },
+        {
+          "position": 2,
+          "name": "territoryid",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 3,
+          "name": "countryregioncode",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 4,
+          "name": "group",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 5,
+          "name": "name",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 6,
+          "name": "nombre_territory_dimension",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 7,
+          "name": "tipo_territory_dimension",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 8,
+          "name": "etl_execution_id",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Etiqueta de ejecución obligatoria; no tiene FK física a app.etl_executions."
+        },
+        {
+          "position": 9,
+          "name": "group_es",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "__next_21_dim_territorio_pkey",
+          "kind": "p",
+          "columns": [
+            "surrogate_key"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ]
+    },
+    {
+      "tabla": "mart_ventas_e21.fact_ventas",
+      "columnas": [
+        {
+          "position": 1,
+          "name": "salesorderid",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Clave de trazabilidad o medida de origen seleccionada por el contrato de esta ejecución. Su significado y agregación se revisan en la propuesta; el nombre físico no acredita su semántica."
+        },
+        {
+          "position": 2,
+          "name": "salesorderdetailid",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Clave de trazabilidad o medida de origen seleccionada por el contrato de esta ejecución. Su significado y agregación se revisan en la propuesta; el nombre físico no acredita su semántica."
+        },
+        {
+          "position": 3,
+          "name": "importe_total_de_l_neas",
+          "type": "numeric",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Clave de trazabilidad o medida de origen seleccionada por el contrato de esta ejecución. Su significado y agregación se revisan en la propuesta; el nombre físico no acredita su semántica."
+        },
+        {
+          "position": 4,
+          "name": "cantidad_de_unidades",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Clave de trazabilidad o medida de origen seleccionada por el contrato de esta ejecución. Su significado y agregación se revisan en la propuesta; el nombre físico no acredita su semántica."
+        },
+        {
+          "position": 5,
+          "name": "n_mero_de_pedidos_distintos",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Campo materializado para la medida documental: su receta puede calcular COUNT DISTINCT. No debe sumarse como si cada valor ya fuera un conteo."
+        },
+        {
+          "position": 6,
+          "name": "dim_fecha_sk",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Referencia lógica a surrogate_key de una dimensión; puede ser nula y no tiene FK física."
+        },
+        {
+          "position": 7,
+          "name": "dim_producto_sk",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Referencia lógica a surrogate_key de una dimensión; puede ser nula y no tiene FK física."
+        },
+        {
+          "position": 8,
+          "name": "dim_cliente_sk",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Referencia lógica a surrogate_key de una dimensión; puede ser nula y no tiene FK física."
+        },
+        {
+          "position": 9,
+          "name": "dim_territorio_sk",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Referencia lógica a surrogate_key de una dimensión; puede ser nula y no tiene FK física."
+        },
+        {
+          "position": 10,
+          "name": "etl_execution_id",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Etiqueta de ejecución obligatoria; no tiene FK física a app.etl_executions."
+        }
+      ],
+      "restricciones": []
+    },
+    {
+      "tabla": "mart_ventas_e22.dim_cliente",
+      "columnas": [
+        {
+          "position": 1,
+          "name": "surrogate_key",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Clave sustituta interna de la dimensión; PK física."
+        },
+        {
+          "position": 2,
+          "name": "customerid",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 3,
+          "name": "customername",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 4,
+          "name": "nombre_cliente",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 5,
+          "name": "tipo_cliente",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 6,
+          "name": "etl_execution_id",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Etiqueta de ejecución obligatoria; no tiene FK física a app.etl_executions."
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "__next_22_dim_cliente_pkey",
+          "kind": "p",
+          "columns": [
+            "surrogate_key"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ]
+    },
+    {
+      "tabla": "mart_ventas_e22.dim_fecha",
+      "columnas": [
+        {
+          "position": 1,
+          "name": "surrogate_key",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Clave sustituta interna de la dimensión; PK física."
+        },
+        {
+          "position": 2,
+          "name": "invoicedate",
+          "type": "date",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 3,
+          "name": "anio",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Componente de calendario derivado de la fecha seleccionada."
+        },
+        {
+          "position": 4,
+          "name": "trimestre",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Componente de calendario derivado de la fecha seleccionada."
+        },
+        {
+          "position": 5,
+          "name": "mes",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Componente de calendario derivado de la fecha seleccionada."
+        },
+        {
+          "position": 6,
+          "name": "dia",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Componente de calendario derivado de la fecha seleccionada."
+        },
+        {
+          "position": 7,
+          "name": "etl_execution_id",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Etiqueta de ejecución obligatoria; no tiene FK física a app.etl_executions."
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "__next_22_dim_fecha_pkey",
+          "kind": "p",
+          "columns": [
+            "surrogate_key"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ]
+    },
+    {
+      "tabla": "mart_ventas_e22.dim_producto",
+      "columnas": [
+        {
+          "position": 1,
+          "name": "surrogate_key",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Clave sustituta interna de la dimensión; PK física."
+        },
+        {
+          "position": 2,
+          "name": "stockitemid",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 3,
+          "name": "stockitemname",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 4,
+          "name": "nombre_producto",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 5,
+          "name": "tipo_producto",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 6,
+          "name": "etl_execution_id",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Etiqueta de ejecución obligatoria; no tiene FK física a app.etl_executions."
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "__next_22_dim_producto_pkey",
+          "kind": "p",
+          "columns": [
+            "surrogate_key"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ]
+    },
+    {
+      "tabla": "mart_ventas_e22.dim_territorio",
+      "columnas": [
+        {
+          "position": 1,
+          "name": "surrogate_key",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Clave sustituta interna de la dimensión; PK física."
+        },
+        {
+          "position": 2,
+          "name": "stateprovinceid",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 3,
+          "name": "stateprovincename",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 4,
+          "name": "stateprovincecode",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 5,
+          "name": "salesterritory",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 6,
+          "name": "nombre_territorio",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 7,
+          "name": "tipo_territorio",
+          "type": "text",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre."
+        },
+        {
+          "position": 8,
+          "name": "etl_execution_id",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Etiqueta de ejecución obligatoria; no tiene FK física a app.etl_executions."
+        }
+      ],
+      "restricciones": [
+        {
+          "name": "__next_22_dim_territorio_pkey",
+          "kind": "p",
+          "columns": [
+            "surrogate_key"
+          ],
+          "reference_schema": null,
+          "reference_table": null,
+          "reference_columns": null,
+          "delete_action": " ",
+          "update_action": " ",
+          "deferrable": false
+        }
+      ]
+    },
+    {
+      "tabla": "mart_ventas_e22.fact_ventas",
+      "columnas": [
+        {
+          "position": 1,
+          "name": "invoicelineid",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Clave de trazabilidad o medida de origen seleccionada por el contrato de esta ejecución. Su significado y agregación se revisan en la propuesta; el nombre físico no acredita su semántica."
+        },
+        {
+          "position": 2,
+          "name": "importe_total_de_l_nea",
+          "type": "numeric",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Clave de trazabilidad o medida de origen seleccionada por el contrato de esta ejecución. Su significado y agregación se revisan en la propuesta; el nombre físico no acredita su semántica."
+        },
+        {
+          "position": 3,
+          "name": "unidades_totales",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Clave de trazabilidad o medida de origen seleccionada por el contrato de esta ejecución. Su significado y agregación se revisan en la propuesta; el nombre físico no acredita su semántica."
+        },
+        {
+          "position": 4,
+          "name": "facturas_distintas",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Campo materializado para la medida documental: su receta puede calcular COUNT DISTINCT. No debe sumarse como si cada valor ya fuera un conteo."
+        },
+        {
+          "position": 5,
+          "name": "dim_fecha_sk",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Referencia lógica a surrogate_key de una dimensión; puede ser nula y no tiene FK física."
+        },
+        {
+          "position": 6,
+          "name": "dim_producto_sk",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Referencia lógica a surrogate_key de una dimensión; puede ser nula y no tiene FK física."
+        },
+        {
+          "position": 7,
+          "name": "dim_cliente_sk",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Referencia lógica a surrogate_key de una dimensión; puede ser nula y no tiene FK física."
+        },
+        {
+          "position": 8,
+          "name": "dim_territorio_sk",
+          "type": "bigint",
+          "nullable": true,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Referencia lógica a surrogate_key de una dimensión; puede ser nula y no tiene FK física."
+        },
+        {
+          "position": 9,
+          "name": "etl_execution_id",
+          "type": "bigint",
+          "nullable": false,
+          "identity": "",
+          "generated": "",
+          "has_default": false,
+          "explicacion": "Etiqueta de ejecución obligatoria; no tiene FK física a app.etl_executions."
+        }
+      ],
+      "restricciones": []
+    }
+  ],
+  "figuras_manifest": "../figuras/manifest_figuras_datos.json",
+  "limites": [
+    "Sin cambios de código, base, configuración ni contenedores.",
+    "Sin consulta de valores comerciales ni credenciales; solo catálogos y campos técnicos mínimos para linaje y revisión Alembic.",
+    "No se afirma una campaña operativa nueva de BI: los dos expedientes se identifican por sus estados técnicos conservados."
+  ]
+}

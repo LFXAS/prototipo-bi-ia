@@ -1,0 +1,1571 @@
+{
+  "fecha_auditoria": "2026-11-25T21:33:29.844915-05:00",
+  "modo": "solo_lectura_catalogos_y_metadatos_tecnicos",
+  "filas_comerciales_leidas": false,
+  "secretos_exportados": false,
+  "esquemas": [
+    {
+      "esquema": "app",
+      "tablas": 18
+    },
+    {
+      "esquema": "mart",
+      "tablas": 0
+    },
+    {
+      "esquema": "mart_ventas",
+      "tablas": 5
+    },
+    {
+      "esquema": "mart_ventas_e11",
+      "tablas": 5
+    },
+    {
+      "esquema": "mart_ventas_e12",
+      "tablas": 5
+    },
+    {
+      "esquema": "mart_ventas_e13",
+      "tablas": 5
+    },
+    {
+      "esquema": "mart_ventas_e14",
+      "tablas": 5
+    },
+    {
+      "esquema": "mart_ventas_e15",
+      "tablas": 5
+    },
+    {
+      "esquema": "mart_ventas_e16",
+      "tablas": 5
+    },
+    {
+      "esquema": "mart_ventas_e17",
+      "tablas": 4
+    },
+    {
+      "esquema": "mart_ventas_e18",
+      "tablas": 5
+    },
+    {
+      "esquema": "mart_ventas_e19",
+      "tablas": 5
+    },
+    {
+      "esquema": "mart_ventas_e20",
+      "tablas": 5
+    },
+    {
+      "esquema": "mart_ventas_e21",
+      "tablas": 5
+    },
+    {
+      "esquema": "mart_ventas_e22",
+      "tablas": 5
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tablas": 5
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tablas": 5
+    },
+    {
+      "esquema": "public",
+      "tablas": 1
+    }
+  ],
+  "columnas": [
+    {
+      "esquema": "app",
+      "columnas": 174
+    },
+    {
+      "esquema": "mart_ventas",
+      "columnas": 52
+    },
+    {
+      "esquema": "mart_ventas_e11",
+      "columnas": 53
+    },
+    {
+      "esquema": "mart_ventas_e12",
+      "columnas": 52
+    },
+    {
+      "esquema": "mart_ventas_e13",
+      "columnas": 49
+    },
+    {
+      "esquema": "mart_ventas_e14",
+      "columnas": 51
+    },
+    {
+      "esquema": "mart_ventas_e15",
+      "columnas": 49
+    },
+    {
+      "esquema": "mart_ventas_e16",
+      "columnas": 48
+    },
+    {
+      "esquema": "mart_ventas_e17",
+      "columnas": 39
+    },
+    {
+      "esquema": "mart_ventas_e18",
+      "columnas": 49
+    },
+    {
+      "esquema": "mart_ventas_e19",
+      "columnas": 47
+    },
+    {
+      "esquema": "mart_ventas_e20",
+      "columnas": 41
+    },
+    {
+      "esquema": "mart_ventas_e21",
+      "columnas": 41
+    },
+    {
+      "esquema": "mart_ventas_e22",
+      "columnas": 36
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "columnas": 36
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "columnas": 42
+    },
+    {
+      "esquema": "public",
+      "columnas": 1
+    }
+  ],
+  "fk_fisicas": [
+    {
+      "esquema": "app",
+      "fk": 24
+    }
+  ],
+  "revision_aplicada": [
+    {
+      "version_num": "20261125_20"
+    }
+  ],
+  "parametro_sesion": [
+    {
+      "key": "AUTH_SESSION_MINUTES",
+      "name": "Duración de la sesión (minutos)",
+      "module_code": "security",
+      "value_type": "integer",
+      "value": "60",
+      "default_value": "60",
+      "min_value": 15,
+      "max_value": 240,
+      "is_active": true
+    }
+  ],
+  "columnas_app": [
+    {
+      "table_name": "analysis_catalogs",
+      "column_name": "id"
+    },
+    {
+      "table_name": "analysis_catalogs",
+      "column_name": "data_connection_id"
+    },
+    {
+      "table_name": "analysis_catalogs",
+      "column_name": "domain_code"
+    },
+    {
+      "table_name": "analysis_catalogs",
+      "column_name": "version"
+    },
+    {
+      "table_name": "analysis_catalogs",
+      "column_name": "configuration_document"
+    },
+    {
+      "table_name": "analysis_catalogs",
+      "column_name": "updated_by_user_id"
+    },
+    {
+      "table_name": "analysis_catalogs",
+      "column_name": "updated_by_label"
+    },
+    {
+      "table_name": "analysis_catalogs",
+      "column_name": "updated_at"
+    },
+    {
+      "table_name": "audit_events",
+      "column_name": "id"
+    },
+    {
+      "table_name": "audit_events",
+      "column_name": "actor_user_id"
+    },
+    {
+      "table_name": "audit_events",
+      "column_name": "action"
+    },
+    {
+      "table_name": "audit_events",
+      "column_name": "resource_type"
+    },
+    {
+      "table_name": "audit_events",
+      "column_name": "resource_id"
+    },
+    {
+      "table_name": "audit_events",
+      "column_name": "detail"
+    },
+    {
+      "table_name": "audit_events",
+      "column_name": "created_at"
+    },
+    {
+      "table_name": "audit_events",
+      "column_name": "actor_label"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "id"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "metadata_snapshot_id"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "business_goal"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "business_questions"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "requested_dimensions"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "periodicity"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "scope_document"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "semantic_map_document"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "status"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "input_hash"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "prompt_version"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "contract_version"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "provider_kind"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "model_id"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "proposal_document"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "validation_document"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "review_comment"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "warnings_confirmed"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "created_by_user_id"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "created_by_label"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "reviewed_by_user_id"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "reviewed_by_label"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "created_at"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "reviewed_at"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "domain_code"
+    },
+    {
+      "table_name": "bi_proposals",
+      "column_name": "source_proposal_id"
+    },
+    {
+      "table_name": "business_need_reviews",
+      "column_name": "id"
+    },
+    {
+      "table_name": "business_need_reviews",
+      "column_name": "metadata_snapshot_id"
+    },
+    {
+      "table_name": "business_need_reviews",
+      "column_name": "input_hash"
+    },
+    {
+      "table_name": "business_need_reviews",
+      "column_name": "assessment_hash"
+    },
+    {
+      "table_name": "business_need_reviews",
+      "column_name": "assessment_document"
+    },
+    {
+      "table_name": "business_need_reviews",
+      "column_name": "provider_kind"
+    },
+    {
+      "table_name": "business_need_reviews",
+      "column_name": "model_id"
+    },
+    {
+      "table_name": "business_need_reviews",
+      "column_name": "created_by_user_id"
+    },
+    {
+      "table_name": "business_need_reviews",
+      "column_name": "created_at"
+    },
+    {
+      "table_name": "data_connections",
+      "column_name": "id"
+    },
+    {
+      "table_name": "data_connections",
+      "column_name": "name"
+    },
+    {
+      "table_name": "data_connections",
+      "column_name": "connector_kind"
+    },
+    {
+      "table_name": "data_connections",
+      "column_name": "host"
+    },
+    {
+      "table_name": "data_connections",
+      "column_name": "port"
+    },
+    {
+      "table_name": "data_connections",
+      "column_name": "database_name"
+    },
+    {
+      "table_name": "data_connections",
+      "column_name": "username"
+    },
+    {
+      "table_name": "data_connections",
+      "column_name": "encrypt"
+    },
+    {
+      "table_name": "data_connections",
+      "column_name": "trust_server_certificate"
+    },
+    {
+      "table_name": "data_connections",
+      "column_name": "secret_id"
+    },
+    {
+      "table_name": "data_connections",
+      "column_name": "is_active"
+    },
+    {
+      "table_name": "data_connections",
+      "column_name": "last_test_status"
+    },
+    {
+      "table_name": "data_connections",
+      "column_name": "last_test_message"
+    },
+    {
+      "table_name": "data_connections",
+      "column_name": "last_tested_at"
+    },
+    {
+      "table_name": "data_connections",
+      "column_name": "created_at"
+    },
+    {
+      "table_name": "data_connections",
+      "column_name": "updated_at"
+    },
+    {
+      "table_name": "etl_executions",
+      "column_name": "id"
+    },
+    {
+      "table_name": "etl_executions",
+      "column_name": "proposal_id"
+    },
+    {
+      "table_name": "etl_executions",
+      "column_name": "metadata_snapshot_id"
+    },
+    {
+      "table_name": "etl_executions",
+      "column_name": "status"
+    },
+    {
+      "table_name": "etl_executions",
+      "column_name": "domain_code"
+    },
+    {
+      "table_name": "etl_executions",
+      "column_name": "builder_version"
+    },
+    {
+      "table_name": "etl_executions",
+      "column_name": "proposal_hash"
+    },
+    {
+      "table_name": "etl_executions",
+      "column_name": "snapshot_hash"
+    },
+    {
+      "table_name": "etl_executions",
+      "column_name": "selection_document"
+    },
+    {
+      "table_name": "etl_executions",
+      "column_name": "plan_document"
+    },
+    {
+      "table_name": "etl_executions",
+      "column_name": "validation_document"
+    },
+    {
+      "table_name": "etl_executions",
+      "column_name": "metrics_document"
+    },
+    {
+      "table_name": "etl_executions",
+      "column_name": "created_by_user_id"
+    },
+    {
+      "table_name": "etl_executions",
+      "column_name": "created_by_label"
+    },
+    {
+      "table_name": "etl_executions",
+      "column_name": "created_at"
+    },
+    {
+      "table_name": "etl_executions",
+      "column_name": "started_at"
+    },
+    {
+      "table_name": "etl_executions",
+      "column_name": "finished_at"
+    },
+    {
+      "table_name": "llm_configurations",
+      "column_name": "id"
+    },
+    {
+      "table_name": "llm_configurations",
+      "column_name": "name"
+    },
+    {
+      "table_name": "llm_configurations",
+      "column_name": "provider_kind"
+    },
+    {
+      "table_name": "llm_configurations",
+      "column_name": "base_url"
+    },
+    {
+      "table_name": "llm_configurations",
+      "column_name": "model_id"
+    },
+    {
+      "table_name": "llm_configurations",
+      "column_name": "credential_reference"
+    },
+    {
+      "table_name": "llm_configurations",
+      "column_name": "is_active"
+    },
+    {
+      "table_name": "llm_configurations",
+      "column_name": "last_test_status"
+    },
+    {
+      "table_name": "llm_configurations",
+      "column_name": "last_test_message"
+    },
+    {
+      "table_name": "llm_configurations",
+      "column_name": "last_tested_at"
+    },
+    {
+      "table_name": "llm_configurations",
+      "column_name": "created_at"
+    },
+    {
+      "table_name": "llm_configurations",
+      "column_name": "updated_at"
+    },
+    {
+      "table_name": "llm_configurations",
+      "column_name": "secret_id"
+    },
+    {
+      "table_name": "llm_configurations",
+      "column_name": "reasoning_level"
+    },
+    {
+      "table_name": "menu_permissions",
+      "column_name": "menu_id"
+    },
+    {
+      "table_name": "menu_permissions",
+      "column_name": "permission_id"
+    },
+    {
+      "table_name": "menus",
+      "column_name": "id"
+    },
+    {
+      "table_name": "menus",
+      "column_name": "code"
+    },
+    {
+      "table_name": "menus",
+      "column_name": "label"
+    },
+    {
+      "table_name": "menus",
+      "column_name": "path"
+    },
+    {
+      "table_name": "menus",
+      "column_name": "position"
+    },
+    {
+      "table_name": "menus",
+      "column_name": "is_active"
+    },
+    {
+      "table_name": "menus",
+      "column_name": "module_code"
+    },
+    {
+      "table_name": "menus",
+      "column_name": "module_label"
+    },
+    {
+      "table_name": "menus",
+      "column_name": "is_system_protected"
+    },
+    {
+      "table_name": "metadata_snapshots",
+      "column_name": "id"
+    },
+    {
+      "table_name": "metadata_snapshots",
+      "column_name": "data_connection_id"
+    },
+    {
+      "table_name": "metadata_snapshots",
+      "column_name": "connector_code"
+    },
+    {
+      "table_name": "metadata_snapshots",
+      "column_name": "database_name"
+    },
+    {
+      "table_name": "metadata_snapshots",
+      "column_name": "contract_version"
+    },
+    {
+      "table_name": "metadata_snapshots",
+      "column_name": "content_hash"
+    },
+    {
+      "table_name": "metadata_snapshots",
+      "column_name": "schema_document"
+    },
+    {
+      "table_name": "metadata_snapshots",
+      "column_name": "schema_count"
+    },
+    {
+      "table_name": "metadata_snapshots",
+      "column_name": "table_count"
+    },
+    {
+      "table_name": "metadata_snapshots",
+      "column_name": "column_count"
+    },
+    {
+      "table_name": "metadata_snapshots",
+      "column_name": "relationship_count"
+    },
+    {
+      "table_name": "metadata_snapshots",
+      "column_name": "captured_by_user_id"
+    },
+    {
+      "table_name": "metadata_snapshots",
+      "column_name": "captured_by_label"
+    },
+    {
+      "table_name": "metadata_snapshots",
+      "column_name": "captured_at"
+    },
+    {
+      "table_name": "parameters",
+      "column_name": "id"
+    },
+    {
+      "table_name": "parameters",
+      "column_name": "key"
+    },
+    {
+      "table_name": "parameters",
+      "column_name": "value"
+    },
+    {
+      "table_name": "parameters",
+      "column_name": "description"
+    },
+    {
+      "table_name": "parameters",
+      "column_name": "is_active"
+    },
+    {
+      "table_name": "parameters",
+      "column_name": "updated_at"
+    },
+    {
+      "table_name": "parameters",
+      "column_name": "name"
+    },
+    {
+      "table_name": "parameters",
+      "column_name": "module_code"
+    },
+    {
+      "table_name": "parameters",
+      "column_name": "value_type"
+    },
+    {
+      "table_name": "parameters",
+      "column_name": "default_value"
+    },
+    {
+      "table_name": "parameters",
+      "column_name": "min_value"
+    },
+    {
+      "table_name": "parameters",
+      "column_name": "max_value"
+    },
+    {
+      "table_name": "permissions",
+      "column_name": "id"
+    },
+    {
+      "table_name": "permissions",
+      "column_name": "code"
+    },
+    {
+      "table_name": "permissions",
+      "column_name": "name"
+    },
+    {
+      "table_name": "permissions",
+      "column_name": "description"
+    },
+    {
+      "table_name": "permissions",
+      "column_name": "is_active"
+    },
+    {
+      "table_name": "permissions",
+      "column_name": "is_system_protected"
+    },
+    {
+      "table_name": "role_permissions",
+      "column_name": "role_id"
+    },
+    {
+      "table_name": "role_permissions",
+      "column_name": "permission_id"
+    },
+    {
+      "table_name": "roles",
+      "column_name": "id"
+    },
+    {
+      "table_name": "roles",
+      "column_name": "code"
+    },
+    {
+      "table_name": "roles",
+      "column_name": "name"
+    },
+    {
+      "table_name": "roles",
+      "column_name": "description"
+    },
+    {
+      "table_name": "roles",
+      "column_name": "is_active"
+    },
+    {
+      "table_name": "roles",
+      "column_name": "is_system_protected"
+    },
+    {
+      "table_name": "secrets",
+      "column_name": "id"
+    },
+    {
+      "table_name": "secrets",
+      "column_name": "kind"
+    },
+    {
+      "table_name": "secrets",
+      "column_name": "ciphertext"
+    },
+    {
+      "table_name": "secrets",
+      "column_name": "created_at"
+    },
+    {
+      "table_name": "secrets",
+      "column_name": "updated_at"
+    },
+    {
+      "table_name": "semantic_advice",
+      "column_name": "id"
+    },
+    {
+      "table_name": "semantic_advice",
+      "column_name": "proposal_id"
+    },
+    {
+      "table_name": "semantic_advice",
+      "column_name": "concept_code"
+    },
+    {
+      "table_name": "semantic_advice",
+      "column_name": "question"
+    },
+    {
+      "table_name": "semantic_advice",
+      "column_name": "response_document"
+    },
+    {
+      "table_name": "semantic_advice",
+      "column_name": "provider_kind"
+    },
+    {
+      "table_name": "semantic_advice",
+      "column_name": "model_id"
+    },
+    {
+      "table_name": "semantic_advice",
+      "column_name": "created_by_user_id"
+    },
+    {
+      "table_name": "semantic_advice",
+      "column_name": "created_by_label"
+    },
+    {
+      "table_name": "semantic_advice",
+      "column_name": "created_at"
+    },
+    {
+      "table_name": "user_roles",
+      "column_name": "user_id"
+    },
+    {
+      "table_name": "user_roles",
+      "column_name": "role_id"
+    },
+    {
+      "table_name": "users",
+      "column_name": "id"
+    },
+    {
+      "table_name": "users",
+      "column_name": "email"
+    },
+    {
+      "table_name": "users",
+      "column_name": "full_name"
+    },
+    {
+      "table_name": "users",
+      "column_name": "password_hash"
+    },
+    {
+      "table_name": "users",
+      "column_name": "is_active"
+    },
+    {
+      "table_name": "users",
+      "column_name": "created_at"
+    },
+    {
+      "table_name": "users",
+      "column_name": "updated_at"
+    },
+    {
+      "table_name": "users",
+      "column_name": "is_system_protected"
+    }
+  ],
+  "diccionario_destinos_vigentes": [
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_cliente",
+      "columna": "surrogate_key",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_cliente",
+      "columna": "customerid",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_cliente",
+      "columna": "customername",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_cliente",
+      "columna": "nombre_cliente",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_cliente",
+      "columna": "tipo_cliente",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_cliente",
+      "columna": "etl_execution_id",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_fecha",
+      "columna": "surrogate_key",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_fecha",
+      "columna": "invoicedate",
+      "tipo": "date",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_fecha",
+      "columna": "anio",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_fecha",
+      "columna": "trimestre",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_fecha",
+      "columna": "mes",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_fecha",
+      "columna": "dia",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_fecha",
+      "columna": "etl_execution_id",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_producto",
+      "columna": "surrogate_key",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_producto",
+      "columna": "stockitemid",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_producto",
+      "columna": "stockitemname",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_producto",
+      "columna": "nombre_producto",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_producto",
+      "columna": "tipo_producto",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_producto",
+      "columna": "etl_execution_id",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_territorio",
+      "columna": "surrogate_key",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_territorio",
+      "columna": "stateprovinceid",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_territorio",
+      "columna": "stateprovincename",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_territorio",
+      "columna": "stateprovincecode",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_territorio",
+      "columna": "salesterritory",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_territorio",
+      "columna": "nombre_territorio",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_territorio",
+      "columna": "tipo_territorio",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_territorio",
+      "columna": "etl_execution_id",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "fact_ventas",
+      "columna": "invoicelineid",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "fact_ventas",
+      "columna": "importe_registrado",
+      "tipo": "numeric",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "fact_ventas",
+      "columna": "facturas_distintas",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "fact_ventas",
+      "columna": "unidades_registradas",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "fact_ventas",
+      "columna": "dim_fecha_sk",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "fact_ventas",
+      "columna": "dim_producto_sk",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "fact_ventas",
+      "columna": "dim_cliente_sk",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "fact_ventas",
+      "columna": "dim_territorio_sk",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "fact_ventas",
+      "columna": "etl_execution_id",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_cliente",
+      "columna": "surrogate_key",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_cliente",
+      "columna": "customerid",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_cliente",
+      "columna": "accountnumber",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_cliente",
+      "columna": "nombre_order_customer",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_cliente",
+      "columna": "tipo_order_customer",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_cliente",
+      "columna": "etl_execution_id",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_fecha",
+      "columna": "surrogate_key",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_fecha",
+      "columna": "orderdate",
+      "tipo": "timestamp without time zone",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_fecha",
+      "columna": "anio",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_fecha",
+      "columna": "trimestre",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_fecha",
+      "columna": "mes",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_fecha",
+      "columna": "dia",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_fecha",
+      "columna": "etl_execution_id",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_producto",
+      "columna": "surrogate_key",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_producto",
+      "columna": "productid",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_producto",
+      "columna": "name",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_producto",
+      "columna": "sizeunitmeasurecode",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_producto",
+      "columna": "productnumber",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_producto",
+      "columna": "weightunitmeasurecode",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_producto",
+      "columna": "nombre_producto",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_producto",
+      "columna": "tipo_producto",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_producto",
+      "columna": "etl_execution_id",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_territorio",
+      "columna": "surrogate_key",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_territorio",
+      "columna": "territoryid",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_territorio",
+      "columna": "countryregioncode",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_territorio",
+      "columna": "group",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_territorio",
+      "columna": "name",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_territorio",
+      "columna": "nombre_order_territory",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_territorio",
+      "columna": "tipo_order_territory",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_territorio",
+      "columna": "etl_execution_id",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_territorio",
+      "columna": "countryregioncode_es",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_territorio",
+      "columna": "group_es",
+      "tipo": "text",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "fact_ventas",
+      "columna": "salesorderid",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "fact_ventas",
+      "columna": "salesorderdetailid",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "fact_ventas",
+      "columna": "importe_total_registrado",
+      "tipo": "numeric",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "fact_ventas",
+      "columna": "pedidos_distintos",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "fact_ventas",
+      "columna": "unidades_totales",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "fact_ventas",
+      "columna": "dim_fecha_sk",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "fact_ventas",
+      "columna": "dim_producto_sk",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "fact_ventas",
+      "columna": "dim_cliente_sk",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "fact_ventas",
+      "columna": "dim_territorio_sk",
+      "tipo": "bigint",
+      "admite_nulos": "YES"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "fact_ventas",
+      "columna": "etl_execution_id",
+      "tipo": "bigint",
+      "admite_nulos": "NO"
+    }
+  ],
+  "restricciones_destinos": [
+    {
+      "esquema": "mart_ventas_e21",
+      "tabla": "dim_cliente",
+      "tipo": "p",
+      "nombre": "__next_21_dim_cliente_pkey"
+    },
+    {
+      "esquema": "mart_ventas_e21",
+      "tabla": "dim_fecha",
+      "tipo": "p",
+      "nombre": "__next_21_dim_fecha_pkey"
+    },
+    {
+      "esquema": "mart_ventas_e21",
+      "tabla": "dim_producto",
+      "tipo": "p",
+      "nombre": "__next_21_dim_producto_pkey"
+    },
+    {
+      "esquema": "mart_ventas_e21",
+      "tabla": "dim_territorio",
+      "tipo": "p",
+      "nombre": "__next_21_dim_territorio_pkey"
+    },
+    {
+      "esquema": "mart_ventas_e22",
+      "tabla": "dim_cliente",
+      "tipo": "p",
+      "nombre": "__next_22_dim_cliente_pkey"
+    },
+    {
+      "esquema": "mart_ventas_e22",
+      "tabla": "dim_fecha",
+      "tipo": "p",
+      "nombre": "__next_22_dim_fecha_pkey"
+    },
+    {
+      "esquema": "mart_ventas_e22",
+      "tabla": "dim_producto",
+      "tipo": "p",
+      "nombre": "__next_22_dim_producto_pkey"
+    },
+    {
+      "esquema": "mart_ventas_e22",
+      "tabla": "dim_territorio",
+      "tipo": "p",
+      "nombre": "__next_22_dim_territorio_pkey"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_cliente",
+      "tipo": "p",
+      "nombre": "__next_23_dim_cliente_pkey"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_fecha",
+      "tipo": "p",
+      "nombre": "__next_23_dim_fecha_pkey"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_producto",
+      "tipo": "p",
+      "nombre": "__next_23_dim_producto_pkey"
+    },
+    {
+      "esquema": "mart_ventas_e23",
+      "tabla": "dim_territorio",
+      "tipo": "p",
+      "nombre": "__next_23_dim_territorio_pkey"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_cliente",
+      "tipo": "p",
+      "nombre": "__next_24_dim_cliente_pkey"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_fecha",
+      "tipo": "p",
+      "nombre": "__next_24_dim_fecha_pkey"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_producto",
+      "tipo": "p",
+      "nombre": "__next_24_dim_producto_pkey"
+    },
+    {
+      "esquema": "mart_ventas_e24",
+      "tabla": "dim_territorio",
+      "tipo": "p",
+      "nombre": "__next_24_dim_territorio_pkey"
+    }
+  ],
+  "linaje_referencias": [
+    {
+      "expediente": 21,
+      "propuesta": 129,
+      "instantanea": 2,
+      "estado_ejecucion": "succeeded",
+      "estado_propuesta": "approved"
+    },
+    {
+      "expediente": 22,
+      "propuesta": 131,
+      "instantanea": 3,
+      "estado_ejecucion": "succeeded",
+      "estado_propuesta": "approved"
+    },
+    {
+      "expediente": 23,
+      "propuesta": 135,
+      "instantanea": 3,
+      "estado_ejecucion": "succeeded",
+      "estado_propuesta": "approved"
+    },
+    {
+      "expediente": 24,
+      "propuesta": 136,
+      "instantanea": 2,
+      "estado_ejecucion": "succeeded",
+      "estado_propuesta": "approved"
+    }
+  ],
+  "comparacion_orm": {
+    "tablas": 18,
+    "columnas": 174,
+    "mismas_tablas": true,
+    "mismas_columnas_por_tabla": true
+  },
+  "totales": {
+    "tablas": 93,
+    "columnas": 860,
+    "tablas_analiticas": 74,
+    "fk_fisicas": 24
+  },
+  "migraciones": {
+    "numero_archivos": 20,
+    "cabezas": [
+      "20261125_20"
+    ],
+    "revision_nueva": {
+      "anterior": "20261003_19",
+      "archivo": "20261125_20_session_duration.py"
+    },
+    "solo_inserta_parametro_sin_cambiar_tablas": true
+  }
+}

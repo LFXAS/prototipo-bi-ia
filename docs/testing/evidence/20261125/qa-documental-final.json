@@ -58,11 +58,10 @@
       "path": "docs/logbook/bitacora.pdf",
       "source": "docs/logbook/bitacora.tex",
       "reviewed_pdf_pages": [
-        59,
         60,
         61
       ],
-      "sha256": "886a5be7720b1e33b758b539d14f24c7c8a5cd5fa68312e2177b8dbd23954016",
+      "sha256": "46657c40c0209a07783ea17772c479c5ccf4f8efe43b0a8aded78b4c7e099f6d",
       "verdict": "Texto y cierre legibles; sin cortes en las páginas nuevas."
     }
   },
@@ -94,5 +93,12 @@
     "sha256": "5eb2d8aa4576d8acf3255fcac25ec78ee75913008affcc9237fb32a7d0b1c77d",
     "igual_copia_compilada_desde_cero": true,
     "jobname": "Adenda_operacion_BI_OpenAI_2026-11-25"
+  },
+  "formacion_completa_y_guia": {
+    "manual_paginas": 272,
+    "manual_qa": "docs/manual-usuario/edicion-20261125/INFORME_QA_MANUAL_2026-11-25.json",
+    "guia_paginas": 15,
+    "guia_qa": "docs/instalacion/portable-20261125/Control_documental_guia.json",
+    "compilacion": "Separada de los trece PDF de make verify;sin cambios de código posteriores."
   }
 }

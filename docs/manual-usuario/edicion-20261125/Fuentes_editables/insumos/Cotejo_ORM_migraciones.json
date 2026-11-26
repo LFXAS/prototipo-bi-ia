@@ -1,0 +1,263 @@
+{
+  "estado": "conforme",
+  "metodo": "Lectura AST de las fuentes sin importar ni ejecutar la aplicación; cotejo de 174 nombres de columna y las 24 FK con sus políticas de eliminación. La revisión aplicada se leyó de la tabla técnica Alembic, sin datos de negocio.",
+  "columnas_app_coinciden": true,
+  "fk_app_coinciden": true,
+  "fk": [
+    {
+      "hija": "app.analysis_catalogs",
+      "columna": "data_connection_id",
+      "padre": "app.data_connections",
+      "columna_padre": "id",
+      "al_eliminar": "CASCADE"
+    },
+    {
+      "hija": "app.analysis_catalogs",
+      "columna": "updated_by_user_id",
+      "padre": "app.users",
+      "columna_padre": "id",
+      "al_eliminar": "SET NULL"
+    },
+    {
+      "hija": "app.audit_events",
+      "columna": "actor_user_id",
+      "padre": "app.users",
+      "columna_padre": "id",
+      "al_eliminar": "SET NULL"
+    },
+    {
+      "hija": "app.bi_proposals",
+      "columna": "created_by_user_id",
+      "padre": "app.users",
+      "columna_padre": "id",
+      "al_eliminar": "SET NULL"
+    },
+    {
+      "hija": "app.bi_proposals",
+      "columna": "metadata_snapshot_id",
+      "padre": "app.metadata_snapshots",
+      "columna_padre": "id",
+      "al_eliminar": "RESTRICT"
+    },
+    {
+      "hija": "app.bi_proposals",
+      "columna": "reviewed_by_user_id",
+      "padre": "app.users",
+      "columna_padre": "id",
+      "al_eliminar": "SET NULL"
+    },
+    {
+      "hija": "app.bi_proposals",
+      "columna": "source_proposal_id",
+      "padre": "app.bi_proposals",
+      "columna_padre": "id",
+      "al_eliminar": "SET NULL"
+    },
+    {
+      "hija": "app.business_need_reviews",
+      "columna": "created_by_user_id",
+      "padre": "app.users",
+      "columna_padre": "id",
+      "al_eliminar": "SET NULL"
+    },
+    {
+      "hija": "app.business_need_reviews",
+      "columna": "metadata_snapshot_id",
+      "padre": "app.metadata_snapshots",
+      "columna_padre": "id",
+      "al_eliminar": "RESTRICT"
+    },
+    {
+      "hija": "app.data_connections",
+      "columna": "secret_id",
+      "padre": "app.secrets",
+      "columna_padre": "id",
+      "al_eliminar": "RESTRICT"
+    },
+    {
+      "hija": "app.etl_executions",
+      "columna": "created_by_user_id",
+      "padre": "app.users",
+      "columna_padre": "id",
+      "al_eliminar": "SET NULL"
+    },
+    {
+      "hija": "app.etl_executions",
+      "columna": "metadata_snapshot_id",
+      "padre": "app.metadata_snapshots",
+      "columna_padre": "id",
+      "al_eliminar": "RESTRICT"
+    },
+    {
+      "hija": "app.etl_executions",
+      "columna": "proposal_id",
+      "padre": "app.bi_proposals",
+      "columna_padre": "id",
+      "al_eliminar": "RESTRICT"
+    },
+    {
+      "hija": "app.llm_configurations",
+      "columna": "secret_id",
+      "padre": "app.secrets",
+      "columna_padre": "id",
+      "al_eliminar": "SET NULL"
+    },
+    {
+      "hija": "app.menu_permissions",
+      "columna": "menu_id",
+      "padre": "app.menus",
+      "columna_padre": "id",
+      "al_eliminar": "CASCADE"
+    },
+    {
+      "hija": "app.menu_permissions",
+      "columna": "permission_id",
+      "padre": "app.permissions",
+      "columna_padre": "id",
+      "al_eliminar": "CASCADE"
+    },
+    {
+      "hija": "app.metadata_snapshots",
+      "columna": "captured_by_user_id",
+      "padre": "app.users",
+      "columna_padre": "id",
+      "al_eliminar": "SET NULL"
+    },
+    {
+      "hija": "app.metadata_snapshots",
+      "columna": "data_connection_id",
+      "padre": "app.data_connections",
+      "columna_padre": "id",
+      "al_eliminar": "RESTRICT"
+    },
+    {
+      "hija": "app.role_permissions",
+      "columna": "permission_id",
+      "padre": "app.permissions",
+      "columna_padre": "id",
+      "al_eliminar": "CASCADE"
+    },
+    {
+      "hija": "app.role_permissions",
+      "columna": "role_id",
+      "padre": "app.roles",
+      "columna_padre": "id",
+      "al_eliminar": "CASCADE"
+    },
+    {
+      "hija": "app.semantic_advice",
+      "columna": "created_by_user_id",
+      "padre": "app.users",
+      "columna_padre": "id",
+      "al_eliminar": "SET NULL"
+    },
+    {
+      "hija": "app.semantic_advice",
+      "columna": "proposal_id",
+      "padre": "app.bi_proposals",
+      "columna_padre": "id",
+      "al_eliminar": "CASCADE"
+    },
+    {
+      "hija": "app.user_roles",
+      "columna": "role_id",
+      "padre": "app.roles",
+      "columna_padre": "id",
+      "al_eliminar": "CASCADE"
+    },
+    {
+      "hija": "app.user_roles",
+      "columna": "user_id",
+      "padre": "app.users",
+      "columna_padre": "id",
+      "al_eliminar": "CASCADE"
+    }
+  ],
+  "archivos_migracion": 19,
+  "cabezas_codigo": [
+    "20261003_19"
+  ],
+  "revision_aplicada": [
+    "20261003_19"
+  ],
+  "cadena_migraciones": {
+    "20260918_06": {
+      "anterior": "20260911_05",
+      "archivo": "20260918_06_encrypted_llm_secrets.py"
+    },
+    "20260910_04": {
+      "anterior": "20260906_03",
+      "archivo": "20260910_04_protect_administration.py"
+    },
+    "20260906_01": {
+      "anterior": null,
+      "archivo": "20260906_01_sprint2_rbac_parameters.py"
+    },
+    "20260920_13": {
+      "anterior": "20260919_12",
+      "archivo": "20260920_13_proposal_lifecycle_statuses.py"
+    },
+    "20260918_08": {
+      "anterior": "20260918_07",
+      "archivo": "20260918_08_metadata_snapshots.py"
+    },
+    "20261001_17": {
+      "anterior": "20260930_16",
+      "archivo": "20261001_17_preserve_legacy_catalog.py"
+    },
+    "20260906_03": {
+      "anterior": "20260906_02",
+      "archivo": "20260906_03_menu_modules.py"
+    },
+    "20261001_18": {
+      "anterior": "20261001_17",
+      "archivo": "20261001_18_restore_verified_executions.py"
+    },
+    "20260923_15": {
+      "anterior": "20260922_14",
+      "archivo": "20260923_15_semantic_advice.py"
+    },
+    "20260906_02": {
+      "anterior": "20260906_01",
+      "archivo": "20260906_02_crud_lifecycle.py"
+    },
+    "20260918_07": {
+      "anterior": "20260918_06",
+      "archivo": "20260918_07_data_connections_parameters.py"
+    },
+    "20260922_14": {
+      "anterior": "20260920_13",
+      "archivo": "20260922_14_etl_execution_preparation.py"
+    },
+    "20260919_11": {
+      "anterior": "20260919_10",
+      "archivo": "20260919_11_proposal_revision_link.py"
+    },
+    "20260919_09": {
+      "anterior": "20260918_08",
+      "archivo": "20260919_09_bi_proposals.py"
+    },
+    "20260911_05": {
+      "anterior": "20260910_04",
+      "archivo": "20260911_05_preserve_audit_actor.py"
+    },
+    "20260919_12": {
+      "anterior": "20260919_11",
+      "archivo": "20260919_12_llm_reasoning_level.py"
+    },
+    "20260930_16": {
+      "anterior": "20260923_15",
+      "archivo": "20260930_16_multi_source_context.py"
+    },
+    "20260919_10": {
+      "anterior": "20260919_09",
+      "archivo": "20260919_10_proposal_domain_profile.py"
+    },
+    "20261003_19": {
+      "anterior": "20261001_18",
+      "archivo": "20261003_19_business_need_reviews.py"
+    }
+  },
+  "sha256_inventario": "c33753c92d62520bab320986d147c1840e5b381a9cbc6981141f962a56678fed",
+  "limite": "No es una comparación exhaustiva de todos los índices o restricciones CHECK, ni una prueba de las filas comerciales o de todos los expedientes históricos."
+}

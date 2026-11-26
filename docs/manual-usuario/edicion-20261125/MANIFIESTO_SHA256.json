@@ -1,0 +1,1172 @@
+{
+  "fecha": "2026-11-25",
+  "origen": "Nueva copia editorial; originales del 18 de noviembre preservados; PDF final compilado con XeLaTeX en Docker aislado.",
+  "estado": "Fuentes cotejadas; revisión documental aprobada con límites expresos.",
+  "archivos": [
+    {
+      "archivo": "Fuentes_editables/LEEME_FUENTES.txt",
+      "sha256": "09efd43ca103e8cdb350076ad3af81b3fd7b6d93c0b0d8627af31c80deab4c96",
+      "bytes": 3165
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/00_acceso.jpg",
+      "sha256": "20545bd04f04a63670a4e0d1ca09d33e710d07d95b2cf7704f29bc387f85360e",
+      "bytes": 34874
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/01_inicio.jpg",
+      "sha256": "22e8416de76415f0e70d90224bc015010110aba762ec751b7b82bdf5901cccf6",
+      "bytes": 90496
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/02_conexiones_formulario.jpg",
+      "sha256": "1902a57bc65b5830f8c4d2bca3d638810fc55dcc6817c4c11e24787b83549594",
+      "bytes": 84544
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/03_conexiones_registradas.jpg",
+      "sha256": "1158048e4575a03c907fe30d84ece3818eafd1d56b77c074a33e643385dac085",
+      "bytes": 64205
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/04_parametros.jpg",
+      "sha256": "cbe0f54dddc8677b8251bd14170535e3ed95977add008a892a0af40eba058979",
+      "bytes": 92025
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/05_parametros_detalle.jpg",
+      "sha256": "bee84283f09f68e4718279bc144834adc832036f72f04dc57b9839cbee4685d3",
+      "bytes": 85691
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/06_llm_formulario.jpg",
+      "sha256": "13f7d8c5e8f024f59bb234744c2e09e233a9a1b419619b45f921d2cfa95f0b5c",
+      "bytes": 86652
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/07_llm_registros.jpg",
+      "sha256": "c8567f04a7ebdc31917838a7eb5d835cbe34cac6e58e388d24b85c319d3e659d",
+      "bytes": 77969
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/08_llm_credencial_vacia.jpg",
+      "sha256": "530521e3fe32569fe3e3d344110f845629be27a3c24f1b8151ed790a261b3d4b",
+      "bytes": 73000
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/09_metadatos_AdventureWorks.jpg",
+      "sha256": "7286771ef4d78316cdf7a8919a17c7e7f5ce846c3edf3d2a4b946a22706f356d",
+      "bytes": 90157
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/10_metadatos_AW_columnas.jpg",
+      "sha256": "de700bdedaae5d767075b4d4449cc77ecfe42a67f03c232806f237413951310e",
+      "bytes": 60898
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/11_metadatos_AW_relaciones.jpg",
+      "sha256": "5e32f0636ad9e8e92817b457e631fcb12f4486856d1aa1f8a3c8e30c143bee53",
+      "bytes": 46018
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/12_metadatos_WWI.jpg",
+      "sha256": "17c86d8f5ca56af2db36a678d0f229c84038e01865217539a8e3779e13ec3a63",
+      "bytes": 92100
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/13_metadatos_WWI_columnas.jpg",
+      "sha256": "dda3f8df2b50163627b826313e94068079fe0e2ef05ef51267a71c4cfaec3f27",
+      "bytes": 59188
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/14_metadatos_WWI_relaciones.jpg",
+      "sha256": "7bc736161d91c84041b0d2e50fbc4713d6d57259001eecd9cace466b003d7db9",
+      "bytes": 42454
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/15_catalogo_WWI_contexto.jpg",
+      "sha256": "c6c5854dca56027b12bff490ee5dfce2aa4e6e159a09d9445bce52dde1c94454",
+      "bytes": 106844
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/16_catalogo_cobertura_AW.jpg",
+      "sha256": "4acf5bb17a8cfe9aba51b16c44f469a8b15c937c95856edd75fea3e7f5b36ad5",
+      "bytes": 100971
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/17_catalogo_preguntas.jpg",
+      "sha256": "93a717b2b9547561180b68e86b06f521e4592bb581ebbc4f5681463296529338",
+      "bytes": 116790
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/18_catalogo_periodicidades.jpg",
+      "sha256": "5663f88f6cba4ed0aa91e58b801b05e402711ed970a60bb4faecf0199bd9f674",
+      "bytes": 115299
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/19_dominio_ventas.jpg",
+      "sha256": "5db84b88ce63328f3e8c989ad891566496133ef7b16ddc985ca1a3b06434a6f0",
+      "bytes": 100021
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/20_necesidad_y_autorizacion.jpg",
+      "sha256": "0ee4bb0feb2d6e5480cf14ef913118c21dbdda613f43bb54674bfda1f963ed89",
+      "bytes": 76744
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/20b_consentimiento_IA.jpg",
+      "sha256": "b497b6074e6b8becac42cd0ef4b51740ffc8d272642a5772a43b7953d317e299",
+      "bytes": 97602
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/21_revision_aprobada.jpg",
+      "sha256": "5cca1ef119b775f5221c8aa1a3b25fe060ccd6bebc08f5c85a17fc771ee2d4d0",
+      "bytes": 97640
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/22_conceptos.jpg",
+      "sha256": "52fa522150b3b50d345930b02118cd15c42bedd95dfbc1933f3c86ac8c685894",
+      "bytes": 101807
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/23_grano_y_medidas.jpg",
+      "sha256": "e1c5946745f75d00ecfb4804af991ff15c90623ce4b3ffdf7626ce427b59cfcc",
+      "bytes": 82885
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/24_cobertura_necesidad.jpg",
+      "sha256": "82c33bce783b0e7352bff2097d52d6f71f48059c87f57b5b5670ce6248e15d05",
+      "bytes": 93472
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/25_medidas_agregaciones.jpg",
+      "sha256": "1d2ffe9084a8ead847157fa791c4abb2d6f4dfd02cdf4ec3fc39b6591784f9e4",
+      "bytes": 88551
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/26_evidencia_estructural.jpg",
+      "sha256": "34faa4695e166fcb8f906300a01b670f8be296035bce5bae21e346a9be1113e1",
+      "bytes": 79592
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/27_calculo_controlado.jpg",
+      "sha256": "eafe25ad525c205e38317527bbf11364b2633d064c53c0f7fab50834885ec982",
+      "bytes": 70369
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/28_relacion_guiada.jpg",
+      "sha256": "85dc3eb6af49cd7c796c6e27cc16b3ff6d82a111426f76cfa77d7c77167e65f8",
+      "bytes": 89138
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/29_conciliacion_AW.jpg",
+      "sha256": "ef69fb14b7c754c3c0b35c6db0c94f0fb776e980a8829c7a7dc83ca9a6b6fd15",
+      "bytes": 87420
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/30_semantica_publicada.jpg",
+      "sha256": "590e8a83034df7a3f0c459a1322df3fd79e319320b83ff2ab8c20820a31df4b4",
+      "bytes": 88797
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/31_etl_elegir_propuesta.jpg",
+      "sha256": "06ce75641d8c656c01db7b41feac7bdcffd94214bb61031528ad21000afcefb7",
+      "bytes": 106339
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/32_etl_indicadores.jpg",
+      "sha256": "c6bb63bda66432140d36d27dc13f00fecdce16a8501ecd3c360fd6fc23aeaeed",
+      "bytes": 98860
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/33_etl_plan.jpg",
+      "sha256": "ce395402edd2328d4c83210a5610885d72960a232e77d3919dc72562241154a3",
+      "bytes": 95702
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/34_etl_carga_conservada.jpg",
+      "sha256": "802c469c95afe92a1a45c382139f0b64740a4a34b4924b7074d381b876c3dc92",
+      "bytes": 84943
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/35_conciliacion_WWI.jpg",
+      "sha256": "67f3e64e13858f21aae327b64e6fd74c5635d67525fdd85c108a282b62e1f795",
+      "bytes": 90397
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/36_analitica_WWI.jpg",
+      "sha256": "c0afa7acef38538c541fc499522df64f0455fc5a31231fdc4c4d3e14bc65e843",
+      "bytes": 102713
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/37_WWI_2015_California.jpg",
+      "sha256": "de4d027a04fa2f498c2da55db6561975df72bb610c478c2389b29ccea9129923",
+      "bytes": 84936
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/38_graficos_analiticos.jpg",
+      "sha256": "f66cc249159c73e573865b68aa62b0c79f55cc862b65436b891e1df770a2470a",
+      "bytes": 81811
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/39_respaldo_grafico.jpg",
+      "sha256": "27ba34d1f06d57d8704409e165f7c23951043e049d89c4cd49db4465745dc537",
+      "bytes": 93761
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/40_hallazgos.jpg",
+      "sha256": "9a04df38c46d4e4805968e155acb8e6a39a0643b30f4e69f4c7c2a956c02f1fd",
+      "bytes": 92634
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/41_copiloto.jpg",
+      "sha256": "ada2a302b3cf9b7dd75fe8033dfe017078a8eaddd2aa48d9501e49d2e03717c1",
+      "bytes": 82709
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/42_analitica_AW.jpg",
+      "sha256": "9124dc4f0a9781a5e4120489ec12214a36afc5c90221bdcd77fdb84b85189022",
+      "bytes": 101235
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/43_AW_2013_Northwest.jpg",
+      "sha256": "4af3f8d7b50db88b36cac431f0bd42c04e3c835785397092d6fa8b3acd461596",
+      "bytes": 83633
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/44_usuarios.jpg",
+      "sha256": "cba9b51968190c3df5077f49f5f782da60f7f2843226148dd9b3443e6308e20c",
+      "bytes": 89764
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/45_roles.jpg",
+      "sha256": "8fe8ea4ca6c8f9a16340f8b404c315b24382aa552006db17fc56491585cd6cc6",
+      "bytes": 71708
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/46_rol_gerencia.jpg",
+      "sha256": "c5990ca3327eca7bad555433ecd0efff5d93120b850d14f01f637f21b840abb1",
+      "bytes": 98924
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/47_permisos.jpg",
+      "sha256": "f34579adbf78334ec7b203f411217e02489e150bb78214c7b333df8a808e281b",
+      "bytes": 100253
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/48_menus.jpg",
+      "sha256": "3d1da547fdbc86f012ef5f4fdc95b2e8fa815c9c18fb9e5ba824699bc0a7533b",
+      "bytes": 79114
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/49_menu_edicion.jpg",
+      "sha256": "f945cd9a5a9ee5d23e1ac432bb64225847b4f85124dcbefbda3bafc1cc2ea557",
+      "bytes": 94654
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/50_auditoria.jpg",
+      "sha256": "3b1c3480fc97a6ec1ead1408be80beace4bddc856729ee27ffb423085ef18181",
+      "bytes": 101383
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/actualizacion_20261125/aw24-filtros-restaurados.jpg",
+      "sha256": "1bb39e7c0659789b1e715e7c72542c76b02e348cd9eb025f392ab31963a1c495",
+      "bytes": 43419
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/actualizacion_20261125/luna-modelo-bajo.jpg",
+      "sha256": "66dba4e478f4511aaa96ee31cd2750a2810a44f605553adb73923737af02ae95",
+      "bytes": 46681
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/actualizacion_20261125/parametros-sesion-60.jpg",
+      "sha256": "c7c313c7cc25637164bfe5a3a6205e580bcaf13dff5023c64923f9f24527b8ef",
+      "bytes": 48761
+    },
+    {
+      "archivo": "Fuentes_editables/capturas/registro_capturas.json",
+      "sha256": "98d65a0af5710e7c05815ca60073977ec0c4ab349641b4263b66ce08c43f5c56",
+      "bytes": 11873
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/Arquitectura_plataforma.pdf",
+      "sha256": "74a1d3d7db7717e47ae61204ab90a4ce39ab8651c3696d3cd1edf78fd4979eaf",
+      "bytes": 46283
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/Arquitectura_plataforma.png",
+      "sha256": "42e0cf4be4db1f9e29257cbe1525f8a74fef83c0b78ac27851dc200dfb0ace78",
+      "bytes": 311375
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/Arquitectura_plataforma.svg",
+      "sha256": "3dae56272339bdebed9dcd3d4823dc32d30a0edaa1cbc0b59b245f35c56081a3",
+      "bytes": 9122
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_00_recorrido_identidades.pdf",
+      "sha256": "209c9e23381d1906c0efe15ce5658d1b7b1ee4ecb55e11ffedf3170440d14013",
+      "bytes": 40369
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_00_recorrido_identidades.png",
+      "sha256": "d7eb8071939bac401951fdcd313edc8e5fd33d11b45572976dc84264e2c2e904",
+      "bytes": 146047
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_00_recorrido_identidades.svg",
+      "sha256": "4620ffdd9a7ec54ded066cf94cb57f3ef1d0a67f9dc8f75c46a46a3b02530ad8",
+      "bytes": 8099
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_01_seguridad.pdf",
+      "sha256": "fa34af35512f633f9ea421eae44952b44d1d17bb56ed774a1838e0303e6c56e3",
+      "bytes": 35803
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_01_seguridad.png",
+      "sha256": "8b765fb51c6406fda3e98e3a2ebe04a54740b7c965e0dc776077bf0ccd3e6140",
+      "bytes": 173285
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_01_seguridad.svg",
+      "sha256": "490ecb31ab2bfc45ed06b457fef8e05455b7f78287df23edb716f61a90015217",
+      "bytes": 10961
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_02_configuracion_metadatos.pdf",
+      "sha256": "aea970980db5beef0aad7b88ccd128ebb3859e89ee765901904c91b97018cb44",
+      "bytes": 39866
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_02_configuracion_metadatos.png",
+      "sha256": "09b896110549b6fc8725a693b91473af7e2fa6f3fb47f972b3ba41517f08c5d3",
+      "bytes": 183855
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_02_configuracion_metadatos.svg",
+      "sha256": "c79071c97d5cbd9193affc7b3be2e05af4879b6856f2bdf29936b1922b296d63",
+      "bytes": 8746
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_03_propuestas_ejecuciones.pdf",
+      "sha256": "6f81a4be1b0c02918afeb0ca8c613f6da9ba7cf9157293733e2349f4f73a81ac",
+      "bytes": 39908
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_03_propuestas_ejecuciones.png",
+      "sha256": "9dc6eebe48d0ce38a771fc4e332c270a32ed54cc003e9ae90fd663842ebbe393",
+      "bytes": 255157
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_03_propuestas_ejecuciones.svg",
+      "sha256": "2c06c94635208b32b5fe20e0915b1f7f5156c4b1ad51059394d71806ff75dd6f",
+      "bytes": 8967
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_04_autoria.pdf",
+      "sha256": "2a8e37daa02bf657254b3b33e96fa31a33d5b7a32f2149c46c36795f24390c05",
+      "bytes": 40583
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_04_autoria.png",
+      "sha256": "0d03fa692490d5f87b805d715c32986c43e220ff902cd37c0dd799d3e9ed22fa",
+      "bytes": 175345
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_04_autoria.svg",
+      "sha256": "a05606ef7fca95fa06278191c76ba633ec3f60f3636103c43f25f3a5025b4ca0",
+      "bytes": 9204
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_05_datamart_e21.pdf",
+      "sha256": "cdefeb2099d83e77d2e5753248419959754bbad89c88b9a05d0619345b03fad7",
+      "bytes": 38369
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_05_datamart_e21.png",
+      "sha256": "91e07883b25485d71d1a80b1b35ceade515fa99b5868abe73c80c620b664f34c",
+      "bytes": 295589
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_05_datamart_e21.svg",
+      "sha256": "db0328b546cc373ae1b7dfbd8771c5b95bffdf592bfbf8cd4aee14700cb99182",
+      "bytes": 8913
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_05_datamart_e22.pdf",
+      "sha256": "d53e006da2fd51dc074cd9a0a4f24509e594ef218142cf2f26f1c9c518cc38db",
+      "bytes": 37103
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_05_datamart_e22.png",
+      "sha256": "31177afb17cb6749d93edbdc1cbdbd39c3169a499ad2550e9e2a5b46a1e53014",
+      "bytes": 278306
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/ER_05_datamart_e22.svg",
+      "sha256": "a22cd042cdc3a561fa9dfe9f39a997b63f148f122892a6b844cf0fe35988d587",
+      "bytes": 8209
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/LEEME_FIGURAS_DATOS.txt",
+      "sha256": "96567cf41742c6feb3afe3bfa63837c91e1cb922c22ed162a04398721365f7b9",
+      "bytes": 2653
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/crear_modelo_datos_manual.py",
+      "sha256": "d3861158457f8363f3c3e9e75a08f9b3616a968be630d653627fc72a08c8e2c5",
+      "bytes": 14127
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/manifest_figuras_datos.json",
+      "sha256": "56679bd5e0f52b042748850cc192a7756413699026c7d42cf29665b17f4e6124",
+      "bytes": 43199
+    },
+    {
+      "archivo": "Fuentes_editables/figuras/renderizar_modelo_datos_manual.py",
+      "sha256": "e51afb4833ad9fe0df95d082b8951d5e3f8a8334d69779b59dc138307924a481",
+      "bytes": 1455
+    },
+    {
+      "archivo": "Fuentes_editables/fuentes/generar_manual.py",
+      "sha256": "e4a486edac9c2114f90454cfa96d31542825045354b0f430eae1eacaaa171e77",
+      "bytes": 48625
+    },
+    {
+      "archivo": "Fuentes_editables/fuentes/pasos_unidos.py",
+      "sha256": "436d09b7290280ee4b95db060ee8305c2da1b123a1312c270a9c813199573666",
+      "bytes": 1249
+    },
+    {
+      "archivo": "Fuentes_editables/fuentes/reservar_titulos.py",
+      "sha256": "209fa8347a3d5764f92849f2d313067ca61b93742d2c85230030beb8feecf2fc",
+      "bytes": 4018
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/Cotejo_ORM_migraciones.json",
+      "sha256": "055be8c9f46500722f82e66e6fe4dc442f62a79600184507e19ef09f1e529dd0",
+      "bytes": 7252
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/ENTREGA_BASE_DATOS_Y_FIGURAS.json",
+      "sha256": "d06a6b764095339fb0d9107df6e6551a6fa9f23e5eac1d0f36b0e281103d6cd1",
+      "bytes": 22525
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/QA_figuras_base_datos.json",
+      "sha256": "5d9490da79feb469739742588db46b7eaf62d7aae5478cd2e0cfad331b1d84b9",
+      "bytes": 8584
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/QA_operacion_bi_etl_analitica.json",
+      "sha256": "4886d1f636bcfe289be33993c6fda2133cdbec08ef557a52c2232ab3f7396f13",
+      "bytes": 1023
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/QA_operacion_practicas_y_defensa.json",
+      "sha256": "d6b3735ce3f0348af419d82687d828629776ee734fa3f2e203bada07fde26917",
+      "bytes": 1379
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/actualizacion_20261125/12_base_datos.tex",
+      "sha256": "6838b949fd55d7b763cd5ec35e73d80f92609e8e770c1cfdfca268fbf9dae7af",
+      "bytes": 147893
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/actualizacion_20261125/actualizaciones_operacion.json",
+      "sha256": "480bc99423630f13ed07b1eb9ce97ec0daa960edf8fc45bdb8127cc7b3e554c4",
+      "bytes": 26132
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/actualizacion_20261125/agregados-origen-independientes.json",
+      "sha256": "9f0b61a7ceb2bb8682a9f3fbce790e92e24e26d38e07bac6ca00f189df8a5db5",
+      "bytes": 4518
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/actualizacion_20261125/operacion-final-luna-y-contextos.json",
+      "sha256": "de04f2b3f767d4b90b344bf3b7e5a14e7e8db03810262c530020b0fa87308a42",
+      "bytes": 2121
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/actualizacion_20261125/unidades-presentacion-verificadas.json",
+      "sha256": "06099b20e545fbbb47c6babed90a37ab371c17bfd0adbddf4cc88d01935ba9af",
+      "bytes": 2288
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/actualizacion_20261125/verificacion-final.json",
+      "sha256": "d191ac794c7323eef9508c6be48dd1215cc21e9bf523cc6f09864bf34470149d",
+      "bytes": 1483
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/actualizacion_bd_20261125.json",
+      "sha256": "654879c1d0660c4f685050f3d14dc89ad402043342371dc51a02f9194f2586e3",
+      "bytes": 34362
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/actualizacion_bd_20261125.md",
+      "sha256": "dc3181edcba78db7fd71a26766eb1416c1cdd45dfbc902d441efd89b2c5db277",
+      "bytes": 5199
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/base_datos_manual.json",
+      "sha256": "929576425951cf63c13f478f6956ad274fa683a3488dd6401c5d082cc9e0deb0",
+      "bytes": 163064
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/base_datos_manual.md",
+      "sha256": "93fb8fa84ba0fdd49ab3dbf446cb416071a71714a5d38ef83d60b14aed4fd8b2",
+      "bytes": 36973
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/consultas_tecnicas_solo_lectura.sql",
+      "sha256": "bd870ad55e6c4708f5e2fbf81a9d345be000defcfb2cc3ac5ff2e30ba025d40b",
+      "bytes": 1190
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/cotejar_orm_migraciones.py",
+      "sha256": "03aa763698a08ee602ec167a2c106f8c0993740adb5a0efacb1d2bf6ae892ae9",
+      "bytes": 3668
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/crear_diccionario_didactico.py",
+      "sha256": "198000c1c2d1e1efd696114176a48eb43a9ee02933987bab9cdc00db5b376445",
+      "bytes": 27878
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/extraer_catalogo_postgresql.py",
+      "sha256": "ef98f2996773374196817e7ebf0bf2ac86c48619287cd4fe9e748c239f3e4e1d",
+      "bytes": 7081
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/introduccion_y_fundamentos.json",
+      "sha256": "6b45c6d48217b7c61a23fbef8ccfaad231497bbc843b75f0dff571af1d614bc8",
+      "bytes": 25076
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/inventario_postgresql_real.json",
+      "sha256": "c33753c92d62520bab320986d147c1840e5b381a9cbc6981141f962a56678fed",
+      "bytes": 290026
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/linaje_ids_demostracion.json",
+      "sha256": "d715562c9e20e52a9f5ccafb0a65bd31248a0791ddc5f07e07e2b32b2bcf5f63",
+      "bytes": 522
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/mapa_capturas.json",
+      "sha256": "ce88631dcac5ac32a2b95bd352f5fa5d7e4001208889355445008efc718aa4f2",
+      "bytes": 19649
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/operacion_bi_etl_analitica.json",
+      "sha256": "73f3157ad38246a9a05fe760ba48d2e2ea40bf6bdb5cf3f3f01434751eae40e2",
+      "bytes": 156270
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/operacion_bi_etl_analitica.md",
+      "sha256": "c8ce478a2cf4901ed6127e7309a280eed2a1b8eec55211e20a5662bd8f91528d",
+      "bytes": 106701
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/operacion_configuracion_y_catalogo.json",
+      "sha256": "2073064ad5f9918290752d83f3c51366dc06d6e344acd17682d4bb85b77a31ec",
+      "bytes": 144891
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/operacion_configuracion_y_catalogo.md",
+      "sha256": "729c22e6e793ada4b4df2787f63ef67b22a9ecf044dc172a42d7bf48f646bb4d",
+      "bytes": 100759
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/operacion_practicas_y_defensa.json",
+      "sha256": "ac90572d4be383754c5c4bd45510f93703a4a1c2c958ce76fb5557e618609c70",
+      "bytes": 116565
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/redactar_operacion.py",
+      "sha256": "837d60c19769802562b3b25bf164d0929651930aec12e3147e14d8ac1ad44890",
+      "bytes": 128055
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/redactar_operacion_configuracion.py",
+      "sha256": "9f944cfeb67bda19b02d85e64493aa0f4c924c724952d7e34d5a128a0685c669",
+      "bytes": 102687
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/redactar_practicas_y_defensa.py",
+      "sha256": "21115c34ac21bd5509ded6afd3f0bf034527dbc936c72c8989f2c8775fe7f855",
+      "bytes": 43511
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/roles_permisos_actuales_sin_usuarios.csv",
+      "sha256": "07d80587eab50e0d62629586bcc79ee98171ce61de44bc8d9e68715045a8a065",
+      "bytes": 3390
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/roles_permisos_actuales_sin_usuarios.json",
+      "sha256": "f1f22f6ee87a716fadd2618277d9e783d35e916dc083fdaaf3abadb7482f0c21",
+      "bytes": 5315
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/roles_permisos_actuales_sin_usuarios.md",
+      "sha256": "9bb87e5f048f3abb7e0ecb51542655367ee6798c1c701f8424f396585eb4baea",
+      "bytes": 3157
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/verificacion_operacion_configuracion_y_catalogo.json",
+      "sha256": "7a9ecc15fcab9a48eac1834160bee0a54bcf89434515b1c7123dface35d42ef9",
+      "bytes": 708
+    },
+    {
+      "archivo": "Fuentes_editables/insumos/version_migracion_aplicada.json",
+      "sha256": "e9a0b9820aa8c6d78a2cdbc22821633fcf720309ae1fd45472a8775b8f75389b",
+      "bytes": 16
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/LEEME_COMPILACION.txt",
+      "sha256": "c91d246f762f75b0823c1e9831ccbe7253c0c4116b542f006b96eb5adea73932",
+      "bytes": 1306
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/ajustes_maquetacion.json",
+      "sha256": "339c72ce09529a4f7e4ae7abcd42c1cddd4d86fbce9156f46f5dca10db8c04fd",
+      "bytes": 27695
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/capturas/LEEME.txt",
+      "sha256": "87c8e47415ac0c162cbad23859cddd0ab79530fc15e518bf476fc771c5c273d7",
+      "bytes": 407
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/cobertura_contenido.json",
+      "sha256": "b36b8ff998d208bec7b1b615a0d51ae1320d781dbda3213cfa3587aa44af12ea",
+      "bytes": 29743
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/main.tex",
+      "sha256": "bd790ccae5377d770ad1881f7a1a82002f5567f31b050a5239db6524f1dee7a1",
+      "bytes": 7928
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/diagramas/Arquitectura_plataforma.pdf",
+      "sha256": "74a1d3d7db7717e47ae61204ab90a4ce39ab8651c3696d3cd1edf78fd4979eaf",
+      "bytes": 46283
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/diagramas/Arquitectura_plataforma.svg",
+      "sha256": "3dae56272339bdebed9dcd3d4823dc32d30a0edaa1cbc0b59b245f35c56081a3",
+      "bytes": 9122
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/diagramas/ER_00_recorrido_identidades.pdf",
+      "sha256": "209c9e23381d1906c0efe15ce5658d1b7b1ee4ecb55e11ffedf3170440d14013",
+      "bytes": 40369
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/diagramas/ER_00_recorrido_identidades.svg",
+      "sha256": "4620ffdd9a7ec54ded066cf94cb57f3ef1d0a67f9dc8f75c46a46a3b02530ad8",
+      "bytes": 8099
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/diagramas/ER_01_seguridad.pdf",
+      "sha256": "fa34af35512f633f9ea421eae44952b44d1d17bb56ed774a1838e0303e6c56e3",
+      "bytes": 35803
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/diagramas/ER_01_seguridad.svg",
+      "sha256": "490ecb31ab2bfc45ed06b457fef8e05455b7f78287df23edb716f61a90015217",
+      "bytes": 10961
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/diagramas/ER_02_configuracion_metadatos.pdf",
+      "sha256": "aea970980db5beef0aad7b88ccd128ebb3859e89ee765901904c91b97018cb44",
+      "bytes": 39866
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/diagramas/ER_02_configuracion_metadatos.svg",
+      "sha256": "c79071c97d5cbd9193affc7b3be2e05af4879b6856f2bdf29936b1922b296d63",
+      "bytes": 8746
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/diagramas/ER_03_propuestas_ejecuciones.pdf",
+      "sha256": "6f81a4be1b0c02918afeb0ca8c613f6da9ba7cf9157293733e2349f4f73a81ac",
+      "bytes": 39908
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/diagramas/ER_03_propuestas_ejecuciones.svg",
+      "sha256": "2c06c94635208b32b5fe20e0915b1f7f5156c4b1ad51059394d71806ff75dd6f",
+      "bytes": 8967
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/diagramas/ER_04_autoria.pdf",
+      "sha256": "2a8e37daa02bf657254b3b33e96fa31a33d5b7a32f2149c46c36795f24390c05",
+      "bytes": 40583
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/diagramas/ER_04_autoria.svg",
+      "sha256": "a05606ef7fca95fa06278191c76ba633ec3f60f3636103c43f25f3a5025b4ca0",
+      "bytes": 9204
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/diagramas/ER_05_datamart_e21.pdf",
+      "sha256": "cdefeb2099d83e77d2e5753248419959754bbad89c88b9a05d0619345b03fad7",
+      "bytes": 38369
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/diagramas/ER_05_datamart_e21.svg",
+      "sha256": "db0328b546cc373ae1b7dfbd8771c5b95bffdf592bfbf8cd4aee14700cb99182",
+      "bytes": 8913
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/diagramas/ER_05_datamart_e22.pdf",
+      "sha256": "d53e006da2fd51dc074cd9a0a4f24509e594ef218142cf2f26f1c9c518cc38db",
+      "bytes": 37103
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/diagramas/ER_05_datamart_e22.svg",
+      "sha256": "a22cd042cdc3a561fa9dfe9f39a997b63f148f122892a6b844cf0fe35988d587",
+      "bytes": 8209
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/fuentes/GUST-FONT-LICENSE.txt",
+      "sha256": "e120f067589d589a9fa436db09940bd2e03b477cf29b15443c6f87d3861f734b",
+      "bytes": 1449
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/fuentes/README-TeX-Gyre-Cursor.txt",
+      "sha256": "22bf9a7d59502f700361dbe0b6c7fcaa39343be6ff6bc9df090dbf452571180c",
+      "bytes": 17975
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/fuentes/README-TeX-Gyre-Heros.txt",
+      "sha256": "90af0294186de301cc4464b28c42a1701853f0427fd0c80ebbf3ebefb0310f43",
+      "bytes": 20593
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/fuentes/README-TeX-Gyre-Pagella.txt",
+      "sha256": "03669c81ee231f6a0e4cbb582dcc7c5e6a4bc7d337a20cd3b9d3c24d2d0a723b",
+      "bytes": 7830
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/fuentes/texgyrecursor-bold.otf",
+      "sha256": "95e9755bfa05759e8d1f8fba21a919ba46091e1275aeb5bf831dffd9c93b041e",
+      "bytes": 87288
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/fuentes/texgyrecursor-bolditalic.otf",
+      "sha256": "6aa5c41f489b898aa890c543e7dcd5e732c63894babc65569e01ee7e46533d82",
+      "bytes": 90360
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/fuentes/texgyrecursor-italic.otf",
+      "sha256": "545f24a2a9e5dd5ace865fe5e80134f55a37794b36e26abae5424aebff600056",
+      "bytes": 87536
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/fuentes/texgyrecursor-regular.otf",
+      "sha256": "0667deb48aa0e88be8f499c4d308e8b9116f290e7f969b0f5a34ee15c9644272",
+      "bytes": 84652
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/fuentes/texgyreheros-bold.otf",
+      "sha256": "b170162835f4efc288886dd4231406dc47e19b614cf4416836635599d44a7d60",
+      "bytes": 135204
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/fuentes/texgyreheros-bolditalic.otf",
+      "sha256": "166fc6d068d9c9974281555cb3d730365537a9b676ab269bb5163f5a75496505",
+      "bytes": 135264
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/fuentes/texgyreheros-italic.otf",
+      "sha256": "6473df7fa107b3fb4be38973710afe22b0640c2ac076d5337cf126bed9aa108c",
+      "bytes": 139208
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/fuentes/texgyreheros-regular.otf",
+      "sha256": "6ae1a09d5a940367b7aaaa91ee8bd8a2c333bfe193e7096e23f931357d62081f",
+      "bytes": 133600
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/fuentes/texgyrepagella-bold.otf",
+      "sha256": "dd4f9b69f0b24f1fb9be8634abf1fce2009e5c68a30842a3e9f5d6e535900abd",
+      "bytes": 219564
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/fuentes/texgyrepagella-bolditalic.otf",
+      "sha256": "556fd64655a92bd9f5485ae2c03f7b9cdaf745a27a91d7edb3c3abde997206d2",
+      "bytes": 216296
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/fuentes/texgyrepagella-italic.otf",
+      "sha256": "069bb27f48eb98a741715227fc6e4b7baf3639c29fc13925f70d1ed8884ac29a",
+      "bytes": 221936
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/fuentes/texgyrepagella-regular.otf",
+      "sha256": "44e64260716d8f2bbe412baa1ee99b7c995190ac4573177c24def0b9200438c7",
+      "bytes": 218100
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/00_acceso.jpg",
+      "sha256": "20545bd04f04a63670a4e0d1ca09d33e710d07d95b2cf7704f29bc387f85360e",
+      "bytes": 34874
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/01_inicio.jpg",
+      "sha256": "22e8416de76415f0e70d90224bc015010110aba762ec751b7b82bdf5901cccf6",
+      "bytes": 90496
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/02_conexiones_formulario.jpg",
+      "sha256": "1902a57bc65b5830f8c4d2bca3d638810fc55dcc6817c4c11e24787b83549594",
+      "bytes": 84544
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/03_conexiones_registradas.jpg",
+      "sha256": "1158048e4575a03c907fe30d84ece3818eafd1d56b77c074a33e643385dac085",
+      "bytes": 64205
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/04_parametros.jpg",
+      "sha256": "cbe0f54dddc8677b8251bd14170535e3ed95977add008a892a0af40eba058979",
+      "bytes": 92025
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/05_parametros_detalle.jpg",
+      "sha256": "bee84283f09f68e4718279bc144834adc832036f72f04dc57b9839cbee4685d3",
+      "bytes": 85691
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/06_llm_formulario.jpg",
+      "sha256": "13f7d8c5e8f024f59bb234744c2e09e233a9a1b419619b45f921d2cfa95f0b5c",
+      "bytes": 86652
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/07_llm_registros.jpg",
+      "sha256": "c8567f04a7ebdc31917838a7eb5d835cbe34cac6e58e388d24b85c319d3e659d",
+      "bytes": 77969
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/08_llm_credencial_vacia.jpg",
+      "sha256": "530521e3fe32569fe3e3d344110f845629be27a3c24f1b8151ed790a261b3d4b",
+      "bytes": 73000
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/09_metadatos_AdventureWorks.jpg",
+      "sha256": "7286771ef4d78316cdf7a8919a17c7e7f5ce846c3edf3d2a4b946a22706f356d",
+      "bytes": 90157
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/10_metadatos_AW_columnas.jpg",
+      "sha256": "de700bdedaae5d767075b4d4449cc77ecfe42a67f03c232806f237413951310e",
+      "bytes": 60898
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/11_metadatos_AW_relaciones.jpg",
+      "sha256": "5e32f0636ad9e8e92817b457e631fcb12f4486856d1aa1f8a3c8e30c143bee53",
+      "bytes": 46018
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/12_metadatos_WWI.jpg",
+      "sha256": "17c86d8f5ca56af2db36a678d0f229c84038e01865217539a8e3779e13ec3a63",
+      "bytes": 92100
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/13_metadatos_WWI_columnas.jpg",
+      "sha256": "dda3f8df2b50163627b826313e94068079fe0e2ef05ef51267a71c4cfaec3f27",
+      "bytes": 59188
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/14_metadatos_WWI_relaciones.jpg",
+      "sha256": "7bc736161d91c84041b0d2e50fbc4713d6d57259001eecd9cace466b003d7db9",
+      "bytes": 42454
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/15_catalogo_WWI_contexto.jpg",
+      "sha256": "c6c5854dca56027b12bff490ee5dfce2aa4e6e159a09d9445bce52dde1c94454",
+      "bytes": 106844
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/16_catalogo_cobertura_AW.jpg",
+      "sha256": "4acf5bb17a8cfe9aba51b16c44f469a8b15c937c95856edd75fea3e7f5b36ad5",
+      "bytes": 100971
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/17_catalogo_preguntas.jpg",
+      "sha256": "93a717b2b9547561180b68e86b06f521e4592bb581ebbc4f5681463296529338",
+      "bytes": 116790
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/18_catalogo_periodicidades.jpg",
+      "sha256": "5663f88f6cba4ed0aa91e58b801b05e402711ed970a60bb4faecf0199bd9f674",
+      "bytes": 115299
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/19_dominio_ventas.jpg",
+      "sha256": "5db84b88ce63328f3e8c989ad891566496133ef7b16ddc985ca1a3b06434a6f0",
+      "bytes": 100021
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/20_necesidad_y_autorizacion.jpg",
+      "sha256": "0ee4bb0feb2d6e5480cf14ef913118c21dbdda613f43bb54674bfda1f963ed89",
+      "bytes": 76744
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/20b_consentimiento_IA.jpg",
+      "sha256": "b497b6074e6b8becac42cd0ef4b51740ffc8d272642a5772a43b7953d317e299",
+      "bytes": 97602
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/21_revision_aprobada.jpg",
+      "sha256": "5cca1ef119b775f5221c8aa1a3b25fe060ccd6bebc08f5c85a17fc771ee2d4d0",
+      "bytes": 97640
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/22_conceptos.jpg",
+      "sha256": "52fa522150b3b50d345930b02118cd15c42bedd95dfbc1933f3c86ac8c685894",
+      "bytes": 101807
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/23_grano_y_medidas.jpg",
+      "sha256": "e1c5946745f75d00ecfb4804af991ff15c90623ce4b3ffdf7626ce427b59cfcc",
+      "bytes": 82885
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/24_cobertura_necesidad.jpg",
+      "sha256": "82c33bce783b0e7352bff2097d52d6f71f48059c87f57b5b5670ce6248e15d05",
+      "bytes": 93472
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/25_medidas_agregaciones.jpg",
+      "sha256": "1d2ffe9084a8ead847157fa791c4abb2d6f4dfd02cdf4ec3fc39b6591784f9e4",
+      "bytes": 88551
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/26_evidencia_estructural.jpg",
+      "sha256": "34faa4695e166fcb8f906300a01b670f8be296035bce5bae21e346a9be1113e1",
+      "bytes": 79592
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/27_calculo_controlado.jpg",
+      "sha256": "eafe25ad525c205e38317527bbf11364b2633d064c53c0f7fab50834885ec982",
+      "bytes": 70369
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/28_relacion_guiada.jpg",
+      "sha256": "85dc3eb6af49cd7c796c6e27cc16b3ff6d82a111426f76cfa77d7c77167e65f8",
+      "bytes": 89138
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/29_conciliacion_AW.jpg",
+      "sha256": "ef69fb14b7c754c3c0b35c6db0c94f0fb776e980a8829c7a7dc83ca9a6b6fd15",
+      "bytes": 87420
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/30_semantica_publicada.jpg",
+      "sha256": "590e8a83034df7a3f0c459a1322df3fd79e319320b83ff2ab8c20820a31df4b4",
+      "bytes": 88797
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/31_etl_elegir_propuesta.jpg",
+      "sha256": "06ce75641d8c656c01db7b41feac7bdcffd94214bb61031528ad21000afcefb7",
+      "bytes": 106339
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/32_etl_indicadores.jpg",
+      "sha256": "c6bb63bda66432140d36d27dc13f00fecdce16a8501ecd3c360fd6fc23aeaeed",
+      "bytes": 98860
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/33_etl_plan.jpg",
+      "sha256": "ce395402edd2328d4c83210a5610885d72960a232e77d3919dc72562241154a3",
+      "bytes": 95702
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/34_etl_carga_conservada.jpg",
+      "sha256": "802c469c95afe92a1a45c382139f0b64740a4a34b4924b7074d381b876c3dc92",
+      "bytes": 84943
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/35_conciliacion_WWI.jpg",
+      "sha256": "67f3e64e13858f21aae327b64e6fd74c5635d67525fdd85c108a282b62e1f795",
+      "bytes": 90397
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/36_analitica_WWI.jpg",
+      "sha256": "c0afa7acef38538c541fc499522df64f0455fc5a31231fdc4c4d3e14bc65e843",
+      "bytes": 102713
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/37_WWI_2015_California.jpg",
+      "sha256": "de4d027a04fa2f498c2da55db6561975df72bb610c478c2389b29ccea9129923",
+      "bytes": 84936
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/38_graficos_analiticos.jpg",
+      "sha256": "f66cc249159c73e573865b68aa62b0c79f55cc862b65436b891e1df770a2470a",
+      "bytes": 81811
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/39_respaldo_grafico.jpg",
+      "sha256": "27ba34d1f06d57d8704409e165f7c23951043e049d89c4cd49db4465745dc537",
+      "bytes": 93761
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/40_hallazgos.jpg",
+      "sha256": "9a04df38c46d4e4805968e155acb8e6a39a0643b30f4e69f4c7c2a956c02f1fd",
+      "bytes": 92634
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/41_copiloto.jpg",
+      "sha256": "ada2a302b3cf9b7dd75fe8033dfe017078a8eaddd2aa48d9501e49d2e03717c1",
+      "bytes": 82709
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/42_analitica_AW.jpg",
+      "sha256": "9124dc4f0a9781a5e4120489ec12214a36afc5c90221bdcd77fdb84b85189022",
+      "bytes": 101235
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/43_AW_2013_Northwest.jpg",
+      "sha256": "4af3f8d7b50db88b36cac431f0bd42c04e3c835785397092d6fa8b3acd461596",
+      "bytes": 83633
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/44_usuarios.jpg",
+      "sha256": "cba9b51968190c3df5077f49f5f782da60f7f2843226148dd9b3443e6308e20c",
+      "bytes": 89764
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/45_roles.jpg",
+      "sha256": "8fe8ea4ca6c8f9a16340f8b404c315b24382aa552006db17fc56491585cd6cc6",
+      "bytes": 71708
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/46_rol_gerencia.jpg",
+      "sha256": "c5990ca3327eca7bad555433ecd0efff5d93120b850d14f01f637f21b840abb1",
+      "bytes": 98924
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/47_permisos.jpg",
+      "sha256": "f34579adbf78334ec7b203f411217e02489e150bb78214c7b333df8a808e281b",
+      "bytes": 100253
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/48_menus.jpg",
+      "sha256": "3d1da547fdbc86f012ef5f4fdc95b2e8fa815c9c18fb9e5ba824699bc0a7533b",
+      "bytes": 79114
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/49_menu_edicion.jpg",
+      "sha256": "f945cd9a5a9ee5d23e1ac432bb64225847b4f85124dcbefbda3bafc1cc2ea557",
+      "bytes": 94654
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/50_auditoria.jpg",
+      "sha256": "3b1c3480fc97a6ec1ead1408be80beace4bddc856729ee27ffb423085ef18181",
+      "bytes": 101383
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/aw24-filtros-restaurados.jpg",
+      "sha256": "1bb39e7c0659789b1e715e7c72542c76b02e348cd9eb025f392ab31963a1c495",
+      "bytes": 43419
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/luna-modelo-bajo.jpg",
+      "sha256": "66dba4e478f4511aaa96ee31cd2750a2810a44f605553adb73923737af02ae95",
+      "bytes": 46681
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/recursos/pantallas/parametros-sesion-60.jpg",
+      "sha256": "c7c313c7cc25637164bfe5a3a6205e580bcaf13dff5023c64923f9f24527b8ef",
+      "bytes": 48761
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/secciones/01_fundamentos.tex",
+      "sha256": "733a86556a8db05fad324b47c7526633acb22cf70fac232ce473d237997ea9de",
+      "bytes": 14419
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/secciones/02_fundamentos.tex",
+      "sha256": "586ab203777c5d2f613c31c3b25b2a91050e33a83551400c88e1fc79b91e119a",
+      "bytes": 16282
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/secciones/03_fundamentos.tex",
+      "sha256": "186ff4d5b20b610232e37e4046e14d63035784d4917ed133807c5b32fe1187a9",
+      "bytes": 6994
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/secciones/04_configuracion.tex",
+      "sha256": "c4ef1c145c5ff0eb7ed5e4196a3ede29e8a254979d5fcd2b9f3c122e493fea61",
+      "bytes": 29685
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/secciones/05_configuracion.tex",
+      "sha256": "c16e40c3fc7a3a1396bd4ff4029443e3db14163b8cc07c47712beed251692c51",
+      "bytes": 57553
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/secciones/06_configuracion.tex",
+      "sha256": "e61c7539d7fbfed356a1ee37d797cb69c1e9182d41e184a9b59ec6d2858b655e",
+      "bytes": 34909
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/secciones/07_operacion_bi.tex",
+      "sha256": "597e0d509b9097c50e5d37c65d2b21e5019c0063b927b1d4ae1bf542052f3127",
+      "bytes": 63884
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/secciones/08_operacion_bi.tex",
+      "sha256": "b5c9b81d4ba155dcc5c943b5a81ca76e6a6629ce5e7e280d5a5d059683c43883",
+      "bytes": 51240
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/secciones/09_operacion_bi.tex",
+      "sha256": "9a63de0cf42254983304feabe0fcba55d55c8c236d0112d537eb75d9075b2f6a",
+      "bytes": 37283
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/secciones/10_administracion.tex",
+      "sha256": "bef80bae6260e43e5f768784110aad6feb35be415dbb48eb6b17c55727e03d28",
+      "bytes": 57533
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/secciones/11_practica.tex",
+      "sha256": "f3c2aa7230fed3eac139297a0d3cc93af1770dc24fef2828d3fca2c1438bd71c",
+      "bytes": 187278
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/secciones/12_base_datos.tex",
+      "sha256": "e4b96ef8d232da779ff847441b42259ecbecfb2a3369c5ea8d40bfd04411e6e4",
+      "bytes": 166193
+    },
+    {
+      "archivo": "Fuentes_editables/manual_latex/secciones/13_permisos_precision.tex",
+      "sha256": "fa7c059eb9954e418720f9efa16f8469acc9191ce63f2de9f77b6ca336bf9885",
+      "bytes": 58400
+    },
+    {
+      "archivo": "INFORME_QA_MANUAL_2026-11-25.json",
+      "sha256": "4090b569591e31701f4b482a1ca6cd73e29cc5c70b56ae66d39c70273b0c3832",
+      "bytes": 4152
+    },
+    {
+      "archivo": "INFORME_QA_MANUAL_2026-11-25.md",
+      "sha256": "290c3c5102b34b3bd703cf6de0a83ab9ce3a29a24d94b0330a1c2a68ef200a15",
+      "bytes": 7679
+    },
+    {
+      "archivo": "LEEME_PRIMERO.md",
+      "sha256": "280a1431d4fbba878b8b40334bc669a7673ac65c7f10a438094ba592ce53f462",
+      "bytes": 1051
+    },
+    {
+      "archivo": "Manual_operacion_y_aprendizaje_BI_IA_2026-11-25.pdf",
+      "sha256": "2f44fbbd4c288dfb5dddf79418ef4ecf7b61acacf00f03ff93359737bde2b0a7",
+      "bytes": 5586143
+    }
+  ]
+}

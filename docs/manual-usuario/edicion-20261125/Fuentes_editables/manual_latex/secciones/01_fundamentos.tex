@@ -1,0 +1,213 @@
+\chapter{Cómo aprender con este manual}
+Este manual acompaña a las programadoras desde el primer ingreso hasta la consulta de un datamart de ventas. Cada recorrido explica qué se hace, por qué se hace, qué resultado debe aparecer y cómo reconocer un problema. Puede utilizarse para estudiar, practicar en el equipo de desarrollo y preparar una demostración ante el jurado.
+
+La meta de aprendizaje es operar con criterio: identificar la fuente de cada cifra, explicar una medida, reconocer una relación que puede duplicar ventas y justificar una decisión. Memorizar una secuencia de botones no basta cuando cambian la base de datos, las preguntas comerciales o la respuesta del modelo de IA.
+
+Primero lea los fundamentos y la arquitectura. Después complete la preparación con una cuenta administradora. Recorra el catálogo y el asistente como analista de BI. Finalmente revise los resultados como gerente comercial. En cada práctica registre la fuente, la versión de metadatos, la propuesta, el expediente, los filtros y el resultado observado.
+
+Las pantallas proceden de la aplicación abierta en vista completa durante la preparación de esta edición. Los casos de referencia conservan pruebas anteriores verificadas en AdventureWorks2022 y WideWorldImporters. Consultar esos expedientes permite estudiar el resultado; no significa que se haya repetido su generación o su ETL al obtener una captura.
+
+En una instalación limpia pueden no existir las propuestas 129 y 131 ni las ejecuciones 21 y 22. Esos números identifican los ejemplos de la instalación de referencia. Las prácticas explican también cómo iniciar un caso propio. Anote los identificadores que produzca su equipo y compare las condiciones y cifras, en lugar de intentar reproducir el mismo número de versión.
+
+\Needspace{36\baselineskip}
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\RaggedRight\sffamily\bfseries\large\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000 Dónde encontrar cada opción\par}
+
+Puede abrir la unidad desde la última columna. El menú visible depende de los permisos de su sesión; el enlace del manual no concede acceso a la aplicación.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.25\linewidth}>{\RaggedRight\arraybackslash}p{0.44\linewidth}>{\RaggedRight\arraybackslash}p{0.22\linewidth}@{}}
+\toprule
+\textbf{Opción visible} & \textbf{Para qué acudir} & \textbf{Unidad del manual} \\
+\midrule
+Inicio & Reconocer la preparación y la fuente de trabajo. & \hyperref[unidad:operacion_02]{Abrir sección \ref*{unidad:operacion_02}} \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\section{Dónde encontrar cada opción}
+Puede abrir la unidad desde la última columna. El menú visible depende de los permisos de su sesión; el enlace del manual no concede acceso a la aplicación.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.25\linewidth}>{\RaggedRight\arraybackslash}p{0.44\linewidth}>{\RaggedRight\arraybackslash}p{0.22\linewidth}@{}}
+\toprule
+\textbf{Opción visible} & \textbf{Para qué acudir} & \textbf{Unidad del manual} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Opción visible} & \textbf{Para qué acudir} & \textbf{Unidad del manual} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Inicio & Reconocer la preparación y la fuente de trabajo. & \hyperref[unidad:operacion_02]{Abrir sección \ref*{unidad:operacion_02}} \\
+\addlinespace[3pt]
+Conexiones de datos & Registrar y comprobar el acceso a cada origen. & \hyperref[unidad:operacion_09]{Abrir sección \ref*{unidad:operacion_09}} \\
+\addlinespace[3pt]
+Parámetros & Comprender los valores generales de operación. & \hyperref[unidad:operacion_10]{Abrir sección \ref*{unidad:operacion_10}} \\
+\addlinespace[3pt]
+Configuración LLM & Preparar y comprobar el proveedor de IA. & \hyperref[unidad:operacion_11]{Abrir sección \ref*{unidad:operacion_11}} \\
+\addlinespace[3pt]
+Explorador de esquema & Revisar tablas, columnas y relaciones capturadas. & \hyperref[unidad:operacion_12]{Abrir sección \ref*{unidad:operacion_12}} \\
+\addlinespace[3pt]
+Catálogo analítico & Definir preguntas y opciones propias de cada fuente. & \hyperref[unidad:operacion_13]{Abrir sección \ref*{unidad:operacion_13}} \\
+\addlinespace[3pt]
+Asistente de datamart & Convertir la necesidad en una propuesta supervisada. & \hyperref[unidad:BI02]{Abrir sección \ref*{unidad:BI02}} \\
+\addlinespace[3pt]
+Datamart de ventas & Preparar, confirmar y conciliar una carga. & \hyperref[unidad:ETL01]{Abrir sección \ref*{unidad:ETL01}} \\
+\addlinespace[3pt]
+Analítica de ventas & Filtrar, interpretar, conversar y exportar. & \hyperref[unidad:AN01]{Abrir sección \ref*{unidad:AN01}} \\
+\addlinespace[3pt]
+Usuarios & Administrar cuentas y asignaciones de acceso. & \hyperref[unidad:operacion_04]{Abrir sección \ref*{unidad:operacion_04}} \\
+\addlinespace[3pt]
+Roles & Agrupar permisos de acuerdo con responsabilidades. & \hyperref[unidad:operacion_05]{Abrir sección \ref*{unidad:operacion_05}} \\
+\addlinespace[3pt]
+Permisos & Consultar qué autoriza cada capacidad. & \hyperref[unidad:operacion_06]{Abrir sección \ref*{unidad:operacion_06}} \\
+\addlinespace[3pt]
+Menús & Comprender la navegación y su visibilidad. & \hyperref[unidad:operacion_07]{Abrir sección \ref*{unidad:operacion_07}} \\
+\addlinespace[3pt]
+Auditoría & Consultar los eventos registrados por la aplicación. & \hyperref[unidad:operacion_08]{Abrir sección \ref*{unidad:operacion_08}} \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\RaggedRight\sffamily\bfseries\large\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000 Responsabilidades durante la operación\par}
+
+Una persona puede estudiar varios perfiles, pero la aplicación permite únicamente las acciones concedidas a su cuenta. Los papeles de Product Owner y Scrum Master pertenecen al trabajo del equipo del proyecto; no conceden por sí mismos permisos dentro de la plataforma.
+
+No se aprende la seguridad dando permisos administrativos a todas las personas. Para una prueba de perfiles, la administradora prepara las cuentas que haya autorizado el responsable y cada estudiante ingresa con el perfil que le corresponda. Ver un rol en la tabla no demuestra que ya se haya probado una sesión con ese rol.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Trabajo principal} & \textbf{Criterio que debe comprender} \\
+\midrule
+Administración & Preparar cuentas, permisos, conexiones, parámetros y proveedor de IA. & Un permiso habilita una acción; una conexión habilitada no combina sus datos con otra. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\section{Responsabilidades durante la operación}
+Una persona puede estudiar varios perfiles, pero la aplicación permite únicamente las acciones concedidas a su cuenta. Los papeles de Product Owner y Scrum Master pertenecen al trabajo del equipo del proyecto; no conceden por sí mismos permisos dentro de la plataforma.
+
+No se aprende la seguridad dando permisos administrativos a todas las personas. Para una prueba de perfiles, la administradora prepara las cuentas que haya autorizado el responsable y cada estudiante ingresa con el perfil que le corresponda. Ver un rol en la tabla no demuestra que ya se haya probado una sesión con ese rol.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Perfil} & \textbf{Trabajo principal} & \textbf{Criterio que debe comprender} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Perfil} & \textbf{Trabajo principal} & \textbf{Criterio que debe comprender} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Administración & Preparar cuentas, permisos, conexiones, parámetros y proveedor de IA. & Un permiso habilita una acción; una conexión habilitada no combina sus datos con otra. \\
+\addlinespace[3pt]
+Analista de BI & Expresar la necesidad, comprobar su respaldo, revisar el modelo, aprobar y supervisar el ETL. & El significado comercial, el grano y las relaciones deben coincidir con lo solicitado. \\
+\addlinespace[3pt]
+Gerencia comercial & Consultar indicadores, comparar segmentos, formular preguntas y exportar resultados. & Una cifra necesita fuente, período, unidad y contexto antes de apoyar una decisión. \\
+\addlinespace[3pt]
+Programadora & Comprender el flujo, revisar la trazabilidad y reproducir una incidencia con evidencia. & El motor común valida y materializa contratos; no se programa una consulta distinta para cada demostración. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\RaggedRight\sffamily\bfseries\large\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000 Tres niveles de práctica\par}
+
+La lectura de un expediente existente permite aprender aun cuando no haya una API key disponible. Generar sugerencias, revisar una necesidad con IA, obtener una propuesta o conversar con el copiloto requiere que el proveedor correspondiente esté configurado y disponible.
+
+El ETL y las aprobaciones de una práctica crean estado persistente. Realice esos ejercicios en el entorno de aprendizaje y con nombres que permitan reconocer el caso. Para estudiar los botones de retirar, restaurar o descartar, utilice un caso de práctica identificado; conserve las aprobaciones y expedientes elegidos para la demostración.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Nivel} & \textbf{Qué puede practicar} & \textbf{Condición de cierre} \\
+\midrule
+Lectura y explicación & Cambiar la fuente, explorar metadatos, consultar una propuesta y un expediente conservados, aplicar filtros y revisar reportes. & Explica la procedencia y el significado de los valores sin modificar la propuesta ni repetir una carga. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\section{Tres niveles de práctica}
+La lectura de un expediente existente permite aprender aun cuando no haya una API key disponible. Generar sugerencias, revisar una necesidad con IA, obtener una propuesta o conversar con el copiloto requiere que el proveedor correspondiente esté configurado y disponible.
+
+El ETL y las aprobaciones de una práctica crean estado persistente. Realice esos ejercicios en el entorno de aprendizaje y con nombres que permitan reconocer el caso. Para estudiar los botones de retirar, restaurar o descartar, utilice un caso de práctica identificado; conserve las aprobaciones y expedientes elegidos para la demostración.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Nivel} & \textbf{Qué puede practicar} & \textbf{Condición de cierre} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Nivel} & \textbf{Qué puede practicar} & \textbf{Condición de cierre} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Lectura y explicación & Cambiar la fuente, explorar metadatos, consultar una propuesta y un expediente conservados, aplicar filtros y revisar reportes. & Explica la procedencia y el significado de los valores sin modificar la propuesta ni repetir una carga. \\
+\addlinespace[3pt]
+Diseño supervisado & Redactar una necesidad nueva, solicitar ayuda de IA, revisar viabilidad, conceptos, medidas, dimensiones y fórmulas. & Conserva un contrato coherente con el objetivo y distingue advertencias aceptables de errores bloqueantes. \\
+\addlinespace[3pt]
+Construcción y análisis & Aprobar una propuesta de práctica, revisar indicadores, confirmar el plan, ejecutar ETL, conciliar y consultar la analítica. & Relaciona necesidad, contrato, expediente y resultados; registra las comprobaciones y los límites del caso. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\section{Cómo reconocer que una práctica terminó correctamente}
+\begin{enumerate}
+\item Confirme la fuente seleccionada antes de leer una tabla o un indicador. AdventureWorks2022 y WideWorldImporters tienen estructuras y documentos comerciales diferentes.
+\item Lea el mensaje de resultado. Un botón pulsado, una pantalla abierta o una respuesta con apariencia correcta no demuestran que la validación haya terminado.
+\item Anote el objetivo, las preguntas, la periodicidad, el proveedor y los identificadores producidos. Registre qué advertencias comprendió y qué decisiones tomó.
+\item Después del ETL contraste las filas de origen y destino, las diferencias y los indicadores conciliados. La validación estructural de una propuesta no sustituye esta conciliación.
+\item En la analítica compruebe el expediente y los filtros. Verifique un valor exacto desde el detalle o la tabla de respaldo y contraste la exportación con la selección visible.
+\item Explique una limitación del caso. Por ejemplo, una moneda no comprobada, atributos actuales que no representan historia o un período extremo con cobertura parcial.
+\end{enumerate}
+
+
+\IfFileExists{capturas/fundamentos_01.tex}{\input{capturas/fundamentos_01.tex}}{}

@@ -1,0 +1,314 @@
+[
+  {
+    "archivo": "00_acceso.jpg",
+    "titulo": "Ingreso con una cuenta autorizada",
+    "fecha": "2026-11-18T05:10:01.013Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "01_inicio.jpg",
+    "titulo": "Inicio y fuente seleccionada",
+    "fecha": "2026-11-18T05:09:50.492Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "02_conexiones_formulario.jpg",
+    "titulo": "Registro y edición de una conexión SQL Server",
+    "fecha": "2026-11-18T05:10:41.625Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "03_conexiones_registradas.jpg",
+    "titulo": "Fuentes de ejemplo habilitadas y validadas como lectura",
+    "fecha": "2026-11-18T05:10:59.072Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "04_parametros.jpg",
+    "titulo": "Parámetros operativos y rangos admitidos",
+    "fecha": "2026-11-18T05:11:28.773Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "05_parametros_detalle.jpg",
+    "titulo": "Bloques de metadatos y paginación configurables",
+    "fecha": "2026-11-18T05:12:05.627Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "06_llm_formulario.jpg",
+    "titulo": "Proveedor, URL, modelo y razonamiento",
+    "fecha": "2026-11-18T05:12:37.320Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "07_llm_registros.jpg",
+    "titulo": "Configuraciones disponibles y proveedor activo",
+    "fecha": "2026-11-18T05:12:46.593Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "08_llm_credencial_vacia.jpg",
+    "titulo": "Formulario de credencial vacío y cancelación",
+    "fecha": "2026-11-18T05:12:54.986Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "09_metadatos_AdventureWorks.jpg",
+    "titulo": "Instantáneas y resumen de metadatos de AdventureWorks",
+    "fecha": "2026-11-18T05:13:09.309Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "10_metadatos_AW_columnas.jpg",
+    "titulo": "Tipos, nulos y clave del detalle de pedidos",
+    "fecha": "2026-11-18T05:13:24.321Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "11_metadatos_AW_relaciones.jpg",
+    "titulo": "Relaciones de la línea con pedido y producto",
+    "fecha": "2026-11-18T05:13:31.072Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "12_metadatos_WWI.jpg",
+    "titulo": "Instantánea independiente de WideWorldImporters",
+    "fecha": "2026-11-18T05:13:52.701Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "13_metadatos_WWI_columnas.jpg",
+    "titulo": "Columnas de InvoiceLines y significado de sus importes",
+    "fecha": "2026-11-18T05:14:07.047Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "14_metadatos_WWI_relaciones.jpg",
+    "titulo": "Rutas declaradas de InvoiceLines a sus entidades",
+    "fecha": "2026-11-18T05:14:12.661Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "15_catalogo_WWI_contexto.jpg",
+    "titulo": "Catálogo separado para WideWorldImporters",
+    "fecha": "2026-11-18T05:14:57.259Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "16_catalogo_cobertura_AW.jpg",
+    "titulo": "Cobertura potencial de las preguntas según metadatos",
+    "fecha": "2026-11-18T05:15:23.487Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "17_catalogo_preguntas.jpg",
+    "titulo": "Etiqueta, explicación e instrucción funcional de cada pregunta",
+    "fecha": "2026-11-18T05:15:29.156Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "18_catalogo_periodicidades.jpg",
+    "titulo": "Habilitar periodicidades y guardar el catálogo de la fuente",
+    "fecha": "2026-11-18T05:16:11.270Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "19_dominio_ventas.jpg",
+    "titulo": "Elegir el dominio de ventas",
+    "fecha": "2026-11-18T05:22:04.754Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "20_necesidad_y_autorizacion.jpg",
+    "titulo": "Objetivo y autorización para asistencia con IA",
+    "fecha": "2026-11-18T05:22:10.378Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "20b_consentimiento_IA.jpg",
+    "titulo": "Consentimiento y ayudas de redacción",
+    "fecha": "2026-11-18T05:28:42.542Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "21_revision_aprobada.jpg",
+    "titulo": "Aprobación humana y versión conservada",
+    "fecha": "2026-11-18T05:22:24.041Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "22_conceptos.jpg",
+    "titulo": "Conceptos y niveles de evidencia",
+    "fecha": "2026-11-18T05:22:29.074Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "23_grano_y_medidas.jpg",
+    "titulo": "Granularidad, hecho y medidas verificables",
+    "fecha": "2026-11-18T05:22:36.913Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "24_cobertura_necesidad.jpg",
+    "titulo": "Cobertura y decisiones de la necesidad",
+    "fecha": "2026-11-18T05:22:37.729Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "25_medidas_agregaciones.jpg",
+    "titulo": "Medidas y reglas del contrato conservado",
+    "fecha": "2026-11-18T05:22:43.502Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "26_evidencia_estructural.jpg",
+    "titulo": "Cuatro controles estructurales y huellas coincidentes",
+    "fecha": "2026-11-18T05:22:54.929Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "27_calculo_controlado.jpg",
+    "titulo": "Editor de cálculo: ejemplo abierto sin guardar",
+    "fecha": "2026-11-18T05:23:07.506Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "28_relacion_guiada.jpg",
+    "titulo": "Corrección de relaciones declaradas",
+    "fecha": "2026-11-18T05:23:08.094Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "29_conciliacion_AW.jpg",
+    "titulo": "Conciliación del expediente AdventureWorks",
+    "fecha": "2026-11-18T05:23:21.621Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "30_semantica_publicada.jpg",
+    "titulo": "Etiquetas semánticas publicadas sin reemplazar originales",
+    "fecha": "2026-11-18T05:23:22.080Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "31_etl_elegir_propuesta.jpg",
+    "titulo": "Selección y control de ejecuciones idénticas",
+    "fecha": "2026-11-18T05:23:28.766Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "32_etl_indicadores.jpg",
+    "titulo": "Indicadores y recetas del ETL",
+    "fecha": "2026-11-18T05:23:34.199Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "33_etl_plan.jpg",
+    "titulo": "Plan controlado previo a la ejecución",
+    "fecha": "2026-11-18T05:23:39.434Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "34_etl_carga_conservada.jpg",
+    "titulo": "Materialización histórica de sólo lectura",
+    "fecha": "2026-11-18T05:23:47.138Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "35_conciliacion_WWI.jpg",
+    "titulo": "Conciliación de WideWorldImporters y divisa sin confirmar",
+    "fecha": "2026-11-18T05:24:00.747Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "36_analitica_WWI.jpg",
+    "titulo": "Panel ejecutivo y procedencia de WideWorldImporters",
+    "fecha": "2026-11-18T05:24:13.728Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "37_WWI_2015_California.jpg",
+    "titulo": "Caso filtrado: 2015 y California",
+    "fecha": "2026-11-18T05:24:21.187Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "38_graficos_analiticos.jpg",
+    "titulo": "Visualizaciones con indicador y filtros",
+    "fecha": "2026-11-18T05:24:28.273Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "39_respaldo_grafico.jpg",
+    "titulo": "Valores exactos de la serie visible",
+    "fecha": "2026-11-18T05:24:48.619Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "40_hallazgos.jpg",
+    "titulo": "Hallazgos y límites de interpretación",
+    "fecha": "2026-11-18T05:24:49.384Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "41_copiloto.jpg",
+    "titulo": "Preguntas contextuales al copiloto",
+    "fecha": "2026-11-18T05:24:50.107Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "42_analitica_AW.jpg",
+    "titulo": "Panel ejecutivo AdventureWorks y procedencia",
+    "fecha": "2026-11-18T05:24:59.221Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "43_AW_2013_Northwest.jpg",
+    "titulo": "Caso filtrado: 2013 y Northwest",
+    "fecha": "2026-11-18T05:25:05.642Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "44_usuarios.jpg",
+    "titulo": "Alta y asignación de roles: formulario vacío sin enviar",
+    "fecha": "2026-11-18T05:29:28.013Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "45_roles.jpg",
+    "titulo": "Perfiles disponibles y acciones de administración",
+    "fecha": "2026-11-18T05:25:28.572Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "46_rol_gerencia.jpg",
+    "titulo": "Permisos del rol Gerente comercial: consulta sin guardar",
+    "fecha": "2026-11-18T05:25:48.380Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "47_permisos.jpg",
+    "titulo": "Permisos técnicos registrados",
+    "fecha": "2026-11-18T05:26:00.663Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "48_menus.jpg",
+    "titulo": "Listado de menús y rutas protegidas",
+    "fecha": "2026-11-18T05:26:10.878Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "49_menu_edicion.jpg",
+    "titulo": "Edición de navegación sin guardar cambios",
+    "fecha": "2026-11-18T05:26:27.017Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  },
+  {
+    "archivo": "50_auditoria.jpg",
+    "titulo": "Auditoría consultable de acciones críticas",
+    "fecha": "2026-11-18T05:26:38.865Z",
+    "area": "Vista completa del navegador visible, sin recorte ni montaje"
+  }
+]

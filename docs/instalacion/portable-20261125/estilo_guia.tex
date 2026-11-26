@@ -1,0 +1,32 @@
+\usepackage{xcolor}
+\definecolor{NavyBI}{HTML}{173C59}
+\definecolor{TealBI}{HTML}{087C85}
+\definecolor{PaleBI}{HTML}{EFF5F8}
+\definecolor{LineBI}{HTML}{D5E3EA}
+\usepackage{titlesec}
+\titleformat{\section}{\color{NavyBI}\sffamily\Large\bfseries}{\thesection}{.55em}{}
+\titleformat{\subsection}{\color{TealBI}\sffamily\normalsize\bfseries}{\thesubsection}{.5em}{}
+\titlespacing*{\section}{0pt}{3pt}{10pt}
+\titlespacing*{\subsection}{0pt}{10pt}{5pt}
+\usepackage[most]{tcolorbox}
+\usepackage{fvextra}
+\usepackage{framed}
+\definecolor{shadecolor}{HTML}{EFF5F8}
+\AtBeginDocument{%
+\RecustomVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\},breaklines=true,breakanywhere=true,breaksymbolleft={},fontsize=\footnotesize}%
+\renewenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}%
+}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\color{TealBI}\sffamily\fontsize{8}{10}\selectfont BI PORTABLE · GUÍA DE INSTALACIÓN}
+\fancyhead[R]{\color{NavyBI}\sffamily\fontsize{8}{10}\selectfont 25 NOV 2026}
+\fancyfoot[L]{\color{NavyBI}\sffamily\fontsize{7.5}{9}\selectfont Nueva entrega pendiente de construcción y aceptación}
+\fancyfoot[R]{\color{NavyBI}\sffamily\fontsize{8}{10}\selectfont\thepage\ / \pageref{LastPage}}
+\renewcommand{\headrulewidth}{.4pt}
+\renewcommand{\footrulewidth}{.2pt}
+\setlength{\emergencystretch}{3em}
+\setlength{\parskip}{5pt}
+\setlength{\parindent}{0pt}
+\AtBeginDocument{\hypersetup{pdftitle={Actualizar BI Portable: guía para las programadoras},pdfauthor={Proyecto BI + IA},pdfsubject={Instalación limpia futura; comandos manuales; desarrollo y release}}}

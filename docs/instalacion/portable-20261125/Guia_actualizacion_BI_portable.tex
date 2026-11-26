@@ -1,0 +1,1352 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+\documentclass[
+  spanish,
+  10pt,
+  a4paper,
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=20mm,headheight=15pt]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{DejaVu Sans}
+  \setmonofont[]{DejaVu Sans Mono}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\newenvironment{Shaded}{}{}
+\newcommand{\AlertTok}[1]{\textbf{#1}}
+\newcommand{\AnnotationTok}[1]{\textit{#1}}
+\newcommand{\AttributeTok}[1]{#1}
+\newcommand{\BaseNTok}[1]{#1}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{#1}
+\newcommand{\CommentTok}[1]{\textit{#1}}
+\newcommand{\CommentVarTok}[1]{\textit{#1}}
+\newcommand{\ConstantTok}[1]{#1}
+\newcommand{\ControlFlowTok}[1]{\textbf{#1}}
+\newcommand{\DataTypeTok}[1]{\underline{#1}}
+\newcommand{\DecValTok}[1]{#1}
+\newcommand{\DocumentationTok}[1]{\textit{#1}}
+\newcommand{\ErrorTok}[1]{\textbf{#1}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{#1}
+\newcommand{\FunctionTok}[1]{#1}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textit{#1}}
+\newcommand{\KeywordTok}[1]{\textbf{#1}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{#1}
+\newcommand{\OtherTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{\textbf{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{#1}
+\newcommand{\SpecialStringTok}[1]{#1}
+\newcommand{\StringTok}[1]{#1}
+\newcommand{\VariableTok}[1]{#1}
+\newcommand{\VerbatimStringTok}[1]{#1}
+\newcommand{\WarningTok}[1]{\textit{#1}}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\ifLuaTeX
+\usepackage[bidi=basic,shorthands=off,]{babel}
+\else
+\usepackage[bidi=default,shorthands=off,]{babel}
+\fi
+\ifPDFTeX
+\else
+\babelfont{rm}[]{DejaVu Sans}
+\fi
+\ifLuaTeX
+  \usepackage{selnolig} % disable illegal ligatures
+\fi
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{xcolor}
+\definecolor{NavyBI}{HTML}{173C59}
+\definecolor{TealBI}{HTML}{087C85}
+\definecolor{PaleBI}{HTML}{EFF5F8}
+\definecolor{LineBI}{HTML}{D5E3EA}
+\usepackage{titlesec}
+\titleformat{\section}{\color{NavyBI}\sffamily\Large\bfseries}{\thesection}{.55em}{}
+\titleformat{\subsection}{\color{TealBI}\sffamily\normalsize\bfseries}{\thesubsection}{.5em}{}
+\titlespacing*{\section}{0pt}{3pt}{10pt}
+\titlespacing*{\subsection}{0pt}{10pt}{5pt}
+\usepackage[most]{tcolorbox}
+\usepackage{fvextra}
+\usepackage{framed}
+\definecolor{shadecolor}{HTML}{EFF5F8}
+\AtBeginDocument{%
+\RecustomVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\},breaklines=true,breakanywhere=true,breaksymbolleft={},fontsize=\footnotesize}%
+\renewenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}%
+}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\color{TealBI}\sffamily\fontsize{8}{10}\selectfont BI PORTABLE · GUÍA DE INSTALACIÓN}
+\fancyhead[R]{\color{NavyBI}\sffamily\fontsize{8}{10}\selectfont 25 NOV 2026}
+\fancyfoot[L]{\color{NavyBI}\sffamily\fontsize{7.5}{9}\selectfont Nueva entrega pendiente de construcción y aceptación}
+\fancyfoot[R]{\color{NavyBI}\sffamily\fontsize{8}{10}\selectfont\thepage\ / \pageref{LastPage}}
+\renewcommand{\headrulewidth}{.4pt}
+\renewcommand{\footrulewidth}{.2pt}
+\setlength{\emergencystretch}{3em}
+\setlength{\parskip}{5pt}
+\setlength{\parindent}{0pt}
+\AtBeginDocument{\hypersetup{pdftitle={Actualizar BI Portable: guía para las programadoras},pdfauthor={Proyecto BI + IA},pdfsubject={Instalación limpia futura; comandos manuales; desarrollo y release}}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdflang={es-EC},
+  colorlinks=true,
+  linkcolor={NavyBI},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={TealBI},
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+\begin{titlepage}
+\vspace*{12mm}
+{\color{TealBI}\sffamily\bfseries PROYECTO BI + IA\par}
+\vspace{10mm}
+{\color{NavyBI}\sffamily\bfseries\fontsize{29}{34}\selectfont Actualizar BI Portable\par}
+\vspace{5mm}
+{\Large Guía de instalación limpia para las programadoras\par}
+\vspace{10mm}
+{\large Desarrollo y release · Una orden a la vez\par}
+\vspace{12mm}
+\begin{tcolorbox}[colback=PaleBI,colframe=TealBI,boxrule=.6pt,arc=2mm]
+\textbf{Esta guía prepara la siguiente entrega.} El paquete nuevo todavía debe construirse, recibir su nombre definitivo y superar sus verificaciones. Esta guía no convierte el portable del 17 de noviembre en una versión actualizada.
+\end{tcolorbox}
+\vspace{8mm}
+La instalación se realizará en el computador receptor. Los contenedores y datos del computador del tutor no se retirarán ni se copiarán por este procedimiento.
+\vfill
+{\color{TealBI}\bfseries Edición documental: 25 de noviembre de 2026\par}
+\vspace{4mm}
+El PDF explica el recorrido. El archivo Markdown conserva cada comando completo para copiarlo sin los saltos de línea de la página impresa. Ambos son documentación, no instaladores ni scripts.
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+\section{Antes de empezar}\label{antes-de-empezar}
+
+El resultado buscado es una \textbf{instalación limpia} con el código
+nuevo, los servicios de desarrollo y release, la estructura PostgreSQL
+completa, un administrador y las dos bases públicas de demostración en
+SQL Server. Las API keys, conexiones, propuestas, ejecuciones y
+datamarts privados del tutor no se trasladan.
+
+Cada ambiente conserva sus propias bases, credenciales y clave de
+cifrado. Con \textbf{8 GB de RAM se utilizará un solo ambiente a la
+vez}. No iniciar Ollama ni otra instancia SQL adicional durante la
+demostración.
+
+\subsection{Cómo usar esta guía}\label{cuxf3mo-usar-esta-guuxeda}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Leer y verificar el paquete nuevo antes de retirar el anterior.
+\item
+  Identificar los recursos antiguos por sus etiquetas Docker.
+\item
+  Detener y eliminar sólo los recursos BI comprobados.
+\item
+  Iniciar desarrollo y comprobarlo; detenerlo antes de probar release.
+\item
+  Configurar cada ambiente y repetir el recorrido BI con ambas fuentes.
+\end{enumerate}
+
+\textbf{No copie bloques completos a la terminal.} Ejecute una orden,
+compruebe el resultado y continúe. Los comandos que comienzan con
+\texttt{read} piden escribir un nombre real observado. No escriba el
+símbolo \texttt{\$} del indicador de la terminal.
+
+\subsection{Comprobar el Ubuntu
+receptor}\label{comprobar-el-ubuntu-receptor}
+
+Si trabaja en Windows, lea el siguiente apartado de preparación WSL y
+continúe con la sección común del paquete nuevo. La identidad
+\texttt{ls-va@Lenovo} corresponde únicamente al Ubuntu de la
+programadora que reemplazará su instalación anterior.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{whoami}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{printf} \StringTok{\textquotesingle{}\%s\textbackslash{}n\textquotesingle{}} \StringTok{"}\VariableTok{$HOME}\StringTok{"}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{hostname} \AttributeTok{{-}s}
+\end{Highlighting}
+\end{Shaded}
+
+En el Ubuntu conocido deben aparecer \textbf{ls-va},
+\textbf{/home/ls-va} y \textbf{Lenovo}. Si aparece \texttt{ceo},
+\texttt{/home/ceo} o un equipo distinto, detenerse. Las órdenes de
+retirada incluyen esa comprobación para que no operen en el equipo del
+tutor. No cambie la comprobación para hacer desaparecer un error.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{uname} \AttributeTok{{-}m}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{free} \AttributeTok{{-}h}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{df} \AttributeTok{{-}h} \StringTok{"}\VariableTok{$HOME}\StringTok{"}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ version}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose version}
+\end{Highlighting}
+\end{Shaded}
+
+Se requiere arquitectura \texttt{x86\_64}, Docker con cliente y servidor
+disponibles y el complemento Compose. Hay que disponer de espacio para
+el archivo recibido, las imágenes importadas y los volúmenes nuevos.
+Conservar Docker ya instalado; un fallo de la aplicación no exige
+reinstalarlo.
+
+\clearpage
+
+\section{Preparar Windows para una instalación
+inicial}\label{preparar-windows-para-una-instalaciuxf3n-inicial}
+
+Este recorrido corresponde al equipo Windows de la otra programadora.
+\textbf{No se ha probado su instalación remota.} Se prepara Ubuntu bajo
+WSL 2 y después se utilizan los mismos archivos portable desde su
+carpeta Linux. Si Docker y WSL ya funcionan, comprobarlos y
+conservarlos; no reinstalarlos por rutina.
+
+\subsection{Comprobar Windows y WSL desde
+PowerShell}\label{comprobar-windows-y-wsl-desde-powershell}
+
+Abrir PowerShell y ejecutar una orden a la vez:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{winver}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{wsl }\OperatorTok{{-}{-}}\NormalTok{version}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{wsl }\OperatorTok{{-}}\NormalTok{l }\OperatorTok{{-}}\NormalTok{v}
+\end{Highlighting}
+\end{Shaded}
+
+La documentación Docker consultada el 25-11-2026 enumera Windows 10 Pro
+de 64 bits, versión 22H2, compilación 19045, WSL 2.1.5 o posterior y 8
+GB de RAM para esta ruta. Confirmar además las condiciones vigentes de
+soporte del sistema operativo en la página oficial antes de elegir el
+instalador.
+
+\subsection{Instalar WSL sólo si
+falta}\label{instalar-wsl-suxf3lo-si-falta}
+
+Abrir \textbf{PowerShell como administrador}. Si Ubuntu 24.04 no está
+instalado, utilizar:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{wsl }\OperatorTok{{-}{-}}\NormalTok{install }\OperatorTok{{-}}\NormalTok{d Ubuntu{-}24}\OperatorTok{.}\DecValTok{04}
+\end{Highlighting}
+\end{Shaded}
+
+Reiniciar Windows si se solicita. Abrir \textbf{Ubuntu 24.04} desde
+Inicio, esperar su preparación y crear el usuario y contraseña Linux. La
+contraseña no se muestra mientras se escribe. No es la contraseña de la
+aplicación BI.
+
+Si WSL ya existe y requiere actualización, utilizar en PowerShell:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{wsl }\OperatorTok{{-}{-}}\NormalTok{update}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{wsl }\OperatorTok{{-}}\NormalTok{l }\OperatorTok{{-}}\NormalTok{v}
+\end{Highlighting}
+\end{Shaded}
+
+La distribución elegida debe indicar \textbf{VERSION 2}. Si esa
+distribución exacta aparece como \texttt{Ubuntu-24.04} con versión 1,
+convertirla con:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{wsl }\OperatorTok{{-}{-}}\NormalTok{set{-}version Ubuntu{-}24}\OperatorTok{.}\DecValTok{04} \DecValTok{2}
+\end{Highlighting}
+\end{Shaded}
+
+No cambiar el nombre de una distribución distinta por aproximación. Si
+falla la virtualización, resolver ese requisito con el responsable del
+equipo antes de continuar.
+
+\clearpage
+
+\subsection{Configurar Docker Desktop y recibir el
+archivo}\label{configurar-docker-desktop-y-recibir-el-archivo}
+
+Descargar Docker Desktop para Windows \textbf{x86\_64} desde la página
+oficial Docker, no desde sitios de terceros. Instalarlo sólo si falta y
+abrirlo; completar el reinicio solicitado, si corresponde.
+
+En Docker Desktop:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  En \textbf{Settings → General}, utilizar el motor basado en WSL 2.
+\item
+  En \textbf{Settings → Resources → WSL Integration}, habilitar la
+  distribución Ubuntu utilizada y aplicar los cambios.
+\item
+  Utilizar \textbf{contenedores Linux}. Si el menú ofrece cambiar a
+  Linux containers, elegir esa opción.
+\item
+  Esperar a que Docker indique que su motor está disponible.
+\end{enumerate}
+
+Las órdenes siguientes se escriben en la terminal \textbf{Ubuntu}, no en
+PowerShell:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ version}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose version}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ info }\AttributeTok{{-}{-}format} \StringTok{\textquotesingle{}\{\{.OSType\}\}\textquotesingle{}}
+\end{Highlighting}
+\end{Shaded}
+
+Deben responder el cliente y servidor, Compose y el tipo \texttt{linux}.
+No instalar otro servidor Docker dentro de Ubuntu si se está utilizando
+correctamente la integración de Docker Desktop.
+
+Preparar una carpeta de recepción en el HOME Linux:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{mkdir} \AttributeTok{{-}p} \StringTok{"}\VariableTok{$HOME}\StringTok{/Descargas"}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{cd} \StringTok{"}\VariableTok{$HOME}\StringTok{/Descargas"}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{explorer.exe}\NormalTok{ .}
+\end{Highlighting}
+\end{Shaded}
+
+Se abrirá el Explorador de Windows en esa carpeta Ubuntu. Copiar allí el
+\textbf{nuevo} \texttt{.tar.gz} y su \texttt{.tar.gz.sha256} desde la
+ubicación donde se recibieron. No extraer el desarrollo directamente en
+una ruta \texttt{C:\textbackslash{}...}; la instalación se mantendrá en
+\texttt{\textasciitilde{}/BI/} dentro de Ubuntu.
+
+Continuar con \textbf{Preparar el paquete nuevo sin arrancarlo} y
+\textbf{Identificar nombres, imágenes y proyectos}. Al ser una
+instalación inicial, \textbf{saltar los dos apartados de retirada de
+contenedores, volúmenes y carpetas Ubuntu Lenovo}. Seguir con Iniciar
+desarrollo. Con 8 GB, probar un solo ambiente a la vez.
+
+Fuentes oficiales, consulta del 25-11-2026:
+\href{https://docs.docker.com/desktop/setup/install/windows-install/}{Docker
+Desktop para Windows} y
+\href{https://learn.microsoft.com/en-us/windows/wsl/install}{Microsoft:
+instalar WSL}.
+
+\clearpage
+
+\section{Preparar el paquete nuevo sin
+arrancarlo}\label{preparar-el-paquete-nuevo-sin-arrancarlo}
+
+\textbf{Este paso sólo se realizará cuando el tutor entregue el archivo
+nuevo y su suma SHA-256.} No seleccionar el archivo del 17 de noviembre
+suponiendo que contiene estas correcciones. El manifiesto nuevo deberá
+identificar el corte real del código y las imágenes de ambos modos.
+
+Copiar juntos el \texttt{.tar.gz} y el \texttt{.tar.gz.sha256} a
+Descargas. Abrir una terminal y mantenerla durante la instalación.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{cd} \StringTok{"}\VariableTok{$HOME}\StringTok{/Descargas"}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ls} \AttributeTok{{-}lh}\NormalTok{ BI\_portable\_}\PreprocessorTok{*}\NormalTok{.tar.gz BI\_portable\_}\PreprocessorTok{*}\NormalTok{.tar.gz.sha256}
+\end{Highlighting}
+\end{Shaded}
+
+Escribir el nombre exacto del paquete nuevo, \textbf{sin} la terminación
+\texttt{.tar.gz}. Esta variable evita inventar una fecha o etiqueta
+futura.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{read} \AttributeTok{{-}r} \AttributeTok{{-}p} \StringTok{"Nombre real del paquete nuevo, sin .tar.gz: "} \VariableTok{BI\_PACKAGE}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{sha256sum} \AttributeTok{{-}c} \StringTok{"}\VariableTok{$BI\_PACKAGE}\StringTok{.tar.gz.sha256"}
+\end{Highlighting}
+\end{Shaded}
+
+Debe indicar \texttt{OK}. Si no coincide, copiar nuevamente los archivos
+y detener aquí la instalación.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{mkdir} \AttributeTok{{-}p} \StringTok{"}\VariableTok{$HOME}\StringTok{/BI"}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{test}\NormalTok{ ! }\AttributeTok{{-}e} \StringTok{"}\VariableTok{$HOME}\StringTok{/BI/}\VariableTok{$BI\_PACKAGE}\StringTok{"} \KeywordTok{\&\&} \FunctionTok{tar} \AttributeTok{{-}{-}keep{-}old{-}files} \AttributeTok{{-}xzf} \StringTok{"}\VariableTok{$HOME}\StringTok{/Descargas/}\VariableTok{$BI\_PACKAGE}\StringTok{.tar.gz"} \AttributeTok{{-}C} \StringTok{"}\VariableTok{$HOME}\StringTok{/BI"}
+\end{Highlighting}
+\end{Shaded}
+
+Si la carpeta existe, no extraer encima. Una carpeta usada por
+desarrollo no debe reemplazarse mientras sus servicios están activos.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\VariableTok{BI\_NEW\_DIRECTORY}\OperatorTok{=}\StringTok{"}\VariableTok{$HOME}\StringTok{/BI/}\VariableTok{$BI\_PACKAGE}\StringTok{"}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{cd} \StringTok{"}\VariableTok{$BI\_NEW\_DIRECTORY}\StringTok{"}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{pwd} \AttributeTok{{-}P}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{sha256sum} \AttributeTok{{-}c}\NormalTok{ SHA256SUMS.txt}
+\end{Highlighting}
+\end{Shaded}
+
+Todas las sumas deben coincidir. Todavía no editar el código ni las
+configuraciones.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{chmod}\NormalTok{ 600 config/desarrollo.env config/release.env CREDENCIALES\_LOCALES.txt}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{less}\NormalTok{ MANIFIESTO.json}
+\end{Highlighting}
+\end{Shaded}
+
+Salir de \texttt{less} con la tecla \textbf{q}. Comprobar que el
+manifiesto corresponde al paquete nuevo, explica si es una entrega
+limpia y registra las pruebas realizadas. Los resultados de noviembre
+anterior no sustituyen sus verificaciones nuevas.
+
+\clearpage
+
+\section{Identificar nombres, imágenes y
+proyectos}\label{identificar-nombres-imuxe1genes-y-proyectos}
+
+Desde la carpeta nueva, validar ambos Compose sin imprimir sus variables
+privadas.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose }\AttributeTok{{-}{-}env{-}file}\NormalTok{ config/desarrollo.env }\AttributeTok{{-}f}\NormalTok{ compose.desarrollo.yaml config }\AttributeTok{{-}{-}quiet}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose }\AttributeTok{{-}{-}env{-}file}\NormalTok{ config/release.env }\AttributeTok{{-}f}\NormalTok{ compose.release.yaml config }\AttributeTok{{-}{-}quiet}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{sed} \AttributeTok{{-}n} \StringTok{\textquotesingle{}/\^{}name:/p\textquotesingle{}}\NormalTok{ compose.desarrollo.yaml compose.release.yaml}
+\end{Highlighting}
+\end{Shaded}
+
+Estos son los nombres de proyecto \textbf{nuevos}. Anotarlos; ninguno se
+retirará. No añadir \texttt{-p} con un nombre de una entrega antigua.
+Usar el nombre declarado en los archivos recibidos.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose }\AttributeTok{{-}{-}env{-}file}\NormalTok{ config/desarrollo.env }\AttributeTok{{-}f}\NormalTok{ compose.desarrollo.yaml config }\AttributeTok{{-}{-}images}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose }\AttributeTok{{-}{-}env{-}file}\NormalTok{ config/release.env }\AttributeTok{{-}f}\NormalTok{ compose.release.yaml config }\AttributeTok{{-}{-}images}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ load }\AttributeTok{{-}i}\NormalTok{ imagenes.tar}
+\end{Highlighting}
+\end{Shaded}
+
+El archivo debe cargar las imágenes exactas del manifiesto: backend y
+frontend para desarrollo y release, PostgreSQL y SQL Server. No usar
+\texttt{-\/-build} ni descargar imágenes para el primer inicio.
+
+\subsection{Descubrir el BI anterior aunque su carpeta haya
+desaparecido}\label{descubrir-el-bi-anterior-aunque-su-carpeta-haya-desaparecido}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose ls }\AttributeTok{{-}{-}all}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ ps }\AttributeTok{{-}a} \AttributeTok{{-}{-}format} \StringTok{\textquotesingle{}table \{\{.Names\}\}\textbackslash{}t\{\{.Image\}\}\textbackslash{}t\{\{.Status\}\}\textbackslash{}t\{\{.Ports\}\}\textquotesingle{}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Instalación anterior conocida
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Nombre de proyecto que puede aparecer
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Portable de octubre & \texttt{bi-limpio-dev} y
+\texttt{bi-limpio-release} \\
+Portable del 17 de noviembre & \texttt{bi-portable-20261117-dev} y
+\texttt{bi-portable-20261117-release} \\
+Clones antiguos & \texttt{bi-ia-prototype} y
+\texttt{bi-ia-prototype-release} \\
+\end{longtable}
+
+Eliminar una carpeta con Supr \textbf{no detiene ni elimina sus
+contenedores o volúmenes}. Por eso puede quedar ocupado el puerto 11433
+aunque el directorio ya no exista. Se puede identificar y retirar el
+contenedor por sus etiquetas; no hace falta reconstruir el YAML antiguo
+ni utilizar el nuevo para borrar el anterior.
+
+\texttt{bd-stack}, MySQL, MariaDB, pgAdmin, otros proyectos y recursos
+sin pertenencia BI comprobada quedan fuera de la sustitución.
+
+\clearpage
+
+\section{Retirar contenedores antiguos, uno por
+uno}\label{retirar-contenedores-antiguos-uno-por-uno}
+
+Este paso es exclusivo del Ubuntu receptor identificado. La sustitución
+limpia del BI antiguo fue autorizada sin respaldo. Sus configuraciones y
+datos de prueba se perderán cuando se retiren sus volúmenes. \textbf{No
+se ejecutaron estas retiradas durante la elaboración de la guía.}
+
+Elegir un proyecto antiguo de la tabla anterior. Repetir después el
+procedimiento para cada proyecto que realmente exista, incluido release.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{read} \AttributeTok{{-}r} \AttributeTok{{-}p} \StringTok{"Proyecto BI antiguo exacto: "} \VariableTok{BI\_OLD\_PROJECT}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ ps }\AttributeTok{{-}a} \AttributeTok{{-}{-}filter} \StringTok{"label=com.docker.compose.project=}\VariableTok{$BI\_OLD\_PROJECT}\StringTok{"} \AttributeTok{{-}{-}format} \StringTok{\textquotesingle{}table \{\{.Names\}\}\textbackslash{}t\{\{.Status\}\}\textbackslash{}t\{\{.Ports\}\}\textquotesingle{}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ volume ls }\AttributeTok{{-}{-}filter} \StringTok{"label=com.docker.compose.project=}\VariableTok{$BI\_OLD\_PROJECT}\StringTok{"}
+\end{Highlighting}
+\end{Shaded}
+
+Elegir \textbf{un} nombre de contenedor del listado. Por ejemplo, sólo
+si aparece: \texttt{bi-limpio-dev-sqlserver-1}. No escribir un nombre de
+la instalación nueva.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{read} \AttributeTok{{-}r} \AttributeTok{{-}p} \StringTok{"Nombre exacto de UN contenedor BI antiguo listado: "} \VariableTok{BI\_OLD\_CONTAINER}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ container inspect }\StringTok{"}\VariableTok{$BI\_OLD\_CONTAINER}\StringTok{"} \AttributeTok{{-}{-}format} \StringTok{\textquotesingle{}\{\{.Name\}\} | proyecto=\{\{index .Config.Labels "com.docker.compose.project"\}\} | carpeta=\{\{index .Config.Labels "com.docker.compose.project.working\_dir"\}\}\textquotesingle{}}
+\end{Highlighting}
+\end{Shaded}
+
+Comprobar proyecto y carpeta. Las rutas antiguas conocidas son:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{\textasciitilde{}/Descargas/BI\_portable\_2026-10-29\_v02}.
+\item
+  \texttt{\textasciitilde{}/BI/BI\_portable\_2026-11-17\_v01}.
+\item
+  Los dos clones BI de \texttt{\textasciitilde{}/Proyectos/}.
+\end{itemize}
+
+Que la carpeta ya no exista no cambia la etiqueta histórica del
+contenedor.
+
+La orden siguiente sólo admite los proyectos antiguos de la tabla, exige
+el equipo receptor y vuelve a comprobar la etiqueta del contenedor antes
+de detenerlo:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{test} \StringTok{"}\VariableTok{$(}\FunctionTok{id} \AttributeTok{{-}un}\VariableTok{)}\StringTok{:}\VariableTok{$HOME}\StringTok{:}\VariableTok{$(}\FunctionTok{hostname} \AttributeTok{{-}s}\VariableTok{)}\StringTok{"}\NormalTok{ = }\StringTok{\textquotesingle{}ls{-}va:/home/ls{-}va:Lenovo\textquotesingle{}} \KeywordTok{\&\&} \KeywordTok{[[} \StringTok{"}\VariableTok{$BI\_OLD\_PROJECT}\StringTok{"} \OtherTok{=\textasciitilde{}} \PreprocessorTok{\^{}}\OperatorTok{(}\SpecialStringTok{bi{-}limpio{-}}\OperatorTok{(}\SpecialStringTok{dev}\PreprocessorTok{|}\SpecialStringTok{release}\OperatorTok{)}\PreprocessorTok{|}\SpecialStringTok{bi{-}portable{-}20261117{-}}\OperatorTok{(}\SpecialStringTok{dev}\PreprocessorTok{|}\SpecialStringTok{release}\OperatorTok{)}\PreprocessorTok{|}\SpecialStringTok{bi{-}ia{-}prototype}\OperatorTok{(}\SpecialStringTok{{-}release}\OperatorTok{)}\PreprocessorTok{?}\OperatorTok{)$} \KeywordTok{]]} \KeywordTok{\&\&} \BuiltInTok{test} \StringTok{"}\VariableTok{$(}\ExtensionTok{docker}\NormalTok{ container inspect }\StringTok{"}\VariableTok{$BI\_OLD\_CONTAINER}\StringTok{"} \AttributeTok{{-}{-}format} \StringTok{\textquotesingle{}\{\{index .Config.Labels "com.docker.compose.project"\}\}\textquotesingle{}}\VariableTok{)}\StringTok{"}\NormalTok{ = }\StringTok{"}\VariableTok{$BI\_OLD\_PROJECT}\StringTok{"} \KeywordTok{\&\&} \ExtensionTok{docker}\NormalTok{ stop }\StringTok{"}\VariableTok{$BI\_OLD\_CONTAINER}\StringTok{"}
+\end{Highlighting}
+\end{Shaded}
+
+Eliminar únicamente ese contenedor, sin forzar:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{test} \StringTok{"}\VariableTok{$(}\FunctionTok{id} \AttributeTok{{-}un}\VariableTok{)}\StringTok{:}\VariableTok{$HOME}\StringTok{:}\VariableTok{$(}\FunctionTok{hostname} \AttributeTok{{-}s}\VariableTok{)}\StringTok{"}\NormalTok{ = }\StringTok{\textquotesingle{}ls{-}va:/home/ls{-}va:Lenovo\textquotesingle{}} \KeywordTok{\&\&} \KeywordTok{[[} \StringTok{"}\VariableTok{$BI\_OLD\_PROJECT}\StringTok{"} \OtherTok{=\textasciitilde{}} \PreprocessorTok{\^{}}\OperatorTok{(}\SpecialStringTok{bi{-}limpio{-}}\OperatorTok{(}\SpecialStringTok{dev}\PreprocessorTok{|}\SpecialStringTok{release}\OperatorTok{)}\PreprocessorTok{|}\SpecialStringTok{bi{-}portable{-}20261117{-}}\OperatorTok{(}\SpecialStringTok{dev}\PreprocessorTok{|}\SpecialStringTok{release}\OperatorTok{)}\PreprocessorTok{|}\SpecialStringTok{bi{-}ia{-}prototype}\OperatorTok{(}\SpecialStringTok{{-}release}\OperatorTok{)}\PreprocessorTok{?}\OperatorTok{)$} \KeywordTok{]]} \KeywordTok{\&\&} \BuiltInTok{test} \StringTok{"}\VariableTok{$(}\ExtensionTok{docker}\NormalTok{ container inspect }\StringTok{"}\VariableTok{$BI\_OLD\_CONTAINER}\StringTok{"} \AttributeTok{{-}{-}format} \StringTok{\textquotesingle{}\{\{index .Config.Labels "com.docker.compose.project"\}\}\textquotesingle{}}\VariableTok{)}\StringTok{"}\NormalTok{ = }\StringTok{"}\VariableTok{$BI\_OLD\_PROJECT}\StringTok{"} \KeywordTok{\&\&} \ExtensionTok{docker}\NormalTok{ rm }\StringTok{"}\VariableTok{$BI\_OLD\_CONTAINER}\StringTok{"}
+\end{Highlighting}
+\end{Shaded}
+
+Repetir \textbf{leer nombre → inspeccionar → detener → eliminar} para
+los demás contenedores listados de ese proyecto. \texttt{migrate} y
+\texttt{seed} pueden estar ya terminados; también deben retirarse si
+pertenecen al BI antiguo. Una lista vacía significa que no hay
+contenedores de ese proyecto que eliminar.
+
+\clearpage
+
+\section{Retirar volúmenes y carpetas
+anteriores}\label{retirar-voluxfamenes-y-carpetas-anteriores}
+
+Conservar el valor de \texttt{BI\_OLD\_PROJECT} comprobado. Si se cerró
+la terminal, repetir la identificación anterior; no suponer que las
+variables siguen definidas.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ ps }\AttributeTok{{-}a} \AttributeTok{{-}{-}filter} \StringTok{"label=com.docker.compose.project=}\VariableTok{$BI\_OLD\_PROJECT}\StringTok{"}
+\end{Highlighting}
+\end{Shaded}
+
+El listado de contenedores debe quedar vacío antes de retirar sus
+volúmenes.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ volume ls }\AttributeTok{{-}{-}filter} \StringTok{"label=com.docker.compose.project=}\VariableTok{$BI\_OLD\_PROJECT}\StringTok{"}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{read} \AttributeTok{{-}r} \AttributeTok{{-}p} \StringTok{"Nombre exacto de UN volumen BI antiguo listado: "} \VariableTok{BI\_OLD\_VOLUME}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ volume inspect }\StringTok{"}\VariableTok{$BI\_OLD\_VOLUME}\StringTok{"} \AttributeTok{{-}{-}format} \StringTok{\textquotesingle{}\{\{.Name\}\} | proyecto=\{\{index .Labels "com.docker.compose.project"\}\} | volumen=\{\{index .Labels "com.docker.compose.volume"\}\}\textquotesingle{}}
+\end{Highlighting}
+\end{Shaded}
+
+Sólo si la etiqueta coincide con el proyecto antiguo elegido:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{test} \StringTok{"}\VariableTok{$(}\FunctionTok{id} \AttributeTok{{-}un}\VariableTok{)}\StringTok{:}\VariableTok{$HOME}\StringTok{:}\VariableTok{$(}\FunctionTok{hostname} \AttributeTok{{-}s}\VariableTok{)}\StringTok{"}\NormalTok{ = }\StringTok{\textquotesingle{}ls{-}va:/home/ls{-}va:Lenovo\textquotesingle{}} \KeywordTok{\&\&} \KeywordTok{[[} \StringTok{"}\VariableTok{$BI\_OLD\_PROJECT}\StringTok{"} \OtherTok{=\textasciitilde{}} \PreprocessorTok{\^{}}\OperatorTok{(}\SpecialStringTok{bi{-}limpio{-}}\OperatorTok{(}\SpecialStringTok{dev}\PreprocessorTok{|}\SpecialStringTok{release}\OperatorTok{)}\PreprocessorTok{|}\SpecialStringTok{bi{-}portable{-}20261117{-}}\OperatorTok{(}\SpecialStringTok{dev}\PreprocessorTok{|}\SpecialStringTok{release}\OperatorTok{)}\PreprocessorTok{|}\SpecialStringTok{bi{-}ia{-}prototype}\OperatorTok{(}\SpecialStringTok{{-}release}\OperatorTok{)}\PreprocessorTok{?}\OperatorTok{)$} \KeywordTok{]]} \KeywordTok{\&\&} \BuiltInTok{test} \StringTok{"}\VariableTok{$(}\ExtensionTok{docker}\NormalTok{ volume inspect }\StringTok{"}\VariableTok{$BI\_OLD\_VOLUME}\StringTok{"} \AttributeTok{{-}{-}format} \StringTok{\textquotesingle{}\{\{index .Labels "com.docker.compose.project"\}\}\textquotesingle{}}\VariableTok{)}\StringTok{"}\NormalTok{ = }\StringTok{"}\VariableTok{$BI\_OLD\_PROJECT}\StringTok{"} \KeywordTok{\&\&} \ExtensionTok{docker}\NormalTok{ volume rm }\StringTok{"}\VariableTok{$BI\_OLD\_VOLUME}\StringTok{"}
+\end{Highlighting}
+\end{Shaded}
+
+Repetir para cada volumen BI antiguo comprobado, incluido release. Si
+Docker informa que está en uso, localizar primero su contenedor; no
+añadir una opción de fuerza. Un volumen sin la etiqueta esperada no se
+borra por parecido de nombre.
+
+\subsection{Borrar la carpeta sólo después de validar la instalación
+nueva}\label{borrar-la-carpeta-suxf3lo-despuuxe9s-de-validar-la-instalaciuxf3n-nueva}
+
+Después de completar los pasos de inicio y acceso de esta guía, abrir el
+gestor de archivos y seleccionar \textbf{únicamente} el directorio
+antiguo identificado. Revisar su ruta completa y enviarlo a la papelera.
+Si ya fue eliminado con Supr, omitir esta operación: la retirada Docker
+anterior sigue siendo necesaria.
+
+No borrar \texttt{Descargas}, \texttt{BI}, \texttt{Proyectos} ni
+\texttt{/home/ls-va} completos. No borrar la carpeta nueva: desarrollo
+utilizará \texttt{fuente/} desde allí. Los clones antiguos
+\texttt{\textasciitilde{}/Proyectos/prototipo-bi-ia-dev} y
+\texttt{\textasciitilde{}/Proyectos/prototipo-bi-ia-release} se retiran
+sólo después de haber comprobado y retirado sus propios recursos Docker.
+
+Las imágenes antiguas que permanezcan son caché y no se ejecutan por sí
+solas. No son motivo para realizar una limpieza global; una imagen de
+infraestructura puede ser compartida entre etiquetas de entregas. La
+guía no utiliza \texttt{docker\ system\ prune},
+\texttt{docker\ volume\ prune}, borrados generales ni eliminación
+forzada de imágenes.
+
+\clearpage
+
+\section{Iniciar desarrollo y comprobar la
+preparación}\label{iniciar-desarrollo-y-comprobar-la-preparaciuxf3n}
+
+Volver a la carpeta \textbf{nueva}. Mantener detenidos los proyectos
+viejos y el ambiente release. Los puertos siguientes corresponden al
+contrato portable anterior que deberá verificar el manifiesto nuevo.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{cd} \StringTok{"}\VariableTok{$BI\_NEW\_DIRECTORY}\StringTok{"}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose }\AttributeTok{{-}{-}env{-}file}\NormalTok{ config/desarrollo.env }\AttributeTok{{-}f}\NormalTok{ compose.desarrollo.yaml config }\AttributeTok{{-}{-}quiet}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose }\AttributeTok{{-}{-}env{-}file}\NormalTok{ config/desarrollo.env }\AttributeTok{{-}f}\NormalTok{ compose.desarrollo.yaml up }\AttributeTok{{-}d} \AttributeTok{{-}{-}pull}\NormalTok{ never }\AttributeTok{{-}{-}wait} \AttributeTok{{-}{-}wait{-}timeout}\NormalTok{ 900}
+\end{Highlighting}
+\end{Shaded}
+
+Esperar a que termine. El primer inicio crea volúmenes vacíos, inicia
+PostgreSQL, aplica migraciones y carga la semilla. SQL Server restaura
+las dos muestras incluidas en su imagen y configura el lector. No se
+importan los volúmenes del tutor.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose }\AttributeTok{{-}{-}env{-}file}\NormalTok{ config/desarrollo.env }\AttributeTok{{-}f}\NormalTok{ compose.desarrollo.yaml ps }\AttributeTok{{-}a}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+Servicio & Estado esperado \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\texttt{postgres}, \texttt{sqlserver}, \texttt{backend},
+\texttt{frontend} & Activos y \texttt{healthy} \\
+\texttt{migrate}, \texttt{seed} & \texttt{Exited\ (0)}: tareas
+terminadas correctamente \\
+\end{longtable}
+
+\textbf{Exited (0) no es un error.} \texttt{Exited\ (1)} en
+\texttt{migrate} o \texttt{seed} sí exige revisar sus registros antes de
+continuar.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose }\AttributeTok{{-}{-}env{-}file}\NormalTok{ config/desarrollo.env }\AttributeTok{{-}f}\NormalTok{ compose.desarrollo.yaml exec }\AttributeTok{{-}T}\NormalTok{ backend alembic current}
+\end{Highlighting}
+\end{Shaded}
+
+El corte actual incorpora la migración \textbf{20261125\_20} y el
+parámetro de sesión. El paquete definitivo deberá incluirla o una
+revisión posterior declarada. No cambiar manualmente el número en
+PostgreSQL ni marcar una migración como aplicada para ocultar un fallo.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{curl} \AttributeTok{{-}{-}fail} \AttributeTok{{-}{-}silent} \AttributeTok{{-}{-}show{-}error}\NormalTok{ http://localhost:18080/api/v1/health/live}
+\end{Highlighting}
+\end{Shaded}
+
+Abrir \textbf{http://localhost:15173/}. Consultar las credenciales del
+ambiente desarrollo en \texttt{CREDENCIALES\_LOCALES.txt} de forma
+privada, sin compartir esa pantalla. El archivo contiene las claves
+nuevas del paquete, no la contraseña habitual del tutor.
+
+Para desarrollar se edita \texttt{fuente/backend} y
+\texttt{fuente/frontend} dentro de la carpeta nueva. Esos son los
+directorios montados por el Compose portable. Conservar la carpeta y su
+ubicación mientras se utilice.
+
+\clearpage
+
+\section{Probar release y encender o apagar cada
+ambiente}\label{probar-release-y-encender-o-apagar-cada-ambiente}
+
+En un equipo de 8 GB, detener desarrollo antes de iniciar release. Los
+dos ambientes tienen almacenamiento independiente; configurar uno no
+configura automáticamente el otro.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose }\AttributeTok{{-}{-}env{-}file}\NormalTok{ config/desarrollo.env }\AttributeTok{{-}f}\NormalTok{ compose.desarrollo.yaml stop }\AttributeTok{{-}t}\NormalTok{ 60}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose }\AttributeTok{{-}{-}env{-}file}\NormalTok{ config/release.env }\AttributeTok{{-}f}\NormalTok{ compose.release.yaml config }\AttributeTok{{-}{-}quiet}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose }\AttributeTok{{-}{-}env{-}file}\NormalTok{ config/release.env }\AttributeTok{{-}f}\NormalTok{ compose.release.yaml up }\AttributeTok{{-}d} \AttributeTok{{-}{-}pull}\NormalTok{ never }\AttributeTok{{-}{-}wait} \AttributeTok{{-}{-}wait{-}timeout}\NormalTok{ 900}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose }\AttributeTok{{-}{-}env{-}file}\NormalTok{ config/release.env }\AttributeTok{{-}f}\NormalTok{ compose.release.yaml ps }\AttributeTok{{-}a}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose }\AttributeTok{{-}{-}env{-}file}\NormalTok{ config/release.env }\AttributeTok{{-}f}\NormalTok{ compose.release.yaml exec }\AttributeTok{{-}T}\NormalTok{ backend alembic current}
+\end{Highlighting}
+\end{Shaded}
+
+Abrir \textbf{http://localhost:18088/} e ingresar con la credencial
+\textbf{release} del paquete. Este modo sirve el frontend compilado y el
+backend de entrega. No equivale por sí mismo a una promoción aprobada a
+\texttt{main}: el manifiesto indicará la procedencia del código.
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Uso & Desarrollo & Release \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Web local & \texttt{15173} & \texttt{18088} \\
+API local & \texttt{18080} & \texttt{18081} \\
+PostgreSQL publicado & \texttt{15432} & \texttt{15433} \\
+SQL Server publicado & \texttt{11433} & \texttt{11434} \\
+SQL desde el backend & \texttt{sqlserver:1433} &
+\texttt{sqlserver:1433} \\
+\end{longtable}
+
+\subsection{Volver a desarrollo}\label{volver-a-desarrollo}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose }\AttributeTok{{-}{-}env{-}file}\NormalTok{ config/release.env }\AttributeTok{{-}f}\NormalTok{ compose.release.yaml stop }\AttributeTok{{-}t}\NormalTok{ 60}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose }\AttributeTok{{-}{-}env{-}file}\NormalTok{ config/desarrollo.env }\AttributeTok{{-}f}\NormalTok{ compose.desarrollo.yaml up }\AttributeTok{{-}d} \AttributeTok{{-}{-}pull}\NormalTok{ never }\AttributeTok{{-}{-}wait} \AttributeTok{{-}{-}wait{-}timeout}\NormalTok{ 900}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Operación diaria}\label{operaciuxf3n-diaria}
+
+Para apagar, utilizar el \texttt{stop\ -t\ 60} del ambiente en uso. Para
+encender de nuevo, utilizar su \texttt{up} anterior. Estos comandos
+conservan los volúmenes. No repetir extracción, \texttt{docker\ load},
+limpieza de contenedores ni configuración inicial cada día.
+
+No añadir \texttt{-\/-volumes} o \texttt{-v} para apagar. Los volúmenes
+contienen configuración, usuarios, metadatos y datamarts; la clave de
+cifrado debe conservarse junto con la base que protege.
+
+\clearpage
+
+\section{Configurar el sistema
+limpio}\label{configurar-el-sistema-limpio}
+
+Primero comprobar la URL del ambiente en uso. Repetir esta configuración
+por separado en desarrollo y release si se utilizarán ambos.
+
+\subsection{1. Registrar las dos conexiones de
+demostración}\label{registrar-las-dos-conexiones-de-demostraciuxf3n}
+
+En \textbf{Conexiones de datos}, crear una conexión para cada base:
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Campo
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Valor
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Motor & SQL Server \\
+Servidor & \texttt{sqlserver} \\
+Puerto interno & \texttt{1433} \\
+Primera base & \texttt{AdventureWorks2022} \\
+Segunda base & \texttt{WideWorldImporters} \\
+Usuario lector & \texttt{bi\_reader} \\
+Contraseña & La del lector SQL del ambiente activo en el archivo
+privado \\
+\end{longtable}
+
+Para el certificado local, usar cifrado y confianza del certificado
+cuando el formulario los ofrezca. No usar el puerto publicado del
+computador como puerto interno Docker. No usar la clave de acceso web
+como clave SQL ni trabajar con \texttt{sa} en la operación BI habitual.
+
+En cada conexión: \textbf{Probar conexión → comprobar sólo lectura →
+Habilitar → Leer metadatos}. Ambas pueden quedar habilitadas; el
+selector de fuente determina el contexto de trabajo.
+
+\subsection{2. Configurar OpenAI con consumo
+controlado}\label{configurar-openai-con-consumo-controlado}
+
+En \textbf{Configuración LLM}, crear una configuración con estos
+valores:
+
+\begin{itemize}
+\tightlist
+\item
+  Proveedor: \textbf{OpenAI}.
+\item
+  URL: \texttt{https://api.openai.com/v1}.
+\item
+  Modelo inicial: \textbf{gpt-6-luna}.
+\item
+  Nivel de razonamiento: \textbf{Bajo}.
+\end{itemize}
+
+Es el preset económico vigente; su acceso y disponibilidad se
+comprobarán con la cuenta de API utilizada. El campo modelo sigue siendo
+editable.
+
+Guardar el registro; después usar \textbf{Registrar credencial} e
+ingresar la API key directamente en el campo privado. No escribirla en
+Parámetros, código, documentos, capturas ni chats. Usar \textbf{Probar
+conexión} y activar la configuración cuando la prueba resulte
+satisfactoria.
+
+El paquete limpio no lleva la clave ni el crédito del tutor. Las
+llamadas reales requieren Internet y consumen la cuota de la cuenta
+configurada. Vigilar el saldo y evitar repetir generaciones sólo para
+obtener capturas. Una prueba de conexión no demuestra por sí sola la
+generación correcta de una propuesta BI.
+
+\subsection{3. Revisar duración de
+sesión}\label{revisar-duraciuxf3n-de-sesiuxf3n}
+
+Abrir \textbf{Parámetros}, localizar el grupo \textbf{Seguridad} y el
+campo \textbf{Duración de la sesión (minutos)}.
+
+Su identificador es \texttt{AUTH\_SESSION\_MINUTES}. El valor inicial es
+\textbf{60} y el rango permitido es \textbf{15--240} minutos. Guardar el
+valor elegido y volver a iniciar sesión. El cambio afecta los tokens
+nuevos; no alarga uno ya emitido.
+
+\subsection{4. Preparar el catálogo de cada
+fuente}\label{preparar-el-catuxe1logo-de-cada-fuente}
+
+En \textbf{Explorador de esquema}, revisar la cabecera y la instantánea
+de la fuente elegida. Después, en \textbf{Catálogo analítico}, revisar
+preguntas y periodicidades de esa misma conexión y guardar. Repetir con
+la otra base. Las preguntas personalizadas no se copian entre bases por
+coincidencia de nombre.
+
+\clearpage
+
+\section{Recorrer BI con ambas bases y registrar la
+prueba}\label{recorrer-bi-con-ambas-bases-y-registrar-la-prueba}
+
+La instalación limpia genera sus propios identificadores. No buscar
+números de propuestas o ejecuciones que aparezcan en capturas del tutor.
+
+\subsection{Primera fuente}\label{primera-fuente}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Elegir AdventureWorks en la cabecera; confirmar base e instantánea.
+\item
+  Revisar tablas, claves y relaciones en el Explorador. El evento
+  comercial de los ejemplos de pedidos debe conservar esa
+  interpretación.
+\item
+  Revisar el catálogo y seleccionar preguntas pertinentes.
+\item
+  En el Asistente, describir una necesidad acotada, por ejemplo comparar
+  mensualmente importes, unidades y pedidos por producto y territorio,
+  con promedio por pedido.
+\item
+  Autorizar el destino LLM mostrado y validar la viabilidad de la
+  necesidad. Resolver ambigüedades; el esquema no demuestra por sí solo
+  significado comercial, moneda ni calidad de filas.
+\item
+  Generar la propuesta y recorrer Necesidad, Conceptos, Propuesta,
+  Personalización y Revisión. Comprobar granularidad, medidas, KPI y
+  relaciones. Aprobar sólo el resultado compatible.
+\item
+  En Datamart de ventas: elegir propuesta, revisar los indicadores,
+  confirmar y materializar. La aprobación anterior no ejecutó el ETL.
+\item
+  Revisar conciliación, cantidades, importes, identidad descriptiva y
+  posibles decisiones semánticas antes de interpretar los resultados.
+\item
+  En Analítica, comprobar fuente, ejecución y propuesta; aplicar año y
+  territorio; revisar el denominador de cada promedio. Exportar PDF y
+  Excel y contrastarlos con la selección visible.
+\end{enumerate}
+
+\subsection{Segunda fuente}\label{segunda-fuente}
+
+Repetir el recorrido con WideWorldImporters. Para un caso de
+facturación, solicitar expresamente ventas facturadas, líneas de
+factura, comprador y ubicación relacionada pertinente. No convertir
+pedidos en facturas ni confundir comprador con destinatario de
+facturación o ciudad postal con ciudad de entrega.
+
+\subsection{Comprobar continuidad}\label{comprobar-continuidad}
+
+\begin{itemize}
+\tightlist
+\item
+  Recargar un módulo: debe conservarse ese módulo autorizado.
+\item
+  Entrar desde Inicio o Revisar configuración: \textbf{Atrás} debe
+  volver al recorrido que lo abrió, conservando el paso. Una entrada
+  directa desde la barra no necesita ese botón contextual.
+\item
+  En Analítica, usar Consultar respaldo y volver: conservar ejecución,
+  indicador, vista y filtros confirmados.
+\item
+  Alternar las dos fuentes y regresar: cada conexión conserva su propia
+  selección dentro de la pestaña, sin traer filtros, datos o chat de la
+  otra.
+\item
+  Si una pregunta del borrador fue retirada del catálogo, el objetivo se
+  conserva y se pide revisar la selección y validar otra vez. Las
+  propuestas históricas conservan su evidencia.
+\item
+  Un KPI añadido por una regla desde un requisito validado debe explicar
+  que procede de la plataforma; no atribuir esa adición al proveedor IA.
+\end{itemize}
+
+Registrar fecha, equipo, ambiente, corte del manifiesto, fuente, IDs
+propios, resultado y captura sin secretos. Los ensayos nuevos de un
+modelo deben anotarse como tales: los resultados observados con otro
+modelo no los certifican automáticamente.
+
+\clearpage
+
+\section{Resolver los incidentes que ya
+ocurrieron}\label{resolver-los-incidentes-que-ya-ocurrieron}
+
+\subsection{El directorio anterior fue borrado con
+Supr}\label{el-directorio-anterior-fue-borrado-con-supr}
+
+Los contenedores y volúmenes pueden seguir existiendo. Utilizar los
+pasos de identificación y retirada por etiquetas. No extraer una versión
+nueva dentro de la carpeta antigua desaparecida para intentar
+recuperarla ni usar un Compose nuevo con un proyecto viejo.
+
+\subsection{Error: puerto 11433 ya
+ocupado}\label{error-puerto-11433-ya-ocupado}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ ps }\AttributeTok{{-}{-}format} \StringTok{\textquotesingle{}table \{\{.Names\}\}\textbackslash{}t\{\{.Image\}\}\textbackslash{}t\{\{.Ports\}\}\textquotesingle{}}
+\end{Highlighting}
+\end{Shaded}
+
+Buscar el contenedor que publica ese puerto. En la experiencia anterior
+era \texttt{bi-limpio-dev-sqlserver-1}. Si pertenece al BI viejo,
+aplicar su retirada selectiva. Si es otro proyecto, detener esta
+sustitución y revisar: no eliminarlo. Después repetir el \texttt{up} del
+ambiente nuevo.
+
+\subsection{Error: migrate terminó con código
+1}\label{error-migrate-terminuxf3-con-cuxf3digo-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose }\AttributeTok{{-}{-}env{-}file}\NormalTok{ config/desarrollo.env }\AttributeTok{{-}f}\NormalTok{ compose.desarrollo.yaml logs }\AttributeTok{{-}{-}tail}\NormalTok{ 120 migrate}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose }\AttributeTok{{-}{-}env{-}file}\NormalTok{ config/desarrollo.env }\AttributeTok{{-}f}\NormalTok{ compose.desarrollo.yaml logs }\AttributeTok{{-}{-}tail}\NormalTok{ 80 postgres seed backend}
+\end{Highlighting}
+\end{Shaded}
+
+La causa se determina leyendo ese mensaje, no sólo el estado rojo.
+Comprobar que se usa la carpeta, configuración y proyecto nuevos; que la
+migración actual está incluida y que no se reutilizó un volumen antiguo
+con otra configuración. No cambiar contraseñas por aproximación, no
+editar \texttt{alembic\_version} y no borrar volúmenes como primer
+intento.
+
+\subsection{SQL Server o la espera de 900 segundos no
+termina}\label{sql-server-o-la-espera-de-900-segundos-no-termina}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{docker}\NormalTok{ compose }\AttributeTok{{-}{-}env{-}file}\NormalTok{ config/desarrollo.env }\AttributeTok{{-}f}\NormalTok{ compose.desarrollo.yaml logs }\AttributeTok{{-}{-}tail}\NormalTok{ 100 sqlserver}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{free} \AttributeTok{{-}h}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{df} \AttributeTok{{-}h} \StringTok{"}\VariableTok{$HOME}\StringTok{"}
+\end{Highlighting}
+\end{Shaded}
+
+Comprobar que sólo está activo un ambiente, que existe espacio y que la
+restauración sigue avanzando. Un segundo \texttt{up} puede retomar la
+preparación idempotente; no obliga a eliminar datos. Para release, usar
+sus dos archivos en las mismas consultas.
+
+\subsection{La propuesta o el proveedor
+falla}\label{la-propuesta-o-el-proveedor-falla}
+
+Leer el mensaje antes de reintentar. Comprobar catálogo visible, fuente,
+autorización de metadatos, modelo, credencial, prueba y saldo. Un
+rechazo del contrato no se corrige aceptando cualquier JSON ni
+inventando columnas. Conservar la necesidad y la evidencia, resolver la
+causa y generar una versión nueva cuando corresponda. No repetir
+llamadas costosas de forma automática.
+
+Los registros se revisan localmente; ocultar datos privados antes de
+compartirlos. No imprimir \texttt{docker\ compose\ config} completo,
+\texttt{.env}, credenciales o inspecciones Docker completas en capturas.
+
+\clearpage
+
+\section{Qué se conserva y cuándo está
+listo}\label{quuxe9-se-conserva-y-cuuxe1ndo-estuxe1-listo}
+
+\subsection{Código de desarrollo y código de
+release}\label{cuxf3digo-de-desarrollo-y-cuxf3digo-de-release}
+
+El portable utiliza \textbf{una fuente de autoría} en \texttt{fuente/}.
+Desarrollo la monta y permite trabajar en ella. Release utiliza imágenes
+compiladas del corte declarado; editar \texttt{fuente/} no cambia esas
+imágenes. Una nueva entrega release exige reconstruir y comprobar sus
+imágenes desde el código elegido.
+
+Los clones viejos
+\texttt{\textasciitilde{}/Proyectos/prototipo-bi-ia-dev} y
+\texttt{\textasciitilde{}/Proyectos/prototipo-bi-ia-release} no
+actualizan este portable ni son la fuente que monta su Compose. No
+iniciar un tercer conjunto desde \texttt{fuente/compose.yaml} o mediante
+\texttt{make\ up} durante esta instalación. Usar los Compose situados en
+la raíz del paquete.
+
+\subsection{Bases, volúmenes y
+cifrado}\label{bases-voluxfamenes-y-cifrado}
+
+\texttt{docker\ load} importa \textbf{imágenes}, no los volúmenes del
+tutor. PostgreSQL obtiene su estructura por migraciones y semilla. SQL
+Server obtiene las muestras públicas desde el respaldo incluido en la
+imagen offline. Los cambios realizados después del inicio viven en los
+volúmenes del ambiente receptor.
+
+La clave raíz de cifrado se crea en su volumen local
+\texttt{secret\_key\_data}. Protege las credenciales guardadas por la
+aplicación. La base PostgreSQL y esa clave deben mantenerse juntas para
+recuperar secretos existentes. No importar sólo PostgreSQL desde otra
+instalación ni copiar una clave del tutor sobre la recién creada.
+
+\subsection{Lista de aceptación del
+receptor}\label{lista-de-aceptaciuxf3n-del-receptor}
+
+\begin{itemize}
+\tightlist
+\item[$\square$]
+  Sumas externa e internas correctas; imágenes coinciden con el
+  manifiesto nuevo.
+\item[$\square$]
+  Ningún contenedor o volumen ajeno al BI antiguo fue retirado.
+\item[$\square$]
+  Desarrollo y release se probaron por separado; cuatro servicios
+  saludables y \texttt{migrate}/\texttt{seed} con salida cero.
+\item[$\square$]
+  Migración 20261125\_20 o posterior declarada presente; sesión
+  parametrizable comprobada.
+\item[$\square$]
+  Administrador accede y utiliza credenciales propias del ambiente.
+\item[$\square$]
+  Ambas muestras conectan en sólo lectura y muestran sus metadatos.
+\item[$\square$]
+  Catálogo, necesidad, propuesta, ETL y analítica conservan la fuente
+  correcta.
+\item[$\square$]
+  Conciliación y exportaciones revisadas; filtros y ejecución
+  conservados al volver a una fuente.
+\item[$\square$]
+  IA probada sólo con credencial autorizada y saldo comprobado;
+  limitaciones anotadas.
+\item[$\square$]
+  Después de \texttt{stop} y \texttt{up}, se conserva el trabajo del
+  receptor.
+\item[$\square$]
+  Carpeta nueva conservada; carpetas antiguas retiradas sólo al concluir
+  la comprobación.
+\end{itemize}
+
+En Windows, la instalación nueva se realiza desde Ubuntu en WSL 2 con
+Docker compatible y los archivos dentro del HOME Linux. Las órdenes
+destructivas protegidas para \texttt{ls-va@Lenovo} \textbf{no se adaptan
+automáticamente a ese equipo}. Revisar sus requisitos y usuario propios
+antes de una sustitución; la otra programadora indicó una instalación
+inicial, no una limpieza de proyectos ajenos.
+
+\subsection{Base documental y alcance de esta
+edición}\label{base-documental-y-alcance-de-esta-ediciuxf3n}
+
+Esta guía toma como antecedente la instalación directa y la guía
+portable del 17-11-2026. Sus comandos de importación, inicio, parada y
+consulta se conservan, ahora con nombres leídos del paquete definitivo y
+retirada individual por etiquetas aunque el directorio antiguo falte. Se
+incorporan las correcciones operativas y la configuración económica
+OpenAI del 25-11-2026.
+
+La elaboración de este documento no construyó el paquete nuevo ni
+ejecutó instalaciones o retiradas en el equipo receptor. El manifiesto y
+el informe de aceptación del nuevo portable deberán registrar sus
+propios resultados antes de distribuirlo.
+
+\end{document}

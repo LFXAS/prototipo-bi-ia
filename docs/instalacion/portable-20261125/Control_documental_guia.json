@@ -1,0 +1,482 @@
+{
+  "date_local": "2026-11-25",
+  "status": "documental_verificado",
+  "pages": 15,
+  "commands_total": 72,
+  "bash_commands_syntax_checked": 65,
+  "powershell_commands_reviewed_not_executed": 7,
+  "commands_executed": false,
+  "docker_mutations_for_this_guide": false,
+  "new_portable_built": false,
+  "rendered_pages": 15,
+  "visual_review": "contact sheet of all 15 pages and complete pages for Windows/Docker and selective container retirement; no cropped or overlapping content observed",
+  "latex_final_overfull_boxes": 0,
+  "latex_unresolved_references": 0,
+  "sources_official_consulted": [
+    "https://docs.docker.com/desktop/setup/install/windows-install/",
+    "https://learn.microsoft.com/en-us/windows/wsl/install"
+  ],
+  "scope": "Documentacion del portable futuro, no acredita instalacion remota ni distribucion nueva construida.",
+  "checks": [
+    {
+      "number": 1,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 2,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 3,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 4,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 5,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 6,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 7,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 8,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 9,
+      "type": "powershell",
+      "syntax_ok": null,
+      "status": "revisado contra documentacion oficial; no ejecutado"
+    },
+    {
+      "number": 10,
+      "type": "powershell",
+      "syntax_ok": null,
+      "status": "revisado contra documentacion oficial; no ejecutado"
+    },
+    {
+      "number": 11,
+      "type": "powershell",
+      "syntax_ok": null,
+      "status": "revisado contra documentacion oficial; no ejecutado"
+    },
+    {
+      "number": 12,
+      "type": "powershell",
+      "syntax_ok": null,
+      "status": "revisado contra documentacion oficial; no ejecutado"
+    },
+    {
+      "number": 13,
+      "type": "powershell",
+      "syntax_ok": null,
+      "status": "revisado contra documentacion oficial; no ejecutado"
+    },
+    {
+      "number": 14,
+      "type": "powershell",
+      "syntax_ok": null,
+      "status": "revisado contra documentacion oficial; no ejecutado"
+    },
+    {
+      "number": 15,
+      "type": "powershell",
+      "syntax_ok": null,
+      "status": "revisado contra documentacion oficial; no ejecutado"
+    },
+    {
+      "number": 16,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 17,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 18,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 19,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 20,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 21,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 22,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 23,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 24,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 25,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 26,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 27,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 28,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 29,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 30,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 31,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 32,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 33,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 34,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 35,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 36,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 37,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 38,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 39,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 40,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 41,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 42,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 43,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 44,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 45,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 46,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 47,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 48,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 49,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 50,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 51,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 52,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 53,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 54,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 55,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 56,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 57,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 58,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 59,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 60,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 61,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 62,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 63,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 64,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 65,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 66,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 67,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 68,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 69,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 70,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 71,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    },
+    {
+      "number": 72,
+      "type": "bash",
+      "syntax_ok": true,
+      "error": ""
+    }
+  ],
+  "outputs": {
+    "Guia_actualizacion_BI_portable.pdf": {
+      "bytes": 121774,
+      "sha256": "03ab36fa8d81c1b60fb4c14b8996dc689a26981d0535146a4488cf9795ac48af"
+    },
+    "Guia_actualizacion_BI_portable.md": {
+      "bytes": 32306,
+      "sha256": "123f32825ed8bc25befd967b2a3679bd7e312204c80a8a43410df3c7989ad090"
+    },
+    "Guia_actualizacion_BI_portable.tex": {
+      "bytes": 56076,
+      "sha256": "af6fa0de109f32a65320255c7a942179593d816c9af72a36ae6baeb6472e4dd3"
+    },
+    "estilo_guia.tex": {
+      "bytes": 1630,
+      "sha256": "fa8a389b28faa31b8a6272f37e8ec004f069ab0fb0ec0b655d646388fb6b1c1e"
+    },
+    "Comandos_Ubuntu_BI_portable.txt": {
+      "bytes": 9486,
+      "sha256": "935f09ba1304c66f45c400071cffac2b970fefb4396440d225a1ae089e6a73c5"
+    },
+    "Comandos_Windows_WSL_BI_portable.txt": {
+      "bytes": 7951,
+      "sha256": "1bfa4cc40ef01aa69cda0178c3a985aea045ef7213d478488002aaaf3642ff3a"
+    }
+  },
+  "windows_txt_conditions": "Orden04 solo si falta Ubuntu24.04; orden05 solo si WSL necesita actualizacion; orden07 solo si esa distribucion exacta esta en VERSION1. Condiciones explicitas en TXT, ya presentes en PDF/MD/TEX.",
+  "conditional_notes_update_executed_installation_commands": false
+}

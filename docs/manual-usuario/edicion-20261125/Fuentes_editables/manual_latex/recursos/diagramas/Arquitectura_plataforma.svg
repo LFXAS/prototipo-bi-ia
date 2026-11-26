@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="23.0cm" height="12.26667cm" viewBox="0 0 900 480">
+<title>Arquitectura de la plataforma inteligente de datamarts de ventas</title>
+<desc>Las personas operan una interfaz React. FastAPI centraliza los permisos, los metadatos, la revisión del diseño, la carga controlada y la analítica. Consulta las fuentes SQL Server en lectura y conserva configuración, versiones y datamarts en PostgreSQL. OpenAI y los demás adaptadores de inteligencia artificial reciben contexto autorizado y devuelve propuestas y explicaciones sujetas a validación; la aprobación corresponde a una persona autorizada.</desc>
+<defs>
+<marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M0 0 L8 4 L0 8 Z" fill="#334F69"/></marker>
+</defs>
+<rect width="900" height="480" fill="#FFFFFF"/>
+
+<rect x="20" y="20" width="180" height="67" rx="5" fill="#F1F4F7" stroke="#7D8B98" stroke-width="1.2"/>
+<text x="35" y="41" font-family="Times New Roman, serif" font-size="15" font-weight="700" text-anchor="start" fill="#141C24">Personas usuarias</text>
+<text x="35" y="62" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Administración</text>
+<text x="35" y="79" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Analista y gerencia</text>
+<path d="M110 88 V126" fill="none" stroke="#334F69" stroke-width="1.8" marker-end="url(#arrow)"/>
+<text x="121" y="112" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Uso autorizado</text>
+<rect x="20" y="127" width="180" height="177" rx="5" fill="#FFFFFF" stroke="#7D8B98" stroke-width="1.2"/>
+<text x="35" y="151" font-family="Times New Roman, serif" font-size="15" font-weight="700" text-anchor="start" fill="#141C24">Interfaz web</text>
+<text x="35" y="173" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">React</text>
+<text x="35" y="206" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Fuentes y catálogo</text>
+<text x="35" y="228" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Asistente de diseño</text>
+<text x="35" y="250" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Panel y copiloto</text>
+<text x="35" y="282" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Acciones y resultados</text>
+<path d="M202 214 H240" fill="none" stroke="#334F69" stroke-width="1.8" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+<rect x="242" y="20" width="408" height="390" rx="5" fill="#F4F6F8" stroke="#334F69" stroke-width="1.6"/>
+<text x="260" y="45" font-family="Times New Roman, serif" font-size="15" font-weight="700" text-anchor="start" fill="#141C24">Servidor de aplicación</text>
+<text x="260" y="68" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Python y FastAPI</text>
+<rect x="258" y="92" width="376" height="60" rx="5" fill="#FFFFFF" stroke="#A7B3BE" stroke-width="1"/>
+<text x="273" y="114" font-family="Times New Roman, serif" font-size="15" font-weight="700" text-anchor="start" fill="#141C24">Fuentes y metadatos</text>
+<text x="273" y="135" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Lectura del esquema y catálogo por fuente</text>
+<rect x="258" y="167" width="376" height="72" rx="5" fill="#FFFFFF" stroke="#A7B3BE" stroke-width="1"/>
+<text x="273" y="189" font-family="Times New Roman, serif" font-size="15" font-weight="700" text-anchor="start" fill="#141C24">Diseño supervisado</text>
+<text x="273" y="210" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Validación del contrato y aprobación humana</text>
+<text x="273" y="228" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">La aprobación conserva una versión</text>
+<rect x="258" y="254" width="376" height="60" rx="5" fill="#FFFFFF" stroke="#A7B3BE" stroke-width="1"/>
+<text x="273" y="276" font-family="Times New Roman, serif" font-size="15" font-weight="700" text-anchor="start" fill="#141C24">Carga del datamart</text>
+<text x="273" y="297" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Transformaciones controladas y conciliación</text>
+<rect x="258" y="329" width="376" height="60" rx="5" fill="#FFFFFF" stroke="#A7B3BE" stroke-width="1"/>
+<text x="273" y="351" font-family="Times New Roman, serif" font-size="15" font-weight="700" text-anchor="start" fill="#141C24">Análisis de ventas</text>
+<text x="273" y="372" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Indicadores, filtros, reportes y copiloto</text>
+<path d="M446 153 V166" fill="none" stroke="#334F69" stroke-width="1.8" marker-end="url(#arrow)"/>
+<path d="M446 240 V253" fill="none" stroke="#334F69" stroke-width="1.8" marker-end="url(#arrow)"/>
+<path d="M446 315 V328" fill="none" stroke="#334F69" stroke-width="1.8" marker-end="url(#arrow)"/>
+<text x="245" y="438" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Acciones controladas por permisos.</text>
+<text x="245" y="460" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Resultados vinculados a su fuente y ejecución.</text>
+<rect x="20" y="356" width="180" height="110" rx="5" fill="#F1F4F7" stroke="#7D8B98" stroke-width="1.2"/>
+<text x="35" y="379" font-family="Times New Roman, serif" font-size="15" font-weight="700" text-anchor="start" fill="#141C24">SQL Server</text>
+<text x="35" y="402" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">AdventureWorks2022</text>
+<text x="35" y="423" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">WideWorldImporters</text>
+<text x="35" y="449" font-family="Times New Roman, serif" font-size="15" font-weight="700" text-anchor="start" fill="#141C24">Sólo lectura</text>
+<path d="M201 410 H221 V284 H240" fill="none" stroke="#334F69" stroke-width="1.8" marker-end="url(#arrow)"/>
+<rect x="690" y="92" width="190" height="172" rx="5" fill="#EDF2F6" stroke="#506B83" stroke-width="1.3"/>
+<text x="705" y="116" font-family="Times New Roman, serif" font-size="15" font-weight="700" text-anchor="start" fill="#141C24">Proveedor de IA</text>
+<text x="705" y="138" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">OpenAI u otros</text>
+<text x="705" y="164" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Local o en la nube</text>
+<text x="705" y="188" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Recibe contexto</text>
+<text x="705" y="207" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">autorizado, sin credenciales.</text>
+<text x="705" y="234" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Propone y explica.</text>
+<text x="705" y="253" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Su salida se valida.</text>
+<path d="M651 123 H688" fill="none" stroke="#334F69" stroke-width="1.8" marker-end="url(#arrow)"/>
+<path d="M688 203 H652" fill="none" stroke="#334F69" stroke-width="1.8" marker-end="url(#arrow)" stroke-dasharray="6 4"/>
+<rect x="690" y="307" width="190" height="159" rx="5" fill="#EDF2F6" stroke="#506B83" stroke-width="1.3"/>
+<text x="705" y="333" font-family="Times New Roman, serif" font-size="15" font-weight="700" text-anchor="start" fill="#141C24">PostgreSQL</text>
+<text x="705" y="362" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Ajustes y seguridad</text>
+<text x="705" y="385" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Metadatos y versiones</text>
+<text x="705" y="408" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Datamarts y evidencias</text>
+<text x="705" y="440" font-family="Times New Roman, serif" font-size="15" font-weight="400" text-anchor="start" fill="#141C24">Aislamiento por fuente</text>
+<path d="M651 284 H670 V339 H688" fill="none" stroke="#334F69" stroke-width="1.8" marker-end="url(#arrow)"/>
+<path d="M688 371 H652" fill="none" stroke="#334F69" stroke-width="1.8" marker-end="url(#arrow)" stroke-dasharray="6 4"/>
+</svg>

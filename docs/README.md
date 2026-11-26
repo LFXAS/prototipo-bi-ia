@@ -81,3 +81,19 @@ incremento no equivale a reconstruir sus imágenes ni a migrar sus volúmenes.
 El preset económico final de OpenAI es Luna con razonamiento bajo. La
 [tabla de modelos y evidencia de uso](manual-usuario/adenda-2026-11-25/Tabla_modelos_OpenAI_2026-11-25.md)
 distingue su prueba de conexión de los recorridos completos realizados con Sol medio.
+
+## Manual completo y traslado actualizados
+
+- [Manual completo de operación y aprendizaje, edición 2.0, 272 páginas](manual-usuario/edicion-20261125/LEEME_PRIMERO.md):
+  incorpora las mejoras dentro de los trece capítulos, los casos 136/24 y 135/23,
+  arquitectura, PostgreSQL, costos y prácticas. No obliga a estudiar una adenda aparte.
+- [Guía del próximo traslado portable, 15 páginas](instalacion/portable-20261125/Guia_actualizacion_BI_portable.pdf),
+  con [comandos Ubuntu](instalacion/portable-20261125/Comandos_Ubuntu_BI_portable.txt)
+  y [Windows/WSL](instalacion/portable-20261125/Comandos_Windows_WSL_BI_portable.txt).
+  El paquete nuevo está pendiente de construcción y verificación; la guía no
+  convierte el portable del 17 de noviembre en una versión actualizada.
+
+Estos dos documentos se compilaron y revisaron por separado del conjunto de trece
+PDF de `make docs`/CI. Sus fuentes y sus actas indican los requisitos de autoría y
+los controles efectivos. La guía de traslado contiene órdenes manuales, no un
+instalador, y no acredita que ya se haya actualizado un equipo remoto.
