@@ -1,0 +1,24 @@
+FUENTE PRINCIPAL: main.tex — EDICIÓN DE FORMACIÓN 2.0 — 25 de noviembre de 2026
+
+Compilar desde esta carpeta con TeX Live completo y XeLaTeX:
+
+latexmk -xelatex -interaction=nonstopmode -halt-on-error main.tex
+
+O bien, ejecutar dos veces, una línea cada vez:
+xelatex -interaction=nonstopmode -halt-on-error main.tex
+xelatex -interaction=nonstopmode -halt-on-error main.tex
+
+Se necesitan los paquetes de main.tex, incluidos fontspec, babel español,
+longtable, landscape, hyperref y bookmark. Las fuentes TeX Gyre OTF se incluyen
+con licencia en recursos/fuentes/ y se cargan por nombre de archivo relativo.
+El resultado es main.pdf. La compilación no llama a ningún proveedor de IA.
+
+La revisión se compiló en un contenedor aislado bi-ia-docs:local, con TeX Live
+2026 montado en sólo lectura, sin red y sin conectar volúmenes de la aplicación.
+El comando exacto usado consta en el informe QA de la raíz de estas fuentes.
+Para un equipo sin TeX Live, prepare un entorno documental XeLaTeX separado;
+no modifique los contenedores de la aplicación para compilar este manual.
+
+Editar de manera estable: ../insumos/ y ../fuentes/generar_manual.py.
+Regenerar sobrescribe los TEX compuestos; leer ../LEEME_FUENTES.txt antes.
+No distribuya archivos AUX/LOG/TOC ni renders internos como entregables.

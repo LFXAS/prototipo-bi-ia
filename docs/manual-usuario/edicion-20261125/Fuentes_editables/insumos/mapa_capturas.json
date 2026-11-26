@@ -1,0 +1,320 @@
+{
+  "operacion_01": [
+    {
+      "archivo": "00_acceso.jpg",
+      "titulo": "Ingreso con una cuenta autorizada",
+      "leyenda": "Formulario vacío. Utilice las credenciales que entregue el responsable del entorno; no se reproducen contraseñas en el manual. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "operacion_02": [
+    {
+      "archivo": "01_inicio.jpg",
+      "titulo": "Inicio y fuente seleccionada",
+      "leyenda": "Inicio identifica la fuente seleccionada y el estado de preparación. Cambiar la fuente cambia el contexto del recorrido. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "operacion_03": [],
+  "operacion_04": [
+    {
+      "archivo": "44_usuarios.jpg",
+      "titulo": "Alta y asignación de roles: formulario sin enviar",
+      "leyenda": "Formulario de usuario vacío y sin enviar. Asignar un rol concede permisos; utilice cuentas autorizadas para las prácticas. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "operacion_05": [
+    {
+      "archivo": "45_roles.jpg",
+      "titulo": "Perfiles disponibles y acciones de administración",
+      "leyenda": "Roles registrados. El perfil funcional Gerente comercial se diferencia del papel académico de Product Owner o Scrum Master. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "46_rol_gerencia.jpg",
+      "titulo": "Permisos del rol Gerente comercial: consulta sin guardar",
+      "leyenda": "Consulta del editor de Gerente comercial, cancelada sin guardar. El rol tiene lectura analítica, conexiones, metadatos y exportación. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "operacion_06": [
+    {
+      "archivo": "47_permisos.jpg",
+      "titulo": "Permisos técnicos registrados",
+      "leyenda": "El catálogo de permisos explica las capacidades existentes. Crear un nombre de permiso no implementa una función nueva. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "operacion_07": [
+    {
+      "archivo": "48_menus.jpg",
+      "titulo": "Listado de menús y rutas protegidas",
+      "leyenda": "Navegación registrada y protegida. Cambiar una etiqueta visible no cambia la ruta interna ni la autorización del backend. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "49_menu_edicion.jpg",
+      "titulo": "Edición de navegación sin guardar cambios",
+      "leyenda": "Editor de menú abierto y cancelado. Etiqueta, posición y permisos afectan a la navegación de los usuarios. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "operacion_08": [
+    {
+      "archivo": "50_auditoria.jpg",
+      "titulo": "Auditoría consultable de acciones críticas",
+      "leyenda": "La auditoría registra acciones críticas. La pantalla es de consulta y no ofrece edición de los eventos. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "operacion_09": [
+    {
+      "archivo": "02_conexiones_formulario.jpg",
+      "titulo": "Registro y edición de una conexión SQL Server",
+      "leyenda": "Formulario de conexión vacío. Host y puerto se refieren al acceso desde el backend, que puede estar dentro de Docker. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "03_conexiones_registradas.jpg",
+      "titulo": "Fuentes de ejemplo habilitadas y validadas como lectura",
+      "leyenda": "Cada registro representa una fuente independiente. No deshabilite una fuente sólo para pasar a otra. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "operacion_10": [
+    {
+      "archivo": "04_parametros.jpg",
+      "titulo": "Parámetros operativos y rangos admitidos",
+      "leyenda": "Los parámetros explican límites operativos. Un plazo mayor no corrige una credencial o un contrato inválido. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "05_parametros_detalle.jpg",
+      "titulo": "Bloques de metadatos y paginación configurables",
+      "leyenda": "Revise el alcance de cada parámetro antes de guardar. La paginación de algunos listados conserva un tamaño fijado por la interfaz. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "operacion_11": [
+    {
+      "archivo": "06_llm_formulario.jpg",
+      "titulo": "Proveedor, URL, modelo y razonamiento",
+      "leyenda": "Configuración del proveedor, servicio, modelo y razonamiento. Seleccione opciones compatibles con el servicio disponible. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "07_llm_registros.jpg",
+      "titulo": "Configuraciones disponibles y proveedor activo",
+      "leyenda": "Configuraciones registradas: una aparece activa. No se promete una salida idéntica entre proveedores. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "08_llm_credencial_vacia.jpg",
+      "titulo": "Formulario de credencial vacío y cancelación",
+      "leyenda": "Panel de sustitución abierto con el campo vacío y cancelado. La credencial se introduce de forma privada; nunca se copia al manual. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "operacion_12": [
+    {
+      "archivo": "09_metadatos_AdventureWorks.jpg",
+      "titulo": "Instantáneas y resumen de metadatos de AdventureWorks",
+      "leyenda": "AdventureWorks: instantánea estructural con seis esquemas y 71 tablas. Los recuentos no son cantidades de ventas. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "10_metadatos_AW_columnas.jpg",
+      "titulo": "Tipos, nulos y clave del detalle de pedidos",
+      "leyenda": "SalesOrderDetail: claves y tipos de las columnas. El nombre de una columna es una pista que debe contrastarse con su significado. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "11_metadatos_AW_relaciones.jpg",
+      "titulo": "Relaciones de la línea con pedido y producto",
+      "leyenda": "Las relaciones declaradas sustentan rutas seguras. Observe las columnas de origen y destino, no sólo el nombre de la tabla. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "12_metadatos_WWI.jpg",
+      "titulo": "Instantánea independiente de WideWorldImporters",
+      "leyenda": "WideWorldImporters: cuatro esquemas y 48 tablas. Una única instantánea deja el selector visible sin alternativas. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "13_metadatos_WWI_columnas.jpg",
+      "titulo": "Columnas de InvoiceLines y significado de sus importes",
+      "leyenda": "InvoiceLines: detalle físico de las facturas. No confunda una línea con una factura completa. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "14_metadatos_WWI_relaciones.jpg",
+      "titulo": "Rutas declaradas de InvoiceLines a sus entidades",
+      "leyenda": "Relaciones de InvoiceLines con sus entidades. La ruta comercial se revisa según la necesidad, aunque exista una FK. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "operacion_13": [
+    {
+      "archivo": "15_catalogo_WWI_contexto.jpg",
+      "titulo": "Catálogo separado para WideWorldImporters",
+      "leyenda": "Catálogo en el contexto de WideWorldImporters. Cada fuente conserva sus propias preguntas y periodicidades. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "16_catalogo_cobertura_AW.jpg",
+      "titulo": "Cobertura potencial de las preguntas según metadatos",
+      "leyenda": "Cobertura técnica calculada sobre AdventureWorks. Esta comprobación orienta el diseño y no sustituye la conciliación numérica. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "17_catalogo_preguntas.jpg",
+      "titulo": "Etiqueta, explicación e instrucción funcional de cada pregunta",
+      "leyenda": "Etiqueta, explicación e instrucción funcional tienen fines distintos. La pregunta orienta a la IA sin fijar SQL ni tablas inventadas. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "operacion_14": [
+    {
+      "archivo": "18_catalogo_periodicidades.jpg",
+      "titulo": "Habilitar periodicidades y guardar el catálogo de la fuente",
+      "leyenda": "Periodicidades habilitadas. Agrupar por mes no transforma una línea física en una fila mensual. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "BI01": [
+    {
+      "archivo": "19_dominio_ventas.jpg",
+      "titulo": "Elegir el dominio de ventas",
+      "leyenda": "El dominio habilitado es ventas. La pantalla no anuncia dominios que no tengan perfil y validadores implementados. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "BI02": [
+    {
+      "archivo": "20_necesidad_y_autorizacion.jpg",
+      "titulo": "Escribir el objetivo del análisis",
+      "leyenda": "Objetivo del análisis en un formulario nuevo. Describa la decisión, los indicadores, el detalle y las comparaciones; no escriba SQL. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "20b_consentimiento_IA.jpg",
+      "titulo": "Autorizar la revisión con IA",
+      "leyenda": "Destino y alcance del envío de metadatos, ayudas de redacción y preguntas del catálogo. El consentimiento está desmarcado; no se envió una nueva solicitud. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "BI03": [],
+  "BI04": [
+    {
+      "archivo": "22_conceptos.jpg",
+      "titulo": "Conceptos y niveles de evidencia",
+      "leyenda": "Conceptos revisados de la propuesta 129. La confianza semántica y la existencia técnica son comprobaciones diferentes. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "BI05": [
+    {
+      "archivo": "23_grano_y_medidas.jpg",
+      "titulo": "Granularidad, hecho y medidas verificables",
+      "leyenda": "El grano se define antes de sumar. En este caso, la clave identifica cada línea de pedido. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "24_cobertura_necesidad.jpg",
+      "titulo": "Cobertura y decisiones de la necesidad",
+      "leyenda": "La matriz relaciona requisitos con salidas, decisiones y limitaciones. Una limitación aceptada debe explicarse al presentar el análisis. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "BI06": [
+    {
+      "archivo": "25_medidas_agregaciones.jpg",
+      "titulo": "Medidas y reglas del contrato conservado",
+      "leyenda": "Contrato conservado en modo de consulta. Se muestran función, origen y regla para comparar conceptos y agregaciones. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "27_calculo_controlado.jpg",
+      "titulo": "Editor de cálculo: ejemplo abierto sin guardar",
+      "leyenda": "Editor abierto como borrador sin guardar: no se eligieron factores ni se creó una versión. Este ejemplo enseña el control, no una fórmula aprobada. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "28_relacion_guiada.jpg",
+      "titulo": "Corrección de relaciones declaradas",
+      "leyenda": "Corrección guiada de una relación. La justificación debe expresar el rol comercial; una FK existente por sí sola no lo demuestra. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "BI07": [
+    {
+      "archivo": "21_revision_aprobada.jpg",
+      "titulo": "Aprobación humana y versión conservada",
+      "leyenda": "Aprobación histórica de la propuesta 129. Consultar el resultado conserva la decisión y no ejecuta el ETL. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "26_evidencia_estructural.jpg",
+      "titulo": "Cuatro controles estructurales y huellas coincidentes",
+      "leyenda": "Reverificación del 18 de noviembre: cuatro controles cumplen y las huellas coinciden. Es validación estructural, no una nueva carga. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "ETL01": [
+    {
+      "archivo": "31_etl_elegir_propuesta.jpg",
+      "titulo": "Selección y control de ejecuciones idénticas",
+      "leyenda": "Propuesta 129 ya materializada en el expediente 21. Una carga idéntica no se vuelve a habilitar accidentalmente. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "ETL02": [
+    {
+      "archivo": "32_etl_indicadores.jpg",
+      "titulo": "Indicadores y recetas del ETL",
+      "leyenda": "Cuatro indicadores conservados del expediente. Una razón requiere un numerador y un denominador comercialmente compatibles. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "ETL03": [
+    {
+      "archivo": "33_etl_plan.jpg",
+      "titulo": "Plan controlado previo a la ejecución",
+      "leyenda": "Plan explicado por etapas. Esta consulta histórica permite aprender los controles sin repetir la carga. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "ETL04": [
+    {
+      "archivo": "34_etl_carga_conservada.jpg",
+      "titulo": "Materialización histórica de sólo lectura",
+      "leyenda": "Etapa de materialización histórica en sólo lectura. Una ejecución nueva requiere la confirmación explícita de su propio expediente. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "ETL05": [
+    {
+      "archivo": "29_conciliacion_AW.jpg",
+      "titulo": "Conciliación del expediente AdventureWorks",
+      "leyenda": "Expediente 21 de AdventureWorks: 121.317 filas en origen y destino, diferencia cero y cinco tablas. La ejecución ocurrió el 6 de noviembre. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "35_conciliacion_WWI.jpg",
+      "titulo": "Conciliación de WideWorldImporters y divisa sin confirmar",
+      "leyenda": "Expediente 22 de WideWorldImporters: 228.265 filas conciliadas. La divisa continúa sin comprobar y no se atribuye USD. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "ETL06": [
+    {
+      "archivo": "30_semantica_publicada.jpg",
+      "titulo": "Etiquetas semánticas publicadas sin reemplazar originales",
+      "leyenda": "Etiquetas revisadas y publicadas como columnas adicionales. Los valores originales se conservan para trazabilidad. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "AN01": [
+    {
+      "archivo": "36_analitica_WWI.jpg",
+      "titulo": "Panel ejecutivo y procedencia de WideWorldImporters",
+      "leyenda": "Panel de WideWorldImporters sin filtros. El encabezado identifica propuesta 131 y ejecución 22. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "42_analitica_AW.jpg",
+      "titulo": "Panel ejecutivo AdventureWorks y procedencia",
+      "leyenda": "AdventureWorks: propuesta 129, ejecución 21 y divisa USD comprobada. Los filtros visibles corresponden al contexto de esa captura histórica. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "37_WWI_2015_California.jpg",
+      "titulo": "Caso filtrado: 2015 y California",
+      "leyenda": "Caso de referencia WideWorldImporters: año 2015 y California; 1.179 facturas y promedio 2.707,18 en moneda de origen. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "43_AW_2013_Northwest.jpg",
+      "titulo": "Caso filtrado: 2013 y Northwest",
+      "leyenda": "Caso AdventureWorks: 2013 y Northwest; 17.452 unidades, 2.053 pedidos y promedio 2.929,94 por pedido. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "AN02": [
+    {
+      "archivo": "38_graficos_analiticos.jpg",
+      "titulo": "Visualizaciones con indicador y filtros",
+      "leyenda": "Vista analítica: serie y rankings bajo el mismo indicador y filtros. Las categorías principales no siempre representan el total completo. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "39_respaldo_grafico.jpg",
+      "titulo": "Valores exactos de la serie visible",
+      "leyenda": "Tabla de valores exactos de la serie de 2015 y California. Úsela para contrastar una lectura abreviada del gráfico. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    },
+    {
+      "archivo": "40_hallazgos.jpg",
+      "titulo": "Hallazgos y límites de interpretación",
+      "leyenda": "Hallazgos automáticos derivados de los agregados. Comparar extremos visibles no demuestra causalidad ni una tendencia estadística. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ],
+  "AN03": [
+    {
+      "archivo": "41_copiloto.jpg",
+      "titulo": "Preguntas contextuales al copiloto",
+      "leyenda": "Conversación contextual: formule una pregunta concreta y compruebe la evidencia de la respuesta. La captura no representa una respuesta nueva del LLM. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad."
+    }
+  ]
+}

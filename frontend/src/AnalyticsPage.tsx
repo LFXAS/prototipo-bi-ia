@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type KeyboardEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 
 import {
   api,
@@ -9,6 +9,7 @@ import {
   type AnalyticsVisual,
 } from './api/security'
 import './analytics.css'
+import { clearAnalyticsContext, readAnalyticsContext, saveAnalyticsContext, type AnalyticsContext } from './analyticsRecovery'
 
 type Props = { token: string; connectionId: number; canExport: boolean; navigate: (path: string) => void }
 
@@ -181,6 +182,7 @@ function Skeleton() {
 
 export function AnalyticsPage({ token, connectionId, canExport, navigate }: Props) {
   const [dashboard, setDashboard] = useState<AnalyticsDashboard | null>(null)
+  const [confirmedSelection, setConfirmedSelection] = useState<Omit<AnalyticsContext, 'viewMode'> | null>(null)
   const [executions, setExecutions] = useState<AnalyticsExecutionOption[]>([])
   const [executionId, setExecutionId] = useState(0)
   const [metricCode, setMetricCode] = useState('')
@@ -194,17 +196,21 @@ export function AnalyticsPage({ token, connectionId, canExport, navigate }: Prop
   const [chatMessages, setChatMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string; answer?: AnalyticsCopilotAnswer }>>([])
   const [chatLoading, setChatLoading] = useState(false)
   const [chatError, setChatError] = useState('')
+  const chatRequestVersion = useRef(0)
 
   useEffect(() => {
     let cancelled = false
+    const recovered = readAnalyticsContext(connectionId)
     setLoading(true)
     setError('')
     setDashboard(null)
+    setConfirmedSelection(null)
     setExecutions([])
     setExecutionId(0)
-    setMetricCode('')
-    setYear('')
-    setTerritory('')
+    setMetricCode(recovered?.metricCode ?? '')
+    setYear(recovered?.year ?? '')
+    setTerritory(recovered?.territory ?? '')
+    setViewMode(recovered?.viewMode ?? 'executive')
     setChatMessages([])
     setChatQuestion('')
     setChatError('')
@@ -215,7 +221,12 @@ export function AnalyticsPage({ token, connectionId, canExport, navigate }: Prop
           throw new Error('La API devolvió ejecuciones de una fuente distinta al contexto seleccionado.')
         }
         setExecutions(items)
-        setExecutionId(items[0]?.execution_id || 0)
+        if (recovered && !items.some((item) => item.execution_id === recovered.executionId)) {
+          setError('La ejecución guardada ya no está disponible para esta fuente. Restablezca la selección para consultar otro expediente; no se reemplazó su análisis automáticamente.')
+          setLoading(false)
+          return
+        }
+        setExecutionId(recovered?.executionId ?? items[0]?.execution_id ?? 0)
         if (!items.length) {
           setError('No existe una ejecución conciliada con datos físicos disponibles para analizar.')
           setLoading(false)
@@ -242,7 +253,11 @@ export function AnalyticsPage({ token, connectionId, canExport, navigate }: Prop
         if (result.data_connection_id !== connectionId || result.execution_id !== executionId) {
           throw new Error('El tablero recibido no corresponde a la fuente y ejecución seleccionadas.')
         }
+        if (metricCode && result.metric_code !== metricCode) {
+          throw new Error('El indicador recibido no corresponde a la selección solicitada.')
+        }
         setDashboard(result)
+        setConfirmedSelection({ connectionId, executionId, metricCode: result.metric_code, year, territory })
         setMetricCode((current) => current || result.metric_code)
       })
       .catch((caught: Error) => { if (!cancelled) setError(caught.message) })
@@ -250,15 +265,29 @@ export function AnalyticsPage({ token, connectionId, canExport, navigate }: Prop
     return () => { cancelled = true }
   }, [connectionId, executionId, executions, metricCode, territory, token, year])
 
+  const selectionConfirmed = Boolean(!loading && !error && dashboard && confirmedSelection
+    && dashboard.data_connection_id === connectionId && dashboard.execution_id === executionId
+    && confirmedSelection.connectionId === connectionId && confirmedSelection.executionId === executionId
+    && confirmedSelection.metricCode === (metricCode || dashboard.metric_code)
+    && confirmedSelection.year === year && confirmedSelection.territory === territory)
+
+  useEffect(() => {
+    if (!selectionConfirmed) return
+    saveAnalyticsContext({ connectionId, executionId, metricCode, year, territory, viewMode })
+  }, [connectionId, executionId, metricCode, selectionConfirmed, territory, viewMode, year])
+
   const unit = useMemo(() => dashboard ? metricUnit(dashboard) : 'valor', [dashboard])
 
   useEffect(() => {
+    chatRequestVersion.current += 1
     setChatMessages([])
     setChatQuestion('')
     setChatError('')
-  }, [executionId, metricCode, territory, viewMode, year])
+    setChatLoading(false)
+    return () => { chatRequestVersion.current += 1 }
+  }, [connectionId, executionId, metricCode, territory, token, viewMode, year])
   if (loading && !dashboard) return <Skeleton />
-  if (error && !dashboard) return <section className="analytics-blocked"><span aria-hidden="true">!</span><p className="eyebrow">Análisis no disponible</p><h2>Primero complete el expediente del datamart</h2><p>{error}</p><button onClick={() => navigate('/datamart-ventas')}>Abrir Generación de datamart</button></section>
+  if (error && !dashboard) return <section className="analytics-blocked"><span aria-hidden="true">!</span><p className="eyebrow">Análisis no disponible</p><h2>Primero complete el expediente del datamart</h2><p>{error}</p><div className="form-actions"><button onClick={() => navigate('/datamart-ventas')}>Abrir Generación de datamart</button>{readAnalyticsContext(connectionId) && <button className="secondary" onClick={() => { clearAnalyticsContext(connectionId); setMetricCode(''); setYear(''); setTerritory(''); setViewMode('executive'); setError(''); setExecutionId(executions[0]?.execution_id ?? 0) }}>Restablecer selección guardada</button>}</div></section>
   if (!dashboard) return null
   const activeDashboard = dashboard
 
@@ -268,6 +297,7 @@ export function AnalyticsPage({ token, connectionId, canExport, navigate }: Prop
   }
 
   async function exportReport(format: 'pdf' | 'xlsx') {
+    if (!selectionConfirmed) return
     setExporting(format)
     setError('')
     try {
@@ -304,7 +334,8 @@ export function AnalyticsPage({ token, connectionId, canExport, navigate }: Prop
 
   async function askCopilot(question = chatQuestion) {
     const normalized = question.trim()
-    if (normalized.length < 5 || chatLoading) return
+    if (normalized.length < 5 || chatLoading || !selectionConfirmed) return
+    const requestVersion = ++chatRequestVersion.current
     const history = chatMessages.slice(-6).map((item) => ({ role: item.role, content: item.content }))
     setChatMessages((current) => [...current, { role: 'user', content: normalized }])
     setChatQuestion('')
@@ -321,14 +352,15 @@ export function AnalyticsPage({ token, connectionId, canExport, navigate }: Prop
         year: year ? Number(year) : undefined,
         territory: territory || undefined,
       })
+      if (requestVersion !== chatRequestVersion.current) return
       setChatMessages((current) => [
         ...current,
         { role: 'assistant', content: answer.answer, answer },
       ])
     } catch (caught) {
-      setChatError(caught instanceof Error ? caught.message : 'El copiloto no pudo responder.')
+      if (requestVersion === chatRequestVersion.current) setChatError(caught instanceof Error ? caught.message : 'El copiloto no pudo responder.')
     } finally {
-      setChatLoading(false)
+      if (requestVersion === chatRequestVersion.current) setChatLoading(false)
     }
   }
 
@@ -363,7 +395,7 @@ export function AnalyticsPage({ token, connectionId, canExport, navigate }: Prop
 
     <section className="analytics-toolbar" aria-label="Filtros del análisis">
       <div><div className="analytics-execution-control">{hasMultipleExecutions ? <label>Datamart analizado<select aria-label="Datamart analizado" value={executionId} onChange={(event) => changeExecution(event.target.value)}>{executions.map((item) => <option key={item.execution_id} value={item.execution_id}>{item.label}</option>)}</select></label> : <div className="analytics-active-execution"><small>Datamart activo</small><strong>{executions[0]?.label ?? `Ejecución #${dashboard.execution_id}`}</strong></div>}{!hasMultipleExecutions && <p role="note">Sólo esta ejecución conserva datos físicos consultables. Los demás expedientes permanecen disponibles para auditoría. <button type="button" onClick={() => navigate('/datamart-ventas')}>Ver expedientes</button></p>}</div>{viewMode === 'analyst' && <label>Indicador de los gráficos<select value={metricCode || dashboard.metric_code} onChange={(event) => setMetricCode(event.target.value)}>{dashboard.available_metrics.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>}<label>Año<select value={year} onChange={(event) => setYear(event.target.value)}><option value="">Todos</option>{dashboard.filters.years.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label><label>Territorio<select value={territory} onChange={(event) => setTerritory(event.target.value)}><option value="">Todos</option>{dashboard.filters.territories.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label></div>
-      <div className="analytics-toolbar-actions"><button className="secondary" disabled={!year && !territory} onClick={clearFilters}>Restablecer filtros</button>{canExport && <div className="analytics-export" aria-label="Exportar selección visible"><button className="secondary" disabled={exporting !== null} onClick={() => void exportReport('pdf')}>{exporting === 'pdf' ? 'Generando…' : 'Exportar PDF'}</button><button className="secondary" disabled={exporting !== null} onClick={() => void exportReport('xlsx')}>{exporting === 'xlsx' ? 'Generando…' : 'Exportar Excel'}</button></div>}</div>
+      <div className="analytics-toolbar-actions"><button className="secondary" disabled={!year && !territory} onClick={clearFilters}>Restablecer filtros</button>{canExport && <div className="analytics-export" aria-label="Exportar selección visible"><button className="secondary" disabled={exporting !== null || !selectionConfirmed} onClick={() => void exportReport('pdf')}>{exporting === 'pdf' ? 'Generando…' : 'Exportar PDF'}</button><button className="secondary" disabled={exporting !== null || !selectionConfirmed} onClick={() => void exportReport('xlsx')}>{exporting === 'xlsx' ? 'Generando…' : 'Exportar Excel'}</button></div>}</div>
     </section>
     {canExport && <p className="analytics-export-note">La exportación conserva la vista, el indicador y los filtros actuales. Excel incluye únicamente los datos que respaldan los gráficos visibles.</p>}
     {loading && <div className="analytics-refresh" role="status">Actualizando resultados…</div>}
@@ -391,14 +423,14 @@ export function AnalyticsPage({ token, connectionId, canExport, navigate }: Prop
       <details className="analytics-prompt-guide" open={chatMessages.length === 0}>
         <summary>Guía de preguntas sugeridas</summary>
         <p>Elija un ejemplo o úselo como modelo: indique qué quiere comprender, comparar o decidir y conserve el período o territorio relevante.</p>
-        {promptGuide.map((group) => <div key={group.category}><strong>{group.category}</strong><div>{group.prompts.map((prompt) => <button type="button" key={prompt} onClick={() => void askCopilot(prompt)}>{prompt}</button>)}</div></div>)}
+        {promptGuide.map((group) => <div key={group.category}><strong>{group.category}</strong><div>{group.prompts.map((prompt) => <button type="button" key={prompt} disabled={!selectionConfirmed || chatLoading} onClick={() => void askCopilot(prompt)}>{prompt}</button>)}</div></div>)}
       </details>
       <div className="analytics-chat-conversation">
         {chatMessages.length === 0 && <div className="analytics-chat-empty"><span aria-hidden="true">✦</span><div><strong>Inicie con una pregunta concreta</strong><p>Seleccione una sugerencia o escriba qué necesita comprender, comparar o decidir.</p></div></div>}
-        {chatMessages.length > 0 && <div className="analytics-chat-thread" aria-live="polite">{chatMessages.map((message, index) => <article className={message.role} key={`${message.role}-${index}`}><small>{message.role === 'user' ? 'Tu pregunta' : 'Copiloto analítico'}</small><p>{message.content}</p>{message.answer && <><InterpretedQueryCard answer={message.answer} /><ul>{message.answer.evidence.map((item) => <li key={item}>{item}</li>)}</ul><span>{message.answer.caveat}</span><div className="chat-followups">{message.answer.suggested_questions.map((item) => <button type="button" key={item} onClick={() => void askCopilot(item)}>{item}</button>)}</div><small>{message.answer.provider_kind} · {message.answer.model_id}</small></>}</article>)}</div>}
+        {chatMessages.length > 0 && <div className="analytics-chat-thread" aria-live="polite">{chatMessages.map((message, index) => <article className={message.role} key={`${message.role}-${index}`}><small>{message.role === 'user' ? 'Tu pregunta' : 'Copiloto analítico'}</small><p>{message.content}</p>{message.answer && <><InterpretedQueryCard answer={message.answer} /><ul>{message.answer.evidence.map((item) => <li key={item}>{item}</li>)}</ul><span>{message.answer.caveat}</span><div className="chat-followups">{message.answer.suggested_questions.map((item) => <button type="button" key={item} disabled={!selectionConfirmed || chatLoading} onClick={() => void askCopilot(item)}>{item}</button>)}</div><small>{message.answer.provider_kind} · {message.answer.model_id}</small></>}</article>)}</div>}
         {chatLoading && <p className="analytics-chat-status" role="status">Interpretando la pregunta y consultando agregados permitidos…</p>}
         {chatError && <p className="notice error" role="alert">{chatError}</p>}
-        <form onSubmit={(event) => { event.preventDefault(); void askCopilot() }}><label htmlFor="analytics-chat-question">Escriba su pregunta</label><textarea id="analytics-chat-question" rows={3} minLength={5} maxLength={500} value={chatQuestion} onChange={(event) => setChatQuestion(event.target.value)} placeholder={viewMode === 'executive' ? 'Ejemplo: ¿qué resultado requiere atención directiva?' : 'Ejemplo: compara los productos principales y explica la evidencia.'} /><small>Una buena pregunta menciona el indicador, la comparación esperada y la decisión que desea apoyar.</small><button disabled={chatLoading || chatQuestion.trim().length < 5}>{chatLoading ? 'Consultando…' : 'Preguntar al copiloto'}</button></form>
+        <form onSubmit={(event) => { event.preventDefault(); void askCopilot() }}><label htmlFor="analytics-chat-question">Escriba su pregunta</label><textarea id="analytics-chat-question" rows={3} minLength={5} maxLength={500} value={chatQuestion} onChange={(event) => setChatQuestion(event.target.value)} placeholder={viewMode === 'executive' ? 'Ejemplo: ¿qué resultado requiere atención directiva?' : 'Ejemplo: compara los productos principales y explica la evidencia.'} /><small>Una buena pregunta menciona el indicador, la comparación esperada y la decisión que desea apoyar.</small><button disabled={!selectionConfirmed || chatLoading || chatQuestion.trim().length < 5}>{chatLoading ? 'Consultando…' : 'Preguntar al copiloto'}</button></form>
       </div>
     </section>
 

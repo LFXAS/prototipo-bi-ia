@@ -1,0 +1,471 @@
+\chapter{Ingresar, orientarse y elegir la fuente}
+\section{Ingresar y reconocer una sesión autorizada}
+\label{unidad:operacion_01}
+\textbf{Para quién:} Todos los perfiles\par
+\textbf{Opción:} Pantalla de acceso\par
+
+Abra la dirección de la plataforma proporcionada por la administración. En el repositorio de desarrollo, el puerto predeterminado es 5173; una entrega release o portable puede publicar otro puerto. Use la dirección de la guía de la instalación que está encendiendo. El puerto identifica el servicio: no determina sus permisos ni la base de datos que analizará.
+
+Una cuenta representa a la persona que realiza las acciones. Sus roles reúnen permisos; por eso dos personas pueden iniciar sesión y ver opciones diferentes. La contraseña permite autenticar la cuenta, mientras que los permisos determinan si puede consultar, modificar o ejecutar una operación. Conocer la contraseña de una cuenta no convierte automáticamente a esa cuenta en administradora.
+
+Al ingresar, compruebe el nombre mostrado en Sesión activa y los menús disponibles. Trabaje con su cuenta asignada. La cuenta administrativa inicial está protegida porque permite recuperar la administración del entorno. Su contraseña se entrega por un canal de administración y no forma parte de este manual.
+
+La sesión tiene una duración absoluta: se cuenta desde el ingreso y no vuelve a comenzar con cada clic. El valor inicial es 60 minutos. La administración puede cambiar Duración de la sesión (minutos), en Parámetros, entre 15 y 240. El cambio se aplica a los próximos inicios de sesión; no alarga una sesión que ya está abierta.
+
+\subsection{Qué hacer si la sesión vence durante una práctica}
+Vencimiento y Cerrar sesión son situaciones diferentes. El vencimiento solicita autenticarse otra vez y permite recuperar información mínima de la tarea. Cerrar sesión es una salida explícita: limpia el borrador local y los contextos de la pestaña. Ninguna de las dos acciones elimina los expedientes guardados en el servidor.
+
+El tiempo máximo del asistente y la duración de la sesión tampoco son lo mismo. El primero limita la espera de una solicitud; el segundo limita el acceso autenticado. Aumentar uno no cambia el otro ni corrige un contrato inválido.
+
+\begin{enumerate}
+\item Lea el aviso de sesión vencida y vuelva a ingresar con su cuenta.
+\item Compruebe la fuente y la versión recuperadas. Revise el objetivo antes de continuar.
+\item Si había una operación de generación o carga en curso, consulte primero el listado y el estado. Una sesión vencida no demuestra que el servidor haya cancelado esa operación.
+\item Si necesita más tiempo para una práctica siguiente, solicite ajustar el parámetro y vuelva a iniciar sesión. No comparta la cuenta de administración para evitar el vencimiento.
+\end{enumerate}
+
+\subsection{Conceptos para comprender la opción}
+\paragraph{Autenticación} Comprobación de la identidad de una cuenta mediante sus credenciales.
+
+\paragraph{Autorización} Comprobación de que la cuenta tiene permiso para la acción solicitada.
+
+\paragraph{Sesión} Acceso temporal de una cuenta autenticada; puede vencer sin borrar los expedientes almacenados.
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Escriba el correo de su cuenta en Correo y la clave suministrada por la administración en Contraseña.
+\item Pulse Iniciar sesión una sola vez y espere a que aparezca el espacio de trabajo.
+\item Compruebe su nombre en Sesión activa. Si no coincide con la cuenta que esperaba usar, pulse Cerrar sesión e ingrese con la cuenta correcta.
+\item Despliegue el grupo de menú correspondiente a su tarea. Si una opción no está disponible, solicite revisar los permisos en lugar de utilizar la cuenta de otra persona.
+\item Si vence la sesión, ingrese otra vez y confirme el módulo, la fuente y el borrador recuperados. No pulse otra vez Cargar para resolver el vencimiento: primero consulte si la ejecución anterior terminó.
+\item Cuando termine, pulse Cerrar sesión. Esta acción cierra su acceso y elimina el borrador local del asistente; los expedientes ya guardados permanecen en el servidor.
+\end{enumerate}
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y botones\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+Correo & Identifica la cuenta registrada. & \textbf{Ejemplo:} El correo asignado a la estudiante; no un nombre de rol.\par\smallskip\textbf{Resultado:} Se consulta esa cuenta al autenticar. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y botones}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Correo & Identifica la cuenta registrada. & \textbf{Ejemplo:} El correo asignado a la estudiante; no un nombre de rol.\par\smallskip\textbf{Resultado:} Se consulta esa cuenta al autenticar. \\
+\addlinespace[3pt]
+Contraseña & Acredita el acceso; se presenta enmascarada. & \textbf{Ejemplo:} La clave entregada para esa cuenta.\par\smallskip\textbf{Resultado:} Se valida sin devolver la contraseña guardada. \\
+\addlinespace[3pt]
+Iniciar sesión & Solicita la autenticación. & \textbf{Ejemplo:} Acceder como Analista de BI con su propia cuenta.\par\smallskip\textbf{Resultado:} Muestra el espacio de trabajo permitido o una explicación del rechazo. \\
+\addlinespace[3pt]
+Cerrar sesión & Finaliza el acceso del navegador. & \textbf{Ejemplo:} Concluir una práctica en un equipo compartido.\par\smallskip\textbf{Resultado:} Regresa al formulario de acceso; no elimina propuestas ni datamarts. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Reconocer la cuenta antes de operar}
+Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.
+
+\begin{enumerate}
+\item Ingrese con una cuenta de práctica.
+\item Anote el nombre mostrado y tres opciones disponibles.
+\item Cierre sesión y compruebe que vuelve el formulario.
+\end{enumerate}
+
+\textbf{Qué debe obtener.} La cuenta mostrada coincide con la utilizada. No se crean propuestas ni cargas por iniciar o cerrar sesión.
+
+\textbf{Cómo comprobarlo.} La estudiante explica la diferencia entre acceso a la plataforma y permiso para ejecutar ETL.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Si aparece un problema\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+Credenciales inválidas o acceso rechazado. & Correo o clave incorrectos, cuenta desactivada o servicio no disponible. & Verifique la dirección de la plataforma y el correo; solicite a la administración revisar el estado de la cuenta. No cambie la configuración de las bases para resolver un problema de acceso.\par\smallskip\textbf{Comprobación:} La cuenta correcta aparece en Sesión activa. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Si aparece un problema}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Credenciales inválidas o acceso rechazado. & Correo o clave incorrectos, cuenta desactivada o servicio no disponible. & Verifique la dirección de la plataforma y el correo; solicite a la administración revisar el estado de la cuenta. No cambie la configuración de las bases para resolver un problema de acceso.\par\smallskip\textbf{Comprobación:} La cuenta correcta aparece en Sesión activa. \\
+\addlinespace[3pt]
+Token inválido o vencido. & La sesión temporal terminó. & Autentíquese nuevamente y revise fuente, borrador y versión recuperados antes de continuar.\par\smallskip\textbf{Comprobación:} La consulta del expediente funciona y no se ha repetido una ejecución. \\
+\addlinespace[3pt]
+La clave aparece dentro de otro campo por autocompletado. & El navegador insertó datos guardados en un formulario. & Limpie el dato que no corresponde y revise cada etiqueta antes de guardar. No capture ni comparta contraseñas.\par\smallskip\textbf{Comprobación:} Correo y nombre contienen los datos previstos; los campos de claves siguen enmascarados. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Para explicar durante la sustentación}
+\paragraph{¿La IA decide quién puede entrar?} No. El acceso y los permisos los comprueba el servidor mediante las cuentas y los roles configurados.
+
+\paragraph{¿Cerrar sesión elimina un datamart?} No. Finaliza el acceso local; los resultados persistidos se conservan. Un borrador local no guardado sí puede perderse.
+
+\pantalla{recursos/pantallas/00_acceso.jpg}{Ingreso con una cuenta autorizada}{Formulario vacío. Utilice las credenciales que entregue el responsable del entorno; no se reproducen contraseñas en el manual. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/operacion_01.tex}{\input{capturas/operacion_01.tex}}{}
+\section{Comenzar desde Inicio y completar la preparación}
+\label{unidad:operacion_02}
+\textbf{Para quién:} Administración, Analista de BI, Gerencia para reconocer su contexto\par
+\textbf{Opción:} Inicio\par
+
+Inicio es el punto de orientación. Para una cuenta con consulta de propuestas, resume tres componentes: Fuente de ventas, Metadatos y Asistente de IA. Los tres deben estar preparados para crear una propuesta nueva. Una fuente habilitada no sustituye a sus metadatos; un modelo activo no garantiza que la pregunta comercial sea factible.
+
+Todo está listo significa que se cumplen los prerrequisitos del asistente en ese contexto. Todavía faltan la necesidad concreta, la evaluación de su viabilidad, el diseño, la revisión humana y la ejecución del ETL. El mensaje no acredita anticipadamente que cualquier necesidad pueda resolverse.
+
+Si el perfil no tiene consulta de propuestas, Inicio puede presentar cantidades de roles, permisos y opciones visibles en lugar de las tarjetas del asistente. Es una diferencia de acceso prevista. Para gerencia, el recorrido principal se dirige a Analítica de ventas, donde se consulta un datamart existente.
+
+\subsection{Conceptos para comprender la opción}
+\paragraph{Prerrequisito} Condición que debe cumplirse antes de comenzar una etapa. Una instantánea de metadatos antes de interpretar el esquema.
+
+\paragraph{Metadatos} Descripción de tablas, columnas, tipos y relaciones; no las filas comerciales.
+
+\paragraph{Proveedor de IA} Servicio configurado para interpretar y explicar dentro de las reglas de la plataforma.
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Abra Inicio y compruebe Fuente en contexto.
+\item Lea el estado de Fuente de ventas, Metadatos y Asistente de IA si su perfil muestra esas tarjetas.
+\item Si aparece Faltan prerrequisitos, pulse Completar configuración inicial.
+\item Recorra la preparación con Continuar y Atrás; use Completar este paso para abrir el módulo pendiente.
+\item Si aparece Todo está listo, pulse Crear propuesta de datamart cuando vaya a iniciar un diseño. Para revisar una configuración ya válida, utilice Revisar configuración.
+\item Para terminar la ayuda de preparación, utilice Cerrar preparación.
+\end{enumerate}
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y botones\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+Crear propuesta de datamart & Abre el asistente. & \textbf{Ejemplo:} Iniciar un diseño sobre WideWorldImporters.\par\smallskip\textbf{Resultado:} Abre la etapa Necesidad; no aprueba ni carga datos. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y botones}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Crear propuesta de datamart & Abre el asistente. & \textbf{Ejemplo:} Iniciar un diseño sobre WideWorldImporters.\par\smallskip\textbf{Resultado:} Abre la etapa Necesidad; no aprueba ni carga datos. \\
+\addlinespace[3pt]
+Completar configuración inicial & Muestra la preparación guiada. & \textbf{Ejemplo:} Faltan los metadatos de la conexión elegida.\par\smallskip\textbf{Resultado:} Permite localizar el módulo pendiente. \\
+\addlinespace[3pt]
+Revisar configuración & Abre el repaso de la preparación. & \textbf{Ejemplo:} Confirmar qué proveedor está activo.\par\smallskip\textbf{Resultado:} Muestra cinco pasos de preparación sin modificar registros por sí mismo. \\
+\addlinespace[3pt]
+Continuar / Atrás & Recorre la ayuda inicial. & \textbf{Ejemplo:} Pasar de Proveedor de IA a Fuente de ventas.\par\smallskip\textbf{Resultado:} Cambia el paso informativo, no ejecuta una carga. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Distinguir preparación de resultados}
+Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.
+
+\begin{enumerate}
+\item Seleccione AdventureWorks y lea sus tarjetas.
+\item Cambie a WideWorldImporters y repita la lectura.
+\item Explique qué falta para disponer de un análisis nuevo.
+\end{enumerate}
+
+\textbf{Qué debe obtener.} El nombre y los metadatos se corresponden con la fuente seleccionada. La estudiante identifica que el panel analítico requiere una ejecución conciliada.
+
+\textbf{Cómo comprobarlo.} No confunde Todo está listo con ETL ejecutado o propuesta aprobada.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Si aparece un problema\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+No se muestran las tarjetas del asistente. & El perfil carece de consulta de propuestas o no hay fuente seleccionable. & Revise el perfil y la existencia de fuentes; gerencia puede operar el panel sin crear propuestas.\par\smallskip\textbf{Comprobación:} La pantalla corresponde a los permisos reales, no a una supuesta cuenta universal. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Si aparece un problema}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+No se muestran las tarjetas del asistente. & El perfil carece de consulta de propuestas o no hay fuente seleccionable. & Revise el perfil y la existencia de fuentes; gerencia puede operar el panel sin crear propuestas.\par\smallskip\textbf{Comprobación:} La pantalla corresponde a los permisos reales, no a una supuesta cuenta universal. \\
+\addlinespace[3pt]
+Asistente de IA no preparado. & Configuración ausente, inactiva o sin prueba vigente. & La administración revisa Configuración LLM y realiza la prueba del registro correcto.\par\smallskip\textbf{Comprobación:} Inicio reconoce el proveedor preparado después de la prueba válida. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Para explicar durante la sustentación}
+\paragraph{¿Todo está listo significa que la IA ya conoce el negocio?} No. Solo indica preparación técnica. La necesidad y su compatibilidad con los metadatos se revisan en la etapa siguiente.
+
+\pantalla{recursos/pantallas/01_inicio.jpg}{Inicio y fuente seleccionada}{Inicio identifica la fuente seleccionada y el estado de preparación. Cambiar la fuente cambia el contexto del recorrido. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/operacion_02.tex}{\input{capturas/operacion_02.tex}}{}
+\section{Navegar y conservar la fuente de trabajo}
+\label{unidad:operacion_03}
+\textbf{Para quién:} Todos los perfiles autorizados\par
+\textbf{Opción:} Fuente en contexto y navegación lateral\par
+
+La navegación organiza la plataforma por preparación del entorno, diseño y transformación BI, análisis y decisiones, y administración y seguridad. Siga ese orden al preparar una fuente nueva. Para revisar resultados existentes, puede ir directamente a la etapa de consulta correspondiente, siempre que tenga permiso.
+
+Cambiar fuente selecciona el origen de trabajo de su sesión. No apaga las demás conexiones ni une sus registros. Las dos bases pueden permanecer habilitadas simultáneamente. La plataforma conserva por separado sus instantáneas, catálogos, propuestas, ejecuciones y resultados.
+
+Antes de interpretar un importe, confirme fuente, propuesta y ejecución. El nombre del origen no se debe inferir a partir de un color del gráfico. En una demostración, verbalice esta identidad al cambiar de AdventureWorks a WideWorldImporters. Si el listado no muestra una fuente, no reutilice una propuesta de otra base para simular su disponibilidad.
+
+Al recargar la pestaña, el sistema conserva el módulo autorizado. En Analítica recuerda por separado la ejecución, el indicador, el año, el territorio y la vista confirmados de cada fuente. Cambiar a otra fuente y regresar recupera su selección propia; no combina ambos análisis. Cerrar sesión limpia estos contextos locales.
+
+\subsection{Volver al punto correcto sin perder el contexto}
+Atrás aparece cuando hay un recorrido previo conocido. Por ejemplo, Inicio puede llevarle a revisar una configuración y permitirle volver al mismo paso de preparación. Desde Analítica, Consultar respaldo permite revisar el expediente y regresar al panel con la selección confirmada. Entrar directamente desde el menú lateral no inventa un paso anterior.
+
+Los filtros se recuerdan dentro de la pestaña y por conexión. No se guardan allí las cifras, el chat ni un resultado inventado: al volver se consultan de nuevo los datos autorizados. Una selección todavía pendiente o fallida no se presenta como un análisis confirmado.
+
+\begin{enumerate}
+\item En Analítica, seleccione una ejecución de AdventureWorks y un año o territorio. Espere a que se actualicen los resultados.
+\item Cambie a WideWorldImporters y confirme su encabezado antes de elegir sus propios filtros.
+\item Regrese a AdventureWorks y compruebe que recupera la selección de esa fuente.
+\item Abra Consultar respaldo y vuelva con Atrás. Compare ejecución, año, territorio e indicador.
+\item Recargue la pestaña y compruebe que sigue en un módulo permitido. Si cierra sesión, los contextos locales se limpian.
+\end{enumerate}
+
+\subsection{Conceptos para comprender la opción}
+\paragraph{Fuente} Conexión a una base de datos concreta. AdventureWorks2022 y WideWorldImporters pueden estar en el mismo servidor y seguir siendo fuentes distintas.
+
+\paragraph{Contexto} Selección que identifica de qué fuente y ejecución proviene la información consultada.
+
+\paragraph{Linaje} Relación entre origen, instantánea, propuesta, ejecución y resultado que permite explicar su procedencia.
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Despliegue el grupo de navegación de la tarea que realizará.
+\item Use Cambiar fuente y elija el nombre de la conexión y su base.
+\item Espere a que se cargue el nuevo contexto antes de leer tablas, tarjetas o gráficos.
+\item En el Explorador, confirme la instantánea; en el asistente, la propuesta; en el datamart o panel, la ejecución.
+\item Si necesita más espacio, utilice Ocultar navegación lateral. Para recuperarla, utilice Mostrar navegación lateral.
+\item En una pantalla estrecha, el botón Menú muestra las opciones disponibles.
+\item Cuando la pantalla muestre Atrás, úselo para regresar al punto que abrió la configuración o el respaldo. Si entró desde el menú lateral puede no aparecer: en ese caso continúe con el menú.
+\end{enumerate}
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y botones\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+Cambiar fuente & Selecciona una conexión habilitada para la sesión. & \textbf{Ejemplo:} Alternar AdventureWorks2022 y WideWorldImporters.\par\smallskip\textbf{Resultado:} Recarga los componentes dependientes de esa fuente. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y botones}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Control} & \textbf{Para qué sirve} & \textbf{Ejemplo y resultado} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Cambiar fuente & Selecciona una conexión habilitada para la sesión. & \textbf{Ejemplo:} Alternar AdventureWorks2022 y WideWorldImporters.\par\smallskip\textbf{Resultado:} Recarga los componentes dependientes de esa fuente. \\
+\addlinespace[3pt]
+Ocultar navegación lateral / Mostrar navegación lateral & Aprovecha el ancho de la pantalla. & \textbf{Ejemplo:} Examinar un modelo o gráfico amplio.\par\smallskip\textbf{Resultado:} Cambia la presentación; no cambia permisos ni resultados. \\
+\addlinespace[3pt]
+Menú & Abre la navegación en pantallas estrechas. & \textbf{Ejemplo:} Uso en un equipo con menor resolución.\par\smallskip\textbf{Resultado:} Presenta las opciones autorizadas. \\
+\addlinespace[3pt]
+Anterior / Siguiente & Recorre un listado paginado cuando tiene más registros. & \textbf{Ejemplo:} Buscar una instantánea más antigua.\par\smallskip\textbf{Resultado:} Cambia el tramo de resultados del listado, no la fuente por sí mismo. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Comprobar el aislamiento visible}
+Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.
+
+\begin{enumerate}
+\item Abra el Explorador con AdventureWorks y anote base e instantánea.
+\item Cambie a WideWorldImporters y anote los mismos datos.
+\item Abra el catálogo de cada fuente y compare su contexto.
+\end{enumerate}
+
+\textbf{Qué debe obtener.} Cada módulo identifica el origen elegido. No se presupone que los números de instantánea o preguntas sean iguales en otra instalación.
+
+\textbf{Cómo comprobarlo.} La estudiante puede señalar la fuente y el artefacto correspondiente antes de describir un resultado.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Si aparece un problema\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+Falta el selector o no aparecen fuentes. & No existen conexiones habilitadas o falta Consultar metadatos, requerido por el selector actual. & Solicite revisar las conexiones y el permiso Consultar metadatos de la cuenta. No conceda ejecución ETL para corregir un permiso de lectura.\par\smallskip\textbf{Comprobación:} La fuente puede seleccionarse sin habilitar acciones de escritura innecesarias. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Si aparece un problema}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Qué observa} & \textbf{Causa posible} & \textbf{Qué hacer y comprobar} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Falta el selector o no aparecen fuentes. & No existen conexiones habilitadas o falta Consultar metadatos, requerido por el selector actual. & Solicite revisar las conexiones y el permiso Consultar metadatos de la cuenta. No conceda ejecución ETL para corregir un permiso de lectura.\par\smallskip\textbf{Comprobación:} La fuente puede seleccionarse sin habilitar acciones de escritura innecesarias. \\
+\addlinespace[3pt]
+Parece permanecer información de otra fuente. & Se leyó la pantalla antes de terminar la actualización, hay una incidencia de contexto o se abrió un expediente histórico distinto. & Espere la carga y compruebe fuente y expediente. Si persiste, registre pantalla y pasos y detenga la interpretación de esas cifras; informe la incidencia.\par\smallskip\textbf{Comprobación:} Los identificadores visibles y los resultados pertenecen a la misma fuente. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Para explicar durante la sustentación}
+\paragraph{¿Por qué una empresa puede tener dos fuentes activas?} Porque cada conexión representa un origen independiente. La selección de contexto permite trabajar con una sin deshabilitar la otra.
+
+\paragraph{¿Universal significa que admite cualquier motor inmediatamente?} El flujo y los contratos se reutilizan por fuente. En este corte se implementó y validó SQL Server; otro motor necesita su conector y pruebas.
+
+
+\IfFileExists{capturas/operacion_03.tex}{\input{capturas/operacion_03.tex}}{}

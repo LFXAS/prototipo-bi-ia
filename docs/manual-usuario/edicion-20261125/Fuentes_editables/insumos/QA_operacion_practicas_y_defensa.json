@@ -1,0 +1,33 @@
+{
+  "estado": "conforme",
+  "fecha": "2026-11-18T00:36:46.433261-05:00",
+  "archivo": "operacion_practicas_y_defensa.json",
+  "sha256": "ac90572d4be383754c5c4bd45510f93703a4a1c2c958ce76fb5557e618609c70",
+  "preguntas_con_respuesta_y_evidencia": 20,
+  "guiones": [
+    {
+      "titulo": "Diez minutos: leer y explicar ventas como gerente",
+      "minutos": 10,
+      "suma_bloques_correcta": true
+    },
+    {
+      "titulo": "Veinticinco minutos: construir y justificar un caso como analista",
+      "minutos": 25,
+      "suma_bloques_correcta": true
+    },
+    {
+      "titulo": "Sesenta minutos: empezar en una aplicación limpia y aprender el recorrido",
+      "minutos": 60,
+      "suma_bloques_correcta": true
+    }
+  ],
+  "rubrica_puntos": 20,
+  "secciones": 8,
+  "texto_basico_de_ambas_fuentes_incluido": true,
+  "protocolo_sin_declarar_exitos_no_obtenidos": true,
+  "cifras_historicas_con_fecha_y_contexto": true,
+  "moneda_WWI_no_asumida": true,
+  "hoja_intencionalmente_en_blanco": true,
+  "alcance": "Revisión editorial y estructural del material de aprendizaje. No ejecución de los guiones ni pruebas operativas nuevas.",
+  "nota_generador": "Conservar intervalos, evidencia de autoexplicación, máximos de espera, no_declarar del protocolo, escala y condiciones de rúbrica, formularios y textos copiables. No duplicar estructuras de primer nivel y secciones."
+}

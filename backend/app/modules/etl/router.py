@@ -11,7 +11,11 @@ from app.core.config import settings
 from app.core.pagination import PageRead
 from app.db.session import get_session
 from app.modules.copilot.models import BiProposal
-from app.modules.copilot.service import validate_proposal, verify_proposal_evidence
+from app.modules.copilot.service import (
+    COMPILATION_RULES_VERSION,
+    validate_proposal,
+    verify_proposal_evidence,
+)
 from app.modules.etl.materializer import (
     apply_spanish_labels,
     discover_spanish_label_candidates,
@@ -151,7 +155,7 @@ async def _localize_categories(
         # whitelist below remains bounded; Groq GPT-OSS supports strict schema decoding.
         response_schema=(
             _LOCALIZATION_SCHEMA
-            if configuration.provider_kind in {"groq-cloud", "anthropic-cloud"}
+            if configuration.provider_kind in {"groq-cloud", "anthropic-cloud", "openai-cloud"}
             else None
         ),
     )
@@ -196,6 +200,13 @@ async def _localize_categories(
 
 async def _candidate(proposal: BiProposal, session: AsyncSession) -> EtlProposalCandidateRead:
     blockers: list[str] = []
+    rules_version = proposal.proposal_document.get("compilation_rules_version", 1)
+    if not isinstance(rules_version, int) or rules_version < COMPILATION_RULES_VERSION:
+        blockers.append(
+            "Este contrato histórico se conserva para consulta. Para una nueva carga, "
+            "cree y apruebe una versión derivada con las reglas actuales y rutas de "
+            "relación verificadas."
+        )
     snapshot = await session.get(MetadataSnapshot, proposal.metadata_snapshot_id)
     connection = (
         await session.get(DataConnection, snapshot.data_connection_id)

@@ -1,0 +1,284 @@
+{
+  "estado": "conforme",
+  "fecha": "2026-11-18T00:31:06.468853-05:00",
+  "figuras": [
+    {
+      "figura": "ER_01_seguridad",
+      "estado": "conforme",
+      "revision_visual_png_completa": true,
+      "png_sha256": "8b765fb51c6406fda3e98e3a2ebe04a54740b7c965e0dc776077bf0ccd3e6140",
+      "svg_sha256": "490ecb31ab2bfc45ed06b457fef8e05455b7f78287df23edb716f61a90015217",
+      "pdf_sha256": "fa34af35512f633f9ea421eae44952b44d1d17bb56ed774a1838e0303e6c56e3",
+      "fuentes_pdf": [
+        [
+          "IZPEGQ+TimesNewRomanPSMT",
+          10.87
+        ],
+        [
+          "WWKHQM+TimesNewRomanPS-BoldMT",
+          10.87
+        ]
+      ],
+      "pdf_imagenes_raster": 0,
+      "tamano_pagina_pdf_pt": [
+        651.97,
+        347.72
+      ],
+      "bbox_textos_pdf_pt": [
+        14.49,
+        21.91,
+        618.28,
+        344.27
+      ]
+    },
+    {
+      "figura": "ER_02_configuracion_metadatos",
+      "estado": "conforme",
+      "revision_visual_png_completa": true,
+      "png_sha256": "09b896110549b6fc8725a693b91473af7e2fa6f3fb47f972b3ba41517f08c5d3",
+      "svg_sha256": "c79071c97d5cbd9193affc7b3be2e05af4879b6856f2bdf29936b1922b296d63",
+      "pdf_sha256": "aea970980db5beef0aad7b88ccd128ebb3859e89ee765901904c91b97018cb44",
+      "fuentes_pdf": [
+        [
+          "MVRBRI+TimesNewRomanPSMT",
+          10.87
+        ],
+        [
+          "YVGLDU+TimesNewRomanPS-BoldMT",
+          10.87
+        ]
+      ],
+      "pdf_imagenes_raster": 0,
+      "tamano_pagina_pdf_pt": [
+        651.97,
+        347.72
+      ],
+      "bbox_textos_pdf_pt": [
+        14.49,
+        21.91,
+        616.51,
+        344.27
+      ]
+    },
+    {
+      "figura": "ER_03_propuestas_ejecuciones",
+      "estado": "conforme",
+      "revision_visual_png_completa": true,
+      "png_sha256": "9dc6eebe48d0ce38a771fc4e332c270a32ed54cc003e9ae90fd663842ebbe393",
+      "svg_sha256": "2c06c94635208b32b5fe20e0915b1f7f5156c4b1ad51059394d71806ff75dd6f",
+      "pdf_sha256": "6f81a4be1b0c02918afeb0ca8c613f6da9ba7cf9157293733e2349f4f73a81ac",
+      "fuentes_pdf": [
+        [
+          "KGFWUD+TimesNewRomanPS-BoldMT",
+          10.87
+        ],
+        [
+          "SFLHQG+TimesNewRomanPSMT",
+          10.87
+        ]
+      ],
+      "pdf_imagenes_raster": 0,
+      "tamano_pagina_pdf_pt": [
+        651.97,
+        347.72
+      ],
+      "bbox_textos_pdf_pt": [
+        14.49,
+        20.46,
+        595.99,
+        344.27
+      ]
+    },
+    {
+      "figura": "ER_04_autoria",
+      "estado": "conforme",
+      "revision_visual_png_completa": true,
+      "png_sha256": "0d03fa692490d5f87b805d715c32986c43e220ff902cd37c0dd799d3e9ed22fa",
+      "svg_sha256": "a05606ef7fca95fa06278191c76ba633ec3f60f3636103c43f25f3a5025b4ca0",
+      "pdf_sha256": "2a8e37daa02bf657254b3b33e96fa31a33d5b7a32f2149c46c36795f24390c05",
+      "fuentes_pdf": [
+        [
+          "AVWQJM+TimesNewRomanPS-BoldMT",
+          10.87
+        ],
+        [
+          "QOFOUA+TimesNewRomanPSMT",
+          10.87
+        ]
+      ],
+      "pdf_imagenes_raster": 0,
+      "tamano_pagina_pdf_pt": [
+        651.97,
+        347.72
+      ],
+      "bbox_textos_pdf_pt": [
+        14.49,
+        21.91,
+        583.9,
+        344.27
+      ]
+    },
+    {
+      "figura": "ER_00_recorrido_identidades",
+      "estado": "conforme",
+      "revision_visual_png_completa": true,
+      "png_sha256": "d7eb8071939bac401951fdcd313edc8e5fd33d11b45572976dc84264e2c2e904",
+      "svg_sha256": "4620ffdd9a7ec54ded066cf94cb57f3ef1d0a67f9dc8f75c46a46a3b02530ad8",
+      "pdf_sha256": "209c9e23381d1906c0efe15ce5658d1b7b1ee4ecb55e11ffedf3170440d14013",
+      "fuentes_pdf": [
+        [
+          "GPQZXM+TimesNewRomanPS-BoldMT",
+          10.87
+        ],
+        [
+          "PVMTLV+TimesNewRomanPSMT",
+          10.87
+        ]
+      ],
+      "pdf_imagenes_raster": 0,
+      "tamano_pagina_pdf_pt": [
+        651.97,
+        347.72
+      ],
+      "bbox_textos_pdf_pt": [
+        14.49,
+        40.02,
+        605.94,
+        344.27
+      ]
+    },
+    {
+      "figura": "ER_05_datamart_e21",
+      "estado": "conforme",
+      "revision_visual_png_completa": true,
+      "png_sha256": "91e07883b25485d71d1a80b1b35ceade515fa99b5868abe73c80c620b664f34c",
+      "svg_sha256": "db0328b546cc373ae1b7dfbd8771c5b95bffdf592bfbf8cd4aee14700cb99182",
+      "pdf_sha256": "cdefeb2099d83e77d2e5753248419959754bbad89c88b9a05d0619345b03fad7",
+      "fuentes_pdf": [
+        [
+          "DRVMGK+TimesNewRomanPSMT",
+          10.87
+        ],
+        [
+          "FVIBDS+TimesNewRomanPS-BoldMT",
+          10.87
+        ]
+      ],
+      "pdf_imagenes_raster": 0,
+      "tamano_pagina_pdf_pt": [
+        651.97,
+        347.72
+      ],
+      "bbox_textos_pdf_pt": [
+        14.49,
+        11.04,
+        591.45,
+        344.27
+      ]
+    },
+    {
+      "figura": "ER_05_datamart_e22",
+      "estado": "conforme",
+      "revision_visual_png_completa": true,
+      "png_sha256": "31177afb17cb6749d93edbdc1cbdbd39c3169a499ad2550e9e2a5b46a1e53014",
+      "svg_sha256": "a22cd042cdc3a561fa9dfe9f39a997b63f148f122892a6b844cf0fe35988d587",
+      "pdf_sha256": "d53e006da2fd51dc074cd9a0a4f24509e594ef218142cf2f26f1c9c518cc38db",
+      "fuentes_pdf": [
+        [
+          "FVIBDS+TimesNewRomanPS-BoldMT",
+          10.87
+        ],
+        [
+          "ZOQDQN+TimesNewRomanPSMT",
+          10.87
+        ]
+      ],
+      "pdf_imagenes_raster": 0,
+      "tamano_pagina_pdf_pt": [
+        651.97,
+        347.72
+      ],
+      "bbox_textos_pdf_pt": [
+        14.49,
+        11.04,
+        551.92,
+        344.27
+      ]
+    },
+    {
+      "figura": "Arquitectura_plataforma",
+      "estado": "conforme",
+      "revision_visual_png_completa": true,
+      "png_sha256": "e687c7a7f87a2fc3e109f123ce700157d85a600c1f7b380bff3d94e0ffdc3d64",
+      "svg_sha256": "fcf61745213e932d821f02d2e038fe8e6de5747aeb66982c8612927d4e184a74",
+      "pdf_sha256": "f2fb3ecb6062256e59024c6177cdaf177bc73a53210b77230a182bf97cea2eb2",
+      "fuentes_pdf": [
+        [
+          "DTUTSM+TimesNewRomanPSMT",
+          10.87
+        ],
+        [
+          "GSPPBV+TimesNewRomanPS-BoldMT",
+          10.87
+        ]
+      ],
+      "pdf_imagenes_raster": 0,
+      "tamano_pagina_pdf_pt": [
+        651.97,
+        347.72
+      ],
+      "bbox_textos_pdf_pt": [
+        25.35,
+        21.18,
+        633.8,
+        335.58
+      ],
+      "ajuste_semantico": "Se sustituyó sin claves por sin credenciales para distinguir credenciales de claves PK/FK en metadatos."
+    }
+  ],
+  "cobertura_fk_fisicas": {
+    "ER_01_seguridad": [
+      "fk_audit_events_actor_user_id_users",
+      "menu_permissions_menu_id_fkey",
+      "menu_permissions_permission_id_fkey",
+      "role_permissions_permission_id_fkey",
+      "role_permissions_role_id_fkey",
+      "user_roles_role_id_fkey",
+      "user_roles_user_id_fkey"
+    ],
+    "ER_02_configuracion_metadatos": [
+      "analysis_catalogs_data_connection_id_fkey",
+      "data_connections_secret_id_fkey",
+      "fk_llm_configurations_secret_id_secrets",
+      "metadata_snapshots_data_connection_id_fkey"
+    ],
+    "ER_03_propuestas_ejecuciones": [
+      "bi_proposals_metadata_snapshot_id_fkey",
+      "fk_bi_proposals_source_proposal_id",
+      "business_need_reviews_metadata_snapshot_id_fkey",
+      "etl_executions_metadata_snapshot_id_fkey",
+      "etl_executions_proposal_id_fkey",
+      "semantic_advice_proposal_id_fkey"
+    ],
+    "ER_04_autoria": [
+      "analysis_catalogs_updated_by_user_id_fkey",
+      "bi_proposals_created_by_user_id_fkey",
+      "bi_proposals_reviewed_by_user_id_fkey",
+      "business_need_reviews_created_by_user_id_fkey",
+      "etl_executions_created_by_user_id_fkey",
+      "metadata_snapshots_captured_by_user_id_fkey",
+      "semantic_advice_created_by_user_id_fkey"
+    ]
+  },
+  "numero_fk": 24,
+  "tablas_app_cubiertas": 18,
+  "columnas_app_diccionario": 174,
+  "revision_estructura_orm": true,
+  "nota_colocacion": "PDF/SVG de 23×12,267 cm, TNR 10,87 pt. Insertar a 23–25 cm en A4 horizontal, conservando proporción. A 25 cm la fuente equivale a 11,81 pt y la altura es 13,33 cm.",
+  "alcance": "Inspección visual de las ocho figuras y comprobación de metadatos vectoriales. No constituye validación operativa de las ejecuciones ni de sesiones con otros perfiles. Sin cambios en DB, aplicación o contenedores.",
+  "limites_del_inventario": [
+    "Las 64 tablas analíticas son estado acumulado variable; el portable limpio no requiere 83 tablas.",
+    "Las referencias lógicas del datamart no son FK físicas.",
+    "Los identificadores 129/21 y 131/22 son locales y no garantizados en una réplica."
+  ]
+}

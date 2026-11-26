@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import UTC, date, datetime
 from types import SimpleNamespace
 
@@ -316,6 +317,79 @@ def test_per_unit_ratios_are_presented_as_averages_with_verified_currency() -> N
 
     assert _display_name_for_recipe(recipe) == "Costo promedio por unidad vendida"
     assert _display_unit_for_recipe(execution, recipe) == "USD por unidad"
+
+
+@pytest.mark.parametrize(
+    ("declared_unit", "currency_code", "expected"),
+    [
+        ("moneda de origen por transacción", "USD", "USD por transacción"),
+        ("moneda de origen por factura", "EUR", "EUR por factura"),
+        ("currency per document", "GBP", "GBP per document"),
+        ("moneda por unidad", "usd", "USD por unidad"),
+        ("moneda de origen", "EUR", "EUR"),
+        ("EUR por factura", "USD", "USD por factura"),
+        ("GBP per document", "AUD", "AUD per document"),
+        ("USD / unidad", "EUR", "EUR / unidad"),
+    ],
+)
+def test_any_monetary_ratio_uses_verified_currency_without_mutating_evidence(
+    declared_unit: str, currency_code: str, expected: str
+) -> None:
+    recipe = {"code": "average_document_amount", "unit": declared_unit}
+    metrics = {
+        "currency_context": {"status": "verified", "currency_code": currency_code},
+        "kpis": [{"code": "average_document_amount", "unit": declared_unit}],
+    }
+    original_recipe, original_metrics = deepcopy(recipe), deepcopy(metrics)
+    execution = SimpleNamespace(metrics_document=metrics)
+
+    assert _display_unit_for_recipe(execution, recipe) == expected
+    assert recipe == original_recipe
+    assert metrics == original_metrics
+
+
+@pytest.mark.parametrize(
+    ("declared_unit", "status", "currency_code"),
+    [
+        ("moneda de origen por transacción", "unresolved", "USD"),
+        ("currency per document", "unverified", "EUR"),
+        ("moneda de origen por unidad", "verified", "USDT"),
+        ("moneda de origen por factura", "verified", "U$D"),
+        ("unidades por factura", "verified", "USD"),
+        ("units per document", "verified", "EUR"),
+        ("clientes por pedido", "verified", "USD"),
+        ("porcentaje", "verified", "USD"),
+        ("PCS por factura", "verified", "USD"),
+        ("KGM per document", "verified", "EUR"),
+    ],
+)
+def test_currency_display_does_not_invent_currency_or_relabel_physical_units(
+    declared_unit: str, status: str, currency_code: str
+) -> None:
+    execution = SimpleNamespace(
+        metrics_document={"currency_context": {"status": status, "currency_code": currency_code}}
+    )
+    recipe = {"code": "arbitrary_metric", "unit": declared_unit}
+    assert _display_unit_for_recipe(execution, recipe) == declared_unit
+
+
+@pytest.mark.parametrize(
+    ("declared_unit", "expected"),
+    [
+        ("USD por transacción", "moneda de origen por transacción"),
+        ("EUR per document", "moneda de origen per document"),
+        ("AUD / unidad", "moneda de origen / unidad"),
+        ("GBP", "moneda de origen"),
+    ],
+)
+def test_model_declared_currency_cannot_establish_source_currency(
+    declared_unit: str, expected: str
+) -> None:
+    execution = SimpleNamespace(metrics_document={"currency_context": {"status": "unresolved"}})
+    assert (
+        _display_unit_for_recipe(execution, {"code": "arbitrary_metric", "unit": declared_unit})
+        == expected
+    )
 
 
 def test_legacy_average_of_line_amount_is_not_labeled_as_unit_price() -> None:

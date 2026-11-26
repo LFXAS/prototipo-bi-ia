@@ -1,0 +1,655 @@
+\chapter{Analizar, conversar y exportar con contexto}
+\section{Elegir el datamart y filtrar el análisis}
+\label{unidad:AN01}
+\textbf{Para quién:} Analista de BI, Gerente comercial\par
+\textbf{Al terminar podrá:} Leer los identificadores y usar filtros sin confundir vistas, bases ni universos.
+
+Analítica de ventas consulta los datos físicos de una ejecución conciliada, no vuelve a extraer cada vez la base transaccional. Compruebe la fuente y los identificadores del encabezado antes de interpretar cifras.
+
+Vista ejecutiva resume la información para gerencia. Vista analítica añade controles y tablas de respaldo. Cambiar de vista no otorga un rol nuevo ni añade datos que no se hayan materializado.
+
+\subsection{Ejercicio actual: recuperar filtros de cada fuente}
+\begin{enumerate}
+\item Abra AdventureWorks, seleccione la ejecución 24 si existe, el año 2013 y Northwest.
+\item Compruebe 17.452 unidades y 2.053 pedidos distintos. Lea el importe exacto en el respaldo y compare su abreviación en las tarjetas.
+\item Cambie a WideWorldImporters y seleccione la ejecución 23, año 2015 y California, si están disponibles. Compruebe 142.247 unidades y 1.179 facturas distintas.
+\item Regrese a AdventureWorks. Deben reaparecer sus filtros confirmados, sin importar filtros ni chat de WideWorldImporters.
+\item Entre al respaldo y vuelva con Atrás. Si consulta una ejecución histórica, anuncie su número y su fecha. No espere ver los mismos identificadores en un portable limpio.
+\end{enumerate}
+
+\pantallaactual{recursos/pantallas/aw24-filtros-restaurados.jpg}{AdventureWorks: ejecución 24 y filtros restaurados}{Captura real del 25 de noviembre de 2026. Se observa 2013, Northwest, 17.452 unidades y 2.053 pedidos. La tarjeta abrevia el importe; la tabla o exportación permite leer el valor exacto.}
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Datamart analizado} Ejecución concreta cuyos datos físicos se consultan; puede haber varios expedientes de la misma fuente.
+
+\paragraph{Filtro} Delimita las filas que participan en el cálculo. Año y territorio se combinan en el mismo alcance.
+
+\paragraph{Indicador de los gráficos} Métrica que explica las visualizaciones. No confundirla con todos los KPI del encabezado.
+
+\paragraph{Última actualización} Fecha de finalización del expediente o de su creación si no existe otra; no equivale a una recarga automática al abrir el panel.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Fuente en contexto & Selecciona la base de trabajo. Cambiarla limpia ejecución, filtros y conversación y vuelve a pedir resultados de esa fuente. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Fuente en contexto & Selecciona la base de trabajo. Cambiarla limpia ejecución, filtros y conversación y vuelve a pedir resultados de esa fuente. \\
+\addlinespace[3pt]
+Datamart analizado & Combobox cuando hay más de una ejecución con datos físicos consultables. Si sólo hay una se muestra Datamart activo. \\
+\addlinespace[3pt]
+Vista ejecutiva / Vista analítica & Presentación según necesidad de lectura. En la ejecutiva se omite el visual de clientes; en la analítica se muestran controles/datos adicionales. \\
+\addlinespace[3pt]
+Indicador de los gráficos & En vista analítica lista agregaciones que admiten visualización segura. Las recetas derivadas pueden existir como KPI sin aparecer en ese selector. \\
+\addlinespace[3pt]
+Año / Territorio & Opciones obtenidas del datamart disponible; no inventan años futuros. \\
+\addlinespace[3pt]
+Restablecer filtros & Retira año y territorio; no cambia la fuente ni ejecuta otro ETL. \\
+\addlinespace[3pt]
+Consultar respaldo / Ver expediente técnico & Abre la evidencia de la ejecución que respalda el panel. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Compruebe fuente, base, propuesta, ejecución, moneda y período en el encabezado.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Contexto correcto antes de leer tarjetas.}
+\item Seleccione el datamart deseado si hay varios.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} El panel confirma la ejecución seleccionada. Las selecciones se conservan separadas por fuente y sólo se recuperan cuando esa ejecución sigue disponible.}
+\item Abra Vista analítica y elija el indicador de los gráficos.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Las gráficas representan la métrica elegida.}
+\item Seleccione año y territorio y espere Actualizando resultados.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} KPI, gráficos y hallazgos se recalculan para ese alcance.}
+\item Compare un valor exacto de tabla con una tarjeta abreviada.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Comprende la diferencia de formato sin declarar un error de cálculo.}
+\item Use Restablecer filtros y vuelva a seleccionar la otra fuente cuando termine.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Restablecer limpia los filtros de la fuente actual. Al volver a la otra fuente se recupera su último contexto confirmado; no se cruza la conversación.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+No hace falta una generación LLM para consultar o filtrar el panel. Los valores se calculan mediante recetas y consultas controladas.
+
+\subsection{Qué comprueba la plataforma}
+Correspondencia de fuente y ejecución, disponibilidad física, recetas y filtros permitidos; el servidor comprueba procedencia además de los controles del navegador.
+
+\subsection{Qué decide la persona}
+La persona elige el universo e interpreta los resultados dentro del evento materializado.
+
+\paragraph{Resultado esperado} Un panel cuyo contexto y alcance puedan explicarse antes de emitir una conclusión.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+Primero complete el expediente del datamart. & No hay ejecución conciliada con datos físicos disponibles. Vuelva a Datamart de ventas y revise preparación, carga y validación. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Primero complete el expediente del datamart. & No hay ejecución conciliada con datos físicos disponibles. Vuelva a Datamart de ventas y revise preparación, carga y validación. \\
+\addlinespace[3pt]
+Falta el combobox de datamart. & Puede ser correcto si sólo una ejecución tiene datos físicos; no se debe crear otra para obtener el selector. \\
+\addlinespace[3pt]
+Aparece un resultado anterior mientras carga el filtro. & Espere a que termine y confirme el contexto del encabezado antes de copiar cifras. Si persiste una fuente equivocada, registre incidencia. \\
+\addlinespace[3pt]
+El chat se vació tras cambiar año o fuente. & Es protección de contexto: la respuesta anterior no se reutiliza como si perteneciera a la nueva selección. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+Explique por qué los 109,8 millones globales de AW 21 no se comparan directamente con 6.015.174,74 del filtro 2013/Northwest.
+
+\textbf{Respuesta orientativa.} Son universos diferentes. La comparación necesita la misma ejecución y filtros.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿Cambiar Año vuelve a cargar el origen?} No. Recalcula sobre el datamart.
+
+\paragraph{¿Todas las recetas pueden graficarse por entidad?} No. El selector ofrece las agregaciones que admiten visualización agrupada segura en la implementación.
+
+\pantalla{recursos/pantallas/36_analitica_WWI.jpg}{Panel ejecutivo y procedencia de WideWorldImporters}{Panel de WideWorldImporters sin filtros. El encabezado identifica propuesta 131 y ejecución 22. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/42_analitica_AW.jpg}{Panel ejecutivo AdventureWorks y procedencia}{AdventureWorks: propuesta 129, ejecución 21 y divisa USD comprobada. Los filtros visibles corresponden al contexto de esa captura histórica. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/37_WWI_2015_California.jpg}{Caso filtrado: 2015 y California}{Caso de referencia WideWorldImporters: año 2015 y California; 1.179 facturas y promedio 2.707,18 en moneda de origen. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/43_AW_2013_Northwest.jpg}{Caso filtrado: 2013 y Northwest}{Caso AdventureWorks: 2013 y Northwest; 17.452 unidades, 2.053 pedidos y promedio 2.929,94 por pedido. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/AN01.tex}{\input{capturas/AN01.tex}}{}
+\begingroup
+\setlength{\parskip}{4pt plus 1pt minus 1pt}
+\setlist[enumerate]{itemsep=3pt,topsep=4pt}
+\titlespacing*{\paragraph}{0pt}{4pt}{0.5em}
+\section{Leer gráficos y hallazgos con criterio comercial}
+\label{unidad:AN02}
+\textbf{Para quién:} Analista de BI, Gerente comercial\par
+\textbf{Al terminar podrá:} Diferenciar tendencia, ranking y distribución y explicar sus denominadores y límites.
+
+Una línea temporal compara períodos; las barras ordenan entidades; una distribución muestra participaciones. Antes de decir que un producto es el mejor, precise si lo ordenó por importe o unidades y qué filtros utilizó.
+
+Los hallazgos del panel se construyen con reglas sobre los resultados visibles. Aunque la pantalla los llame Copiloto analítico, no todos sus textos proceden de una nueva llamada LLM. La conversación inferior sí utiliza el proveedor de IA.
+
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Top o ranking} Lista limitada de entidades ordenadas por un indicador. El máximo de una línea no equivale a la mayor suma por producto.
+
+\paragraph{Participación visible} Porcentaje respecto del total definido para esa visualización. En el panel los rankings limitados pueden usar la suma de lo mostrado; en consultas agregadas del copiloto se informa el universo filtrado completo.
+
+\paragraph{Asociación} Patrón observado en datos. No prueba por sí solo causalidad, preferencia del cliente, demanda de mercado o eficacia de una campaña.
+
+\paragraph{Detalle seleccionado} Valor y contexto de un punto, barra o categoría. Seleccionarlo no cambia filtros sin una acción adicional.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Punto, barra o categoría & Clic o teclado permiten ver valor exacto y participación del dato seleccionado. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Punto, barra o categoría & Clic o teclado permiten ver valor exacto y participación del dato seleccionado. \\
+\addlinespace[3pt]
+Filtrar tablero por territorio & Botón explícito en el detalle territorial. Abrir el detalle no aplica el filtro automáticamente. \\
+\addlinespace[3pt]
+Cerrar detalle & Cierra la selección puntual sin modificar el universo. \\
+\addlinespace[3pt]
+Tabla de respaldo en vista analítica & Permite contrastar cifras de la gráfica. \\
+\addlinespace[3pt]
+Cómo se generaron & Explica la procedencia y reglas de los hallazgos. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Lea título, subtítulo, indicador, unidad y filtros de la gráfica.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Identifica el universo que está comparando.}
+\item Seleccione el dato que desee revisar.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Detalle con valor exacto sin cambio inesperado del panel.}
+\item Compare con la tabla de respaldo.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} La cifra representada tiene soporte verificable.}
+\item Si desea restringir por territorio, pulse el botón de filtro explícito.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Se recalcula el panel para ese alcance.}
+\item Lea hallazgo, evidencia y Cómo se generaron.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Distingue una descripción numérica de una conclusión sobre causas.}
+\item Redacte una lectura y una comprobación comercial adicional.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Por ejemplo revisar composición de productos antes de atribuir una caída a un proveedor.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+Los hallazgos automáticos del panel son determinísticos. La IA conversacional puede explicar la evidencia después, pero su prosa requiere revisión.
+
+\subsection{Qué comprueba la plataforma}
+Cálculo de agregados y visualizaciones sobre el datamart identificado. La gráfica no certifica hipótesis comerciales ajenas a los registros.
+
+\subsection{Qué decide la persona}
+La persona decide qué dato merece atención y qué comprobaciones adicionales necesita antes de actuar.
+
+\paragraph{Resultado esperado} Lectura comercial con cifra, unidad, período y límite explícitos.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+El Top 8 no suma el total global. & Es un subconjunto; revise su denominador. No ajuste la gráfica para que aparente cubrir todo. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+El Top 8 no suma el total global. & Es un subconjunto; revise su denominador. No ajuste la gráfica para que aparente cubrir todo. \\
+\addlinespace[3pt]
+Pedidos distintos por producto superan los pedidos globales al sumarlos. & Un pedido puede contener varios productos; el conteo distinto no es aditivo entre grupos. \\
+\addlinespace[3pt]
+La IA dice que un producto domina el mercado. & El ranking interno no demuestra cuota de mercado. Reformule como posición dentro del universo consultado. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+Un producto lidera por importe y otro por unidades. Escriba dos conclusiones válidas.
+
+\textbf{Respuesta orientativa.} Liderazgo por importe y liderazgo por unidades son distintos; ninguno demuestra automáticamente mayor margen o preferencia del mercado.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿Un gráfico por provincia demuestra dónde ocurrió físicamente la entrega?} No, salvo evidencia específica. En WWI el caso usa provincia de la ciudad de entrega registrada en la ficha.
+
+\paragraph{¿Abrir una barra filtra todo el tablero?} No. El filtro territorial exige su botón explícito.
+
+\endgroup
+\pantalla{recursos/pantallas/38_graficos_analiticos.jpg}{Visualizaciones con indicador y filtros}{Vista analítica: serie y rankings bajo el mismo indicador y filtros. Las categorías principales no siempre representan el total completo. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/39_respaldo_grafico.jpg}{Valores exactos de la serie visible}{Tabla de valores exactos de la serie de 2015 y California. Úsela para contrastar una lectura abreviada del gráfico. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/40_hallazgos.jpg}{Hallazgos y límites de interpretación}{Hallazgos automáticos derivados de los agregados. Comparar extremos visibles no demuestra causalidad ni una tendencia estadística. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/AN02.tex}{\input{capturas/AN02.tex}}{}
+\section{Conversar con el copiloto y revisar su respuesta}
+\label{unidad:AN03}
+\textbf{Para quién:} Analista de BI, Gerente comercial\par
+\textbf{Al terminar podrá:} Formular preguntas respondibles y contrastar consulta interpretada, evidencia y conclusión.
+
+El copiloto recibe contexto agregado y procedencia del datamart. Interpreta indicador, dimensión, filtros y Top N, y la plataforma puede ejecutar una consulta agregada permitida antes de pedir una explicación.
+
+Una pregunta puede solicitar otro año o territorio disponible aunque no esté seleccionado en pantalla. Por eso revise Consulta interpretada: la respuesta puede corresponder a otro alcance solicitado y no al filtro actualmente visible.
+
+Las reglas acotan formato, consultas y cautelas; no existe un validador universal de verdad para cada frase del modelo. La alumna debe verificar cifras, denominadores y límites antes de usar la respuesta.
+
+Si cambia de fuente, ejecución, indicador o filtros mientras una respuesta está pendiente, la conversación anterior deja de corresponder al contexto visible. El sistema descarta la respuesta tardía para que no se presente como si fuera del análisis nuevo. Espere la actualización del panel y formule otra pregunta si necesita continuar.
+
+\subsection{Formular preguntas útiles al copiloto sin perder el alcance}
+Una pregunta recomendable dice qué indicador quiere, para qué período y con qué agrupación. Ejemplo: ¿Cuáles son los cinco productos con más unidades en el contexto actual? Después revise Consulta interpretada y su evidencia. La pregunta pide una comparación descriptiva; no demuestra por qué un cliente compró ni predice lo que hará.
+
+Para evaluar coherencia, compruebe que la cifra, la unidad, el año, el territorio, la dimensión y el denominador de la respuesta coinciden con la consulta interpretada. Si la explicación excede esa evidencia, solicite aclaración o descarte la conclusión. Una redacción convincente no convierte una hipótesis en una causa probada.
+
+En la campaña actual se probaron recorridos y conversaciones con Sol. La comprobación mínima de Luna no acredita todavía la misma calidad de explicación; si la usa en una práctica nueva, conserve la pregunta y revise la evidencia con los mismos criterios. No cambie automáticamente a otro modelo ante una respuesta débil.
+
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Consulta interpretada} Indicador, agrupación, filtros, límite y orden que la plataforma entendió de la pregunta.
+
+\paragraph{Agregado permitido} Cálculo cerrado sobre dimensiones materializadas de producto, cliente o territorio, con recetas aprobadas; no SQL libre.
+
+\paragraph{Evidencia} Valores y alcance que respaldan la explicación; debe poder contrastarse con el panel o tablas.
+
+\paragraph{Pregunta de seguimiento} Sugerencia ejecutable construida desde capacidades verificadas; no debe asumirse que abre un nuevo módulo de análisis.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Escriba su pregunta & Entre 5 y 500 caracteres. Indique indicador, comparación, período, territorio y qué quiere comprender. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Escriba su pregunta & Entre 5 y 500 caracteres. Indique indicador, comparación, período, territorio y qué quiere comprender. \\
+\addlinespace[3pt]
+Guía de preguntas sugeridas & Ejemplos adaptados al contexto; pueden usarse como punto de partida. \\
+\addlinespace[3pt]
+Preguntar al copiloto & Solicita interpretación/explicación. No crea una propuesta ni ejecuta otro ETL. \\
+\addlinespace[3pt]
+Consulta interpretada & Revise alcance y denominador antes de leer la narración. \\
+\addlinespace[3pt]
+Evidencia y cautela & Permiten reconocer lo calculado y lo que no se ha demostrado. \\
+\addlinespace[3pt]
+Proveedor y modelo & Identifican quién generó la respuesta; cambiar de proveedor no debe cambiar las reglas del datamart. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Confirme ejecución, indicador y filtros antes de preguntar.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Tiene un contexto inicial claro.}
+\item Escriba una pregunta concreta, por ejemplo Top 5 de productos por unidades con los filtros actuales.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Solicitud respondible con capacidades presentes.}
+\item Espere la respuesta sin enviar varias veces.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} El copiloto muestra interpretación y evidencia si la operación cumple.}
+\item Lea Consulta interpretada y compare indicador, año, territorio, límite y denominador.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Reconoce cuándo la pregunta pidió un alcance distinto del panel.}
+\item Contraste al menos una cifra con tabla o consulta agregada y revise los límites comerciales.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} No acepta una redacción coherente si contradice datos.}
+\item Pregunte de nuevo para aclarar un denominador o límite, sin atribuir causas que no se han comprobado.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Conversación útil y controlada.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+Interpreta la intención y redacta respuesta con evidencia agregada. Hay dos generaciones diferenciadas: intención estructurada y explicación. La plataforma aporta seguimiento y cautelas.
+
+\subsection{Qué comprueba la plataforma}
+Permisos, fuente/ejecución, indicadores y dimensiones disponibles, filtros, cantidades Top N entre 1 y 20, consultas agregadas e identificadores permitidos; no acepta SQL libre del modelo.
+
+\subsection{Qué decide la persona}
+La persona formula, revisa y decide si la explicación permite una conclusión. Una recomendación es una comprobación por realizar, no un hecho demostrado.
+
+\paragraph{Resultado esperado} Respuesta contrastada con significado comercial y alcance reconocibles.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+El proveedor no responde o devuelve formato inválido. & Revise configuración, cuota/tiempo y credencial con el administrador. Un fallo de chat no requiere recargar el datamart. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+El proveedor no responde o devuelve formato inválido. & Revise configuración, cuota/tiempo y credencial con el administrador. Un fallo de chat no requiere recargar el datamart. \\
+\addlinespace[3pt]
+La respuesta usa el año actual para un conjunto histórico. & Recuerde que el reloj del servidor no añade registros futuros; no acepte fechas ajenas a la disponibilidad. \\
+\addlinespace[3pt]
+Se pide un pronóstico del próximo período. & Es fuera del alcance. El resultado correcto es explicar el límite; no inventar un valor o año. \\
+\addlinespace[3pt]
+La respuesta llama facturación a los pedidos de AW. & Corrija la interpretación: no se demuestra factura emitida a partir del pedido. \\
+\addlinespace[3pt]
+La respuesta es fluida pero cambia la cifra. & No la use como evidencia. Registre pregunta, contexto y discrepancia, reintente aclaración y contraste con cálculos determinísticos. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+En AW 21 filtre 2013/Northwest, indicador unidades, y pregunte: Resume las unidades vendidas en 2013 para Northwest. Indica el total y el mes con mayor cantidad, sin atribuir causas ni mezclar importes.
+
+\textbf{Respuesta orientativa.} El control histórico del 6 noviembre registró 17.452 unidades y junio 2013 con 2.494. Una sesión nueva debe contrastar sus propios resultados; no copiar esa cifra si el alcance o la fuente cambiaron.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿Se ejecuta SQL redactado por el LLM?} No. La intención se limita a consultas agregadas permitidas del servidor.
+
+\paragraph{¿El copiloto sólo puede responder el filtro visible?} Puede interpretar otro filtro disponible solicitado. Debe leer la consulta interpretada y no asumir que los dos alcances coinciden.
+
+\paragraph{¿Una respuesta correcta una vez garantiza que el proveedor nunca fallará?} No. Se deben revisar cada respuesta y sus controles.
+
+\pantalla{recursos/pantallas/41_copiloto.jpg}{Preguntas contextuales al copiloto}{Conversación contextual: formule una pregunta concreta y compruebe la evidencia de la respuesta. La captura no representa una respuesta nueva del LLM. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/AN03.tex}{\input{capturas/AN03.tex}}{}
+\section{Exportar y comprobar antes de compartir}
+\label{unidad:AN04}
+\textbf{Para quién:} Analista de BI, Gerente comercial con permiso de exportación\par
+\textbf{Al terminar podrá:} Obtener informes que conserven universo y procedencia y revisarlos contra el panel.
+
+Exportar PDF produce un informe para lectura. Exportar Excel produce tablas y gráficos de respaldo de las visualizaciones visibles. Ninguno es un respaldo de contenedores, volúmenes o todas las filas de la fuente.
+
+La exportación se genera desde el dashboard autorizado. No es una exportación automática de la conversación del chat; si desea citar una respuesta debe registrar la pregunta y su contexto como evidencia aparte.
+
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Contexto exportado} Fuente, propuesta, ejecución, vista, métrica, filtros y unidad que permiten interpretar el archivo.
+
+\paragraph{Trazabilidad} Información para reconocer qué expediente y selección respaldan las cifras.
+
+\paragraph{Redondeo} Presentación con decimales o abreviaturas; no autoriza a cambiar valores para hacerlos coincidir visualmente.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Exportar PDF & Descarga el informe de la vista y selección actuales. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Exportar PDF & Descarga el informe de la vista y selección actuales. \\
+\addlinespace[3pt]
+Exportar Excel & Descarga el libro con datos que respaldan los gráficos exportados. \\
+\addlinespace[3pt]
+Vista ejecutiva/Vista analítica & Afecta qué visualizaciones se comparten; revise la vista junto a los filtros. \\
+\addlinespace[3pt]
+Carpeta Descargas & Abra el archivo recibido y revíselo, no basta con pulsar el botón. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Fije fuente, ejecución, vista, indicador, año y territorio.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Alcance exacto que se quiere compartir.}
+\item Exporte PDF y espere la descarga.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Archivo con nombre de ejecución y vista.}
+\item Exporte Excel.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Libro de revisión, no volcado completo del origen.}
+\item Abra ambos archivos y compare un total, una entidad y el filtro con el panel.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Cifras y contexto congruentes.}
+\item Revise unidad, advertencias, denominadores y procedencia.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} El informe no pierde el límite demostrado en pantalla.}
+\item Registre fecha, nombre y contexto del archivo revisado.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Evidencia de revisión real, no sólo descarga.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+No se necesita otra llamada al LLM para generar el informe del dashboard. El chat no convierte el reporte en una conclusión validada por un modelo.
+
+\subsection{Qué comprueba la plataforma}
+Permiso de exportación además de lectura de analítica; servidor reconstruye el mismo dashboard con filtros autorizados y registra la acción.
+
+\subsection{Qué decide la persona}
+La persona elige selección, vista y formato y comprueba el archivo antes de compartirlo.
+
+\paragraph{Resultado esperado} Dos archivos revisados cuyo alcance puede explicarse sin abrir o trabase.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+No hay botones de exportación. & Revise que el rol tenga permisos de lectura del panel y exportación. No se corrige cambiando de vista. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+No hay botones de exportación. & Revise que el rol tenga permisos de lectura del panel y exportación. No se corrige cambiando de vista. \\
+\addlinespace[3pt]
+El PDF tiene menos gráficos que la Vista analítica. & Compruebe qué vista exportó; la ejecutiva omite el visual de clientes. \\
+\addlinespace[3pt]
+El porcentaje de Excel no coincide. & Compruebe si es escala 0 a 100 o fracción y qué denominador se usó; no multiplique otra vez por 100 por costumbre. \\
+\addlinespace[3pt]
+El archivo muestra moneda de origen aunque AW esté en USD. & La evidencia histórica AW 21 conservó una etiqueta genérica en una razón del PDF, pese al valor correcto. No presente ese antecedente como perfección semántica; revise el archivo nuevo. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+Explique por qué no es suficiente mostrar que se descargó un informe para probar que es correcto.
+
+\textbf{Respuesta orientativa.} Debe abrirse y comparar cifras, contexto, filtros, unidades y trazabilidad con la selección autorizada.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿Excel incluye todas las filas del OLTP?} No. Incluye respaldo de las visualizaciones exportadas.
+
+\paragraph{¿Se exigen siempre seis páginas y seis hojas?} No. Esas cantidades pertenecen a los casos históricos concretos; varían con la vista y las visualizaciones.
+
+
+\IfFileExists{capturas/AN04.tex}{\input{capturas/AN04.tex}}{}

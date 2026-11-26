@@ -1,0 +1,50 @@
+@startuml
+skinparam backgroundColor white
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 16
+skinparam ArrowFontSize 15
+skinparam NoteFontSize 14
+skinparam Padding 6
+skinparam nodesep 24
+skinparam ranksep 28
+skinparam dpi 180
+skinparam wrapWidth 220
+skinparam maxMessageSize 190
+skinparam sequenceMessageAlign center
+hide empty members
+hide circle
+skinparam classAttributeIconSize 0
+
+
+autonumber
+actor "Analista" as A
+participant "Servicio\nde carga" as S
+database "Registro\nde ejecución" as R
+database "Base\nde origen" as O
+database "Datamart\nde destino" as D
+A -> S : Preparar propuesta e indicadores
+S -> R : Recuperar contrato y metadatos
+S -> S : Validar y construir el plan
+S --> A : Presentar plan y advertencias
+A -> S : Confirmar la ejecución
+S -> O : Leer los datos aprobados
+O --> S : Datos de origen
+S -> D : Cargar el datamart
+S -> O : Consultar totales de referencia
+S -> D : Consultar totales cargados
+S -> S : Conciliar origen y destino
+alt Fallo o diferencia bloqueante
+ S -> R : Registrar fallo y bloqueo
+else Resultado válido
+ S -> R : Registrar conciliación
+ S --> A : Habilitar revisión del resultado
+end
+legend bottom
+El origen permanece en sólo lectura.
+Cada ejecución tiene un destino y una procedencia propios.
+endlegend
+
+
+@enduml

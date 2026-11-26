@@ -1,0 +1,50 @@
+@startuml
+skinparam backgroundColor white
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 16
+skinparam ArrowFontSize 15
+skinparam NoteFontSize 14
+skinparam Padding 6
+skinparam nodesep 24
+skinparam ranksep 28
+skinparam dpi 180
+skinparam wrapWidth 220
+skinparam maxMessageSize 190
+skinparam sequenceMessageAlign center
+hide empty members
+hide circle
+skinparam classAttributeIconSize 0
+
+
+autonumber
+actor "Analista" as A
+participant "Servidor" as S
+database "Registro\ndel proyecto" as D
+participant "Proveedor de\ninteligencia artificial" as IA
+A -> S : Revisar necesidad y fuente
+S -> D : Leer contexto autorizado
+S -> IA : Evaluar viabilidad
+IA --> S : Revisión de la necesidad
+S --> A : Revisión validada
+A -> S : Solicitar propuesta
+S -> IA : Proponer conceptos y modelo
+IA --> S : Propuesta estructurada
+S -> S : Validar referencias y cálculos
+alt Respuesta inválida
+ S --> A : Bloquear y explicar
+else Respuesta válida
+ S -> D : Guardar versión revisable
+ S --> A : Propuesta y advertencias
+ A -> S : Aprobar tras la revisión
+ S -> D : Registrar aprobación validada
+ S --> A : Confirmar sin ejecutar carga
+end
+legend bottom
+El servidor conserva el objetivo original y verifica los permisos.
+La inteligencia artificial propone; la aprobación es humana.
+endlegend
+
+
+@enduml

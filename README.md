@@ -179,3 +179,28 @@ El flujo principal de la prueba de concepto está completo: configurar, introspe
 3. cerrar conclusiones, anexos, evidencias y referencias del documento académico completo;
 4. integrar las correcciones de la auditoría operativa por PR a `develop` y promover a `main` sólo tras revisión y CI aprobada;
 5. mantener inventario, combinación de fuentes, otros motores y despliegue Azure como extensiones futuras, no como requisitos para demostrar el núcleo actual.
+
+### Revisión operativa del 25 de noviembre de 2026
+
+Se incorpora OpenAI Responses (preset económico final GPT-6 Luna/bajo; ensayos
+completos realizados con GPT-6.2 Sol/medio), sesión
+configurable desde Parámetros (60 minutos iniciales, rango 15–240), continuidad
+de módulo y retornos guiados, recuperación de preguntas retiradas y conservación
+de contexto comprobado al generar propuestas. Los contratos nuevos usan prompt
+v9 y reglas 6 y requieren indicadores seleccionables para las métricas solicitadas;
+las lecturas históricas siguen inmutables. El chat descarta respuestas de un contexto
+previo. Consulte [especificación](docs/specs/SPR-06-02-continuidad-operativa-y-openai.md),
+[QA](docs/testing/qa-continuidad-openai-2026-11-25.md) y
+[adenda operativa](docs/manual-usuario/adenda-2026-11-25/LEEME.md).
+Aplicar migraciones antes de usar esta actualización. No requiere borrar volúmenes
+ni registrar claves en archivos de entorno.
+
+La [tabla de modelos, tarifas y pruebas](docs/manual-usuario/adenda-2026-11-25/Tabla_modelos_OpenAI_2026-11-25.md)
+identifica qué modelo se utilizó en cada caso y cómo preparar una demostración sin
+regenerar resultados publicados. Luna pasó una prueba breve de conexión; no se le
+atribuye el recorrido completo de Sol ni un costo real no medido por solicitud.
+
+El [manual completo actualizado de 272 páginas](docs/manual-usuario/edicion-20261125/LEEME_PRIMERO.md)
+integra estas funciones en la formación. La [guía de sustitución portable](docs/instalacion/portable-20261125/Guia_actualizacion_BI_portable.pdf)
+explica el próximo traslado limpio a Ubuntu y Windows/WSL. El paquete nuevo aún
+requiere construcción y verificación desde el corte elegido.

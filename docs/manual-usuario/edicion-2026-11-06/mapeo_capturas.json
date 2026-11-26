@@ -1,0 +1,1445 @@
+{
+  "estado": "Claves resueltas con capturas nuevas completas; manuales finales revisados página por página.",
+  "fecha": "2026-11-06T03:23:03.557950-05:00",
+  "manifest_revisado": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/manifest.json",
+  "capturas_en_corte": 109,
+  "aliases": {
+    "login": "login",
+    "home_aw": "inicio_aw",
+    "home_wwi": "inicio_wwi",
+    "navigation": "inicio_aw",
+    "roles_form": "roles_formulario",
+    "roles_analyst": "roles_analista",
+    "roles_manager": "roles_gerente",
+    "users_form": "usuarios_formulario",
+    "connections_list": "conexiones_listado",
+    "connections_form": "conexiones_formulario",
+    "connection_test_aw": "conexiones_listado",
+    "connection_test_wwi": "conexiones_validacion",
+    "connection_enabled": "conexiones_validacion",
+    "connection_metadata": "conexiones_validacion",
+    "schema_aw": "esquema_aw",
+    "metadata_refresh": "esquema_aw",
+    "schema_aw_detail": "esquema_aw_columnas",
+    "schema_wwi_detail": "esquema_wwi_columnas",
+    "metadata_versions": "esquema_wwi",
+    "parameters": "parametros_inferior",
+    "llm_list": "llm_configuraciones",
+    "llm_form": "llm_formulario",
+    "llm_test": "llm_prueba",
+    "llm_active": "llm_configuraciones",
+    "catalog_aw": "catalogo_cobertura_aw",
+    "catalog_coverage": "catalogo_cobertura_wwi",
+    "catalog_question": "catalogo_preguntas",
+    "catalog_periodicities": "catalogo_periodicidades",
+    "catalog_wwi": "catalogo_cobertura_wwi",
+    "assistant_domain": "asistente_dominio",
+    "assistant_need": "asistente_necesidad",
+    "assistant_consent": "asistente_necesidad",
+    "need_viability": "asistente_viabilidad",
+    "need_viability_evidence": "asistente_viabilidad_evidencia",
+    "need_limitations": "asistente_limites",
+    "need_continue": "asistente_limites",
+    "assistant_concepts": "asistente_conceptos",
+    "concept_evidence": "conceptos_evidencia",
+    "case_aw_schema": "esquema_aw_relaciones",
+    "case_aw_need": "asistente_necesidad",
+    "case_wwi_schema": "esquema_wwi_relaciones",
+    "conexiones": "conexiones_listado",
+    "llm_configuraciones": "llm_configuraciones",
+    "esquema_adventureworks": "esquema_aw",
+    "esquema_wideworldimporters": "esquema_wwi",
+    "catalogo_preguntas": "catalogo_preguntas",
+    "asistente_necesidad": "asistente_necesidad",
+    "asistente_viabilidad": "asistente_viabilidad",
+    "asistente_conceptos": "asistente_conceptos",
+    "acceso": "login",
+    "inicio_adventureworks": "inicio_aw",
+    "inicio_wideworldimporters": "inicio_wwi",
+    "parametros": "parametros_inferior",
+    "roles_analista": "roles_analista",
+    "esquema_relaciones_aw": "esquema_aw_relaciones",
+    "esquema_relaciones_wwi": "esquema_wwi_relaciones",
+    "catalogo_aw_cobertura": "catalogo_cobertura_aw",
+    "catalogo_periodicidades": "catalogo_periodicidades",
+    "roles_analyst_permissions": "roles_analista_permisos",
+    "roles_manager_permissions": "roles_gerente_permisos",
+    "catalogo_preguntas_adicionales": "catalogo_instrucciones",
+    "permissions_menus": "menus_edicion",
+    "permissions_catalog": "permisos_catalogo",
+    "permissions_catalog_more": "permisos_catalogo_segunda",
+    "menus_list": "menus_listado",
+    "menus_edit": "menus_edicion",
+    "audit": "auditoria_listado",
+    "assistant_proposal": "asistente_propuesta",
+    "proposal_verification": "asistente_validacion",
+    "assistant_personalization": "asistente_personalizacion",
+    "personalization_measures": "asistente_calculo_controlado",
+    "personalization_calculation": "asistente_calculo_controlado",
+    "personalization_relation": "asistente_relacion_guiada",
+    "personalization_saved": "asistente_propuesta",
+    "assistant_review": "asistente_aprobacion",
+    "proposal_approved": "asistente_aprobada",
+    "etl_choose": "etl_elegir_propuesta_nueva",
+    "etl_indicators": "etl_indicadores_detalle",
+    "etl_existing_execution": "caso_aw_expediente18",
+    "etl_plan": "etl_operaciones_plan",
+    "etl_prepared": "etl_preparado",
+    "etl_running": "etl_ejecucion",
+    "etl_completed": "etl_conciliacion_detalle",
+    "etl_quality": "etl_semantica_revision",
+    "etl_semantic": "etl_semantica_revision",
+    "etl_semantic_published": "etl_semantica_publicada",
+    "analytics_aw_executive": "analitica_ejecutiva",
+    "analytics_aw_analyst": "analitica_detallada",
+    "analytics_filters": "caso_aw_panel_filtrado",
+    "case_aw_proposal": "asistente_propuesta",
+    "case_aw_dashboard": "caso_aw_panel_filtrado",
+    "export_context": "caso_aw_panel_filtrado",
+    "export_pdf": "caso_aw_panel_filtrado",
+    "export_excel": "caso_aw_panel_filtrado",
+    "exportacion_panel": "caso_aw_panel_filtrado",
+    "etl_materializacion": "etl_ejecucion",
+    "etl_elegir_propuesta": "etl_elegir_propuesta_nueva",
+    "etl_confirmacion": "etl_operaciones_plan",
+    "caso_aw_expediente": "etl_conciliacion_detalle",
+    "need_suggestions": "asistente_sugerencias",
+    "copilot_guide": "copiloto_pregunta",
+    "copilot_question": "copiloto_pregunta",
+    "copilot_answer": "copiloto_aw",
+    "case_aw_chat": "copiloto_aw",
+    "etl_reconciliation": "etl_conciliacion_detalle",
+    "etl_conciliacion": "etl_conciliacion_detalle",
+    "case_aw_reconciliation": "etl_conciliacion_detalle",
+    "etl_currency": "etl_conciliacion_detalle",
+    "etl_indicadores": "etl_indicadores_detalle",
+    "need_formulation": "asistente_formulacion",
+    "concept_copilot": "asistente_copiloto_concepto",
+    "case_wwi_need": "caso_wwi_necesidad",
+    "proposal_coverage": "asistente_cobertura",
+    "proposal_identity": "asistente_identidades",
+    "personalization_kpis": "asistente_personalizacion_kpis",
+    "llm_credential_empty": "llm_credencial_vacia",
+    "etl_compare": "etl_comparacion",
+    "proposal_history": "asistente_historial",
+    "analytics_point": "analitica_detalle_punto",
+    "copilot_interpreted": "copiloto_consulta_interpretada",
+    "copilot_followup": "copiloto_seguimiento",
+    "etl_pipeline": "etl_operaciones_plan",
+    "analytics_wwi_executive": "analitica_wwi_ejecutiva",
+    "case_wwi_proposal": "caso_wwi_propuesta",
+    "case_wwi_reconciliation": "caso_wwi_conciliacion",
+    "case_wwi_currency": "caso_wwi_divisa",
+    "case_wwi_dashboard": "caso_wwi_panel_filtrado",
+    "case_wwi_relationship_customer": "asistente_relacion_cliente_correcta",
+    "case_wwi_relationship_territory": "asistente_relacion_guiada",
+    "case_wwi_relationship_rejected": "relacion_rol_incorrecto_rechazado"
+  },
+  "verificaciones": [
+    {
+      "clave_editorial": "login",
+      "key_manifest": "login",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/login.jpg",
+      "sha256": "d93be5728ec5b7cff59c73054f11ee23b99a924846af3bf3d6bcdc594bfa8c13",
+      "observado_visualmente": "Formulario de acceso con correo visible y contraseña vacía; Iniciar sesión disponible.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "home_aw",
+      "key_manifest": "inicio_aw",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/inicio_aw.jpg",
+      "sha256": "c67753d959974a27797fb40aa2a0639388c0895db1445d3cfa4dd4064c3a3c29",
+      "observado_visualmente": "Inicio con AdventureWorks, fuente e instantánea, tres prerrequisitos y navegación expandida.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "home_wwi",
+      "key_manifest": "inicio_wwi",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/inicio_wwi.jpg",
+      "sha256": "a1d2e44c6d79821fbb40a0c2587f4d8ccca2a03e408708efd931bad4ca91ff1c",
+      "observado_visualmente": "Inicio, fuente WideWorldImporters y estado listo visibles; no es una pantalla de analítica.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "navigation",
+      "key_manifest": "inicio_aw",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/inicio_aw.jpg",
+      "sha256": "c67753d959974a27797fb40aa2a0639388c0895db1445d3cfa4dd4064c3a3c29",
+      "observado_visualmente": "Inicio con AdventureWorks, fuente e instantánea, tres prerrequisitos y navegación expandida.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "roles_form",
+      "key_manifest": "roles_formulario",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/roles_formulario.jpg",
+      "sha256": "0ad2557eba57adbf76f7efa5f06a89e31366d7336fd802f66ddc7cfb70c4462b",
+      "observado_visualmente": "Crear rol, Nombre/Descripción y lista de permisos; el botón final de creación queda fuera de esta vista.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "roles_analyst",
+      "key_manifest": "roles_analista",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/roles_analista.jpg",
+      "sha256": "3aa9fd71184b16c6cab820262f6dacd33cc56380f87d3611cafc0c67069f6cd6",
+      "observado_visualmente": "Editar rol Analista BI y primera parte de permisos marcados; es consulta de configuración bajo Administrador inicial.",
+      "limite": "Debe acompañarse de roles_analista_permisos para la lista completa. No es sesión con cuenta analista."
+    },
+    {
+      "clave_editorial": "roles_manager",
+      "key_manifest": "roles_gerente",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/roles_gerente.jpg",
+      "sha256": "c71b9d67fa3f27cecfe660f83f5a47d4ebfb5c472d311afe2354c664a27ecb99",
+      "observado_visualmente": "Editar Gerente comercial, consulta de análisis y conexiones marcadas; generación y catálogo no marcados. Sesión sigue Administrador inicial.",
+      "limite": "Debe acompañarse de roles_gerente_permisos para metadatos/exportación. No es sesión con cuenta gerente."
+    },
+    {
+      "clave_editorial": "users_form",
+      "key_manifest": "usuarios_formulario",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/usuarios_formulario.jpg",
+      "sha256": "0f480cf64a6ce0467bd7be306c2ffad1a07601b30a6141ce8207af1f00d3e7d6",
+      "observado_visualmente": "Crear usuario vacío con roles y dos cuentas existentes al pie. No acredita creación nueva.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "connections_list",
+      "key_manifest": "conexiones_listado",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/conexiones_listado.jpg",
+      "sha256": "64e1665fce1c79650c2763a2755edb90a9e6ae756c249ba684656a853992f8ce",
+      "observado_visualmente": "Formulario vacío y listado de las dos fuentes habilitadas; aviso de prueba correcta, fechas y controles.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "connections_form",
+      "key_manifest": "conexiones_formulario",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/conexiones_formulario.jpg",
+      "sha256": "5b834a7e08d803f1caf5ac3f201b77b1d69cb2476211658af16a9dd48f7d6766",
+      "observado_visualmente": "Formulario Registrar conexión con campos y opciones completos; no muestra un registro nuevo guardado.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "connection_test_aw",
+      "key_manifest": "conexiones_listado",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/conexiones_listado.jpg",
+      "sha256": "64e1665fce1c79650c2763a2755edb90a9e6ae756c249ba684656a853992f8ce",
+      "observado_visualmente": "Formulario vacío y listado de las dos fuentes habilitadas; aviso de prueba correcta, fechas y controles.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "connection_test_wwi",
+      "key_manifest": "conexiones_validacion",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/conexiones_validacion.jpg",
+      "sha256": "0c45425dd9dc0a62159d6279c1183d08b8e5f334e073c998cf51879c9bffff7f",
+      "observado_visualmente": "Aviso de conexión y sólo lectura validados; ambas fuentes habilitadas con acciones Probar conexión y Leer metadatos.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "connection_enabled",
+      "key_manifest": "conexiones_validacion",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/conexiones_validacion.jpg",
+      "sha256": "0c45425dd9dc0a62159d6279c1183d08b8e5f334e073c998cf51879c9bffff7f",
+      "observado_visualmente": "Aviso de conexión y sólo lectura validados; ambas fuentes habilitadas con acciones Probar conexión y Leer metadatos.",
+      "limite": "Acredita estado Habilitada y control Deshabilitar, no una habilitación nueva registrada por esta imagen."
+    },
+    {
+      "clave_editorial": "connection_metadata",
+      "key_manifest": "conexiones_validacion",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/conexiones_validacion.jpg",
+      "sha256": "0c45425dd9dc0a62159d6279c1183d08b8e5f334e073c998cf51879c9bffff7f",
+      "observado_visualmente": "Aviso de conexión y sólo lectura validados; ambas fuentes habilitadas con acciones Probar conexión y Leer metadatos.",
+      "limite": "Muestra Leer metadatos disponible; la creación/actualización de instantánea se comprueba por separado."
+    },
+    {
+      "clave_editorial": "schema_aw",
+      "key_manifest": "esquema_aw",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/esquema_aw.jpg",
+      "sha256": "7958eecb4f467f2408561c756d9be34e31f9128ac1a670404234b8252ad92384",
+      "observado_visualmente": "Cabecera AdventureWorks, instantánea2, resumen de tablas y selector Versión de metadatos; Actualizar metadatos disponible.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "metadata_refresh",
+      "key_manifest": "esquema_aw",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/esquema_aw.jpg",
+      "sha256": "7958eecb4f467f2408561c756d9be34e31f9128ac1a670404234b8252ad92384",
+      "observado_visualmente": "Cabecera AdventureWorks, instantánea2, resumen de tablas y selector Versión de metadatos; Actualizar metadatos disponible.",
+      "limite": "Muestra el control y la instantánea existente, no una captura nueva de estructura."
+    },
+    {
+      "clave_editorial": "schema_aw_detail",
+      "key_manifest": "esquema_aw_columnas",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/esquema_aw_columnas.jpg",
+      "sha256": "5152bc3c0452c43a3d9477ae9a8113706261180e8eb78e2f76933285ec6c249e",
+      "observado_visualmente": "Búsqueda SalesOrderDetail y detalle de columnas, tipos y claves; no muestra las relaciones al pie.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "schema_wwi_detail",
+      "key_manifest": "esquema_wwi_columnas",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/esquema_wwi_columnas.jpg",
+      "sha256": "c7e255d65f3385ccca9c12aafd852164e795ce0f3abfa96f3c65a4c3d593f9b6",
+      "observado_visualmente": "Búsqueda InvoiceLines, clave InvoiceLineID y columnas InvoiceID, Quantity y otras.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "metadata_versions",
+      "key_manifest": "esquema_wwi",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/esquema_wwi.jpg",
+      "sha256": "b8ede44a7af38d73deab6b4ef41b2baa300900d0e83b04474053c3de4a81673c",
+      "observado_visualmente": "Cabecera WideWorldImporters, instantánea3, selector deshabilitado y explicación de una única versión.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "parameters",
+      "key_manifest": "parametros_inferior",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/parametros_inferior.jpg",
+      "sha256": "e32426f85fff32a3f929b6e1a39565943703b3cffa852561c603939acca4f91e",
+      "observado_visualmente": "Los cuatro parámetros y sus valores, rangos, Guardar y Restaurar están visibles.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "llm_list",
+      "key_manifest": "llm_configuraciones",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/llm_configuraciones.jpg",
+      "sha256": "7a84eb71c2729cb7a192eedd0ce023b0d5eb188632def9092b4b6a8dd7641650",
+      "observado_visualmente": "Listado de proveedores y estado; Claude aparece activo (true), resto false; claves no visibles.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "llm_form",
+      "key_manifest": "llm_formulario",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/llm_formulario.jpg",
+      "sha256": "f2a8800fb88c5bd4c4bb7158ad6e543177c39de3a3eaeac30e2009bd4fb1ad1b",
+      "observado_visualmente": "Crear configuración LLM con nombre, proveedor, URL, modelo, razonamiento y Crear registro; no hay ventana API key.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "llm_test",
+      "key_manifest": "llm_prueba",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/llm_prueba.jpg",
+      "sha256": "751e6f76c7b46e2e146a8a3f128529636dbe1168d0475d22a2c19ef833c89fb1",
+      "observado_visualmente": "Aviso de conexión con proveedor validada y listado; Claude sigue activo. No muestra una necesidad ni respuesta de negocio.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "llm_active",
+      "key_manifest": "llm_configuraciones",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/llm_configuraciones.jpg",
+      "sha256": "7a84eb71c2729cb7a192eedd0ce023b0d5eb188632def9092b4b6a8dd7641650",
+      "observado_visualmente": "Listado de proveedores y estado; Claude aparece activo (true), resto false; claves no visibles.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "catalog_aw",
+      "key_manifest": "catalogo_cobertura_aw",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/catalogo_cobertura_aw.jpg",
+      "sha256": "9fa36d01f6a878d5f4026151dbde2bae5cc972dd1701b932a2f00544f27c22a2",
+      "observado_visualmente": "Fuente AdventureWorks, dominio y comienzo de cobertura; no muestra toda la cobertura expandida.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "catalog_coverage",
+      "key_manifest": "catalogo_cobertura_wwi",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/catalogo_cobertura_wwi.jpg",
+      "sha256": "c6c0b3ba15983d5a7ca019443d6c5256fc473887175d2acaff9f64cb37d2a83f",
+      "observado_visualmente": "Cobertura de WideWorldImporters con cuatro preguntas verificables y dos por validar; Referencias detectadas permanece cerrado.",
+      "limite": "Muestra el control Referencias detectadas cerrado; para enseñar sus referencias completas hace falta abrirlo."
+    },
+    {
+      "clave_editorial": "catalog_question",
+      "key_manifest": "catalogo_preguntas",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/catalogo_preguntas.jpg",
+      "sha256": "86acaa5780b8758b5f17b30b5cd0ae3df6d1ab0b1d75d0e5772c37cae5a1f2e1",
+      "observado_visualmente": "Preguntas1/2 completas con Habilitada, Etiqueta, Explicación e Instrucción; parte de3/4.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "catalog_periodicities",
+      "key_manifest": "catalogo_periodicidades",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/catalogo_periodicidades.jpg",
+      "sha256": "8be35fcf61f42b2c58a104a3e8b85de7a5262085318db7c220c8a297d573d2e5",
+      "observado_visualmente": "Cinco periodicidades y botones Guardar catálogo/Restaurar catálogo validado.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "catalog_wwi",
+      "key_manifest": "catalogo_cobertura_wwi",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/catalogo_cobertura_wwi.jpg",
+      "sha256": "c6c0b3ba15983d5a7ca019443d6c5256fc473887175d2acaff9f64cb37d2a83f",
+      "observado_visualmente": "Cobertura de WideWorldImporters con cuatro preguntas verificables y dos por validar; Referencias detectadas permanece cerrado.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "assistant_domain",
+      "key_manifest": "asistente_dominio",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_dominio.jpg",
+      "sha256": "0c7a7415277319310d6a15ddc7fe0f05602604f1eb08978fd9d73b777d7577cb",
+      "observado_visualmente": "Selección Datamart de ventas y Crear propuesta; es el comienzo del asistente.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "assistant_need",
+      "key_manifest": "asistente_necesidad",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_necesidad.jpg",
+      "sha256": "c0bee6b76a97b9769501bb4e6a3c4a2fd9212c6832be6e06bf961172ddb81b34",
+      "observado_visualmente": "Objetivo AW de532 caracteres completo, destino Claude, autorización marcada y botones de ayuda. No muestra resultados de sugerencias o reformulación.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "assistant_consent",
+      "key_manifest": "asistente_necesidad",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_necesidad.jpg",
+      "sha256": "c0bee6b76a97b9769501bb4e6a3c4a2fd9212c6832be6e06bf961172ddb81b34",
+      "observado_visualmente": "Objetivo AW de532 caracteres completo, destino Claude, autorización marcada y botones de ayuda. No muestra resultados de sugerencias o reformulación.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "need_viability",
+      "key_manifest": "asistente_viabilidad",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_viabilidad.jpg",
+      "sha256": "59e4b36a97df479432dc8e4d48d3706fa3d90597d29e46fdb8243cc1ae39252f",
+      "observado_visualmente": "Mensual y revisión con14 directos/9 automáticos/9 por decidir, explicación de derivación; comienzo de tarjetas.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "need_viability_evidence",
+      "key_manifest": "asistente_viabilidad_evidencia",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_viabilidad_evidencia.jpg",
+      "sha256": "0bdc7069d7a223605aee5b149b3ae8a1d359cfa6eb2612aede95158eae27c2af",
+      "observado_visualmente": "Revisión previa y evidencia temporal abierta: LineTotal, OrderQty, OrderDate y ruta detalle a cabecera.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "need_limitations",
+      "key_manifest": "asistente_limites",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_limites.jpg",
+      "sha256": "85848e35175d7dd3ca69fb6a6596e3c174748916cfeeb123cbea16cd56feed4e",
+      "observado_visualmente": "Límites con casillas marcadas y Generar propuesta y resolver9 derivables; no muestra generación terminada.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "need_continue",
+      "key_manifest": "asistente_limites",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_limites.jpg",
+      "sha256": "85848e35175d7dd3ca69fb6a6596e3c174748916cfeeb123cbea16cd56feed4e",
+      "observado_visualmente": "Límites con casillas marcadas y Generar propuesta y resolver9 derivables; no muestra generación terminada.",
+      "limite": "Acredita el botón disponible y límites marcados; no acredita que la generación posterior sea correcta."
+    },
+    {
+      "clave_editorial": "assistant_concepts",
+      "key_manifest": "asistente_conceptos",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_conceptos.jpg",
+      "sha256": "6eefd53c8a6872c9d1c59b74dff0055601713e1994085be984410d5f29ea9240",
+      "observado_visualmente": "Conceptos de línea, pedido, producto y territorio con Incluir y evidencia confirmada; no es la aprobación del modelo.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "concept_evidence",
+      "key_manifest": "conceptos_evidencia",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/conceptos_evidencia.jpg",
+      "sha256": "b15049684e71d29ff66e1d52049332e67ccd50a5bf93f74727719c596fee683f",
+      "observado_visualmente": "Origen técnico y controles de la línea de pedido abiertos; clave y relación comprobadas.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "case_aw_schema",
+      "key_manifest": "esquema_aw_relaciones",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/esquema_aw_relaciones.jpg",
+      "sha256": "ce2bd9739870277e7a0da990a74588c00c238d5dc5858433ff746c393332dcab",
+      "observado_visualmente": "Continuación del detalle con columnas y relaciones de SalesOrderID a SalesOrderHeader y clave compuesta a SpecialOfferProduct.",
+      "limite": "Muestra relaciones de pedido; la identidad de fuente/tabla se contextualiza con esquema_aw y esquema_aw_columnas."
+    },
+    {
+      "clave_editorial": "case_aw_need",
+      "key_manifest": "asistente_necesidad",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_necesidad.jpg",
+      "sha256": "c0bee6b76a97b9769501bb4e6a3c4a2fd9212c6832be6e06bf961172ddb81b34",
+      "observado_visualmente": "Objetivo AW de532 caracteres completo, destino Claude, autorización marcada y botones de ayuda. No muestra resultados de sugerencias o reformulación.",
+      "limite": "Captura del texto y autorización, anterior al incidente125. No se atribuye a un nuevo caso exitoso posterior al fix."
+    },
+    {
+      "clave_editorial": "case_wwi_schema",
+      "key_manifest": "esquema_wwi_relaciones",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/esquema_wwi_relaciones.jpg",
+      "sha256": "dd49549eb407a06d3670b37f687d016d5731e2140afdc1eb5bc809591740626f",
+      "observado_visualmente": "Continuación de InvoiceLines con relaciones a Invoices, StockItems, PackageTypes y People por auditoría.",
+      "limite": "Muestra las relaciones de factura; contextualizar con esquema_wwi y esquema_wwi_columnas."
+    },
+    {
+      "clave_editorial": "conexiones",
+      "key_manifest": "conexiones_listado",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/conexiones_listado.jpg",
+      "sha256": "64e1665fce1c79650c2763a2755edb90a9e6ae756c249ba684656a853992f8ce",
+      "observado_visualmente": "Formulario vacío y listado de las dos fuentes habilitadas; aviso de prueba correcta, fechas y controles.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "llm_configuraciones",
+      "key_manifest": "llm_configuraciones",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/llm_configuraciones.jpg",
+      "sha256": "7a84eb71c2729cb7a192eedd0ce023b0d5eb188632def9092b4b6a8dd7641650",
+      "observado_visualmente": "Listado de proveedores y estado; Claude aparece activo (true), resto false; claves no visibles.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "esquema_adventureworks",
+      "key_manifest": "esquema_aw",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/esquema_aw.jpg",
+      "sha256": "7958eecb4f467f2408561c756d9be34e31f9128ac1a670404234b8252ad92384",
+      "observado_visualmente": "Cabecera AdventureWorks, instantánea2, resumen de tablas y selector Versión de metadatos; Actualizar metadatos disponible.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "esquema_wideworldimporters",
+      "key_manifest": "esquema_wwi",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/esquema_wwi.jpg",
+      "sha256": "b8ede44a7af38d73deab6b4ef41b2baa300900d0e83b04474053c3de4a81673c",
+      "observado_visualmente": "Cabecera WideWorldImporters, instantánea3, selector deshabilitado y explicación de una única versión.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "catalogo_preguntas",
+      "key_manifest": "catalogo_preguntas",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/catalogo_preguntas.jpg",
+      "sha256": "86acaa5780b8758b5f17b30b5cd0ae3df6d1ab0b1d75d0e5772c37cae5a1f2e1",
+      "observado_visualmente": "Preguntas1/2 completas con Habilitada, Etiqueta, Explicación e Instrucción; parte de3/4.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "asistente_necesidad",
+      "key_manifest": "asistente_necesidad",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_necesidad.jpg",
+      "sha256": "c0bee6b76a97b9769501bb4e6a3c4a2fd9212c6832be6e06bf961172ddb81b34",
+      "observado_visualmente": "Objetivo AW de532 caracteres completo, destino Claude, autorización marcada y botones de ayuda. No muestra resultados de sugerencias o reformulación.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "asistente_viabilidad",
+      "key_manifest": "asistente_viabilidad",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_viabilidad.jpg",
+      "sha256": "59e4b36a97df479432dc8e4d48d3706fa3d90597d29e46fdb8243cc1ae39252f",
+      "observado_visualmente": "Mensual y revisión con14 directos/9 automáticos/9 por decidir, explicación de derivación; comienzo de tarjetas.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "asistente_conceptos",
+      "key_manifest": "asistente_conceptos",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_conceptos.jpg",
+      "sha256": "6eefd53c8a6872c9d1c59b74dff0055601713e1994085be984410d5f29ea9240",
+      "observado_visualmente": "Conceptos de línea, pedido, producto y territorio con Incluir y evidencia confirmada; no es la aprobación del modelo.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "acceso",
+      "key_manifest": "login",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/login.jpg",
+      "sha256": "d93be5728ec5b7cff59c73054f11ee23b99a924846af3bf3d6bcdc594bfa8c13",
+      "observado_visualmente": "Formulario de acceso con correo visible y contraseña vacía; Iniciar sesión disponible.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "inicio_adventureworks",
+      "key_manifest": "inicio_aw",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/inicio_aw.jpg",
+      "sha256": "c67753d959974a27797fb40aa2a0639388c0895db1445d3cfa4dd4064c3a3c29",
+      "observado_visualmente": "Inicio con AdventureWorks, fuente e instantánea, tres prerrequisitos y navegación expandida.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "inicio_wideworldimporters",
+      "key_manifest": "inicio_wwi",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/inicio_wwi.jpg",
+      "sha256": "a1d2e44c6d79821fbb40a0c2587f4d8ccca2a03e408708efd931bad4ca91ff1c",
+      "observado_visualmente": "Inicio, fuente WideWorldImporters y estado listo visibles; no es una pantalla de analítica.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "parametros",
+      "key_manifest": "parametros_inferior",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/parametros_inferior.jpg",
+      "sha256": "e32426f85fff32a3f929b6e1a39565943703b3cffa852561c603939acca4f91e",
+      "observado_visualmente": "Los cuatro parámetros y sus valores, rangos, Guardar y Restaurar están visibles.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "roles_analista",
+      "key_manifest": "roles_analista",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/roles_analista.jpg",
+      "sha256": "3aa9fd71184b16c6cab820262f6dacd33cc56380f87d3611cafc0c67069f6cd6",
+      "observado_visualmente": "Editar rol Analista BI y primera parte de permisos marcados; es consulta de configuración bajo Administrador inicial.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "esquema_relaciones_aw",
+      "key_manifest": "esquema_aw_relaciones",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/esquema_aw_relaciones.jpg",
+      "sha256": "ce2bd9739870277e7a0da990a74588c00c238d5dc5858433ff746c393332dcab",
+      "observado_visualmente": "Continuación del detalle con columnas y relaciones de SalesOrderID a SalesOrderHeader y clave compuesta a SpecialOfferProduct.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "esquema_relaciones_wwi",
+      "key_manifest": "esquema_wwi_relaciones",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/esquema_wwi_relaciones.jpg",
+      "sha256": "dd49549eb407a06d3670b37f687d016d5731e2140afdc1eb5bc809591740626f",
+      "observado_visualmente": "Continuación de InvoiceLines con relaciones a Invoices, StockItems, PackageTypes y People por auditoría.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "catalogo_aw_cobertura",
+      "key_manifest": "catalogo_cobertura_aw",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/catalogo_cobertura_aw.jpg",
+      "sha256": "9fa36d01f6a878d5f4026151dbde2bae5cc972dd1701b932a2f00544f27c22a2",
+      "observado_visualmente": "Fuente AdventureWorks, dominio y comienzo de cobertura; no muestra toda la cobertura expandida.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "catalogo_periodicidades",
+      "key_manifest": "catalogo_periodicidades",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/catalogo_periodicidades.jpg",
+      "sha256": "8be35fcf61f42b2c58a104a3e8b85de7a5262085318db7c220c8a297d573d2e5",
+      "observado_visualmente": "Cinco periodicidades y botones Guardar catálogo/Restaurar catálogo validado.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "roles_analyst_permissions",
+      "key_manifest": "roles_analista_permisos",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/roles_analista_permisos.jpg",
+      "sha256": "4fc5364eb3fc3805d9d17248d777c914a434bd396288f9fa24ed4dcff56f9aed",
+      "observado_visualmente": "Continuación de permisos de Analista: revisión, materialización, metadatos, identidad y exportes; no muestra cabecera del rol.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "roles_manager_permissions",
+      "key_manifest": "roles_gerente_permisos",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/roles_gerente_permisos.jpg",
+      "sha256": "95e518803f0409d9f7551b7160348359958d6892ea88881ff7b136a55e40c56a",
+      "observado_visualmente": "Continuación: Consultar metadatos y Exportar marcados, revisión/ETL/configuración no marcados; no prueba sesión autenticada como gerente.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "catalogo_preguntas_adicionales",
+      "key_manifest": "catalogo_instrucciones",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/catalogo_instrucciones.jpg",
+      "sha256": "98e8b470ba24b65a06456441ad7f731eb3ec21b5a1810bb4fd1397d43a64ae46",
+      "observado_visualmente": "Preguntas5/6 de costos/rentabilidad y ventas/costos por unidad con campos visibles; también final de3/4.",
+      "limite": "La imagen acredita el estado y los controles visibles; no demuestra por sí sola una acción nueva fuera del encuadre."
+    },
+    {
+      "clave_editorial": "permissions_menus",
+      "key_manifest": "menus_edicion",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/menus_edicion.jpg",
+      "sha256": "cb52c778e3936ff50dd035555de87bce457366def746700c00b3bf92e7b94bc4",
+      "observado_visualmente": "Editar menú Explorador de esquema, Etiqueta visible, Posición y Permisos requeridos.",
+      "limite": "permissions_menus agrupa dos pantallas: acompañar el editor con permisos_catalogo para mostrar el catálogo, sin atribuir a una sola foto ambos estados."
+    },
+    {
+      "clave_editorial": "permissions_catalog",
+      "key_manifest": "permisos_catalogo",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/permisos_catalogo.jpg",
+      "sha256": "641a1f99afb5556aa6c8a63b6bf8f40b1b4d5da755763148ac40aa6845f0777d",
+      "observado_visualmente": "Pantalla Permisos, descripciones y aviso de que no se crean desde el navegador; página1–10 de29.",
+      "limite": "La captura acredita la pantalla y controles visibles; no un guardado o cambio nuevo."
+    },
+    {
+      "clave_editorial": "permissions_catalog_more",
+      "key_manifest": "permisos_catalogo_segunda",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/permisos_catalogo_segunda.jpg",
+      "sha256": "e1b785ebea7580241c00352548da4580e93e96fceefe5ac0b8d0f089c099958d",
+      "observado_visualmente": "Segunda página del catálogo con materialización, metadatos, identidad y configuración; no es editor.",
+      "limite": "La captura acredita la pantalla y controles visibles; no un guardado o cambio nuevo."
+    },
+    {
+      "clave_editorial": "menus_list",
+      "key_manifest": "menus_listado",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/menus_listado.jpg",
+      "sha256": "ce55589f6d24a58b2d2e64b9194f391a17381f4c4f99a16a539037969d30c03f",
+      "observado_visualmente": "Pantalla Menús con filas y Editar/Protegido; no se muestra un formulario nuevo.",
+      "limite": "La captura acredita la pantalla y controles visibles; no un guardado o cambio nuevo."
+    },
+    {
+      "clave_editorial": "menus_edit",
+      "key_manifest": "menus_edicion",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/menus_edicion.jpg",
+      "sha256": "cb52c778e3936ff50dd035555de87bce457366def746700c00b3bf92e7b94bc4",
+      "observado_visualmente": "Editar menú Explorador de esquema, Etiqueta visible, Posición y Permisos requeridos.",
+      "limite": "La captura acredita la pantalla y controles visibles; no un guardado o cambio nuevo."
+    },
+    {
+      "clave_editorial": "audit",
+      "key_manifest": "auditoria_listado",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/auditoria_listado.jpg",
+      "sha256": "d374740aea10423b36baac7fd991053f8a40b4f43f52cd4ebc07dec366bbae3a",
+      "observado_visualmente": "Consulta de acciones registrada; sin edición de auditoría.",
+      "revision_visual_nativa": true
+    },
+    {
+      "clave_editorial": "assistant_personalization",
+      "key_manifest": "asistente_personalizacion",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_personalizacion.jpg",
+      "sha256": "666a50ea170c470bf9e973dff9c67701864b33193b43ab72d2f694656e0bdfef",
+      "observado_visualmente": "Resumen, granularidad y dimensiones de126; las medidas se explican en la captura de cálculo.",
+      "revision_visual_nativa": true
+    },
+    {
+      "clave_editorial": "personalization_measures",
+      "key_manifest": "asistente_calculo_controlado",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_calculo_controlado.jpg",
+      "sha256": "0898ae73e423de0339067742b2ee0bd20e017e3c4c33f48b6128a42486489703",
+      "observado_visualmente": "Medida de importe con agregación, origen validado y reglas actual/borrador visibles.",
+      "revision_visual_nativa": true
+    },
+    {
+      "clave_editorial": "personalization_calculation",
+      "key_manifest": "asistente_calculo_controlado",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_calculo_controlado.jpg",
+      "sha256": "0898ae73e423de0339067742b2ee0bd20e017e3c4c33f48b6128a42486489703",
+      "observado_visualmente": "Editor opcional abierto con operación y columnas; demostración sin guardar esa modificación.",
+      "revision_visual_nativa": true
+    },
+    {
+      "clave_editorial": "personalization_relation",
+      "key_manifest": "asistente_justificacion",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_justificacion.jpg",
+      "sha256": "94452b218a2301b89f94c7f45eefda9556007eb63b0cbb7a8b84a2a182675d50",
+      "observado_visualmente": "Comprobación de relación uno a uno y controles de corrección; no se atribuye una corrección de relación nueva a esta imagen.",
+      "revision_visual_nativa": true
+    },
+    {
+      "clave_editorial": "proposal_approved",
+      "key_manifest": "asistente_aprobada",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_aprobada.jpg",
+      "sha256": "8e0c315c05e65f86d661c5c24774dba4f51dd02c5f6cf8e43bfcbbe661ec6da9",
+      "observado_visualmente": "Estado Aprobada, responsable y fecha de126; aprobación no ejecuta ETL.",
+      "revision_visual_nativa": true
+    },
+    {
+      "clave_editorial": "etl_indicators",
+      "key_manifest": "etl_indicadores_nueva",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_indicadores_nueva.jpg",
+      "sha256": "caeb56f0fd001906785ca897fc7993e909740ba7a0f3caab4ebe43ea7a30d0ab",
+      "observado_visualmente": "Receta de importe promedio por pedido y paso a transformaciones; no se ven las cuatro tarjetas a la vez.",
+      "revision_visual_nativa": true
+    },
+    {
+      "clave_editorial": "etl_existing_execution",
+      "key_manifest": "caso_aw_expediente18",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_aw_expediente18.jpg",
+      "sha256": "d7e3ee900cb8c90c87727bc8e3875e83d40dabe6d4eb23de5515efd8a9b94357",
+      "observado_visualmente": "Consulta identificada del antecedente18; distinta del nuevo20.",
+      "revision_visual_nativa": true
+    },
+    {
+      "clave_editorial": "etl_plan",
+      "key_manifest": "etl_confirmacion_nueva",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_confirmacion_nueva.jpg",
+      "sha256": "6045dd9ab3f0fc46d9466c8907773e864eb5eed71285ba0cb51a3f59b118fe1e",
+      "observado_visualmente": "Registro y confirmación explícita antes de preparar20; no muestra toda la lista superior.",
+      "revision_visual_nativa": true
+    },
+    {
+      "clave_editorial": "etl_completed",
+      "key_manifest": "caso_aw_expediente",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_aw_expediente.jpg",
+      "sha256": "0195b447504eecb431cccd4df0748dbb6f12fce8dc710b4b9f390c2efbcbfdc8",
+      "observado_visualmente": "Expediente20 validado, etapas completadas y resultado publicado.",
+      "revision_visual_nativa": true
+    },
+    {
+      "clave_editorial": "etl_quality",
+      "key_manifest": "etl_semantica_revision",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_semantica_revision.jpg",
+      "sha256": "06dc88092d48b86c7cd247d49fabab1a8e667dc176ceeb6d316d722617e240b3",
+      "observado_visualmente": "Calidad por tabla y cuatro indicadores de20 visibles antes de revisar candidatos.",
+      "revision_visual_nativa": true
+    },
+    {
+      "clave_editorial": "etl_semantic",
+      "key_manifest": "etl_semantica_revision",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_semantica_revision.jpg",
+      "sha256": "06dc88092d48b86c7cd247d49fabab1a8e667dc176ceeb6d316d722617e240b3",
+      "observado_visualmente": "Candidatos editables; no debe tomarse la selección inicial de códigos como recomendación de publicarlos.",
+      "revision_visual_nativa": true
+    },
+    {
+      "clave_editorial": "etl_semantic_published",
+      "key_manifest": "etl_semantica_publicada",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_semantica_publicada.jpg",
+      "sha256": "71c2c4738042f30ce586cdbc4e738656d1593c86657bf9c10761da85791415c7",
+      "observado_visualmente": "Banner final de20 materializado, conciliado e interpretado; la decisión publicada detallada no está en esta vista.",
+      "revision_visual_nativa": true
+    },
+    {
+      "clave_editorial": "analytics_aw_analyst",
+      "key_manifest": "analitica_detallada",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/analitica_detallada.jpg",
+      "sha256": "c0ad2cdf4e578eb3ec0d6ed8372e67d28a5ee8443cc238ab03d6e6568b6e4689",
+      "observado_visualmente": "Vista analítica con selector de indicador y filtros actuales de20.",
+      "revision_visual_nativa": true
+    },
+    {
+      "clave_editorial": "etl_confirmacion",
+      "key_manifest": "etl_confirmacion_nueva",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_confirmacion_nueva.jpg",
+      "sha256": "6045dd9ab3f0fc46d9466c8907773e864eb5eed71285ba0cb51a3f59b118fe1e",
+      "observado_visualmente": "Confirmación real del plan126 para expediente20.",
+      "revision_visual_nativa": true
+    },
+    {
+      "clave_editorial": "caso_aw_expediente",
+      "key_manifest": "caso_aw_expediente",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_aw_expediente.jpg",
+      "sha256": "0195b447504eecb431cccd4df0748dbb6f12fce8dc710b4b9f390c2efbcbfdc8",
+      "observado_visualmente": "Caso nuevo20, final validado.",
+      "revision_visual_nativa": true
+    },
+    {
+      "clave_editorial": "need_suggestions",
+      "key_manifest": "asistente_sugerencias",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_sugerencias.jpg",
+      "sha256": "69fb5360cd185df90329629df91547257c59a94389a5c2e4acf0d7e8fb1474f9",
+      "revision_visual_nativa": true,
+      "observado_visualmente": "Ayuda de sugerencias de WideWorldImporters, opciones1 y2 y límites; las referencias inferiores continúan fuera de vista."
+    },
+    {
+      "clave_editorial": "copilot_guide",
+      "key_manifest": "copiloto_pregunta",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/copiloto_pregunta.jpg",
+      "sha256": "038235afc1ed7b14359dbc5137a006ccd86d2701931c2d87b26fca1d0a55194e",
+      "revision_visual_nativa": true,
+      "observado_visualmente": "Guía abierta y pregunta escrita para unidades de2013/Northwest; no es todavía una respuesta."
+    },
+    {
+      "clave_editorial": "copilot_question",
+      "key_manifest": "copiloto_pregunta",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/copiloto_pregunta.jpg",
+      "sha256": "038235afc1ed7b14359dbc5137a006ccd86d2701931c2d87b26fca1d0a55194e",
+      "revision_visual_nativa": true,
+      "observado_visualmente": "Pregunta exacta antes de enviar y contexto unidades/2013/Northwest."
+    },
+    {
+      "clave_editorial": "need_formulation",
+      "key_manifest": "asistente_formulacion",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_formulacion.jpg",
+      "sha256": "a91ee7817ac0038e0560509326d850187d135a6d193d07c17e6a8aebbd1e0b22",
+      "revision_visual_nativa": true,
+      "observado_visualmente": "Redacción sugerida WWI conserva693caracteres,explicación,referencias y límites; parte inferior continúa."
+    },
+    {
+      "clave_editorial": "concept_copilot",
+      "key_manifest": "asistente_copiloto_concepto",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_copiloto_concepto.jpg",
+      "sha256": "99e6cd7152de7bbcc6a2ce9afdf7d84468a99380d69816793b0cfc50cdc6d2de",
+      "revision_visual_nativa": true,
+      "observado_visualmente": "Respuesta nueva del conceptoTerritorio en propuesta127:relaciónCustomers→Cities y límite de ficha actual,no historia."
+    },
+    {
+      "clave_editorial": "case_wwi_need",
+      "key_manifest": "caso_wwi_necesidad",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_wwi_necesidad.jpg",
+      "sha256": "6d54a699226aee82b3d73e8eb4be1948275a456868369d2af5a9b8c71c7ea045",
+      "revision_visual_nativa": true,
+      "observado_visualmente": "Preguntas elegidas,Mensual y revisión previa de WWI,con automáticos y pendientes; la captura no muestra el texto completo superior."
+    },
+    {
+      "clave_editorial": "proposal_coverage",
+      "key_manifest": "asistente_cobertura",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_cobertura.jpg",
+      "sha256": "8b2c04206e2dfdc78d76e3ea40101829a7ce4f9ce3c0ba7b5e4c8c15783f4d41",
+      "revision_visual_nativa": true,
+      "observado_visualmente": "Sección De la necesidad al datamart de127,con cuatro preguntas básicas resueltas;las filas posteriores continúan."
+    },
+    {
+      "clave_editorial": "proposal_identity",
+      "key_manifest": "asistente_identidades",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_identidades.jpg",
+      "sha256": "e4e4d38080a20070fd5f2c15a50dd668c7940aa57542706057025500f66d1779",
+      "revision_visual_nativa": true,
+      "observado_visualmente": "Rutas descriptivas de producto,cliente yterritorio deWWI;la fila100porciento visible pertenece aProducto,las siguientes continúan."
+    },
+    {
+      "clave_editorial": "personalization_kpis",
+      "key_manifest": "asistente_personalizacion_kpis",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_personalizacion_kpis.jpg",
+      "sha256": "ff7c5568ce2ae7ee843c43136b23f96665620fadb7d286452a5b4dff6f8b7fff",
+      "revision_visual_nativa": true,
+      "observado_visualmente": "Contrato127 con cincoKPI actuales y comienzo de campos;ilustra la revisión,antes de guardar la selección final de cuatro."
+    },
+    {
+      "clave_editorial": "llm_credential_empty",
+      "key_manifest": "llm_credencial_vacia",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/llm_credencial_vacia.jpg",
+      "sha256": "883ca044351df00d9459595259e11af519492f1317d56e43f84e9cf4f77badb0",
+      "revision_visual_nativa": true,
+      "observado_visualmente": "Formulario vacío de reemplazo de credencialClaude; no se muestra ni guarda una clave."
+    },
+    {
+      "clave_editorial": "etl_compare",
+      "key_manifest": "etl_comparacion",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_comparacion.jpg",
+      "sha256": "d9611295fcdbf6ac787179b483c8e3fcd22a061848b90f8f480f3fc7ea424e00",
+      "revision_visual_nativa": true,
+      "observado_visualmente": "Comparación de antecedentesWWI124 y117; consulta sin ejecutar ni modificar estado."
+    },
+    {
+      "clave_editorial": "proposal_history",
+      "key_manifest": "asistente_historial",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_historial.jpg",
+      "sha256": "0832c34006708e35cc17f9410d7326a728b4b965ab5a430162a573c49d6c3399",
+      "revision_visual_nativa": true,
+      "observado_visualmente": "FiltroAprobadas con antecedente124; no atribuye aprobación a127/128."
+    },
+    {
+      "clave_editorial": "analytics_point",
+      "key_manifest": "analitica_detalle_punto",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/analitica_detalle_punto.jpg",
+      "sha256": "d5f64dfaf50b78c17acb1f3b5b0ea2860403168b4357ae346c3b0ede02010cb0",
+      "revision_visual_nativa": true,
+      "observado_visualmente": "AW20 con todos los años/territorios y detalleJun2013:USD5.081.069,13 y4,6porciento del contexto visible; seleccionar no cambia filtros."
+    },
+    {
+      "clave_editorial": "copilot_interpreted",
+      "key_manifest": "copiloto_consulta_interpretada",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/copiloto_consulta_interpretada.jpg",
+      "sha256": "63e6d459f92d8583428d0f5841e60bab55f268129f988f17db4c98961757f18e",
+      "revision_visual_nativa": true,
+      "observado_visualmente": "Consulta adicionalAW20 de cinco clientes por unidades,Todos los años/Todos los territorios; no es el filtroNorthwest ni la campaña5."
+    },
+    {
+      "clave_editorial": "copilot_followup",
+      "key_manifest": "copiloto_seguimiento",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/copiloto_seguimiento.jpg",
+      "sha256": "218a4ac5b1c96e9116a1b0cb945241126171871781c473e936826c2d43f1c4e2",
+      "revision_visual_nativa": true,
+      "observado_visualmente": "Procedencia y resultado adicionalAW20:denominador274.914 unidades,Top5 suma12.083,aproximadamente4,4porciento. No acredita reglas5."
+    },
+    {
+      "clave_editorial": "assistant_proposal",
+      "key_manifest": "asistente_propuesta",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_propuesta.jpg",
+      "sha256": "f305b0424618237a3184805998c36d0f63c42d5ea40e48499f760c05d11195e7",
+      "observado_visualmente": "Propuesta129 derivada validada, cero errores, nueve advertencias, detalle de pedido y fuentes visibles. Es revisión estructural antes de carga.",
+      "limite": "Captura completa de la aplicación; acredita únicamente el estado visible. El pie conserva el identificador real y no convierte un estado preparado o en curso en una carga terminada."
+    },
+    {
+      "clave_editorial": "personalization_saved",
+      "key_manifest": "asistente_propuesta",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_propuesta.jpg",
+      "sha256": "f305b0424618237a3184805998c36d0f63c42d5ea40e48499f760c05d11195e7",
+      "observado_visualmente": "Propuesta129 derivada validada, cero errores, nueve advertencias, detalle de pedido y fuentes visibles. Es revisión estructural antes de carga.",
+      "limite": "Captura completa de la aplicación; acredita únicamente el estado visible. El pie conserva el identificador real y no convierte un estado preparado o en curso en una carga terminada."
+    },
+    {
+      "clave_editorial": "assistant_review",
+      "key_manifest": "asistente_aprobacion",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_aprobacion.jpg",
+      "sha256": "d722e824913fada2095201c0d1d906d03f17f48c261afac2de08e1ee5601138f",
+      "observado_visualmente": "Revisión y comentario humano antes de aprobar129. La acción Aprobar propuesta está disponible y se aclara que todavía no ejecuta ETL.",
+      "limite": "Captura completa de la aplicación; acredita únicamente el estado visible. El pie conserva el identificador real y no convierte un estado preparado o en curso en una carga terminada."
+    },
+    {
+      "clave_editorial": "etl_choose",
+      "key_manifest": "etl_elegir_propuesta_nueva",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_elegir_propuesta_nueva.jpg",
+      "sha256": "a3825b7f47f21cbd2431a2f99b5d9859b02dc77acebc247f16c2630651029408",
+      "observado_visualmente": "La propuesta129 está seleccionada para una nueva carga. El aviso superior aún identifica el datamart publicado20/126; no es contradicción, porque21 todavía no está publicado.",
+      "limite": "Captura completa de la aplicación; acredita únicamente el estado visible. El pie conserva el identificador real y no convierte un estado preparado o en curso en una carga terminada."
+    },
+    {
+      "clave_editorial": "etl_indicators",
+      "key_manifest": "etl_indicadores_detalle",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_indicadores_detalle.jpg",
+      "sha256": "3f2f152fea1092c4af6747d62aae7b814d9b667e7686db07486de60ebe251883",
+      "observado_visualmente": "Revisión de los cuatro indicadores seleccionados para129; tres tarjetas visibles en este viewport. El aviso superior conserva el datamart20/126 todavía vigente.",
+      "limite": "Captura completa de la aplicación; acredita únicamente el estado visible. El pie conserva el identificador real y no convierte un estado preparado o en curso en una carga terminada."
+    },
+    {
+      "clave_editorial": "etl_prepared",
+      "key_manifest": "etl_preparado",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_preparado.jpg",
+      "sha256": "e00370acc1578a829b7a893b640804f3f495ba95fafe479088bb0090506a6807",
+      "observado_visualmente": "Expediente21 preparado y trazable; el mensaje indica que aún no se han consultado ni alterado datos fuente fuera de la confirmación. No acredita conciliación terminada.",
+      "limite": "Captura completa de la aplicación; acredita únicamente el estado visible. El pie conserva el identificador real y no convierte un estado preparado o en curso en una carga terminada."
+    },
+    {
+      "clave_editorial": "etl_running",
+      "key_manifest": "etl_ejecucion",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_ejecucion.jpg",
+      "sha256": "446771a425473839687a7a8bcd8aeda6234d7c5b034081ef31bca6f19f939e83",
+      "observado_visualmente": "Estado transitorio de materialización de21/129 con botón desactivado. El listado aún conserva su estado previo Preparada; no acredita éxito final.",
+      "limite": "Captura completa de la aplicación; acredita únicamente el estado visible. El pie conserva el identificador real y no convierte un estado preparado o en curso en una carga terminada."
+    },
+    {
+      "clave_editorial": "case_aw_proposal",
+      "key_manifest": "asistente_propuesta",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_propuesta.jpg",
+      "sha256": "f305b0424618237a3184805998c36d0f63c42d5ea40e48499f760c05d11195e7",
+      "observado_visualmente": "Propuesta129 derivada validada, cero errores, nueve advertencias, detalle de pedido y fuentes visibles. Es revisión estructural antes de carga.",
+      "limite": "Captura completa de la aplicación; acredita únicamente el estado visible. El pie conserva el identificador real y no convierte un estado preparado o en curso en una carga terminada."
+    },
+    {
+      "clave_editorial": "etl_materializacion",
+      "key_manifest": "etl_ejecucion",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_ejecucion.jpg",
+      "sha256": "446771a425473839687a7a8bcd8aeda6234d7c5b034081ef31bca6f19f939e83",
+      "observado_visualmente": "Estado transitorio de materialización de21/129 con botón desactivado. El listado aún conserva su estado previo Preparada; no acredita éxito final.",
+      "limite": "Captura completa de la aplicación; acredita únicamente el estado visible. El pie conserva el identificador real y no convierte un estado preparado o en curso en una carga terminada."
+    },
+    {
+      "clave_editorial": "etl_elegir_propuesta",
+      "key_manifest": "etl_elegir_propuesta_nueva",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_elegir_propuesta_nueva.jpg",
+      "sha256": "a3825b7f47f21cbd2431a2f99b5d9859b02dc77acebc247f16c2630651029408",
+      "observado_visualmente": "La propuesta129 está seleccionada para una nueva carga. El aviso superior aún identifica el datamart publicado20/126; no es contradicción, porque21 todavía no está publicado.",
+      "limite": "Captura completa de la aplicación; acredita únicamente el estado visible. El pie conserva el identificador real y no convierte un estado preparado o en curso en una carga terminada."
+    },
+    {
+      "clave_editorial": "etl_indicadores",
+      "key_manifest": "etl_indicadores_detalle",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_indicadores_detalle.jpg",
+      "sha256": "3f2f152fea1092c4af6747d62aae7b814d9b667e7686db07486de60ebe251883",
+      "observado_visualmente": "Revisión de los cuatro indicadores seleccionados para129; tres tarjetas visibles en este viewport. El aviso superior conserva el datamart20/126 todavía vigente.",
+      "limite": "Captura completa de la aplicación; acredita únicamente el estado visible. El pie conserva el identificador real y no convierte un estado preparado o en curso en una carga terminada."
+    },
+    {
+      "clave_editorial": "etl_pipeline",
+      "key_manifest": "etl_operaciones_plan",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_operaciones_plan.jpg",
+      "sha256": "f2b33f8c5dcea71a564683c1dab875903e850a816c3243b94fe15b0f268e8683",
+      "observado_visualmente": "Vista del plan129 con extracción de columnas aprobadas, limpieza, normalización y deduplicación. La interpretación semántica se revisa después de la carga.",
+      "limite": "Captura completa de la aplicación; acredita únicamente el estado visible. El pie conserva el identificador real y no convierte un estado preparado o en curso en una carga terminada."
+    },
+    {
+      "clave_editorial": "proposal_verification",
+      "key_manifest": "asistente_validacion",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_validacion.jpg",
+      "sha256": "123ac24fe68a3655da8098e9073b96b4dad611525adf6869241a4b84c35241b8",
+      "observado_visualmente": "Cuatro controles estructurales de131 en verde; la vista distingue contrato/reproducción de la futura conciliación de filas e importes.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "personalization_relation",
+      "key_manifest": "asistente_relacion_guiada",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_relacion_guiada.jpg",
+      "sha256": "db6926b63a708bd7d3eb42bc26a0dfca25d41ef4a6f536b85c1ea0af252f16d5",
+      "observado_visualmente": "Decisión guiada deTerritorio con Customers.DeliveryCityID haciaCities; la justificación conserva provincia y elección anterior del comprador. No es la captura anterior errónea deFecha.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "etl_completed",
+      "key_manifest": "etl_conciliacion_detalle",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_conciliacion_detalle.jpg",
+      "sha256": "d78d802a80e019c7d502ca752bccec4656d63d1f6537da455eb7a9db279c8783",
+      "observado_visualmente": "Conciliación21:121.317 líneas enambos lados, diferencia0, cinco tablas, USD comprobado, cuatro indicadores y calidad por dimensión.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "analytics_aw_executive",
+      "key_manifest": "analitica_ejecutiva",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/analitica_ejecutiva.jpg",
+      "sha256": "8a0eb402691e0c90af0a2090d202d4f25693e0b3e39b94208214e9287f1d95de",
+      "observado_visualmente": "Panel ejecutivo21/129 publicado enAdventureWorks; no corresponde al expediente20.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "analytics_filters",
+      "key_manifest": "caso_aw_panel_filtrado",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_aw_panel_filtrado.jpg",
+      "sha256": "a68cd43b199f73176edef74dabbaa53527278ec14b690a1da266adbbdeaea32e",
+      "observado_visualmente": "Panel21/129 filtrado2013/Northwest, USD,17.452 unidades,2.053 pedidos y razón2.929,94. La tarjeta de importe abrevia6M.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "case_aw_dashboard",
+      "key_manifest": "caso_aw_panel_filtrado",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_aw_panel_filtrado.jpg",
+      "sha256": "a68cd43b199f73176edef74dabbaa53527278ec14b690a1da266adbbdeaea32e",
+      "observado_visualmente": "Panel21/129 filtrado2013/Northwest, USD,17.452 unidades,2.053 pedidos y razón2.929,94. La tarjeta de importe abrevia6M.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "export_context",
+      "key_manifest": "caso_aw_panel_filtrado",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_aw_panel_filtrado.jpg",
+      "sha256": "a68cd43b199f73176edef74dabbaa53527278ec14b690a1da266adbbdeaea32e",
+      "observado_visualmente": "Panel21/129 filtrado2013/Northwest, USD,17.452 unidades,2.053 pedidos y razón2.929,94. La tarjeta de importe abrevia6M.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "export_pdf",
+      "key_manifest": "caso_aw_panel_filtrado",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_aw_panel_filtrado.jpg",
+      "sha256": "a68cd43b199f73176edef74dabbaa53527278ec14b690a1da266adbbdeaea32e",
+      "observado_visualmente": "Panel21/129 filtrado2013/Northwest, USD,17.452 unidades,2.053 pedidos y razón2.929,94. La tarjeta de importe abrevia6M.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "export_excel",
+      "key_manifest": "caso_aw_panel_filtrado",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_aw_panel_filtrado.jpg",
+      "sha256": "a68cd43b199f73176edef74dabbaa53527278ec14b690a1da266adbbdeaea32e",
+      "observado_visualmente": "Panel21/129 filtrado2013/Northwest, USD,17.452 unidades,2.053 pedidos y razón2.929,94. La tarjeta de importe abrevia6M.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "exportacion_panel",
+      "key_manifest": "caso_aw_panel_filtrado",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_aw_panel_filtrado.jpg",
+      "sha256": "a68cd43b199f73176edef74dabbaa53527278ec14b690a1da266adbbdeaea32e",
+      "observado_visualmente": "Panel21/129 filtrado2013/Northwest, USD,17.452 unidades,2.053 pedidos y razón2.929,94. La tarjeta de importe abrevia6M.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "caso_aw_expediente",
+      "key_manifest": "etl_conciliacion_detalle",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_conciliacion_detalle.jpg",
+      "sha256": "d78d802a80e019c7d502ca752bccec4656d63d1f6537da455eb7a9db279c8783",
+      "observado_visualmente": "Conciliación21:121.317 líneas enambos lados, diferencia0, cinco tablas, USD comprobado, cuatro indicadores y calidad por dimensión.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "copilot_answer",
+      "key_manifest": "copiloto_aw",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/copiloto_aw.jpg",
+      "sha256": "5e39a12a03c85856210554f06659953717f826ac9775da70b135df888b8ae042",
+      "observado_visualmente": "Chat de21 para unidades2013/Northwest; conserva alcance y confirma17.452 y junio2.494.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "case_aw_chat",
+      "key_manifest": "copiloto_aw",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/copiloto_aw.jpg",
+      "sha256": "5e39a12a03c85856210554f06659953717f826ac9775da70b135df888b8ae042",
+      "observado_visualmente": "Chat de21 para unidades2013/Northwest; conserva alcance y confirma17.452 y junio2.494.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "etl_reconciliation",
+      "key_manifest": "etl_conciliacion_detalle",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_conciliacion_detalle.jpg",
+      "sha256": "d78d802a80e019c7d502ca752bccec4656d63d1f6537da455eb7a9db279c8783",
+      "observado_visualmente": "Conciliación21:121.317 líneas enambos lados, diferencia0, cinco tablas, USD comprobado, cuatro indicadores y calidad por dimensión.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "etl_conciliacion",
+      "key_manifest": "etl_conciliacion_detalle",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_conciliacion_detalle.jpg",
+      "sha256": "d78d802a80e019c7d502ca752bccec4656d63d1f6537da455eb7a9db279c8783",
+      "observado_visualmente": "Conciliación21:121.317 líneas enambos lados, diferencia0, cinco tablas, USD comprobado, cuatro indicadores y calidad por dimensión.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "case_aw_reconciliation",
+      "key_manifest": "etl_conciliacion_detalle",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_conciliacion_detalle.jpg",
+      "sha256": "d78d802a80e019c7d502ca752bccec4656d63d1f6537da455eb7a9db279c8783",
+      "observado_visualmente": "Conciliación21:121.317 líneas enambos lados, diferencia0, cinco tablas, USD comprobado, cuatro indicadores y calidad por dimensión.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "etl_currency",
+      "key_manifest": "etl_conciliacion_detalle",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/etl_conciliacion_detalle.jpg",
+      "sha256": "d78d802a80e019c7d502ca752bccec4656d63d1f6537da455eb7a9db279c8783",
+      "observado_visualmente": "Conciliación21:121.317 líneas enambos lados, diferencia0, cinco tablas, USD comprobado, cuatro indicadores y calidad por dimensión.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "analytics_wwi_executive",
+      "key_manifest": "analitica_wwi_ejecutiva",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/analitica_wwi_ejecutiva.jpg",
+      "sha256": "196faf9013a292079c1690c42195bba1c15e8a25e458f121c1038ab44932412b",
+      "observado_visualmente": "Panel ejecutivo22/131, fuenteWideWorldImporters, moneda de origen y filtrosTodos; la cabecera inferior de los indicadores empieza al final del viewport.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "case_wwi_proposal",
+      "key_manifest": "caso_wwi_propuesta",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_wwi_propuesta.jpg",
+      "sha256": "5b1dd73464467d190f678482e59e1963992bef8dc2e12feb73d93f0f83c8c65c",
+      "observado_visualmente": "Propuesta131, territorio de entrega y línea de factura, cero errores y siete advertencias; todavía es la vista estructural de la propuesta.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "case_wwi_reconciliation",
+      "key_manifest": "caso_wwi_conciliacion",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_wwi_conciliacion.jpg",
+      "sha256": "02b9c0cc98bba6235d285c6b2ed84962ad58bcc81987373e1eac3d4490b6c7c2",
+      "observado_visualmente": "228.265 líneas de origen y destino, diferencia0, cinco tablas, cuatro indicadores globales y calidad por tabla. El aviso monetario conserva moneda de origen.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "case_wwi_currency",
+      "key_manifest": "caso_wwi_divisa",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_wwi_divisa.jpg",
+      "sha256": "8ce3b01a53c3f23cf1b6f67f23ff926191678ff0fb1b259e0049004d96e9d543",
+      "observado_visualmente": "Resultado no concluyente de divisa: no se asigna un código monetario; los importes ya están conciliados y no se repite la carga.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "case_wwi_dashboard",
+      "key_manifest": "caso_wwi_panel_filtrado",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/caso_wwi_panel_filtrado.jpg",
+      "sha256": "792c64ea2a89d0faf049681964c0380f895516189a59db77cff527c9eeec8c58",
+      "observado_visualmente": "Panel22/131 y filtro2015/California:3,2M de importe,142,2k unidades,1.179 facturas y2.707,18 por factura; aviso de vigencia dimensional visible.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "case_wwi_relationship_customer",
+      "key_manifest": "asistente_relacion_cliente_correcta",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_relacion_cliente_correcta.jpg",
+      "sha256": "e1600970d2cf8a3074c8a8b4bf2a0c14a6d0d0e4e7c20d08ab86550e0e4c9ee1",
+      "observado_visualmente": "Decisión guiada de Cliente con Invoices.CustomerID haciaCustomers, unicidad y justificación del comprador. La acción crea versión corregida independiente.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "case_wwi_relationship_territory",
+      "key_manifest": "asistente_relacion_guiada",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/asistente_relacion_guiada.jpg",
+      "sha256": "db6926b63a708bd7d3eb42bc26a0dfca25d41ef4a6f536b85c1ea0af252f16d5",
+      "observado_visualmente": "Decisión guiada deTerritorio con Customers.DeliveryCityID haciaCities; la justificación conserva provincia y elección anterior del comprador. No es la captura anterior errónea deFecha.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    },
+    {
+      "clave_editorial": "case_wwi_relationship_rejected",
+      "key_manifest": "relacion_rol_incorrecto_rechazado",
+      "archivo": "/home/ceo/Documentos/ChatGPT/Tesis 2026 CII/manuales-renovados-20261106/capturas/relacion_rol_incorrecto_rechazado.jpg",
+      "sha256": "79fce7313dcc08518271067f834da0cb2eb267e036c12d1f917d6bff2eaeb31f",
+      "observado_visualmente": "Aviso de rechazo de relación contradictoria con las referencias revisadas; no se creó una versión nueva por ese intento.",
+      "limite": "La imagen completa acredita el estado y controles registrados. Los resultados numéricos se vinculan también con conciliación y consulta independiente, no sólo con una fotografía."
+    }
+  ],
+  "pendientes_formacion": [],
+  "pendientes_compacto_generador": [],
+  "claves_fichas_universidad_aun_no_cubiertas": [],
+  "precauciones": [
+    "No usar incidencia125_modelo como propuesta aprobada, ejecución o caso de éxito.",
+    "La preparación y ejecución usan capturas reales de estados diferentes; las fotografías históricas o del corte intermedio se identifican por su propio expediente y no prueban una nueva carga.",
+    "No usar sesion_vencida como restauración completada. Su título actual sobre conservación del avance debe precisarse si se utiliza como aviso de error.",
+    "No hay fotografías Cargando que se hayan empleado como formularios.",
+    "El generador deduplica figuras por SHA-256: varias acciones pueden referirse a una sola vista sin repetirla.",
+    "Las fotografías de roles muestran configuración bajo sesión Administrador inicial, no ejecución con las cuentas de esos roles.",
+    "El API puede devolver tamaños nativos distintos del viewport solicitado. Registrar dimensiones reales y requested_viewport; no inferir recorte."
+  ],
+  "fotos_a_corregir_o_complementar": [],
+  "redundantes_no_necesarias": [
+    "asistente_contexto",
+    "usuarios_listado",
+    "parametros_superior",
+    "catalogo_preguntas_adicionales"
+  ],
+  "nuevas_capturas_prioritarias": [],
+  "sha256_snapshot_de_revision": "f54eb2dee4ecae8c53991c4ac01ba3ea33d400049cc7d38f155c7fce94effe95",
+  "sha256_manifest_ultima_lectura": "f54eb2dee4ecae8c53991c4ac01ba3ea33d400049cc7d38f155c7fce94effe95",
+  "numero_manifest_ultima_lectura": 47,
+  "nota_huella_snapshot": "La instantánea de revisión serializa los47 registros inspeccionados; su SHA-256 no se presenta como identidad de bytes del manifiesto original.",
+  "complementarias_por_accion": {
+    "permissions_menus": [
+      "permisos_catalogo",
+      "menus_listado",
+      "menus_edicion"
+    ],
+    "roles_analyst": [
+      "roles_analista",
+      "roles_analista_permisos"
+    ],
+    "roles_manager": [
+      "roles_gerente",
+      "roles_gerente_permisos"
+    ],
+    "catalog_question": [
+      "catalogo_preguntas",
+      "catalogo_instrucciones"
+    ],
+    "case_aw_schema": [
+      "esquema_aw_columnas",
+      "esquema_aw_relaciones"
+    ],
+    "case_wwi_schema": [
+      "esquema_wwi_columnas",
+      "esquema_wwi_relaciones"
+    ]
+  },
+  "manifest_sha256_snapshot": "75a48406ca93fa13d0374f95c986113d5d3863009896b4663d767fa25b5b23ba",
+  "captions": {
+    "inicio_wwi": "Inicio con WideWorldImporters en contexto",
+    "login": "Acceso al sistema con cuenta autorizada",
+    "inicio_aw": "Inicio con AdventureWorks en contexto",
+    "conexiones_formulario": "Formulario de conexión SQL Server",
+    "conexiones_listado": "Fuentes habilitadas y validación de sólo lectura",
+    "conexiones_validacion": "Comprobación de acceso de sólo lectura a las fuentes",
+    "esquema_aw": "Resumen y versiones de metadatos de AdventureWorks",
+    "esquema_aw_columnas": "Columnas y tipos del detalle de pedido",
+    "esquema_aw_relaciones": "Relaciones declaradas del detalle de pedido",
+    "esquema_wwi": "Resumen y versión de metadatos de WideWorldImporters",
+    "esquema_wwi_columnas": "Tipos y columnas de las líneas de factura",
+    "esquema_wwi_relaciones": "Relaciones de líneas de factura con sus cabeceras y productos",
+    "parametros_superior": "Parámetros de conexión y del asistente",
+    "parametros_inferior": "Parámetros de metadatos y tamaño de listados",
+    "llm_formulario": "Formulario para un proveedor de inteligencia artificial",
+    "llm_configuraciones": "Configuraciones disponibles y proveedor activo",
+    "llm_prueba": "Prueba del proveedor activo sin exponer su credencial",
+    "catalogo_cobertura_wwi": "Cobertura técnica automática por fuente",
+    "catalogo_preguntas": "Preguntas de negocio y explicación para el analista",
+    "catalogo_instrucciones": "Instrucciones funcionales de las preguntas",
+    "catalogo_preguntas_adicionales": "Costos, márgenes y razones por unidad",
+    "catalogo_periodicidades": "Periodicidades admitidas y sus explicaciones",
+    "catalogo_cobertura_aw": "Catálogo y cobertura vinculados con AdventureWorks",
+    "asistente_dominio": "Selección del dominio implementado de ventas",
+    "asistente_contexto": "Fuente y pasos del asistente de ventas",
+    "asistente_necesidad": "Objetivo escrito y autorización para revisar metadatos",
+    "asistente_preguntas_periodicidad": "Preguntas de negocio y periodicidad mensual seleccionadas",
+    "asistente_viabilidad": "Revisión previa y explicación de las derivaciones automáticas",
+    "asistente_viabilidad_evidencia": "Evidencia estructural y ruta declarada del análisis temporal",
+    "asistente_limites": "Límites revisados antes de generar la propuesta",
+    "asistente_conceptos": "Conceptos propuestos y comprobados para AdventureWorks",
+    "conceptos_evidencia": "Detalle de la evidencia de un concepto",
+    "conceptos_limites": "Cliente respaldado y contexto monetario excluido",
+    "incidencia125_modelo": "Ensayo 125 pendiente de corrección del territorio y del alcance",
+    "usuarios_formulario": "Formulario de cuenta y asignación de roles",
+    "usuarios_listado": "Cuentas existentes y acciones disponibles",
+    "roles_formulario": "Creación de roles y permisos por responsabilidad",
+    "roles_analista": "Permisos del rol Analista BI",
+    "roles_analista_permisos": "Permisos operativos de diseño, metadatos y carga",
+    "roles_listado": "Roles existentes y su propósito",
+    "roles_gerente": "Perfil de consulta Gerente comercial",
+    "roles_gerente_permisos": "Consulta de metadatos sin generación de propuestas o ETL",
+    "sesion_vencida": "Recuperación de sesión con avance conservado",
+    "permisos_catalogo": "Catálogo de permisos y sus descripciones",
+    "permisos_catalogo_segunda": "Permisos de materialización, metadatos y configuración",
+    "menus_listado": "Catálogo de navegación y módulos autorizados",
+    "menus_edicion": "Opciones de edición y permisos requeridos del explorador",
+    "auditoria_listado": "Registro de operaciones y trazabilidad de la plataforma",
+    "caso_aw_expediente18": "Consulta del expediente 18 conciliado de AdventureWorks",
+    "caso_aw_conciliacion18": "Filas e indicadores conciliados del expediente 18",
+    "caso_aw_semantica18": "Etiquetas españolas publicadas conservando los valores originales",
+    "etl_elegir_propuesta": "Elección de propuesta; consulta del expediente 18 de AdventureWorks",
+    "etl_indicadores": "Indicadores y origen del conteo de pedidos; expediente 18",
+    "etl_confirmacion": "Plan controlado del expediente 18; consulta sin ejecutar",
+    "etl_materializacion": "Materialización finalizada del expediente 18",
+    "asistente_justificacion": "Justificación del ajuste y selección humana de indicadores",
+    "asistente_personalizacion": "Personalización de versión 126 con orígenes y agregaciones legibles",
+    "asistente_calculo_controlado": "Editor opcional de fórmulas permitidas; demostración sin guardar cambios",
+    "asistente_aprobada": "Consulta histórica: aprobación 126; una carga nueva requiere una derivada actual",
+    "etl_indicadores_nueva": "Cuatro indicadores de propuesta 126 seleccionados antes de ejecutar",
+    "etl_confirmacion_nueva": "Confirmación explícita del plan de la propuesta 126",
+    "etl_conciliacion": "Expediente 20 con 121317 filas conciliadas y cuatro indicadores",
+    "etl_semantica_revision": "Revisión de etiquetas españolas después de la conciliación",
+    "etl_semantica_seleccion": "Traducciones revisadas y códigos de país excluidos",
+    "etl_semantica_publicada": "Expediente 20 validado con etiquetas revisadas publicadas",
+    "caso_aw_expediente": "Ejecución 20 nueva y validada de AdventureWorks",
+    "analitica_detallada": "Vista analítica con filtros y selector de indicador",
+    "sesion_recuperada": "Sesión recuperada en Analítica de ventas sin perder el expediente publicado",
+    "analitica_indicador": "Cambio de indicador a unidades vendidas",
+    "analitica_tabla": "Tabla mensual que respalda el gráfico de unidades",
+    "copiloto_pregunta": "Pregunta del analista con indicador unidades y filtros explícitos",
+    "copiloto_limite": "Pregunta de pronóstico rechazada; revisión de límites y precisión temporal del texto pendiente",
+    "exportacion_panel": "Controles de exportación de la vista analítica filtrada de ejecución 20",
+    "asistente_sugerencias": "Necesidades sugeridas para WWI con referencias y límites reales",
+    "asistente_formulacion": "Redacción sugerida que conserva la necesidad y expone límites de WWI",
+    "caso_wwi_necesidad": "Viabilidad WWI con siete límites revisados y periodicidad mensual",
+    "asistente_copiloto_concepto": "Explicación de relaciones y límite histórico del territorio de WWI",
+    "asistente_cobertura": "Cobertura de necesidad 127 por fuentes y salidas verificadas",
+    "asistente_identidades": "Cobertura descriptiva del 100 porciento en producto, cliente y territorio de WWI",
+    "asistente_personalizacion_kpis": "Indicadores del borrador y medida asociada antes de la selección final",
+    "llm_credencial_vacia": "Formulario de credencial vacío; no se revela ni sustituye ninguna clave",
+    "etl_comparacion": "Comparación de dos propuestas WWI sin ejecutar ni modificar sus expedientes",
+    "asistente_historial": "Versiones aprobadas de WWI conservadas sin modificar su estado",
+    "analitica_detalle_punto": "Detalle de junio 2013 en AdventureWorks sin modificar el filtro",
+    "copiloto_limite_corregido": "Respuesta que rechaza el pronóstico sin inventar un año",
+    "copiloto_consulta_interpretada": "Consulta de Top 5 por cliente con alcance y denominador explícitos",
+    "copiloto_seguimiento": "Procedencia de consulta adicional y respuesta de seguimiento del copiloto",
+    "asistente_propuesta": "Propuesta 129 final de AdventureWorks con cuatro indicadores seleccionados",
+    "asistente_aprobacion": "Revisión humana de la propuesta 129 antes de ejecutar datos",
+    "etl_elegir_propuesta_nueva": "Propuesta 129 seleccionada para nueva carga con reglas actuales",
+    "etl_indicadores_detalle": "Revisión de indicadores de la propuesta 129 antes de la carga",
+    "etl_operaciones_plan": "Operaciones controladas de extracción y limpieza de la propuesta 129",
+    "etl_preparado": "Ejecución 21 preparada con esquema analítico propio y fuente separada",
+    "etl_ejecucion": "Ejecución 21 materializando el contrato final de AdventureWorks",
+    "etl_conciliacion_detalle": "Ejecución 21: 121317 filas, diferencia 0 y cuatro indicadores conciliados",
+    "analitica_ejecutiva": "Panel ejecutivo publicado de la ejecución 21 y propuesta 129",
+    "caso_aw_panel_filtrado": "Ejecución 21 filtrada por 2013 y Northwest",
+    "copiloto_aw": "Respuesta del copiloto sobre ejecución 21: 17452 unidades y junio 2494",
+    "relacion_rol_incorrecto_rechazado": "Rechazo de BillToCustomerID por contradecir el cliente revisado",
+    "asistente_relacion_cliente_correcta": "Elección explícita del cliente comprador por la relación declarada",
+    "asistente_relacion_guiada": "Territorio y vínculo de ciudad de entrega, conservando la provincia y la decisión de cliente",
+    "caso_wwi_propuesta": "Propuesta 131 con comprador y provincia de entrega revisados, cuatro KPI",
+    "asistente_validacion": "Cuatro comprobaciones de la propuesta 131 con reproducción exacta y reglas 5",
+    "caso_wwi_conciliacion": "Ejecución 22 con 228265 líneas conciliadas, diferencia 0 y moneda de origen",
+    "caso_wwi_divisa": "Comprobación de divisa no concluyente: importes conservados como moneda de origen",
+    "analitica_wwi_ejecutiva": "Panel ejecutivo exclusivo de WWI ejecución 22 y propuesta 131",
+    "caso_wwi_panel_filtrado": "Ejecución 22, 2015 California con comprador y ciudad de entrega correctos"
+  },
+  "antecedentes_de_pendientes_resueltos": {
+    "corte_previo_al_cierre": {
+      "claves_fichas_universidad_aun_no_cubiertas": [
+        "asistente_propuesta",
+        "asistente_aprobacion",
+        "etl_elegir_propuesta",
+        "etl_confirmacion",
+        "etl_conciliacion",
+        "analitica_aw_ejecutiva",
+        "analitica_aw_filtrada",
+        "analitica_hallazgos",
+        "copiloto_aw",
+        "exportacion_panel",
+        "caso_aw_propuesta122",
+        "caso_aw_expediente18",
+        "caso_aw_panel_filtrado",
+        "caso_wwi_propuesta124",
+        "caso_wwi_expediente19",
+        "caso_wwi_panel_filtrado",
+        "problema_actual",
+        "versiones_evidencia"
+      ],
+      "fotos_a_corregir_o_complementar": [
+        {
+          "key": "catalogo_preguntas_adicionales",
+          "problema": "Título y contenido no corresponden: son Periodicidades.",
+          "accion": "Excluir esta foto del tema de preguntas adicionales; usar catalogo_instrucciones para5/6 o repetir la vista. No editar la imagen."
+        },
+        {
+          "key": "sesion_vencida",
+          "problema": "El estado visible es sesión vencida, no restauración completada.",
+          "accion": "Precisar título del manifiesto; sólo después usar para problemas de acceso. Para recuperación completa tomar otra foto tras ingresar y observar avance."
+        },
+        {
+          "key": "roles_formulario",
+          "problema": "No aparece el botón final Crear registro.",
+          "accion": "Complementar con una vista completa al final del formulario vacío si se enseña la creación."
+        },
+        {
+          "key": "roles_analista",
+          "problema": "Lista de permisos larga; falta mitad inferior en esa vista.",
+          "accion": "Acompañar con roles_analista_permisos ya disponible."
+        },
+        {
+          "key": "roles_gerente",
+          "problema": "No muestra todavía Consultar metadatos/Exportar.",
+          "accion": "Acompañar con roles_gerente_permisos ya disponible."
+        },
+        {
+          "key": "catalogo_cobertura_wwi",
+          "problema": "Referencias detectadas está cerrado.",
+          "accion": "Abrir una y capturar si se quiere documentar el resultado de abrirla, no sólo el control."
+        }
+      ],
+      "nuevas_capturas_prioritarias": [
+        "Auditoría como pantalla real; Permisos y Menús ya están disponibles en el corte47.",
+        "Formulario de credencial vacío, con botón Guardar credencial.",
+        "Resultados reales de sugerencia/formulación y conversación semántica.",
+        "Propuesta correcta después del fix, cobertura, identidad y verificación.",
+        "Personalización, revisión y comprobante de aprobación; historial visible.",
+        "Cinco estados ETL diferenciados, incluyendo preparado ANTES de ejecutar y conciliación DESPUÉS.",
+        "Paneles ejecutivo/analítico, filtros y detalle de ambas fuentes.",
+        "Chat con consulta interpretada, evidencia/denominador y seguimiento.",
+        "Exportes y archivos abiertos revisados.",
+        "Consulta actual de122/18 y124/19, identificada como consulta histórica si se usa en fichas de esos números."
+      ]
+    }
+  },
+  "fecha_cierre": "2026-11-06T04:13:48.536485-05:00",
+  "sha256_manifest_cierre": "7cf96fd362134eb472528a6b00fd69f3f94fe298888800d72c965f3b52c59078",
+  "capturas_manifest_cierre": 109,
+  "nota_de_alcance": "Una captura completa puede respaldar varios pasos de la misma vista. El manual incorpora una sola figura por imagen idéntica y conserva referencias cruzadas. Ninguna pantalla se recorta ni altera."
+}

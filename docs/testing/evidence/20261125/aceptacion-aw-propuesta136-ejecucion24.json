@@ -1,0 +1,384 @@
+{
+  "checked_at_utc": "2026-11-26T02:18:24.687002+00:00",
+  "mode": "read_only_audit_of_persisted_execution_no_llm_no_new_etl",
+  "proposal_id": 136,
+  "proposal_status": "approved",
+  "prompt_version": "sales-bi-v9",
+  "rules_version": 6,
+  "execution_id": 24,
+  "execution_status": "succeeded",
+  "physical_schema": "mart_ventas_e24",
+  "proposal_unchanged": true,
+  "verification": {
+    "verified": true,
+    "approval_safe": true,
+    "compatibility_warning": false,
+    "checks": [
+      {
+        "code": "snapshot.integrity",
+        "label": "Integridad de los metadatos",
+        "passed": true,
+        "detail": "La huella coincide con la instantánea estructural persistida."
+      },
+      {
+        "code": "references.current",
+        "label": "Referencias técnicas comprobadas",
+        "passed": true,
+        "detail": "17 referencias técnicas válidas; 0 descartadas."
+      },
+      {
+        "code": "validation.consistency",
+        "label": "Consistencia del contrato BI",
+        "passed": true,
+        "detail": "La validación vigente conserva un contrato válido: 0 errores y 4 advertencias."
+      },
+      {
+        "code": "proposal.replay",
+        "label": "Reproducción determinística del contrato",
+        "passed": true,
+        "detail": "Las decisiones persistidas reconstruyen exactamente el mismo contrato con sus reglas de compilación persistidas. Instrucciones persistidas: sales-bi-v9; actuales: sales-bi-v9. Reglas de compilación persistidas: 6; actuales: 6."
+      }
+    ],
+    "snapshot_hash": "bf2842f08c8f8f3d29a551604075a7c8853aa40b624c926d48d0a3cee9f3da15",
+    "proposal_hash": "5ea86a7fd65b55e51053360d8863d40360777237cad83b5feed0d1db5e800b6c",
+    "replay_hash": "5ea86a7fd65b55e51053360d8863d40360777237cad83b5feed0d1db5e800b6c",
+    "validated_reference_count": 17,
+    "rejected_reference_count": 0,
+    "validation_errors": 0,
+    "validation_warnings": 4,
+    "pending_validations": [
+      "Contraste de cifras mediante consultas de referencia después de materializar el datamart.",
+      "Evaluación formal de utilidad mediante juicio de expertos."
+    ]
+  },
+  "selection_coverage": {
+    "status": "complete",
+    "required_kpi_codes": [
+      "importe_promedio_transaccion",
+      "importe_total",
+      "pedidos_distintos",
+      "requested_quantity_sum"
+    ],
+    "missing_kpi_codes": [],
+    "message": "La selección conserva los resultados solicitados."
+  },
+  "all_periods": {
+    "data_connection_id": 1,
+    "proposal_id": 136,
+    "execution_id": 24,
+    "database_name": "AdventureWorks2022",
+    "currency_code": "USD",
+    "currency_status": "verified",
+    "quality": {
+      "source_rows": 121317,
+      "datamart_rows": 121317,
+      "difference_rows": 0,
+      "reconciliation_passed": true,
+      "tables_loaded": 5
+    },
+    "metrics": [
+      {
+        "code": "importe_total",
+        "role": "sales_amount",
+        "name": "Importe total registrado",
+        "value": 109846381.399888,
+        "unit": "USD",
+        "status": "reconciled"
+      },
+      {
+        "code": "pedidos_distintos",
+        "role": "transaction_count",
+        "name": "Pedidos distintos",
+        "value": 31465.0,
+        "unit": "pedidos",
+        "status": "reconciled"
+      },
+      {
+        "code": "requested_quantity_sum",
+        "role": "quantity",
+        "name": "Unidades totales",
+        "value": 274914.0,
+        "unit": "Unidades",
+        "status": "reconciled"
+      },
+      {
+        "code": "importe_promedio_transaccion",
+        "role": "average_document_amount",
+        "name": "Importe promedio por transacción",
+        "value": 3491.065672966407,
+        "unit": "USD por transacción",
+        "status": "reconciled"
+      }
+    ],
+    "selectable_metrics": [
+      {
+        "code": "importe_total",
+        "label": "Importe total registrado"
+      },
+      {
+        "code": "pedidos_distintos",
+        "label": "Pedidos distintos"
+      },
+      {
+        "code": "requested_quantity_sum",
+        "label": "Unidades totales"
+      }
+    ],
+    "visuals": [
+      {
+        "code": "trend",
+        "points": 38
+      },
+      {
+        "code": "products",
+        "points": 8
+      },
+      {
+        "code": "territories",
+        "points": 8
+      },
+      {
+        "code": "customers",
+        "points": 8
+      }
+    ]
+  },
+  "filtered": {
+    "year": 2013,
+    "territory": "Northwest",
+    "dashboard": {
+      "data_connection_id": 1,
+      "proposal_id": 136,
+      "execution_id": 24,
+      "database_name": "AdventureWorks2022",
+      "currency_code": "USD",
+      "currency_status": "verified",
+      "quality": {
+        "source_rows": 121317,
+        "datamart_rows": 121317,
+        "difference_rows": 0,
+        "reconciliation_passed": true,
+        "tables_loaded": 5
+      },
+      "metrics": [
+        {
+          "code": "importe_total",
+          "role": "sales_amount",
+          "name": "Importe total registrado",
+          "value": 6015174.735836,
+          "unit": "USD",
+          "status": "reconciled"
+        },
+        {
+          "code": "pedidos_distintos",
+          "role": "transaction_count",
+          "name": "Pedidos distintos",
+          "value": 2053.0,
+          "unit": "pedidos",
+          "status": "reconciled"
+        },
+        {
+          "code": "requested_quantity_sum",
+          "role": "quantity",
+          "name": "Unidades totales",
+          "value": 17452.0,
+          "unit": "Unidades",
+          "status": "reconciled"
+        },
+        {
+          "code": "importe_promedio_transaccion",
+          "role": "average_document_amount",
+          "name": "Importe promedio por transacción",
+          "value": 2929.943855740867,
+          "unit": "USD por transacción",
+          "status": "reconciled"
+        }
+      ],
+      "selectable_metrics": [
+        {
+          "code": "importe_total",
+          "label": "Importe total registrado"
+        },
+        {
+          "code": "pedidos_distintos",
+          "label": "Pedidos distintos"
+        },
+        {
+          "code": "requested_quantity_sum",
+          "label": "Unidades totales"
+        }
+      ],
+      "visuals": [
+        {
+          "code": "trend",
+          "points": 12
+        },
+        {
+          "code": "products",
+          "points": 8
+        },
+        {
+          "code": "territories",
+          "points": 1
+        },
+        {
+          "code": "customers",
+          "points": 8
+        }
+      ]
+    }
+  },
+  "historical_contracts": [
+    {
+      "proposal_id": 129,
+      "status": "approved",
+      "rules": 5,
+      "hash_before": "08435dfa9cad6e409023fe9291791711825ce61d766da8d3a1baecebf54a744e",
+      "hash_after": "08435dfa9cad6e409023fe9291791711825ce61d766da8d3a1baecebf54a744e",
+      "approval_safe": true,
+      "compatibility_warning": true,
+      "checks": [
+        {
+          "code": "snapshot.integrity",
+          "label": "Integridad de los metadatos",
+          "passed": true,
+          "detail": "La huella coincide con la instantánea estructural persistida."
+        },
+        {
+          "code": "references.current",
+          "label": "Referencias técnicas comprobadas",
+          "passed": true,
+          "detail": "7 referencias técnicas válidas; 0 descartadas."
+        },
+        {
+          "code": "validation.consistency",
+          "label": "Consistencia del contrato BI",
+          "passed": true,
+          "detail": "La validación vigente conserva un contrato válido: 0 errores y 9 advertencias."
+        },
+        {
+          "code": "proposal.replay",
+          "label": "Reproducción determinística del contrato",
+          "passed": true,
+          "detail": "Las decisiones persistidas reconstruyen exactamente el mismo contrato con sus reglas de compilación persistidas. Instrucciones persistidas: sales-bi-v8; actuales: sales-bi-v9. Reglas de compilación persistidas: 5; actuales: 6."
+        }
+      ]
+    },
+    {
+      "proposal_id": 131,
+      "status": "approved",
+      "rules": 5,
+      "hash_before": "31535a5cc35c751e08f99eb1064d3fe9810e2498b8c797826efdfe8e6c3afd54",
+      "hash_after": "31535a5cc35c751e08f99eb1064d3fe9810e2498b8c797826efdfe8e6c3afd54",
+      "approval_safe": true,
+      "compatibility_warning": true,
+      "checks": [
+        {
+          "code": "snapshot.integrity",
+          "label": "Integridad de los metadatos",
+          "passed": true,
+          "detail": "La huella coincide con la instantánea estructural persistida."
+        },
+        {
+          "code": "references.current",
+          "label": "Referencias técnicas comprobadas",
+          "passed": true,
+          "detail": "7 referencias técnicas válidas; 0 descartadas."
+        },
+        {
+          "code": "validation.consistency",
+          "label": "Consistencia del contrato BI",
+          "passed": true,
+          "detail": "La validación vigente conserva un contrato válido: 0 errores y 7 advertencias."
+        },
+        {
+          "code": "proposal.replay",
+          "label": "Reproducción determinística del contrato",
+          "passed": true,
+          "detail": "Las decisiones persistidas reconstruyen exactamente el mismo contrato con sus reglas de compilación persistidas. Instrucciones persistidas: sales-bi-v8; actuales: sales-bi-v9. Reglas de compilación persistidas: 5; actuales: 6."
+        }
+      ]
+    }
+  ],
+  "independent_source_comparison": {
+    "source": "agregados-origen-independientes.json",
+    "method": "Compare independent SQL Server oracle against persisted dashboard recipes by semantic role; decimal tolerance only for float serialization.",
+    "cases": [
+      {
+        "scope": "all_periods",
+        "source_case": "all_sales_lines",
+        "checks": [
+          {
+            "role": "sales_amount",
+            "source_expected": "109846381.399888",
+            "dashboard_observed": "109846381.399888",
+            "tolerance": "0.000001",
+            "passed": true
+          },
+          {
+            "role": "transaction_count",
+            "source_expected": "31465",
+            "dashboard_observed": "31465.0",
+            "tolerance": "0",
+            "passed": true
+          },
+          {
+            "role": "quantity",
+            "source_expected": "274914",
+            "dashboard_observed": "274914.0",
+            "tolerance": "0",
+            "passed": true
+          },
+          {
+            "role": "average_document_amount",
+            "source_expected": "3491.065672966407119021134594",
+            "dashboard_observed": "3491.065672966407",
+            "tolerance": "0.000001",
+            "passed": true
+          },
+          {
+            "role": "line_count",
+            "source_expected": "121317",
+            "datamart_observed": "121317",
+            "passed": true
+          }
+        ]
+      },
+      {
+        "scope": "filtered_2013_northwest",
+        "source_case": "2013_northwest_commercial_territory",
+        "checks": [
+          {
+            "role": "sales_amount",
+            "source_expected": "6015174.735836",
+            "dashboard_observed": "6015174.735836",
+            "tolerance": "0.000001",
+            "passed": true
+          },
+          {
+            "role": "transaction_count",
+            "source_expected": "2053",
+            "dashboard_observed": "2053.0",
+            "tolerance": "0",
+            "passed": true
+          },
+          {
+            "role": "quantity",
+            "source_expected": "17452",
+            "dashboard_observed": "17452.0",
+            "tolerance": "0",
+            "passed": true
+          },
+          {
+            "role": "average_document_amount",
+            "source_expected": "2929.943855740867023867510960",
+            "dashboard_observed": "2929.943855740867",
+            "tolerance": "0.000001",
+            "passed": true
+          }
+        ]
+      }
+    ],
+    "passed": true
+  }
+}

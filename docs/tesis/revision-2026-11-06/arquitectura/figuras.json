@@ -1,0 +1,22 @@
+[
+  {
+    "archivo": "Arquitectura_detallada_BI_IA.svg",
+    "titulo": "Arquitectura de la plataforma inteligente de BI",
+    "descripcion": "Cuatro servicios base en Docker: interfaz React, servidor FastAPI, SQL Server de sólo lectura con AdventureWorks2022 y WideWorldImporters, y PostgreSQL como persistencia y destino analítico. El proveedor de inteligencia artificial configurable intercambia sólo contexto autorizado con FastAPI. Una persona autorizada aprueba antes de la carga controlada y conciliada.",
+    "dimensiones_svg": [
+      1600,
+      1130
+    ],
+    "version": "Detalle técnico"
+  },
+  {
+    "archivo": "Arquitectura_general_BI_IA.svg",
+    "titulo": "Cómo funciona la plataforma de ventas con IA",
+    "descripcion": "Cuatro servicios base en Docker: interfaz React, servidor FastAPI, SQL Server de sólo lectura con AdventureWorks2022 y WideWorldImporters, y PostgreSQL como persistencia y destino analítico. El proveedor de inteligencia artificial configurable intercambia sólo contexto autorizado con FastAPI. Una persona autorizada aprueba antes de la carga controlada y conciliada.",
+    "dimensiones_svg": [
+      1600,
+      1130
+    ],
+    "version": "Explicación general para formación"
+  }
+]

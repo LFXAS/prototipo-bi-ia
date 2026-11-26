@@ -1,0 +1,24 @@
+{
+  "estado": "listo_para_integracion_editorial",
+  "secciones": 21,
+  "pasos": 116,
+  "campos_controles": 121,
+  "conceptos": 90,
+  "preguntas_autoevaluacion": 44,
+  "practicas": 4,
+  "objetivos_historicos_exactos": 2,
+  "fuentes_inmutables_verificadas": 16,
+  "SHA256_JSON": "8fc6e1638952d0bb79bcf9873589e274f3be127ded8f4d4b64324747b830e563",
+  "SHA256_MD": "c8ce478a2cf4901ed6127e7309a280eed2a1b8eec55211e20a5662bd8f91528d",
+  "limite": "Lectura de código y antecedentes; no sesión funcional nueva. Es insumo de un manual que todavía debe compilarse y revisarse visualmente.",
+  "revision_editorial": "Lectura íntegra de 21 secciones; corrección de uniones, palabras fragmentadas y frases poco naturales. Estructura, datos numéricos, objetivos copiables y preguntas de chat conservados.",
+  "cadenas_corregidas": 23,
+  "revision_espaciado_final": {
+    "fecha": "2026-11-18",
+    "cambios": [
+      "líneas:80 → líneas: 80",
+      "distintos:120 → distintos: 120"
+    ],
+    "cifras_sin_cambios": true
+  }
+}

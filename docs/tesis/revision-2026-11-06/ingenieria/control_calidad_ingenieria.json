@@ -1,0 +1,92 @@
+{
+  "fecha": "2026-11-06",
+  "alcance": "Revisión documental, preservación de registros y validación de recursos visuales; no se ejecutó la aplicación ni se modificaron contenedores.",
+  "conteos": {
+    "RF": 26,
+    "RNF": 12,
+    "casos_uso": 12,
+    "historias_usuario": 18,
+    "sprints": 7,
+    "plan_pruebas_actualizado": 12,
+    "matriz_trazabilidad": 26
+  },
+  "sprints": "Seis incrementos y una fila independiente de correcciones posteriores.",
+  "identificadores": "Los identificadores originales permanecen sólo para control. Usar etiqueta en el capítulo.",
+  "diagramas": [
+    {
+      "nombre": "01_casos_uso",
+      "ancho": 1280,
+      "alto": 1701,
+      "archivos_validados": 3,
+      "sha256_png": "edac9ad2e25e6654e60f2b221e61ad3fdf089c44efe47466ad889e370d9b21e2",
+      "sha256_svg": "7563e8136385ed4553e6aa6c7cdcc6b8c90388c3421ddb88fb7b3f4f59b2576e"
+    },
+    {
+      "nombre": "02_actividad_supervision",
+      "ancho": 1788,
+      "alto": 2748,
+      "archivos_validados": 3,
+      "sha256_png": "f00d20e86aa13d303157a92605b04273923d46a87d5fe7fa96b6853d079eb362",
+      "sha256_svg": "2fe7e2e81e2ebd3e3ea65cdb53df1742e3d4f408bad8c284083768d3c3d5e473"
+    },
+    {
+      "nombre": "03_secuencia_propuesta",
+      "ancho": 1543,
+      "alto": 2218,
+      "archivos_validados": 3,
+      "sha256_png": "00329849bc38192399a9104fc67569b6ff8d69dfb68fc07cc389795a12653f34",
+      "sha256_svg": "08267dcbfd6cae6e46619ca48d0fbc9b6d15c66920266b985fed61d3b5c6d522"
+    },
+    {
+      "nombre": "04_secuencia_etl",
+      "ancho": 1536,
+      "alto": 2193,
+      "archivos_validados": 3,
+      "sha256_png": "604e57d067bd37d6c356fa1ca023c5990bcf2a4137fcdad72c2b76a166d736ed",
+      "sha256_svg": "74a602fa0ba12225fbca736f603c875adf738bd1c0727c3b19871f6fd389608b"
+    },
+    {
+      "nombre": "05_componentes",
+      "ancho": 2111,
+      "alto": 1816,
+      "archivos_validados": 3,
+      "sha256_png": "c816f2f19f117453c252f0866bf530bb9d5c1158442d9eb2b625a17e9c4cf84f",
+      "sha256_svg": "18a2092b9338d76e588b61baf561f9588400b280fd6e2d451e069b25bac9d181"
+    },
+    {
+      "nombre": "06_despliegue",
+      "ancho": 2529,
+      "alto": 1791,
+      "archivos_validados": 3,
+      "sha256_png": "4742bc2f1c4fc000f5cb89bd5400baf9650dd6d47f7cf9440a80d05701ea57c2",
+      "sha256_svg": "65ca7273f64a9689811d10742e17bda10d5909d79c782c8f148186c580b50955"
+    },
+    {
+      "nombre": "07_clases_dominio",
+      "ancho": 2042,
+      "alto": 1826,
+      "archivos_validados": 3,
+      "sha256_png": "bef4ef0dc12abbb50a00efeaec702b35eafd1b23f7140277821ef6016e9dd7e3",
+      "sha256_svg": "457fbb8ec06828035ca2b289434e80451d4cadb5ef03ee364bef846dc9e447e5"
+    },
+    {
+      "nombre": "08_estados_propuesta",
+      "ancho": 1424,
+      "alto": 1219,
+      "archivos_validados": 3,
+      "sha256_png": "671b9ad87b1aa5e9b85066bccb4fccd665e35dcc9f432a28ca46c7edc41d69b4",
+      "sha256_svg": "895a3d381ce8be2018189e81587c8cfb9e2abe1793fe59706c0ce67bef5cb015"
+    },
+    {
+      "nombre": "09_modelo_estrella_logico",
+      "ancho": 905,
+      "alto": 1477,
+      "archivos_validados": 3,
+      "sha256_png": "59be4301e563a19a1a2a545e18fc4a59604cae8636906df934d54de81e6f0695",
+      "sha256_svg": "4780da9f1f3ba7b159a27897db8a4c2b2393cd1b76aaff15f6155b75f71de510"
+    }
+  ],
+  "inspeccion_visual": "Las nueve imágenes se abrieron y revisaron. Se compactaron las secuencias, se conservaron rombos de decisión, se separaron multiplicidades y se corrigió el modelo lógico sin prometer un esquema físico común.",
+  "recomendacion_maquetacion": "Asignar página propia a cada diagrama; conservar proporción. Los diagramas de componentes, despliegue y clases requieren el ancho útil completo. Evitar reducirlos junto a una tabla.",
+  "restricciones": "El diseño lógico de ventas es una referencia conceptual. No equivale a una plantilla física fija para ambas bases. Los diagramas representan el alcance acreditado en SQL Server y no conectores sin implementar."
+}

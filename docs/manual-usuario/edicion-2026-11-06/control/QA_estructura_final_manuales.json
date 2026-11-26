@@ -1,0 +1,22 @@
+{
+  "estado": "validado",
+  "fecha": "2026-11-06T04:16:15.338969-05:00",
+  "documentos": [
+    {
+      "documento": "Manual_de_usuario_universidad",
+      "figuras": 20,
+      "paginas": 38,
+      "imagenes_integras_sin_recorte": true,
+      "indice_nativo_estable": true,
+      "borde_decorativo_titulo": false
+    },
+    {
+      "documento": "Manual_de_formacion_BI_IA",
+      "figuras": 75,
+      "paginas": 137,
+      "imagenes_integras_sin_recorte": true,
+      "indice_nativo_estable": true,
+      "borde_decorativo_titulo": false
+    }
+  ]
+}

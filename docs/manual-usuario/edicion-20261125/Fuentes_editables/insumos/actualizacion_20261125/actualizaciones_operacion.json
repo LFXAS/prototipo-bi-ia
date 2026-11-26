@@ -1,0 +1,315 @@
+{
+  "fecha": "2026-11-25",
+  "base_historica": "Edición 18 de noviembre de 2026",
+  "units": {
+    "operacion_01": {
+      "title": "Qué hacer si la sesión vence durante una práctica",
+      "paragraphs": [
+        "Vencimiento y Cerrar sesión son situaciones diferentes. El vencimiento solicita autenticarse otra vez y permite recuperar información mínima de la tarea. Cerrar sesión es una salida explícita: limpia el borrador local y los contextos de la pestaña. Ninguna de las dos acciones elimina los expedientes guardados en el servidor.",
+        "El tiempo máximo del asistente y la duración de la sesión tampoco son lo mismo. El primero limita la espera de una solicitud; el segundo limita el acceso autenticado. Aumentar uno no cambia el otro ni corrige un contrato inválido."
+      ],
+      "steps": [
+        "Lea el aviso de sesión vencida y vuelva a ingresar con su cuenta.",
+        "Compruebe la fuente y la versión recuperadas. Revise el objetivo antes de continuar.",
+        "Si había una operación de generación o carga en curso, consulte primero el listado y el estado. Una sesión vencida no demuestra que el servidor haya cancelado esa operación.",
+        "Si necesita más tiempo para una práctica siguiente, solicite ajustar el parámetro y vuelva a iniciar sesión. No comparta la cuenta de administración para evitar el vencimiento."
+      ]
+    },
+    "operacion_03": {
+      "title": "Volver al punto correcto sin perder el contexto",
+      "paragraphs": [
+        "Atrás aparece cuando hay un recorrido previo conocido. Por ejemplo, Inicio puede llevarle a revisar una configuración y permitirle volver al mismo paso de preparación. Desde Analítica, Consultar respaldo permite revisar el expediente y regresar al panel con la selección confirmada. Entrar directamente desde el menú lateral no inventa un paso anterior.",
+        "Los filtros se recuerdan dentro de la pestaña y por conexión. No se guardan allí las cifras, el chat ni un resultado inventado: al volver se consultan de nuevo los datos autorizados. Una selección todavía pendiente o fallida no se presenta como un análisis confirmado."
+      ],
+      "steps": [
+        "En Analítica, seleccione una ejecución de AdventureWorks y un año o territorio. Espere a que se actualicen los resultados.",
+        "Cambie a WideWorldImporters y confirme su encabezado antes de elegir sus propios filtros.",
+        "Regrese a AdventureWorks y compruebe que recupera la selección de esa fuente.",
+        "Abra Consultar respaldo y vuelva con Atrás. Compare ejecución, año, territorio e indicador.",
+        "Recargue la pestaña y compruebe que sigue en un módulo permitido. Si cierra sesión, los contextos locales se limpian."
+      ]
+    },
+    "operacion_10": {
+      "title": "Práctica guiada: preparar tiempo suficiente para la capacitación",
+      "paragraphs": [
+        "Con una cuenta autorizada, busque la tarjeta Duración de la sesión (minutos). La imagen muestra el valor 60 de la instalación revisada. En un equipo diferente puede verse otro valor válido. No cambie todos los parámetros para intentar resolver una sola incidencia."
+      ],
+      "steps": [
+        "Anote el valor actual. Para una demostración habitual puede conservar 60.",
+        "Si necesita una práctica más larga, acuerde 120 con la administración, escriba 120 y pulse Guardar en esa tarjeta.",
+        "Compruebe el mensaje y el valor guardado. El rango es de 15 a 240 minutos.",
+        "Vuelva a iniciar sesión antes de la práctica para utilizar la nueva duración. Registre el ajuste si forma parte de una prueba."
+      ],
+      "screenshot": {
+        "file": "parametros-sesion-60.jpg",
+        "title": "Parámetros: duración de la sesión",
+        "caption": "Captura real del 25 de noviembre de 2026. La sesión nueva dura 60 minutos por defecto. El cambio no renueva una sesión que ya estaba abierta."
+      }
+    },
+    "operacion_11": {
+      "title": "Configurar OpenAI paso a paso y controlar el consumo",
+      "paragraphs": [
+        "Una suscripción de ChatGPT y el uso de la API son servicios con facturación y disponibilidad propias. Un crédito promocional sólo debe darse por confirmado al consultar la cuenta API que lo recibió. La plataforma utiliza la API key de esa cuenta; no emplea automáticamente el modelo o la suscripción de este chat.",
+        "OpenAI se conecta al servicio oficial https://api.openai.com/v1 mediante Responses API. La credencial se introduce en Registrar credencial y se almacena cifrada; no se vuelve a mostrar. No la copie en el objetivo comercial, el catálogo, una captura ni este manual. La configuración no permite elegir cualquier destino de Internet.",
+        "Groq y OpenAI son proveedores distintos. Un modelo cuyo nombre contenga openai dentro de Groq sigue consumiendo la cuenta y cuota de Groq. Para utilizar su crédito API de OpenAI debe elegir el proveedor OpenAI.",
+        "La plataforma solicita una respuesta estructurada y vuelve a comprobarla localmente. Si hay rechazo del modelo, respuesta incompleta, cuota agotada o contrato inválido, el fallo debe quedar visible. No se cambia a un modelo más caro de manera automática para ocultarlo."
+      ],
+      "steps": [
+        "Abra Configuración LLM y revise si ya existe una configuración OpenAI. Evite crear duplicados.",
+        "Para crearla, escriba un nombre reconocible, por ejemplo OpenAI capacitación, y elija Proveedor: OpenAI.",
+        "Revise la URL oficial. Para la opción económica escriba gpt-6-luna y seleccione razonamiento Bajo. El modelo debe estar disponible para su cuenta.",
+        "Pulse Crear registro. Luego, en su fila, abra Registrar credencial, introduzca la API key privadamente y guárdela.",
+        "Pulse Probar conexión una sola vez. Una respuesta válida demuestra acceso básico y salida estructurada mínima, no calidad de toda la propuesta BI.",
+        "Pulse Activar sobre la configuración que utilizará el grupo. Sólo una queda activa para las nuevas solicitudes de toda la aplicación.",
+        "Antes de enviar la necesidad, revise el aviso sobre el contexto que se transferirá. Para diseño se utilizan necesidad y metadatos permitidos; no se envían contraseñas de las bases.",
+        "Si cambia modelo, URL, proveedor, razonamiento o credencial, repita la prueba. Si falla por cuota no reintente sin revisar primero su cuenta."
+      ],
+      "table": {
+        "title": "Opciones OpenAI y qué se comprobó realmente",
+        "headers": [
+          "Modelo y nivel",
+          "Tarifa estándar por millón de tokens",
+          "Evidencia de esta edición"
+        ],
+        "rows": [
+          [
+            "GPT-6 Luna; Bajo",
+            "Entrada USD 0,10; salida USD 0,50",
+            "Opción económica actual. Una prueba real de conexión y JSON estructurado; sin recorrido BI completo con Luna."
+          ],
+          [
+            "GPT-5.4 mini",
+            "Entrada USD 0,75; salida USD 4,50",
+            "Alternativa disponible según cuenta. No ensayada en esta campaña."
+          ],
+          [
+            "GPT-6.1 Terra",
+            "Entrada USD 1; salida USD 5",
+            "No ensayada en esta campaña."
+          ],
+          [
+            "GPT-6.2 Sol; Medio",
+            "Entrada USD 2; salida USD 10",
+            "Modelo utilizado en los dos recorridos nuevos completos: AdventureWorks 136/24 y WideWorldImporters 135/23."
+          ],
+          [
+            "GPT-6.2 Astra",
+            "Entrada USD 8; salida USD 40",
+            "No ensayada. No se recomienda para este presupuesto de demostración."
+          ]
+        ]
+      },
+      "after_table": [
+        "Tarifas de texto estándar consultadas el 25 de noviembre de 2026, sin caché ni otros descuentos. Con un supuesto idéntico de 10.000 tokens de entrada y 2.000 de salida, el costo base sería USD 0,002; 0,0165; 0,020; 0,040 y 0,160, respectivamente. Es una comparación estimada, no el costo medido del proyecto. El supuesto no incluye razonamiento adicional, reintentos, herramientas ni llamadas extras.",
+        "Las tarifas de entrada y salida de Luna son 95 % menores que las de Sol. Esto no demuestra igual calidad ni un ahorro real idéntico por tarea: cambian la longitud, el razonamiento y el número de llamadas. No se conservó un registro de costos por solicitud de las pruebas, por lo que el consumo real debe consultarse en Usage/Billing de la cuenta API.",
+        "En modelos de razonamiento, la salida disponible comparte presupuesto con el razonamiento interno. El adaptador reserva un límite mínimo según el nivel: 4.096 tokens en Automático, Mínimo o Bajo; 8.192 en Medio; 16.384 en Alto, con techo de 32.768. Es un límite permitido, no una cantidad que siempre se facture. Un proceso puede realizar más de una llamada.",
+        "Para gastar menos durante la sustentación, consulte propuestas aprobadas, expedientes y paneles publicados. Abrirlos no vuelve a generar la propuesta con IA. Sugerir una necesidad, verificar viabilidad mediante IA, generar una propuesta o conversar con el copiloto sí puede consumir la API. Use sólo la operación que necesita y no repita clics mientras espera."
+      ],
+      "screenshot": {
+        "file": "luna-modelo-bajo.jpg",
+        "title": "Configuración activa: OpenAI económico",
+        "caption": "Captura real del 25 de noviembre de 2026. La fila OpenAI BI — Luna económico muestra razonamiento bajo y credencial configurada. No se muestra la clave ni debe copiarse al manual."
+      }
+    },
+    "operacion_13": {
+      "title": "Si una pregunta fue retirada del catálogo",
+      "paragraphs": [
+        "Un borrador local puede conservar preguntas que ya no existen en el catálogo de esa fuente. Esto ocurrió con una necesidad restaurada de WideWorldImporters. El rechazo se produjo antes de llamar al modelo: no era evidencia de corrupción del datamart ni prueba de un fallo específico de Claude.",
+        "Ahora el sistema conserva el objetivo y las preguntas que siguen disponibles, retira del borrador las que ya no están y muestra un aviso. La viabilidad anterior deja de servir para esa selección modificada: revise otra vez el alcance y la autorización antes de generar. No sustituye una pregunta retirada por otra con un nombre parecido.",
+        "Consultar una propuesta histórica conserva sus preguntas y decisiones de entonces. No se modifica ni se retira su aprobación sólo porque el catálogo actual haya cambiado. Un borrador nuevo y una versión aprobada son objetos diferentes."
+      ],
+      "steps": [
+        "Si aparece un aviso de preguntas retiradas, lea cuáles cambiaron y compruebe la fuente.",
+        "Vuelva a la necesidad; conserve o ajuste el objetivo y elija sólo preguntas disponibles que realmente correspondan.",
+        "Repita la comprobación de viabilidad. Lea las limitaciones antes de continuar.",
+        "Si desea estudiar el caso aprobado anterior, ábralo en consulta: no lo regenere para intentar recuperar el catálogo."
+      ]
+    },
+    "BI03": {
+      "title": "Del respaldo estructural a una respuesta analítica útil",
+      "paragraphs": [
+        "Derivable significa que una relación declarada o una receta controlada puede resolver el requisito a partir de referencias existentes. No significa que deba escribir SQL, ni que la IA tenga permiso para inventar una columna o ejecutar una fórmula libre. Lea las entradas, el grano y la ruta de relación.",
+        "La propuesta nueva debe conservar todos los requisitos revisados de la necesidad. No basta con encontrar una columna Quantity u OrderQty si se pidió analizar unidades y después el panel no ofrece ese indicador. Medida física es el dato de la línea; indicador es la operación que el usuario podrá seleccionar y explicar.",
+        "En los contratos nuevos, la plataforma sólo completa un indicador requerido cuando existe una receta segura y única a partir de las medidas admitidas. Su procedencia queda diferenciada de la sugerencia del modelo. Si hay varias interpretaciones posibles, corresponde revisar el caso; no elegir una en silencio. Si la persona excluye después un indicador requerido, se conserva su decisión y se muestra cobertura parcial."
+      ],
+      "steps": [
+        "Identifique las palabras de la necesidad que definen resultados obligatorios: importe, unidades, pedidos o facturas, por ejemplo.",
+        "En la propuesta, contraste cada requisito con su indicador, fórmula y unidad.",
+        "Compruebe que las unidades no se confundan con número de líneas y que los pedidos o facturas utilicen el conteo documental adecuado.",
+        "Si un requisito queda parcial, aclárelo o acepte explícitamente un alcance menor defendible. No apruebe sólo porque no hay errores de JSON."
+      ]
+    },
+    "BI07": {
+      "title": "Versiones históricas y nuevas reglas de composición",
+      "paragraphs": [
+        "Los contratos nuevos de esta edición emplean la composición 6 y el prompt sales-bi-v9. Son identificadores técnicos para reproducir el proceso; no son una calificación de la propuesta. Las versiones históricas compuestas con reglas 1 a 5 conservan sus datos y huellas originales.",
+        "Una comprobación de compatibilidad no debe reescribir el expediente histórico ni borrar una aprobación al consultarlo. Para una nueva carga se revisan las reglas y compatibilidad que correspondan. Si necesita un diseño nuevo, cree y apruebe una versión nueva, conservando la evidencia anterior.",
+        "En la campaña intermedia existió una propuesta que tenía cero errores estructurales, pero omitía el indicador requerido de unidades. No se aprobó ni se presenta aquí como caso final exitoso. La ausencia llevó a reforzar la cobertura. Los casos actuales de referencia son 135 y 136."
+      ]
+    },
+    "ETL05": {
+      "title": "Comprobar la conciliación con la campaña vigente",
+      "paragraphs": [
+        "La conciliación compara cantidades equivalentes bajo el mismo alcance. Una tabla con una fila por línea no tiene el mismo conteo que una tabla con una fila por pedido. Sumar importes con uniones que duplican líneas puede dar una cifra convincente y equivocada; por eso se revisan grano, relaciones y receta antes de interpretar el panel."
+      ],
+      "table": {
+        "title": "Casos comprobados del 25 de noviembre de 2026",
+        "headers": [
+          "Fuente y expediente",
+          "Alcance total de referencia",
+          "Filtro de control"
+        ],
+        "rows": [
+          [
+            "AdventureWorks: propuesta 136; ejecución 24",
+            "121.317 líneas; 274.914 unidades; 31.465 pedidos distintos; importe 109.846.381,399888 USD.",
+            "Año 2013 y territorio Northwest: 7.757 líneas; 17.452 unidades; 2.053 pedidos; 6.015.174,735836 USD."
+          ],
+          [
+            "WideWorldImporters: propuesta 135; ejecución 23",
+            "228.265 líneas; 8.950.628 unidades; 70.510 facturas distintas; importe 198.043.439,45 en moneda de origen.",
+            "Año 2015 y provincia California: 3.771 líneas; 142.247 unidades; 1.179 facturas; 3.191.769,11 en moneda de origen."
+          ]
+        ]
+      },
+      "after_table": [
+        "Estos valores proceden de consultas agregadas independientes al origen, contrastadas con los expedientes nuevos. Son controles de las copias de demostración revisadas, no parámetros incrustados en la plataforma. En otra copia, con otros filtros o un contrato distinto pueden cambiar.",
+        "Northwest se obtiene del territorio del encabezado del pedido. California se obtiene del cliente comprador y su ciudad de entrega registrada en el maestro. Una ubicación actual del cliente no demuestra por sí sola una dirección histórica de entrega. No atribuya al indicador una precisión temporal que la relación no conserva."
+      ]
+    },
+    "ETL06": {
+      "title": "Entender moneda y razones sin inventar conversiones",
+      "paragraphs": [
+        "Cuando la fuente demuestra USD u otra divisa admitida, una etiqueta monetaria como moneda de origen por transacción se presenta con ese código, conservando el denominador. Si la fuente no demuestra una divisa, sigue diciendo moneda de origen. Una etiqueta USD o EUR sugerida por el modelo no es prueba de moneda.",
+        "La corrección es de presentación: no convierte valores, no aplica tipos de cambio y no modifica el contrato guardado. Las unidades físicas, por ejemplo piezas o kilogramos, no se transforman en moneda. Un promedio por línea y un promedio por pedido siguen siendo indicadores diferentes aunque ambos se expresen en USD."
+      ]
+    },
+    "AN01": {
+      "title": "Ejercicio actual: recuperar filtros de cada fuente",
+      "steps": [
+        "Abra AdventureWorks, seleccione la ejecución 24 si existe, el año 2013 y Northwest.",
+        "Compruebe 17.452 unidades y 2.053 pedidos distintos. Lea el importe exacto en el respaldo y compare su abreviación en las tarjetas.",
+        "Cambie a WideWorldImporters y seleccione la ejecución 23, año 2015 y California, si están disponibles. Compruebe 142.247 unidades y 1.179 facturas distintas.",
+        "Regrese a AdventureWorks. Deben reaparecer sus filtros confirmados, sin importar filtros ni chat de WideWorldImporters.",
+        "Entre al respaldo y vuelva con Atrás. Si consulta una ejecución histórica, anuncie su número y su fecha. No espere ver los mismos identificadores en un portable limpio."
+      ],
+      "screenshot": {
+        "file": "aw24-filtros-restaurados.jpg",
+        "title": "AdventureWorks: ejecución 24 y filtros restaurados",
+        "caption": "Captura real del 25 de noviembre de 2026. Se observa 2013, Northwest, 17.452 unidades y 2.053 pedidos. La tarjeta abrevia el importe; la tabla o exportación permite leer el valor exacto."
+      }
+    },
+    "AN03": {
+      "title": "Formular preguntas útiles al copiloto sin perder el alcance",
+      "paragraphs": [
+        "Una pregunta recomendable dice qué indicador quiere, para qué período y con qué agrupación. Ejemplo: ¿Cuáles son los cinco productos con más unidades en el contexto actual? Después revise Consulta interpretada y su evidencia. La pregunta pide una comparación descriptiva; no demuestra por qué un cliente compró ni predice lo que hará.",
+        "Para evaluar coherencia, compruebe que la cifra, la unidad, el año, el territorio, la dimensión y el denominador de la respuesta coinciden con la consulta interpretada. Si la explicación excede esa evidencia, solicite aclaración o descarte la conclusión. Una redacción convincente no convierte una hipótesis en una causa probada.",
+        "En la campaña actual se probaron recorridos y conversaciones con Sol. La comprobación mínima de Luna no acredita todavía la misma calidad de explicación; si la usa en una práctica nueva, conserve la pregunta y revise la evidencia con los mismos criterios. No cambie automáticamente a otro modelo ante una respuesta débil."
+      ]
+    },
+    "PR01": {
+      "title": "Ruta recomendada de estudio con los casos actuales",
+      "paragraphs": [
+        "Primero aprenda a consultar un expediente comprobado. Después repita su formulación en una propuesta nueva, sin exigir que el modelo use las mismas palabras o que el sistema asigne el mismo número. Evalúe el significado, los requisitos y la conciliación. Los casos históricos del 6 de noviembre se conservan a continuación como material de comparación."
+      ],
+      "steps": [
+        "Fase 1, lectura sin nueva generación: consulte 136/24 de AdventureWorks y explique grano, unidades, pedidos e importe.",
+        "Fase 2, contraste: consulte 135/23 de WideWorldImporters y explique la diferencia entre factura y pedido, y entre moneda de origen y USD.",
+        "Fase 3, navegación: reproduzca el cambio de fuentes, filtros y retorno al respaldo.",
+        "Fase 4, práctica nueva: escriba una necesidad breve con importe, unidades y documentos distintos por período y territorio. Confirme que el catálogo de esa fuente respalda el objetivo.",
+        "Fase 5, supervisión: revise viabilidad, conceptos, diseño, cobertura e indicadores. Apruebe únicamente la nueva versión que cumpla.",
+        "Fase 6, carga: prepare y confirme el ETL una vez; compruebe estado final, conciliación, publicación y panel. Registre los identificadores reales que obtenga.",
+        "Fase 7, explicación: formule una pregunta concreta al copiloto, contraste su evidencia y exporte el mismo contexto. Registre cualquier rechazo correcto o limitación."
+      ],
+      "table": {
+        "title": "Preparación de los dos ejercicios vigentes",
+        "headers": [
+          "Opción",
+          "AdventureWorks",
+          "WideWorldImporters"
+        ],
+        "rows": [
+          [
+            "Periodicidad",
+            "Mensual",
+            "Mensual"
+          ],
+          [
+            "Preguntas de negocio",
+            "Evolución temporal, productos, clientes y territorio.",
+            "Evolución temporal, productos, clientes y territorio."
+          ],
+          [
+            "Evento y granularidad",
+            "Una línea de pedido, conservando identificador del pedido.",
+            "Una línea de factura, conservando identificador de factura."
+          ],
+          [
+            "Indicadores imprescindibles",
+            "Importe total; unidades totales; pedidos distintos; importe promedio por pedido.",
+            "Importe total; unidades totales; facturas distintas; importe promedio por factura."
+          ],
+          [
+            "Límites del ejercicio",
+            "Sin costos, margen ni impuestos. USD sólo con evidencia de la fuente.",
+            "Sin costos, impuestos ni rentabilidad. Moneda de origen; ubicación actual del maestro del cliente."
+          ]
+        ]
+      },
+      "after_table": [
+        "Necesidad comprobada de AdventureWorks, para copiar y revisar: Analizar mensualmente el importe registrado y las unidades de las líneas de pedidos por producto, cliente y territorio comercial. Los indicadores deben incluir importe total, unidades totales, pedidos distintos e importe promedio por pedido. Usar la fecha del pedido y el territorio comercial asociado al pedido. Identificar los clientes con nombres descriptivos de personas u organizaciones mediante relaciones declaradas. Conservar el detalle de cada línea y la trazabilidad del pedido. No calcular costos, margen ni impuestos.",
+        "Necesidad comprobada de WideWorldImporters, para copiar y revisar: Analizar mensualmente el importe registrado y las unidades de las líneas de factura por producto y cliente, con el número de facturas distintas y el importe promedio por factura. Usar la fecha de emisión y, para el territorio, la provincia de la ciudad de entrega registrada del cliente. Mantener la trazabilidad de cada línea y aclarar que esa ubicación corresponde a la ficha actual del cliente. Conservar la moneda de origen sin asumir impuestos, costos ni rentabilidad.",
+        "Antes de aprobar, compruebe los cuatro indicadores. Las recetas esperadas son suma del importe, suma de unidades, conteo distinto del documento e importe dividido por documentos distintos. En la campaña vigente, la plataforma completó de manera trazable el KPI de unidades a partir de una receta inequívoca. No copie un número de advertencias como criterio de aprobación: lea y justifique las que presente su nueva versión.",
+        "Las rutas y los campos pueden cambiar en otra fuente. Estas fichas prueban dos aplicaciones del mismo proceso; no autorizan a fijar sus tablas, nombres ni fórmulas como lógica exclusiva de la plataforma. Para una nueva base, vuelva al esquema y al catálogo antes de reutilizar una necesidad."
+      ]
+    },
+    "QA01": {
+      "title": "Incidencias de esta edición: diagnóstico sencillo",
+      "table": {
+        "title": "Cómo actuar sin crear otro problema",
+        "headers": [
+          "Situación",
+          "Qué significa o revisar",
+          "Acción segura"
+        ],
+        "rows": [
+          [
+            "Preguntas retiradas en un borrador",
+            "El catálogo de esa fuente cambió. No es una prueba de fallo del modelo.",
+            "Revise selección, repita viabilidad y confirme el alcance antes de generar."
+          ],
+          [
+            "Sesión vencida",
+            "Terminó su duración absoluta. La tarea del servidor puede haber continuado.",
+            "Vuelva a ingresar; consulte estado y expediente antes de repetir una carga."
+          ],
+          [
+            "Respuesta estructurada inválida o incompleta",
+            "No cumple el contrato o alcanzó un límite. No se debe usar como propuesta válida.",
+            "Conserve la necesidad; revise aviso, modelo y presupuesto. Un reintento es una nueva llamada con posible costo."
+          ],
+          [
+            "Cuota o saldo insuficiente",
+            "La cuenta del proveedor no admite otra solicitud.",
+            "Revise Usage/Billing y el proyecto API. No cambie las bases ni repita solicitudes en bucle."
+          ],
+          [
+            "Una cifra no coincide con el otro panel",
+            "Puede haber distinto origen, ejecución, año, territorio, unidad o denominador.",
+            "Compare primero el encabezado y la tabla exacta; no sume ambas fuentes para ocultar la diferencia."
+          ],
+          [
+            "No aparece un KPI obligatorio",
+            "Encontrar la columna no demuestra cobertura analítica.",
+            "Revise cobertura y receta antes de aprobar. Si quedó parcial, corrija el alcance o el diseño."
+          ],
+          [
+            "Respuesta de chat pendiente al cambiar contexto",
+            "La respuesta anterior ya no corresponde al panel actual.",
+            "Espere los datos del contexto nuevo y formule la pregunta allí. No copie la respuesta vieja como si perteneciera a la nueva fuente."
+          ]
+        ]
+      }
+    }
+  }
+}

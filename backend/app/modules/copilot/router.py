@@ -104,6 +104,12 @@ router = APIRouter(tags=["copilot"])
 _secret_cipher = SecretCipher(settings.secrets_key_path)
 
 
+def _reviewed_business_scope(goal: str, assessment: object) -> dict[str, object]:
+    """Bind the compiler to the saved request, never to a model-supplied scope."""
+    requirements = assessment.get("requirements", []) if isinstance(assessment, dict) else []
+    return {"goal": goal, "requirements": deepcopy(requirements)}
+
+
 async def _active_configuration(session: AsyncSession) -> LlmConfiguration | None:
     return (
         await session.execute(
@@ -479,6 +485,57 @@ def _safe_business_request(
     }
 
 
+def _validate_catalog_selection(
+    payload: BusinessNeedInput | NeedSuggestionInput, available_catalog: list[dict[str, object]]
+) -> None:
+    """Reject stale choices before any provider call without silently changing the need."""
+    selected_domain = next(
+        (item for item in available_catalog if item["code"] == payload.domain_code), None
+    )
+    domain_questions = cast(list[dict[str, object]], (selected_domain or {}).get("questions", []))
+    domain_periodicities = cast(
+        list[dict[str, object]], (selected_domain or {}).get("periodicities", [])
+    )
+    available_questions = {
+        str(item["code"]) for item in domain_questions if bool(item["available"])
+    }
+    available_periodicities = {
+        str(item["code"]) for item in domain_periodicities if bool(item["available"])
+    }
+    unavailable_questions = set(payload.business_questions) - available_questions
+    unavailable_periodicity = payload.periodicity not in available_periodicities
+    if unavailable_questions or unavailable_periodicity:
+        questions_by_code = {str(item["code"]): item for item in domain_questions}
+        known_labels = [
+            str(questions_by_code[code]["label"])
+            for code in sorted(unavailable_questions)
+            if code in questions_by_code
+        ]
+        removed_count = len(unavailable_questions - questions_by_code.keys())
+        explanations: list[str] = []
+        if known_labels:
+            explanations.append(f"Preguntas no disponibles: {', '.join(known_labels)}.")
+        if removed_count:
+            explanations.append(
+                "Una pregunta guardada ya no forma parte del catálogo actual."
+                if removed_count == 1
+                else f"{removed_count} preguntas guardadas ya no forman parte del catálogo actual."
+            )
+        if unavailable_periodicity:
+            explanations.append(
+                "La periodicidad seleccionada no está habilitada o no tiene respaldo "
+                "en los metadatos vigentes."
+            )
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "La selección del paso Necesidad no coincide con el catálogo vigente de "
+                f"esta fuente. {' '.join(explanations)} Regrese al paso Necesidad, revise "
+                "las opciones disponibles y vuelva a validar antes de continuar."
+            ),
+        )
+
+
 async def _validated_need_request(
     payload: BusinessNeedInput | NeedSuggestionInput, session: AsyncSession
 ) -> tuple[MetadataSnapshot, dict[str, object], dict[str, object]]:
@@ -503,31 +560,7 @@ async def _validated_need_request(
         )
     catalog_configuration = await _needs_catalog(session, payload.domain_code, connection.id)
     available_catalog = catalog_for_snapshot(snapshot.schema_document, catalog_configuration)
-    selected_domain = next(
-        (item for item in available_catalog if item["code"] == payload.domain_code), None
-    )
-    domain_questions = cast(list[dict[str, object]], (selected_domain or {}).get("questions", []))
-    domain_periodicities = cast(
-        list[dict[str, object]], (selected_domain or {}).get("periodicities", [])
-    )
-    available_questions = {
-        str(item["code"]) for item in domain_questions if bool(item["available"])
-    }
-    available_periodicities = {
-        str(item["code"]) for item in domain_periodicities if bool(item["available"])
-    }
-    unavailable = sorted(
-        (set(map(str, payload.business_questions)) - available_questions)
-        | ({payload.periodicity} - available_periodicities)
-    )
-    if unavailable:
-        raise HTTPException(
-            status_code=422,
-            detail=(
-                "La necesidad contiene opciones deshabilitadas o no respaldadas por los "
-                f"metadatos actuales: {', '.join(unavailable)}. Actualice la selección."
-            ),
-        )
+    _validate_catalog_selection(payload, available_catalog)
     return snapshot, _safe_business_request(payload, catalog_configuration), catalog_configuration
 
 
@@ -862,30 +895,7 @@ async def create_proposal(
         )
     catalog_configuration = await _needs_catalog(session, payload.domain_code, connection.id)
     available_catalog = catalog_for_snapshot(snapshot.schema_document, catalog_configuration)
-    selected_domain = next(
-        (item for item in available_catalog if item["code"] == payload.domain_code), None
-    )
-    domain_questions = cast(list[dict[str, object]], (selected_domain or {}).get("questions", []))
-    domain_periodicities = cast(
-        list[dict[str, object]], (selected_domain or {}).get("periodicities", [])
-    )
-    available_questions = {
-        str(item["code"]) for item in domain_questions if bool(item["available"])
-    }
-    available_periodicities = {
-        str(item["code"]) for item in domain_periodicities if bool(item["available"])
-    }
-    unavailable_questions = set(map(str, payload.business_questions)) - available_questions
-    unavailable_periodicities = {payload.periodicity} - available_periodicities
-    if unavailable_questions or unavailable_periodicities:
-        unavailable = sorted(unavailable_questions | unavailable_periodicities)
-        raise HTTPException(
-            status_code=422,
-            detail=(
-                "La necesidad contiene opciones deshabilitadas o no respaldadas por los "
-                f"metadatos actuales: {', '.join(unavailable)}. Actualice la selección."
-            ),
-        )
+    _validate_catalog_selection(payload, available_catalog)
     request_document = _safe_business_request(payload, catalog_configuration)
     review = await session.scalar(
         select(BusinessNeedReview)
@@ -1113,6 +1123,9 @@ async def create_proposal(
                 response_schema=proposal_blueprint_schema(scope, semantic_map, assessment),
             )
             blueprint["requested_dimensions"] = reviewed_dimensions(assessment)
+            blueprint["business_request_scope"] = _reviewed_business_scope(
+                str(request_document.get("goal", "")), assessment
+            )
             proposal = expand_proposal_blueprint(blueprint, scope, semantic_map)
             proposal = apply_financial_requirements(proposal, assessment, scope)
             proposal["need_assessment"] = assessment
@@ -1544,8 +1557,19 @@ async def revise_controlled_relation(
             ),
         )
     try:
+        source_blueprint = deepcopy(source_blueprint)
+        effective_dimensions = source.proposal_document.get("dimensions", [])
+        for dimension in effective_dimensions if isinstance(effective_dimensions, list) else []:
+            if isinstance(dimension, dict):
+                effective_source = next(iter(dimension.get("source_tables", [])), None)
+                for decision in source_blueprint.get("dimensions", []):
+                    if decision.get("name") == dimension.get("name") and effective_source:
+                        decision["source_table"] = effective_source
+        source_blueprint["business_request_scope"] = _reviewed_business_scope(
+            source.business_goal, source.proposal_document.get("need_assessment")
+        )
         revised_blueprint = apply_controlled_relationship(
-            source_blueprint, payload.dimension_name, option
+            source_blueprint, payload.dimension_name, option, source.scope_document
         )
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
@@ -1556,6 +1580,9 @@ async def revise_controlled_relation(
         "option_id": payload.option_id,
         "comment": payload.comment,
     }
+    revised_blueprint["business_request_scope"] = _reviewed_business_scope(
+        source.business_goal, source.proposal_document.get("need_assessment")
+    )
     proposal_document = expand_proposal_blueprint(
         revised_blueprint, source.scope_document, semantic_map
     )
@@ -1672,6 +1699,9 @@ async def revise_proposal(
         "measure_names": payload.measure_names,
         "kpi_codes": payload.kpi_codes,
     }
+    revised_blueprint["business_request_scope"] = _reviewed_business_scope(
+        source.business_goal, source.proposal_document.get("need_assessment")
+    )
     proposal_document = expand_proposal_blueprint(
         revised_blueprint,
         source.scope_document,

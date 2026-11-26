@@ -1,0 +1,59 @@
+@startuml
+skinparam backgroundColor white
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 16
+skinparam ArrowFontSize 15
+skinparam NoteFontSize 14
+skinparam Padding 6
+skinparam nodesep 24
+skinparam ranksep 28
+skinparam dpi 180
+skinparam wrapWidth 220
+skinparam maxMessageSize 190
+skinparam sequenceMessageAlign center
+hide empty members
+hide circle
+skinparam classAttributeIconSize 0
+
+top to bottom direction
+component "Interfaz web" as UI
+interface "Servicios autorizados" as SERV
+rectangle "Aplicación del servidor" {
+ component "Acceso y auditoría" as SEC
+ component "Fuentes y metadatos" as MET
+ component "Diseño y aprobación" as COP
+ component "Carga y conciliación" as ETL
+ component "Analítica y reportes" as ANA
+ component "Validaciones comunes" as VAL
+}
+database "Registro del proyecto\ny datamarts" as PG
+database "Fuente SQL Server" as SQL
+cloud "Proveedor de\ninteligencia artificial" as IA
+UI --> SERV
+SERV --> SEC
+SERV --> MET
+SERV --> COP
+SERV --> ETL
+SERV --> ANA
+COP ..> MET : utiliza contexto
+COP ..> VAL : verifica propuesta
+ETL ..> VAL : verifica plan
+ETL ..> COP : utiliza aprobación
+ANA ..> ETL : utiliza ejecución válida
+MET --> SQL : consulta estructura
+ETL --> SQL : sólo lectura
+COP --> IA : necesidad y metadatos
+ANA --> IA : agregados autorizados
+SEC --> PG
+MET --> PG
+COP --> PG
+ETL --> PG
+ANA --> PG
+note bottom of SQL
+El conector SQL Server se comprobó con dos bases.
+Otros motores requieren conector y pruebas propias.
+end note
+
+@enduml

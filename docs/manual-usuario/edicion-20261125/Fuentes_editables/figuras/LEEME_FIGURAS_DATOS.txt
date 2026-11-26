@@ -1,0 +1,43 @@
+FIGURAS PARA EL MANUAL OPERATIVO Y DE APRENDIZAJE
+
+Ocho figuras finales: arquitectura, visión de identidades principales, cuatro
+áreas del modelo de app y dos datamarts físicos conservados. Cada figura se
+entrega como SVG editable, PDF vectorial con Times New Roman incrustada y PNG
+RGB opaco de 2717×1449 píxeles a 300 dpi.
+
+COLOCACIÓN
+Insertar PDF o SVG a 23–25 cm de ancho en una página A4 horizontal y conservar
+proporción. A 23 cm el texto es 10,87 pt; a 25 cm es 11,81 pt y la altura 13,33 cm.
+No reducir para insertarlo en una columna estrecha. La leyenda académica o el
+pie de figura debe quedar fuera del gráfico. Los textos internos ya se revisaron.
+
+LECTURA
+ER_00 es una vista inicial de las identidades y sus FK principales.
+ER_01 a ER_04 contienen conjuntamente las 18 tablas de app y las 24 FK físicas.
+Las cajas muestran claves y campos principales para mantener legibilidad;
+el diccionario base_datos_manual.json/.md enumera las 174 columnas de app.
+Las referencias a usuarios se separan en ER_04 para evitar líneas cruzadas.
+ER_05_datamart_e21 y ER_05_datamart_e22 muestran todas las columnas de sus cinco
+tablas. Las líneas discontinuas representan enlaces del motor, SIN FK físicas.
+Los campos llamados etl_execution_id tampoco tienen FK a app.etl_executions.
+No se atribuyen cardinalidades garantizadas a estas uniones lógicas.
+
+FUENTES
+crear_modelo_datos_manual.py construye los SVG desde el inventario observado;
+renderizar_modelo_datos_manual.py exporta PDF por Inkscape CLI y rasteriza con
+Poppler. Las fuentes son Times New Roman legítimamente instaladas. Los binarios
+y sus rutas pertenecen al entorno de autoría; adapte las rutas para otro equipo.
+La arquitectura reutiliza el esquema legible validado en la revisión documental
+previa. Su SVG incluido permite editarla sin depender del proyecto original.
+No se distribuyen dependencias, tipografías licenciadas, bases ni volúmenes.
+
+PROCEDENCIA Y LÍMITES
+El inventario procede de pg_catalog de la instalación local del 18 de noviembre.
+Los nombres/columnas/FK se cotejaron con el ORM; la cabeza de 19 migraciones coincide
+con Alembic. Se consultaron solo identidades técnicas para mostrar 129→21 y 131→22.
+No se abrieron sus documentos JSON, no se leyeron ventas ni secretos y no se
+modificaron la aplicación, los contenedores ni las bases.
+Las 64 tablas analíticas son resultados históricos acumulados, no un requisito
+del portable limpio. Los números de versión y ejecución son locales y cambian
+al replicar el proceso. La matriz de roles describe definiciones, no una prueba
+de acceso de personas ni de inicio de sesión con cada perfil.

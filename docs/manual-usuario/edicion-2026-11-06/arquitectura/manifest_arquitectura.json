@@ -1,0 +1,113 @@
+{
+  "fecha_creacion": "2026-11-06T00:38:53.325359-05:00",
+  "estado": "Dos variantes finales verificadas visualmente; materiales nuevos de autoría, pendientes de incorporación por el responsable del documento.",
+  "alcance": "Imagen de arquitectura y recorrido supervisado, no un diagrama UML ni evidencia de una ejecución nueva de la aplicación.",
+  "figuras": [
+    {
+      "archivo": "Arquitectura_detallada_BI_IA.svg",
+      "titulo": "Arquitectura de la plataforma inteligente de BI",
+      "descripcion": "Cuatro servicios base en Docker: interfaz React, servidor FastAPI, SQL Server de sólo lectura con AdventureWorks2022 y WideWorldImporters, y PostgreSQL como persistencia y destino analítico. El proveedor de inteligencia artificial configurable intercambia sólo contexto autorizado con FastAPI. Una persona autorizada aprueba antes de la carga controlada y conciliada.",
+      "dimensiones_svg": [
+        1600,
+        1130
+      ],
+      "version": "Detalle técnico"
+    },
+    {
+      "archivo": "Arquitectura_general_BI_IA.svg",
+      "titulo": "Cómo funciona la plataforma de ventas con IA",
+      "descripcion": "Cuatro servicios base en Docker: interfaz React, servidor FastAPI, SQL Server de sólo lectura con AdventureWorks2022 y WideWorldImporters, y PostgreSQL como persistencia y destino analítico. El proveedor de inteligencia artificial configurable intercambia sólo contexto autorizado con FastAPI. Una persona autorizada aprueba antes de la carga controlada y conciliada.",
+      "dimensiones_svg": [
+        1600,
+        1130
+      ],
+      "version": "Explicación general para formación"
+    }
+  ],
+  "archivos": [
+    {
+      "archivo": "Arquitectura_detallada_BI_IA.png",
+      "bytes": 400934,
+      "sha256": "a0fc5cd6daf65f10760bea9a5cbd13bc9b44a4aeb32821180b03e90de2c5ceeb"
+    },
+    {
+      "archivo": "Arquitectura_detallada_BI_IA.svg",
+      "bytes": 14647,
+      "sha256": "e6c612a08e4c229611ccb58badebabeadea92cc82393d95b7a3441fea06b2139"
+    },
+    {
+      "archivo": "Arquitectura_general_BI_IA.png",
+      "bytes": 414607,
+      "sha256": "1a977678363b278dd5b2fa9e7bce8f9a32d0a623faba719166b7e306d1ebbf8f"
+    },
+    {
+      "archivo": "Arquitectura_general_BI_IA.svg",
+      "bytes": 14537,
+      "sha256": "c2aa2a6f99bbc9647aed33aea7db291886fa63292d4ed657734e6d6e7e2e6036"
+    },
+    {
+      "archivo": "Explicacion_arquitectura.txt",
+      "bytes": 5103,
+      "sha256": "7d746e1b88ac27a4423631e206556c98d152e62d8b2f05fbf74a7dd39752ff75"
+    },
+    {
+      "archivo": "crear_arquitectura.py",
+      "bytes": 8316,
+      "sha256": "97fdda46358f2840a3535651265a00a1f8c01480c5d33771d769f0bf8ce7deca"
+    },
+    {
+      "archivo": "figuras.json",
+      "bytes": 1232,
+      "sha256": "8c46915f3cab53b4e2f3f193b543d30458385f74ff3171952b5db85cdde3955b"
+    },
+    {
+      "archivo": "renderizar_arquitectura.mjs",
+      "bytes": 536,
+      "sha256": "ccdd59c8d81f2e066187e54be4545be0360a48b619e65eefcc889217629339f2"
+    },
+    {
+      "archivo": "verificacion_figuras.json",
+      "bytes": 3584,
+      "sha256": "8bf734832e0bfe895143fe31533330b0dccf7463c6e5bc534b5bc99e8ffc996a"
+    }
+  ],
+  "fuentes_de_verificacion": [
+    {
+      "ruta": "/home/ceo/Proyectos/BI/docs/architecture.md",
+      "sha256": "4426a59aaba711d01af8e1de9fa64625b7fea9b5fc43c7e4026fbd1a3d06b342"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/compose.yaml",
+      "sha256": "0b22d5f762f4f4437ea15ee355605569d4647c4df5455c01baca5db3e5e62193"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/backend/app/modules/parameters/schemas.py",
+      "sha256": "3a94a8729a3c7e586ecdada221fd395290233cd3f10b1e404a8d07b92e8e1841"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/backend/app/modules/analytics/router.py",
+      "sha256": "19f72ee4d007c9eb369fd10cbe32ab525b888647a528dac388cbe098b13996b2"
+    },
+    {
+      "ruta": "/home/ceo/Proyectos/BI/backend/app/modules/analytics/service.py",
+      "sha256": "3a25e61c3307c442c337cb04fe0bd2a09aa17897c3b7ef9f65671f3793e50b9a"
+    }
+  ],
+  "comprobaciones": [
+    "SVG y PNG presentes para las dos variantes",
+    "PNG: 2400 × 1695 píxeles",
+    "Texto mínimo: 28 px en SVG de 1600 px",
+    "Inspección visual nativa de ambas imágenes",
+    "Sin textos recortados u objetos superpuestos",
+    "Sin URLs, credenciales ni servidores privados en la figura",
+    "Aprobación humana separada de ejecución y conciliación",
+    "La IA únicamente se comunica con el servidor de aplicación mediante contexto autorizado"
+  ],
+  "limites": [
+    "Las dos fuentes mostradas son ejemplos del mismo motor SQL Server.",
+    "La arquitectura permite proveedores configurables; no demuestra equivalencia de todos los modelos.",
+    "No se afirma que todos los motores de bases de datos estén implementados.",
+    "La imagen describe el diseño verificado en código y documentación; no sustituye resultados de pruebas operativas."
+  ],
+  "nota_sha256": "El manifiesto no incluye su propio hash; SHA256SUMS.txt contiene el hash del manifiesto y de todos los entregables."
+}

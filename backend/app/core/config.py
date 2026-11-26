@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
     jwt_secret: SecretStr = SecretStr("ChangeMe_JWT_2026!")
     jwt_algorithm: str = "HS256"
-    jwt_access_token_minutes: int = 30
+    jwt_access_token_minutes: int = Field(default=60, ge=1, le=240)
     bootstrap_admin_email: str = "admin@bi.local"
     bootstrap_admin_password: SecretStr = SecretStr("ChangeMe_Admin_2026!")
 

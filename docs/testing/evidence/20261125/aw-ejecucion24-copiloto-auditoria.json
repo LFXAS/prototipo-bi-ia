@@ -1,0 +1,68 @@
+{
+  "method": "Revisión QA de la respuesta real visible conservada por root; contraste numérico con el oráculo independiente y semántico con la procedencia de la ejecución24. No se invoca un LLM adicional ni se modifica la respuesta.",
+  "source_text": "aw-ejecucion24-copiloto.txt",
+  "source_text_sha256": "d64c0d47c40a55baad99c5936ec8a1b903f42abfaf6f4a52a5871845eee7d3f9",
+  "proposal_id": 136,
+  "execution_id": 24,
+  "question_scope": {
+    "year": 2013,
+    "territory": "Northwest",
+    "event": "sales_order_lines",
+    "location_role": "commercial_territory_from_order_header"
+  },
+  "checks": [
+    {
+      "criterion": "Importe filtrado redondeado",
+      "source_expected": "6015174.74",
+      "visible_claim": "6.015.174,74",
+      "passed": true
+    },
+    {
+      "criterion": "Unidades observadas",
+      "source_expected": 17452,
+      "visible_claim": "17.452",
+      "passed": true
+    },
+    {
+      "criterion": "Pedidos distintos",
+      "source_expected": 2053,
+      "visible_claim": "2.053",
+      "passed": true
+    },
+    {
+      "criterion": "Promedio documental redondeado",
+      "source_expected": "2929.94",
+      "visible_claim": "2.929,94",
+      "passed": true
+    },
+    {
+      "criterion": "Denominador documental correcto",
+      "passed": true
+    },
+    {
+      "criterion": "Promedio de líneas distinguido del promedio por pedido",
+      "passed": true
+    },
+    {
+      "criterion": "Divisa respaldada por la aplicación",
+      "passed": true
+    },
+    {
+      "criterion": "Pedidos no convertidos en facturas",
+      "passed": true
+    },
+    {
+      "criterion": "Territorio comercial asociado a la cabecera",
+      "passed": true
+    },
+    {
+      "criterion": "No se inventa vigencia histórica ni entrega física",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "limitations": [
+    "La coincidencia de este caso no garantiza todas las preguntas posibles.",
+    "Los agregados y el territorio comercial no prueban entregas físicas, causas de ventas, preferencias o demanda."
+  ]
+}

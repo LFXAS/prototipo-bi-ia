@@ -1,0 +1,2435 @@
+{
+  "title": "Operación, configuración y catálogo: contenido de formación verificado contra el software",
+  "date": "2026-11-18",
+  "repository": "/home/ceo/Proyectos/BI",
+  "source_commit": "39383d65bda89eff123e04f28f84fd2e482909e8",
+  "purpose": "Fuente editorial para el manual operativo y de aprendizaje; las prácticas descritas son propuestas de capacitación y no nuevas pruebas ejecutadas durante esta auditoría de código.",
+  "scope": "Acceso, Inicio, navegación/contexto, usuarios, roles, permisos, menús, auditoría, conexiones, parámetros, LLM, explorador y catálogo comercial/temporal. Asistente, ETL y analítica se desarrollan en el contenido paralelo correspondiente.",
+  "authority_rule": "Cuando una especificación o un manual anterior describe controles no presentes, se documenta la UI y autorización implementadas en el corte leído. No se modificó código, base de datos ni configuración.",
+  "sections": [
+    {
+      "id": "operacion_01",
+      "order": 1,
+      "title": "Ingresar y reconocer una sesión autorizada",
+      "ui_path": "Pantalla de acceso",
+      "audience": [
+        "Todos los perfiles"
+      ],
+      "paragraphs": [
+        "Abra la dirección de la plataforma proporcionada por la administración. En el repositorio de desarrollo, el puerto predeterminado es 5173; una entrega release o portable puede publicar otro puerto. Use la dirección de la guía de la instalación que está encendiendo. El puerto identifica el servicio: no determina sus permisos ni la base de datos que analizará.",
+        "Una cuenta representa a la persona que realiza las acciones. Sus roles reúnen permisos; por eso dos personas pueden iniciar sesión y ver opciones diferentes. La contraseña permite autenticar la cuenta, mientras que los permisos determinan si puede consultar, modificar o ejecutar una operación. Conocer la contraseña de una cuenta no convierte automáticamente a esa cuenta en administradora.",
+        "Al ingresar, compruebe el nombre mostrado en Sesión activa y los menús disponibles. Trabaje con su cuenta asignada. La cuenta administrativa inicial está protegida porque permite recuperar la administración del entorno. Su contraseña se entrega por un canal de administración y no forma parte de este manual.",
+        "La sesión tiene una duración absoluta: se cuenta desde el ingreso y no vuelve a comenzar con cada clic. El valor inicial es 60 minutos. La administración puede cambiar Duración de la sesión (minutos), en Parámetros, entre 15 y 240. El cambio se aplica a los próximos inicios de sesión; no alarga una sesión que ya está abierta."
+      ],
+      "concepts": [
+        {
+          "term": "Autenticación",
+          "explanation": "Comprobación de la identidad de una cuenta mediante sus credenciales.",
+          "example": ""
+        },
+        {
+          "term": "Autorización",
+          "explanation": "Comprobación de que la cuenta tiene permiso para la acción solicitada.",
+          "example": ""
+        },
+        {
+          "term": "Sesión",
+          "explanation": "Acceso temporal de una cuenta autenticada; puede vencer sin borrar los expedientes almacenados.",
+          "example": ""
+        }
+      ],
+      "steps": [
+        "Escriba el correo de su cuenta en Correo y la clave suministrada por la administración en Contraseña.",
+        "Pulse Iniciar sesión una sola vez y espere a que aparezca el espacio de trabajo.",
+        "Compruebe su nombre en Sesión activa. Si no coincide con la cuenta que esperaba usar, pulse Cerrar sesión e ingrese con la cuenta correcta.",
+        "Despliegue el grupo de menú correspondiente a su tarea. Si una opción no está disponible, solicite revisar los permisos en lugar de utilizar la cuenta de otra persona.",
+        "Si vence la sesión, ingrese otra vez y confirme el módulo, la fuente y el borrador recuperados. No pulse otra vez Cargar para resolver el vencimiento: primero consulte si la ejecución anterior terminó.",
+        "Cuando termine, pulse Cerrar sesión. Esta acción cierra su acceso y elimina el borrador local del asistente; los expedientes ya guardados permanecen en el servidor."
+      ],
+      "controls": [
+        {
+          "name": "Correo",
+          "purpose": "Identifica la cuenta registrada.",
+          "example": "El correo asignado a la estudiante; no un nombre de rol.",
+          "result": "Se consulta esa cuenta al autenticar."
+        },
+        {
+          "name": "Contraseña",
+          "purpose": "Acredita el acceso; se presenta enmascarada.",
+          "example": "La clave entregada para esa cuenta.",
+          "result": "Se valida sin devolver la contraseña guardada."
+        },
+        {
+          "name": "Iniciar sesión",
+          "purpose": "Solicita la autenticación.",
+          "example": "Acceder como Analista de BI con su propia cuenta.",
+          "result": "Muestra el espacio de trabajo permitido o una explicación del rechazo."
+        },
+        {
+          "name": "Cerrar sesión",
+          "purpose": "Finaliza el acceso del navegador.",
+          "example": "Concluir una práctica en un equipo compartido.",
+          "result": "Regresa al formulario de acceso; no elimina propuestas ni datamarts."
+        }
+      ],
+      "practice": [
+        {
+          "title": "Reconocer la cuenta antes de operar",
+          "evidence_status": "Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.",
+          "steps": [
+            "Ingrese con una cuenta de práctica.",
+            "Anote el nombre mostrado y tres opciones disponibles.",
+            "Cierre sesión y compruebe que vuelve el formulario."
+          ],
+          "expected_results": [
+            "La cuenta mostrada coincide con la utilizada.",
+            "No se crean propuestas ni cargas por iniciar o cerrar sesión."
+          ],
+          "success_criterion": "La estudiante explica la diferencia entre acceso a la plataforma y permiso para ejecutar ETL."
+        }
+      ],
+      "errors": [
+        {
+          "symptom": "Credenciales inválidas o acceso rechazado.",
+          "possible_cause": "Correo o clave incorrectos, cuenta desactivada o servicio no disponible.",
+          "action": "Verifique la dirección de la plataforma y el correo; solicite a la administración revisar el estado de la cuenta. No cambie la configuración de las bases para resolver un problema de acceso.",
+          "verification": "La cuenta correcta aparece en Sesión activa."
+        },
+        {
+          "symptom": "Token inválido o vencido.",
+          "possible_cause": "La sesión temporal terminó.",
+          "action": "Autentíquese nuevamente y revise fuente, borrador y versión recuperados antes de continuar.",
+          "verification": "La consulta del expediente funciona y no se ha repetido una ejecución."
+        },
+        {
+          "symptom": "La clave aparece dentro de otro campo por autocompletado.",
+          "possible_cause": "El navegador insertó datos guardados en un formulario.",
+          "action": "Limpie el dato que no corresponde y revise cada etiqueta antes de guardar. No capture ni comparta contraseñas.",
+          "verification": "Correo y nombre contienen los datos previstos; los campos de claves siguen enmascarados."
+        }
+      ],
+      "defense_qa": [
+        {
+          "question": "¿La IA decide quién puede entrar?",
+          "answer": "No. El acceso y los permisos los comprueba el servidor mediante las cuentas y los roles configurados."
+        },
+        {
+          "question": "¿Cerrar sesión elimina un datamart?",
+          "answer": "No. Finaliza el acceso local; los resultados persistidos se conservan. Un borrador local no guardado sí puede perderse."
+        }
+      ],
+      "source_refs": [
+        "frontend/src/App.tsx:288–327",
+        "backend/app/modules/security/service.py:228–283",
+        "backend/app/modules/security/schemas.py:12–19"
+      ]
+    },
+    {
+      "id": "operacion_02",
+      "order": 2,
+      "title": "Comenzar desde Inicio y completar la preparación",
+      "ui_path": "Inicio",
+      "audience": [
+        "Administración",
+        "Analista de BI",
+        "Gerencia para reconocer su contexto"
+      ],
+      "paragraphs": [
+        "Inicio es el punto de orientación. Para una cuenta con consulta de propuestas, resume tres componentes: Fuente de ventas, Metadatos y Asistente de IA. Los tres deben estar preparados para crear una propuesta nueva. Una fuente habilitada no sustituye a sus metadatos; un modelo activo no garantiza que la pregunta comercial sea factible.",
+        "Todo está listo significa que se cumplen los prerrequisitos del asistente en ese contexto. Todavía faltan la necesidad concreta, la evaluación de su viabilidad, el diseño, la revisión humana y la ejecución del ETL. El mensaje no acredita anticipadamente que cualquier necesidad pueda resolverse.",
+        "Si el perfil no tiene consulta de propuestas, Inicio puede presentar cantidades de roles, permisos y opciones visibles en lugar de las tarjetas del asistente. Es una diferencia de acceso prevista. Para gerencia, el recorrido principal se dirige a Analítica de ventas, donde se consulta un datamart existente."
+      ],
+      "concepts": [
+        {
+          "term": "Prerrequisito",
+          "explanation": "Condición que debe cumplirse antes de comenzar una etapa.",
+          "example": "Una instantánea de metadatos antes de interpretar el esquema."
+        },
+        {
+          "term": "Metadatos",
+          "explanation": "Descripción de tablas, columnas, tipos y relaciones; no las filas comerciales.",
+          "example": ""
+        },
+        {
+          "term": "Proveedor de IA",
+          "explanation": "Servicio configurado para interpretar y explicar dentro de las reglas de la plataforma.",
+          "example": ""
+        }
+      ],
+      "steps": [
+        "Abra Inicio y compruebe Fuente en contexto.",
+        "Lea el estado de Fuente de ventas, Metadatos y Asistente de IA si su perfil muestra esas tarjetas.",
+        "Si aparece Faltan prerrequisitos, pulse Completar configuración inicial.",
+        "Recorra la preparación con Continuar y Atrás; use Completar este paso para abrir el módulo pendiente.",
+        "Si aparece Todo está listo, pulse Crear propuesta de datamart cuando vaya a iniciar un diseño. Para revisar una configuración ya válida, utilice Revisar configuración.",
+        "Para terminar la ayuda de preparación, utilice Cerrar preparación."
+      ],
+      "controls": [
+        {
+          "name": "Crear propuesta de datamart",
+          "purpose": "Abre el asistente.",
+          "example": "Iniciar un diseño sobre WideWorldImporters.",
+          "result": "Abre la etapa Necesidad; no aprueba ni carga datos."
+        },
+        {
+          "name": "Completar configuración inicial",
+          "purpose": "Muestra la preparación guiada.",
+          "example": "Faltan los metadatos de la conexión elegida.",
+          "result": "Permite localizar el módulo pendiente."
+        },
+        {
+          "name": "Revisar configuración",
+          "purpose": "Abre el repaso de la preparación.",
+          "example": "Confirmar qué proveedor está activo.",
+          "result": "Muestra cinco pasos de preparación sin modificar registros por sí mismo."
+        },
+        {
+          "name": "Continuar / Atrás",
+          "purpose": "Recorre la ayuda inicial.",
+          "example": "Pasar de Proveedor de IA a Fuente de ventas.",
+          "result": "Cambia el paso informativo, no ejecuta una carga."
+        }
+      ],
+      "practice": [
+        {
+          "title": "Distinguir preparación de resultados",
+          "evidence_status": "Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.",
+          "steps": [
+            "Seleccione AdventureWorks y lea sus tarjetas.",
+            "Cambie a WideWorldImporters y repita la lectura.",
+            "Explique qué falta para disponer de un análisis nuevo."
+          ],
+          "expected_results": [
+            "El nombre y los metadatos se corresponden con la fuente seleccionada.",
+            "La estudiante identifica que el panel analítico requiere una ejecución conciliada."
+          ],
+          "success_criterion": "No confunde Todo está listo con ETL ejecutado o propuesta aprobada."
+        }
+      ],
+      "errors": [
+        {
+          "symptom": "No se muestran las tarjetas del asistente.",
+          "possible_cause": "El perfil carece de consulta de propuestas o no hay fuente seleccionable.",
+          "action": "Revise el perfil y la existencia de fuentes; gerencia puede operar el panel sin crear propuestas.",
+          "verification": "La pantalla corresponde a los permisos reales, no a una supuesta cuenta universal."
+        },
+        {
+          "symptom": "Asistente de IA no preparado.",
+          "possible_cause": "Configuración ausente, inactiva o sin prueba vigente.",
+          "action": "La administración revisa Configuración LLM y realiza la prueba del registro correcto.",
+          "verification": "Inicio reconoce el proveedor preparado después de la prueba válida."
+        }
+      ],
+      "defense_qa": [
+        {
+          "question": "¿Todo está listo significa que la IA ya conoce el negocio?",
+          "answer": "No. Solo indica preparación técnica. La necesidad y su compatibilidad con los metadatos se revisan en la etapa siguiente."
+        }
+      ],
+      "source_refs": [
+        "frontend/src/App.tsx:392–443"
+      ]
+    },
+    {
+      "id": "operacion_03",
+      "order": 3,
+      "title": "Navegar y conservar la fuente de trabajo",
+      "ui_path": "Fuente en contexto y navegación lateral",
+      "audience": [
+        "Todos los perfiles autorizados"
+      ],
+      "paragraphs": [
+        "La navegación organiza la plataforma por preparación del entorno, diseño y transformación BI, análisis y decisiones, y administración y seguridad. Siga ese orden al preparar una fuente nueva. Para revisar resultados existentes, puede ir directamente a la etapa de consulta correspondiente, siempre que tenga permiso.",
+        "Cambiar fuente selecciona el origen de trabajo de su sesión. No apaga las demás conexiones ni une sus registros. Las dos bases pueden permanecer habilitadas simultáneamente. La plataforma conserva por separado sus instantáneas, catálogos, propuestas, ejecuciones y resultados.",
+        "Antes de interpretar un importe, confirme fuente, propuesta y ejecución. El nombre del origen no se debe inferir a partir de un color del gráfico. En una demostración, verbalice esta identidad al cambiar de AdventureWorks a WideWorldImporters. Si el listado no muestra una fuente, no reutilice una propuesta de otra base para simular su disponibilidad.",
+        "Al recargar la pestaña, el sistema conserva el módulo autorizado. En Analítica recuerda por separado la ejecución, el indicador, el año, el territorio y la vista confirmados de cada fuente. Cambiar a otra fuente y regresar recupera su selección propia; no combina ambos análisis. Cerrar sesión limpia estos contextos locales."
+      ],
+      "concepts": [
+        {
+          "term": "Fuente",
+          "explanation": "Conexión a una base de datos concreta.",
+          "example": "AdventureWorks2022 y WideWorldImporters pueden estar en el mismo servidor y seguir siendo fuentes distintas."
+        },
+        {
+          "term": "Contexto",
+          "explanation": "Selección que identifica de qué fuente y ejecución proviene la información consultada.",
+          "example": ""
+        },
+        {
+          "term": "Linaje",
+          "explanation": "Relación entre origen, instantánea, propuesta, ejecución y resultado que permite explicar su procedencia.",
+          "example": ""
+        }
+      ],
+      "steps": [
+        "Despliegue el grupo de navegación de la tarea que realizará.",
+        "Use Cambiar fuente y elija el nombre de la conexión y su base.",
+        "Espere a que se cargue el nuevo contexto antes de leer tablas, tarjetas o gráficos.",
+        "En el Explorador, confirme la instantánea; en el asistente, la propuesta; en el datamart o panel, la ejecución.",
+        "Si necesita más espacio, utilice Ocultar navegación lateral. Para recuperarla, utilice Mostrar navegación lateral.",
+        "En una pantalla estrecha, el botón Menú muestra las opciones disponibles.",
+        "Cuando la pantalla muestre Atrás, úselo para regresar al punto que abrió la configuración o el respaldo. Si entró desde el menú lateral puede no aparecer: en ese caso continúe con el menú."
+      ],
+      "controls": [
+        {
+          "name": "Cambiar fuente",
+          "purpose": "Selecciona una conexión habilitada para la sesión.",
+          "example": "Alternar AdventureWorks2022 y WideWorldImporters.",
+          "result": "Recarga los componentes dependientes de esa fuente."
+        },
+        {
+          "name": "Ocultar navegación lateral / Mostrar navegación lateral",
+          "purpose": "Aprovecha el ancho de la pantalla.",
+          "example": "Examinar un modelo o gráfico amplio.",
+          "result": "Cambia la presentación; no cambia permisos ni resultados."
+        },
+        {
+          "name": "Menú",
+          "purpose": "Abre la navegación en pantallas estrechas.",
+          "example": "Uso en un equipo con menor resolución.",
+          "result": "Presenta las opciones autorizadas."
+        },
+        {
+          "name": "Anterior / Siguiente",
+          "purpose": "Recorre un listado paginado cuando tiene más registros.",
+          "example": "Buscar una instantánea más antigua.",
+          "result": "Cambia el tramo de resultados del listado, no la fuente por sí mismo."
+        }
+      ],
+      "practice": [
+        {
+          "title": "Comprobar el aislamiento visible",
+          "evidence_status": "Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.",
+          "steps": [
+            "Abra el Explorador con AdventureWorks y anote base e instantánea.",
+            "Cambie a WideWorldImporters y anote los mismos datos.",
+            "Abra el catálogo de cada fuente y compare su contexto."
+          ],
+          "expected_results": [
+            "Cada módulo identifica el origen elegido.",
+            "No se presupone que los números de instantánea o preguntas sean iguales en otra instalación."
+          ],
+          "success_criterion": "La estudiante puede señalar la fuente y el artefacto correspondiente antes de describir un resultado."
+        }
+      ],
+      "errors": [
+        {
+          "symptom": "Falta el selector o no aparecen fuentes.",
+          "possible_cause": "No existen conexiones habilitadas o falta Consultar metadatos, requerido por el selector actual.",
+          "action": "Solicite revisar las conexiones y el permiso Consultar metadatos de la cuenta. No conceda ejecución ETL para corregir un permiso de lectura.",
+          "verification": "La fuente puede seleccionarse sin habilitar acciones de escritura innecesarias."
+        },
+        {
+          "symptom": "Parece permanecer información de otra fuente.",
+          "possible_cause": "Se leyó la pantalla antes de terminar la actualización, hay una incidencia de contexto o se abrió un expediente histórico distinto.",
+          "action": "Espere la carga y compruebe fuente y expediente. Si persiste, registre pantalla y pasos y detenga la interpretación de esas cifras; informe la incidencia.",
+          "verification": "Los identificadores visibles y los resultados pertenecen a la misma fuente."
+        }
+      ],
+      "defense_qa": [
+        {
+          "question": "¿Por qué una empresa puede tener dos fuentes activas?",
+          "answer": "Porque cada conexión representa un origen independiente. La selección de contexto permite trabajar con una sin deshabilitar la otra."
+        },
+        {
+          "question": "¿Universal significa que admite cualquier motor inmediatamente?",
+          "answer": "El flujo y los contratos se reutilizan por fuente. En este corte se implementó y validó SQL Server; otro motor necesita su conector y pruebas."
+        }
+      ],
+      "source_refs": [
+        "frontend/src/App.tsx:227–276,333–389",
+        "backend/app/modules/metadata/router.py:99–140",
+        "docs/specs/SPR-06-01-contexto-multifuente-sqlserver.md"
+      ]
+    },
+    {
+      "id": "operacion_04",
+      "order": 4,
+      "title": "Crear y mantener cuentas de usuario",
+      "ui_path": "Administración y seguridad > Usuarios",
+      "audience": [
+        "Administración"
+      ],
+      "paragraphs": [
+        "Una cuenta se crea para una persona, no para una base de datos. Los roles asignados determinan sus permisos efectivos en toda la plataforma. La misma cuenta de analista puede seleccionar las fuentes habilitadas para el flujo disponible; el sistema no crea automáticamente una cuenta por conexión.",
+        "En Usuarios, el formulario se encuentra en la propia pantalla. Para crear se completan Correo, Nombre completo, Contraseña y Roles asignados, y se pulsa Crear registro. En edición, el correo identifica a la cuenta y permanece en consulta. Una contraseña vacía conserva la existente; escribir una nueva la sustituye.",
+        "No es necesario escribir identificadores numéricos: los roles se eligen por nombre y descripción. Si falla la carga de roles, el formulario queda bloqueado y aparece Reintentar carga de opciones. Un error de red no debe resolverse guardando una cuenta sin sus roles previstos.",
+        "El estado true de la tabla significa activo; false significa inactivo. Una cuenta desactivada conserva su registro, pero no puede usar una sesión válida. Eliminar es una operación diferente y solicita confirmación. Los registros Protegido y la recuperación administrativa tienen controles adicionales; la administración inicial no debe desaparecer como parte de una práctica."
+      ],
+      "concepts": [
+        {
+          "term": "Cuenta",
+          "explanation": "Identidad de acceso con correo y nombre.",
+          "example": ""
+        },
+        {
+          "term": "Rol",
+          "explanation": "Conjunto de permisos asignable a una cuenta.",
+          "example": "Analista BI o Gerente comercial son nombres de perfiles configurados."
+        },
+        {
+          "term": "Permisos efectivos",
+          "explanation": "Unión de permisos activos de los roles activos de la cuenta.",
+          "example": ""
+        }
+      ],
+      "steps": [
+        "Abra Usuarios y compruebe si va a crear una cuenta o editar una existente.",
+        "Para una cuenta de práctica, escriba un correo no utilizado y un nombre que identifique a la persona. Defina una clave de al menos 12 caracteres sin incluirla en capturas o documentos.",
+        "En Roles asignados, marque los perfiles necesarios y lea su descripción.",
+        "Pulse Crear registro y verifique la nueva fila.",
+        "Para editar, pulse Editar en la fila exacta. Cambie el nombre o roles; deje Contraseña vacía si no desea cambiarla.",
+        "Pulse Guardar cambios y vuelva a abrir la misma fila para comprobar las asociaciones. Utilice Cancelar si no desea guardar.",
+        "La prueba completa del perfil requiere iniciar sesión con esa cuenta y verificar operaciones permitidas y denegadas; la lista de casillas por sí sola no lo demuestra."
+      ],
+      "controls": [
+        {
+          "name": "Correo",
+          "purpose": "Identifica una cuenta nueva y no se edita después desde esta pantalla.",
+          "example": "Correo asignado a la persona.",
+          "result": "Evita que se confunda el nombre visible con el identificador de acceso."
+        },
+        {
+          "name": "Nombre completo",
+          "purpose": "Permite reconocer a quien opera y atribuirle acciones.",
+          "example": "Nombre de la estudiante, no su correo.",
+          "result": "Se usa como identificación visible de la cuenta."
+        },
+        {
+          "name": "Contraseña",
+          "purpose": "Establece o cambia la clave.",
+          "example": "Al editar, dejar vacío para conservarla.",
+          "result": "Se guarda protegida y no vuelve a mostrarse."
+        },
+        {
+          "name": "Roles asignados",
+          "purpose": "Concede los roles seleccionados.",
+          "example": "Marcar Gerente comercial para consulta.",
+          "result": "La cuenta recibe los permisos de sus roles activos."
+        },
+        {
+          "name": "Desactivar / Activar",
+          "purpose": "Cambia la disponibilidad de una cuenta no protegida.",
+          "example": "Desactivar una cuenta de práctica que ya no se usa.",
+          "result": "El registro permanece; el acceso se deniega si está inactivo."
+        },
+        {
+          "name": "Eliminar",
+          "purpose": "Solicita eliminación definitiva de una cuenta no protegida.",
+          "example": "Retirar una cuenta temporal autorizada.",
+          "result": "El servidor valida dependencias y conserva la evidencia histórica segura que corresponda."
+        }
+      ],
+      "practice": [
+        {
+          "title": "Editar sin cambiar la contraseña",
+          "evidence_status": "Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.",
+          "steps": [
+            "En un entorno de capacitación, abra una cuenta no protegida.",
+            "Cambie únicamente su Nombre completo y deje Contraseña vacía.",
+            "Guarde y vuelva a consultar la fila.",
+            "Compruebe acceso con las credenciales conocidas de esa cuenta cuando corresponda."
+          ],
+          "expected_results": [
+            "El nombre se actualiza.",
+            "No se simula un cambio de correo ni se exige reemplazar la clave para editar los roles."
+          ],
+          "success_criterion": "La cuenta conserva el correo y la contraseña previstos y recibe solo los roles seleccionados."
+        }
+      ],
+      "errors": [
+        {
+          "symptom": "No se pueden cargar los roles.",
+          "possible_cause": "Permiso Consultar roles ausente o fallo al consultar el catálogo.",
+          "action": "Solicite revisar el permiso complementario y utilice Reintentar carga de opciones. No guarde hasta que la tabla sea la correcta.",
+          "verification": "El formulario vuelve a habilitarse y muestra los roles esperados."
+        },
+        {
+          "symptom": "El correo no cambia al editar.",
+          "possible_cause": "Es un campo de consulta en la edición vigente.",
+          "action": "Mantenga el correo original. Si se necesita otra identidad de acceso, acuerde con la administración el tratamiento de la cuenta; no anuncie un cambio no admitido.",
+          "verification": "La fila conserva el correo que identifica la cuenta."
+        },
+        {
+          "symptom": "No se permite eliminar o desactivar.",
+          "possible_cause": "Cuenta protegida, sesión propia o control de recuperación/dependencias.",
+          "action": "Lea la causa y utilice una cuenta de práctica autorizada. No altere directamente PostgreSQL para eludir el control.",
+          "verification": "La vía de administración permanece disponible."
+        }
+      ],
+      "defense_qa": [
+        {
+          "question": "¿Por qué no se cambia el correo al editar?",
+          "answer": "La cuenta se identifica con ese correo y el contrato de edición no admite modificarlo. La pantalla lo muestra en consulta para evitar simular un cambio."
+        },
+        {
+          "question": "¿Ver las casillas marcadas prueba la seguridad del rol?",
+          "answer": "No. Permite revisar la configuración; la verificación operativa exige autenticar la cuenta y probar permisos permitidos y denegados."
+        }
+      ],
+      "source_refs": [
+        "frontend/src/App.tsx:1988–2090,2446–2580",
+        "backend/app/modules/security/router.py:125–281",
+        "backend/app/modules/security/schemas.py:77–100"
+      ]
+    },
+    {
+      "id": "operacion_05",
+      "order": 5,
+      "title": "Definir roles según las responsabilidades",
+      "ui_path": "Administración y seguridad > Roles",
+      "audience": [
+        "Administración"
+      ],
+      "paragraphs": [
+        "Diseñe primero la responsabilidad y después sus permisos. La administración prepara el entorno y el acceso; el analista convierte necesidades en diseños y resultados verificados; la gerencia consulta, interpreta y exporta. El nombre del rol es una etiqueta: llamar a un rol Gerente comercial no le concede automáticamente permisos de lectura.",
+        "En Crear rol se escriben Nombre y Descripción y se marcan Permisos otorgados. El sistema genera la clave interna. Use los nombres y las explicaciones de la tabla; no necesita conocer códigos técnicos para operar. Al editar un rol, una casilla retirada deja de formar parte de sus permisos al guardar.",
+        "La instalación base garantiza el rol administrativo protegido; Analista BI, Gerente comercial y otros perfiles pueden ser configuraciones locales de la demostración. Una copia limpia puede requerir crearlos o asignarlos. Por eso este manual distingue la matriz recomendada de la evidencia de una instalación concreta.",
+        "Tras una modificación, vuelva a abrir el rol para comprobar nombre y casillas. La edición de datos y de permisos utiliza operaciones separadas: si aparece un error después de una actualización parcial, revise qué quedó guardado y complete la corrección. No dé por sentado que todo se guardó por haber pulsado el botón.",
+        "Eliminar y Desactivar tienen efectos distintos. Eliminar borra definitivamente un rol no protegido y exige que ya no tenga asignaciones a usuarios ni permisos asociados; también cuentan las asociaciones existentes aunque el usuario o el permiso estén inactivos. La plataforma no retira esas relaciones automáticamente para permitir el borrado. Si se busca suspender el uso del perfil y conservar su definición, debe evaluarse Desactivar en lugar de eliminarlo."
+      ],
+      "concepts": [
+        {
+          "term": "Mínimo privilegio",
+          "explanation": "Conceder solo las operaciones necesarias para una responsabilidad.",
+          "example": ""
+        },
+        {
+          "term": "Consulta y administración",
+          "explanation": "Leer un recurso y modificarlo son permisos diferentes.",
+          "example": "Consultar catálogo no equivale a Administrar catálogo."
+        },
+        {
+          "term": "Rol protegido",
+          "explanation": "Perfil del sistema con controles que conservan la recuperación administrativa.",
+          "example": ""
+        }
+      ],
+      "steps": [
+        "Liste las tareas del perfil que va a crear. Para gerencia: consultar el panel, seleccionar fuentes y exportar resultados.",
+        "Abra Roles y complete Nombre y Descripción.",
+        "Marque los permisos necesarios en Permisos otorgados. Para un rol con selector de fuentes, incluya Consultar metadatos.",
+        "Pulse Crear registro. Para modificar uno existente, abra Editar, ajuste las casillas y pulse Guardar cambios.",
+        "Vuelva a abrir el rol y coteje sus permisos con la matriz acordada.",
+        "Asigne el rol a una cuenta en Usuarios y compruebe el recorrido autenticado. Si se retiró un permiso, verifique también que la operación correspondiente se deniega."
+      ],
+      "controls": [
+        {
+          "name": "Nombre",
+          "purpose": "Identifica el perfil en Usuarios y Roles.",
+          "example": "Gerente comercial.",
+          "result": "Produce una etiqueta legible y una clave interna generada."
+        },
+        {
+          "name": "Descripción",
+          "purpose": "Explica qué puede hacer ese perfil.",
+          "example": "Consulta resultados y exporta informes, sin ejecutar ETL.",
+          "result": "Facilita una asignación de cuentas con criterio."
+        },
+        {
+          "name": "Permisos otorgados",
+          "purpose": "Define el alcance real de las acciones.",
+          "example": "Consultar análisis visual y Exportar reportes analíticos.",
+          "result": "El servidor utiliza estos permisos al autorizar."
+        },
+        {
+          "name": "Editar",
+          "purpose": "Abre el perfil concreto.",
+          "example": "Revisar un rol existente antes de agregar otro similar.",
+          "result": "Muestra sus datos y permisos actuales."
+        },
+        {
+          "name": "Desactivar / Activar",
+          "purpose": "Cambia el uso de un rol no protegido.",
+          "example": "Retirar temporalmente un perfil de capacitación.",
+          "result": "Los permisos de un rol inactivo no aportan acceso efectivo."
+        },
+        {
+          "name": "Protegido",
+          "purpose": "Identifica controles especiales del registro.",
+          "example": "Rol Administrador inicial.",
+          "result": "No equivale a una acción que deba pulsarse ni a un error."
+        },
+        {
+          "name": "Eliminar",
+          "purpose": "Borra físicamente un rol no protegido que no conserve asignaciones a usuarios ni permisos. Aparece en las filas no protegidas cuando la cuenta puede administrar roles.",
+          "example": "Un rol de práctica vacío y sin asignaciones; es un ejemplo propuesto, no un borrado realizado durante esta edición.",
+          "result": "Solicita confirmación: «Eliminar definitivamente… Esta acción no se puede deshacer». Cancelar conserva el registro. Tras confirmar, el servidor comprueba permisos, protección y dependencias; si autoriza el borrado, la fila desaparece al actualizarse la lista y se registra el evento en Auditoría."
+        }
+      ],
+      "practice": [
+        {
+          "title": "Explicar un perfil de gerencia",
+          "evidence_status": "Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.",
+          "steps": [
+            "Consulte el rol de gerencia si existe o prepare su matriz antes de crearlo.",
+            "Identifique consulta del panel, exportación y consulta de metadatos.",
+            "Confirme que no requiere preparar materializaciones ni revisar propuestas."
+          ],
+          "expected_results": [
+            "Se distingue lectura analítica de escritura técnica.",
+            "La estudiante explica la dependencia del selector de fuentes."
+          ],
+          "success_criterion": "Puede justificar cada permiso del perfil sin conceder administración general por comodidad."
+        }
+      ],
+      "errors": [
+        {
+          "symptom": "La tabla de permisos no carga.",
+          "possible_cause": "Falta Consultar permisos o hay un fallo de red.",
+          "action": "Revise el permiso complementario y pulse Reintentar carga de opciones.",
+          "verification": "No queda habilitado el guardado de una selección vacía por error."
+        },
+        {
+          "symptom": "El rol parece correcto, pero la cuenta no accede.",
+          "possible_cause": "El rol o la cuenta están inactivos, falta la asignación o no se concedió una dependencia de interfaz.",
+          "action": "Revise estado, asignación y permisos; autentique otra vez para actualizar la navegación.",
+          "verification": "La operación se autoriza en el servidor y la navegación corresponde a la cuenta."
+        },
+        {
+          "symptom": "No se permite retirar ciertos permisos del administrador.",
+          "possible_cause": "La modificación dañaría la recuperación del entorno.",
+          "action": "Mantenga el rol protegido y cree un perfil separado para la práctica.",
+          "verification": "Permanece una administración activa y recuperable."
+        },
+        {
+          "symptom": "Eliminar informa que primero se resuelvan asignaciones a usuarios o de permisos.",
+          "possible_cause": "El rol tiene relaciones persistidas. No basta con que esté inactivo ni con que no haya usuarios activos.",
+          "action": "Lea la dependencia indicada y decida con la responsable de acceso si corresponde conservar, desactivar o retirar deliberadamente las asignaciones. No vacíe un perfil en uso sólo para completar una práctica. Si se autoriza su retiro, revise primero las cuentas afectadas.",
+          "verification": "Un rechazo conserva el rol y sus relaciones. Un borrado autorizado elimina la fila de la lista y deja en Auditoría el evento de eliminación de rol."
+        },
+        {
+          "symptom": "No aparece Eliminar o el servidor informa «El rol protegido no puede eliminarse».",
+          "possible_cause": "Es el perfil administrativo protegido, o faltan permisos para administrar roles.",
+          "action": "Conserve el rol protegido y use un perfil de práctica no protegido para estudiar sus opciones. La interfaz muestra Protegido y oculta Eliminar en ese caso.",
+          "verification": "El perfil de recuperación administrativo sigue disponible. La protección se comprueba también en el servidor."
+        }
+      ],
+      "defense_qa": [
+        {
+          "question": "¿Scrum Master es un rol de la plataforma?",
+          "answer": "No. Es una responsabilidad del proyecto de desarrollo. Product Owner y Scrum Master no conceden permisos de la aplicación."
+        },
+        {
+          "question": "¿Es lo mismo ocultar ETL que denegar ETL?",
+          "answer": "No. El menú refleja permisos, pero la autorización de la operación se comprueba también en el servidor."
+        },
+        {
+          "question": "¿Eliminar un rol equivale a desactivarlo y se puede deshacer?",
+          "answer": "No. Desactivar conserva la definición. Eliminar ejecuta un borrado físico, después de confirmar y sólo si el rol no es protegido y no tiene asignaciones de usuarios o permisos. No existe una papelera ni un botón de restauración. Crear otro perfil con el mismo nombre produce otro registro y exige volver a configurar sus permisos y asignaciones."
+        }
+      ],
+      "source_refs": [
+        "frontend/src/App.tsx:2554–2594",
+        "backend/app/modules/security/service.py:22–219,257–283",
+        "backend/app/modules/security/router.py:284–448",
+        "frontend/src/App.tsx:2045–2062,2080",
+        "backend/app/modules/security/router.py:56–68,420–449"
+      ]
+    },
+    {
+      "id": "operacion_06",
+      "order": 6,
+      "title": "Interpretar el catálogo de permisos",
+      "ui_path": "Administración y seguridad > Permisos",
+      "audience": [
+        "Administración",
+        "Personas autorizadas para consulta"
+      ],
+      "paragraphs": [
+        "Permisos es el diccionario de operaciones que los módulos conocen. Consultar propuestas BI, Generar propuestas BI y Revisar propuestas BI son capacidades distintas: consultar una versión no permite generarla ni aprobarla. La separación evita conceder escritura por el simple hecho de necesitar leer un expediente.",
+        "La pantalla vigente es informativa. Presenta nombre, descripción y estado en un listado paginado; no ofrece crear un permiso libre. Escribir un nombre como Administrar inventario no implementaría inventario ni protegería una operación real. Los permisos técnicos se incorporan cuando se desarrolla la funcionalidad correspondiente.",
+        "Algunas descripciones históricas del catálogo utilizan verbos como crear permisos o menús, pero la operación actual de la pantalla se rige por sus controles y por el servidor. Para asignar privilegios se trabaja en Roles; para conocer el significado de un permiso se consulta esta lista."
+      ],
+      "concepts": [
+        {
+          "term": "Permiso",
+          "explanation": "Autorización concreta que protege una operación implementada.",
+          "example": ""
+        },
+        {
+          "term": "Permiso de lectura",
+          "explanation": "Permite consultar sin modificar el recurso.",
+          "example": ""
+        },
+        {
+          "term": "Permiso declarado",
+          "explanation": "Entrada del catálogo; no demuestra por sí misma que exista una nueva función utilizable.",
+          "example": ""
+        }
+      ],
+      "steps": [
+        "Abra Permisos.",
+        "Lea el nombre y la descripción de las operaciones que correspondan a su tarea.",
+        "Use Anterior o Siguiente si el listado tiene más de una página.",
+        "Regrese a Roles para conceder o retirar esos permisos del perfil correspondiente.",
+        "Compruebe el resultado con una cuenta de ese perfil; no modifique códigos internos ni datos directamente."
+      ],
+      "controls": [
+        {
+          "name": "Elemento",
+          "purpose": "Presenta el nombre del permiso.",
+          "example": "Revisar propuestas BI.",
+          "result": "Permite identificar una capacidad con lenguaje comprensible."
+        },
+        {
+          "name": "Detalle",
+          "purpose": "Describe el alcance funcional.",
+          "example": "Aprobar o rechazar propuestas validadas.",
+          "result": "Ayuda a diferenciar revisión de mera consulta."
+        },
+        {
+          "name": "Estado",
+          "purpose": "Indica si el permiso está activo.",
+          "example": "true en el catálogo aprobado.",
+          "result": "Un permiso inactivo no aporta acceso efectivo."
+        },
+        {
+          "name": "Anterior / Siguiente",
+          "purpose": "Recorre el catálogo vigente.",
+          "example": "Consultar la segunda página de los 29 permisos base.",
+          "result": "Muestra otro tramo del listado sin crear registros."
+        }
+      ],
+      "practice": [
+        {
+          "title": "Separar tres permisos del asistente",
+          "evidence_status": "Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.",
+          "steps": [
+            "Localice Consultar propuestas BI, Generar propuestas BI y Revisar propuestas BI.",
+            "Asocie a cada uno una tarea.",
+            "Explique cuál requiere un analista revisor y cuál puede necesitar una persona que solo consulta."
+          ],
+          "expected_results": [
+            "Las tareas se vinculan con permisos diferentes."
+          ],
+          "success_criterion": "La estudiante no atribuye aprobación al permiso de lectura."
+        }
+      ],
+      "errors": [
+        {
+          "symptom": "No existe el permiso que se desea escribir.",
+          "possible_cause": "La capacidad no está implementada o se está buscando por un nombre diferente.",
+          "action": "Revise el catálogo por su descripción y consulte la especificación; no intente crear códigos desde el navegador.",
+          "verification": "Se asigna una capacidad existente o se reconoce correctamente una ampliación pendiente de desarrollo."
+        }
+      ],
+      "defense_qa": [
+        {
+          "question": "¿Agregar un permiso implementa una función?",
+          "answer": "No. Un permiso protege una operación existente. La funcionalidad requiere código, controles y pruebas propios."
+        }
+      ],
+      "source_refs": [
+        "frontend/src/App.tsx:1988–2090",
+        "backend/app/modules/security/router.py:452–529",
+        "backend/app/modules/security/service.py:22–127"
+      ]
+    },
+    {
+      "id": "operacion_07",
+      "order": 7,
+      "title": "Ajustar los nombres y el orden de los menús",
+      "ui_path": "Administración y seguridad > Menús",
+      "audience": [
+        "Administración"
+      ],
+      "paragraphs": [
+        "Un menú es la entrada visible a una pantalla ya implementada. Cambiar su etiqueta ayuda a la navegación, pero no crea un nuevo módulo ni cambia el contrato de la operación. La aplicación conserva las rutas y claves internas; el formulario permite ajustar Etiqueta visible, Posición y Permisos requeridos.",
+        "Primero seleccione Editar en un menú registrado. No hay una operación normal para inventar una ruta o agregar una pantalla desde esta lista. En el catálogo base, los menús están protegidos: puede haber datos de presentación editables, pero no se permite eliminarlos o desactivarlos como si fueran registros de práctica.",
+        "Los grupos de navegación tienen un orden común y las opciones se organizan dentro de ellos. Un número de posición menor sitúa antes una opción dentro del orden aplicable. Con varios permisos asociados, el servidor de navegación muestra actualmente el menú si la cuenta posee al menos uno de ellos; cada acción sigue exigiendo su permiso específico. Por ello, la configuración del menú no sustituye al control de acceso."
+      ],
+      "concepts": [
+        {
+          "term": "Menú",
+          "explanation": "Acceso de navegación a una pantalla registrada.",
+          "example": ""
+        },
+        {
+          "term": "Etiqueta",
+          "explanation": "Nombre que lee la persona usuaria; es distinto de la ruta técnica.",
+          "example": ""
+        },
+        {
+          "term": "Posición",
+          "explanation": "Valor de orden; no es un identificador de permiso ni una prioridad comercial.",
+          "example": ""
+        }
+      ],
+      "steps": [
+        "Abra Menús y localice la entrada que necesita ajustar.",
+        "Pulse Editar en esa fila.",
+        "Cambie Etiqueta visible solo si mejora la comprensión y mantiene la función real.",
+        "Ajuste Posición y revise Permisos requeridos.",
+        "Pulse Guardar cambios o Cancelar.",
+        "Actualice la sesión para volver a consultar la navegación y compruebe la etiqueta con la cuenta destinataria."
+      ],
+      "controls": [
+        {
+          "name": "Etiqueta visible",
+          "purpose": "Define el nombre de navegación.",
+          "example": "Conservar Analítica de ventas como nombre preciso.",
+          "result": "Modifica la presentación del menú registrado."
+        },
+        {
+          "name": "Posición",
+          "purpose": "Ordena la entrada.",
+          "example": "Una posición anterior dentro de su grupo.",
+          "result": "Reordena la navegación aplicable, no concede permisos."
+        },
+        {
+          "name": "Permisos requeridos",
+          "purpose": "Asocia condiciones de visibilidad del menú.",
+          "example": "Consultar análisis visual para la entrada del panel.",
+          "result": "Influye en la navegación; el servidor sigue validando la operación."
+        },
+        {
+          "name": "Guardar cambios / Cancelar",
+          "purpose": "Confirma o abandona la edición.",
+          "example": "Ajustar una etiqueta sin cambiar una ruta.",
+          "result": "El registro se actualiza o se conserva como estaba."
+        }
+      ],
+      "practice": [
+        {
+          "title": "Reconocer menú y operación",
+          "evidence_status": "Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.",
+          "steps": [
+            "Consulte la entrada Datamart de ventas y la entrada Analítica de ventas.",
+            "Identifique sus funciones y los permisos de consulta asociados.",
+            "Explique por qué abrir el panel no permite ejecutar una carga."
+          ],
+          "expected_results": [
+            "Se distingue navegación, consulta y ejecución."
+          ],
+          "success_criterion": "Puede justificar la separación sin intentar crear rutas nuevas."
+        }
+      ],
+      "errors": [
+        {
+          "symptom": "No aparece Crear menú.",
+          "possible_cause": "La UI solo edita pantallas ya registradas.",
+          "action": "Use Editar sobre una entrada existente. Para otra pantalla se necesita desarrollo e incorporación controlada.",
+          "verification": "No se presenta una ruta inventada como una función operativa."
+        },
+        {
+          "symptom": "La etiqueta cambió, pero la cuenta no ve el menú.",
+          "possible_cause": "La sesión conserva su navegación anterior o faltan los permisos efectivos.",
+          "action": "Vuelva a autenticar y revise el rol; no retire la autorización del servidor para forzar la visualización.",
+          "verification": "La navegación actual refleja los permisos y la etiqueta guardada."
+        }
+      ],
+      "defense_qa": [
+        {
+          "question": "¿Puedo agregar inventario escribiéndolo en Menús?",
+          "answer": "No. La pantalla, las reglas de inventario y sus pruebas deben desarrollarse antes de registrar una entrada operativa."
+        }
+      ],
+      "source_refs": [
+        "frontend/src/App.tsx:1988–2090,2594–2609",
+        "backend/app/modules/security/router.py:99–121,532–648"
+      ]
+    },
+    {
+      "id": "operacion_08",
+      "order": 8,
+      "title": "Consultar la auditoría y reportar una incidencia",
+      "ui_path": "Administración y seguridad > Auditoría",
+      "audience": [
+        "Administración",
+        "Personas con Consultar auditoría"
+      ],
+      "paragraphs": [
+        "La auditoría registra acciones críticas y ayuda a reconstruir quién actuó sobre un recurso. Sirve para investigar una modificación o acompañar un expediente. No reemplaza la conciliación de importes: un evento de ejecución informa que hubo una acción, mientras que el expediente muestra las comprobaciones y sus resultados.",
+        "La interfaz actual presenta una lista paginada de eventos recientes, con acción, actor y tipo de recurso. Algunas acciones aparecen con claves técnicas, como copilot.catalog.update o etl.execution.run. Deben interpretarse como actualización del catálogo y ejecución de carga, respectivamente. No son instrucciones que la estudiante deba ejecutar.",
+        "Esta pantalla es de consulta. No se crean, corrigen ni eliminan eventos para que una demostración parezca exitosa. Si una cuenta fue retirada, la evidencia puede conservar su etiqueta histórica. Para un reporte útil, acompañe la pantalla con la fuente, la propuesta o ejecución afectada y los pasos que reprodujeron la incidencia."
+      ],
+      "concepts": [
+        {
+          "term": "Evento de auditoría",
+          "explanation": "Registro de una acción realizada sobre un recurso.",
+          "example": ""
+        },
+        {
+          "term": "Actor",
+          "explanation": "Cuenta atribuida a la acción.",
+          "example": ""
+        },
+        {
+          "term": "Recurso",
+          "explanation": "Objeto sobre el que se actuó.",
+          "example": "Una propuesta, un catálogo, una conexión o una ejecución."
+        }
+      ],
+      "steps": [
+        "Abra Auditoría.",
+        "Lea los eventos más recientes y distinga acción, actor y recurso.",
+        "Use Siguiente o Anterior para revisar eventos anteriores.",
+        "Si investiga un caso, abra por separado su expediente para comprobar estado y cifras.",
+        "Describa la incidencia con pasos, fuente e identificadores; adjunte la captura sin claves ni tokens."
+      ],
+      "controls": [
+        {
+          "name": "Elemento",
+          "purpose": "Muestra la acción registrada.",
+          "example": "Inicio de sesión o copilot.catalog.update.",
+          "result": "Identifica qué tipo de operación ocurrió."
+        },
+        {
+          "name": "Detalle",
+          "purpose": "Permite reconocer al actor histórico.",
+          "example": "Nombre y correo de la cuenta de práctica.",
+          "result": "Ayuda a atribuir la acción sin mostrar credenciales."
+        },
+        {
+          "name": "Estado",
+          "purpose": "En esta tabla puede representar el tipo de recurso.",
+          "example": "etl_execution.",
+          "result": "No debe interpretarse automáticamente como éxito o fracaso del ETL."
+        },
+        {
+          "name": "Anterior / Siguiente",
+          "purpose": "Recorre los eventos.",
+          "example": "Revisar operaciones anteriores de una campaña.",
+          "result": "Cambia la página de consulta; no filtra por actor automáticamente."
+        }
+      ],
+      "practice": [
+        {
+          "title": "Relacionar un evento con su expediente",
+          "evidence_status": "Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.",
+          "steps": [
+            "Consulte un evento de ejecución existente.",
+            "Identifique su tipo de recurso.",
+            "Abra el expediente correspondiente desde Datamart de ventas y revise conciliación."
+          ],
+          "expected_results": [
+            "Se usan dos evidencias complementarias: acción auditada y resultado cuantitativo."
+          ],
+          "success_criterion": "La estudiante no utiliza la mera presencia del evento como prueba de igualdad de importes."
+        }
+      ],
+      "errors": [
+        {
+          "symptom": "No encuentra filtros por fecha o actor.",
+          "possible_cause": "La UI de este corte solo ofrece paginación.",
+          "action": "Revise las páginas disponibles o solicite apoyo técnico para una consulta autorizada. No siga instrucciones de un manual anterior que anuncien filtros inexistentes.",
+          "verification": "La investigación documenta el alcance real de la consulta."
+        },
+        {
+          "symptom": "Aparece una acción técnica difícil de comprender.",
+          "possible_cause": "El evento conserva el nombre interno de la operación.",
+          "action": "Asóciela con el módulo y consulte el expediente; registre la clave literal si necesita reportar una incidencia.",
+          "verification": "El reporte identifica qué se hizo, sin inventar su resultado."
+        }
+      ],
+      "defense_qa": [
+        {
+          "question": "¿Se puede borrar un error de la auditoría?",
+          "answer": "No desde la interfaz. La auditoría conserva acciones y aporta trazabilidad; la solución del problema se registra mediante nuevas acciones válidas."
+        }
+      ],
+      "source_refs": [
+        "frontend/src/App.tsx:1988–2090",
+        "backend/app/modules/security/router.py:650–669",
+        "backend/app/modules/security/service.py:289–319"
+      ]
+    },
+    {
+      "id": "operacion_09",
+      "order": 9,
+      "title": "Registrar, probar y habilitar fuentes de datos",
+      "ui_path": "Preparación del entorno > Conexiones de datos",
+      "audience": [
+        "Administración"
+      ],
+      "paragraphs": [
+        "Una conexión identifica dónde se encuentra una base de datos y con qué cuenta de lectura puede consultarla la aplicación. En este corte, Motor muestra SQL Server y no es una opción libre para escoger otros motores. El sistema reutiliza el mismo flujo para diferentes bases SQL Server; registrar el nombre de MySQL no incorpora un conector que no existe.",
+        "Servidor se interpreta desde el contenedor del backend. En una instalación Compose del proyecto, sqlserver es el nombre interno del servicio y 1433 su puerto interno. No lo sustituya por localhost ni por el puerto publicado del host por costumbre: localhost dentro de un contenedor se refiere a ese mismo contenedor. Para un servidor externo, la administración proporciona el host y puerto accesibles desde el backend.",
+        "AdventureWorks2022 y WideWorldImporters pueden compartir servidor y puerto, pero llevan conexiones distintas porque cambia Base de datos y pueden cambiar sus credenciales. Nunca use una cuenta administrativa de escritura para el flujo BI. La prueba verifica acceso de lectura y ausencia de privilegios de escritura relevantes; una prueba rechazada por tener escritura exige corregir el usuario del origen.",
+        "Registrar conserva una configuración deshabilitada; Probar conexión comprueba sus condiciones; Habilitar la ofrece en el selector. Son tres acciones diferentes. Varias fuentes pueden estar habilitadas a la vez. Una fila habilitada muestra Probar conexión, Leer metadatos y Deshabilitar cuando la cuenta tiene los permisos correspondientes; no muestra Editar. El código ofrece edición solo para una conexión deshabilitada. No elimine una conexión que tiene expedientes para intentar corregir una captura: el servidor controla sus dependencias."
+      ],
+      "concepts": [
+        {
+          "term": "Servidor y base",
+          "explanation": "El servidor aloja una o varias bases; la base selecciona el origen concreto.",
+          "example": ""
+        },
+        {
+          "term": "Solo lectura",
+          "explanation": "Cuenta destinada a consultar el origen sin modificar sus tablas.",
+          "example": ""
+        },
+        {
+          "term": "Cifrar transporte",
+          "explanation": "Protección de la conexión hacia el servidor.",
+          "example": ""
+        },
+        {
+          "term": "Confiar en certificado local",
+          "explanation": "Aceptación del certificado de la instalación local prevista; no equivale a validar públicamente su identidad.",
+          "example": ""
+        }
+      ],
+      "steps": [
+        "Abra Conexiones de datos y revise si la conexión ya está registrada.",
+        "Si necesita una nueva, complete Nombre visible, Servidor, Puerto, Base de datos y Usuario de sólo lectura con los datos de la instalación.",
+        "Introduzca la contraseña suministrada para ese usuario. Revise Cifrar transporte y Confiar en certificado local con la administración.",
+        "Pulse Registrar conexión y compruebe su fila.",
+        "Pulse Probar conexión; continúe cuando Validación indique Sólo lectura validada.",
+        "Pulse Habilitar para que aparezca en Cambiar fuente.",
+        "Pulse Leer metadatos si tiene permiso de actualización, o continúe desde el Explorador.",
+        "No busque Editar en una fila habilitada. Si la administración necesita cambiar esa conexión, debe planificar su deshabilitación; la edición está prevista para el estado deshabilitado. No deshabilite una fuente solo para reproducir una captura del manual."
+      ],
+      "controls": [
+        {
+          "name": "Nombre visible",
+          "purpose": "Distingue la fuente en los módulos.",
+          "example": "AdventureWorks local o WideWorldImporters local.",
+          "result": "Se reconoce el origen sin depender del orden del selector."
+        },
+        {
+          "name": "Motor",
+          "purpose": "Indica el conector implementado.",
+          "example": "SQL Server, deshabilitado para edición.",
+          "result": "Evita presentar soporte de un motor inexistente."
+        },
+        {
+          "name": "Servidor / Puerto",
+          "purpose": "Determina el destino de red visto por el backend.",
+          "example": "sqlserver y 1433 en Compose, cuando corresponde a esa instalación.",
+          "result": "Se intenta conectar al servidor definido."
+        },
+        {
+          "name": "Base de datos",
+          "purpose": "Selecciona la base dentro del servidor.",
+          "example": "AdventureWorks2022 o WideWorldImporters.",
+          "result": "Los metadatos posteriores se capturan de esa base."
+        },
+        {
+          "name": "Usuario de sólo lectura / Contraseña",
+          "purpose": "Acredita el acceso de consulta al origen.",
+          "example": "Usuario preparado por la administración de la instalación.",
+          "result": "La contraseña se guarda cifrada y no se devuelve al navegador."
+        },
+        {
+          "name": "Cifrar transporte / Confiar en certificado local",
+          "purpose": "Configura las condiciones de transporte admitidas.",
+          "example": "Certificado local del contenedor de demostración.",
+          "result": "Permite la conexión prevista sin confundir certificado local con identidad pública."
+        },
+        {
+          "name": "Probar conexión",
+          "purpose": "Comprueba lectura y permisos relevantes.",
+          "example": "Probar cada una de las dos fuentes.",
+          "result": "Registra estado y fecha de la prueba."
+        },
+        {
+          "name": "Habilitar / Deshabilitar",
+          "purpose": "Ofrece o retira la fuente del contexto seleccionable.",
+          "example": "Mantener ambas habilitadas para alternar análisis.",
+          "result": "No fusiona bases ni borra sus expedientes."
+        },
+        {
+          "name": "Leer metadatos",
+          "purpose": "Captura la estructura de una fuente habilitada.",
+          "example": "Crear la instantánea inicial de WideWorldImporters.",
+          "result": "Genera o reutiliza una instantánea, sin enviar filas a la IA."
+        },
+        {
+          "name": "Eliminar",
+          "purpose": "Retira una conexión deshabilitada sin dependencias que lo impidan.",
+          "example": "Conexión temporal creada por error, con autorización.",
+          "result": "No sirve para borrar indiscriminadamente el historial BI."
+        }
+      ],
+      "practice": [
+        {
+          "title": "Reconocer dos bases en un mismo servidor",
+          "evidence_status": "Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.",
+          "steps": [
+            "Consulte las dos conexiones existentes.",
+            "Compare servidor, puerto y Base de datos.",
+            "Seleccione cada una desde Cambiar fuente y compruebe su nombre."
+          ],
+          "expected_results": [
+            "Pueden coincidir servidor y puerto, pero las bases y sus contextos son diferentes."
+          ],
+          "success_criterion": "La estudiante distingue conexión, servidor y base sin cambiar credenciales para la práctica."
+        }
+      ],
+      "errors": [
+        {
+          "symptom": "No se puede conectar al servidor.",
+          "possible_cause": "Host o puerto incorrectos desde el backend, servicio apagado o red no disponible.",
+          "action": "Revise los datos con la guía de instalación. En Compose, compruebe el nombre interno del servicio; no cambie a localhost por ensayo sin criterio.",
+          "verification": "Probar conexión responde y registra una fecha actual."
+        },
+        {
+          "symptom": "La prueba detecta permisos de escritura.",
+          "possible_cause": "El usuario del origen tiene privilegios superiores a los admitidos.",
+          "action": "Solicite un usuario de lectura o ajuste sus permisos en SQL Server mediante la administración. No se corrige desmarcando Cifrar transporte.",
+          "verification": "La prueba acredita solo lectura antes de habilitar."
+        },
+        {
+          "symptom": "Habilitar no está disponible.",
+          "possible_cause": "No hay prueba satisfactoria vigente.",
+          "action": "Corrija la causa y use Probar conexión.",
+          "verification": "La fila pasa a Sólo lectura validada y permite habilitar."
+        },
+        {
+          "symptom": "Eliminar es rechazado.",
+          "possible_cause": "La conexión está activa o tiene dependencias.",
+          "action": "Deshabilite solo si corresponde y lea las dependencias. Mantenga los registros que respaldan propuestas o ejecuciones.",
+          "verification": "No se destruye el origen de los expedientes para resolver un problema de configuración."
+        }
+      ],
+      "defense_qa": [
+        {
+          "question": "¿Registrar ya lee todas las ventas?",
+          "answer": "No. Conserva la conexión. La prueba consulta condiciones de acceso, la introspección lee estructura y la ejecución ETL posterior obtiene las filas autorizadas."
+        },
+        {
+          "question": "¿Habilitar WideWorldImporters apaga AdventureWorks?",
+          "answer": "No. Las fuentes se habilitan independientemente y la sesión elige con cuál trabajar."
+        }
+      ],
+      "source_refs": [
+        "frontend/src/App.tsx:2093–2182",
+        "backend/app/modules/parameters/connections.py",
+        "docs/specs/SPR-03-04-configuracion-web-conexiones-y-secretos.md",
+        "docs/specs/SPR-06-01-contexto-multifuente-sqlserver.md"
+      ]
+    },
+    {
+      "id": "operacion_10",
+      "order": 10,
+      "title": "Ajustar parámetros con un propósito concreto",
+      "ui_path": "Preparación del entorno > Parámetros",
+      "audience": [
+        "Administración"
+      ],
+      "paragraphs": [
+        "Los parámetros son ajustes operativos aprobados, no un lugar para guardar claves, contraseñas o fórmulas del negocio. La pantalla muestra el nombre, una explicación, el valor actual, el rango admitido y el predeterminado. Modifique un parámetro cuando pueda explicar qué problema operativo intenta resolver.",
+        "Duración de la sesión (minutos) está en la categoría Seguridad. Su valor predeterminado es 60 y admite de 15 a 240 minutos. Para una capacitación larga pueden acordarse 60 o 120 minutos. El permiso Administrar parámetros es necesario para modificarlo. Guardarlo no renueva las sesiones ya emitidas; ingrese otra vez para recibir la nueva duración.",
+        "Tiempo máximo del asistente expresa cuánto esperará la aplicación una solicitud; no concede más capacidad semántica al modelo. Si un proveedor devuelve un contrato inválido, aumentar el tiempo no vuelve correcto ese contrato. Elementos por bloque de metadatos controla la organización del contexto técnico; no selecciona cuántas filas de ventas se cargarán.",
+        "Cada tarjeta tiene su propio Guardar y Restaurar. Guardar una tarjeta no debe darse por entendido como guardar todas las demás. Anote el valor anterior y cambie una cosa a la vez para poder observar el efecto. Restaurar recupera el predeterminado de ese parámetro, no la configuración completa de la aplicación.",
+        "En el código de este corte, los listados de la pantalla principal solicitan diez registros de forma explícita. Aunque Registros por página puede guardarse, no se debe prometer que cambie todos los listados inmediatamente. La capacitación debe comprobar el efecto visible antes de utilizarlo como demostración de parametrización."
+      ],
+      "concepts": [
+        {
+          "term": "Tiempo máximo",
+          "explanation": "Límite de espera de una operación, expresado en segundos.",
+          "example": ""
+        },
+        {
+          "term": "Predeterminado",
+          "explanation": "Valor de referencia que se recupera al restaurar la tarjeta.",
+          "example": ""
+        },
+        {
+          "term": "Bloque de metadatos",
+          "explanation": "Grupo de elementos estructurales usado para organizar el contexto del asistente; no es un lote de ventas.",
+          "example": ""
+        }
+      ],
+      "steps": [
+        "Abra Parámetros y lea la tarjeta que desea ajustar.",
+        "Anote valor actual, unidad, rango y motivo del cambio.",
+        "Introduzca un entero dentro del rango.",
+        "Pulse Guardar en esa tarjeta y compruebe el mensaje de actualización.",
+        "Repita la lectura del valor. Si el cambio no se justifica, utilice Restaurar en esa misma tarjeta.",
+        "Verifique el efecto real en la operación correspondiente; no infiera eficacia por el solo hecho de que se guardó."
+      ],
+      "controls": [
+        {
+          "name": "Tiempo máximo de conexión",
+          "purpose": "Limita la espera al probar una fuente.",
+          "example": "Predeterminado 8 segundos; rango 3–30.",
+          "result": "Afecta el límite de espera de la prueba, no los permisos SQL."
+        },
+        {
+          "name": "Tiempo máximo del asistente",
+          "purpose": "Limita la espera de la solicitud al proveedor.",
+          "example": "Predeterminado 600 segundos; rango 10–900.",
+          "result": "Permite acotar la espera sin garantizar éxito."
+        },
+        {
+          "name": "Elementos por bloque de metadatos",
+          "purpose": "Organiza la cantidad de elementos técnicos por bloque.",
+          "example": "Predeterminado 100; rango 25–200.",
+          "result": "Cambia el tamaño operativo del contexto, no las filas del ETL."
+        },
+        {
+          "name": "Registros por página",
+          "purpose": "Conserva el ajuste de tamaño predeterminado de listados.",
+          "example": "Predeterminado 10; rango 10–100.",
+          "result": "El efecto depende del consumidor; los paginadores actuales envían 10 explícitamente."
+        },
+        {
+          "name": "Guardar",
+          "purpose": "Persiste el valor de esa tarjeta.",
+          "example": "Guardar un tiempo acordado para una prueba.",
+          "result": "Muestra un mensaje con el nombre del parámetro actualizado."
+        },
+        {
+          "name": "Restaurar",
+          "purpose": "Recupera el predeterminado de la tarjeta.",
+          "example": "Volver Tiempo máximo de conexión a 8.",
+          "result": "Se deshabilita si ya coincide con el predeterminado."
+        },
+        {
+          "name": "Duración de la sesión (minutos)",
+          "purpose": "Fija la duración absoluta de los siguientes inicios de sesión.",
+          "example": "60 para el uso habitual; 120 si se acuerda una práctica extensa.",
+          "result": "Guardar aplica el valor a sesiones nuevas, dentro del rango 15–240."
+        }
+      ],
+      "practice": [
+        {
+          "title": "Cambiar y recuperar un parámetro sin llamar a la IA",
+          "evidence_status": "Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.",
+          "steps": [
+            "En un entorno de capacitación, anote Tiempo máximo de conexión.",
+            "Guarde un valor permitido distinto y compruebe el mensaje.",
+            "Pulse Restaurar y compruebe el predeterminado."
+          ],
+          "expected_results": [
+            "Se conserva el dato operativo y se puede volver al valor de referencia.",
+            "No se cambian catálogos, fuentes ni propuestas."
+          ],
+          "success_criterion": "La estudiante explica qué cambió y qué no demuestra este ejercicio."
+        }
+      ],
+      "errors": [
+        {
+          "symptom": "El valor es rechazado.",
+          "possible_cause": "Está fuera del rango o no es un entero admitido.",
+          "action": "Utilice el rango visible; no agregue una clave nueva.",
+          "verification": "Se guarda un valor válido y legible."
+        },
+        {
+          "symptom": "El modelo sigue fallando tras aumentar el tiempo.",
+          "possible_cause": "El problema puede ser cuota, clave, modelo o contrato estructurado.",
+          "action": "Revise el mensaje del proveedor y su prueba de configuración. No atribuya todos los fallos a tiempo insuficiente.",
+          "verification": "La reparación se dirige a la causa observada."
+        },
+        {
+          "symptom": "Guardar Registros por página no cambia el listado.",
+          "possible_cause": "El componente utiliza su tamaño explícito del corte actual.",
+          "action": "Registre esta limitación; conserve el valor de referencia si no hay una prueba de efecto.",
+          "verification": "La demostración no promete un cambio que el navegador no muestra."
+        }
+      ],
+      "defense_qa": [
+        {
+          "question": "¿Subir el tiempo hace más inteligente a la IA?",
+          "answer": "No. Solo modifica el límite de espera. La calidad de una propuesta sigue dependiendo del contexto, del proveedor y de las reglas de validación."
+        }
+      ],
+      "source_refs": [
+        "frontend/src/App.tsx:62,2402–2444",
+        "backend/app/modules/parameters/service.py:23–77"
+      ]
+    },
+    {
+      "id": "operacion_11",
+      "order": 11,
+      "title": "Configurar y comprobar el asistente de IA",
+      "ui_path": "Preparación del entorno > Configuración LLM",
+      "audience": [
+        "Administración"
+      ],
+      "paragraphs": [
+        "El modelo de lenguaje interpreta y explica; no autentica usuarios ni ejecuta SQL libre sobre las bases. La plataforma mantiene proveedores como configuraciones separadas y una sola configuración activa a la vez. Cambiar la activa afecta las nuevas solicitudes de la aplicación, por lo que debe coordinarse antes de una demostración compartida.",
+        "Seleccione el Proveedor para completar la URL y el modelo sugeridos por el producto. Son valores del corte de software, no una garantía permanente de disponibilidad comercial. El identificador debe existir y estar autorizado en la cuenta del proveedor. La URL se valida contra destinos permitidos; no se usa esta pantalla para enviar datos a un servicio arbitrario.",
+        "Para un proveedor cloud, el flujo consiste en crear el registro, registrar la credencial, probar la conexión y activar la configuración prevista. La prueba hace una solicitud mínima, sin el contexto comercial de la demostración. Un resultado satisfactorio acredita ese acceso básico, pero no demuestra todavía la calidad de una propuesta de BI.",
+        "Ollama local no necesita API key, pero sí requiere el servicio local y el modelo descargado en la instalación. La pantalla no descarga modelos por escribir su nombre. Si se cambia proveedor, URL, modelo o razonamiento, se invalida la prueba previa; vuelva a probar antes de usar el asistente. Cambiar de tipo de proveedor en un registro activo exige desactivarlo primero.",
+        "Nivel de razonamiento es una opción común que los adaptadores traducen a las capacidades admitidas. La modalidad de Claude de este corte ofrece Automático, Mínimo o Bajo; no habilita pensamiento extendido con Medio o Alto. Una opción más alta puede cambiar tiempo y consumo en proveedores compatibles, pero no garantiza mejores respuestas ni sustituye la supervisión.",
+        "La edición del 25 de noviembre incorpora OpenAI como proveedor propio. La recomendación económica actual es gpt-6-luna con razonamiento Bajo. Su conexión y una respuesta estructurada mínima fueron comprobadas. Los recorridos nuevos completos con ambas fuentes se comprobaron con gpt-6.2-sol y razonamiento Medio; esto no acredita todavía un recorrido completo con Luna. Una prueba de conexión satisfactoria no reemplaza la revisión de cada propuesta."
+      ],
+      "concepts": [
+        {
+          "term": "Proveedor",
+          "explanation": "Servicio que ofrece el modelo, local o cloud.",
+          "example": ""
+        },
+        {
+          "term": "Modelo",
+          "explanation": "Identificador concreto de la capacidad solicitada dentro de ese proveedor.",
+          "example": ""
+        },
+        {
+          "term": "Credencial",
+          "explanation": "Clave que autoriza al proveedor; se almacena cifrada y no se vuelve a mostrar.",
+          "example": ""
+        },
+        {
+          "term": "Activa",
+          "explanation": "Configuración seleccionada para nuevas solicitudes; no significa que todas sus respuestas serán válidas.",
+          "example": ""
+        }
+      ],
+      "steps": [
+        "Abra Configuración LLM y revise los registros existentes para no duplicarlos innecesariamente.",
+        "En Crear configuración LLM, escriba Nombre de configuración y seleccione Proveedor.",
+        "Revise URL del servicio, Modelo y Nivel de razonamiento. Use valores autorizados para la instalación.",
+        "Pulse Crear registro. En cloud, pulse Registrar credencial en su fila, introduzca la API key y pulse Guardar credencial.",
+        "Pulse Probar conexión y lea el resultado. Corrija clave, cuota, modelo o disponibilidad si falla.",
+        "Pulse Activar sobre la configuración prevista y compruebe cuál queda activa.",
+        "Vuelva a Inicio para revisar el asistente preparado. Antes de enviar una necesidad, atienda la autorización de transferencia del contexto que corresponda al destino elegido.",
+        "Para una clave renovada, use Reemplazar credencial y repita la prueba. No necesita borrar la propuesta histórica para cambiar una configuración de futuras solicitudes."
+      ],
+      "controls": [
+        {
+          "name": "Nombre de configuración",
+          "purpose": "Distingue el registro.",
+          "example": "Claude demostración o Groq capacitación.",
+          "result": "Permite reconocer la configuración que se prueba y activa."
+        },
+        {
+          "name": "Proveedor",
+          "purpose": "Selecciona el adaptador implementado.",
+          "example": "OpenAI, Anthropic Claude, Groq Cloud, Gemini Cloud, Qwen Cloud u Ollama local.",
+          "result": "Completa valores recomendados de URL, modelo y nivel."
+        },
+        {
+          "name": "URL del servicio",
+          "purpose": "Identifica el destino permitido.",
+          "example": "URL completada al seleccionar el proveedor.",
+          "result": "Se valida su correspondencia; no admite un destino arbitrario."
+        },
+        {
+          "name": "Modelo",
+          "purpose": "Especifica el identificador que el servicio debe reconocer.",
+          "example": "Modelo autorizado de la cuenta y del adaptador.",
+          "result": "La prueba puede detectar ausencia, acceso o incompatibilidad."
+        },
+        {
+          "name": "Nivel de razonamiento",
+          "purpose": "Elige una modalidad admitida.",
+          "example": "Mínimo para una solicitud breve en la modalidad de Claude disponible.",
+          "result": "Se conserva en la configuración y forma parte de lo que debe volver a probarse si cambia."
+        },
+        {
+          "name": "Registrar credencial / Reemplazar credencial",
+          "purpose": "Abre el formulario de la clave cloud.",
+          "example": "Registrar una clave nueva sin imprimirla ni pegarla en documentación.",
+          "result": "El servidor conserva el secreto cifrado."
+        },
+        {
+          "name": "Guardar credencial / Cancelar",
+          "purpose": "Confirma o abandona el envío de la clave.",
+          "example": "Cancelar si se abrió la fila equivocada.",
+          "result": "La clave no vuelve a mostrarse en el listado."
+        },
+        {
+          "name": "Probar conexión",
+          "purpose": "Realiza la comprobación mínima del proveedor y modelo.",
+          "example": "Comprobar un modelo local instalado.",
+          "result": "Devuelve un resultado básico, sin generar un datamart."
+        },
+        {
+          "name": "Activar / Desactivar",
+          "purpose": "Selecciona la configuración operativa.",
+          "example": "Cambiar de proveedor con conocimiento de quienes usan la plataforma.",
+          "result": "Solo una queda activa para nuevas solicitudes."
+        },
+        {
+          "name": "Eliminar",
+          "purpose": "Retira una configuración inactiva cuando el servidor lo permite.",
+          "example": "Limpiar un registro temporal autorizado.",
+          "result": "No sirve para reparar automáticamente un proveedor indisponible."
+        }
+      ],
+      "practice": [
+        {
+          "title": "Identificar los componentes de una configuración existente",
+          "evidence_status": "Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.",
+          "steps": [
+            "Consulte un registro sin mostrar la clave.",
+            "Identifique proveedor, modelo, nivel y estado.",
+            "Explique cuál usaría la próxima solicitud y qué ocurriría al cambiar el modelo."
+          ],
+          "expected_results": [
+            "Se distingue registro, prueba, credencial y activación.",
+            "No se envía una solicitud comercial por consultar el listado."
+          ],
+          "success_criterion": "La estudiante explica por qué una prueba básica exitosa no es una evaluación completa de las propuestas BI."
+        }
+      ],
+      "errors": [
+        {
+          "symptom": "Credencial pendiente o rechazo de autenticación.",
+          "possible_cause": "No se registró una clave válida para ese proveedor.",
+          "action": "Registre o reemplace la clave en la fila correcta y pruebe otra vez. No la escriba en Parámetros ni en el objetivo de negocio.",
+          "verification": "La prueba básica resulta satisfactoria sin exponer el secreto."
+        },
+        {
+          "symptom": "Modelo no disponible o sin acceso.",
+          "possible_cause": "Identificador incorrecto, no instalado o no autorizado para la cuenta.",
+          "action": "Revise el modelo con la administración; en Ollama compruebe servicio y descarga mediante la guía técnica.",
+          "verification": "El servicio reconoce el modelo configurado."
+        },
+        {
+          "symptom": "Cuota, límite de servicio o tiempo agotado.",
+          "possible_cause": "Restricción externa o recursos insuficientes.",
+          "action": "Lea la causa y espere o cambie a una configuración previamente preparada con autorización. No describa un cambio silencioso de proveedor como comportamiento del sistema.",
+          "verification": "La nueva configuración queda identificada y probada."
+        },
+        {
+          "symptom": "El proveedor devuelve JSON, pero el contrato es rechazado.",
+          "possible_cause": "La salida no cumple los campos, tipos o reglas que exige la plataforma.",
+          "action": "Mantenga la necesidad guardada y revise el diagnóstico de recuperación del asistente. Reintente de forma controlada o elija un proveedor probado; no apruebe una respuesta inválida para continuar.",
+          "verification": "Se obtiene una versión válida y revisable o un fallo explicado; no se materializa contenido inválido."
+        },
+        {
+          "symptom": "Activar no devuelve un estado de preparación correcto.",
+          "possible_cause": "La clave puede existir, pero la prueba es inválida o quedó obsoleta tras un cambio.",
+          "action": "Pruebe exactamente la combinación que está activa y revise Inicio.",
+          "verification": "La preparación reconoce proveedor y modelo comprobados."
+        }
+      ],
+      "defense_qa": [
+        {
+          "question": "¿Se reemplaza la IA sin cambiar el proceso BI?",
+          "answer": "Los adaptadores permiten cambiar de proveedor manteniendo los contratos de la aplicación. Cada combinación requiere prueba y validación; no se garantiza que todos los modelos produzcan la misma calidad."
+        },
+        {
+          "question": "¿La prueba mínima autoriza enviar datos de ventas completos?",
+          "answer": "No. La prueba utiliza una solicitud mínima. Las solicitudes posteriores respetan su propósito y autorización: el diseño usa contexto estructural y el copiloto analítico utiliza agregados permitidos."
+        }
+      ],
+      "source_refs": [
+        "frontend/src/App.tsx:1988–2090,2530–2635",
+        "backend/app/modules/parameters/router.py:176–437",
+        "backend/app/modules/parameters/schemas.py:49–106",
+        "docs/specs/SPR-02-03-parametros-y-llm.md"
+      ]
+    },
+    {
+      "id": "operacion_12",
+      "order": 12,
+      "title": "Leer y comprender el esquema antes de diseñar",
+      "ui_path": "Preparación del entorno > Explorador de esquema",
+      "audience": [
+        "Analista de BI",
+        "Administración",
+        "Gerencia con consulta de metadatos"
+      ],
+      "paragraphs": [
+        "El Explorador muestra una fotografía estructural de la fuente: esquemas, tablas, columnas, tipos, claves principales y relaciones declaradas. Es el primer paso para comprobar qué información existe y cómo puede relacionarse. No muestra las filas del negocio ni demuestra por sí solo que un atributo tenga el significado comercial que usted necesita.",
+        "Un esquema es una agrupación de objetos dentro de la base. Una tabla reúne registros de una entidad o evento; una columna representa un atributo. La clave principal identifica una fila de la tabla. Una relación declarada vincula columnas de tablas mediante una clave foránea. Dos columnas con el mismo nombre no prueban una relación válida si el esquema no la respalda.",
+        "La instantánea conserva versión, fecha y huella de contenido. Si la estructura no cambió, una actualización puede reutilizar la captura existente; no es obligatorio que aumente el número de versión. Versionar metadatos permite saber con qué estructura se revisó una propuesta histórica. Actualizar metadatos no actualiza las filas del datamart ni repite el ETL.",
+        "En AdventureWorks, una línea de pedido y su cabecera permiten distinguir la cantidad de líneas de la cantidad de pedidos. En WideWorldImporters, la línea de factura corresponde a otro evento comercial. Estos son ejemplos de lectura del esquema: el programa no exige esos nombres a una fuente nueva, pero sí necesita relaciones y tipos compatibles con la necesidad.",
+        "Para la demostración, encuentre al menos el detalle comercial, su fecha de evento y una relación hacia producto, cliente o territorio. Explique qué significa cada enlace antes de usarlo. Una relación hacia la persona que creó o modificó un registro no demuestra quién compró ni dónde se realizó la operación."
+      ],
+      "concepts": [
+        {
+          "term": "Tabla",
+          "explanation": "Conjunto de filas del mismo tipo de entidad o evento.",
+          "example": ""
+        },
+        {
+          "term": "Columna",
+          "explanation": "Atributo con un nombre y un tipo de dato.",
+          "example": ""
+        },
+        {
+          "term": "PK",
+          "explanation": "Clave principal; identifica una fila de la tabla.",
+          "example": "Puede incluir más de una columna."
+        },
+        {
+          "term": "Relación saliente",
+          "explanation": "Enlace desde la tabla consultada hacia otra mediante sus columnas.",
+          "example": ""
+        },
+        {
+          "term": "Relación entrante",
+          "explanation": "Enlace de otra tabla hacia la tabla que se consulta.",
+          "example": ""
+        },
+        {
+          "term": "Huella",
+          "explanation": "Resumen calculado del contenido estructural para comprobar si la captura cambió.",
+          "example": ""
+        }
+      ],
+      "steps": [
+        "Seleccione la fuente correcta en Cambiar fuente.",
+        "Si no hay metadatos, pulse Crear primera instantánea si tiene permiso de actualización.",
+        "Lea el resumen de esquemas, tablas, columnas y relaciones y la versión vigente.",
+        "Use Versión de metadatos para una captura histórica cuando exista más de una.",
+        "En Buscar tabla o columna escriba parte del nombre; opcionalmente escriba el nombre exacto del esquema en Esquema y pulse Buscar.",
+        "Seleccione una tabla de la lista y revise Columna, Tipo, Permite nulos y Clave.",
+        "Lea Relaciones salientes y Relaciones entrantes. Anote las columnas del enlace y la tabla relacionada.",
+        "Para quitar un filtro, vacíe los campos y pulse Buscar. Al cambiar de fuente, compruebe que se cargan su propia instantánea y tablas."
+      ],
+      "controls": [
+        {
+          "name": "Crear primera instantánea",
+          "purpose": "Captura estructura cuando aún no existe una versión.",
+          "example": "Preparar una fuente SQL Server nueva.",
+          "result": "Conserva tablas, columnas y relaciones, sin filas ni credenciales."
+        },
+        {
+          "name": "Actualizar metadatos",
+          "purpose": "Vuelve a consultar la estructura de la fuente.",
+          "example": "Se agregó una tabla o cambió una relación declarada.",
+          "result": "Crea una versión si hay cambios o reutiliza la equivalente."
+        },
+        {
+          "name": "Versión de metadatos",
+          "purpose": "Permite revisar una captura conservada.",
+          "example": "Abrir la estructura de una propuesta histórica.",
+          "result": "Con una única versión, el selector está deshabilitado y lo explica."
+        },
+        {
+          "name": "Buscar tabla o columna",
+          "purpose": "Filtra por un texto de estructura.",
+          "example": "SalesOrderDetail o InvoiceLines en los ejemplos instalados.",
+          "result": "Presenta coincidencias, no filas comerciales."
+        },
+        {
+          "name": "Esquema",
+          "purpose": "Acota la búsqueda por agrupación estructural.",
+          "example": "Sales, si corresponde a la fuente.",
+          "result": "No es un selector de base de datos."
+        },
+        {
+          "name": "Buscar",
+          "purpose": "Aplica los campos escritos.",
+          "example": "Buscar InvoiceLines dentro de Sales.",
+          "result": "Actualiza la lista desde la instantánea elegida."
+        },
+        {
+          "name": "Tablas",
+          "purpose": "Permite elegir el objeto que se examina.",
+          "example": "Detalle de una venta o factura.",
+          "result": "Presenta columnas y relaciones de la tabla seleccionada."
+        },
+        {
+          "name": "Relaciones salientes / Relaciones entrantes",
+          "purpose": "Explica los enlaces declarados.",
+          "example": "Detalle hacia cabecera; otra tabla hacia cliente.",
+          "result": "Permite reconocer el sentido y columnas de una relación sin inventarla."
+        }
+      ],
+      "practice": [
+        {
+          "title": "Comparar pedido y factura",
+          "evidence_status": "Ejercicio de consulta propuesto; los nombres corresponden a las dos fuentes públicas de demostración y deben comprobarse en la instalación.",
+          "steps": [
+            "Seleccione AdventureWorks y busque SalesOrderDetail; revise sus claves y un enlace con SalesOrderHeader.",
+            "Cambie a WideWorldImporters y busque InvoiceLines; revise sus claves y un enlace con Invoices.",
+            "Explique por qué una línea no es un pedido ni una factura completa."
+          ],
+          "expected_results": [
+            "Se distinguen las estructuras de dos eventos comerciales.",
+            "La estudiante identifica las referencias de la fuente sin proponer todavía un ETL."
+          ],
+          "success_criterion": "Puede justificar un conteo distinto de documentos frente a un conteo de líneas."
+        }
+      ],
+      "errors": [
+        {
+          "symptom": "No aparecen coincidencias.",
+          "possible_cause": "Texto o esquema no coinciden con la instantánea.",
+          "action": "Vacíe los filtros, pulse Buscar y localice una tabla de la lista. No concluya que faltan las ventas por una búsqueda mal escrita.",
+          "verification": "La lista vuelve a mostrar objetos de la fuente correcta."
+        },
+        {
+          "symptom": "Versión de metadatos aparece deshabilitada.",
+          "possible_cause": "Solo existe una captura disponible.",
+          "action": "Lea la nota y consulte esa versión. No necesita generar versiones artificiales.",
+          "verification": "Se reconoce la única instantánea sin interpretarla como un fallo."
+        },
+        {
+          "symptom": "No hay una relación de negocio que el analista esperaba.",
+          "possible_cause": "El origen no la declara o enlaza otro rol del negocio.",
+          "action": "Registre la limitación y formule una necesidad compatible. No una tablas por nombres parecidos para forzar cobertura.",
+          "verification": "La propuesta posterior usa enlaces respaldados o informa la insuficiencia."
+        },
+        {
+          "symptom": "Actualizar no cambia el número de versión.",
+          "possible_cause": "La huella estructural es equivalente.",
+          "action": "Compruebe el mensaje y la estructura; una captura reutilizada es un resultado válido.",
+          "verification": "No se confunde ausencia de cambio de estructura con error de actualización de ventas."
+        }
+      ],
+      "defense_qa": [
+        {
+          "question": "¿La instantánea permite comprobar que los importes están bien?",
+          "answer": "Permite comprobar estructura y referencias. La comprobación numérica corresponde a la conciliación posterior a una carga."
+        },
+        {
+          "question": "¿Por qué conservar nombres técnicos en inglés?",
+          "answer": "Identifican las referencias reales del origen. La explicación puede estar en español, pero no debe cambiar los nombres que permiten rastrear tablas y columnas."
+        }
+      ],
+      "source_refs": [
+        "frontend/src/App.tsx:2184–2282",
+        "backend/app/modules/metadata/router.py",
+        "backend/app/modules/metadata/introspection.py",
+        "docs/specs/SPR-03-03-explorador-esquema-y-trazabilidad.md"
+      ]
+    },
+    {
+      "id": "operacion_13",
+      "order": 13,
+      "title": "Construir un catálogo de preguntas con criterio de negocio",
+      "ui_path": "Diseño y transformación BI > Catálogo analítico > Preguntas de negocio",
+      "audience": [
+        "Analista responsable del catálogo con permiso de administración",
+        "Administración",
+        "Consulta para comprender el alcance"
+      ],
+      "paragraphs": [
+        "El catálogo es un conjunto de orientaciones comerciales que el analista podrá seleccionar al formular una necesidad. No es el datamart, no es una consulta SQL y no determina automáticamente qué tablas se cargarán. Su función es describir qué decisiones interesa apoyar con esa fuente.",
+        "La pantalla separa dos planos. Cobertura técnica de la fuente muestra qué referencias se descubren en la instantánea. Preguntas de negocio contiene las orientaciones que una persona autorizada administra. La IA utiliza el alcance y los metadatos en las etapas de necesidad y propuesta; la pantalla del catálogo no tiene un botón que genere libremente su configuración mediante la IA.",
+        "La línea base del producto contiene cuatro preguntas: evolución temporal, productos, clientes y territorio. No fueron creadas por un LLM en cada base. En el entorno histórico de AdventureWorks se incorporaron otras dos orientaciones, sobre costos y rentabilidad y sobre ventas y costos por unidad, por decisión del analista a partir de una recomendación conversacional. Ver seis preguntas en una fuente no significa que la plataforma deba copiar seis a todas las demás.",
+        "Cada catálogo pertenece a una conexión y a un dominio. Antes de editar, confirme el nombre en Fuente en contexto. Guardar un catálogo de AdventureWorks no debe modificar WideWorldImporters. Una nueva fuente comienza con las orientaciones del perfil y requiere su propio criterio comercial; la evidencia técnica se obtiene de su estructura, no de la fuente anterior.",
+        "Verificable significa que el descubrimiento dispone de referencias que pueden revisarse; Por validar conserva una orientación cuya evidencia tendrá que comprobarse antes de aprobar una propuesta; No disponible informa insuficiencia técnica. Ninguno de esos rótulos demuestra que ya se calcularon ventas o que la interpretación comercial sea incuestionable. Abra Referencias detectadas y lea su alcance.",
+        "Redacte una pregunta para una decisión concreta. Productos con mayor desempeño es una orientación; una instrucción útil especifica si se comparan sumas de importe o de unidades y advierte que un ranking no prueba preferencias del consumidor. No introduzca nombres de columnas inventadas ni convierta una limitación en una orden para que la IA la ignore.",
+        "Habilitada conserva la pregunta y controla si se ofrece para nuevos análisis. Retirar pregunta la quita del borrador de catálogo y el cambio se hace persistente al Guardar catálogo. Deshabilitar es adecuado cuando quiere conservar la redacción para un uso futuro. No utilice retirar como si fuera una aprobación o rechazo de las propuestas que ya existen.",
+        "Restaurar catálogo validado aplica inmediatamente la configuración predeterminada del perfil a la fuente elegida; no es un historial de deshacer ni recupera automáticamente las últimas preguntas personalizadas. En este corte puede sustituir las dos preguntas adicionales de AdventureWorks por las cuatro iniciales. Antes de utilizarlo, conserve por escrito las orientaciones que desea volver a incorporar y confirme que está trabajando en la fuente adecuada."
+      ],
+      "concepts": [
+        {
+          "term": "Pregunta de negocio",
+          "explanation": "Tema comercial que orienta una necesidad, sin fijar por sí mismo el diseño físico.",
+          "example": "Comparar el importe vendido por producto y mes."
+        },
+        {
+          "term": "Etiqueta",
+          "explanation": "Nombre breve que el analista reconocerá en la selección de preguntas.",
+          "example": ""
+        },
+        {
+          "term": "Explicación para el analista",
+          "explanation": "Describe para qué decisión resulta útil la pregunta.",
+          "example": ""
+        },
+        {
+          "term": "Instrucción funcional para la IA",
+          "explanation": "Precisa el resultado y sus límites en términos comerciales; no habilita SQL ni referencias inexistentes.",
+          "example": ""
+        },
+        {
+          "term": "Cobertura técnica",
+          "explanation": "Respaldo estructural detectado para las orientaciones del dominio.",
+          "example": ""
+        },
+        {
+          "term": "Personalización por fuente",
+          "explanation": "Configuración independiente que pertenece a una conexión concreta.",
+          "example": ""
+        }
+      ],
+      "steps": [
+        "Abra Catálogo analítico y confirme Fuente en contexto y Dominio habilitado.",
+        "Lea Cobertura técnica de la fuente. Abra Referencias detectadas en las tarjetas que la ofrezcan.",
+        "Revise las preguntas existentes antes de añadir otra: puede bastar con mejorar su explicación.",
+        "Pulse Agregar pregunta. Sustituya la redacción de ejemplo de los tres campos por una orientación comercial concreta.",
+        "Escriba Etiqueta, Explicación para el analista e Instrucción funcional para la IA. Revise Habilitada.",
+        "Pulse Guardar catálogo y espere el mensaje de actualización.",
+        "Vuelva al catálogo y compruebe los textos. Después, abra un análisis nuevo para comprobar qué orientaciones ofrece el asistente.",
+        "Cambie a la otra fuente y confirme que sus preguntas se mantienen propias.",
+        "Si necesita retirar una orientación, considere primero desmarcar Habilitada. Si elige Retirar pregunta, revise el borrador restante y pulse Guardar catálogo.",
+        "No utilice Restaurar catálogo validado como prueba de aprendizaje sobre un catálogo con personalizaciones que necesite conservar."
+      ],
+      "controls": [
+        {
+          "name": "Dominio habilitado",
+          "purpose": "Selecciona un perfil analítico implementado.",
+          "example": "Datamart de ventas, único dominio operativo del corte.",
+          "result": "No crea inventario, compras u otro dominio por cambiar una etiqueta."
+        },
+        {
+          "name": "Cobertura técnica de la fuente",
+          "purpose": "Presenta el descubrimiento de referencias de la instantánea vigente.",
+          "example": "Comprobar qué estructura respalda análisis temporal o territorial.",
+          "result": "Distingue evidencia técnica de una preferencia comercial escrita."
+        },
+        {
+          "name": "Verificable / Por validar / No disponible",
+          "purpose": "Resume el respaldo de una orientación.",
+          "example": "Una pregunta personalizada puede permanecer Por validar.",
+          "result": "Guía la revisión; no acredita una cifra calculada."
+        },
+        {
+          "name": "Referencias detectadas",
+          "purpose": "Despliega las referencias que sustentan una tarjeta.",
+          "example": "Leer las tablas o columnas citadas y su pertenencia al origen.",
+          "result": "Permite una comprobación explícita del respaldo."
+        },
+        {
+          "name": "Agregar pregunta",
+          "purpose": "Añade un borrador de orientación.",
+          "example": "Una orientación sobre documentos e importe promedio.",
+          "result": "Genera un identificador interno; máximo doce preguntas en total, no doce adicionales."
+        },
+        {
+          "name": "Habilitada",
+          "purpose": "Ofrece o retira de las selecciones futuras sin eliminar el texto.",
+          "example": "Deshabilitar temporalmente una orientación de costos.",
+          "result": "Conserva la redacción al guardar, pero no la ofrece como pregunta habilitada."
+        },
+        {
+          "name": "Etiqueta",
+          "purpose": "Nombre reconocible de la orientación; de 3 a 120 caracteres.",
+          "example": "Costos y rentabilidad de las ventas.",
+          "result": "Se muestra en el catálogo y en las selecciones que correspondan."
+        },
+        {
+          "name": "Explicación para el analista",
+          "purpose": "Explica utilidad y decisión; de 10 a 300 caracteres.",
+          "example": "Permite comparar el importe vendido con costos respaldados para revisar diferencias por producto.",
+          "result": "La persona comprende para qué seleccionar esa orientación."
+        },
+        {
+          "name": "Instrucción funcional para la IA",
+          "purpose": "Delimita la interpretación comercial; de 10 a 500 caracteres.",
+          "example": "Usar únicamente costos verificables; declarar si son actuales y no atribuirles validez histórica.",
+          "result": "Orienta las solicitudes futuras sin sustituir los validadores."
+        },
+        {
+          "name": "Identificador interno",
+          "purpose": "Mantiene la identidad de la pregunta.",
+          "example": "Código automático custom_… de una pregunta nueva.",
+          "result": "No es un campo que deba inventar ni editar la operadora."
+        },
+        {
+          "name": "Retirar pregunta",
+          "purpose": "Quita la tarjeta del borrador.",
+          "example": "Retirar una orientación duplicada con autorización.",
+          "result": "Necesita Guardar catálogo para persistir; no permite retirar la última tarjeta por ese botón."
+        },
+        {
+          "name": "Guardar catálogo",
+          "purpose": "Persiste preguntas y periodicidades de la fuente.",
+          "example": "Guardar una pregunta aclarada en WideWorldImporters.",
+          "result": "Los nuevos análisis usan la configuración actualizada; no reescribe propuestas previas."
+        },
+        {
+          "name": "Restaurar catálogo validado",
+          "purpose": "Reaplica la línea base del perfil a la fuente actual.",
+          "example": "Recuperar las cuatro orientaciones estándar en un entorno limpio.",
+          "result": "Sustituye personalizaciones del catálogo; no revierte una propuesta ni una ejecución."
+        }
+      ],
+      "practice": [
+        {
+          "title": "Examinar el catálogo sin modificarlo",
+          "evidence_status": "Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.",
+          "steps": [
+            "Seleccione AdventureWorks y cuente las orientaciones que realmente conserva la instalación.",
+            "Identifique las cuatro estándar y las personalizadas si existen.",
+            "Cambie a WideWorldImporters y compare etiquetas, instrucciones y cobertura."
+          ],
+          "expected_results": [
+            "Se reconoce la configuración propia de cada origen.",
+            "No se asume que la cantidad seis sea obligatoria o generada por IA."
+          ],
+          "success_criterion": "Puede explicar quién redacta las preguntas y de dónde procede la evidencia técnica."
+        },
+        {
+          "title": "Añadir una orientación comercial acotada",
+          "evidence_status": "Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.",
+          "steps": [
+            "En el entorno de capacitación, seleccione una fuente y conserve los textos iniciales.",
+            "Agregue una pregunta sobre importe por documento, indicando conteo distinto de pedidos o facturas según el evento real.",
+            "Guarde el catálogo y compruebe la nueva tarjeta.",
+            "Consulte la otra fuente para verificar que no recibió la tarjeta.",
+            "En la etapa de necesidad, someta cualquier nueva solicitud a su evaluación de viabilidad."
+          ],
+          "expected_results": [
+            "La pregunta queda guardada únicamente en la fuente elegida.",
+            "La tarjeta no crea automáticamente una medida, propuesta o ETL.",
+            "Una cobertura Por validar no se describe como fallo si aún no se ha construido una propuesta."
+          ],
+          "success_criterion": "La estudiante distingue guardar orientación de demostrar su factibilidad sobre metadatos."
+        }
+      ],
+      "errors": [
+        {
+          "symptom": "La pregunta aparece Por validar.",
+          "possible_cause": "No tiene evidencia técnica suficiente en el descubrimiento inicial o es una orientación personalizada.",
+          "action": "Revise sus términos y referencias; formule una necesidad concreta y utilice la evaluación de viabilidad. No la fuerce como Verificable por cambiar su etiqueta.",
+          "verification": "La factibilidad se acredita mediante referencias y reglas, o se informa una limitación."
+        },
+        {
+          "symptom": "No se puede guardar el catálogo.",
+          "possible_cause": "Campos fuera de longitud, tarjetas inválidas, fuente no habilitada o falta de permiso.",
+          "action": "Lea el mensaje, complete los tres campos de cada pregunta y revise la fuente. Compruebe también las periodicidades del mismo formulario.",
+          "verification": "Aparece El catálogo analítico fue actualizado y una nueva consulta conserva los textos."
+        },
+        {
+          "symptom": "Faltan las dos preguntas adicionales después de restaurar.",
+          "possible_cause": "Restaurar sustituyó la personalización por la línea base de cuatro preguntas.",
+          "action": "Recupere los textos conservados o una evidencia histórica y vuelva a incorporarlos en la fuente correcta; no anuncie una recuperación automática inexistente.",
+          "verification": "Las orientaciones adicionales vuelven a estar guardadas y habilitadas solo donde corresponde."
+        },
+        {
+          "symptom": "La pregunta pide costos, pero no hay un costo confiable.",
+          "possible_cause": "El deseo comercial supera la evidencia del origen o solo existe un costo actual.",
+          "action": "Acote la necesidad a las medidas disponibles o declare el alcance del costo actual. No llame costo histórico de la venta a un atributo actual sin respaldo.",
+          "verification": "La propuesta no publica un margen supuesto ni confunde factibilidad estructural con criterio contable."
+        },
+        {
+          "symptom": "Agregar pregunta está deshabilitado.",
+          "possible_cause": "Ya existen doce tarjetas.",
+          "action": "Revise duplicados y retire o reformule una orientación si corresponde. Deshabilitar una tarjeta no reduce el número total.",
+          "verification": "El catálogo cumple el máximo de doce, con las preguntas necesarias."
+        }
+      ],
+      "defense_qa": [
+        {
+          "question": "¿La IA construyó las cuatro preguntas iniciales?",
+          "answer": "No. Proceden del perfil del producto. Una persona autorizada puede ampliarlas; la IA interviene al sugerir o revisar necesidades y al proponer el diseño a partir de los metadatos."
+        },
+        {
+          "question": "¿Por qué una pregunta guardada no demuestra que puede responderse?",
+          "answer": "Porque el catálogo expresa intención. La evaluación de viabilidad y los validadores deben comprobar referencias, relaciones, grano y cálculos para esa necesidad."
+        },
+        {
+          "question": "¿Por qué el catálogo no fija las tablas?",
+          "answer": "Para separar el propósito comercial del esquema físico. El mismo objetivo puede requerir estructuras diferentes en cada fuente."
+        },
+        {
+          "question": "¿Qué ocurre al restaurar?",
+          "answer": "Se aplica la configuración predeterminada del perfil en esa fuente; las personalizaciones del catálogo pueden sustituirse. Las propuestas y ejecuciones previas no se reescriben."
+        }
+      ],
+      "source_refs": [
+        "frontend/src/App.tsx:2285–2400",
+        "backend/app/modules/copilot/router.py:325–433",
+        "backend/app/modules/copilot/domains.py:52–94,188–310",
+        "backend/app/modules/copilot/schemas.py:138–158",
+        "docs/specs/SPR-06-01-contexto-multifuente-sqlserver.md:35–60"
+      ]
+    },
+    {
+      "id": "operacion_14",
+      "order": 14,
+      "title": "Elegir periodicidades sin confundirlas con el detalle de los datos",
+      "ui_path": "Diseño y transformación BI > Catálogo analítico > Periodicidades",
+      "audience": [
+        "Analista responsable del catálogo",
+        "Administración",
+        "Personas en formación BI"
+      ],
+      "paragraphs": [
+        "Periodicidad indica cómo se agrupan temporalmente los resultados: día, semana, mes, trimestre o año. Granularidad indica qué representa una fila del hecho, como una línea de pedido o una línea de factura. Frecuencia de actualización indica cuándo se ejecutaría otra carga. Son tres decisiones distintas y no deben utilizarse como sinónimos.",
+        "Un caso puede conservar cada línea de venta y presentar sus importes agrupados mensualmente. En ese caso, Mensual no reduce por sí sola el hecho a una fila por mes. Tampoco agenda una carga mensual: el prototipo realiza cargas completas confirmadas por una persona; no implementa un calendario de refresco automático por habilitar esta opción.",
+        "La etiqueta temporal debe corresponder al evento de negocio. En AdventureWorks puede usarse la fecha del pedido cuando esa es la elegida y validada; en WideWorldImporters puede ser la fecha de la factura. Una comparación mensual de pedidos no debe llamarse facturación mensual solo porque ambas usan meses. La propuesta y su expediente conservan la fecha de evento y el alcance.",
+        "Las estrategias están implementadas como un catálogo cerrado de cinco opciones. Se pueden ofrecer varias y retirar alguna, pero escribir Bimestral como etiqueta de Mensual no crea una agregación bimestral. La etiqueta ayuda a leer la opción; no cambia el código de cálculo que la plataforma admite.",
+        "En un análisis particular se selecciona una de las periodicidades habilitadas. Los KPI pueden declarar una periodicidad explícita o heredar la de la propuesta; el lector analítico resuelve esa configuración al agrupar los resultados. Cambiar la configuración de un catálogo no debe reetiquetar una ejecución histórica que ya conserva su propio contrato."
+      ],
+      "concepts": [
+        {
+          "term": "Granularidad",
+          "explanation": "Significado de una fila del hecho.",
+          "example": "Una línea de pedido puede contener cantidad e importe."
+        },
+        {
+          "term": "Periodicidad",
+          "explanation": "Agrupación temporal usada para presentar un resultado.",
+          "example": "Sumar importes de las líneas correspondientes a un mes."
+        },
+        {
+          "term": "Fecha de evento",
+          "explanation": "Fecha cuyo significado comercial organiza el análisis.",
+          "example": "Fecha del pedido frente a fecha de factura."
+        },
+        {
+          "term": "Actualización",
+          "explanation": "Obtención de datos mediante otra ejecución.",
+          "example": "No es un efecto de habilitar Mensual en el catálogo."
+        },
+        {
+          "term": "Herencia de periodicidad",
+          "explanation": "Un indicador utiliza la periodicidad de su propuesta cuando así lo declara su receta.",
+          "example": ""
+        }
+      ],
+      "steps": [
+        "Revise primero qué fecha comercial respalda la fuente y la necesidad.",
+        "En Periodicidades lea cada opción y su Explicación.",
+        "Conserve habilitadas las que desea ofrecer al analista y desmarque las que no correspondan.",
+        "Para reincorporar una estrategia retirada, selecciónela en Agregar periodicidad y pulse Agregar.",
+        "Revise la Etiqueta y Explicación sin cambiar su significado temporal.",
+        "Pulse Guardar catálogo y compruebe las opciones disponibles al iniciar una necesidad nueva.",
+        "En la propuesta, confirme aparte la granularidad. En el expediente y el panel, compruebe la periodicidad efectiva de la serie."
+      ],
+      "controls": [
+        {
+          "name": "Habilitada",
+          "purpose": "Ofrece una periodicidad para nuevas selecciones.",
+          "example": "Mantener Mensual habilitada para una comparación comercial.",
+          "result": "Conserva la estrategia y controla su disponibilidad."
+        },
+        {
+          "name": "Etiqueta",
+          "purpose": "Nombre legible de la periodicidad; de 3 a 100 caracteres.",
+          "example": "Mensual.",
+          "result": "No altera por sí mismo la agrupación implementada."
+        },
+        {
+          "name": "Explicación",
+          "purpose": "Describe cuándo y para qué usar la opción; de 10 a 240 caracteres.",
+          "example": "Agrupa por mes usando una fecha comercial verificable.",
+          "result": "Orienta la selección del analista."
+        },
+        {
+          "name": "Retirar periodicidad",
+          "purpose": "Quita una estrategia del borrador de configuración.",
+          "example": "Retirar temporalmente Diaria si no se ofrecerá.",
+          "result": "No permite retirar la última tarjeta desde ese botón; el cambio necesita guardarse."
+        },
+        {
+          "name": "Agregar periodicidad",
+          "purpose": "Permite elegir una de las estrategias implementadas ausentes.",
+          "example": "Seleccionar Trimestral cuando no figura entre las tarjetas.",
+          "result": "No acepta una frecuencia arbitraria."
+        },
+        {
+          "name": "Agregar",
+          "purpose": "Inserta la estrategia seleccionada en el borrador.",
+          "example": "Reincorporar Anual.",
+          "result": "La tarjeta aparece y se conserva al Guardar catálogo."
+        },
+        {
+          "name": "Guardar catálogo",
+          "purpose": "Persiste también las opciones temporales del formulario.",
+          "example": "Guardar Mensual y Trimestral habilitadas.",
+          "result": "Las nuevas necesidades ofrecen esa configuración."
+        }
+      ],
+      "practice": [
+        {
+          "title": "Explicar un datamart de líneas con análisis mensual",
+          "evidence_status": "Práctica propuesta para el entorno de capacitación; no se presenta como una nueva ejecución realizada durante la redacción.",
+          "steps": [
+            "Seleccione una propuesta histórica de líneas en el recorrido de formación.",
+            "Lea su granularidad y su periodicidad.",
+            "Explique qué se suma durante un mes y qué representa cada fila almacenada.",
+            "Repita la explicación para la otra fuente con su propio evento comercial."
+          ],
+          "expected_results": [
+            "Se distingue nivel de detalle, fecha de negocio y agrupación.",
+            "La estudiante no afirma que habilitar Mensual ejecute un ETL mensual automático."
+          ],
+          "success_criterion": "Puede responder qué representa una fila y qué representa un punto mensual del gráfico sin confundirlos."
+        }
+      ],
+      "errors": [
+        {
+          "symptom": "No aparece una periodicidad en el asistente.",
+          "possible_cause": "Está retirada o deshabilitada en el catálogo de esa fuente.",
+          "action": "Revise las tarjetas y guarde la configuración correspondiente; confirme que inicia una necesidad nueva de la misma fuente.",
+          "verification": "La opción habilitada se ofrece en el contexto correcto."
+        },
+        {
+          "symptom": "Se desea una frecuencia que no aparece.",
+          "possible_cause": "La estrategia no está implementada.",
+          "action": "Utilice una opción admitida si responde a la necesidad o registre una ampliación de desarrollo. No renombre Mensual para simular Bimestral.",
+          "verification": "El título temporal coincide con la agrupación realmente ejecutada."
+        },
+        {
+          "symptom": "No hay fecha de negocio verificable.",
+          "possible_cause": "La estructura no respalda la agrupación solicitada o la fecha pertenece a otro evento.",
+          "action": "Revise metadatos y delimite la necesidad. La etiqueta temporal no reemplaza una fecha ausente.",
+          "verification": "La propuesta usa una fecha respaldada o informa la limitación."
+        },
+        {
+          "symptom": "Se supone que cambiar el catálogo cambió el panel histórico.",
+          "possible_cause": "Se confundió la configuración futura con el contrato de una ejecución ya materializada.",
+          "action": "Consulte la periodicidad y la propuesta de esa ejecución. Cree o revise un nuevo diseño solo cuando se requiera y se autorice.",
+          "verification": "La procedencia histórica permanece identificada."
+        }
+      ],
+      "defense_qa": [
+        {
+          "question": "¿Mensual es la granularidad?",
+          "answer": "No necesariamente. En los casos de líneas, el hecho conserva líneas y el análisis agrupa sus importes por mes."
+        },
+        {
+          "question": "¿Por qué no usar siempre la fecha de modificación del registro?",
+          "answer": "Porque suele indicar una acción administrativa. La fecha del evento comercial debe corresponder al pedido, factura u otro evento solicitado."
+        },
+        {
+          "question": "¿Se puede refrescar automáticamente al marcar Semanal?",
+          "answer": "No. La opción agrupa resultados por semana; no programa una nueva carga."
+        }
+      ],
+      "source_refs": [
+        "frontend/src/App.tsx:2280–2283,2393–2400",
+        "backend/app/modules/copilot/domains.py:111–145,188–310",
+        "backend/app/modules/copilot/schemas.py:146–158",
+        "docs/architecture.md"
+      ]
+    }
+  ],
+  "business_question_examples": [
+    {
+      "label": "Evolución de ventas en el tiempo",
+      "description": "Permite comparar el importe registrado y las unidades entre periodos de un mismo evento comercial.",
+      "prompt_instruction": "Comparar sumas por periodos usando la fecha de negocio verificable. Distinguir pedido de factura; no afirmar una tendencia causal ni comparar periodos incompletos como equivalentes.",
+      "classification": "Orientación estándar, redacción de capacitación; revisar antes de sustituir el texto local."
+    },
+    {
+      "label": "Productos con mayor desempeño",
+      "description": "Permite identificar productos con mayor importe o unidades dentro de la selección analizada.",
+      "prompt_instruction": "Ordenar productos por sumas de importe o unidades respaldadas. Mostrar el alcance de la selección; el ranking no demuestra preferencias, demanda futura ni causalidad.",
+      "classification": "Orientación estándar, ejemplo de instrucción más concreta."
+    },
+    {
+      "label": "Desempeño por cliente",
+      "description": "Permite comparar ventas atribuidas al cliente mediante relaciones de negocio comprobadas.",
+      "prompt_instruction": "Usar la identidad descriptiva del cliente obtenida mediante rutas verificadas. No sustituir cliente por vendedor, empleado que editó el registro o contacto sin respaldo.",
+      "classification": "Orientación estándar."
+    },
+    {
+      "label": "Desempeño por territorio",
+      "description": "Permite comparar resultados según la ubicación o el territorio comercial respaldado por la fuente.",
+      "prompt_instruction": "Declarar el rol territorial usado y conservar la ruta revisada. Una dirección actual de cliente no acredita lugar de entrega realizado ni ubicación histórica del evento.",
+      "classification": "Orientación estándar; el territorio efectivo depende de la fuente y la propuesta."
+    },
+    {
+      "label": "Costos y rentabilidad de las ventas",
+      "description": "Permite revisar la diferencia entre ventas y costos cuando los componentes tienen respaldo y alcance explícitos.",
+      "prompt_instruction": "Usar únicamente costos e importes verificables y declarar su fecha y significado. No presentar un costo actual de producto como costo histórico de cada venta ni inventar margen cuando falten componentes.",
+      "classification": "Orientación personalizada histórica de AdventureWorks; no se garantiza aplicabilidad a otra fuente."
+    },
+    {
+      "label": "Ventas y costos por unidad",
+      "description": "Permite comparar importes por unidad conservando un denominador de unidades y el alcance de los costos disponibles.",
+      "prompt_instruction": "Calcular razones entre sumas compatibles de importe y unidades, con denominador verificable y tratamiento de cero. Distinguir promedio por unidad, por línea y por documento; declarar costos actuales cuando corresponda.",
+      "classification": "Orientación personalizada histórica; precisa revisión de factibilidad y denominadores."
+    }
+  ],
+  "permission_manifest": {
+    "status": "Catálogo base extraído literalmente del código; las columnas de Analista y Gerencia son una propuesta de capacitación, no una lectura de sus asignaciones actuales en PostgreSQL.",
+    "count": 29,
+    "items": [
+      {
+        "technical_code_for_developers": "security.users.read",
+        "visible_name": "Consultar usuarios",
+        "catalog_description": "Permite consultar usuarios.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "No necesario para el recorrido propuesto.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "security.users.write",
+        "visible_name": "Administrar usuarios",
+        "catalog_description": "Permite crear y modificar usuarios.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "No necesario para el recorrido propuesto.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "security.roles.read",
+        "visible_name": "Consultar roles",
+        "catalog_description": "Permite consultar roles.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "No necesario para el recorrido propuesto.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "security.roles.write",
+        "visible_name": "Administrar roles",
+        "catalog_description": "Permite crear roles y asignar permisos.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "No necesario para el recorrido propuesto.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "security.permissions.read",
+        "visible_name": "Consultar permisos",
+        "catalog_description": "Permite consultar permisos.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "No necesario para el recorrido propuesto.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "security.permissions.write",
+        "visible_name": "Administrar permisos",
+        "catalog_description": "Permite crear permisos.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "No necesario para el recorrido propuesto.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "security.menus.read",
+        "visible_name": "Consultar menús",
+        "catalog_description": "Permite consultar la navegación.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "No necesario para el recorrido propuesto.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "security.menus.write",
+        "visible_name": "Administrar menús",
+        "catalog_description": "Permite crear y parametrizar menús.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "No necesario para el recorrido propuesto.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "parameters.read",
+        "visible_name": "Consultar parámetros",
+        "catalog_description": "Permite consultar parámetros operativos.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "No necesario para el recorrido propuesto.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "parameters.write",
+        "visible_name": "Administrar parámetros",
+        "catalog_description": "Permite crear y modificar parámetros.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "No necesario para el recorrido propuesto.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "parameters.llm.read",
+        "visible_name": "Consultar configuración LLM",
+        "catalog_description": "Permite consultar proveedores LLM.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "No necesario para el recorrido propuesto.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "parameters.llm.write",
+        "visible_name": "Administrar configuración LLM",
+        "catalog_description": "Permite parametrizar proveedores LLM.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "No necesario para el recorrido propuesto.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "connections.read",
+        "visible_name": "Consultar conexiones",
+        "catalog_description": "Permite consultar fuentes sin secretos.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "No necesario para el recorrido propuesto.",
+        "training_manager_proposal": "Incluir para el recorrido de consulta propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "connections.write",
+        "visible_name": "Administrar conexiones",
+        "catalog_description": "Permite parametrizar fuentes de datos.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "No necesario para el recorrido propuesto.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "connections.test",
+        "visible_name": "Probar conexiones",
+        "catalog_description": "Permite validar fuentes de solo lectura.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "No necesario para el recorrido propuesto.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "metadata.read",
+        "visible_name": "Consultar metadatos",
+        "catalog_description": "Permite consultar instantáneas del esquema.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "Incluir según la responsabilidad acordada.",
+        "training_manager_proposal": "Incluir para el recorrido de consulta propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "metadata.refresh",
+        "visible_name": "Actualizar metadatos",
+        "catalog_description": "Permite leer la estructura de una fuente habilitada y seleccionada.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "Incluir según la responsabilidad acordada.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "metadata.semantic_resolution.read",
+        "visible_name": "Revisar identidad de dimensiones",
+        "catalog_description": "Permite comprobar relaciones, cobertura y muestras descriptivas controladas.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "Incluir según la responsabilidad acordada.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "metadata.semantic_resolution.manage",
+        "visible_name": "Resolver identidad de dimensiones",
+        "catalog_description": "Permite crear una versión corregida desde rutas semánticas verificadas.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "No necesario para el recorrido propuesto.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": "Declarado en el catálogo; no se identificó una operación autorizada con este código en el recorrido web auditado. No atribuir una capacidad nueva por su mera existencia."
+      },
+      {
+        "technical_code_for_developers": "copilot.proposals.read",
+        "visible_name": "Consultar propuestas BI",
+        "catalog_description": "Permite consultar solicitudes, propuestas y decisiones del asistente.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "Incluir según la responsabilidad acordada.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "copilot.proposals.generate",
+        "visible_name": "Generar propuestas BI",
+        "catalog_description": "Permite solicitar interpretación semántica y propuestas de ventas.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "Incluir según la responsabilidad acordada.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "copilot.proposals.review",
+        "visible_name": "Revisar propuestas BI",
+        "catalog_description": "Permite aprobar o rechazar propuestas validadas.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "Incluir según la responsabilidad acordada.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "copilot.catalog.read",
+        "visible_name": "Consultar catálogo analítico",
+        "catalog_description": "Permite consultar preguntas de negocio y periodicidades por dominio.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "Incluir según la responsabilidad acordada.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "copilot.catalog.write",
+        "visible_name": "Administrar catálogo analítico",
+        "catalog_description": "Permite crear, modificar, habilitar y retirar guías analíticas por dominio.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "Incluir según la responsabilidad acordada.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "etl.executions.read",
+        "visible_name": "Consultar materializaciones",
+        "catalog_description": "Permite revisar propuestas elegibles, planes y evidencia de ejecuciones ETL.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "Incluir según la responsabilidad acordada.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "etl.executions.write",
+        "visible_name": "Preparar materializaciones",
+        "catalog_description": "Permite seleccionar una propuesta y preparar una ejecución ETL controlada.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "Incluir según la responsabilidad acordada.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "analytics.dashboard.read",
+        "visible_name": "Consultar análisis visual",
+        "catalog_description": "Permite explorar KPI, visualizaciones e insights sobre un datamart conciliado.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "Incluir según la responsabilidad acordada.",
+        "training_manager_proposal": "Incluir para el recorrido de consulta propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "reports.analytics.export",
+        "visible_name": "Exportar reportes analíticos",
+        "catalog_description": "Permite descargar en PDF o Excel la selección analítica visible y autorizada.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "Incluir según la responsabilidad acordada.",
+        "training_manager_proposal": "Incluir para el recorrido de consulta propuesto.",
+        "note": ""
+      },
+      {
+        "technical_code_for_developers": "audit.read",
+        "visible_name": "Consultar auditoría",
+        "catalog_description": "Permite consultar eventos de auditoría.",
+        "administrator_baseline": "Incluido en el rol administrativo base protegido.",
+        "training_analyst_proposal": "No necesario para el recorrido propuesto.",
+        "training_manager_proposal": "No necesario para el recorrido de gerencia propuesto.",
+        "note": ""
+      }
+    ],
+    "dependencies": [
+      {
+        "operation": "Seleccionar fuente y operar pantallas con contexto",
+        "requirement": "Consultar metadatos (metadata.read). También permite abrir el Explorador en consulta."
+      },
+      {
+        "operation": "Editar usuarios no protegidos mediante la UI",
+        "requirement": "Administrar usuarios y Consultar roles para cargar las opciones."
+      },
+      {
+        "operation": "Crear o editar roles y menús mediante la UI",
+        "requirement": "Administrar el recurso y Consultar permisos para cargar las casillas."
+      },
+      {
+        "operation": "Mostrar cobertura técnica del catálogo",
+        "requirement": "La configuración usa Consultar catálogo analítico; la cobertura consulta el catálogo técnico mediante Consultar propuestas BI. La falta de esa consulta puede dejar la cobertura sin mostrar."
+      },
+      {
+        "operation": "Exportar PDF o Excel",
+        "requirement": "Consultar análisis visual y Exportar reportes analíticos conjuntamente."
+      },
+      {
+        "operation": "Revisar o generar una propuesta",
+        "requirement": "Consulta de propuestas más el permiso de generar o revisar correspondiente; no se confunden."
+      }
+    ],
+    "recommended_role_notes": [
+      "El rol de Analista responsable del catálogo incluye Administrar catálogo solo si esa responsabilidad se le asignó. Un perfil de analista que únicamente crea propuestas puede mantener el catálogo en consulta.",
+      "Actualizar metadatos puede reservarse a administración y retirarse del analista si la preparación de fuentes se realiza centralmente.",
+      "La propuesta de Gerente comercial incluye lectura de conexiones sin secretos, lectura de metadatos por dependencia del selector, panel y exportación. No incluye materialización, revisión ni administración del catálogo.",
+      "Administrador es el perfil base sembrado. Los nombres locales Analista BI, Gerente comercial u Operador no garantizan por sí mismos ninguna lista de permisos.",
+      "Product Owner y Scrum Master son responsabilidades del proyecto académico y no perfiles de autorización de la aplicación."
+    ]
+  },
+  "implementation_precision": [
+    {
+      "topic": "Catálogo de preguntas",
+      "fact": "Cuatro orientaciones base definidas por el perfil; no hay generación LLM del editor de catálogo. Dos orientaciones adicionales de AW fueron decisiones humanas históricas.",
+      "manual_treatment": "Explicar su procedencia y su independencia por fuente."
+    },
+    {
+      "topic": "Restauración del catálogo",
+      "fact": "El endpoint reset aplica default_needs_catalog_configuration a la fuente actual.",
+      "manual_treatment": "Advertir que sustituye personalizaciones; no confundirlo con recuperar la última edición."
+    },
+    {
+      "topic": "Paginación",
+      "fact": "App.tsx usa const pageSize = 10 en los listados auditados aunque UI_PAGE_SIZE se guarda.",
+      "manual_treatment": "No prometer efecto inmediato de ese parámetro; verificar antes de una demostración."
+    },
+    {
+      "topic": "Usuarios y auditoría",
+      "fact": "La UI no expone buscador de usuarios ni filtros de auditoría por fecha/actor en este corte.",
+      "manual_treatment": "Documentar únicamente la paginación disponible."
+    },
+    {
+      "topic": "Permisos y menús",
+      "fact": "No se crean contratos técnicos o pantallas libres desde el navegador.",
+      "manual_treatment": "Separar edición de roles/etiquetas de ampliaciones del producto."
+    },
+    {
+      "topic": "Pruebas por rol",
+      "fact": "La consulta de una configuración no acredita un recorrido autenticado bajo ese perfil.",
+      "manual_treatment": "Proponer la verificación sin afirmar que se ejecutó durante esta lectura de código."
+    }
+  ],
+  "source_inventory": [
+    {
+      "path": "/home/ceo/Proyectos/BI/AGENTS.md",
+      "sha256": "956992619d20788bacbe165cb50b1e822863831bcc65e3705f30c0e73ef5504f"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/frontend/src/App.tsx",
+      "sha256": "9f52d985a353607fd0a7db452e36d6d1ed0532a57dfa3ac1091f17eea0fd514b"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/frontend/src/api/security.ts",
+      "sha256": "dfed9595c81a13bd5657c6760d80295afce79914aced51fb844a52667e8119dd"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/backend/app/modules/security/router.py",
+      "sha256": "b2c1c98f845d7dd2cb1cceb41771042132a9c50bead61513b7b7b07d92fcd4a4"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/backend/app/modules/security/service.py",
+      "sha256": "cd2e40b8894b48bd971f20c1802dc1a6613f8735dd9c118d705a991730b4702a"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/backend/app/modules/security/schemas.py",
+      "sha256": "9db13538e0207453b0f67bfdbb461d7747efe34319e66fb070fd275b779c86de"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/backend/app/modules/parameters/router.py",
+      "sha256": "1b73b430bb08d6a0860e96b39888c526eb188c98b768d86c11923f40031e33cc"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/backend/app/modules/parameters/service.py",
+      "sha256": "29906d760d3287fbbec266ad81c34d093e1c64a0872deaff2d520d16d3626459"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/backend/app/modules/parameters/connections.py",
+      "sha256": "b6fe3c83b05f04f356d9f15786c6f11488dc8b6dac16633d1adaa95dc2ea8530"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/backend/app/modules/parameters/schemas.py",
+      "sha256": "3a94a8729a3c7e586ecdada221fd395290233cd3f10b1e404a8d07b92e8e1841"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/backend/app/modules/metadata/router.py",
+      "sha256": "f4b5c974f5e9c5c2d2acf524a803332dc2c52274fefa4bab4f27beda5b7dd4d9"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/backend/app/modules/metadata/introspection.py",
+      "sha256": "1b35da5fb65dff4ba2ac8413749ccc1a8727680519e6b7b9c8e9948acbd0c86b"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/backend/app/modules/copilot/router.py",
+      "sha256": "57d4f8a71357d8b280fe5759537aebd5783a364386da2415a23dee1c3217199b"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/backend/app/modules/copilot/domains.py",
+      "sha256": "73a991fdd47efdbb40511cffa28db94ef874391251984af4ca3bea4fe36e4cb2"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/backend/app/modules/copilot/schemas.py",
+      "sha256": "30910cc1707fa83c7c0c6e9fe710496a50458053cf233e93169ce50ead500819"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/docs/scope.md",
+      "sha256": "5ae206386168850f1e9be47aa76430d23675e333445b0e02d8134469dbb521c1"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/docs/architecture.md",
+      "sha256": "c2e0179c0bc5a9db6fd9aafcdfc9b8805dd19a4719fd4ac5eb42ac7e00264ca7"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/docs/specs/SPR-02-01-seguridad-rbac.md",
+      "sha256": "1c629ec09c6fe54cbf611642c4d0f4811b0e832b3bbfddd241336d84893be9dc"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/docs/specs/SPR-02-03-parametros-y-llm.md",
+      "sha256": "0348bab0724923b17d0fadd8b751668586dacd630a3d4a6ccf65cbffc56f6d11"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/docs/specs/SPR-06-01-contexto-multifuente-sqlserver.md",
+      "sha256": "8fbd181c8d21726469e9d11723db044260ac3a4d145ed18c12c1068973875570"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/docs/manual-usuario/contenido_roles_parametros.json",
+      "sha256": "af9682bfde362f592a8e102bcfea60c671a33fec58b286ccf763b5666a96bde1"
+    },
+    {
+      "path": "/home/ceo/Proyectos/BI/docs/manual-usuario/edicion-2026-11-06/contenido_formacion.json",
+      "sha256": "89a60cdae4cc6ab6c5640f67fe9aca48ce7f2a25979016e3cdd2367b75bddd03"
+    }
+  ]
+}

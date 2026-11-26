@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { AnalyticsPage } from './AnalyticsPage'
 import { api, type AnalyticsDashboard } from './api/security'
+import { analyticsContextKey, readAnalyticsContext } from './analyticsRecovery'
 
 const dashboard: AnalyticsDashboard = {
   execution_id: 9,
@@ -64,6 +65,7 @@ describe('AnalyticsPage', () => {
 
   afterEach(() => {
     cleanup()
+    sessionStorage.clear()
     vi.restoreAllMocks()
   })
 
@@ -178,6 +180,89 @@ describe('AnalyticsPage', () => {
       'test-token',
       expect.objectContaining({ executionId: 9, year: '', territory: '' }),
     ))
+  })
+
+  it('restaura la misma ejecución, vista e indicadores al volver del respaldo, sin guardar datos ni chat', async () => {
+    mockExecutionCatalog()
+    const [older] = await api.analyticsExecutions('test-token', 1)
+    vi.mocked(api.analyticsExecutions).mockResolvedValue([{ ...older, execution_id: 10, proposal_id: 76, label: 'Ejecución más reciente #10' }, older])
+    const restoredDashboard = { ...dashboard, filters: { ...dashboard.filters, years: [{ value: '2013', label: '2013' }] } }
+    vi.spyOn(api, 'analyticsDashboard').mockImplementation(async (_token, filters) => ({ ...restoredDashboard, execution_id: filters.executionId ?? 10 }))
+    const rendered = render(<AnalyticsPage token="test-token" connectionId={1} canExport={false} navigate={vi.fn()} />)
+    fireEvent.change(await screen.findByLabelText('Datamart analizado'), { target: { value: '9' } })
+    fireEvent.click(await screen.findByRole('button', { name: 'Vista analítica' }))
+    fireEvent.change(screen.getByLabelText('Año'), { target: { value: '2013' } })
+    fireEvent.change(screen.getByLabelText('Territorio'), { target: { value: 'Europe' } })
+    fireEvent.change(screen.getByLabelText('Escriba su pregunta'), { target: { value: 'Texto de una conversación que no se debe persistir.' } })
+    await waitFor(() => expect(readAnalyticsContext(1)).toMatchObject({ connectionId: 1, executionId: 9, metricCode: 'total_units', year: '2013', territory: 'Europe', viewMode: 'analyst' }))
+    expect(sessionStorage.getItem(analyticsContextKey)).not.toContain('274914')
+    expect(sessionStorage.getItem(analyticsContextKey)).not.toContain('conversación')
+    rendered.unmount()
+    render(<AnalyticsPage token="test-token" connectionId={1} canExport={false} navigate={vi.fn()} />)
+    expect(await screen.findByLabelText('Año')).toHaveValue('2013')
+    expect(screen.getByLabelText('Datamart analizado')).toHaveValue('9')
+    expect(screen.getByLabelText('Territorio')).toHaveValue('Europe')
+    expect(screen.getByRole('button', { name: 'Vista analítica' })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByLabelText('Escriba su pregunta')).toHaveValue('')
+    await waitFor(() => expect(api.analyticsDashboard).toHaveBeenLastCalledWith('test-token', { connectionId: 1, executionId: 9, metricCode: 'total_units', year: '2013', territory: 'Europe' }))
+    expect(readAnalyticsContext(2)).toBeNull()
+  })
+
+  it('no sustituye una ejecución guardada que desapareció por otra más reciente sin decisión humana', async () => {
+    mockExecutionCatalog()
+    sessionStorage.setItem(analyticsContextKey, JSON.stringify({ connectionId: 1, executionId: 7, metricCode: 'total_units', year: '', territory: '', viewMode: 'executive' }))
+    const query = vi.spyOn(api, 'analyticsDashboard').mockResolvedValue(dashboard)
+    render(<AnalyticsPage token="test-token" connectionId={1} canExport={false} navigate={vi.fn()} />)
+    expect(await screen.findByText(/La ejecución guardada ya no está disponible/)).toBeInTheDocument()
+    expect(query).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', { name: 'Restablecer selección guardada' }))
+    expect(await screen.findByRole('button', { name: 'Vista ejecutiva' })).toBeInTheDocument()
+    expect(query).toHaveBeenCalledWith('test-token', expect.objectContaining({ executionId: 9, year: '', territory: '' }))
+  })
+
+  it('descarta la respuesta de chat anterior al cambiar filtros y conserva en curso la consulta del contexto nuevo', async () => {
+    mockExecutionCatalog()
+    vi.spyOn(api, 'analyticsDashboard').mockResolvedValue(dashboard)
+    type Answer = Awaited<ReturnType<typeof api.askAnalyticsCopilot>>
+    const pending: Array<(answer: Answer) => void> = []
+    vi.spyOn(api, 'askAnalyticsCopilot').mockImplementation(() => new Promise((resolve) => pending.push(resolve)))
+    render(<AnalyticsPage token="test-token" connectionId={1} canExport={false} navigate={vi.fn()} />)
+    expect(await screen.findByLabelText('Territorio')).toBeInTheDocument()
+    await waitFor(() => expect(api.analyticsDashboard).toHaveBeenCalledTimes(2))
+    fireEvent.change(screen.getByLabelText('Escriba su pregunta'), { target: { value: 'Resume todos los territorios.' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Preguntar al copiloto' }))
+    await waitFor(() => expect(pending).toHaveLength(1))
+    fireEvent.change(screen.getByLabelText('Territorio'), { target: { value: 'Europe' } })
+    await waitFor(() => expect(api.analyticsDashboard).toHaveBeenLastCalledWith('test-token', expect.objectContaining({ territory: 'Europe' })))
+    fireEvent.change(screen.getByLabelText('Escriba su pregunta'), { target: { value: 'Resume solamente Europa.' } })
+    expect(screen.getByRole('button', { name: 'Preguntar al copiloto' })).toBeEnabled()
+    fireEvent.click(screen.getByRole('button', { name: 'Preguntar al copiloto' }))
+    await waitFor(() => expect(pending).toHaveLength(2))
+    const answer = (text: string): Answer => ({ answer: text, evidence: [], suggested_questions: [], caveat: 'Datos agregados.', provider_kind: 'openai-cloud', model_id: 'gpt-6.2-sol' })
+    await act(async () => pending[0](answer('Respuesta antigua de todos los territorios.')))
+    expect(screen.queryByText('Respuesta antigua de todos los territorios.')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Consultando…' })).toBeDisabled()
+    await act(async () => pending[1](answer('Respuesta vigente sólo para Europa.')))
+    expect(await screen.findByText('Respuesta vigente sólo para Europa.')).toBeInTheDocument()
+    expect(screen.queryByText('Resume todos los territorios.')).not.toBeInTheDocument()
+  })
+
+  it('no guarda filtros aún pendientes o rechazados como si sus resultados ya hubieran sido confirmados', async () => {
+    mockExecutionCatalog()
+    let rejectQuery!: (error: Error) => void
+    vi.spyOn(api, 'analyticsDashboard').mockImplementation(async (_token, query) => {
+      if (query.territory === 'Europe') return new Promise((_resolve, reject) => { rejectQuery = reject })
+      return dashboard
+    })
+    render(<AnalyticsPage token="test-token" connectionId={1} canExport={false} navigate={vi.fn()} />)
+    expect(await screen.findByLabelText('Territorio')).toBeInTheDocument()
+    await waitFor(() => expect(readAnalyticsContext(1)).toMatchObject({ territory: '' }))
+    fireEvent.change(screen.getByLabelText('Territorio'), { target: { value: 'Europe' } })
+    await waitFor(() => expect(rejectQuery).toBeTypeOf('function'))
+    expect(readAnalyticsContext(1)?.territory).toBe('')
+    await act(async () => rejectQuery(new Error('No se pudo confirmar el filtro solicitado.')))
+    expect(await screen.findByText('No se pudo confirmar el filtro solicitado.')).toBeInTheDocument()
+    expect(readAnalyticsContext(1)?.territory).toBe('')
   })
 
   it('descarta respuestas tardías y contenido sugerido de la fuente anterior', async () => {

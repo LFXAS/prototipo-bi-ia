@@ -1,0 +1,999 @@
+\chapter{Materializar, conciliar y revisar los resultados}
+\begingroup
+\setlength{\parskip}{4pt plus 1pt minus 1pt}
+\setlist[enumerate]{itemsep=3pt,topsep=4pt}
+\titlespacing*{\paragraph}{0pt}{4pt}{0.5em}
+\section{Materialización, paso 1: elegir una propuesta}
+\label{unidad:ETL01}
+\textbf{Para quién:} Analista de BI\par
+\textbf{Al terminar podrá:} Escoger un contrato aprobado entendiendo qué puede ejecutarse y qué debe abrirse como histórico.
+
+Entre a Datamart de ventas con la fuente que corresponde. El proceso muestra cinco pasos: Elegir propuesta, Revisar indicadores, Confirmar ejecución, Materializar y cargar, y Validar resultados.
+
+La propuesta recomendada es una ayuda para elegir entre candidatas compatibles. No ejecuta nada automáticamente. Si el mismo contrato y selección ya tienen expediente, se debe abrir ese expediente en lugar de repetir la carga.
+
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Propuesta elegible} Conserva aprobación, metadatos, fuente habilitada y probada, contrato compatible e indicadores calculables.
+
+\paragraph{Expediente} Registro de una preparación o ejecución, con selección, huellas, plan, responsable y resultados.
+
+\paragraph{Consulta histórica} Lectura de lo ocurrido en una ejecución anterior; no es una prueba nueva ni una recarga.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Tarjeta de versión & Resumen, necesidad, grano, cantidad de KPI y fecha de aprobación. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Tarjeta de versión & Resumen, necesidad, grano, cantidad de KPI y fecha de aprobación. \\
+\addlinespace[3pt]
+Seleccionar & Elige el contrato del recorrido actual. \\
+\addlinespace[3pt]
+Comparar & Permite contrastar hasta dos propuestas por grano, medidas e indicadores. \\
+\addlinespace[3pt]
+Versiones anteriores no habilitadas para una nueva carga & Explica bloqueos; no significa que se hayan borrado sus datos. \\
+\addlinespace[3pt]
+Abrir expediente & Recupera una ejecución previa sin repetir el ETL. \\
+\addlinespace[3pt]
+Revisar indicadores & Avanza con la propuesta seleccionada. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Compruebe la fuente antes de leer las tarjetas.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} No mezcla contratos de otra base.}
+\item Compare necesidad y grano con su ficha de análisis.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Selecciona un modelo adecuado, no sólo la versión de número mayor.}
+\item Use Comparar si existen dos alternativas relevantes.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Reconoce diferencias que afectan al significado comercial.}
+\item Si indica Ya ejecutada, abra el expediente para consultar la evidencia.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} No produce otra carga idéntica accidental.}
+\item Si requiere una carga nueva y la candidata es compatible, pulse Revisar indicadores.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Continúa con la versión aprobada elegida.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+Los indicadores fueron sugeridos en el diseño; esta selección no exige otra generación con IA.
+
+\subsection{Qué comprueba la plataforma}
+Reglas de compilación actuales, aprobación, instantánea existente, fuente activa en lectura, recetas y preparación dimensional. Contratos históricos anteriores pueden quedar excluidos de nuevas ejecuciones.
+
+\subsection{Qué decide la persona}
+La persona selecciona la versión y decide si consulta lo previo o necesita una derivada corregida.
+
+\paragraph{Resultado esperado} Un contrato correcto seleccionado o un expediente histórico abierto de forma consciente.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+No hay propuestas habilitadas. & Lea la lista de bloqueos; corrija o genere una propuesta actual. El historial puede seguir disponible. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+No hay propuestas habilitadas. & Lea la lista de bloqueos; corrija o genere una propuesta actual. El historial puede seguir disponible. \\
+\addlinespace[3pt]
+Sólo se ve Abrir expediente. & Es la protección frente a repetición de contrato. Consulte el existente; no trate de borrar la ejecución para forzar otra. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+Elija dos propuestas y explique una diferencia de grano o indicador sin ejecutarlas.
+
+\textbf{Respuesta orientativa.} La comparación tiene sentido si cambia la pregunta o su representación; el número de versión por sí solo no mide calidad.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿Recomendada equivale a aprobada automáticamente por la IA?} No. Es una recomendación operativa entre contratos que conservan aprobación y compatibilidad.
+
+\paragraph{¿Histórico bloqueado equivale a datos eliminados?} No. Puede consultarse el expediente conservado.
+
+\endgroup
+\pantalla{recursos/pantallas/31_etl_elegir_propuesta.jpg}{Selección y control de ejecuciones idénticas}{Propuesta 129 ya materializada en el expediente 21. Una carga idéntica no se vuelve a habilitar accidentalmente. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/ETL01.tex}{\input{capturas/ETL01.tex}}{}
+\section{Materialización, paso 2: elegir indicadores y recetas}
+\label{unidad:ETL02}
+\textbf{Para quién:} Analista de BI\par
+\textbf{Al terminar podrá:} Seleccionar salidas calculables y explicar suma, diferencia, razón y participación.
+
+En Revisar indicadores no se redactan fórmulas libres. Se decide cuáles de las recetas admitidas del contrato se necesitan para el objetivo. Debe quedar al menos una.
+
+Desmarcar indicadores puede reducir la cobertura de la necesidad. La preparación registra si la selección es parcial. No presente un ejercicio de dos KPI como si hubiera materializado todos los requisitos de una necesidad avanzada.
+
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Agregación} Suma, conteo, conteo distinto, promedio, mínimo o máximo de una medida comprobada.
+
+\paragraph{Diferencia} Resta entre dos entradas verificadas, por ejemplo importe menos costo comparable.
+
+\paragraph{Razón} Numerador dividido entre denominador. El importe por pedido usa importe total \(\div\) pedidos distintos del mismo alcance.
+
+\paragraph{Participación} Razón multiplicada por 100. Siempre se debe explicar el universo del denominador.
+
+\paragraph{Promedio ponderado por unidad} Total monetario \(\div\) total de unidades, distinto de promediar precios de filas sin ponderar.
+
+\paragraph{Sin valor} Una razón sin denominador válido no debe representarse como una división infinita ni como una venta cero demostrada.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Incluir indicador & Conserva o retira una receta de esta ejecución. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Incluir indicador & Conserva o retira una receta de esta ejecución. \\
+\addlinespace[3pt]
+Cálculo controlado & Describe operación y entradas; compruebe el denominador y la unidad. \\
+\addlinespace[3pt]
+Unidad & Unidades, documentos, porcentaje o moneda de origen; un código monetario necesita evidencia. \\
+\addlinespace[3pt]
+Período & Hereda o precisa la periodicidad del contrato. \\
+\addlinespace[3pt]
+Ajuste de seguridad & Por ejemplo una tasa presentada como dinero o un promedio de línea mal nombrado. \\
+\addlinespace[3pt]
+Ver trazabilidad técnica & Entradas verificadas, versión de definición y unidad originalmente sugerida. \\
+\addlinespace[3pt]
+Revisar transformaciones & Avanza con las recetas seleccionadas. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Lea nombre, descripción y cálculo de cada indicador.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Reconoce qué pregunta responde.}
+\item Compruebe que el conteo documental sea distinto y que la razón use ese conteo.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} No confunde líneas con pedidos o facturas.}
+\item Seleccione las salidas necesarias y revise las que retira.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Queda al menos una receta y el alcance parcial se reconoce.}
+\item Lea las correcciones de nombre o unidad.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} No denomina neto a precio \(\times\) cantidad sin descontar una tasa ni promedio por pedido a AVG de línea.}
+\item Pulse Revisar transformaciones.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Continúa sin cambiar el contrato físico ni ejecutar todavía.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+Propuso indicadores anteriormente; el cálculo lo controla el motor de recetas. La IA no calcula a mano el total que se publicará.
+
+\subsection{Qué comprueba la plataforma}
+Operaciones soportadas y entradas comprobadas. Las diferencias, razones y participaciones requieren dos entradas válidas. La división con divisor cero conserva un resultado nulo/no calculable.
+
+\subsection{Qué decide la persona}
+El analista selecciona qué indicadores quiere materializar y acepta conscientemente un alcance parcial cuando corresponda.
+
+\paragraph{Resultado esperado} Selección de indicadores útil, con fórmula y unidad entendidas.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+Un KPI no tiene medida compatible. & Vuelva al asistente para corregir o excluir; este paso no permite inventar la entrada. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Un KPI no tiene medida compatible. & Vuelva al asistente para corregir o excluir; este paso no permite inventar la entrada. \\
+\addlinespace[3pt]
+La razón aparece Sin valor. & Revise denominador y universo. No reemplace el resultado por cero para ocultar una división no definida. \\
+\addlinespace[3pt]
+Las facturas por producto no suman las facturas globales. & El conteo distinto no es aditivo: una factura puede contener varios productos. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+Tres líneas: pedido A 100 y 50; pedido B 90. Calcule total, conteo de líneas, pedidos distintos e importe por pedido.
+
+\textbf{Respuesta orientativa.} 240; 3; 2; 120. Sumar los pedidos distintos de grupos de producto puede contar el mismo pedido varias veces.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿Por qué 10 \% y 40 \% no se promedian siempre como 25 \%?} Si tienen distintos denominadores, hay que usar totales compatibles o ponderar; el promedio simple puede cambiar el significado.
+
+\paragraph{¿Cambiar la etiqueta corrige una receta incorrecta?} No. Debe corresponder fórmula, medida y unidad, no sólo el texto.
+
+\pantalla{recursos/pantallas/32_etl_indicadores.jpg}{Indicadores y recetas del ETL}{Cuatro indicadores conservados del expediente. Una razón requiere un numerador y un denominador comercialmente compatibles. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/ETL02.tex}{\input{capturas/ETL02.tex}}{}
+\section{Materialización, paso 3: confirmar el plan}
+\label{unidad:ETL03}
+\textbf{Para quién:} Analista de BI con permiso de ejecución\par
+\textbf{Al terminar podrá:} Leer extracción, limpieza, transformación, carga y validación antes de fijar el expediente.
+
+Esta pantalla permite explicar el proceso sin escribir SQL. Revise la tabla de hechos, el grano, las dimensiones y las medidas. Luego lea cada operación de la secuencia.
+
+Las operaciones opcionales marcadas Revisar en el paso 5 preparan candidatos de etiquetas en español. No existe una lista para aprobar etiquetas aquí: esa revisión aparecerá después de la carga si hay candidatos.
+
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Extracción} Lectura controlada de columnas del origen autorizado.
+
+\paragraph{Limpieza y calidad} Tratamiento previsto de claves, nulos, textos o duplicados según el plan; no es una promesa de corregir cualquier dato defectuoso.
+
+\paragraph{Transformación} Derivaciones y enriquecimientos permitidos que respetan la granularidad.
+
+\paragraph{Clave sustituta} Identificador interno de la dimensión analítica, separado de la clave comercial del origen.
+
+\paragraph{Carga dimensional} Creación y carga del hecho y dimensiones del destino de la ejecución.
+
+\paragraph{Conciliación} Contraste de cantidades e importes de origen y destino del mismo alcance.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Tabla de hechos / Granularidad / Dimensiones / Medidas & Resumen del modelo que se va a materializar. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Tabla de hechos / Granularidad / Dimensiones / Medidas & Resumen del modelo que se va a materializar. \\
+\addlinespace[3pt]
+Etapas del plan & Extracción, Limpieza y calidad, Transformación y enriquecimiento, Carga dimensional y Conciliación y evidencia. \\
+\addlinespace[3pt]
+Advertencias heredadas & Avisos de la propuesta que siguen siendo relevantes para la carga. \\
+\addlinespace[3pt]
+Registro de decisión & Comentario de 10 a 500 caracteres que explica la decisión sobre plan y KPI. \\
+\addlinespace[3pt]
+Confirmo el plan de ejecución & Acepta el contrato y entiende que las etiquetas candidatas se revisarán después. \\
+\addlinespace[3pt]
+Preparar materialización & Guarda selección, plan y huellas. No lee ni altera filas de la fuente en esta confirmación. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Compare el resumen con la propuesta aprobada.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Mismo evento y grano.}
+\item Lea las operaciones de cada etapa y advertencias.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Puede explicar qué se leerá y qué se calculará.}
+\item Compruebe que no se confunda una etiqueta en español con un valor original nuevo.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Entiende la política de conservar originales.}
+\item Escriba una decisión concreta y marque la confirmación.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Registro humano suficiente.}
+\item Pulse Preparar materialización una sola vez y anote el número de ejecución.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Expediente preparado con propuesta, instantánea, responsable y huellas; aún no hay nueva carga física.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+No genera SQL libre en esta confirmación. La interpretación posterior de categorías puede usar IA bajo la política de valores aptos y revisión humana.
+
+\subsection{Qué comprueba la plataforma}
+Permiso de escritura ETL, aprobación y compatibilidad actuales, recetas seleccionadas, cobertura y duplicidad de contrato/selección.
+
+\subsection{Qué decide la persona}
+Una persona autorizada confirma el plan y la selección que quedará registrada.
+
+\paragraph{Resultado esperado} Un expediente preparado, trazable y aún separado de la ejecución física.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+La preparación informa que el contrato ya corresponde a otra ejecución. & Abra ese expediente; el conflicto evita repetir la carga idéntica. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+La preparación informa que el contrato ya corresponde a otra ejecución. & Abra ese expediente; el conflicto evita repetir la carga idéntica. \\
+\addlinespace[3pt]
+El botón sigue deshabilitado. & Revise permiso, casilla de confirmación y longitud del comentario. \\
+\addlinespace[3pt]
+Faltan etiquetas para aprobar en esta pantalla. & Es normal: primero se materializa, después se revisan los candidatos en Validar resultados. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+Explique por qué preparar no significa que ya se pueda mostrar un nuevo tablero.
+
+\textbf{Respuesta orientativa.} Se guardó el contrato; faltan lectura, carga, conciliación y condiciones de publicación.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿Qué se conserva al preparar?} Selección de KPI, comentario, plan, huellas de propuesta e instantánea y responsable.
+
+\paragraph{¿Quién ejecuta la lectura?} El materializador controlado después del inicio explícito del paso 4.
+
+\pantalla{recursos/pantallas/33_etl_plan.jpg}{Plan controlado previo a la ejecución}{Plan explicado por etapas. Esta consulta histórica permite aprender los controles sin repetir la carga. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/ETL03.tex}{\input{capturas/ETL03.tex}}{}
+\section{Materialización, paso 4: cargar sin repetir accidentalmente}
+\label{unidad:ETL04}
+\textbf{Para quién:} Analista de BI con permiso de ejecución\par
+\textbf{Al terminar podrá:} Iniciar una carga entendiendo sus efectos y recuperar el expediente ante una interrupción.
+
+Antes de pulsar Materializar y cargar datamart, compruebe fuente, propuesta y número de expediente. La operación leerá columnas aprobadas de la fuente y creará un destino analítico propio de esa ejecución.
+
+El hecho y las dimensiones se cargan con controles transaccionales. Un fallo bloqueante no debe dejar un datamart parcial publicado ni sustituir los resultados anteriores. No pulse repetidamente el botón porque tarde la respuesta.
+
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Esquema por ejecución} Espacio analítico identificado para separar resultados de distintas ejecuciones; la base de origen no se sobrescribe.
+
+\paragraph{Transacción} Conjunto de operaciones que se confirma completo o se revierte ante un fallo.
+
+\paragraph{Preparada / En ejecución / Validada / Revisión pendiente / Fallida} Estados del expediente que se deben leer antes de intentar otra acción.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Contrato preparado correctamente & Confirma el registro previo; revise huellas y selección. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Contrato preparado correctamente & Confirma el registro previo; revise huellas y selección. \\
+\addlinespace[3pt]
+Materializar y cargar datamart & Inicia extracción, transformación, creación y carga según el contrato validado. \\
+\addlinespace[3pt]
+Ver trazabilidad técnica & Constructor, huellas, responsable y fecha. \\
+\addlinespace[3pt]
+Expedientes recientes & Permite recuperar la ejecución para ver qué ocurrió, sin iniciar otra. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Lea el comprobante y confirme que sigue siendo el expediente esperado.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} No carga un modelo de otra fuente o versión.}
+\item Pulse Materializar y cargar datamart una vez y mantenga la pantalla abierta.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Estado de procesamiento; no cambia la fuente a modo escritura.}
+\item Espere el resultado.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Avanza al paso 5 con validación, revisión pendiente o fallo.}
+\item Si se interrumpe el navegador, recupere sesión y abra el expediente antes de reintentar.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Reconoce si terminó, sigue preparada o falló; no crea cargas duplicadas por incertidumbre.}
+\item Registre identificadores y estado final.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Evidencia de una ejecución nueva o de una consulta histórica, claramente distinguidas.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+El diseño puede proceder de IA, pero la lectura y carga se realizan con el materializador y operaciones permitidas. La IA no recibe autorización para ejecutar instrucciones SQL libres.
+
+\subsection{Qué comprueba la plataforma}
+Contrato y fuente al ejecutar, trazabilidad, claves, relaciones exactas, tipos y condiciones de carga. El destino conserva el aislamiento por ejecución.
+
+\subsection{Qué decide la persona}
+La persona inicia la materialización; si hay fallo investiga y prepara una corrección en lugar de alterar a mano el expediente.
+
+\paragraph{Resultado esperado} Expediente de carga con métricas o fallo controlado y resultados anteriores conservados.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+Error de conexión o sesión vencida. & Vuelva a entrar y revise Expedientes recientes antes de reenviar. El servidor puede haber terminado aunque el navegador perdiera la respuesta. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Error de conexión o sesión vencida. & Vuelva a entrar y revise Expedientes recientes antes de reenviar. El servidor puede haber terminado aunque el navegador perdiera la respuesta. \\
+\addlinespace[3pt]
+Fallida y mensaje de reversión. & Revise conexión y contrato con el administrador; si cambió la estructura capture metadatos y genere la versión correcta. Conserve el estado fallido hasta resolver la causa y comprobar la nueva ejecución. \\
+\addlinespace[3pt]
+La etapa dice Materialización ya ejecutada. & Es consulta. Pase a Validar resultados; esa pantalla no vuelve a cargar por recorrer los pasos. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+Simule sólo en la bitácora la decisión ante una pantalla que no responde: ¿qué revisa antes de volver a pulsar?
+
+\textbf{Respuesta orientativa.} Estado del expediente existente, fuente, propuesta y sesión. No ejecutar de nuevo sin conocer si la carga terminó.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿Se reemplaza AdventureWorks por el datamart?} No. Se usa como fuente de lectura y el destino analítico queda separado.
+
+\paragraph{¿Abrir un paso histórico repite la lectura de origen?} No. Permite consultar evidencia de la ejecución ya realizada.
+
+\pantalla{recursos/pantallas/34_etl_carga_conservada.jpg}{Materialización histórica de sólo lectura}{Etapa de materialización histórica en sólo lectura. Una ejecución nueva requiere la confirmación explícita de su propio expediente. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/ETL04.tex}{\input{capturas/ETL04.tex}}{}
+\begingroup
+\setlength{\parskip}{4pt plus 1pt minus 1pt}
+\setlist[enumerate]{itemsep=3pt,topsep=4pt}
+\titlespacing*{\paragraph}{0pt}{4pt}{0.5em}
+\section{Materialización, paso 5: revisar conciliación y calidad}
+\label{unidad:ETL05}
+\textbf{Para quién:} Analista de BI, Gerente comercial para lectura autorizada\par
+\textbf{Al terminar podrá:} Comprobar cantidades y valores y distinguir una conciliación numérica de una interpretación comercial correcta.
+
+Una carga no se da por buena sólo por mostrar un mensaje verde. Lea Filas de origen, Filas cargadas, Diferencia, Tablas creadas y las métricas de cada tabla. Compare también indicadores y procedencia.
+
+La conciliación de la ejecución contrasta filas y totales de medidas de origen/destino. Un resultado de diferencia cero demuestra consistencia de ese alcance; no demuestra por sí solo que se eligió el cliente, fecha o territorio comercial correctos.
+
+\subsection{Comprobar la conciliación con la campaña vigente}
+La conciliación compara cantidades equivalentes bajo el mismo alcance. Una tabla con una fila por línea no tiene el mismo conteo que una tabla con una fila por pedido. Sumar importes con uniones que duplican líneas puede dar una cifra convincente y equivocada; por eso se revisan grano, relaciones y receta antes de interpretar el panel.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Casos comprobados del 25 de noviembre de 2026\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Fuente y expediente} & \textbf{Alcance total de referencia} & \textbf{Filtro de control} \\
+\midrule
+AdventureWorks: propuesta 136; ejecución 24 & 121.317 líneas; 274.914 unidades; 31.465 pedidos distintos; importe 109.846.381,399888 USD. & Año 2013 y territorio Northwest: 7.757 líneas; 17.452 unidades; 2.053 pedidos; 6.015.174,735836 USD. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Casos comprobados del 25 de noviembre de 2026}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Fuente y expediente} & \textbf{Alcance total de referencia} & \textbf{Filtro de control} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Fuente y expediente} & \textbf{Alcance total de referencia} & \textbf{Filtro de control} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+AdventureWorks: propuesta 136; ejecución 24 & 121.317 líneas; 274.914 unidades; 31.465 pedidos distintos; importe 109.846.381,399888 USD. & Año 2013 y territorio Northwest: 7.757 líneas; 17.452 unidades; 2.053 pedidos; 6.015.174,735836 USD. \\
+\addlinespace[3pt]
+WideWorldImporters: propuesta 135; ejecución 23 & 228.265 líneas; 8.950.628 unidades; 70.510 facturas distintas; importe 198.043.439,45 en moneda de origen. & Año 2015 y provincia California: 3.771 líneas; 142.247 unidades; 1.179 facturas; 3.191.769,11 en moneda de origen. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+Estos valores proceden de consultas agregadas independientes al origen, contrastadas con los expedientes nuevos. Son controles de las copias de demostración revisadas, no parámetros incrustados en la plataforma. En otra copia, con otros filtros o un contrato distinto pueden cambiar.
+
+Northwest se obtiene del territorio del encabezado del pedido. California se obtiene del cliente comprador y su ciudad de entrega registrada en el maestro. Una ubicación actual del cliente no demuestra por sí sola una dirección histórica de entrega. No atribuya al indicador una precisión temporal que la relación no conserva.
+
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Duplicados controlados en dimensión} Repeticiones agrupadas al conformar una dimensión. Muchas facturas del mismo día pueden producir una sola fila de fecha sin eliminar líneas del hecho.
+
+\paragraph{Diferencia cero} Coinciden los controles de ese universo. Hay que comprobar además evento, rutas, unidades y criterios comerciales.
+
+\paragraph{Indicador conciliado} Valor calculado a partir de entradas y recetas del expediente; un resultado no calculable debe revisarse por separado.
+
+\paragraph{Revisión pendiente} Puede significar diferencia de carga o interpretación semántica pendiente. Lea el motivo concreto, no sólo el color.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Conciliación OLTP-datamart & Comprobante de filas, diferencias y medidas de la ejecución. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Conciliación OLTP-datamart & Comprobante de filas, diferencias y medidas de la ejecución. \\
+\addlinespace[3pt]
+Calidad por tabla & Filas de origen/carga y duplicados controlados; distinga hecho y dimensión. \\
+\addlinespace[3pt]
+Indicadores calculados & Valores, unidad y estado. Algunos se muestran abreviados; el valor exacto y los reportes permiten contrastar decimales. \\
+\addlinespace[3pt]
+Interpretación semántica & Estado y revisión de candidatos de etiquetas; se explica en la siguiente unidad. \\
+\addlinespace[3pt]
+Comprobar divisa sin repetir el ETL & Acción aparte si falta evidencia del código monetario. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Revise que origen y destino correspondan al mismo expediente y grano.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} No compara el filtro de un tablero con un total global de otro caso.}
+\item Compare filas y diferencia.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} El hecho conserva el número esperado sin rechazo o multiplicación indebida.}
+\item Revise por tabla las agrupaciones de valores repetidos en las dimensiones.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Entiende por qué la fecha puede tener menos filas que documentos sin perder hechos.}
+\item Compare indicadores, unidades y razones con su fórmula.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} No hay denominador cambiado o unidad inventada.}
+\item Revise rutas de cliente/territorio además de números.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Se conserva el rol comercial solicitado.}
+\item Si la conciliación y publicación cumplen, abra Analítica de ventas.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Tablero identificado con fuente, propuesta y ejecución correctas.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+Puede apoyar etiquetas y explicar después resultados; el contraste numérico no se obtiene por opinión del modelo.
+
+\subsection{Qué comprueba la plataforma}
+En el materializador actual la conciliación requiere cero filas rechazadas, mismo conteo origen/destino y diferencias de totales de medidas iguales a cero. La condición numérica no reemplaza la revisión semántica del analista.
+
+\subsection{Qué decide la persona}
+La persona revisa métricas, procedencia y alcance antes de usar los resultados para una lectura comercial.
+
+\paragraph{Resultado esperado} Expediente comprendido y evidencia concreta para aceptar o investigar.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+Hay diferencia de filas o importes. & No presente el tablero como verificado sin resolverla. Registre magnitud y alcance, revise claves/uniones/entradas y corrija el contrato. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Hay diferencia de filas o importes. & No presente el tablero como verificado sin resolverla. Registre magnitud y alcance, revise claves/uniones/entradas y corrija el contrato. \\
+\addlinespace[3pt]
+Fecha muestra miles de duplicados controlados. & Compruebe si son días repetidos en documentos; en el caso WWI 22 se conservaron 1.069 días desde 70.510 documentos sin perder 228.265 líneas. \\
+\addlinespace[3pt]
+Los totales coinciden pero cambia California entre versiones. & Compare roles de comprador/facturación y ciudad de entrega/postal. Distinta clasificación puede explicar el cambio sin mezcla entre bases. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+Conserve 100 líneas de factura sobre 10 días. ¿Es obligatorio tener 100 filas en la dimensión fecha?
+
+\textbf{Respuesta orientativa.} No. Puede haber 10 fechas únicas y 100 filas en el hecho; lo importante es que las claves y los controles expliquen esa conformación.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿Diferencia cero prueba que el territorio era históricamente el del cliente?} No. Haría falta una historia de vigencias; el prototipo lee los atributos del estado disponible durante el ETL.
+
+\paragraph{¿Revisión pendiente siempre significa carga fallida?} No. Puede haber conciliación correcta con etiquetas aún pendientes; lea el detalle.
+
+\endgroup
+\pantalla{recursos/pantallas/29_conciliacion_AW.jpg}{Conciliación del expediente AdventureWorks}{Expediente 21 de AdventureWorks: 121.317 filas en origen y destino, diferencia cero y cinco tablas. La ejecución ocurrió el 6 de noviembre. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+\pantalla{recursos/pantallas/35_conciliacion_WWI.jpg}{Conciliación de WideWorldImporters y divisa sin confirmar}{Expediente 22 de WideWorldImporters: 228.265 filas conciliadas. La divisa continúa sin comprobar y no se atribuye USD. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/ETL05.tex}{\input{capturas/ETL05.tex}}{}
+\begingroup
+\setlength{\parskip}{4pt plus 1pt minus 1pt}
+\setlist[enumerate]{itemsep=3pt,topsep=4pt}
+\titlespacing*{\paragraph}{0pt}{4pt}{0.5em}
+\section{Revisar etiquetas en español y comprobar la moneda}
+\label{unidad:ETL06}
+\textbf{Para quién:} Analista de BI\par
+\textbf{Al terminar podrá:} Publicar sólo interpretaciones revisadas y conservar el significado original y la divisa demostrable.
+
+La interpretación semántica añade etiquetas españolas a categorías aptas; conserva los valores originales. No traduce identificadores, nombres de personas, direcciones, texto libre ni categorías de alta cardinalidad.
+
+La moneda es un control diferente. Un importe conciliado no autoriza a escribir USD. Si la fuente no demuestra un código único adecuado, el resultado correcto es moneda de origen. No confunda el país del cliente con la divisa del importe.
+
+\subsection{Entender moneda y razones sin inventar conversiones}
+Cuando la fuente demuestra USD u otra divisa admitida, una etiqueta monetaria como moneda de origen por transacción se presenta con ese código, conservando el denominador. Si la fuente no demuestra una divisa, sigue diciendo moneda de origen. Una etiqueta USD o EUR sugerida por el modelo no es prueba de moneda.
+
+La corrección es de presentación: no convierte valores, no aplica tipos de cambio y no modifica el contrato guardado. Las unidades físicas, por ejemplo piezas o kilogramos, no se transforman en moneda. Un promedio por línea y un promedio por pedido siguen siendo indicadores diferentes aunque ambos se expresen en USD.
+
+\subsection{Conceptos para decidir con criterio}
+\paragraph{Mapeo} Correspondencia entre categoría original y etiqueta española revisada.
+
+\paragraph{Publicación supervisada} Las etiquetas sólo se publican después de la revisión individual y la confirmación humana.
+
+\paragraph{Divisa comprobada} Código respaldado por evidencia relacional de fuente/base; no elegido por el modelo por intuición.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Campos y controles\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+Publicar & Casilla por mapeo para conservarlo o excluirlo. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Campos y controles}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Campo o control} & \textbf{Significado y criterio} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Publicar & Casilla por mapeo para conservarlo o excluirlo. \\
+\addlinespace[3pt]
+Etiqueta en español & Texto editable, hasta 100 caracteres, que debe preservar el significado. \\
+\addlinespace[3pt]
+Comentario de revisión & Entre 10 y 500 caracteres sobre la decisión tomada. \\
+\addlinespace[3pt]
+Confirmo que revisé los mapeos que se publicarán & Confirmación distinta de la aprobación del diseño y de la preparación del ETL. \\
+\addlinespace[3pt]
+Publicar etiquetas revisadas & Publica sólo los mapeos aceptados como columnas adicionales auditables. \\
+\addlinespace[3pt]
+Reintentar interpretación sin repetir el ETL & Recupera una interpretación pendiente sin recargar el hecho. \\
+\addlinespace[3pt]
+Comprobar divisa sin repetir el ETL & Consulta evidencia de moneda y actualiza su contexto sin otra materialización. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Paso a paso}
+\begin{enumerate}
+\item Lea el estado de Interpretación semántica.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Reconoce si no hay candidatos, están pendientes, requieren revisión o ya fueron publicados.}
+\item Compare cada original con la etiqueta, corrija lo necesario y excluya códigos que no convenga traducir.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} No cambia el valor original ni acepta una etiqueta por rutina.}
+\item Escriba comentario, marque confirmación y publique.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Recibo con responsable, fecha y mapeos revisados.}
+\item Si está pendiente por proveedor, revise la configuración y use el reintento semántico.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} No se repite el ETL para corregir sólo etiquetas.}
+\item Revise la divisa y compruébela si la acción está disponible.\par\nopagebreak[4]\smallskip{\small\textbf{Compruebe:} Código verificado o moneda de origen con el límite conservado.}
+\end{enumerate}
+\subsection{Qué hace la IA}
+Propone etiquetas para categorías seguras dentro de la política implementada. No debería convertir códigos, nombres propios o información ausente en traducciones inventadas.
+
+\subsection{Qué comprueba la plataforma}
+Aptitud de categorías, formato de mapeos, conservación del original y publicación autorizada. La comprobación de moneda usa evidencia de la fuente, no una respuesta libre del LLM.
+
+\subsection{Qué decide la persona}
+El analista publica, corrige o excluye cada etiqueta y confirma la revisión. No elige una divisa sin evidencia para mejorar la apariencia.
+
+\paragraph{Resultado esperado} Etiquetas comprensibles con original conservado y unidad monetaria honesta.
+
+\Needspace{8\baselineskip}
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 Errores y recuperación\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+No aparece ninguna etiqueta para aprobar. & Si no hay candidatos aptos no existe una tarea de publicación. No hay que fabricar un mapeo. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{Errores y recuperación}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Situación} & \textbf{Qué hacer} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+No aparece ninguna etiqueta para aprobar. & Si no hay candidatos aptos no existe una tarea de publicación. No hay que fabricar un mapeo. \\
+\addlinespace[3pt]
+El proveedor falla después de una carga conciliada. & Reintente sólo interpretación; antes compruebe el expediente para conservar la carga existente. \\
+\addlinespace[3pt]
+WWI no demuestra USD. & Conserve moneda de origen. Cambiar el rótulo manualmente no convierte el dato en dólares. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\subsection{Ejercicio}
+En el caso AW 21 se propusieron Europe, North America, Pacific y códigos AU, CA, DE, FR, GB, US. Explique la revisión documentada.
+
+\textbf{Respuesta orientativa.} Se publicaron Europa, América del Norte y Pacífico; los seis códigos se excluyeron de traducción. Se conservaron originales.
+
+\subsection{Compruebe lo que aprendió}
+\paragraph{¿Publicar etiquetas altera los importes?} No. Añade interpretación categórica auditada; no cambia las medidas originales.
+
+\paragraph{¿Siempre debe resolverse un código monetario?} No. La ausencia de evidencia suficiente debe conservarse como límite.
+
+\endgroup
+\pantalla{recursos/pantallas/30_semantica_publicada.jpg}{Etiquetas semánticas publicadas sin reemplazar originales}{Etiquetas revisadas y publicadas como columnas adicionales. Los valores originales se conservan para trazabilidad. Captura de referencia del 18 de noviembre de 2026; revise las instrucciones actualizadas de esta unidad.}
+
+\IfFileExists{capturas/ETL06.tex}{\input{capturas/ETL06.tex}}{}

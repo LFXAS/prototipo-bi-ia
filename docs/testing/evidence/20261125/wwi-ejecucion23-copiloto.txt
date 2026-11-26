@@ -1,0 +1,27 @@
+CONSULTA CONTEXTUAL
+
+Preguntar sobre estos resultados
+IA
+
+El copiloto interpreta indicador, dimensión, filtros y Top N. Puede consultar agregados permitidos aunque el filtro no esté seleccionado en pantalla; nunca recibe filas, credenciales ni SQL libre.
+
+Guía de preguntas sugeridas
+Tu pregunta
+
+Resume el importe registrado, las unidades y las facturas de 2015 en California. Explica cómo se obtiene el importe promedio por factura y qué límites tienen la moneda y la ubicación del cliente.
+
+Copiloto analítico
+
+En 2015, las facturas asociadas a California registraron un importe total de 3.191.769,11 en moneda de origen y 142.247 unidades, repartidas en 1.179 facturas distintas. El importe promedio fue de 2.707,18 en moneda de origen por factura: se divide el importe total de las líneas entre las 1.179 facturas, contando cada factura una sola vez aunque tenga varias líneas. La selección solo identifica la moneda como «moneda de origen»: no confirma que sea USD ni indica una conversión. El importe registrado tampoco permite determinar impuestos, costos ni rentabilidad. El año se basa en la fecha de emisión de la factura. California se asigna según el estado de la ciudad de entrega que figuraba en la ficha del cliente cuando se cargaron los datos. Eso no confirma que la ubicación estuviera vigente al emitirse la factura ni que se realizara una entrega allí.
+
+Los indicadores conciliados para 2015 y California registran 3.191.769,11 en moneda de origen, 142.247 unidades y 1.179 facturas distintas.
+El registro de ventas conserva una fila por línea de factura y permite identificar qué líneas pertenecen a la misma factura.
+La fecha procede de la factura; el estado procede de la ciudad de entrega registrada en la ficha del cliente. No se verificó la vigencia histórica de esa ubicación ni la entrega.
+Los atributos dimensionales reflejan el estado disponible en el origen durante el ETL. No se verifica que esos atributos fueran vigentes en la fecha del hecho ni que representen una entrega realizada; la fecha del hecho no demuestra esas condiciones. Los agregados no prueban causas, preferencias ni demanda de mercado.
+¿Cuál es el Top 5 de «Importe registrado total» por producto con los filtros actuales?
+¿Cuál es el Top 5 de «Facturas distintas» por cliente con los filtros actuales?
+¿Cuál es el Top 5 de «Unidades registradas» por territorio con los filtros actuales?
+openai-cloud · gpt-6.2-sol
+Escriba su pregunta
+Una buena pregunta menciona el indicador, la comparación esperada y la decisión que desea apoyar.
+Preguntar al copiloto

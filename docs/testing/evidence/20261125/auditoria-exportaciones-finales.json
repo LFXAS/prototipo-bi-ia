@@ -1,0 +1,490 @@
+{
+  "checked_at_utc": "2026-11-26T02:23:38.217954+00:00",
+  "operation": "Read-only QA of real application downloads, then byte-identical copies; no re-export, editing, app configuration, LLM request or ETL execution.",
+  "tools": {
+    "pdf_text": "Poppler pdftotext",
+    "pdf_visual": "Poppler pdftoppm 110 dpi",
+    "pdf_structure": "pypdf bundled runtime",
+    "spreadsheet": "openpyxl bundled runtime; extraction only"
+  },
+  "cases": [
+    {
+      "proposal_id": 135,
+      "execution_id": 23,
+      "source_name": "WideWorldImporters",
+      "filters": {
+        "year": 2015,
+        "territory": "California"
+      },
+      "currency": "moneda de origen",
+      "checks": [
+        {
+          "check": "Fuente/base/filtros/identificadores Excel",
+          "passed": true
+        },
+        {
+          "check": "Fuente/base/filtros/identificadores PDF",
+          "passed": true
+        },
+        {
+          "check": "KPI Excel: Importe registrado total",
+          "passed": true,
+          "cell": "B14",
+          "observed": 3191769.11,
+          "expected": 3191769.11,
+          "number_format": "#,##0.00"
+        },
+        {
+          "check": "KPI PDF: Importe registrado total",
+          "passed": true,
+          "expected_display": "3,191,769.11"
+        },
+        {
+          "check": "KPI Excel: Facturas distintas",
+          "passed": true,
+          "cell": "E14",
+          "observed": 1179,
+          "expected": 1179.0,
+          "number_format": "#,##0"
+        },
+        {
+          "check": "KPI PDF: Facturas distintas",
+          "passed": true,
+          "expected_display": "1,179"
+        },
+        {
+          "check": "KPI Excel: Importe promedio por factura",
+          "passed": true,
+          "cell": "H14",
+          "observed": 2707.183299406277,
+          "expected": 2707.1832994062765,
+          "number_format": "#,##0.00"
+        },
+        {
+          "check": "KPI PDF: Importe promedio por factura",
+          "passed": true,
+          "expected_display": "2,707.18"
+        },
+        {
+          "check": "KPI Excel: Unidades registradas",
+          "passed": true,
+          "cell": "B17",
+          "observed": 142247,
+          "expected": 142247.0,
+          "number_format": "#,##0.00"
+        },
+        {
+          "check": "KPI PDF: Unidades registradas",
+          "passed": true,
+          "expected_display": "142,247.00"
+        },
+        {
+          "check": "Unidad monetaria PDF",
+          "passed": true
+        },
+        {
+          "check": "Unidades y documentos legibles",
+          "passed": true
+        },
+        {
+          "check": "Sólo hojas correspondientes a visuales visibles",
+          "passed": true,
+          "observed": [
+            "Resumen",
+            "Evolución en el tiempo",
+            "Productos líderes",
+            "Distribución territorial"
+          ]
+        },
+        {
+          "check": "Tabla de respaldo: Evolución en el tiempo",
+          "passed": true,
+          "observed_rows": 12,
+          "expected_rows": 12
+        },
+        {
+          "check": "Meses del filtro concilian con el importe",
+          "passed": true,
+          "sum_of_months": "3191769.11",
+          "headline_amount": "3191769.11"
+        },
+        {
+          "check": "Tabla de respaldo: Productos líderes",
+          "passed": true,
+          "observed_rows": 8,
+          "expected_rows": 8
+        },
+        {
+          "check": "Participación referida al Top N visible",
+          "passed": true,
+          "visible_categories": 8,
+          "share_sum": "0.99999999999999990"
+        },
+        {
+          "check": "Tabla de respaldo: Distribución territorial",
+          "passed": true,
+          "observed_rows": 1,
+          "expected_rows": 1
+        },
+        {
+          "check": "Sin errores de celdas Excel",
+          "passed": true,
+          "errors": []
+        },
+        {
+          "check": "Sin macros ni conexiones externas",
+          "passed": true,
+          "entries": []
+        },
+        {
+          "check": "Sin credenciales detectadas en texto/XML",
+          "passed": true
+        },
+        {
+          "check": "Sin cruce con la otra fuente",
+          "passed": true
+        },
+        {
+          "check": "PDF completo y sin anotaciones activas",
+          "passed": true,
+          "pages": 5
+        },
+        {
+          "check": "Revisión visual PDF",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "metrics": [
+        {
+          "name": "Importe registrado total",
+          "unit_in_dashboard": "moneda de origen",
+          "sheet": "Resumen",
+          "label_cell": "B13",
+          "value_cell": "B14",
+          "value": 3191769.11,
+          "number_format": "#,##0.00"
+        },
+        {
+          "name": "Facturas distintas",
+          "unit_in_dashboard": "facturas",
+          "sheet": "Resumen",
+          "label_cell": "E13",
+          "value_cell": "E14",
+          "value": 1179,
+          "number_format": "#,##0"
+        },
+        {
+          "name": "Importe promedio por factura",
+          "unit_in_dashboard": "moneda de origen por transacción",
+          "sheet": "Resumen",
+          "label_cell": "H13",
+          "value_cell": "H14",
+          "value": 2707.183299406277,
+          "number_format": "#,##0.00"
+        },
+        {
+          "name": "Unidades registradas",
+          "unit_in_dashboard": "Unidades",
+          "sheet": "Resumen",
+          "label_cell": "B16",
+          "value_cell": "B17",
+          "value": 142247,
+          "number_format": "#,##0.00"
+        }
+      ],
+      "backing_tables": [
+        {
+          "sheet": "Evolución en el tiempo",
+          "rows": 12,
+          "range": "B6:D17",
+          "matches_visible_dashboard_points": true
+        },
+        {
+          "sheet": "Productos líderes",
+          "rows": 8,
+          "range": "B6:D13",
+          "matches_visible_dashboard_points": true
+        },
+        {
+          "sheet": "Distribución territorial",
+          "rows": 1,
+          "range": "B6:D6",
+          "matches_visible_dashboard_points": true
+        }
+      ],
+      "excel_formula_count": 0,
+      "excel_snapshot_note": "Exportación estática de los valores y tablas visibles; no se presenta como modelo con fórmulas recalculables.",
+      "pdf_visual_review": {
+        "method": "Poppler pdftoppm, 110 dpi; inspección visual de páginas de portada, gráfico y tablas representativas.",
+        "pages_inspected": [
+          1,
+          2,
+          3
+        ],
+        "passed": true,
+        "observations": "Valores y unidades legibles; gráfico continuo visible; tablas y encabezados sin recortes, superposición ni franjas blancas que interrumpan el contenido."
+      },
+      "copies": [
+        {
+          "origin": "/home/ceo/Descargas/ventas-ejecucion-23-executive.pdf",
+          "destination": "exports/WideWorldImporters_2015_California_propuesta135_ejecucion23_vista_ejecutiva.pdf",
+          "size_bytes": 9008,
+          "source_sha256": "dd4c74a1cd253bc604e8b1292a5049fb97d927d3de5a263b87ca7a52bd14fd28",
+          "copied_sha256": "dd4c74a1cd253bc604e8b1292a5049fb97d927d3de5a263b87ca7a52bd14fd28",
+          "identical_bytes": true
+        },
+        {
+          "origin": "/home/ceo/Descargas/ventas-ejecucion-23-executive.xlsx",
+          "destination": "exports/WideWorldImporters_2015_California_propuesta135_ejecucion23_vista_ejecutiva.xlsx",
+          "size_bytes": 18608,
+          "source_sha256": "6c8fa12cd17377b6812cae4ef78bfeabb54ac55fb00bb09c824dc202bfb46d2e",
+          "copied_sha256": "6c8fa12cd17377b6812cae4ef78bfeabb54ac55fb00bb09c824dc202bfb46d2e",
+          "identical_bytes": true
+        }
+      ]
+    },
+    {
+      "proposal_id": 136,
+      "execution_id": 24,
+      "source_name": "AdventureWorks",
+      "filters": {
+        "year": 2013,
+        "territory": "Northwest"
+      },
+      "currency": "USD",
+      "checks": [
+        {
+          "check": "Fuente/base/filtros/identificadores Excel",
+          "passed": true
+        },
+        {
+          "check": "Fuente/base/filtros/identificadores PDF",
+          "passed": true
+        },
+        {
+          "check": "KPI Excel: Importe total registrado",
+          "passed": true,
+          "cell": "B14",
+          "observed": 6015174.735836,
+          "expected": 6015174.735836,
+          "number_format": "#,##0.00 \"USD\""
+        },
+        {
+          "check": "KPI PDF: Importe total registrado",
+          "passed": true,
+          "expected_display": "6,015,174.74"
+        },
+        {
+          "check": "KPI Excel: Pedidos distintos",
+          "passed": true,
+          "cell": "E14",
+          "observed": 2053,
+          "expected": 2053.0,
+          "number_format": "#,##0"
+        },
+        {
+          "check": "KPI PDF: Pedidos distintos",
+          "passed": true,
+          "expected_display": "2,053"
+        },
+        {
+          "check": "KPI Excel: Unidades totales",
+          "passed": true,
+          "cell": "H14",
+          "observed": 17452,
+          "expected": 17452.0,
+          "number_format": "#,##0.00"
+        },
+        {
+          "check": "KPI PDF: Unidades totales",
+          "passed": true,
+          "expected_display": "17,452.00"
+        },
+        {
+          "check": "KPI Excel: Importe promedio por transacción",
+          "passed": true,
+          "cell": "B17",
+          "observed": 2929.943855740867,
+          "expected": 2929.943855740867,
+          "number_format": "#,##0.00 \"USD\""
+        },
+        {
+          "check": "KPI PDF: Importe promedio por transacción",
+          "passed": true,
+          "expected_display": "2,929.94"
+        },
+        {
+          "check": "Unidad monetaria PDF",
+          "passed": true
+        },
+        {
+          "check": "Unidades y documentos legibles",
+          "passed": true
+        },
+        {
+          "check": "Sólo hojas correspondientes a visuales visibles",
+          "passed": true,
+          "observed": [
+            "Resumen",
+            "Evolución en el tiempo",
+            "Productos líderes",
+            "Distribución territorial"
+          ]
+        },
+        {
+          "check": "Tabla de respaldo: Evolución en el tiempo",
+          "passed": true,
+          "observed_rows": 12,
+          "expected_rows": 12
+        },
+        {
+          "check": "Meses del filtro concilian con el importe",
+          "passed": true,
+          "sum_of_months": "6015174.735836",
+          "headline_amount": "6015174.735836"
+        },
+        {
+          "check": "Tabla de respaldo: Productos líderes",
+          "passed": true,
+          "observed_rows": 8,
+          "expected_rows": 8
+        },
+        {
+          "check": "Participación referida al Top N visible",
+          "passed": true,
+          "visible_categories": 8,
+          "share_sum": "0.99999999999999983"
+        },
+        {
+          "check": "Tabla de respaldo: Distribución territorial",
+          "passed": true,
+          "observed_rows": 1,
+          "expected_rows": 1
+        },
+        {
+          "check": "Sin errores de celdas Excel",
+          "passed": true,
+          "errors": []
+        },
+        {
+          "check": "Sin macros ni conexiones externas",
+          "passed": true,
+          "entries": []
+        },
+        {
+          "check": "Sin credenciales detectadas en texto/XML",
+          "passed": true
+        },
+        {
+          "check": "Sin cruce con la otra fuente",
+          "passed": true
+        },
+        {
+          "check": "PDF completo y sin anotaciones activas",
+          "passed": true,
+          "pages": 5
+        },
+        {
+          "check": "Revisión visual PDF",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "metrics": [
+        {
+          "name": "Importe total registrado",
+          "unit_in_dashboard": "USD",
+          "sheet": "Resumen",
+          "label_cell": "B13",
+          "value_cell": "B14",
+          "value": 6015174.735836,
+          "number_format": "#,##0.00 \"USD\""
+        },
+        {
+          "name": "Pedidos distintos",
+          "unit_in_dashboard": "pedidos",
+          "sheet": "Resumen",
+          "label_cell": "E13",
+          "value_cell": "E14",
+          "value": 2053,
+          "number_format": "#,##0"
+        },
+        {
+          "name": "Unidades totales",
+          "unit_in_dashboard": "Unidades",
+          "sheet": "Resumen",
+          "label_cell": "H13",
+          "value_cell": "H14",
+          "value": 17452,
+          "number_format": "#,##0.00"
+        },
+        {
+          "name": "Importe promedio por transacción",
+          "unit_in_dashboard": "USD por transacción",
+          "sheet": "Resumen",
+          "label_cell": "B16",
+          "value_cell": "B17",
+          "value": 2929.943855740867,
+          "number_format": "#,##0.00 \"USD\""
+        }
+      ],
+      "backing_tables": [
+        {
+          "sheet": "Evolución en el tiempo",
+          "rows": 12,
+          "range": "B6:D17",
+          "matches_visible_dashboard_points": true
+        },
+        {
+          "sheet": "Productos líderes",
+          "rows": 8,
+          "range": "B6:D13",
+          "matches_visible_dashboard_points": true
+        },
+        {
+          "sheet": "Distribución territorial",
+          "rows": 1,
+          "range": "B6:D6",
+          "matches_visible_dashboard_points": true
+        }
+      ],
+      "excel_formula_count": 0,
+      "excel_snapshot_note": "Exportación estática de los valores y tablas visibles; no se presenta como modelo con fórmulas recalculables.",
+      "pdf_visual_review": {
+        "method": "Poppler pdftoppm, 110 dpi; inspección visual de páginas de portada, gráfico y tablas representativas.",
+        "pages_inspected": [
+          1,
+          2,
+          5
+        ],
+        "passed": true,
+        "observations": "Valores y unidades legibles; gráfico continuo visible; tablas y encabezados sin recortes, superposición ni franjas blancas que interrumpan el contenido."
+      },
+      "copies": [
+        {
+          "origin": "/home/ceo/Descargas/ventas-ejecucion-24-executive.pdf",
+          "destination": "exports/AdventureWorks_2013_Northwest_propuesta136_ejecucion24_vista_ejecutiva.pdf",
+          "size_bytes": 8922,
+          "source_sha256": "407a36d77f32e4b44f7706703c8afb06529ea9a2a45019a34988ed2750fd6b55",
+          "copied_sha256": "407a36d77f32e4b44f7706703c8afb06529ea9a2a45019a34988ed2750fd6b55",
+          "identical_bytes": true
+        },
+        {
+          "origin": "/home/ceo/Descargas/ventas-ejecucion-24-executive.xlsx",
+          "destination": "exports/AdventureWorks_2013_Northwest_propuesta136_ejecucion24_vista_ejecutiva.xlsx",
+          "size_bytes": 18738,
+          "source_sha256": "0fbe62dc21e3ffd693446ed402f6b08a27845ea9e7554aeff0703b7d645be432",
+          "copied_sha256": "0fbe62dc21e3ffd693446ed402f6b08a27845ea9e7554aeff0703b7d645be432",
+          "identical_bytes": true
+        }
+      ]
+    }
+  ],
+  "passed": true,
+  "limitations": [
+    "La inspección de Excel verifica valores, tipos, formatos y hojas, sin afirmar una apertura nativa en Microsoft Excel o LibreOffice.",
+    "Los porcentajes de productos usan el total de las categorías visibles del Top N, no el importe global.",
+    "Los PDF se conservaron exactamente como fueron generados por la aplicación."
+  ]
+}

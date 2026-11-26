@@ -1,0 +1,244 @@
+COMANDOS MANUALES · BI PORTABLE · EDICION 25-11-2026
+PAQUETE NUEVO AUN PENDIENTE DE CONSTRUIR Y VERIFICAR.
+Este TXT es documentacion, NO un script. No ejecutarlo con bash, sh o PowerShell -File.
+Leer primero el PDF. Ejecutar UNA orden cada vez y verificar el resultado.
+Los comandos read solicitan nombres reales observados. No escribir el indicador $ de la terminal.
+No se incluyen contrasenas ni API keys. Ninguna orden de instalacion se ejecuto al crear esta guia.
+
+USO: Ubuntu de ls-va en Lenovo. No ejecutar retiradas en el equipo del tutor.
+
+Orden 01 · Antes de empezar
+[TERMINAL UBUNTU]
+whoami
+
+Orden 02 · Antes de empezar
+[TERMINAL UBUNTU]
+printf '%s\n' "$HOME"
+
+Orden 03 · Antes de empezar
+[TERMINAL UBUNTU]
+hostname -s
+
+Orden 04 · Antes de empezar
+[TERMINAL UBUNTU]
+uname -m
+
+Orden 05 · Antes de empezar
+[TERMINAL UBUNTU]
+free -h
+
+Orden 06 · Antes de empezar
+[TERMINAL UBUNTU]
+df -h "$HOME"
+
+Orden 07 · Antes de empezar
+[TERMINAL UBUNTU]
+docker version
+
+Orden 08 · Antes de empezar
+[TERMINAL UBUNTU]
+docker compose version
+
+Orden 09 · Preparar el paquete nuevo sin arrancarlo
+[TERMINAL UBUNTU]
+cd "$HOME/Descargas"
+
+Orden 10 · Preparar el paquete nuevo sin arrancarlo
+[TERMINAL UBUNTU]
+ls -lh BI_portable_*.tar.gz BI_portable_*.tar.gz.sha256
+
+Orden 11 · Preparar el paquete nuevo sin arrancarlo
+[TERMINAL UBUNTU]
+read -r -p "Nombre real del paquete nuevo, sin .tar.gz: " BI_PACKAGE
+
+Orden 12 · Preparar el paquete nuevo sin arrancarlo
+[TERMINAL UBUNTU]
+sha256sum -c "$BI_PACKAGE.tar.gz.sha256"
+
+Orden 13 · Preparar el paquete nuevo sin arrancarlo
+[TERMINAL UBUNTU]
+mkdir -p "$HOME/BI"
+
+Orden 14 · Preparar el paquete nuevo sin arrancarlo
+[TERMINAL UBUNTU]
+test ! -e "$HOME/BI/$BI_PACKAGE" && tar --keep-old-files -xzf "$HOME/Descargas/$BI_PACKAGE.tar.gz" -C "$HOME/BI"
+
+Orden 15 · Preparar el paquete nuevo sin arrancarlo
+[TERMINAL UBUNTU]
+BI_NEW_DIRECTORY="$HOME/BI/$BI_PACKAGE"
+
+Orden 16 · Preparar el paquete nuevo sin arrancarlo
+[TERMINAL UBUNTU]
+cd "$BI_NEW_DIRECTORY"
+
+Orden 17 · Preparar el paquete nuevo sin arrancarlo
+[TERMINAL UBUNTU]
+pwd -P
+
+Orden 18 · Preparar el paquete nuevo sin arrancarlo
+[TERMINAL UBUNTU]
+sha256sum -c SHA256SUMS.txt
+
+Orden 19 · Preparar el paquete nuevo sin arrancarlo
+[TERMINAL UBUNTU]
+chmod 600 config/desarrollo.env config/release.env CREDENCIALES_LOCALES.txt
+
+Orden 20 · Preparar el paquete nuevo sin arrancarlo
+[TERMINAL UBUNTU]
+less MANIFIESTO.json
+
+Orden 21 · Identificar nombres, imágenes y proyectos
+[TERMINAL UBUNTU]
+docker compose --env-file config/desarrollo.env -f compose.desarrollo.yaml config --quiet
+
+Orden 22 · Identificar nombres, imágenes y proyectos
+[TERMINAL UBUNTU]
+docker compose --env-file config/release.env -f compose.release.yaml config --quiet
+
+Orden 23 · Identificar nombres, imágenes y proyectos
+[TERMINAL UBUNTU]
+sed -n '/^name:/p' compose.desarrollo.yaml compose.release.yaml
+
+Orden 24 · Identificar nombres, imágenes y proyectos
+[TERMINAL UBUNTU]
+docker compose --env-file config/desarrollo.env -f compose.desarrollo.yaml config --images
+
+Orden 25 · Identificar nombres, imágenes y proyectos
+[TERMINAL UBUNTU]
+docker compose --env-file config/release.env -f compose.release.yaml config --images
+
+Orden 26 · Identificar nombres, imágenes y proyectos
+[TERMINAL UBUNTU]
+docker load -i imagenes.tar
+
+Orden 27 · Identificar nombres, imágenes y proyectos
+[TERMINAL UBUNTU]
+docker compose ls --all
+
+Orden 28 · Identificar nombres, imágenes y proyectos
+[TERMINAL UBUNTU]
+docker ps -a --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
+
+Orden 29 · Retirar contenedores antiguos, uno por uno
+[TERMINAL UBUNTU]
+read -r -p "Proyecto BI antiguo exacto: " BI_OLD_PROJECT
+
+Orden 30 · Retirar contenedores antiguos, uno por uno
+[TERMINAL UBUNTU]
+docker ps -a --filter "label=com.docker.compose.project=$BI_OLD_PROJECT" --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+
+Orden 31 · Retirar contenedores antiguos, uno por uno
+[TERMINAL UBUNTU]
+docker volume ls --filter "label=com.docker.compose.project=$BI_OLD_PROJECT"
+
+Orden 32 · Retirar contenedores antiguos, uno por uno
+[TERMINAL UBUNTU]
+read -r -p "Nombre exacto de UN contenedor BI antiguo listado: " BI_OLD_CONTAINER
+
+Orden 33 · Retirar contenedores antiguos, uno por uno
+[TERMINAL UBUNTU]
+docker container inspect "$BI_OLD_CONTAINER" --format '{{.Name}} | proyecto={{index .Config.Labels "com.docker.compose.project"}} | carpeta={{index .Config.Labels "com.docker.compose.project.working_dir"}}'
+
+Orden 34 · Retirar contenedores antiguos, uno por uno
+[TERMINAL UBUNTU]
+test "$(id -un):$HOME:$(hostname -s)" = 'ls-va:/home/ls-va:Lenovo' && [[ "$BI_OLD_PROJECT" =~ ^(bi-limpio-(dev|release)|bi-portable-20261117-(dev|release)|bi-ia-prototype(-release)?)$ ]] && test "$(docker container inspect "$BI_OLD_CONTAINER" --format '{{index .Config.Labels "com.docker.compose.project"}}')" = "$BI_OLD_PROJECT" && docker stop "$BI_OLD_CONTAINER"
+
+Orden 35 · Retirar contenedores antiguos, uno por uno
+[TERMINAL UBUNTU]
+test "$(id -un):$HOME:$(hostname -s)" = 'ls-va:/home/ls-va:Lenovo' && [[ "$BI_OLD_PROJECT" =~ ^(bi-limpio-(dev|release)|bi-portable-20261117-(dev|release)|bi-ia-prototype(-release)?)$ ]] && test "$(docker container inspect "$BI_OLD_CONTAINER" --format '{{index .Config.Labels "com.docker.compose.project"}}')" = "$BI_OLD_PROJECT" && docker rm "$BI_OLD_CONTAINER"
+
+Orden 36 · Retirar volúmenes y carpetas anteriores
+[TERMINAL UBUNTU]
+docker ps -a --filter "label=com.docker.compose.project=$BI_OLD_PROJECT"
+
+Orden 37 · Retirar volúmenes y carpetas anteriores
+[TERMINAL UBUNTU]
+docker volume ls --filter "label=com.docker.compose.project=$BI_OLD_PROJECT"
+
+Orden 38 · Retirar volúmenes y carpetas anteriores
+[TERMINAL UBUNTU]
+read -r -p "Nombre exacto de UN volumen BI antiguo listado: " BI_OLD_VOLUME
+
+Orden 39 · Retirar volúmenes y carpetas anteriores
+[TERMINAL UBUNTU]
+docker volume inspect "$BI_OLD_VOLUME" --format '{{.Name}} | proyecto={{index .Labels "com.docker.compose.project"}} | volumen={{index .Labels "com.docker.compose.volume"}}'
+
+Orden 40 · Retirar volúmenes y carpetas anteriores
+[TERMINAL UBUNTU]
+test "$(id -un):$HOME:$(hostname -s)" = 'ls-va:/home/ls-va:Lenovo' && [[ "$BI_OLD_PROJECT" =~ ^(bi-limpio-(dev|release)|bi-portable-20261117-(dev|release)|bi-ia-prototype(-release)?)$ ]] && test "$(docker volume inspect "$BI_OLD_VOLUME" --format '{{index .Labels "com.docker.compose.project"}}')" = "$BI_OLD_PROJECT" && docker volume rm "$BI_OLD_VOLUME"
+
+Orden 41 · Iniciar desarrollo y comprobar la preparación
+[TERMINAL UBUNTU]
+cd "$BI_NEW_DIRECTORY"
+
+Orden 42 · Iniciar desarrollo y comprobar la preparación
+[TERMINAL UBUNTU]
+docker compose --env-file config/desarrollo.env -f compose.desarrollo.yaml config --quiet
+
+Orden 43 · Iniciar desarrollo y comprobar la preparación
+[TERMINAL UBUNTU]
+docker compose --env-file config/desarrollo.env -f compose.desarrollo.yaml up -d --pull never --wait --wait-timeout 900
+
+Orden 44 · Iniciar desarrollo y comprobar la preparación
+[TERMINAL UBUNTU]
+docker compose --env-file config/desarrollo.env -f compose.desarrollo.yaml ps -a
+
+Orden 45 · Iniciar desarrollo y comprobar la preparación
+[TERMINAL UBUNTU]
+docker compose --env-file config/desarrollo.env -f compose.desarrollo.yaml exec -T backend alembic current
+
+Orden 46 · Iniciar desarrollo y comprobar la preparación
+[TERMINAL UBUNTU]
+curl --fail --silent --show-error http://localhost:18080/api/v1/health/live
+
+Orden 47 · Probar release y encender o apagar cada ambiente
+[TERMINAL UBUNTU]
+docker compose --env-file config/desarrollo.env -f compose.desarrollo.yaml stop -t 60
+
+Orden 48 · Probar release y encender o apagar cada ambiente
+[TERMINAL UBUNTU]
+docker compose --env-file config/release.env -f compose.release.yaml config --quiet
+
+Orden 49 · Probar release y encender o apagar cada ambiente
+[TERMINAL UBUNTU]
+docker compose --env-file config/release.env -f compose.release.yaml up -d --pull never --wait --wait-timeout 900
+
+Orden 50 · Probar release y encender o apagar cada ambiente
+[TERMINAL UBUNTU]
+docker compose --env-file config/release.env -f compose.release.yaml ps -a
+
+Orden 51 · Probar release y encender o apagar cada ambiente
+[TERMINAL UBUNTU]
+docker compose --env-file config/release.env -f compose.release.yaml exec -T backend alembic current
+
+Orden 52 · Probar release y encender o apagar cada ambiente
+[TERMINAL UBUNTU]
+docker compose --env-file config/release.env -f compose.release.yaml stop -t 60
+
+Orden 53 · Probar release y encender o apagar cada ambiente
+[TERMINAL UBUNTU]
+docker compose --env-file config/desarrollo.env -f compose.desarrollo.yaml up -d --pull never --wait --wait-timeout 900
+
+Orden 54 · Resolver los incidentes que ya ocurrieron
+[TERMINAL UBUNTU]
+docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Ports}}'
+
+Orden 55 · Resolver los incidentes que ya ocurrieron
+[TERMINAL UBUNTU]
+docker compose --env-file config/desarrollo.env -f compose.desarrollo.yaml logs --tail 120 migrate
+
+Orden 56 · Resolver los incidentes que ya ocurrieron
+[TERMINAL UBUNTU]
+docker compose --env-file config/desarrollo.env -f compose.desarrollo.yaml logs --tail 80 postgres seed backend
+
+Orden 57 · Resolver los incidentes que ya ocurrieron
+[TERMINAL UBUNTU]
+docker compose --env-file config/desarrollo.env -f compose.desarrollo.yaml logs --tail 100 sqlserver
+
+Orden 58 · Resolver los incidentes que ya ocurrieron
+[TERMINAL UBUNTU]
+free -h
+
+Orden 59 · Resolver los incidentes que ya ocurrieron
+[TERMINAL UBUNTU]
+df -h "$HOME"

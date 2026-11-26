@@ -1,0 +1,3268 @@
+\chapter{Comprender la base de datos y el linaje}
+\section{Dos bases de datos con trabajos diferentes}
+SQL Server conserva las bases de demostración de origen. PostgreSQL conserva cuentas, configuración, metadatos, propuestas, expedientes y las tablas analíticas cargadas. Registrar una conexión no copia toda la base origen; obtener metadatos tampoco copia ventas. La aplicación lee datos autorizados cuando se confirma la carga. Cada ejecución nueva conserva su propio destino analítico.
+
+\section{Base de datos, esquema, tabla y fila}
+bi\_\allowbreak{}prototype es la base PostgreSQL auditada. Un esquema es un espacio de nombres dentro de esa base: app agrupa el estado de la plataforma; mart\_\allowbreak{}ventas\_\allowbreak{}e23 y mart\_\allowbreak{}ventas\_\allowbreak{}e24 separan los resultados de las dos ejecuciones nuevas de esta edición. Una tabla contiene columnas y filas. Un esquema llamado mart\_\allowbreak{}ventas\_\allowbreak{}e23 no es otra base SQL Server ni un catálogo de preguntas. Las ejecuciones anteriores, entre ellas e21 y e22, conservan su propio esquema y no deben confundirse con una carga nueva.
+
+\section{Qué se comprobó realmente}
+Se volvieron a leer los catálogos PostgreSQL el 25 de noviembre de 2026 en modo de solo lectura, sin filas comerciales, credenciales ni documentos JSON de las propuestas. El corte vigente incluye 93 tablas y 860 columnas: 18 tablas de app con 174 columnas, 74 tablas analíticas y public.alembic\_\allowbreak{}version. Hay 24 FK físicas, todas en app. Los nombres de las 174 columnas de las 18 tablas de app coinciden con el ORM actual. Se cotejaron 20 archivos de migración; la revisión aplicada y la única cabeza de la cadena son 20261125\_\allowbreak{}20. Estos datos describen la estructura observada; por sí solos no prueban que todas las cargas históricas sean correctas.
+
+El inventario anterior, del 18 de noviembre, registraba 83 tablas y 782 columnas, con la revisión 20261003\_\allowbreak{}19. La diferencia corresponde a las diez tablas y 78 columnas de los nuevos destinos e23 y e24. La tabla app.parameters recibió una fila de configuración; las tablas, columnas y FK de app no cambiaron. Los diagramas de app siguen representando esas mismas 18 entidades y 24 relaciones físicas.
+
+\section{Qué cambia con la duración configurable de la sesión}
+La opción \textbf{Duración de la sesión (minutos)} se guarda como una fila de app.parameters, con la clave técnica \texttt{AUTH\_SESSION\_MINUTES}. No representa una nueva tabla de usuarios ni una nueva entidad del negocio. En este corte su valor es 60 minutos, con un intervalo permitido de 15 a 240 minutos. La migración 20261125\_\allowbreak{}20 añade el parámetro cuando falta y conserva un valor que ya estuviera configurado.
+
+La persona administradora cambia esta duración desde \textbf{Parámetros}; no necesita editar PostgreSQL. El valor se aplica al siguiente inicio de sesión. Cambiarlo no amplía una sesión que ya está abierta ni convierte el tiempo de sesión en un contador de inactividad. Si se modifica durante una demostración, se debe cerrar la sesión y volver a entrar antes de comprobar la nueva duración. Las propuestas y los expedientes guardados permanecen en sus tablas cuando termina la sesión.
+
+\section{Claves primarias y claves foráneas}
+Una PK identifica una fila dentro de una tabla. Las tablas user\_\allowbreak{}roles, role\_\allowbreak{}permissions y menu\_\allowbreak{}permissions usan PK de dos columnas: la pareja es única. Una FK comprueba que un valor hijo exista en una tabla padre. Por ejemplo, una ejecución debe referir una propuesta existente. No se deduce una FK porque una columna termine en \_\allowbreak{}id.
+
+\section{Cómo leer las cardinalidades}
+1 junto a la tabla padre significa que cada fila hija necesita un padre; 0..1 permite que la referencia sea nula. 0..* junto a la hija indica que un padre puede tener ninguna o muchas hijas. No se deduce que todos los padres ya tengan hijos. Un índice único completo sobre la FK limita a una hija por padre. Por eso secret\_\allowbreak{}id es uno a uno opcional por cada tabla de configuración, pero la unicidad de data\_\allowbreak{}connections y de llm\_\allowbreak{}configurations no es una exclusión global entre ambas tablas.
+
+\section{Autoría, roles y permisos}
+app.users identifica a la persona de la aplicación. user\_\allowbreak{}roles la relaciona con uno o varios roles, y role\_\allowbreak{}permissions relaciona esos roles con operaciones. menu\_\allowbreak{}permissions vincula navegación con permisos. No existe una FK directa entre roles y menus. La persona puede ver una opción en React únicamente según sus permisos; FastAPI vuelve a comprobarlos antes de operar. Las FK de autoría son opcionales y usan SET NULL para preservar evidencia si se retira una cuenta; las reglas de sesión del servidor siguen siendo obligatorias.
+
+\section{JSON y JSONB no son tablas separadas}
+JSONB almacena un documento estructurado en una columna: por ejemplo la definición de un catálogo o el contrato de una propuesta. JSON almacena el documento de detalle de auditoría. Estos documentos no se descomponen automáticamente en tablas con FK. Los nombres de tablas, rutas, identificadores o esquemas guardados dentro del documento se comprueban mediante reglas del servidor. No deben dibujarse como FK físicas. El inventario registra únicamente el tipo y nombre de esas columnas, sin leer su contenido.
+
+\section{La revisión previa no está unida por una FK directa a la propuesta}
+business\_\allowbreak{}need\_\allowbreak{}reviews y bi\_\allowbreak{}proposals apuntan a metadata\_\allowbreak{}snapshots. El servidor comprueba entradas, huellas, actor y contexto al generar. No existe review\_\allowbreak{}id en bi\_\allowbreak{}proposals ni una FK que materialice la correspondencia entre ambos documentos. Esa parte de la trazabilidad es una regla de aplicación, complementaria a las restricciones SQL.
+
+\section{Una propuesta y una ejecución no son lo mismo}
+bi\_\allowbreak{}proposals guarda el diseño conservado y su decisión. etl\_\allowbreak{}executions guarda un expediente que apunta por FK a esa propuesta y a sus metadatos. Una propuesta puede fundamentar cero o varias ejecuciones. Aprobar el diseño no llena fact\_\allowbreak{}ventas; la materialización requiere la confirmación posterior y controles de conciliación.
+
+\section{Cómo se conservan los resultados físicos}
+Los destinos actuales mart\_\allowbreak{}ventas\_\allowbreak{}e23 y mart\_\allowbreak{}ventas\_\allowbreak{}e24 existen en el catálogo y contienen dim\_\allowbreak{}fecha, dim\_\allowbreak{}producto, dim\_\allowbreak{}cliente, dim\_\allowbreak{}territorio y fact\_\allowbreak{}ventas. Los históricos e21 y e22 conservan esas cinco tablas con sus propias columnas. Las dimensiones tienen PK surrogate\_\allowbreak{}key. En los cuatro destinos observados, fact\_\allowbreak{}ventas no tiene PK ni FK declaradas. Sus dim\_\allowbreak{}*\_\allowbreak{}sk se unen lógicamente con surrogate\_\allowbreak{}key, y etl\_\allowbreak{}execution\_\allowbreak{}id es una etiqueta de ejecución sin FK a app.etl\_\allowbreak{}executions. Las líneas discontinuas de sus diagramas no prometen restricciones que PostgreSQL no impone. El constructor y la conciliación deben comprobar esas correspondencias; la PK de una dimensión no demuestra por sí sola que todos los hechos tengan miembro válido.
+
+\section{Por qué las columnas de ventas cambian entre fuentes}
+Los nombres y atributos físicos dependen del contrato aprobado. AdventureWorks conserva la identidad de pedido y detalle; WideWorldImporters conserva la identidad de línea de factura. Las dos demostraciones comparten el motor general, sin exigir nombres de tablas fuente iguales. Los esquemas físicos de ejecuciones anteriores son evidencia histórica; su mera existencia no garantiza que estén publicados o disponibles en el selector analítico.
+
+\section{Cómo interpretar medidas y conteos}
+Una columna física llamada numero de pedidos o facturas distintas puede conservar el identificador documental de cada línea para que el lector calcule COUNT DISTINCT en el conjunto filtrado. No se debe sumar ese identificador ni sumar conteos de grupos que pueden repetir documentos. Para el importe promedio por documento, se divide el importe total entre los documentos distintos del filtro. Agrupar por mes no transforma la fila física en un resumen mensual.
+
+\section{Asesoría del diseño y conversación analítica}
+semantic\_\allowbreak{}advice conserva consultas sobre conceptos de una propuesta. El copiloto analítico conversa sobre agregados de una ejecución y sus filtros. La arquitectura documenta que no conserva el historial completo de chat en una tabla de mensajes: la auditoría registra huella y contexto mínimo. No debe presentarse semantic\_\allowbreak{}advice como un almacén de todos los mensajes analíticos.
+
+\section{Qué garantiza y qué no garantiza este inventario}
+La coincidencia entre ORM y catálogo acredita los nombres de columnas de app observados. Las FK físicas acreditan integridad referencial de esas relaciones SQL, no el significado comercial de cada importe o territorio. Los documentos JSON, el plan, la selección y los enlaces analíticos necesitan controles de aplicación. El manual debe enseñar a revisar tanto estructura como conciliación, contexto, moneda y denominadores, sin pedir a la persona usuaria que modifique estas tablas con SQL.
+
+\section{Una fotografía local, no un requisito del portable}
+Las 93 tablas del corte vigente describen esta instalación con resultados históricos acumulados. Las 74 tablas analíticas no son un catálogo fijo que deba venir con el portable limpio: aparecen al materializar ejecuciones. El portable limpio conserva la estructura de app y el control de migraciones; los esquemas analíticos se generan después. Los identificadores de propuestas, instantáneas y ejecuciones también se asignan en cada instalación. Por eso una réplica correcta no depende de obtener los números 135, 136, 23 o 24: depende de conservar la correspondencia entre la fuente, la propuesta que se aprobó y su propia ejecución.
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\RaggedRight\sffamily\bfseries\large\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000 Roles observados y alcance de la comprobación\par}
+
+El inventario de roles conservado del 18 de noviembre consultó únicamente sus definiciones y permisos, sin cuentas ni asignaciones de personas. En ese corte constan Administrador, Operador, Analista BI y Gerente comercial. Gerente comercial tiene lectura analítica, lectura de conexiones, consulta de metadatos y exportación analítica. Consultar metadatos permite cargar el selector de fuentes y también abrir el explorador; no concede escritura ni ETL. La nueva inspección estructural de este capítulo no vuelve a evaluar recorridos por perfil. Una lectura de permisos no acredita que se haya iniciado sesión y completado el recorrido con cada uno.
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\RaggedRight\sffamily\bfseries\large\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000 Esquemas conservados en la instalación de referencia\par}
+
+\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Esquema} & \textbf{Tablas observadas} \\
+\midrule
+app & 18 \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\section{Esquemas conservados en la instalación de referencia}
+La tabla corresponde al catálogo leído el 25 de noviembre de 2026. La presencia de un esquema conserva un resultado físico; no significa que deba aparecer como carga vigente en todos los perfiles o que todas sus cargas históricas hayan sido reevaluadas.
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Esquema} & \textbf{Tablas observadas} \\
+\midrule
+app & 18 \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\section{Roles observados y alcance de la comprobación}
+El inventario de roles conservado del 18 de noviembre consultó únicamente sus definiciones y permisos, sin cuentas ni asignaciones de personas. En ese corte constan Administrador, Operador, Analista BI y Gerente comercial. Gerente comercial tiene lectura analítica, lectura de conexiones, consulta de metadatos y exportación analítica. Consultar metadatos permite cargar el selector de fuentes y también abrir el explorador; no concede escritura ni ETL. La nueva inspección estructural de este capítulo no vuelve a evaluar recorridos por perfil. Una lectura de permisos no acredita que se haya iniciado sesión y completado el recorrido con cada uno.
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\RaggedRight\sffamily\bfseries\large\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000 Esquemas conservados en la instalación de referencia\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Esquema} & \textbf{Tablas observadas} \\
+\midrule
+app & 18 \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\section{Esquemas conservados en la instalación de referencia}
+La tabla corresponde al catálogo leído el 25 de noviembre de 2026. La presencia de un esquema conserva un resultado físico; no significa que deba aparecer como carga vigente en todos los perfiles o que todas sus cargas históricas hayan sido reevaluadas.
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+\textbf{Esquema} & \textbf{Tablas observadas} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Esquema} & \textbf{Tablas observadas} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+app & 18 \\
+\addlinespace[3pt]
+mart & 0 \\
+\addlinespace[3pt]
+mart\_\allowbreak{}ventas & 5 \\
+\addlinespace[3pt]
+mart\_\allowbreak{}ventas\_\allowbreak{}e11 & 5 \\
+\addlinespace[3pt]
+mart\_\allowbreak{}ventas\_\allowbreak{}e12 & 5 \\
+\addlinespace[3pt]
+mart\_\allowbreak{}ventas\_\allowbreak{}e13 & 5 \\
+\addlinespace[3pt]
+mart\_\allowbreak{}ventas\_\allowbreak{}e14 & 5 \\
+\addlinespace[3pt]
+mart\_\allowbreak{}ventas\_\allowbreak{}e15 & 5 \\
+\addlinespace[3pt]
+mart\_\allowbreak{}ventas\_\allowbreak{}e16 & 5 \\
+\addlinespace[3pt]
+mart\_\allowbreak{}ventas\_\allowbreak{}e17 & 4 \\
+\addlinespace[3pt]
+mart\_\allowbreak{}ventas\_\allowbreak{}e18 & 5 \\
+\addlinespace[3pt]
+mart\_\allowbreak{}ventas\_\allowbreak{}e19 & 5 \\
+\addlinespace[3pt]
+mart\_\allowbreak{}ventas\_\allowbreak{}e20 & 5 \\
+\addlinespace[3pt]
+mart\_\allowbreak{}ventas\_\allowbreak{}e21 & 5 \\
+\addlinespace[3pt]
+mart\_\allowbreak{}ventas\_\allowbreak{}e22 & 5 \\
+\addlinespace[3pt]
+mart\_\allowbreak{}ventas\_\allowbreak{}e23 & 5 \\
+\addlinespace[3pt]
+mart\_\allowbreak{}ventas\_\allowbreak{}e24 & 5 \\
+\addlinespace[3pt]
+public & 1 \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\RaggedRight\sffamily\bfseries\large\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000 Relación comprobada entre los casos de demostración\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Fuente} & \textbf{Diseño y metadatos} & \textbf{Ejecución} \\
+\midrule
+AdventureWorks2022 & Propuesta 136 aprobada; instantánea 2. & Expediente 24: carga completada. Vigente en esta edición. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\section{Relación comprobada entre los casos de demostración}
+La lectura técnica confirma que cada expediente apunta a su propuesta y a la instantánea indicada. La edición actual usa los casos 135/23 y 136/24 para la nueva demostración. Se conservan 129/21 y 131/22 como referencias históricas del manual del 18 de noviembre; no se ha sustituido su contenido por el de una ejecución posterior. En otra instalación se debe reconocer la fuente y el diseño, porque sus números locales pueden ser diferentes.
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.22\linewidth}>{\RaggedRight\arraybackslash}p{0.3\linewidth}>{\RaggedRight\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+\textbf{Fuente} & \textbf{Diseño y metadatos} & \textbf{Ejecución} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Fuente} & \textbf{Diseño y metadatos} & \textbf{Ejecución} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+AdventureWorks2022 & Propuesta 136 aprobada; instantánea 2. & Expediente 24: carga completada. Vigente en esta edición. \\
+\addlinespace[3pt]
+WideWorldImporters & Propuesta 135 aprobada; instantánea 3. & Expediente 23: carga completada. Vigente en esta edición. \\
+\addlinespace[3pt]
+AdventureWorks2022 & Propuesta 129 aprobada; instantánea 2. & Expediente 21: carga completada. Referencia histórica del 18 de noviembre. \\
+\addlinespace[3pt]
+WideWorldImporters & Propuesta 131 aprobada; instantánea 3. & Expediente 22: carga completada. Referencia histórica del 18 de noviembre. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\diagramasistema{recursos/diagramas/ER_00_recorrido_identidades.pdf}{Identidades principales que conectan fuente, diseño y ejecución}{Vista inicial de las identidades principales; no incluye todas las FK. El inventario y los cuatro esquemas de área contienen las 18 entidades de app y las 24 relaciones físicas, sin deducir relaciones por parecido de nombres.}
+\diagramasistema{recursos/diagramas/ER_01_seguridad.pdf}{Modelo físico de seguridad y navegación}{Se muestran las ocho tablas de seguridad y siete relaciones físicas. Campos principales; el diccionario enumera todas las columnas. La auditoría conserva actor opcional y una etiqueta histórica separada.}
+\diagramasistema{recursos/diagramas/ER_02_configuracion_metadatos.pdf}{Modelo físico de configuración y metadatos}{Seis tablas de configuración y metadatos. Cuatro relaciones físicas; las dos FK de autoría aparecen en el esquema separado de responsables. Catálogo único por conexión y dominio; instantánea única por conexión, versión de contrato y huella.}
+\diagramasistema{recursos/diagramas/ER_03_propuestas_ejecuciones.pdf}{Modelo físico de necesidades, propuestas y ejecuciones}{Cuatro entidades operativas y referencia a metadatos; seis FK físicas, incluida la relación de versiones derivadas de bi\_\allowbreak{}proposals. Las revisiones previas se comprueban con contexto y huellas por lógica del servidor; no existe una FK review\_\allowbreak{}id en bi\_\allowbreak{}proposals.}
+\diagramasistema{recursos/diagramas/ER_04_autoria.pdf}{Relaciones físicas con la persona que realiza cada acción}{Siete FK de autoría hacia users. La opcionalidad se obtiene del catálogo real: la eliminación de una cuenta preserva el expediente anulando la referencia. Las reglas del servidor y las etiquetas históricas complementan la FK.}
+\diagramasistema{recursos/diagramas/ER_05_datamart_e21.pdf}{Referencia histórica: estructura física del datamart, ejecución 21}{Diagrama del inventario del 18 de noviembre; no representa la nueva ejecución 24. Conserva todas las columnas de las cinco tablas físicas observadas entonces. Los nombres y atributos corresponden a esta ejecución, no son un modelo fijo universal. Las líneas discontinuas representan la unión que efectúa el motor entre dim\_\allowbreak{}*\_\allowbreak{}sk y surrogate\_\allowbreak{}key; la base no las impone como FK. No se atribuyen cardinalidades garantizadas a esas líneas.}
+\diagramasistema{recursos/diagramas/ER_05_datamart_e22.pdf}{Referencia histórica: estructura física del datamart, ejecución 22}{Diagrama del inventario del 18 de noviembre; no representa la nueva ejecución 23. Conserva todas las columnas de las cinco tablas físicas observadas entonces. Los nombres y atributos corresponden a esta ejecución, no son un modelo fijo universal. Las líneas discontinuas representan la unión que efectúa el motor entre dim\_\allowbreak{}*\_\allowbreak{}sk y surrogate\_\allowbreak{}key; la base no las impone como FK. No se atribuyen cardinalidades garantizadas a esas líneas.}
+\section{Cómo reconocer los destinos nuevos sin mezclar su información}
+El destino de WideWorldImporters, ejecución 23, tiene 36 columnas entre sus cinco tablas. Su tabla de hechos conserva la identidad de la línea de factura, el importe registrado, el identificador usado para facturas distintas, las unidades y las claves de las dimensiones. El destino de AdventureWorks, ejecución 24, tiene 42 columnas entre sus cinco tablas. Su tabla de hechos conserva la identidad de pedido y detalle, el importe registrado, el identificador usado para pedidos distintos, las unidades y las claves de las dimensiones. Que ambos destinos tengan una tabla llamada fact\_\allowbreak{}ventas no significa que sus filas o atributos deban combinarse.
+
+Para revisar el linaje desde la aplicación: primero se elige la fuente; después se comprueba la propuesta del expediente; por último se abre el resultado de esa ejecución en Analítica de ventas. Antes de interpretar un valor, se verifican también el año, el territorio y los demás filtros. La fecha de un pedido, la fecha de una factura y la provincia de entrega del cliente son decisiones de negocio diferentes: se conserva la definición del contrato correspondiente. No se debe identificar un territorio solo por el parecido de su nombre.
+
+Las reglas nuevas de composición no reescriben las propuestas históricas. Una receta que explica un conteo de documentos distintos sigue siendo una receta de conteo, aunque la tabla física guarde el identificador documental repetido en varias líneas. Revisar un diseño o un resultado histórico no debe retirar su aprobación ni sustituirlo por otro diseño. Cuando se necesita otro alcance, se genera y aprueba una propuesta nueva y se conserva su expediente separado.
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\RaggedRight\sffamily\bfseries\large\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000 Diccionario de las tablas de la aplicación\par}
+
+El nombre de cada tabla y columna coincide con el inventario observado. Estas fichas ayudan a comprender lo que guarda la plataforma; las tareas de operación se realizan desde la interfaz, sin modificar estas tablas con SQL.
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 app.analysis\_\allowbreak{}catalogs\par}
+
+\par\vspace{6pt}\noindent\textbf{Área}\hspace{0.5em} Configuración y metadatos
+
+\par\vspace{6pt}\noindent\textbf{Qué guarda}\hspace{0.5em} Guarda orientación funcional por conexión y dominio, con versión.
+
+\par\vspace{6pt}\noindent\textbf{Cómo se utiliza}\hspace{0.5em} Catálogo analítico: preguntas de negocio y periodicidades. No define un modelo dimensional físico fijo. La combinación conexión/dominio es única.
+
+\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{app.analysis\_\allowbreak{}catalogs}
+\paragraph{Área} Configuración y metadatos
+
+\paragraph{Qué guarda} Guarda orientación funcional por conexión y dominio, con versión.
+
+\paragraph{Cómo se utiliza} Catálogo analítico: preguntas de negocio y periodicidades. No define un modelo dimensional físico fijo. La combinación conexión/dominio es única.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\section{Diccionario de las tablas de la aplicación}
+El nombre de cada tabla y columna coincide con el inventario observado. Estas fichas ayudan a comprender lo que guarda la plataforma; las tareas de operación se realizan desde la interfaz, sin modificar estas tablas con SQL.
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 app.analysis\_\allowbreak{}catalogs\par}
+
+\par\vspace{6pt}\noindent\textbf{Área}\hspace{0.5em} Configuración y metadatos
+
+\par\vspace{6pt}\noindent\textbf{Qué guarda}\hspace{0.5em} Guarda orientación funcional por conexión y dominio, con versión.
+
+\par\vspace{6pt}\noindent\textbf{Cómo se utiliza}\hspace{0.5em} Catálogo analítico: preguntas de negocio y periodicidades. No define un modelo dimensional físico fijo. La combinación conexión/dominio es única.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{app.analysis\_\allowbreak{}catalogs}
+\paragraph{Área} Configuración y metadatos
+
+\paragraph{Qué guarda} Guarda orientación funcional por conexión y dominio, con versión.
+
+\paragraph{Cómo se utiliza} Catálogo analítico: preguntas de negocio y periodicidades. No define un modelo dimensional físico fijo. La combinación conexión/dominio es única.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{data\_connection\_id}} & integer\par\smallskip Obligatorio. & FK a app.data\_\allowbreak{}connections.id; preserva el contexto de fuente. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{domain\_code}} & character varying(40)\par\smallskip Obligatorio. & Dominio analítico; ventas es el dominio implementado. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{version}} & integer\par\smallskip Obligatorio. Con valor predeterminado. & Versión de configuración del catálogo; no representa un expediente de ejecución. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{configuration\_document}} & jsonb\par\smallskip Obligatorio. & JSONB de preguntas de negocio y periodicidades administradas para esta conexión y dominio. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{updated\_by\_user\_id}} & integer\par\smallskip Admite nulos. & FK opcional al usuario que actualizó el catálogo. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{updated\_by\_label}} & character varying(320)\par\smallskip Obligatorio. & Etiqueta histórica de la persona que actualizó el catálogo. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{updated\_at}} & timestamp with time zone\par\smallskip Obligatorio. Con valor predeterminado. & Fecha de actualización del registro; su opcionalidad física consta en el inventario. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: data\_\allowbreak{}connection\_\allowbreak{}id hacia app.data\_\allowbreak{}connections (id); al eliminar: cascada SQL.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: data\_\allowbreak{}connection\_\allowbreak{}id hacia app.data\_\allowbreak{}connections (id); al eliminar: cascada SQL.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave foránea: data\_\allowbreak{}connection\_\allowbreak{}id hacia app.data\_\allowbreak{}connections (id); al eliminar: cascada SQL.
+\item Clave foránea: updated\_\allowbreak{}by\_\allowbreak{}user\_\allowbreak{}id hacia app.users (id); al eliminar: referencia nula.
+\item Clave primaria: id.
+\item Unicidad: data\_\allowbreak{}connection\_\allowbreak{}id, domain\_\allowbreak{}code.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Índices únicos} \begin{itemize}
+\item id; índice completo.
+\item data\_\allowbreak{}connection\_\allowbreak{}id, domain\_\allowbreak{}code; índice completo.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 app.audit\_\allowbreak{}events\par}
+
+\par\vspace{6pt}\noindent\textbf{Área}\hspace{0.5em} Seguridad
+
+\par\vspace{6pt}\noindent\textbf{Qué guarda}\hspace{0.5em} Registra quién realizó una acción y sobre qué recurso, conservando contexto técnico.
+
+\par\vspace{6pt}\noindent\textbf{Cómo se utiliza}\hspace{0.5em} Auditoría de operaciones. La columna detail es JSON, no JSONB; actor\_\allowbreak{}user\_\allowbreak{}id es la FK de usuario, pero resource\_\allowbreak{}id es una referencia textual, no una FK universal.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{app.audit\_\allowbreak{}events}
+\paragraph{Área} Seguridad
+
+\paragraph{Qué guarda} Registra quién realizó una acción y sobre qué recurso, conservando contexto técnico.
+
+\paragraph{Cómo se utiliza} Auditoría de operaciones. La columna detail es JSON, no JSONB; actor\_\allowbreak{}user\_\allowbreak{}id es la FK de usuario, pero resource\_\allowbreak{}id es una referencia textual, no una FK universal.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{actor\_user\_id}} & integer\par\smallskip Admite nulos. & FK opcional al usuario que realizó la acción; ON DELETE SET NULL conserva el evento si se retira la cuenta. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{action}} & character varying(120)\par\smallskip Obligatorio. & Código de la operación registrada en auditoría. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{resource\_type}} & character varying(100)\par\smallskip Obligatorio. & Clase de recurso afectado por la operación. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{resource\_id}} & character varying(100)\par\smallskip Admite nulos. & Identidad del recurso guardada como texto; PostgreSQL no la impone como FK a todas las tablas. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{detail}} & json\par\smallskip Obligatorio. Con valor predeterminado. & Documento JSON con detalle de auditoría; no se leyó su contenido. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{created\_at}} & timestamp with time zone\par\smallskip Admite nulos. Con valor predeterminado. & Fecha de creación del registro; su opcionalidad física consta en el inventario. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{actor\_label}} & character varying(320)\par\smallskip Admite nulos. & Etiqueta histórica del actor. Es texto de evidencia y no otra FK. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: actor\_\allowbreak{}user\_\allowbreak{}id hacia app.users (id); al eliminar: referencia nula.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: actor\_\allowbreak{}user\_\allowbreak{}id hacia app.users (id); al eliminar: referencia nula.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave foránea: actor\_\allowbreak{}user\_\allowbreak{}id hacia app.users (id); al eliminar: referencia nula.
+\item Clave primaria: id.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Índices únicos} \begin{itemize}
+\item id; índice completo.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 app.bi\_\allowbreak{}proposals\par}
+
+\par\vspace{6pt}\noindent\textbf{Área}\hspace{0.5em} Propuestas y ejecución
+
+\par\vspace{6pt}\noindent\textbf{Qué guarda}\hspace{0.5em} Conserva versiones del diseño BI, sus documentos, proveedor, validación y revisión humana.
+
+\par\vspace{6pt}\noindent\textbf{Cómo se utiliza}\hspace{0.5em} Asistente de datamart: conceptos, propuesta, personalización y revisión. Aprobar no ejecuta la carga. Una versión derivada enlaza con su origen mediante source\_\allowbreak{}proposal\_\allowbreak{}id.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{app.bi\_\allowbreak{}proposals}
+\paragraph{Área} Propuestas y ejecución
+
+\paragraph{Qué guarda} Conserva versiones del diseño BI, sus documentos, proveedor, validación y revisión humana.
+
+\paragraph{Cómo se utiliza} Asistente de datamart: conceptos, propuesta, personalización y revisión. Aprobar no ejecuta la carga. Una versión derivada enlaza con su origen mediante source\_\allowbreak{}proposal\_\allowbreak{}id.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{metadata\_snapshot\_id}} & integer\par\smallskip Obligatorio. & FK a app.metadata\_\allowbreak{}snapshots.id; enlaza el artefacto a una estructura de origen conservada. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{business\_goal}} & text\par\smallskip Obligatorio. & Necesidad comercial redactada o adoptada por la persona analista. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{business\_questions}} & jsonb\par\smallskip Obligatorio. & JSONB de las preguntas seleccionadas para esa necesidad. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{requested\_dimensions}} & jsonb\par\smallskip Obligatorio. & Campo JSONB conservado en el contrato histórico; no implica que el catálogo actual fije dimensiones predeterminadas. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{periodicity}} & character varying(20)\par\smallskip Obligatorio. & Agrupación temporal solicitada; no cambia por sí sola el grano físico de las filas. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{scope\_document}} & jsonb\par\smallskip Obligatorio. & JSONB del alcance y contexto verificados para el diseño. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{semantic\_map\_document}} & jsonb\par\smallskip Obligatorio. & JSONB de conceptos, explicaciones y correspondencias con la estructura. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{status}} & character varying(40)\par\smallskip Obligatorio. & Estado del ciclo de vida del artefacto. Una propuesta aprobada no equivale a una ejecución terminada. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{input\_hash}} & character varying(64)\par\smallskip Obligatorio. & Huella de entradas y contexto de la solicitud; no es el hash de contraseña de una persona. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{prompt\_version}} & character varying(30)\par\smallskip Obligatorio. & Versión de las instrucciones utilizadas para preparar el artefacto. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{contract\_version}} & integer\par\smallskip Obligatorio. & Versión del contrato estructural guardado; no es el número de propuesta ni de ejecución. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{provider\_kind}} & character varying(40)\par\smallskip Obligatorio. & Tipo de proveedor de IA. En los expedientes conserva la procedencia como texto, sin FK a la configuración que después puede cambiar. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{model\_id}} & character varying(160)\par\smallskip Obligatorio. & Identificador del modelo utilizado o configurado, distinto de una API key. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{proposal\_document}} & jsonb\par\smallskip Obligatorio. & JSONB del diseño BI declarativo: hechos, dimensiones, medidas, indicadores y plan propuesto. No es el datamart cargado. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{validation\_document}} & jsonb\par\smallskip Obligatorio. & JSONB de comprobaciones, errores o advertencias del artefacto o ejecución. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{review\_comment}} & text\par\smallskip Admite nulos. & Justificación o comentario de la revisión humana. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{warnings\_confirmed}} & boolean\par\smallskip Obligatorio. Con valor predeterminado. & Indica si se confirmaron las advertencias sujetas a decisión humana. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{created\_by\_user\_id}} & integer\par\smallskip Admite nulos. & FK opcional a la persona que creó el artefacto o expediente. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{created\_by\_label}} & character varying(320)\par\smallskip Obligatorio. & Etiqueta histórica de la persona creadora. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{reviewed\_by\_user\_id}} & integer\par\smallskip Admite nulos. & FK opcional a la persona que revisó la propuesta; puede diferir de quien la creó. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{reviewed\_by\_label}} & character varying(320)\par\smallskip Admite nulos. & Etiqueta histórica de la persona revisora. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{created\_at}} & timestamp with time zone\par\smallskip Obligatorio. Con valor predeterminado. & Fecha de creación del registro; su opcionalidad física consta en el inventario. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{reviewed\_at}} & timestamp with time zone\par\smallskip Admite nulos. & Fecha de la decisión de revisión. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{domain\_code}} & character varying(40)\par\smallskip Obligatorio. & Dominio analítico; ventas es el dominio implementado. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{source\_proposal\_id}} & integer\par\smallskip Admite nulos. & FK opcional a otra fila de app.bi\_\allowbreak{}proposals; registra el origen de una versión derivada. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: created\_\allowbreak{}by\_\allowbreak{}user\_\allowbreak{}id hacia app.users (id); al eliminar: referencia nula.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: created\_\allowbreak{}by\_\allowbreak{}user\_\allowbreak{}id hacia app.users (id); al eliminar: referencia nula.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave foránea: created\_\allowbreak{}by\_\allowbreak{}user\_\allowbreak{}id hacia app.users (id); al eliminar: referencia nula.
+\item Clave foránea: metadata\_\allowbreak{}snapshot\_\allowbreak{}id hacia app.metadata\_\allowbreak{}snapshots (id); al eliminar: restricción.
+\item Clave foránea: reviewed\_\allowbreak{}by\_\allowbreak{}user\_\allowbreak{}id hacia app.users (id); al eliminar: referencia nula.
+\item Clave foránea: source\_\allowbreak{}proposal\_\allowbreak{}id hacia app.bi\_\allowbreak{}proposals (id); al eliminar: referencia nula.
+\item Clave primaria: id.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Índices únicos} \begin{itemize}
+\item id; índice completo.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 app.business\_\allowbreak{}need\_\allowbreak{}reviews\par}
+
+\par\vspace{6pt}\noindent\textbf{Área}\hspace{0.5em} Propuestas y ejecución
+
+\par\vspace{6pt}\noindent\textbf{Qué guarda}\hspace{0.5em} Conserva la evaluación previa de una necesidad, contexto y huellas.
+
+\par\vspace{6pt}\noindent\textbf{Cómo se utiliza}\hspace{0.5em} Paso Necesidad. La revisión evalúa viabilidad antes de generar; no crea tablas ni garantiza la calidad de todos los datos.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{app.business\_\allowbreak{}need\_\allowbreak{}reviews}
+\paragraph{Área} Propuestas y ejecución
+
+\paragraph{Qué guarda} Conserva la evaluación previa de una necesidad, contexto y huellas.
+
+\paragraph{Cómo se utiliza} Paso Necesidad. La revisión evalúa viabilidad antes de generar; no crea tablas ni garantiza la calidad de todos los datos.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{metadata\_snapshot\_id}} & integer\par\smallskip Obligatorio. & FK a app.metadata\_\allowbreak{}snapshots.id; enlaza el artefacto a una estructura de origen conservada. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{input\_hash}} & character varying(64)\par\smallskip Obligatorio. & Huella de entradas y contexto de la solicitud; no es el hash de contraseña de una persona. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{assessment\_hash}} & character varying(64)\par\smallskip Obligatorio. & Huella del resultado de la revisión previa. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{assessment\_document}} & jsonb\par\smallskip Obligatorio. & JSONB de la evaluación de viabilidad, sus requisitos y límites; no se ejecuta como SQL. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{provider\_kind}} & character varying(40)\par\smallskip Obligatorio. & Tipo de proveedor de IA. En los expedientes conserva la procedencia como texto, sin FK a la configuración que después puede cambiar. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{model\_id}} & character varying(160)\par\smallskip Obligatorio. & Identificador del modelo utilizado o configurado, distinto de una API key. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{created\_by\_user\_id}} & integer\par\smallskip Admite nulos. & FK opcional a la persona que creó el artefacto o expediente. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{created\_at}} & timestamp with time zone\par\smallskip Obligatorio. Con valor predeterminado. & Fecha de creación del registro; su opcionalidad física consta en el inventario. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: created\_\allowbreak{}by\_\allowbreak{}user\_\allowbreak{}id hacia app.users (id); al eliminar: referencia nula.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: created\_\allowbreak{}by\_\allowbreak{}user\_\allowbreak{}id hacia app.users (id); al eliminar: referencia nula.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave foránea: created\_\allowbreak{}by\_\allowbreak{}user\_\allowbreak{}id hacia app.users (id); al eliminar: referencia nula.
+\item Clave foránea: metadata\_\allowbreak{}snapshot\_\allowbreak{}id hacia app.metadata\_\allowbreak{}snapshots (id); al eliminar: restricción.
+\item Clave primaria: id.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Índices únicos} \begin{itemize}
+\item id; índice completo.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 app.data\_\allowbreak{}connections\par}
+
+\par\vspace{6pt}\noindent\textbf{Área}\hspace{0.5em} Configuración y metadatos
+
+\par\vspace{6pt}\noindent\textbf{Qué guarda}\hspace{0.5em} Identifica una fuente de datos, sus propiedades de conexión y la referencia a una credencial cifrada.
+
+\par\vspace{6pt}\noindent\textbf{Cómo se utiliza}\hspace{0.5em} Pantalla Conexiones de datos y selector de fuente. Ambas conexiones pueden estar habilitadas; seleccionar una no fusiona sus datos.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{app.data\_\allowbreak{}connections}
+\paragraph{Área} Configuración y metadatos
+
+\paragraph{Qué guarda} Identifica una fuente de datos, sus propiedades de conexión y la referencia a una credencial cifrada.
+
+\paragraph{Cómo se utiliza} Pantalla Conexiones de datos y selector de fuente. Ambas conexiones pueden estar habilitadas; seleccionar una no fusiona sus datos.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{name}} & character varying(120)\par\smallskip Obligatorio. & Nombre o denominación visible en el módulo. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{connector\_kind}} & character varying(40)\par\smallskip Obligatorio. & Tipo de conector de la fuente; las dos fuentes ensayadas usan el adaptador SQL Server. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{host}} & character varying(255)\par\smallskip Obligatorio. & Servidor de origen configurado; no se extrajo su valor. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{port}} & integer\par\smallskip Obligatorio. & Puerto de la conexión de origen; no se extrajo su valor. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{database\_name}} & character varying(128)\par\smallskip Obligatorio. & Nombre de la base de origen. En una instantánea conserva la identidad de la captura. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{username}} & character varying(128)\par\smallskip Obligatorio. & Cuenta técnica de lectura de la fuente; no es la cuenta con la que una persona entra a la aplicación. No se extrajo su valor. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{encrypt}} & boolean\par\smallskip Obligatorio. & Opción de cifrado de transporte hacia la fuente. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{trust\_server\_certificate}} & boolean\par\smallskip Obligatorio. & Opción de validación del certificado de la conexión de origen. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{secret\_id}} & integer\par\smallskip Obligatorio. & FK a app.secrets.id. La credencial se recupera y descifra sólo bajo controles del servidor. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{is\_active}} & boolean\par\smallskip Obligatorio. Con valor predeterminado. & Estado de habilitación del registro; su efecto depende de las reglas del módulo. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{last\_test\_status}} & character varying(40)\par\smallskip Admite nulos. & Resultado de la última prueba de conexión del registro. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{last\_test\_message}} & text\par\smallskip Admite nulos. & Descripción del resultado de la última prueba; no se extrajo su texto. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{last\_tested\_at}} & timestamp with time zone\par\smallskip Admite nulos. & Fecha de la última prueba de conectividad. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{created\_at}} & timestamp with time zone\par\smallskip Admite nulos. Con valor predeterminado. & Fecha de creación del registro; su opcionalidad física consta en el inventario. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{updated\_at}} & timestamp with time zone\par\smallskip Admite nulos. Con valor predeterminado. & Fecha de actualización del registro; su opcionalidad física consta en el inventario. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: secret\_\allowbreak{}id hacia app.secrets (id); al eliminar: restricción.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: secret\_\allowbreak{}id hacia app.secrets (id); al eliminar: restricción.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave foránea: secret\_\allowbreak{}id hacia app.secrets (id); al eliminar: restricción.
+\item Clave primaria: id.
+\item Unicidad: secret\_\allowbreak{}id.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Índices únicos} \begin{itemize}
+\item id; índice completo.
+\item secret\_\allowbreak{}id; índice completo.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 app.etl\_\allowbreak{}executions\par}
+
+\par\vspace{6pt}\noindent\textbf{Área}\hspace{0.5em} Propuestas y ejecución
+
+\par\vspace{6pt}\noindent\textbf{Qué guarda}\hspace{0.5em} Conserva el expediente de preparación y ejecución: selección, plan, validación, métricas y fechas.
+
+\par\vspace{6pt}\noindent\textbf{Cómo se utiliza}\hspace{0.5em} Datamart de ventas e historial de ejecuciones. El registro del expediente no es la tabla de hechos; los datos cargados viven en el esquema analítico de esa ejecución.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{app.etl\_\allowbreak{}executions}
+\paragraph{Área} Propuestas y ejecución
+
+\paragraph{Qué guarda} Conserva el expediente de preparación y ejecución: selección, plan, validación, métricas y fechas.
+
+\paragraph{Cómo se utiliza} Datamart de ventas e historial de ejecuciones. El registro del expediente no es la tabla de hechos; los datos cargados viven en el esquema analítico de esa ejecución.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{proposal\_id}} & integer\par\smallskip Obligatorio. & FK a app.bi\_\allowbreak{}proposals.id; vincula la asesoría o ejecución con una propuesta concreta. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{metadata\_snapshot\_id}} & integer\par\smallskip Obligatorio. & FK a app.metadata\_\allowbreak{}snapshots.id; enlaza el artefacto a una estructura de origen conservada. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{status}} & character varying(40)\par\smallskip Obligatorio. & Estado del ciclo de vida del artefacto. Una propuesta aprobada no equivale a una ejecución terminada. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{domain\_code}} & character varying(40)\par\smallskip Obligatorio. & Dominio analítico; ventas es el dominio implementado. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{builder\_version}} & character varying(40)\par\smallskip Obligatorio. & Versión del constructor determinístico que preparó el plan de ejecución. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{proposal\_hash}} & character varying(64)\par\smallskip Obligatorio. & Huella del contrato de propuesta usado para la ejecución. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{snapshot\_hash}} & character varying(64)\par\smallskip Obligatorio. & Huella de los metadatos conservados utilizados para la ejecución. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{selection\_document}} & jsonb\par\smallskip Obligatorio. & JSONB de indicadores y decisiones seleccionados para materializar. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{plan\_document}} & jsonb\par\smallskip Obligatorio. & JSONB del plan compilado y su destino; el nombre de un esquema en un documento no constituye una FK de PostgreSQL. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{validation\_document}} & jsonb\par\smallskip Obligatorio. & JSONB de comprobaciones, errores o advertencias del artefacto o ejecución. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{metrics\_document}} & jsonb\par\smallskip Obligatorio. & JSONB de métricas y comprobaciones de la carga; no contiene la tabla física de hechos. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{created\_by\_user\_id}} & integer\par\smallskip Admite nulos. & FK opcional a la persona que creó el artefacto o expediente. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{created\_by\_label}} & character varying(320)\par\smallskip Obligatorio. & Etiqueta histórica de la persona creadora. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{created\_at}} & timestamp with time zone\par\smallskip Obligatorio. Con valor predeterminado. & Fecha de creación del registro; su opcionalidad física consta en el inventario. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{started\_at}} & timestamp with time zone\par\smallskip Admite nulos. & Fecha de comienzo de la ejecución. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{finished\_at}} & timestamp with time zone\par\smallskip Admite nulos. & Fecha de finalización de la ejecución. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: created\_\allowbreak{}by\_\allowbreak{}user\_\allowbreak{}id hacia app.users (id); al eliminar: referencia nula.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: created\_\allowbreak{}by\_\allowbreak{}user\_\allowbreak{}id hacia app.users (id); al eliminar: referencia nula.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave foránea: created\_\allowbreak{}by\_\allowbreak{}user\_\allowbreak{}id hacia app.users (id); al eliminar: referencia nula.
+\item Clave foránea: metadata\_\allowbreak{}snapshot\_\allowbreak{}id hacia app.metadata\_\allowbreak{}snapshots (id); al eliminar: restricción.
+\item Clave foránea: proposal\_\allowbreak{}id hacia app.bi\_\allowbreak{}proposals (id); al eliminar: restricción.
+\item Clave primaria: id.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Índices únicos} \begin{itemize}
+\item id; índice completo.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 app.llm\_\allowbreak{}configurations\par}
+
+\par\vspace{6pt}\noindent\textbf{Área}\hspace{0.5em} Configuración y metadatos
+
+\par\vspace{6pt}\noindent\textbf{Qué guarda}\hspace{0.5em} Configura proveedor, modelo, endpoint, razonamiento y prueba de conectividad.
+
+\par\vspace{6pt}\noindent\textbf{Cómo se utiliza}\hspace{0.5em} Pantalla Configuración IA. secret\_\allowbreak{}id es opcional y único dentro de esta tabla; un proveedor local puede no necesitar API key.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{app.llm\_\allowbreak{}configurations}
+\paragraph{Área} Configuración y metadatos
+
+\paragraph{Qué guarda} Configura proveedor, modelo, endpoint, razonamiento y prueba de conectividad.
+
+\paragraph{Cómo se utiliza} Pantalla Configuración IA. secret\_\allowbreak{}id es opcional y único dentro de esta tabla; un proveedor local puede no necesitar API key.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{name}} & character varying(120)\par\smallskip Obligatorio. & Nombre o denominación visible en el módulo. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{provider\_kind}} & character varying(40)\par\smallskip Obligatorio. & Tipo de proveedor de IA. En los expedientes conserva la procedencia como texto, sin FK a la configuración que después puede cambiar. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{base\_url}} & character varying(300)\par\smallskip Obligatorio. & Dirección del servicio de IA configurado; no se extrajo su valor. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{model\_id}} & character varying(160)\par\smallskip Obligatorio. & Identificador del modelo utilizado o configurado, distinto de una API key. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{credential\_reference}} & character varying(80)\par\smallskip Obligatorio. & Referencia técnica de la credencial; no equivale a una clave en texto. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{is\_active}} & boolean\par\smallskip Obligatorio. Con valor predeterminado. & Estado de habilitación del registro; su efecto depende de las reglas del módulo. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{last\_test\_status}} & character varying(40)\par\smallskip Admite nulos. & Resultado de la última prueba de conexión del registro. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{last\_test\_message}} & text\par\smallskip Admite nulos. & Descripción del resultado de la última prueba; no se extrajo su texto. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{last\_tested\_at}} & timestamp with time zone\par\smallskip Admite nulos. & Fecha de la última prueba de conectividad. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{created\_at}} & timestamp with time zone\par\smallskip Admite nulos. Con valor predeterminado. & Fecha de creación del registro; su opcionalidad física consta en el inventario. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{updated\_at}} & timestamp with time zone\par\smallskip Admite nulos. Con valor predeterminado. & Fecha de actualización del registro; su opcionalidad física consta en el inventario. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{secret\_id}} & integer\par\smallskip Admite nulos. & FK a app.secrets.id. La credencial se recupera y descifra sólo bajo controles del servidor. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{reasoning\_level}} & character varying(20)\par\smallskip Obligatorio. Con valor predeterminado. & Nivel de razonamiento admitido por la configuración y el adaptador. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: secret\_\allowbreak{}id hacia app.secrets (id); al eliminar: referencia nula.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: secret\_\allowbreak{}id hacia app.secrets (id); al eliminar: referencia nula.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave foránea: secret\_\allowbreak{}id hacia app.secrets (id); al eliminar: referencia nula.
+\item Clave primaria: id.
+\item Unicidad: secret\_\allowbreak{}id.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Índices únicos} \begin{itemize}
+\item id; índice completo.
+\item secret\_\allowbreak{}id; índice completo.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 app.menu\_\allowbreak{}permissions\par}
+
+\par\vspace{6pt}\noindent\textbf{Área}\hspace{0.5em} Seguridad
+
+\par\vspace{6pt}\noindent\textbf{Qué guarda}\hspace{0.5em} Relaciona entradas de navegación con permisos.
+
+\par\vspace{6pt}\noindent\textbf{Cómo se utiliza}\hspace{0.5em} Determina qué requisito de permiso acompaña a una entrada del menú; no es una asignación directa de menú a rol.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{menu\_id}} & integer\par\smallskip Obligatorio. Clave primaria. & FK a app.menus.id; identifica una entrada de navegación. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{app.menu\_\allowbreak{}permissions}
+\paragraph{Área} Seguridad
+
+\paragraph{Qué guarda} Relaciona entradas de navegación con permisos.
+
+\paragraph{Cómo se utiliza} Determina qué requisito de permiso acompaña a una entrada del menú; no es una asignación directa de menú a rol.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{menu\_id}} & integer\par\smallskip Obligatorio. Clave primaria. & FK a app.menus.id; identifica una entrada de navegación. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{permission\_id}} & integer\par\smallskip Obligatorio. Clave primaria. & FK a app.permissions.id; identifica una operación autorizable. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: menu\_\allowbreak{}id hacia app.menus (id); al eliminar: cascada SQL.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: menu\_\allowbreak{}id hacia app.menus (id); al eliminar: cascada SQL.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave foránea: menu\_\allowbreak{}id hacia app.menus (id); al eliminar: cascada SQL.
+\item Clave foránea: permission\_\allowbreak{}id hacia app.permissions (id); al eliminar: cascada SQL.
+\item Clave primaria: menu\_\allowbreak{}id, permission\_\allowbreak{}id.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item menu\_\allowbreak{}id, permission\_\allowbreak{}id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item menu\_\allowbreak{}id, permission\_\allowbreak{}id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Índices únicos} \begin{itemize}
+\item menu\_\allowbreak{}id, permission\_\allowbreak{}id; índice completo.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 app.menus\par}
+
+\par\vspace{6pt}\noindent\textbf{Área}\hspace{0.5em} Seguridad
+
+\par\vspace{6pt}\noindent\textbf{Qué guarda}\hspace{0.5em} Define entradas de navegación, ruta, agrupación y orden.
+
+\par\vspace{6pt}\noindent\textbf{Cómo se utiliza}\hspace{0.5em} La barra lateral muestra las opciones permitidas. La autorización efectiva se comprueba en FastAPI.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{app.menus}
+\paragraph{Área} Seguridad
+
+\paragraph{Qué guarda} Define entradas de navegación, ruta, agrupación y orden.
+
+\paragraph{Cómo se utiliza} La barra lateral muestra las opciones permitidas. La autorización efectiva se comprueba en FastAPI.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{code}} & character varying(100)\par\smallskip Obligatorio. & Código estable de la entidad; no depende de su etiqueta visible. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{label}} & character varying(120)\par\smallskip Obligatorio. & Etiqueta de navegación que se presenta a la persona usuaria. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{path}} & character varying(160)\par\smallskip Obligatorio. & Ruta de la pantalla; no es una credencial ni una regla de autorización. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{position}} & integer\par\smallskip Obligatorio. Con valor predeterminado. & Orden de presentación dentro de la navegación. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{is\_active}} & boolean\par\smallskip Obligatorio. Con valor predeterminado. & Estado de habilitación del registro; su efecto depende de las reglas del módulo. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{module\_code}} & character varying(80)\par\smallskip Obligatorio. Con valor predeterminado. & Código del módulo o agrupación funcional. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{module\_label}} & character varying(120)\par\smallskip Obligatorio. Con valor predeterminado. & Nombre visible de la agrupación de menús. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{is\_system\_protected}} & boolean\par\smallskip Obligatorio. Con valor predeterminado. & Marca de un registro base protegido para conservar administración y navegación esenciales. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: id.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: id.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave primaria: id.
+\item Unicidad: code.
+\item Unicidad: path.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item code; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item code; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Índices únicos} \begin{itemize}
+\item code; índice completo.
+\item id; índice completo.
+\item code; índice completo.
+\item path; índice completo.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 app.metadata\_\allowbreak{}snapshots\par}
+
+\par\vspace{6pt}\noindent\textbf{Área}\hspace{0.5em} Configuración y metadatos
+
+\par\vspace{6pt}\noindent\textbf{Qué guarda}\hspace{0.5em} Guarda una captura estructural inmutable de una fuente y sus huellas.
+
+\par\vspace{6pt}\noindent\textbf{Cómo se utiliza}\hspace{0.5em} Explorador de esquema. El JSONB describe tablas, columnas y relaciones declaradas de la fuente, no contiene filas de ventas.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{app.metadata\_\allowbreak{}snapshots}
+\paragraph{Área} Configuración y metadatos
+
+\paragraph{Qué guarda} Guarda una captura estructural inmutable de una fuente y sus huellas.
+
+\paragraph{Cómo se utiliza} Explorador de esquema. El JSONB describe tablas, columnas y relaciones declaradas de la fuente, no contiene filas de ventas.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{data\_connection\_id}} & integer\par\smallskip Obligatorio. & FK a app.data\_\allowbreak{}connections.id; preserva el contexto de fuente. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{connector\_code}} & character varying(40)\par\smallskip Obligatorio. & Código del adaptador que realizó la captura estructural. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{database\_name}} & character varying(128)\par\smallskip Obligatorio. & Nombre de la base de origen. En una instantánea conserva la identidad de la captura. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{contract\_version}} & integer\par\smallskip Obligatorio. & Versión del contrato estructural guardado; no es el número de propuesta ni de ejecución. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{content\_hash}} & character varying(64)\par\smallskip Obligatorio. & Huella del documento estructural canónico; permite detectar cambios y evitar duplicar capturas iguales. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{schema\_document}} & jsonb\par\smallskip Obligatorio. & JSONB de los metadatos de origen: estructura, tipos, claves y relaciones declaradas. No son filas de negocio. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{schema\_count}} & integer\par\smallskip Obligatorio. & Número de esquemas descritos en la instantánea de origen. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{table\_count}} & integer\par\smallskip Obligatorio. & Número de tablas descritas en la instantánea de origen. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{column\_count}} & integer\par\smallskip Obligatorio. & Número de columnas descritas en la instantánea de origen. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{relationship\_count}} & integer\par\smallskip Obligatorio. & Número de relaciones declaradas descritas; no cuenta ventas ni coincidencias de datos. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{captured\_by\_user\_id}} & integer\par\smallskip Admite nulos. & FK opcional al usuario que obtuvo la instantánea. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{captured\_by\_label}} & character varying(320)\par\smallskip Obligatorio. & Etiqueta histórica de la persona que obtuvo la instantánea. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{captured\_at}} & timestamp with time zone\par\smallskip Obligatorio. Con valor predeterminado. & Fecha de captura de los metadatos. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: captured\_\allowbreak{}by\_\allowbreak{}user\_\allowbreak{}id hacia app.users (id); al eliminar: referencia nula.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: captured\_\allowbreak{}by\_\allowbreak{}user\_\allowbreak{}id hacia app.users (id); al eliminar: referencia nula.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave foránea: captured\_\allowbreak{}by\_\allowbreak{}user\_\allowbreak{}id hacia app.users (id); al eliminar: referencia nula.
+\item Clave foránea: data\_\allowbreak{}connection\_\allowbreak{}id hacia app.data\_\allowbreak{}connections (id); al eliminar: restricción.
+\item Clave primaria: id.
+\item Unicidad: data\_\allowbreak{}connection\_\allowbreak{}id, contract\_\allowbreak{}version, content\_\allowbreak{}hash.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Índices únicos} \begin{itemize}
+\item id; índice completo.
+\item data\_\allowbreak{}connection\_\allowbreak{}id, contract\_\allowbreak{}version, content\_\allowbreak{}hash; índice completo.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 app.parameters\par}
+
+\par\vspace{6pt}\noindent\textbf{Área}\hspace{0.5em} Configuración y metadatos
+
+\par\vspace{6pt}\noindent\textbf{Qué guarda}\hspace{0.5em} Conserva parámetros del producto, su tipo y límites configurados.
+
+\par\vspace{6pt}\noindent\textbf{Cómo se utiliza}\hspace{0.5em} Pantalla Parámetros. value se conserva como texto; el servidor interpreta el tipo y valida los límites.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{app.parameters}
+\paragraph{Área} Configuración y metadatos
+
+\paragraph{Qué guarda} Conserva parámetros del producto, su tipo y límites configurados.
+
+\paragraph{Cómo se utiliza} Pantalla Parámetros. value se conserva como texto; el servidor interpreta el tipo y valida los límites.
+
+\paragraph{Ejemplo vigente} Duración de la sesión (minutos) utiliza esta tabla existente. La clave \texttt{AUTH\_SESSION\_MINUTES} identifica una fila; su valor inicial es 60 y sus límites son 15 y 240. La operación se realiza desde la pantalla, sin añadir columnas ni editar valores por SQL. Este ejemplo es una configuración técnica del acceso y no una medida de ventas.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{key}} & character varying(100)\par\smallskip Obligatorio. & Clave única de un parámetro del producto. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{value}} & text\par\smallskip Obligatorio. & Valor del parámetro guardado como texto; no se extrajo su contenido. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{description}} & text\par\smallskip Admite nulos. & Explicación de la entidad o parámetro. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{is\_active}} & boolean\par\smallskip Obligatorio. Con valor predeterminado. & Estado de habilitación del registro; su efecto depende de las reglas del módulo. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{updated\_at}} & timestamp with time zone\par\smallskip Admite nulos. Con valor predeterminado. & Fecha de actualización del registro; su opcionalidad física consta en el inventario. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{name}} & character varying(160)\par\smallskip Obligatorio. Con valor predeterminado. & Nombre o denominación visible en el módulo. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{module\_code}} & character varying(80)\par\smallskip Obligatorio. Con valor predeterminado. & Código del módulo o agrupación funcional. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{value\_type}} & character varying(30)\par\smallskip Obligatorio. Con valor predeterminado. & Tipo lógico con el que el servidor interpreta el valor textual. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{default\_value}} & text\par\smallskip Obligatorio. Con valor predeterminado. & Valor previsto por defecto para el parámetro; no se extrajo su contenido. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{min\_value}} & integer\par\smallskip Admite nulos. & Límite inferior configurado para valores numéricos compatibles. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{max\_value}} & integer\par\smallskip Admite nulos. & Límite superior configurado para valores numéricos compatibles. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: id.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: id.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave primaria: id.
+\item Unicidad: key.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item key; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item key; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Índices únicos} \begin{itemize}
+\item key; índice completo.
+\item id; índice completo.
+\item key; índice completo.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 app.permissions\par}
+
+\par\vspace{6pt}\noindent\textbf{Área}\hspace{0.5em} Seguridad
+
+\par\vspace{6pt}\noindent\textbf{Qué guarda}\hspace{0.5em} Catálogo de operaciones que el servidor autoriza.
+
+\par\vspace{6pt}\noindent\textbf{Cómo se utiliza}\hspace{0.5em} Permisos de lectura, escritura, revisión o ejecución según el módulo. Un menú visible no concede el permiso.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{app.permissions}
+\paragraph{Área} Seguridad
+
+\paragraph{Qué guarda} Catálogo de operaciones que el servidor autoriza.
+
+\paragraph{Cómo se utiliza} Permisos de lectura, escritura, revisión o ejecución según el módulo. Un menú visible no concede el permiso.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{code}} & character varying(120)\par\smallskip Obligatorio. & Código estable de la entidad; no depende de su etiqueta visible. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{name}} & character varying(160)\par\smallskip Obligatorio. & Nombre o denominación visible en el módulo. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{description}} & text\par\smallskip Admite nulos. & Explicación de la entidad o parámetro. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{is\_active}} & boolean\par\smallskip Obligatorio. Con valor predeterminado. & Estado de habilitación del registro; su efecto depende de las reglas del módulo. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{is\_system\_protected}} & boolean\par\smallskip Obligatorio. Con valor predeterminado. & Marca de un registro base protegido para conservar administración y navegación esenciales. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: id.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: id.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave primaria: id.
+\item Unicidad: code.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item code; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item code; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Índices únicos} \begin{itemize}
+\item code; índice completo.
+\item id; índice completo.
+\item code; índice completo.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 app.role\_\allowbreak{}permissions\par}
+
+\par\vspace{6pt}\noindent\textbf{Área}\hspace{0.5em} Seguridad
+
+\par\vspace{6pt}\noindent\textbf{Qué guarda}\hspace{0.5em} Relaciona roles con permisos mediante dos FK y una PK compuesta.
+
+\par\vspace{6pt}\noindent\textbf{Cómo se utiliza}\hspace{0.5em} Conceder a un rol las operaciones autorizadas.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{role\_id}} & integer\par\smallskip Obligatorio. Clave primaria. & FK a app.roles.id; identifica un rol en la tabla de asociación. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{app.role\_\allowbreak{}permissions}
+\paragraph{Área} Seguridad
+
+\paragraph{Qué guarda} Relaciona roles con permisos mediante dos FK y una PK compuesta.
+
+\paragraph{Cómo se utiliza} Conceder a un rol las operaciones autorizadas.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{role\_id}} & integer\par\smallskip Obligatorio. Clave primaria. & FK a app.roles.id; identifica un rol en la tabla de asociación. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{permission\_id}} & integer\par\smallskip Obligatorio. Clave primaria. & FK a app.permissions.id; identifica una operación autorizable. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: permission\_\allowbreak{}id hacia app.permissions (id); al eliminar: cascada SQL.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: permission\_\allowbreak{}id hacia app.permissions (id); al eliminar: cascada SQL.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave foránea: permission\_\allowbreak{}id hacia app.permissions (id); al eliminar: cascada SQL.
+\item Clave foránea: role\_\allowbreak{}id hacia app.roles (id); al eliminar: cascada SQL.
+\item Clave primaria: role\_\allowbreak{}id, permission\_\allowbreak{}id.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item role\_\allowbreak{}id, permission\_\allowbreak{}id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item role\_\allowbreak{}id, permission\_\allowbreak{}id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Índices únicos} \begin{itemize}
+\item role\_\allowbreak{}id, permission\_\allowbreak{}id; índice completo.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 app.roles\par}
+
+\par\vspace{6pt}\noindent\textbf{Área}\hspace{0.5em} Seguridad
+
+\par\vspace{6pt}\noindent\textbf{Qué guarda}\hspace{0.5em} Agrupa responsabilidades de acceso, como administración, análisis o gerencia.
+
+\par\vspace{6pt}\noindent\textbf{Cómo se utiliza}\hspace{0.5em} Administración de roles; el nombre visible no sustituye los permisos asignados.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{app.roles}
+\paragraph{Área} Seguridad
+
+\paragraph{Qué guarda} Agrupa responsabilidades de acceso, como administración, análisis o gerencia.
+
+\paragraph{Cómo se utiliza} Administración de roles; el nombre visible no sustituye los permisos asignados.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{code}} & character varying(80)\par\smallskip Obligatorio. & Código estable de la entidad; no depende de su etiqueta visible. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{name}} & character varying(120)\par\smallskip Obligatorio. & Nombre o denominación visible en el módulo. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{description}} & text\par\smallskip Admite nulos. & Explicación de la entidad o parámetro. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{is\_active}} & boolean\par\smallskip Obligatorio. Con valor predeterminado. & Estado de habilitación del registro; su efecto depende de las reglas del módulo. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{is\_system\_protected}} & boolean\par\smallskip Obligatorio. Con valor predeterminado. & Marca de un registro base protegido para conservar administración y navegación esenciales. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: id.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: id.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave primaria: id.
+\item Unicidad: code.
+\item Unicidad: name.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item code; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item code; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Índices únicos} \begin{itemize}
+\item code; índice completo.
+\item id; índice completo.
+\item code; índice completo.
+\item name; índice completo.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 app.secrets\par}
+
+\par\vspace{6pt}\noindent\textbf{Área}\hspace{0.5em} Configuración y metadatos
+
+\par\vspace{6pt}\noindent\textbf{Qué guarda}\hspace{0.5em} Conserva valores cifrados de credenciales mediante ciphertext.
+
+\par\vspace{6pt}\noindent\textbf{Cómo se utiliza}\hspace{0.5em} No se consultan sus valores desde la interfaz ni desde este inventario. La raíz de cifrado está en un volumen separado de PostgreSQL.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{app.secrets}
+\paragraph{Área} Configuración y metadatos
+
+\paragraph{Qué guarda} Conserva valores cifrados de credenciales mediante ciphertext.
+
+\paragraph{Cómo se utiliza} No se consultan sus valores desde la interfaz ni desde este inventario. La raíz de cifrado está en un volumen separado de PostgreSQL.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{kind}} & character varying(40)\par\smallskip Obligatorio. & Clase de credencial cifrada. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{ciphertext}} & text\par\smallskip Obligatorio. & Contenido cifrado del secreto; no se leyó ni se incluye en los documentos. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{created\_at}} & timestamp with time zone\par\smallskip Admite nulos. Con valor predeterminado. & Fecha de creación del registro; su opcionalidad física consta en el inventario. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{updated\_at}} & timestamp with time zone\par\smallskip Admite nulos. Con valor predeterminado. & Fecha de actualización del registro; su opcionalidad física consta en el inventario. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: id.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: id.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave primaria: id.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Índices únicos} \begin{itemize}
+\item id; índice completo.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 app.semantic\_\allowbreak{}advice\par}
+
+\par\vspace{6pt}\noindent\textbf{Área}\hspace{0.5em} Propuestas y ejecución
+
+\par\vspace{6pt}\noindent\textbf{Qué guarda}\hspace{0.5em} Conserva asesoría contextual sobre un concepto de una propuesta.
+
+\par\vspace{6pt}\noindent\textbf{Cómo se utiliza}\hspace{0.5em} Ayuda para una decisión semántica del diseño. No es una tabla de conversaciones completas del copiloto analítico.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{app.semantic\_\allowbreak{}advice}
+\paragraph{Área} Propuestas y ejecución
+
+\paragraph{Qué guarda} Conserva asesoría contextual sobre un concepto de una propuesta.
+
+\paragraph{Cómo se utiliza} Ayuda para una decisión semántica del diseño. No es una tabla de conversaciones completas del copiloto analítico.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{proposal\_id}} & integer\par\smallskip Obligatorio. & FK a app.bi\_\allowbreak{}proposals.id; vincula la asesoría o ejecución con una propuesta concreta. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{concept\_code}} & character varying(80)\par\smallskip Obligatorio. & Identificador del concepto sobre el que se pidió asesoría. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{question}} & text\par\smallskip Obligatorio. & Consulta contextual sobre un concepto del diseño. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{response\_document}} & jsonb\par\smallskip Obligatorio. & JSONB de la asesoría semántica; no se leyó su contenido. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{provider\_kind}} & character varying(40)\par\smallskip Obligatorio. & Tipo de proveedor de IA. En los expedientes conserva la procedencia como texto, sin FK a la configuración que después puede cambiar. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{model\_id}} & character varying(160)\par\smallskip Obligatorio. & Identificador del modelo utilizado o configurado, distinto de una API key. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{created\_by\_user\_id}} & integer\par\smallskip Admite nulos. & FK opcional a la persona que creó el artefacto o expediente. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{created\_by\_label}} & character varying(320)\par\smallskip Obligatorio. & Etiqueta histórica de la persona creadora. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{created\_at}} & timestamp with time zone\par\smallskip Obligatorio. Con valor predeterminado. & Fecha de creación del registro; su opcionalidad física consta en el inventario. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: created\_\allowbreak{}by\_\allowbreak{}user\_\allowbreak{}id hacia app.users (id); al eliminar: referencia nula.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: created\_\allowbreak{}by\_\allowbreak{}user\_\allowbreak{}id hacia app.users (id); al eliminar: referencia nula.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave foránea: created\_\allowbreak{}by\_\allowbreak{}user\_\allowbreak{}id hacia app.users (id); al eliminar: referencia nula.
+\item Clave foránea: proposal\_\allowbreak{}id hacia app.bi\_\allowbreak{}proposals (id); al eliminar: cascada SQL.
+\item Clave primaria: id.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Índices únicos} \begin{itemize}
+\item id; índice completo.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 app.user\_\allowbreak{}roles\par}
+
+\par\vspace{6pt}\noindent\textbf{Área}\hspace{0.5em} Seguridad
+
+\par\vspace{6pt}\noindent\textbf{Qué guarda}\hspace{0.5em} Relaciona cuentas con roles mediante dos FK y una PK compuesta.
+
+\par\vspace{6pt}\noindent\textbf{Cómo se utiliza}\hspace{0.5em} Asignar uno o varios roles a una cuenta; un rol puede pertenecer a varias cuentas.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{user\_id}} & integer\par\smallskip Obligatorio. Clave primaria. & FK a app.users.id; identifica una cuenta en la tabla de asociación. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{app.user\_\allowbreak{}roles}
+\paragraph{Área} Seguridad
+
+\paragraph{Qué guarda} Relaciona cuentas con roles mediante dos FK y una PK compuesta.
+
+\paragraph{Cómo se utiliza} Asignar uno o varios roles a una cuenta; un rol puede pertenecer a varias cuentas.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{user\_id}} & integer\par\smallskip Obligatorio. Clave primaria. & FK a app.users.id; identifica una cuenta en la tabla de asociación. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{role\_id}} & integer\par\smallskip Obligatorio. Clave primaria. & FK a app.roles.id; identifica un rol en la tabla de asociación. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: role\_\allowbreak{}id hacia app.roles (id); al eliminar: cascada SQL.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave foránea: role\_\allowbreak{}id hacia app.roles (id); al eliminar: cascada SQL.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave foránea: role\_\allowbreak{}id hacia app.roles (id); al eliminar: cascada SQL.
+\item Clave foránea: user\_\allowbreak{}id hacia app.users (id); al eliminar: cascada SQL.
+\item Clave primaria: user\_\allowbreak{}id, role\_\allowbreak{}id.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item user\_\allowbreak{}id, role\_\allowbreak{}id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item user\_\allowbreak{}id, role\_\allowbreak{}id; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Índices únicos} \begin{itemize}
+\item user\_\allowbreak{}id, role\_\allowbreak{}id; índice completo.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 app.users\par}
+
+\par\vspace{6pt}\noindent\textbf{Área}\hspace{0.5em} Seguridad
+
+\par\vspace{6pt}\noindent\textbf{Qué guarda}\hspace{0.5em} La cuenta de una persona: identidad, estado de acceso y hash de contraseña.
+
+\par\vspace{6pt}\noindent\textbf{Cómo se utiliza}\hspace{0.5em} Administración y acceso a la plataforma. No confundir al usuario de la aplicación con el usuario técnico de PostgreSQL o SQL Server.
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{app.users}
+\paragraph{Área} Seguridad
+
+\paragraph{Qué guarda} La cuenta de una persona: identidad, estado de acceso y hash de contraseña.
+
+\paragraph{Cómo se utiliza} Administración y acceso a la plataforma. No confundir al usuario de la aplicación con el usuario técnico de PostgreSQL o SQL Server.
+
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{id}} & integer\par\smallskip Obligatorio. Clave primaria. Con valor predeterminado. & Identificador interno de esta entidad; su PK distingue cada registro. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{email}} & character varying(255)\par\smallskip Obligatorio. & Identificador de inicio de sesión; su índice único impide cuentas duplicadas con el mismo valor. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{full\_name}} & character varying(160)\par\smallskip Obligatorio. & Nombre visible de la persona de la cuenta. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{password\_hash}} & character varying(255)\par\smallskip Obligatorio. & Hash de contraseña, no contraseña en texto ni credencial recuperable. Este inventario sólo lee el nombre y tipo de la columna. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{is\_active}} & boolean\par\smallskip Obligatorio. Con valor predeterminado. & Estado de habilitación del registro; su efecto depende de las reglas del módulo. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{created\_at}} & timestamp with time zone\par\smallskip Admite nulos. Con valor predeterminado. & Fecha de creación del registro; su opcionalidad física consta en el inventario. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{updated\_at}} & timestamp with time zone\par\smallskip Admite nulos. Con valor predeterminado. & Fecha de actualización del registro; su opcionalidad física consta en el inventario. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{is\_system\_protected}} & boolean\par\smallskip Obligatorio. Con valor predeterminado. & Marca de un registro base protegido para conservar administración y navegación esenciales. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: id.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: id.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave primaria: id.
+\item Unicidad: email.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item email; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Índices únicos\par}
+\begin{itemize}
+\item email; índice completo.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Índices únicos} \begin{itemize}
+\item email; índice completo.
+\item email; índice completo.
+\item id; índice completo.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\RaggedRight\sffamily\bfseries\large\color{Azul}\hyphenpenalty=10000\exhyphenpenalty=10000 Diccionario histórico de dos datamarts de demostración\par}
+
+Las fichas siguientes conservan las columnas de los expedientes 21 y 22 del inventario del 18 de noviembre, para estudiar ejemplos concretos sin alterar la historia. No son el diccionario físico de los nuevos expedientes 23 y 24. Un diseño nuevo puede producir otro conjunto de atributos, como se explica en el apartado de destinos nuevos. Las 174 columnas de app descritas antes siguen vigentes al corte del 25 de noviembre. Una relación lógica del materializador no debe confundirse con una clave foránea física que la base no ha declarado.
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 mart\_\allowbreak{}ventas\_\allowbreak{}e21.dim\_\allowbreak{}cliente\par}
+
+\par
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{surrogate\_key}} & bigint\par\smallskip Obligatorio. & Clave sustituta interna de la dimensión; PK física. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{mart\_\allowbreak{}ventas\_\allowbreak{}e21.dim\_\allowbreak{}cliente}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{surrogate\_key}} & bigint\par\smallskip Obligatorio. & Clave sustituta interna de la dimensión; PK física. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\section{Diccionario histórico de dos datamarts de demostración}
+Las fichas siguientes conservan las columnas de los expedientes 21 y 22 del inventario del 18 de noviembre, para estudiar ejemplos concretos sin alterar la historia. No son el diccionario físico de los nuevos expedientes 23 y 24. Un diseño nuevo puede producir otro conjunto de atributos, como se explica en el apartado de destinos nuevos. Las 174 columnas de app descritas antes siguen vigentes al corte del 25 de noviembre. Una relación lógica del materializador no debe confundirse con una clave foránea física que la base no ha declarado.
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 mart\_\allowbreak{}ventas\_\allowbreak{}e21.dim\_\allowbreak{}cliente\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{surrogate\_key}} & bigint\par\smallskip Obligatorio. & Clave sustituta interna de la dimensión; PK física. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{mart\_\allowbreak{}ventas\_\allowbreak{}e21.dim\_\allowbreak{}cliente}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{surrogate\_key}} & bigint\par\smallskip Obligatorio. & Clave sustituta interna de la dimensión; PK física. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{customerid}} & bigint\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{accountnumber}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{nombre\_cliente}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{tipo\_cliente}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{etl\_execution\_id}} & bigint\par\smallskip Obligatorio. & Etiqueta de ejecución obligatoria; no tiene FK física a app.etl\_\allowbreak{}executions. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 mart\_\allowbreak{}ventas\_\allowbreak{}e21.dim\_\allowbreak{}fecha\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{surrogate\_key}} & bigint\par\smallskip Obligatorio. & Clave sustituta interna de la dimensión; PK física. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{mart\_\allowbreak{}ventas\_\allowbreak{}e21.dim\_\allowbreak{}fecha}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{surrogate\_key}} & bigint\par\smallskip Obligatorio. & Clave sustituta interna de la dimensión; PK física. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{orderdate}} & timestamp without time zone\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{anio}} & bigint\par\smallskip Obligatorio. & Componente de calendario derivado de la fecha seleccionada. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{trimestre}} & bigint\par\smallskip Obligatorio. & Componente de calendario derivado de la fecha seleccionada. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{mes}} & bigint\par\smallskip Obligatorio. & Componente de calendario derivado de la fecha seleccionada. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{dia}} & bigint\par\smallskip Obligatorio. & Componente de calendario derivado de la fecha seleccionada. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{etl\_execution\_id}} & bigint\par\smallskip Obligatorio. & Etiqueta de ejecución obligatoria; no tiene FK física a app.etl\_\allowbreak{}executions. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 mart\_\allowbreak{}ventas\_\allowbreak{}e21.dim\_\allowbreak{}producto\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{surrogate\_key}} & bigint\par\smallskip Obligatorio. & Clave sustituta interna de la dimensión; PK física. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{mart\_\allowbreak{}ventas\_\allowbreak{}e21.dim\_\allowbreak{}producto}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{surrogate\_key}} & bigint\par\smallskip Obligatorio. & Clave sustituta interna de la dimensión; PK física. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{productid}} & bigint\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{name}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{sizeunitmeasurecode}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{productnumber}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{weightunitmeasurecode}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{nombre\_producto}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{tipo\_producto}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{etl\_execution\_id}} & bigint\par\smallskip Obligatorio. & Etiqueta de ejecución obligatoria; no tiene FK física a app.etl\_\allowbreak{}executions. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 mart\_\allowbreak{}ventas\_\allowbreak{}e21.dim\_\allowbreak{}territorio\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{surrogate\_key}} & bigint\par\smallskip Obligatorio. & Clave sustituta interna de la dimensión; PK física. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{mart\_\allowbreak{}ventas\_\allowbreak{}e21.dim\_\allowbreak{}territorio}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{surrogate\_key}} & bigint\par\smallskip Obligatorio. & Clave sustituta interna de la dimensión; PK física. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{territoryid}} & bigint\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{countryregioncode}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{group}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{name}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{nombre\_territory\_dimension}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{tipo\_territory\_dimension}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{etl\_execution\_id}} & bigint\par\smallskip Obligatorio. & Etiqueta de ejecución obligatoria; no tiene FK física a app.etl\_\allowbreak{}executions. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{group\_es}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 mart\_\allowbreak{}ventas\_\allowbreak{}e21.fact\_\allowbreak{}ventas\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{salesorderid}} & bigint\par\smallskip Admite nulos. & Clave de trazabilidad o medida de origen seleccionada por el contrato de esta ejecución. Su significado y agregación se revisan en la propuesta; el nombre físico no acredita su semántica. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{mart\_\allowbreak{}ventas\_\allowbreak{}e21.fact\_\allowbreak{}ventas}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{salesorderid}} & bigint\par\smallskip Admite nulos. & Clave de trazabilidad o medida de origen seleccionada por el contrato de esta ejecución. Su significado y agregación se revisan en la propuesta; el nombre físico no acredita su semántica. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{salesorderdetailid}} & bigint\par\smallskip Admite nulos. & Clave de trazabilidad o medida de origen seleccionada por el contrato de esta ejecución. Su significado y agregación se revisan en la propuesta; el nombre físico no acredita su semántica. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{importe\_total\_de\_l\_neas}} & numeric\par\smallskip Admite nulos. & Clave de trazabilidad o medida de origen seleccionada por el contrato de esta ejecución. Su significado y agregación se revisan en la propuesta; el nombre físico no acredita su semántica. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{cantidad\_de\_unidades}} & bigint\par\smallskip Admite nulos. & Clave de trazabilidad o medida de origen seleccionada por el contrato de esta ejecución. Su significado y agregación se revisan en la propuesta; el nombre físico no acredita su semántica. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{n\_mero\_de\_pedidos\_distintos}} & bigint\par\smallskip Admite nulos. & Campo materializado para la medida documental: su receta puede calcular COUNT DISTINCT. No debe sumarse como si cada valor ya fuera un conteo. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{dim\_fecha\_sk}} & bigint\par\smallskip Admite nulos. & Referencia lógica a surrogate\_\allowbreak{}key de una dimensión; puede ser nula y no tiene FK física. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{dim\_producto\_sk}} & bigint\par\smallskip Admite nulos. & Referencia lógica a surrogate\_\allowbreak{}key de una dimensión; puede ser nula y no tiene FK física. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{dim\_cliente\_sk}} & bigint\par\smallskip Admite nulos. & Referencia lógica a surrogate\_\allowbreak{}key de una dimensión; puede ser nula y no tiene FK física. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{dim\_territorio\_sk}} & bigint\par\smallskip Admite nulos. & Referencia lógica a surrogate\_\allowbreak{}key de una dimensión; puede ser nula y no tiene FK física. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{etl\_execution\_id}} & bigint\par\smallskip Obligatorio. & Etiqueta de ejecución obligatoria; no tiene FK física a app.etl\_\allowbreak{}executions. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 mart\_\allowbreak{}ventas\_\allowbreak{}e22.dim\_\allowbreak{}cliente\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{surrogate\_key}} & bigint\par\smallskip Obligatorio. & Clave sustituta interna de la dimensión; PK física. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{mart\_\allowbreak{}ventas\_\allowbreak{}e22.dim\_\allowbreak{}cliente}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{surrogate\_key}} & bigint\par\smallskip Obligatorio. & Clave sustituta interna de la dimensión; PK física. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{customerid}} & bigint\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{customername}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{nombre\_cliente}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{tipo\_cliente}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{etl\_execution\_id}} & bigint\par\smallskip Obligatorio. & Etiqueta de ejecución obligatoria; no tiene FK física a app.etl\_\allowbreak{}executions. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 mart\_\allowbreak{}ventas\_\allowbreak{}e22.dim\_\allowbreak{}fecha\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{surrogate\_key}} & bigint\par\smallskip Obligatorio. & Clave sustituta interna de la dimensión; PK física. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{mart\_\allowbreak{}ventas\_\allowbreak{}e22.dim\_\allowbreak{}fecha}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{surrogate\_key}} & bigint\par\smallskip Obligatorio. & Clave sustituta interna de la dimensión; PK física. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{invoicedate}} & date\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{anio}} & bigint\par\smallskip Obligatorio. & Componente de calendario derivado de la fecha seleccionada. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{trimestre}} & bigint\par\smallskip Obligatorio. & Componente de calendario derivado de la fecha seleccionada. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{mes}} & bigint\par\smallskip Obligatorio. & Componente de calendario derivado de la fecha seleccionada. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{dia}} & bigint\par\smallskip Obligatorio. & Componente de calendario derivado de la fecha seleccionada. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{etl\_execution\_id}} & bigint\par\smallskip Obligatorio. & Etiqueta de ejecución obligatoria; no tiene FK física a app.etl\_\allowbreak{}executions. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 mart\_\allowbreak{}ventas\_\allowbreak{}e22.dim\_\allowbreak{}producto\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{surrogate\_key}} & bigint\par\smallskip Obligatorio. & Clave sustituta interna de la dimensión; PK física. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{mart\_\allowbreak{}ventas\_\allowbreak{}e22.dim\_\allowbreak{}producto}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{surrogate\_key}} & bigint\par\smallskip Obligatorio. & Clave sustituta interna de la dimensión; PK física. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{stockitemid}} & bigint\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{stockitemname}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{nombre\_producto}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{tipo\_producto}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{etl\_execution\_id}} & bigint\par\smallskip Obligatorio. & Etiqueta de ejecución obligatoria; no tiene FK física a app.etl\_\allowbreak{}executions. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 mart\_\allowbreak{}ventas\_\allowbreak{}e22.dim\_\allowbreak{}territorio\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{surrogate\_key}} & bigint\par\smallskip Obligatorio. & Clave sustituta interna de la dimensión; PK física. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{mart\_\allowbreak{}ventas\_\allowbreak{}e22.dim\_\allowbreak{}territorio}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{surrogate\_key}} & bigint\par\smallskip Obligatorio. & Clave sustituta interna de la dimensión; PK física. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{stateprovinceid}} & bigint\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{stateprovincename}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{stateprovincecode}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{salesterritory}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{nombre\_territorio}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{tipo\_territorio}} & text\par\smallskip Admite nulos. & Atributo de origen o etiqueta descriptiva seleccionada para esta dimensión. La propuesta y la evidencia definen su procedencia; no se deduce significado histórico únicamente del nombre. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{etl\_execution\_id}} & bigint\par\smallskip Obligatorio. & Etiqueta de ejecución obligatoria; no tiene FK física a app.etl\_\allowbreak{}executions. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\bfseries Restricciones físicas observadas\par}
+\begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+}
+\Needspace{\dimexpr\ht0+\dp0+24pt\relax}
+\endgroup
+\paragraph{Restricciones físicas observadas} \begin{itemize}
+\item Clave primaria: surrogate\_\allowbreak{}key.
+\end{itemize}
+
+\begingroup
+\setbox0=\vbox{\hsize=\linewidth
+{\normalfont\normalsize\sffamily\bfseries\normalsize\color{Teal}\hyphenpenalty=10000\exhyphenpenalty=10000 mart\_\allowbreak{}ventas\_\allowbreak{}e22.fact\_\allowbreak{}ventas\par}
+
+\par
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\texttt{\seqsplit{invoicelineid}} & bigint\par\smallskip Admite nulos. & Clave de trazabilidad o medida de origen seleccionada por el contrato de esta ejecución. Su significado y agregación se revisan en la propuesta; el nombre físico no acredita su semántica. \\
+\bottomrule
+\end{tabular}
+\endgroup
+}
+\Needspace{\dimexpr\ht0+\dp0+48pt\relax}
+\endgroup
+\subsection{mart\_\allowbreak{}ventas\_\allowbreak{}e22.fact\_\allowbreak{}ventas}
+\begingroup
+\fontsize{10}{12.5}\selectfont
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.23\linewidth}>{\RaggedRight\arraybackslash}p{0.45\linewidth}@{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo y condición} & \textbf{Qué representa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Continúa en la página siguiente}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{\seqsplit{invoicelineid}} & bigint\par\smallskip Admite nulos. & Clave de trazabilidad o medida de origen seleccionada por el contrato de esta ejecución. Su significado y agregación se revisan en la propuesta; el nombre físico no acredita su semántica. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{importe\_total\_de\_l\_nea}} & numeric\par\smallskip Admite nulos. & Clave de trazabilidad o medida de origen seleccionada por el contrato de esta ejecución. Su significado y agregación se revisan en la propuesta; el nombre físico no acredita su semántica. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{unidades\_totales}} & bigint\par\smallskip Admite nulos. & Clave de trazabilidad o medida de origen seleccionada por el contrato de esta ejecución. Su significado y agregación se revisan en la propuesta; el nombre físico no acredita su semántica. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{facturas\_distintas}} & bigint\par\smallskip Admite nulos. & Campo materializado para la medida documental: su receta puede calcular COUNT DISTINCT. No debe sumarse como si cada valor ya fuera un conteo. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{dim\_fecha\_sk}} & bigint\par\smallskip Admite nulos. & Referencia lógica a surrogate\_\allowbreak{}key de una dimensión; puede ser nula y no tiene FK física. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{dim\_producto\_sk}} & bigint\par\smallskip Admite nulos. & Referencia lógica a surrogate\_\allowbreak{}key de una dimensión; puede ser nula y no tiene FK física. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{dim\_cliente\_sk}} & bigint\par\smallskip Admite nulos. & Referencia lógica a surrogate\_\allowbreak{}key de una dimensión; puede ser nula y no tiene FK física. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{dim\_territorio\_sk}} & bigint\par\smallskip Admite nulos. & Referencia lógica a surrogate\_\allowbreak{}key de una dimensión; puede ser nula y no tiene FK física. \\
+\addlinespace[3pt]
+\texttt{\seqsplit{etl\_execution\_id}} & bigint\par\smallskip Obligatorio. & Etiqueta de ejecución obligatoria; no tiene FK física a app.etl\_\allowbreak{}executions. \\
+\addlinespace[3pt]
+\end{longtable}
+\endgroup
+
+\section{Alcance del inventario y límites}
+La inspección estructural realizada para actualizar este capítulo no modificó código, base, configuración ni contenedores.
+
+Se consultaron catálogos, identificadores y estados técnicos mínimos para el linaje y la revisión Alembic, además del parámetro público de duración de sesión. No se consultaron ventas individuales, credenciales ni documentos completos de las propuestas.
+
+La existencia física y el estado técnico no sustituyen la prueba operativa ni la conciliación de una carga. Los casos nuevos 135/23 y 136/24 se explican y se prueban en los capítulos de operación de esta edición; este capítulo distingue su estructura de los ejemplos históricos 129/21 y 131/22. Los estados de todos ellos se cotejaron sin generar propuestas ni ejecutar cargas adicionales durante esta inspección.

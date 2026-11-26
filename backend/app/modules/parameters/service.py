@@ -21,6 +21,18 @@ class ParameterDefinition(TypedDict):
 
 
 APPROVED_PARAMETERS: dict[str, ParameterDefinition] = {
+    "AUTH_SESSION_MINUTES": {
+        "name": "Duración de la sesión (minutos)",
+        "description": (
+            "Duración absoluta de las sesiones nuevas, entre 15 y 240 minutos. "
+            "El cambio se aplica al volver a iniciar sesión; no renueva tokens existentes."
+        ),
+        "module_code": "security",
+        "value_type": "integer",
+        "default_value": "60",
+        "min_value": 15,
+        "max_value": 240,
+    },
     "UI_PAGE_SIZE": {
         "name": "Registros por página",
         "description": "Cantidad predeterminada de registros mostrados en los listados.",
